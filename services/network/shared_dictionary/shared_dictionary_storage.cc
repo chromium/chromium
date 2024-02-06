@@ -218,7 +218,8 @@ SharedDictionaryStorage::MaybeCreateWriter(
   // dictionary storage has its own cache eviction logic, which is different
   // from the HTTP Caches's eviction logic.
   if (was_fetched_via_cache &&
-      IsAlreadyRegistered(url, response_time, expiration, info->match)) {
+      IsAlreadyRegistered(url, response_time, expiration, info->match,
+                          info->match_dest, info->id)) {
     return nullptr;
   }
 

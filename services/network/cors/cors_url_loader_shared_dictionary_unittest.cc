@@ -134,7 +134,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
               dictionary_map.begin()->first);
 
     ASSERT_EQ(1u, dictionary_map.begin()->second.size());
-    EXPECT_EQ("/path*", dictionary_map.begin()->second.begin()->first);
+    EXPECT_EQ(std::make_tuple("/path*", std::set<mojom::RequestDestination>()),
+              dictionary_map.begin()->second.begin()->first);
     const auto& dictionary_info =
         dictionary_map.begin()->second.begin()->second;
     EXPECT_EQ(dictionary_url, dictionary_info.url());
@@ -151,7 +152,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
 
   const std::map<
       url::SchemeHostPort,
-      std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
         ->GetDictionaryMap();

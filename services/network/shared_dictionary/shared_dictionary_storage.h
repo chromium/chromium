@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
@@ -42,7 +43,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // Returns a matching SharedDictionary for `url`. If the metadata has not been
   // read from the database, this method returns nullptr.
   virtual std::unique_ptr<SharedDictionary> GetDictionarySync(
-      const GURL& url) = 0;
+      const GURL& url,
+      mojom::RequestDestination destination) = 0;
 
   // If the metadata has already been read from the database, this method calls
   // `callback` synchronously with a matching `SharedDictionary`. Otherwise,
@@ -50,6 +52,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // `callback` with a matching `SharedDictionary`.
   virtual void GetDictionary(
       const GURL& url,
+      mojom::RequestDestination destination,
       base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) = 0;
 
   // Returns a SharedDictionaryWriter if `headers` has a valid
@@ -83,10 +86,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       const std::string& id) = 0;
 
   // Called to avoid registering the same dictionary from the disk cache.
-  virtual bool IsAlreadyRegistered(const GURL& url,
-                                   base::Time response_time,
-                                   base::TimeDelta expiration,
-                                   const std::string& match) = 0;
+  virtual bool IsAlreadyRegistered(
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) = 0;
 };
 
 // Returns a matching dictionary for `url` from `dictionary_info_map`.
@@ -95,9 +101,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
 // DictionaryInfoType.
 template <class DictionaryInfoType>
 DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
-    std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfoType>>&
-        dictionary_info_map,
-    const GURL& url) {
+    std::map<
+        url::SchemeHostPort,
+        std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+                 DictionaryInfoType>>& dictionary_info_map,
+    const GURL& url,
+    mojom::RequestDestination destination) {
   auto it = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it == dictionary_info_map.end()) {
     return nullptr;
@@ -105,11 +114,16 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
   DictionaryInfoType* matched_info = nullptr;
   for (auto& item : it->second) {
     DictionaryInfoType& info = item.second;
-    CHECK_EQ(info.match(), item.first);
+    CHECK(std::make_tuple(info.match(), info.match_dest()) == item.first);
     if (matched_info &&
         ((matched_info->match().size() > info.match().size()) ||
          (matched_info->match().size() == info.match().size() &&
           matched_info->response_time() > info.response_time()))) {
+      continue;
+    }
+    // When `match_dest` is empty, we don't check the `destination`.
+    if (!info.match_dest().empty() &&
+        !base::Contains(info.match_dest(), destination)) {
       continue;
     }
     if (!info.matcher()) {
@@ -135,23 +149,27 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
 // DictionaryInfoType.
 template <class DictionaryInfoType>
 bool IsAlreadyRegisteredInDictionaryInfoMap(
-    std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfoType>>&
-        dictionary_info_map,
+    std::map<
+        url::SchemeHostPort,
+        std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+                 DictionaryInfoType>>& dictionary_info_map,
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,
-    const std::string& match) {
+    const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest,
+    const std::string& id) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it1 == dictionary_info_map.end()) {
     return false;
   }
-  auto it2 = it1->second.find(match);
+  auto it2 = it1->second.find(std::make_tuple(match, match_dest));
   if (it2 == it1->second.end()) {
     return false;
   }
   return it2->second.url() == url &&
          it2->second.response_time() == response_time &&
-         it2->second.expiration() == expiration;
+         it2->second.expiration() == expiration && it2->second.id() == id;
 }
 
 }  // namespace network

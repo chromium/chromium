@@ -51,8 +51,12 @@ class EvictionCandidate {
  public:
   EvictionCandidate(raw_ptr<SharedDictionaryStorageInMemory> storage,
                     const url::SchemeHostPort& host,
-                    const std::string& match)
-      : storage_(storage), host_(host), match_(match) {}
+                    const std::string& match,
+                    const std::set<mojom::RequestDestination>& match_dest)
+      : storage_(storage),
+        host_(host),
+        match_(match),
+        match_dest_(match_dest) {}
 
   EvictionCandidate(const EvictionCandidate&) = default;
   EvictionCandidate& operator=(const EvictionCandidate&) = default;
@@ -63,11 +67,15 @@ class EvictionCandidate {
   const url::SchemeHostPort& host() const { return host_; }
   raw_ptr<SharedDictionaryStorageInMemory> storage() const { return storage_; }
   const std::string& match() const { return match_; }
+  const std::set<mojom::RequestDestination> match_dest() const {
+    return match_dest_;
+  }
 
  private:
   raw_ptr<SharedDictionaryStorageInMemory> storage_;
   url::SchemeHostPort host_;
   std::string match_;
+  std::set<mojom::RequestDestination> match_dest_;
 };
 
 }  // namespace
@@ -189,7 +197,7 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
     total_size -= dict_ref.dict()->size();
     eviction_candidates.emplace_back(
         dict_ref.storage(), url::SchemeHostPort(dict_ref.dict()->url()),
-        dict_ref.dict()->match());
+        dict_ref.dict()->match(), dict_ref.dict()->match_dest());
     if ((max_size == 0 || size_low_watermark >= total_size) &&
         eviction_candidates.size() >= to_be_removed_count) {
       break;
@@ -197,7 +205,8 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
   }
   dictionaries.clear();  // Unneeded, and may ref. about-to-be-deleted things.
   for (auto& candidate : eviction_candidates) {
-    candidate.storage()->DeleteDictionary(candidate.host(), candidate.match());
+    candidate.storage()->DeleteDictionary(candidate.host(), candidate.match(),
+                                          candidate.match_dest());
   }
 }
 

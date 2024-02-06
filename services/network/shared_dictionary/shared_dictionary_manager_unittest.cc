@@ -224,14 +224,15 @@ class SharedDictionaryManagerTest
   }
   const std::map<
       url::SchemeHostPort,
-      std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
         ->GetDictionaryMap();
   }
   const std::map<
       url::SchemeHostPort,
-      std::map<std::string,
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
                SharedDictionaryStorageOnDisk::WrappedDictionaryInfo>>&
   GetOnDiskDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageOnDisk*>(storage)
@@ -341,14 +342,16 @@ TEST_P(SharedDictionaryManagerTest, CachedStorage) {
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
   // Even after resetting `storage`, `storage` should be in `manager`'s
   // `cached_storages_`. So the metadata is still in the memory.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
@@ -367,7 +370,8 @@ TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
@@ -382,7 +386,8 @@ TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
   // Even after creating 10 (kCachedStorageMaxSize) storages, the first storage
   // should still be in the cache.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
   storage.reset();
 
   for (int i = 0; i < 10; ++i) {
@@ -396,7 +401,8 @@ TEST_P(SharedDictionaryManagerTest, CachedStorageEvicted) {
   // When we create 11 (kCachedStorageMaxSize + 1) storages, the first storage
   // must be evicted
   storage = manager->GetStorage(isolation_key);
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest,
@@ -420,14 +426,16 @@ TEST_P(SharedDictionaryManagerTest,
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
   // If `manager` has observed moderate memory pressure, it should not cache the
   // stoarge.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest,
@@ -451,14 +459,16 @@ TEST_P(SharedDictionaryManagerTest,
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
   // If `manager` has observed critical memory pressure, it should not cache the
   // stoarge.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest,
@@ -477,7 +487,8 @@ TEST_P(SharedDictionaryManagerTest,
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
@@ -489,7 +500,8 @@ TEST_P(SharedDictionaryManagerTest,
   // If `manager` observed moderate memory pressure, it should clear the cached
   // storage.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest,
@@ -508,7 +520,8 @@ TEST_P(SharedDictionaryManagerTest,
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                         mojom::RequestDestination::kEmpty));
 
   storage.reset();
 
@@ -520,7 +533,8 @@ TEST_P(SharedDictionaryManagerTest,
   // If `manager` observed critical memory pressure, it should clear the cached
   // storage.
   storage = manager->GetStorage(isolation_key);
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
@@ -1097,13 +1111,14 @@ TEST_P(SharedDictionaryManagerTest, WriteAndGetDictionary) {
   }
 
   // Check the returned dictionary from GetDictionarySync().
-  EXPECT_TRUE(
-      storage->GetDictionarySync(GURL("https://origin1.test/testfile")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
+                                         mojom::RequestDestination::kEmpty));
   // Different origin.
-  EXPECT_FALSE(
-      storage->GetDictionarySync(GURL("https://origin2.test/testfile")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin2.test/testfile"),
+                                          mojom::RequestDestination::kEmpty));
   // No matching dictionary.
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/test")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/test"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
@@ -1135,7 +1150,8 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
 
   // Check the returned dictionary from GetDictionarySync().
   std::unique_ptr<SharedDictionary> dict =
-      storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"));
+      storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"),
+                                 mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
   EXPECT_EQ(data1.size() + data2.size(), dict->size());
   EXPECT_EQ(sha256, dict->hash());
@@ -1171,7 +1187,9 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
                 dictionary_map.begin()->first);
 
       EXPECT_EQ(1u, dictionary_map.begin()->second.size());
-      EXPECT_EQ("/testfile*", dictionary_map.begin()->second.begin()->first);
+      EXPECT_EQ(
+          std::make_tuple("/testfile*", std::set<mojom::RequestDestination>()),
+          dictionary_map.begin()->second.begin()->first);
       const auto& dictionary_info =
           dictionary_map.begin()->second.begin()->second;
       EXPECT_EQ(GURL("https://origin1.test/dict"), dictionary_info.url());
@@ -1192,7 +1210,9 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
                 dictionary_map.begin()->first);
 
       EXPECT_EQ(1u, dictionary_map.begin()->second.size());
-      EXPECT_EQ("/testfile*", dictionary_map.begin()->second.begin()->first);
+      EXPECT_EQ(
+          std::make_tuple("/testfile*", std::set<mojom::RequestDestination>()),
+          dictionary_map.begin()->second.begin()->first);
       const auto& dictionary_info =
           dictionary_map.begin()->second.begin()->second;
       EXPECT_EQ(GURL("https://origin1.test/dict"), dictionary_info.url());
@@ -1225,7 +1245,8 @@ TEST_P(SharedDictionaryManagerTest, LongestMatchDictionaryWin) {
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"));
+  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
+                                         mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
   net::TestCompletionCallback read_callback;
   EXPECT_EQ(net::OK,
@@ -1249,7 +1270,8 @@ TEST_P(SharedDictionaryManagerTest, LatestDictionaryWin) {
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"));
+  auto dict = storage->GetDictionarySync(GURL("https://origin1.test/testfile"),
+                                         mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
   net::TestCompletionCallback read_callback;
   EXPECT_EQ(net::OK,
@@ -1308,7 +1330,8 @@ TEST_P(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
 
   // Check the returned dictionary from GetDictionarySync().
   std::unique_ptr<SharedDictionary> dict =
-      storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"));
+      storage->GetDictionarySync(GURL("https://origin1.test/testfile?hello"),
+                                 mojom::RequestDestination::kEmpty);
   EXPECT_FALSE(dict);
 }
 
@@ -1344,9 +1367,12 @@ TEST_P(SharedDictionaryManagerTest,
     FlushCacheTasks();
   }
 
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin2.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin3.test/p3?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin3.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
@@ -1377,7 +1403,8 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
 
   for (size_t i = 0; i < kCacheMaxCount; ++i) {
     EXPECT_TRUE(storages[i]->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1406,14 +1433,16 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
   // kCacheMaxCount * 0.9.
   for (size_t i = 0; i < kCacheMaxCount - kCacheMaxCount * 0.9; ++i) {
     EXPECT_FALSE(storages[i]->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
   }
 
   // Newer dictionaries must not be deleted.
   for (size_t i = kCacheMaxCount - kCacheMaxCount * 0.9 + 1;
        i <= kCacheMaxCount; ++i) {
     EXPECT_TRUE(storages[i]->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
   }
 }
 
@@ -1446,18 +1475,23 @@ TEST_P(SharedDictionaryManagerTest,
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
   WriteDictionary(storage3.get(), GURL("https://origin3.test/d1"), "p3*",
                   {kTestData1});
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
-  EXPECT_FALSE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?")));
-  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p3?")));
+  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p3?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
@@ -1498,8 +1532,8 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Call GetDictionary to update the last used time of the dictionary 1-1.
-  std::unique_ptr<SharedDictionary> dict1 =
-      storage1->GetDictionarySync(GURL("https://origin1.test/p1?"));
+  std::unique_ptr<SharedDictionary> dict1 = storage1->GetDictionarySync(
+      GURL("https://origin1.test/p1?"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict1);
 
   // Set the max size to kTestData1.size() * 3. The low water mark will be
@@ -1510,10 +1544,14 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionAfterUpdatingLastUsedTime) {
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
-  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?")));
-  EXPECT_FALSE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
@@ -1545,11 +1583,14 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p?")));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p?")));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p?")));
+  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
 
   WriteDictionary(storage1.get(), GURL("https://origin4.test/d"), "p*",
@@ -1557,10 +1598,14 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p?")));
-  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p?")));
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin4.test/p?")));
+  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage3->GetDictionarySync(GURL("https://origin3.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin4.test/p?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest,
@@ -1587,7 +1632,8 @@ TEST_P(SharedDictionaryManagerTest,
 
   for (size_t i = 0; i < cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1602,12 +1648,14 @@ TEST_P(SharedDictionaryManagerTest,
   }
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?"),
+                                          mojom::RequestDestination::kEmpty));
 
   // Newer dictionaries must not be evicted.
   for (size_t i = 1; i <= cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
   }
 }
 
@@ -1637,7 +1685,8 @@ TEST_P(SharedDictionaryManagerTest,
 
   for (size_t i = 0; i < cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1652,12 +1701,14 @@ TEST_P(SharedDictionaryManagerTest,
   }
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?"),
+                                          mojom::RequestDestination::kEmpty));
 
   // Newer dictionaries must not be evicted.
   for (size_t i = 1; i <= cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
   }
 }
 
@@ -1687,7 +1738,8 @@ TEST_P(SharedDictionaryManagerTest,
 
   for (size_t i = 0; i < cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
@@ -1704,13 +1756,16 @@ TEST_P(SharedDictionaryManagerTest,
 
   // The last dictionary size is kTestData1.size() * 2. So the oldest two
   // dictionaries must be evicted.
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p001?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p000?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p001?"),
+                                          mojom::RequestDestination::kEmpty));
 
   // Newer dictionaries must not be deleted.
   for (size_t i = 2; i <= cache_max_count_per_site; ++i) {
     EXPECT_TRUE(storage->GetDictionarySync(
-        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i))));
+        GURL(base::StringPrintf("https://origin.test/p%03" PRIuS "?", i)),
+        mojom::RequestDestination::kEmpty));
   }
 }
 
@@ -1744,9 +1799,12 @@ TEST_P(SharedDictionaryManagerTest, ClearDataMatchFrameOrigin) {
                      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, ClearDataMatchTopFrameSite) {
@@ -1779,9 +1837,12 @@ TEST_P(SharedDictionaryManagerTest, ClearDataMatchTopFrameSite) {
                      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, ClearDataMatchDictionaryUrl) {
@@ -1814,9 +1875,12 @@ TEST_P(SharedDictionaryManagerTest, ClearDataMatchDictionaryUrl) {
                      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://target.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://target.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://target.test/p3?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://target.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://target.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://target.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, ClearDataNullUrlMatcher) {
@@ -1846,9 +1910,12 @@ TEST_P(SharedDictionaryManagerTest, ClearDataNullUrlMatcher) {
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
@@ -1877,8 +1944,8 @@ TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
   }
 
   // Get a dictionary before calling ClearData().
-  std::unique_ptr<SharedDictionary> dict =
-      storage->GetDictionarySync(GURL("https://origin.test/p2?"));
+  std::unique_ptr<SharedDictionary> dict = storage->GetDictionarySync(
+      GURL("https://origin.test/p2?"), mojom::RequestDestination::kEmpty);
   ASSERT_TRUE(dict);
 
   base::RunLoop run_loop;
@@ -1887,9 +1954,12 @@ TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p3?"),
+                                         mojom::RequestDestination::kEmpty));
 
   // We can still read the deleted dictionary from `dict`.
   net::TestCompletionCallback read_callback;
@@ -1928,19 +1998,27 @@ TEST_P(SharedDictionaryManagerTest, ClearDataForIsolationKey) {
     FlushCacheTasks();
   }
 
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?")));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
 
   base::RunLoop run_loop;
   manager->ClearDataForIsolationKey(isolation_key1, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?")));
-  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?")));
-  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?")));
+  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?"),
+                                           mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage2->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
 }
 
 TEST_P(SharedDictionaryManagerTest, GetUsageInfo) {
@@ -2035,7 +2113,8 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfo) {
 
   task_environment_.FastForwardBy(base::Seconds(1));
   // Update `last_used_time`.
-  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?")));
+  EXPECT_TRUE(storage1->GetDictionarySync(GURL("https://origin1.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
 
   std::vector<network::mojom::SharedDictionaryInfoPtr> result1 =
       GetSharedDictionaryInfo(manager.get(), isolation_key1);
@@ -2154,22 +2233,28 @@ TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
 
   task_environment_.FastForwardBy(base::Seconds(4));
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                         mojom::RequestDestination::kEmpty));
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
 
   EXPECT_EQ(2u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
   EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
 
   task_environment_.FastForwardBy(base::Seconds(4));
-  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
+  EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                         mojom::RequestDestination::kEmpty));
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
-  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p1?")));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
   EXPECT_TRUE(GetSharedDictionaryInfo(manager.get(), isolation_key).empty());
 }
 

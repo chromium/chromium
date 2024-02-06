@@ -2041,6 +2041,83 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   EXPECT_FALSE(observer->details()->is_blocked);
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestEmptyString) {
+  Shell* shell = GetTargetShell();
+  EXPECT_TRUE(NavigateToURL(shell, GetURL("/shared_dictionary/blank.html")));
+
+  // The response header contains `match-dest=("")` in Use-As-Dictionary header.
+  const GURL dictionary_url = GetURL("/shared_dictionary/test.empty_dest.dict");
+  EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(),
+                     LinkRelDictionaryScript(dictionary_url)));
+
+  // Wait for the dictionary to be registered.
+  EXPECT_TRUE(WaitForHistogram(
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
+
+  // Check that Chrome uses the dictionary while fetching the resource using
+  // Fetch API.
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
+                   FetchTargetDataScript(dictionary_url))
+                .ExtractString());
+
+  switch (GetVersion()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
+      // Check that Chrome uses the dictionary while fetching a script.
+      EXPECT_EQ(kCompressedDataResultString,
+                LoadTestScript(GetURL(kTestPath + "?for_script")));
+      break;
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
+      // Check that Chrome doesn't use the dictionary while fetching a script.
+      EXPECT_EQ(kUncompressedDataResultString,
+                LoadTestScript(GetURL(kTestPath + "?for_script")));
+      break;
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
+  Shell* shell = GetTargetShell();
+  EXPECT_TRUE(NavigateToURL(shell, GetURL("/shared_dictionary/blank.html")));
+
+  // The response header contains `match-dest=("script")` in Use-As-Dictionary
+  // header.
+  const GURL dictionary_url =
+      GetURL("/shared_dictionary/test.script_dest.dict");
+  EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(),
+                     LinkRelDictionaryScript(dictionary_url)));
+
+  // Wait for the dictionary to be registered.
+  EXPECT_TRUE(WaitForHistogram(
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
+
+  // Check that Chrome uses the dictionary while fetching a script.
+  EXPECT_EQ(kCompressedDataResultString,
+            LoadTestScript(GetURL(kTestPath + "?for_script")));
+
+  switch (GetVersion()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
+      // Check that Chrome uses the dictionary while fetching the resource using
+      // Fetch API.
+      EXPECT_EQ(kCompressedDataOriginalString,
+                EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
+                       FetchTargetDataScript(dictionary_url))
+                    .ExtractString());
+      break;
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
+      // Check that Chrome doesn't use the dictionary while fetching the
+      // resource using Fetch API.
+      EXPECT_EQ(kUncompressedDataString,
+                EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
+                       FetchTargetDataScript(dictionary_url))
+                    .ExtractString());
+      break;
+  }
+}
+
 IN_PROC_BROWSER_TEST_P(
     SharedDictionaryBrowserTest,
     GetUsageInfoAndClearSharedDictionaryCacheForIsolationKey) {

@@ -7240,6 +7240,10 @@ data/shared_dictionary/path/compressed.data
 data/shared_dictionary/path/compressed.data.mock-http-headers
 data/shared_dictionary/test.dict
 data/shared_dictionary/test.dict.mock-http-headers
+data/shared_dictionary/test.empty_dest.dict
+data/shared_dictionary/test.empty_dest.dict.mock-http-headers
+data/shared_dictionary/test.script_dest.dict
+data/shared_dictionary/test.script_dest.dict.mock-http-headers
 data/shared_dictionary/test_dict.html
 data/shared_dictionary/test_dict.html.mock-http-headers
 data/shared_dictionary/test_no_acao.dict

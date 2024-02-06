@@ -64,7 +64,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const base::Time& response_time() const { return response_time_; }
     base::TimeDelta expiration() const { return expiration_; }
     const std::string& match() const { return match_; }
-    const std::set<mojom::RequestDestination> match_dest() const {
+    const std::set<mojom::RequestDestination>& match_dest() const {
       return match_dest_;
     }
     const std::string& id() const { return id_; }
@@ -103,8 +103,11 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const SharedDictionaryStorageInMemory&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionarySync(const GURL& url) override;
+  std::unique_ptr<SharedDictionary> GetDictionarySync(
+      const GURL& url,
+      mojom::RequestDestination destination) override;
   void GetDictionary(const GURL& url,
+                     mojom::RequestDestination destination,
                      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
                          callback) override;
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
@@ -114,18 +117,25 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id) override;
-  bool IsAlreadyRegistered(const GURL& url,
-                           base::Time response_time,
-                           base::TimeDelta expiration,
-                           const std::string& match) override;
+  bool IsAlreadyRegistered(
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) override;
 
-  const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
+  const std::map<
+      url::SchemeHostPort,
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               DictionaryInfo>>&
   GetDictionaryMap() {
     return dictionary_info_map_;
   }
 
   void DeleteDictionary(const url::SchemeHostPort& host,
-                        const std::string& match);
+                        const std::string& match,
+                        const std::set<mojom::RequestDestination>& match_dest);
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher);
@@ -155,7 +165,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   const net::SharedDictionaryIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
 
-  std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>
+  std::map<
+      url::SchemeHostPort,
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               DictionaryInfo>>
       dictionary_info_map_;
   base::WeakPtrFactory<SharedDictionaryStorageInMemory> weak_factory_{this};
 };

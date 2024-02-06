@@ -30,16 +30,19 @@ SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
-SharedDictionaryStorageInMemory::GetDictionarySync(const GURL& url) {
-  DictionaryInfo* info =
-      GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
+SharedDictionaryStorageInMemory::GetDictionarySync(
+    const GURL& url,
+    mojom::RequestDestination destination) {
+  DictionaryInfo* info = GetMatchingDictionaryFromDictionaryInfoMap(
+      dictionary_info_map_, url, destination);
 
   if (!info) {
     return nullptr;
   }
 
   if (info->response_time() + info->expiration() <= base::Time::Now()) {
-    DeleteDictionary(url::SchemeHostPort(info->url()), info->match());
+    DeleteDictionary(url::SchemeHostPort(info->url()), info->match(),
+                     info->match_dest());
     return nullptr;
   }
   info->set_last_used_time(base::Time::Now());
@@ -49,16 +52,18 @@ SharedDictionaryStorageInMemory::GetDictionarySync(const GURL& url) {
 
 void SharedDictionaryStorageInMemory::GetDictionary(
     const GURL& url,
+    mojom::RequestDestination destination,
     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
-  std::move(callback).Run(GetDictionarySync(url));
+  std::move(callback).Run(GetDictionarySync(url, destination));
 }
 
 void SharedDictionaryStorageInMemory::DeleteDictionary(
     const url::SchemeHostPort& host,
-    const std::string& match) {
+    const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest) {
   auto it = dictionary_info_map_.find(host);
   if (it != dictionary_info_map_.end()) {
-    it->second.erase(match);
+    it->second.erase(std::make_tuple(match, match_dest));
     if (it->second.empty()) {
       dictionary_info_map_.erase(it);
     }
@@ -127,9 +132,12 @@ bool SharedDictionaryStorageInMemory::IsAlreadyRegistered(
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,
-    const std::string& match) {
-  return IsAlreadyRegisteredInDictionaryInfoMap(
-      dictionary_info_map_, url, response_time, expiration, match);
+    const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest,
+    const std::string& id) {
+  return IsAlreadyRegisteredInDictionaryInfoMap(dictionary_info_map_, url,
+                                                response_time, expiration,
+                                                match, match_dest, id);
 }
 
 void SharedDictionaryStorageInMemory::OnDictionaryWritten(
@@ -148,7 +156,7 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     return;
   }
   dictionary_info_map_[url::SchemeHostPort(url)].insert_or_assign(
-      match,
+      std::make_tuple(match, match_dest),
       DictionaryInfo(url, response_time, expiration, match, match_dest, id,
                      /*last_used_time=*/base::Time::Now(), data, size, hash,
                      std::move(matcher)));

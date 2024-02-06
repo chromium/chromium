@@ -379,7 +379,7 @@ CorsURLLoader::CorsURLLoader(
     // `HttpNetworkTransaction` builds the request header just before sending it
     // to the server.
     shared_dictionary_storage_->GetDictionary(
-        request_.url,
+        request_.url, request_.destination,
         base::BindOnce(
             [](base::WeakPtr<CorsURLLoader> loader,
                std::unique_ptr<SharedDictionary> shared_dictionary) {

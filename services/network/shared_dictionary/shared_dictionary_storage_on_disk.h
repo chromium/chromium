@@ -63,8 +63,11 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const SharedDictionaryStorageOnDisk&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionarySync(const GURL& url) override;
+  std::unique_ptr<SharedDictionary> GetDictionarySync(
+      const GURL& url,
+      mojom::RequestDestination destination) override;
   void GetDictionary(const GURL& url,
+                     mojom::RequestDestination destination,
                      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
                          callback) override;
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
@@ -74,10 +77,13 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id) override;
-  bool IsAlreadyRegistered(const GURL& url,
-                           base::Time response_time,
-                           base::TimeDelta expiration,
-                           const std::string& match) override;
+  bool IsAlreadyRegistered(
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.
@@ -101,8 +107,10 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   void OnRefCountedSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
-  const std::map<url::SchemeHostPort,
-                 std::map<std::string, WrappedDictionaryInfo>>&
+  const std::map<
+      url::SchemeHostPort,
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               WrappedDictionaryInfo>>&
   GetDictionaryMapForTesting() {
     return dictionary_info_map_;
   }
@@ -110,8 +118,12 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   base::WeakPtr<SharedDictionaryManagerOnDisk> manager_;
   const net::SharedDictionaryIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
-  std::map<url::SchemeHostPort, std::map<std::string, WrappedDictionaryInfo>>
+  std::map<
+      url::SchemeHostPort,
+      std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
+               WrappedDictionaryInfo>>
       dictionary_info_map_;
+
   std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
       dictionaries_;
 
