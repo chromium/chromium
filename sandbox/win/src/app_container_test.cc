@@ -459,19 +459,20 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
 }
 
-// TODO(crbug.com/1523707): Windows 11 ARM64 dbg seems to return 0xC0000005
-// (access violation) instead of SBOX_TEST_SECOND_ERROR.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
-#define MAYBE_ChildProcessMitigationLowBox DISABLED_ChildProcessMitigationLowBox
-#else
-#define MAYBE_ChildProcessMitigationLowBox ChildProcessMitigationLowBox
-#endif
-TEST_F(AppContainerTest, MAYBE_ChildProcessMitigationLowBox) {
+TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
+
+#if defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+  // TODO(crbug.com/1524390) A DPLOG issued when CreateProcess() fails conflicts
+  // with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the process to
+  // run the right exitcode and not an access violation crash.
+  runner.SetDisableCsrss(false);
+#endif  // defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+
   EXPECT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
 
