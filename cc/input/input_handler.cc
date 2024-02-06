@@ -547,7 +547,7 @@ InputHandlerPointerResult InputHandler::MouseMoveAt(
 }
 
 PointerResultType InputHandler::HitTest(const gfx::PointF& viewport_point) {
-  return scrollbar_controller_->HitTest(viewport_point);
+  return scrollbar_controller_->HitTest(viewport_point).type;
 }
 
 InputHandlerPointerResult InputHandler::MouseDown(

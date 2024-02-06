@@ -58,6 +58,13 @@ enum class ScrollBeginThreadState {
   kMaxValue = kScrollingOnMain,
 };
 
+struct CC_EXPORT PointerHitTestResult {
+  PointerHitTestResult() = default;
+
+  PointerResultType type = PointerResultType::kUnhandled;
+  raw_ptr<const LayerImpl> layer_impl = nullptr;
+};
+
 struct CC_EXPORT InputHandlerPointerResult {
   InputHandlerPointerResult() = default;
   // Tells what type of processing occurred in the input handler as a result of
