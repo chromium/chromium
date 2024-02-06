@@ -90,7 +90,7 @@ constexpr char kHelpMsg[] =
 void ComputeAndPrintMD5hash(const std::vector<uint8_t>& yuv_plane,
                             const base::FilePath md5_log_location) {
   base::MD5Digest md5_digest;
-  base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
+  base::MD5Sum(yuv_plane, &md5_digest);
   std::string md5_digest_b16 = MD5DigestToBase16(md5_digest);
 
   if (!md5_log_location.empty()) {
