@@ -3371,6 +3371,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
+      "multi_gpu_category": "active",
       "device_id": [
         "0x67c7", "0x67df", "0x67ff", "0x6fdf", "0x67ef", "0x6981",
         "0x6987", "0x699f", "0x67c2", "0x67d0", "0x6900", "0x6984",
