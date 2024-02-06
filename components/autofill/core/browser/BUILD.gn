@@ -909,6 +909,7 @@ static_library("test_support") {
     "ui/mock_autofill_popup_delegate.h",
     "ui/mock_fast_checkout_client.cc",
     "ui/mock_fast_checkout_client.h",
+    "ui/suggestion_test_helpers.cc",
     "ui/suggestion_test_helpers.h",
     "webdata/mock_autofill_webdata_backend.cc",
     "webdata/mock_autofill_webdata_backend.h",
