@@ -68,6 +68,7 @@ FontSelector* FontFallbackList::GetFontSelector() const {
 
 void FontFallbackList::ReleaseFontData() {
   unsigned num_fonts = font_list_.size();
+  recordreplay::Assert("[RUN-TODO] FontFallbackList::ReleaseFontData");
   for (unsigned i = 0; i < num_fonts; ++i) {
     if (!font_list_[i]->IsCustomFont()) {
       DCHECK(!font_list_[i]->IsSegmented());

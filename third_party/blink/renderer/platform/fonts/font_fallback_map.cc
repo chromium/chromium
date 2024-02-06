@@ -26,7 +26,7 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
   recordreplay::Assert("[RUN-3109-3229] FontFallbackMap::Get %d %d %d %u",
                        iter != fallback_list_for_description_.end(),
                        iter != fallback_list_for_description_.end() ? iter->value->RecordReplayId() : -1,
-                       iter != fallback_list_for_description_.end() ? iter->value->HasOneRef() : -1,
+                       iter != fallback_list_for_description_.end() ? iter->value->IsValid() : -1,
                        font_description.GetHash());
   if (iter != fallback_list_for_description_.end()) {
     DCHECK(iter->value->IsValid());
