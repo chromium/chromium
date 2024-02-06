@@ -337,9 +337,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // and |this| are owned by the optimization guide keyed service.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  // A reference to the PrefService for this profile. Not owned.
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
-
   // The repeating callback that will be used to determine if component updates
   // are enabled.
   ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
