@@ -363,7 +363,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
       .WillByDefault(Return(profile_store()));
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
-            sync_util::SyncState::kSyncingNormalEncryption);
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
 
   ExpectPasswords({form});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
@@ -397,7 +399,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
   sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
-            sync_util::SyncState::kAccountPasswordsActiveNormalEncryption);
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_FALSE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
 
   ExpectPasswords({form}, /*store=*/account_store());
   ExpectPasswords({}, /*store=*/profile_store());
@@ -433,7 +437,9 @@ TEST_F(LeakDetectionDelegateTest,
   sync_service()->GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
-            sync_util::SyncState::kAccountPasswordsActiveNormalEncryption);
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_FALSE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
 
   ExpectPasswords({}, /*store=*/account_store());
   ExpectPasswords({form}, /*store=*/profile_store());

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -198,15 +197,15 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
       base::Unretained(this));
 
   switch (controller_.GetPasswordSyncState()) {
-    case password_manager::sync_util::SyncState::kNotActive:
+    case ManagePasswordsBubbleController::SyncState::kNotActive:
       return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE,
           open_password_manager_closure, views::style::CONTEXT_BUBBLE_FOOTER);
-    case password_manager::sync_util::SyncState::kSyncingNormalEncryption:
-    case password_manager::sync_util::SyncState::kSyncingWithCustomPassphrase:
+    case ManagePasswordsBubbleController::SyncState::
+        kActiveWithSyncFeatureEnabled:
       return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
@@ -214,8 +213,8 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
           views::style::CONTEXT_BUBBLE_FOOTER);
-    case password_manager::sync_util::SyncState::
-        kAccountPasswordsActiveNormalEncryption:
+    case ManagePasswordsBubbleController::SyncState::
+        kActiveWithAccountPasswords:
       // Account store users have a special footer in the management bubble
       // since they might have a mix of synced and non-synced passwords.
       return CreateGooglePasswordManagerLabel(
@@ -224,10 +223,6 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           open_password_manager_closure, views::style::CONTEXT_BUBBLE_FOOTER);
-    case password_manager::sync_util::SyncState::
-        kAccountPasswordsActiveWithCustomPassphrase:
-      // Unreachable on desktop platforms.
-      NOTREACHED_NORETURN();
   }
 }
 

@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
             SyncTest::kDefaultUserEmail);
   EXPECT_EQ(
       password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
-      password_manager::sync_util::SyncState::kSyncingNormalEncryption);
+      password_manager::sync_util::SyncState::kActiveWithNormalEncryption);
 
   // Enter a persistent auth error state.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();

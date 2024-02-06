@@ -86,12 +86,8 @@ bool IsSyncUser(Profile* profile) {
   CHECK(profile);
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  password_manager::sync_util::SyncState sync_state =
-      password_manager::sync_util::GetPasswordSyncState(sync_service);
-  return sync_state ==
-             password_manager::sync_util::SyncState::kSyncingNormalEncryption ||
-         sync_state == password_manager::sync_util::SyncState::
-                           kSyncingWithCustomPassphrase;
+  return password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
+      sync_service);
 }
 
 }  // namespace

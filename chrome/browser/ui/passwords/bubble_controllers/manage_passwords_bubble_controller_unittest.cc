@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -200,23 +199,28 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::sync_util::SyncState::kNotActive);
+            ManagePasswordsBubbleController::SyncState::kNotActive);
 
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
-  EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::sync_util::SyncState::
-                kAccountPasswordsActiveNormalEncryption);
+  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
-  sync_service()->SetHasSyncConsent(true);
-  EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::sync_util::SyncState::kSyncingNormalEncryption);
-
-  sync_service()->SetIsUsingExplicitPassphrase(true);
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
-      password_manager::sync_util::SyncState::kSyncingWithCustomPassphrase);
+      ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
+
+  sync_service()->SetHasSyncConsent(true);
+  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
+
+  sync_service()->SetIsUsingExplicitPassphrase(true);
+  EXPECT_EQ(controller()->GetPasswordSyncState(),
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {

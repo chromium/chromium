@@ -72,9 +72,12 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
 
-  ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::sync_util::SyncState::
-                kAccountPasswordsActiveNormalEncryption);
+  ASSERT_EQ(
+      password_manager::sync_util::GetPasswordSyncState(&sync_service_),
+      password_manager::sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_FALSE(
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          &sync_service_));
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -87,8 +90,12 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfSyncing) {
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
 
-  ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
-            password_manager::sync_util::SyncState::kSyncingNormalEncryption);
+  ASSERT_EQ(
+      password_manager::sync_util::GetPasswordSyncState(&sync_service_),
+      password_manager::sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          &sync_service_));
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }

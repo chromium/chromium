@@ -120,7 +120,7 @@ TEST_F(PasswordSyncUtilTest, SyncEnabled) {
   EXPECT_EQ(
       active_info.email,
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
-  EXPECT_EQ(SyncState::kSyncingNormalEncryption,
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
             GetPasswordSyncState(&sync_service));
 }
 
@@ -151,7 +151,7 @@ TEST_F(PasswordSyncUtilTest, SyncEnabledWithCustomPassphrase) {
   EXPECT_EQ(
       active_info.email,
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
-  EXPECT_EQ(SyncState::kSyncingWithCustomPassphrase,
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
             GetPasswordSyncState(&sync_service));
 }
 
@@ -167,7 +167,7 @@ TEST_F(PasswordSyncUtilTest, AccountPasswordsActive) {
   EXPECT_EQ(
       std::string(),
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
-  EXPECT_EQ(SyncState::kAccountPasswordsActiveNormalEncryption,
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
             GetPasswordSyncState(&sync_service));
 }
 
@@ -184,7 +184,7 @@ TEST_F(PasswordSyncUtilTest, AccountPasswordsActiveAndCustomPassphrase) {
   EXPECT_EQ(
       std::string(),
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
-  EXPECT_EQ(SyncState::kAccountPasswordsActiveWithCustomPassphrase,
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
             GetPasswordSyncState(&sync_service));
 }
 

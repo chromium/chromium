@@ -113,6 +113,9 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
 
   // A credential is marked as syncing if either the profile store is synced
   // or it is in the account store.
+  // TODO(b/317058107): Revisit if this codepath, and possibly others using
+  // `PasswordForm::Store::kAccountStore` are compatible with ongoing changes
+  // on Android.
   IsSyncing is_syncing{false};
   bool in_account_store = (in_stores & PasswordForm::Store::kAccountStore) ==
                           PasswordForm::Store::kAccountStore;
@@ -120,13 +123,11 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   switch (sync_util::GetPasswordSyncState(sync_service)) {
     case sync_util::SyncState::kNotActive:
       break;
-    case sync_util::SyncState::kAccountPasswordsActiveNormalEncryption:
-    case sync_util::SyncState::kAccountPasswordsActiveWithCustomPassphrase:
-      is_syncing = IsSyncing(in_account_store);
-      break;
-    case sync_util::SyncState::kSyncingWithCustomPassphrase:
-    case sync_util::SyncState::kSyncingNormalEncryption:
-      is_syncing = IsSyncing(true);
+    case sync_util::SyncState::kActiveWithNormalEncryption:
+    case sync_util::SyncState::kActiveWithCustomPassphrase:
+      is_syncing = IsSyncing(
+          in_account_store ||
+          sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service));
       break;
   }
 

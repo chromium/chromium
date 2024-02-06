@@ -23,13 +23,8 @@ namespace sync_util {
 
 enum class SyncState {
   kNotActive,
-  kSyncingNormalEncryption,
-  kSyncingWithCustomPassphrase,
-  // Sync is disabled but the user is signed in and opted in to passwords
-  // account storage.
-  kAccountPasswordsActiveNormalEncryption,
-  // Same as above but the account has a custom passphrase set.
-  kAccountPasswordsActiveWithCustomPassphrase,
+  kActiveWithNormalEncryption,
+  kActiveWithCustomPassphrase,
 };
 
 // Uses `sync_service` to determine whether the user is signed in with
@@ -88,8 +83,6 @@ std::optional<std::string> GetAccountForSaving(
 
 // Reports whether and how passwords are currently synced. In particular, for a
 // null `sync_service` returns kNotActive.
-// TODO(b/1488793): Revisit this function and avoid distinguishing account
-// passwords from full sync.
 SyncState GetPasswordSyncState(const syncer::SyncService* sync_service);
 
 }  // namespace sync_util

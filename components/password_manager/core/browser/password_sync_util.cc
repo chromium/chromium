@@ -113,15 +113,9 @@ SyncState GetPasswordSyncState(const syncer::SyncService* sync_service) {
     return SyncState::kNotActive;
   }
 
-  if (sync_service->IsSyncFeatureActive()) {
-    return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-               ? SyncState::kSyncingWithCustomPassphrase
-               : SyncState::kSyncingNormalEncryption;
-  }
-
   return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
-             ? SyncState::kAccountPasswordsActiveWithCustomPassphrase
-             : SyncState::kAccountPasswordsActiveNormalEncryption;
+             ? SyncState::kActiveWithCustomPassphrase
+             : SyncState::kActiveWithNormalEncryption;
 }
 
 }  // namespace sync_util

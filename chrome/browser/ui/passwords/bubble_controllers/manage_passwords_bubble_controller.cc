@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -111,11 +112,20 @@ void ManagePasswordsBubbleController::RequestFavicon(
       &favicon_tracker_);
 }
 
-password_manager::sync_util::SyncState
-ManagePasswordsBubbleController::GetPasswordSyncState() {
+ManagePasswordsBubbleController::SyncState
+ManagePasswordsBubbleController::GetPasswordSyncState() const {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
-  return password_manager::sync_util::GetPasswordSyncState(sync_service);
+  switch (password_manager::sync_util::GetPasswordSyncState(sync_service)) {
+    case password_manager::sync_util::SyncState::kNotActive:
+      return SyncState::kNotActive;
+    case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
+    case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
+      return sync_service->IsSyncFeatureEnabled()
+                 ? SyncState::kActiveWithSyncFeatureEnabled
+                 : SyncState::kActiveWithAccountPasswords;
+  }
+  NOTREACHED_NORETURN();
 }
 
 std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {

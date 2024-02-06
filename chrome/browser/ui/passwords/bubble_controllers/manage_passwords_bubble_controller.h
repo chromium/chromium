@@ -25,15 +25,17 @@ struct FaviconImageResult;
 
 namespace password_manager {
 class PasswordStoreInterface;
-
-namespace sync_util {
-enum class SyncState;
-}  // namespace sync_util
 }  // namespace password_manager
 
 // This controller provides data and actions for the ManagePasswordsView.
 class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
  public:
+  enum class SyncState {
+    kNotActive,
+    kActiveWithSyncFeatureEnabled,
+    kActiveWithAccountPasswords,
+  };
+
   explicit ManagePasswordsBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~ManagePasswordsBubbleController() override;
@@ -50,7 +52,7 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   void RequestFavicon(
       base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback);
 
-  password_manager::sync_util::SyncState GetPasswordSyncState();
+  SyncState GetPasswordSyncState() const;
 
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.
