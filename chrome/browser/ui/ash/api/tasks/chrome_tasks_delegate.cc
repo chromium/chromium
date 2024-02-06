@@ -105,11 +105,6 @@ ChromeTasksDelegate::~ChromeTasksDelegate() = default;
 
 void ChromeTasksDelegate::UpdateClientForProfileSwitch(
     const AccountId& account_id) {
-  // Cleanup before switching clients.
-  if (active_account_id_.is_valid()) {
-    SendCompletedTasks();
-  }
-
   // Do not create a client for guest profiles and don't create a new client for
   // an account that has already been registered.
   if (user_manager::UserManager::IsInitialized() &&
@@ -141,22 +136,6 @@ void ChromeTasksDelegate::GetTasks(const std::string& task_list_id,
   client->GetTasks(task_list_id, std::move(callback));
 }
 
-void ChromeTasksDelegate::MarkAsCompleted(const std::string& task_list_id,
-                                          const std::string& task_id,
-                                          bool completed) {
-  CHECK(active_account_id_.is_valid());
-  TasksClientImpl* client = GetActiveAccountClient();
-  CHECK(client);
-  client->MarkAsCompleted(task_list_id, task_id, completed);
-}
-
-void ChromeTasksDelegate::SendCompletedTasks() {
-  CHECK(active_account_id_.is_valid());
-  TasksClientImpl* client = GetActiveAccountClient();
-  CHECK(client);
-  client->OnGlanceablesBubbleClosed();
-}
-
 void ChromeTasksDelegate::AddTask(const std::string& task_list_id,
                                   const std::string& title) {
   CHECK(active_account_id_.is_valid());
@@ -165,13 +144,15 @@ void ChromeTasksDelegate::AddTask(const std::string& task_list_id,
   client->AddTask(task_list_id, title, base::DoNothing());
 }
 
-void ChromeTasksDelegate::UpdateTaskTitle(const std::string& task_list_id,
-                                          const std::string& task_id,
-                                          const std::string& title) {
+void ChromeTasksDelegate::UpdateTask(const std::string& task_list_id,
+                                     const std::string& task_id,
+                                     const std::string& title,
+                                     bool completed) {
   CHECK(active_account_id_.is_valid());
   TasksClientImpl* client = GetActiveAccountClient();
   CHECK(client);
-  client->UpdateTask(task_list_id, task_id, title, base::DoNothing());
+  client->UpdateTask(task_list_id, task_id, title, completed,
+                     base::DoNothing());
 }
 
 TasksClientImpl* ChromeTasksDelegate::GetActiveAccountClient() const {

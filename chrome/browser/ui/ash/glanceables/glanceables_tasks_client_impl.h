@@ -67,6 +67,7 @@ class TasksClientImpl : public api::TasksClient {
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
+                  bool completed,
                   api::TasksClient::OnTaskSavedCallback callback) override;
   void OnGlanceablesBubbleClosed(
       api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback =

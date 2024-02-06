@@ -85,7 +85,7 @@ std::vector<std::unique_ptr<api::Task>> ConvertTasks(
                      }) != root_task->links().end();
     const bool has_notes = !root_task->notes().empty();
     converted_tasks.push_back(std::make_unique<api::Task>(
-        root_task->id(), root_task->title(), completed, root_task->due(),
+        root_task->id(), root_task->title(), root_task->due(), completed,
         has_subtasks, has_email_link, has_notes, root_task->updated()));
   }
 
@@ -189,6 +189,7 @@ void TasksClientImpl::UpdateTask(
     const std::string& task_list_id,
     const std::string& task_id,
     const std::string& title,
+    bool completed,
     api::TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
@@ -197,7 +198,10 @@ void TasksClientImpl::UpdateTask(
 
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(std::make_unique<PatchTaskRequest>(
-      request_sender, task_list_id, task_id, TaskRequestPayload{.title = title},
+      request_sender, task_list_id, task_id,
+      TaskRequestPayload{.title = title,
+                         .status = completed ? TaskStatus::kCompleted
+                                             : TaskStatus::kNeedsAction},
       base::BindOnce(&TasksClientImpl::OnTaskUpdated,
                      weak_factory_.GetWeakPtr(), task_list_id,
                      base::Time::Now(), std::move(callback))));
@@ -458,7 +462,7 @@ void TasksClientImpl::OnTaskAdded(
   const auto* const task = iter->second.AddAt(
       /*index=*/0,
       std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
-                                  /*completed=*/false, /*due=*/std::nullopt,
+                                  /*due=*/std::nullopt, /*completed=*/false,
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false, /*has_notes=*/false,
                                   result.value()->updated()));
@@ -486,17 +490,22 @@ void TasksClientImpl::OnTaskUpdated(
     return;
   }
 
-  const auto task_iter = std::find_if(
-      tasks_iter->second.begin(), tasks_iter->second.end(),
-      [&result](const auto& task) { return task->id == result->get()->id(); });
+  Task* result_data = result->get();
+  const auto task_iter =
+      std::find_if(tasks_iter->second.begin(), tasks_iter->second.end(),
+                   [&result_data](const auto& task) {
+                     return task->id == result_data->id();
+                   });
   if (task_iter == tasks_iter->second.end()) {
     std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
-  task_iter->get()->title = result->get()->title();
-  task_iter->get()->updated = result->get()->updated();
-  std::move(callback).Run(/*task=*/task_iter->get());
+  ash::api::Task* task = task_iter->get();
+  task->title = result_data->title();
+  task->completed = result_data->status() == TaskStatus::kCompleted;
+  task->updated = result_data->updated();
+  std::move(callback).Run(/*task=*/task);
 }
 
 google_apis::RequestSender* TasksClientImpl::GetRequestSender() {

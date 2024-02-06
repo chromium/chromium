@@ -97,13 +97,15 @@ void FakeTasksClient::AddTask(const std::string& task_list_id,
 void FakeTasksClient::UpdateTask(const std::string& task_list_id,
                                  const std::string& task_id,
                                  const std::string& title,
+                                 bool completed,
                                  TasksClient::OnTaskSavedCallback callback) {
   if (paused_) {
-    pending_update_task_callbacks_.push_back(
-        base::BindOnce(&FakeTasksClient::UpdateTaskImpl, base::Unretained(this),
-                       task_list_id, task_id, title, std::move(callback)));
+    pending_update_task_callbacks_.push_back(base::BindOnce(
+        &FakeTasksClient::UpdateTaskImpl, base::Unretained(this), task_list_id,
+        task_id, title, completed, std::move(callback)));
   } else {
-    UpdateTaskImpl(task_list_id, task_id, title, std::move(callback));
+    UpdateTaskImpl(task_list_id, task_id, title, completed,
+                   std::move(callback));
   }
 }
 
@@ -154,8 +156,7 @@ void FakeTasksClient::AddTaskImpl(const std::string& task_list_id,
 
   auto pending_task = std::make_unique<Task>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), title,
-      /*completed=*/false,
-      /*due=*/absl::nullopt,
+      /*due=*/absl::nullopt, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false,
       /*has_notes=*/false,
       /*updated=*/base::Time::Now());
@@ -169,6 +170,7 @@ void FakeTasksClient::UpdateTaskImpl(
     const std::string& task_list_id,
     const std::string& task_id,
     const std::string& title,
+    bool completed,
     TasksClient::OnTaskSavedCallback callback) {
   if (run_with_errors_) {
     std::move(callback).Run(/*task=*/nullptr);
@@ -183,8 +185,10 @@ void FakeTasksClient::UpdateTaskImpl(
       [&task_id](const auto& task) { return task->id == task_id; });
   CHECK(task_iter != task_list_iter->second->end());
 
-  task_iter->get()->title = title;
-  std::move(callback).Run(task_iter->get());
+  Task* task = task_iter->get();
+  task->title = title;
+  task->completed = completed;
+  std::move(callback).Run(task);
 }
 
 void FakeTasksClient::PopulateTasks(base::Time tasks_due_time) {
@@ -212,30 +216,30 @@ void FakeTasksClient::PopulateTaskLists(base::Time tasks_due_time) {
   std::unique_ptr<ui::ListModel<Task>> task_list_1 =
       std::make_unique<ui::ListModel<Task>>();
   task_list_1->Add(std::make_unique<Task>(
-      "TaskListItem1", "Task List 1 Item 1 Title", /*completed=*/false,
-      /*due=*/tasks_due_time,
+      "TaskListItem1", "Task List 1 Item 1 Title",
+      /*due=*/tasks_due_time, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
       /*updated=*/tasks_due_time));
   task_list_1->Add(std::make_unique<Task>(
-      "TaskListItem2", "Task List 1 Item 2 Title", /*completed=*/false,
-      /*due=*/tasks_due_time,
+      "TaskListItem2", "Task List 1 Item 2 Title",
+      /*due=*/tasks_due_time, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
       /*updated=*/tasks_due_time));
   std::unique_ptr<ui::ListModel<Task>> task_list_2 =
       std::make_unique<ui::ListModel<Task>>();
   task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem3", "Task List 2 Item 1 Title", /*completed=*/false,
-      /*due=*/tasks_due_time,
+      "TaskListItem3", "Task List 2 Item 1 Title",
+      /*due=*/tasks_due_time, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
       /*updated=*/tasks_due_time));
   task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem4", "Task List 2 Item 2 Title", /*completed=*/false,
-      /*due=*/tasks_due_time,
+      "TaskListItem4", "Task List 2 Item 2 Title",
+      /*due=*/tasks_due_time, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
       /*updated=*/tasks_due_time));
   task_list_2->Add(std::make_unique<Task>(
-      "TaskListItem5", "Task List 2 Item 3 Title", /*completed=*/false,
-      /*due=*/tasks_due_time,
+      "TaskListItem5", "Task List 2 Item 3 Title",
+      /*due=*/tasks_due_time, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false,
       /*updated=*/tasks_due_time));
   tasks_in_task_lists_.emplace("TaskListID1", std::move(task_list_1));

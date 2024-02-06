@@ -29,24 +29,15 @@ void TestTasksDelegate::GetTasks(const std::string& task_list_id,
   NOTIMPLEMENTED();
 }
 
-void TestTasksDelegate::MarkAsCompleted(const std::string& task_list_id,
-                                        const std::string& task_id,
-                                        bool completed) {
-  NOTIMPLEMENTED();
-}
-
-void TestTasksDelegate::SendCompletedTasks() {
-  NOTIMPLEMENTED();
-}
-
 void TestTasksDelegate::AddTask(const std::string& task_list_id,
                                 const std::string& title) {
   NOTIMPLEMENTED();
 }
 
-void TestTasksDelegate::UpdateTaskTitle(const std::string& task_list_id,
-                                        const std::string& task_id,
-                                        const std::string& title) {
+void TestTasksDelegate::UpdateTask(const std::string& task_list_id,
+                                   const std::string& task_id,
+                                   const std::string& title,
+                                   bool completed) {
   NOTIMPLEMENTED();
 }
 

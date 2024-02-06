@@ -56,8 +56,9 @@ class FocusModeChipCarouselTest : public AshTestBase {
 
   std::unique_ptr<api::Task> MakeTask(const std::string& title) {
     return std::make_unique<api::Task>(
-        /*id=*/base::NumberToString(task_id_++), title, /*completed=*/false,
-        /*due=*/absl::nullopt, /*has_subtasks=*/false, /*has_email_link=*/false,
+        /*id=*/base::NumberToString(task_id_++), title,
+        /*due=*/absl::nullopt, /*completed=*/false, /*has_subtasks=*/false,
+        /*has_email_link=*/false,
         /*has_notes=*/false, /*updated=*/base::Time::Now());
   }
 

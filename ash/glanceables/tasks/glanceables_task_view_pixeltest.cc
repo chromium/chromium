@@ -37,9 +37,8 @@ class GlanceablesTaskViewPixelTest
 
     task_ = std::make_unique<api::Task>(
         "task-id", "Task title",
-        /*completed=*/false,
         has_due_date() ? std::make_optional(due_date) : std::nullopt,
-        has_subtasks(),
+        /*completed=*/false, has_subtasks(),
         /*has_email_link=*/false,
         /*has_notes=*/has_notes(), /*updated=*/base::Time());
 

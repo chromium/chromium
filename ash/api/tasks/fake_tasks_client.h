@@ -46,6 +46,7 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   void UpdateTask(const std::string& task_list_id,
                   const std::string& task_id,
                   const std::string& title,
+                  bool completed,
                   TasksClient::OnTaskSavedCallback callback) override;
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
@@ -79,6 +80,7 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   void UpdateTaskImpl(const std::string& task_list_id,
                       const std::string& task_id,
                       const std::string& title,
+                      bool completed,
                       TasksClient::OnTaskSavedCallback callback);
 
   void PopulateTasks(base::Time tasks_due_time);

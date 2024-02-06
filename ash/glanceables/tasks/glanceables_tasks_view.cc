@@ -461,7 +461,8 @@ void GlanceablesTasksView::SaveTask(
   if (task_id.empty()) {
     client->AddTask(task_list_id, title, std::move(on_task_saved));
   } else {
-    client->UpdateTask(task_list_id, task_id, title, std::move(on_task_saved));
+    client->UpdateTask(task_list_id, task_id, title, /*completed=*/false,
+                       std::move(on_task_saved));
   }
 }
 

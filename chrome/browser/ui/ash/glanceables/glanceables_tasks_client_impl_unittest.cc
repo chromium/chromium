@@ -26,6 +26,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "google_apis/tasks/tasks_api_requests.h"
+#include "google_apis/tasks/tasks_api_task_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1813,7 +1814,7 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
             "kind": "tasks#task",
             "id": "task-id",
             "title": "Updated title",
-            "status": "needsAction"
+            "status": "completed"
           }
         )"))));
 
@@ -1835,12 +1836,13 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
   // Update the task.
   TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
-                       update_task_future.GetCallback());
+                       /*completed=*/true, update_task_future.GetCallback());
   ASSERT_TRUE(update_task_future.Wait());
 
   // Make sure `tasks` contains the update.
   EXPECT_EQ(tasks->GetItemAt(0), update_task_future.Get());
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Updated title");
+  EXPECT_EQ(tasks->GetItemAt(0)->completed, true);
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
@@ -1862,7 +1864,7 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
 
   TestFuture<const api::Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
-                       update_task_future.GetCallback());
+                       /*completed=*/false, update_task_future.GetCallback());
 
   ASSERT_TRUE(update_task_future.Wait());
   EXPECT_FALSE(update_task_future.Get());

@@ -27,15 +27,12 @@ class ChromeTasksDelegate : public TasksDelegate {
   void GetTaskLists(TasksClient::GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
                 TasksClient::GetTasksCallback callback) override;
-  void MarkAsCompleted(const std::string& task_list_id,
-                       const std::string& task_id,
-                       bool completed) override;
-  void SendCompletedTasks() override;
   void AddTask(const std::string& task_list_id,
                const std::string& title) override;
-  void UpdateTaskTitle(const std::string& task_list_id,
-                       const std::string& task_id,
-                       const std::string& title) override;
+  void UpdateTask(const std::string& task_list_id,
+                  const std::string& task_id,
+                  const std::string& title,
+                  bool completed) override;
 
  private:
   // Returns the `TasksClientImpl` associated with the `active_account_id_`.

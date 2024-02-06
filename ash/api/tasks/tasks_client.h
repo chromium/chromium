@@ -58,6 +58,7 @@ class ASH_EXPORT TasksClient {
   virtual void UpdateTask(const std::string& task_list_id,
                           const std::string& task_id,
                           const std::string& title,
+                          bool completed,
                           OnTaskSavedCallback callback) = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
