@@ -43,10 +43,7 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                         return "No regular tabs exist";
                     }
                 };
-        // TODO(crbug.com/1521184): If the view is declared as owned with declareViewIf(), the empty
-        // state text is still
-        // thought to exist by DoesNotExistCondition, even though it's not actually displayed.
-        elements.declareUnownedViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
+        elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
 
         Condition incognitoTabsExist =
                 new UiThreadCondition() {

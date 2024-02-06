@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
-import org.chromium.base.test.transit.ViewConditions.DoesNotExistAnymoreCondition;
 import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.MatchedViewProvider;
+import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +145,7 @@ public class Elements {
 
                 if (viewElement.mOwned) {
                     exitConditions.add(
-                            new DoesNotExistAnymoreCondition(
+                            new NotDisplayedAnymoreCondition(
                                     viewElement.mViewMatcher, matchedViewProvider));
                 }
             }
