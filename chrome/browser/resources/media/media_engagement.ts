@@ -7,7 +7,8 @@ import 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {MediaEngagementConfig, MediaEngagementScoreDetails, MediaEngagementScoreDetailsProvider, MediaEngagementScoreDetailsProviderRemote} from './media_engagement_score_details.mojom-webui.js';
+import type {MediaEngagementConfig, MediaEngagementScoreDetails, MediaEngagementScoreDetailsProviderRemote} from './media_engagement_score_details.mojom-webui.js';
+import {MediaEngagementScoreDetailsProvider} from './media_engagement_score_details.mojom-webui.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated with media engagement details.

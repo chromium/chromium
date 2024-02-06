@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import type {PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {PageHandler} from './connectors_internals.mojom-webui.js';
 
 export class BrowserProxy {
   readonly handler: PageHandlerInterface;

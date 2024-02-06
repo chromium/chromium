@@ -4,7 +4,7 @@
 import './mojo_timestamp.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import {getTemplate} from './value_display.html.js';
 

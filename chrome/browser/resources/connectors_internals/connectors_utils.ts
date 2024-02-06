@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Int32Value, KeyTrustLevel, KeyType} from './connectors_internals.mojom-webui.js';
+import type {Int32Value} from './connectors_internals.mojom-webui.js';
+import {KeyTrustLevel, KeyType} from './connectors_internals.mojom-webui.js';
 
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',

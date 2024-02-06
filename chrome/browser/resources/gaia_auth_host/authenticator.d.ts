@@ -7,7 +7,7 @@
  * authenticator.js is used from TypeScript files.
  */
 
-import {PasswordAttributes} from './saml_password_attributes.js';
+import type {PasswordAttributes} from './saml_password_attributes.js';
 
 export interface SyncTrustedVaultKey {
   keyMaterial: ArrayBuffer;

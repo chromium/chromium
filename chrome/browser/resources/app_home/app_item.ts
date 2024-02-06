@@ -5,10 +5,11 @@
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppInfo, ClickEvent, RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import type {AppInfo, ClickEvent} from './app_home.mojom-webui.js';
+import {RunOnOsLoginMode} from './app_home.mojom-webui.js';
 import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import {getTemplate} from './app_item.html.js';
 import {BrowserProxy} from './browser_proxy.js';

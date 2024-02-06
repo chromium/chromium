@@ -11,6 +11,8 @@ module.exports = {
   // Disable clang-format because it produces odd formatting for these rules.
   // clang-format off
   rules: {
+    // Disable due to large number of violations in this folder.
+    '@typescript-eslint/consistent-type-imports': 'off',
     /**
      * https://google.github.io/styleguide/tsguide.html#return-types
      * The Google TS style guide makes no formal rule on enforcing explicit

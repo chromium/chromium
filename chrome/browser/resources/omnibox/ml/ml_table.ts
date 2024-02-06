@@ -5,10 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {AutocompleteControllerType, AutocompleteMatch} from '../omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from '../omnibox.mojom-webui.js';
+import {AutocompleteControllerType} from '../omnibox.mojom-webui.js';
 import {clearChildren, createEl, setFormattedClipboardForMl, signalNames} from '../omnibox_util.js';
 
-import {MlBrowserProxy, ResponseFilter} from './ml_browser_proxy.js';
+import type {MlBrowserProxy} from './ml_browser_proxy.js';
+import {ResponseFilter} from './ml_browser_proxy.js';
 // @ts-ignore:next-line
 import sheet from './ml_table.css' assert {type : 'css'};
 import {getTemplate} from './ml_table.html.js';

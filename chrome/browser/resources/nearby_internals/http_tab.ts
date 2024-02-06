@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './http_tab.html.js';
 import {NearbyHttpBrowserProxy} from './nearby_http_browser_proxy.js';
-import {HttpMessage} from './types.js';
+import type {HttpMessage} from './types.js';
 
 const HttpTabElementBase = WebUiListenerMixin(PolymerElement);
 

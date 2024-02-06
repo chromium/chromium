@@ -8,11 +8,14 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {Debouncer, DomRepeatEvent, enqueueDebouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, enqueueDebouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
-import {Action, Option, ViewModel} from './types.js';
+import type {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {Option, ViewModel} from './types.js';
+import {Action} from './types.js';
 
 export interface CommanderAppElement {
   $: {

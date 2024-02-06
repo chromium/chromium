@@ -8,7 +8,8 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './http_message_object.html.js';
-import {Direction, HttpMessage, Rpc} from './types.js';
+import type {HttpMessage} from './types.js';
+import {Direction, Rpc} from './types.js';
 
 class HttpMessageObjectElement extends PolymerElement {
   static get is() {

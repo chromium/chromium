@@ -10,12 +10,12 @@ import './ml_chart.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox.mojom-webui.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy.js';
-import {MlCalculatorElement} from './ml_calculator.js';
-import {MlChartElement} from './ml_chart.js';
-import {MlTableElement} from './ml_table.js';
+import type {MlCalculatorElement} from './ml_calculator.js';
+import type {MlChartElement} from './ml_chart.js';
+import type {MlTableElement} from './ml_table.js';
 // @ts-ignore:next-line
 import sheet from './ml_ui.css' assert {type : 'css'};
 import {getTemplate} from './ml_ui.html.js';

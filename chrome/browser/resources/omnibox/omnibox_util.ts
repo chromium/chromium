@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Signals} from './omnibox.mojom-webui.js';
+import type {Signals} from './omnibox.mojom-webui.js';
 
 export function clearChildren(element: Element) {
   while (element.firstChild) {

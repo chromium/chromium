@@ -5,13 +5,14 @@
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
-import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserSwitchInternalsProxy, BrowserSwitchInternalsProxyImpl, Decision, RuleSet, RuleSetList, RulesetSources, TimestampPair} from './browser_switch_internals_proxy.js';
+import type {BrowserSwitchInternalsProxy, Decision, RuleSet, RuleSetList, RulesetSources, TimestampPair} from './browser_switch_internals_proxy.js';
+import {BrowserSwitchInternalsProxyImpl} from './browser_switch_internals_proxy.js';
 
 const BrowserSwitchInternalsAppElementBase = I18nMixin(PolymerElement);
 

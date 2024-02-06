@@ -6,7 +6,8 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {ConsentMetadata, DeviceTrustState, KeyInfo, KeyManagerInitializedValue, KeyManagerPermanentFailure, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import type {ConsentMetadata, DeviceTrustState, KeyInfo, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {KeyManagerInitializedValue, KeyManagerPermanentFailure} from './connectors_internals.mojom-webui.js';
 import * as utils from './connectors_utils.js';
 import {getTemplate} from './device_trust_connector.html.js';
 

@@ -14,7 +14,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -25,11 +25,13 @@ import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ConfigurableParams, Length, PartialComposeResponse, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
-import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
+import type {ComposeDialogCallbackRouter, ComposeResponse, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
+import {CloseReason, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
+import type {ComposeApiProxy} from './compose_api_proxy.js';
+import {ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeStatus} from './compose_enums.mojom-webui.js';
-import {ComposeResultTextElement, TextInput} from './result_text.js';
-import {ComposeTextareaElement} from './textarea.js';
+import type {ComposeResultTextElement, TextInput} from './result_text.js';
+import type {ComposeTextareaElement} from './textarea.js';
 
 // Struct with ComposeAppElement's properties that need to be saved to return
 // the element to a specific state.

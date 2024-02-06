@@ -5,7 +5,8 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_service_internals.html.js';
-import {AppCapabilityInfo, AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo, PromiseAppInfo, ShortcutInfo} from './app_service_internals.mojom-webui.js';
+import type {AppCapabilityInfo, AppInfo, PreferredAppInfo, PromiseAppInfo, ShortcutInfo} from './app_service_internals.mojom-webui.js';
+import {AppServiceInternalsPageHandler} from './app_service_internals.mojom-webui.js';
 
 export class AppServiceInternalsElement extends PolymerElement {
   static get is() {

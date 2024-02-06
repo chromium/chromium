@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DetailsProvider, DetailsProviderRemote} from './discards.mojom-webui.js';
-import {SiteDataProvider, SiteDataProviderRemote} from './site_data.mojom-webui.js';
+import type {DetailsProviderRemote} from './discards.mojom-webui.js';
+import {DetailsProvider} from './discards.mojom-webui.js';
+import type {SiteDataProviderRemote} from './site_data.mojom-webui.js';
+import {SiteDataProvider} from './site_data.mojom-webui.js';
 
 // The following variables are initialized by 'initialize'.
 // Points to the DiscardsDetailsProviderRemote.

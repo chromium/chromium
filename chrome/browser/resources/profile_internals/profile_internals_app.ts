@@ -10,7 +10,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_internals_app.html.js';
-import {ProfileInternalsBrowserProxy, ProfileInternalsBrowserProxyImpl, ProfileState, ProfileStateElement} from './profile_internals_browser_proxy.js';
+import type {ProfileInternalsBrowserProxy, ProfileState, ProfileStateElement} from './profile_internals_browser_proxy.js';
+import {ProfileInternalsBrowserProxyImpl} from './profile_internals_browser_proxy.js';
 
 const ProfileInternalsAppElementBase = WebUiListenerMixin(PolymerElement);
 

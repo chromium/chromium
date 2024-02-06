@@ -4,7 +4,8 @@
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {NotificationsInternalsBrowserProxy, NotificationsInternalsBrowserProxyImpl} from './notifications_internals_browser_proxy.js';
+import type {NotificationsInternalsBrowserProxy} from './notifications_internals_browser_proxy.js';
+import {NotificationsInternalsBrowserProxyImpl} from './notifications_internals_browser_proxy.js';
 
 function initialize() {
   const browserProxy: NotificationsInternalsBrowserProxy =

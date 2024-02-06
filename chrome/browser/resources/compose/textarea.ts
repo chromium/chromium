@@ -11,7 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComposeTextareaAnimator} from './animations/textarea_animator.js';
-import {ConfigurableParams} from './compose.mojom-webui.js';
+import type {ConfigurableParams} from './compose.mojom-webui.js';
 import {getTemplate} from './textarea.html.js';
 
 export interface ComposeTextareaElement {

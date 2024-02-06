@@ -5,10 +5,11 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getTemplate} from './app.html.js';
-import {SiteEngagementDetails, SiteEngagementDetailsProvider, SiteEngagementDetailsProviderInterface} from './site_engagement_details.mojom-webui.js';
+import type {SiteEngagementDetails, SiteEngagementDetailsProviderInterface} from './site_engagement_details.mojom-webui.js';
+import {SiteEngagementDetailsProvider} from './site_engagement_details.mojom-webui.js';
 
 /**
  * Rounds the supplied value to two decimal places of accuracy.

@@ -5,12 +5,14 @@
 import './diagnose_info_table.js';
 
 import {CustomElement} from '//resources/js/custom_element.js';
-import {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {DiagnoseInfoTableElement} from './diagnose_info_table.js';
+import type {DiagnoseInfoTableElement} from './diagnose_info_table.js';
 import {getTemplate} from './diagnose_info_view.html.js';
-import {AccessPointData, GeolocationDiagnostics, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE, NetworkLocationDiagnostics, NetworkLocationResponse, PositionCacheDiagnostics, WifiPollingPolicyDiagnostics} from './geolocation_internals.mojom-webui.js';
-import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED, GeopositionResult} from './geoposition.mojom-webui.js';
+import type {AccessPointData, GeolocationDiagnostics, NetworkLocationDiagnostics, NetworkLocationResponse, PositionCacheDiagnostics, WifiPollingPolicyDiagnostics} from './geolocation_internals.mojom-webui.js';
+import {INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from './geolocation_internals.mojom-webui.js';
+import type {GeopositionResult} from './geoposition.mojom-webui.js';
+import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from './geoposition.mojom-webui.js';
 
 export const PROVIDER_STATE_TABLE_ID = 'provider-state-table';
 const PROVIDER_STATE_ENUM: {[key: number]: string} = {

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutocompleteControllerType, AutocompleteMatch, OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse, Signals} from '../omnibox.mojom-webui.js';
+import type {AutocompleteControllerType, AutocompleteMatch, OmniboxPageHandlerRemote, OmniboxResponse, Signals} from '../omnibox.mojom-webui.js';
+import {OmniboxPageCallbackRouter, OmniboxPageHandler} from '../omnibox.mojom-webui.js';
 import {MlVersionObj} from '../omnibox_util.js';
 
 export enum ResponseFilter {

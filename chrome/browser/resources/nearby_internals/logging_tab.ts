@@ -13,7 +13,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {getTemplate} from './logging_tab.html.js';
-import {LogMessage, LogProvider, SelectOption, Severity} from './types.js';
+import type {LogMessage, LogProvider, SelectOption} from './types.js';
+import {Severity} from './types.js';
 
 /**
  * Converts log message to string format for saved download file.

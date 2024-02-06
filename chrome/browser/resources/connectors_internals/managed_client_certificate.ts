@@ -5,7 +5,7 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {ClientCertificateState, ClientIdentity, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import type {ClientCertificateState, ClientIdentity, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
 import * as utils from './connectors_utils.js';
 import {getTemplate} from './managed_client_certificate.html.js';
 

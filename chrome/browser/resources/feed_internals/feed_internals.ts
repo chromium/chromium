@@ -4,9 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
-import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {FeedOrder, LastFetchProperties, PageHandler, PageHandlerRemote} from './feed_internals.mojom-webui.js';
+import type {LastFetchProperties, PageHandlerRemote} from './feed_internals.mojom-webui.js';
+import {FeedOrder, PageHandler} from './feed_internals.mojom-webui.js';
 
 /**
  * Reference to the backend.

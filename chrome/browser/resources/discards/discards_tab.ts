@@ -7,11 +7,13 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {boolToString, durationToString, getOrCreateDetailsProvider} from './discards.js';
-import {DetailsProviderRemote, LifecycleUnitVisibility, TabDiscardsInfo} from './discards.mojom-webui.js';
+import type {DetailsProviderRemote, TabDiscardsInfo} from './discards.mojom-webui.js';
+import {LifecycleUnitVisibility} from './discards.mojom-webui.js';
 import {getTemplate} from './discards_tab.html.js';
 import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './lifecycle_unit_state.mojom-webui.js';
 import {SortedTableMixin} from './sorted_table_mixin.js';

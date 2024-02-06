@@ -19,11 +19,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
-import {LogTypesElement} from './log_types.js';
+import type {LogTypesElement} from './log_types.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
+import type {LogMessage, LogProvider, PresenceDevice, SelectOption} from './types.js';
+import {ActionValues, FeatureValues, Severity} from './types.js';
 
 /**
  * Converts log message to string format for saved download file.

@@ -5,7 +5,8 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './log_object.html.js';
-import {LogMessage, Severity} from './types.js';
+import type {LogMessage} from './types.js';
+import {Severity} from './types.js';
 
 
 /** @polymer */

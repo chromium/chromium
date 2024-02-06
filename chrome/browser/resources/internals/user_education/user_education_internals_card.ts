@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeaturePromoDemoPageInfo} from './user_education_internals.mojom-webui.js';
+import type {FeaturePromoDemoPageInfo} from './user_education_internals.mojom-webui.js';
 import {getTemplate} from './user_education_internals_card.html.js';
 
 const PROMO_LAUNCH_EVENT = 'promo-launch';

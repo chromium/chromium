@@ -7,8 +7,9 @@
  * mojo to get values and keeps them in sync by observing for changes
  */
 
-import {DataUsage, FastInitiationNotificationState, NearbyShareSettingsInterface, NearbyShareSettingsObserverReceiver, NearbyShareSettingsRemote, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DataUsage, FastInitiationNotificationState, NearbyShareSettingsInterface, NearbyShareSettingsObserverReceiver, NearbyShareSettingsRemote, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings, observeNearbyShareSettings} from './nearby_share_settings.js';
 

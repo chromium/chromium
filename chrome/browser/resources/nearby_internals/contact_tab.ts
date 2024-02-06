@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './contact_tab.html.js';
 import {NearbyContactBrowserProxy} from './nearby_contact_browser_proxy.js';
-import {ContactUpdate} from './types.js';
+import type {ContactUpdate} from './types.js';
 
 const ContactTabElementBase = WebUiListenerMixin(PolymerElement);
 
