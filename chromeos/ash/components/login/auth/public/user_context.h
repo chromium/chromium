@@ -51,6 +51,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     AUTH_FLOW_ACTIVE_DIRECTORY,
   };
 
+  // Defines details related to user home directory mount.
+  enum class MountState {
+    // User home directory is persistent, and it was freshly
+    // created during login.
+    kNewPersistent,
+    // User home directory is persistent, and it existed before
+    // current login.
+    kExistingPersistent,
+    // User home directory is mounted as ephemeral.
+    kEphemeral,
+  };
+
   // Data that is relevant only for interaction with cryptohomed.
   class CryptohomeContext {
    public:
@@ -86,6 +98,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     base::Time GetSessionLifetime() const;
     void SetSessionLifetime(const base::Time& valid_until);
 
+    std::optional<MountState> GetMountState() const;
+    void SetMountState(MountState mount_state);
+
     void ClearAuthorizedIntents();
     void AddAuthorizedIntent(AuthSessionIntent auth_intent);
     AuthSessionIntents GetAuthorizedIntents() const;
@@ -101,6 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     AuthSessionIntents authorized_for_;
     std::string user_id_hash_;
     base::Time valid_until_;
+    std::optional<MountState> mount_state_;
   };
 
   UserContext();
@@ -249,6 +265,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
 
   base::Time GetSessionLifetime() const;
   void SetSessionLifetime(const base::Time& valid_until);
+
+  std::optional<MountState> GetMountState() const;
+  void SetMountState(MountState mount_state);
 
   void ClearAuthorizedIntents();
   void AddAuthorizedIntent(AuthSessionIntent auth_intent);
