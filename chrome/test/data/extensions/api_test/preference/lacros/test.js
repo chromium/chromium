@@ -20,12 +20,6 @@ var preferencesToTest = [
     }
   },
   {
-    root: chrome.privacy.websites,
-    preferences: {
-      protectedContentEnabled: true,
-    }
-  },
-  {
     root: chrome.proxy,
     preferences: {
       settings: {mode: 'system'},
