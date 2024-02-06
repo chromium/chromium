@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
+#include "chrome/browser/ash/input_method/ui/announcement_view.h"
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -15,32 +15,31 @@
 namespace ui {
 namespace ime {
 
-class AssistiveAccessiblityViewTest : public ChromeViewsTestBase {
+class AnnouncementViewTest : public ChromeViewsTestBase {
  public:
-  AssistiveAccessiblityViewTest() {}
-  ~AssistiveAccessiblityViewTest() override {}
+  AnnouncementViewTest() {}
+  ~AnnouncementViewTest() override {}
 
  protected:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    assistive_accessibility_view_ =
-        new AssistiveAccessibilityView(GetContext());
+    announcement_view_ = new AnnouncementView(GetContext());
   }
 
   void TearDown() override {
-    assistive_accessibility_view_->GetWidget()->CloseNow();
+    announcement_view_->GetWidget()->CloseNow();
     ChromeViewsTestBase::TearDown();
   }
 
-  raw_ptr<AssistiveAccessibilityView, DanglingUntriaged>
-      assistive_accessibility_view_;
+  raw_ptr<AnnouncementView, DanglingUntriaged>
+      announcement_view_;
 };
 
-TEST_F(AssistiveAccessiblityViewTest, MakesAnnouncement) {
+TEST_F(AnnouncementViewTest, MakesAnnouncement) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
-  assistive_accessibility_view_->Announce(u"test");
+  announcement_view_->Announce(u"test");
   task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
 }

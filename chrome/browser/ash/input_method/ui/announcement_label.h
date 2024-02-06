@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_ACCESSIBILITY_LABEL_H_
-#define CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_ACCESSIBILITY_LABEL_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_LABEL_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_LABEL_H_
 
 #include <memory>
 #include "base/timer/timer.h"
@@ -15,12 +15,12 @@ namespace ui {
 namespace ime {
 
 // Label used for ChromeVox announcements via live regions.
-class SuggestionAccessibilityLabel : public views::Label {
-  METADATA_HEADER(SuggestionAccessibilityLabel, views::Label)
+class AnnouncementLabel : public views::Label {
+  METADATA_HEADER(AnnouncementLabel, views::Label)
 
  public:
-  SuggestionAccessibilityLabel();
-  ~SuggestionAccessibilityLabel() override;
+  AnnouncementLabel();
+  ~AnnouncementLabel() override;
 
   // views::Label overrides
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -44,4 +44,4 @@ class SuggestionAccessibilityLabel : public views::Label {
 }  // namespace ime
 }  // namespace ui
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_ACCESSIBILITY_LABEL_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_LABEL_H_

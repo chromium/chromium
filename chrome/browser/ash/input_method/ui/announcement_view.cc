@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
+#include "chrome/browser/ash/input_method/ui/announcement_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ui {
@@ -10,7 +10,7 @@ namespace ime {
 
 const gfx::Rect kWindowAnchorRect = gfx::Rect(-100000, -100000, 0, 0);
 
-AssistiveAccessibilityView::AssistiveAccessibilityView(gfx::NativeView parent) {
+AnnouncementView::AnnouncementView(gfx::NativeView parent) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
@@ -19,9 +19,9 @@ AssistiveAccessibilityView::AssistiveAccessibilityView(gfx::NativeView parent) {
   set_title_margins(gfx::Insets());
   set_shadow(views::BubbleBorder::NO_SHADOW);
 
-  accessibility_label_ =
-      AddChildView(std::make_unique<SuggestionAccessibilityLabel>());
-  accessibility_label_->SetLineHeight(0);
+  announcement_label_ =
+      AddChildView(std::make_unique<AnnouncementLabel>());
+  announcement_label_->SetLineHeight(0);
 
   views::Widget* const widget =
       BubbleDialogDelegate::CreateBubble(base::WrapUnique(this));
@@ -32,17 +32,17 @@ AssistiveAccessibilityView::AssistiveAccessibilityView(gfx::NativeView parent) {
   widget->Show();
 }
 
-AssistiveAccessibilityView::AssistiveAccessibilityView() = default;
-AssistiveAccessibilityView::~AssistiveAccessibilityView() = default;
+AnnouncementView::AnnouncementView() = default;
+AnnouncementView::~AnnouncementView() = default;
 
-void AssistiveAccessibilityView::Announce(const std::u16string& message) {
-  DCHECK(accessibility_label_);
+void AnnouncementView::Announce(const std::u16string& message) {
+  DCHECK(announcement_label_);
   if (message.empty())
     return;
-  accessibility_label_->Announce(message);
+  announcement_label_->Announce(message);
 }
 
-BEGIN_METADATA(AssistiveAccessibilityView)
+BEGIN_METADATA(AnnouncementView)
 END_METADATA
 
 }  // namespace ime

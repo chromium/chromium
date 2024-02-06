@@ -42,8 +42,8 @@ gfx::NativeView GetParentView() {
 AssistiveWindowController::AssistiveWindowController(
     AssistiveWindowControllerDelegate* delegate,
     Profile* profile,
-    ui::ime::AssistiveAccessibilityView* accessibility_view)
-    : delegate_(delegate), accessibility_view_(accessibility_view) {}
+    ui::ime::AnnouncementView* announcement_view)
+    : delegate_(delegate), announcement_view_(announcement_view) {}
 
 AssistiveWindowController::~AssistiveWindowController() {
   ClearPendingSuggestionTimer();
@@ -53,8 +53,9 @@ AssistiveWindowController::~AssistiveWindowController() {
     undo_window_->GetWidget()->RemoveObserver(this);
   if (grammar_suggestion_window_ && grammar_suggestion_window_->GetWidget())
     grammar_suggestion_window_->GetWidget()->RemoveObserver(this);
-  if (accessibility_view_ && accessibility_view_->GetWidget())
-    accessibility_view_->GetWidget()->RemoveObserver(this);
+  if (announcement_view_ && announcement_view_->GetWidget()) {
+    announcement_view_->GetWidget()->RemoveObserver(this);
+  }
   CHECK(!IsInObserverList());
 }
 
@@ -92,14 +93,14 @@ void AssistiveWindowController::InitGrammarSuggestionWindow() {
   widget->Show();
 }
 
-void AssistiveWindowController::InitAccessibilityView() {
-  if (accessibility_view_)
+void AssistiveWindowController::InitAnnouncementView() {
+  if (announcement_view_) {
     return;
+  }
 
   // accessibility_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  accessibility_view_ =
-      new ui::ime::AssistiveAccessibilityView(GetParentView());
-  accessibility_view_->GetWidget()->AddObserver(this);
+  announcement_view_ = new ui::ime::AnnouncementView(GetParentView());
+  announcement_view_->GetWidget()->AddObserver(this);
 }
 
 void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
@@ -118,17 +119,18 @@ void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
     widget->RemoveObserver(this);
     grammar_suggestion_window_ = nullptr;
   }
-  if (accessibility_view_ && widget == accessibility_view_->GetWidget()) {
+  if (announcement_view_ && widget == announcement_view_->GetWidget()) {
     widget->RemoveObserver(this);
-    accessibility_view_ = nullptr;
+    announcement_view_ = nullptr;
   }
 }
 
 void AssistiveWindowController::Announce(const std::u16string& message) {
-  if (!accessibility_view_)
-    InitAccessibilityView();
+  if (!announcement_view_) {
+    InitAnnouncementView();
+  }
 
-  accessibility_view_->Announce(message);
+  announcement_view_->Announce(message);
 }
 
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use

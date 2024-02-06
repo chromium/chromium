@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
-#include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
+#include "chrome/browser/ash/input_method/ui/announcement_view.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/grammar_suggestion_window.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_window_view.h"
@@ -40,7 +40,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   explicit AssistiveWindowController(
       AssistiveWindowControllerDelegate* delegate,
       Profile* profile,
-      ui::ime::AssistiveAccessibilityView* accessibility_view = nullptr);
+      ui::ime::AnnouncementView* announcement_view = nullptr);
 
   AssistiveWindowController(const AssistiveWindowController&) = delete;
   AssistiveWindowController& operator=(const AssistiveWindowController&) =
@@ -79,7 +79,7 @@ class AssistiveWindowController : public views::WidgetObserver,
       ui::ime::SuggestionWindowView::Orientation orientation);
   void InitUndoWindow();
   void InitGrammarSuggestionWindow();
-  void InitAccessibilityView();
+  void InitAnnouncementView();
   void DisplayCompletionSuggestion(const ui::ime::SuggestionDetails& details);
   void ClearPendingSuggestionTimer();
 
@@ -89,7 +89,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   raw_ptr<ui::ime::UndoWindow> undo_window_ = nullptr;
   raw_ptr<ui::ime::GrammarSuggestionWindow> grammar_suggestion_window_ =
       nullptr;
-  raw_ptr<ui::ime::AssistiveAccessibilityView> accessibility_view_ = nullptr;
+  raw_ptr<ui::ime::AnnouncementView> announcement_view_ = nullptr;
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;
