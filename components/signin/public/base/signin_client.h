@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -25,6 +26,12 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/account.h"
 #endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+namespace signin {
+class BoundSessionOAuthMultiLoginDelegate;
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class PrefService;
 
@@ -151,6 +158,11 @@ class SigninClient : public KeyedService {
       signin::PrimaryAccountChangeEvent event_details,
       absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source) = 0;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  virtual std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiloginDelegate() const = 0;
+#endif
 
  protected:
   std::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;

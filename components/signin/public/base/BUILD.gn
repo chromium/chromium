@@ -73,6 +73,10 @@ static_library("base") {
   if (is_chromeos_lacros) {
     public_deps += [ "//components/account_manager_core" ]
   }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "bound_session_oauth_multilogin_delegate.h" ]
+  }
 }
 
 if (is_android) {

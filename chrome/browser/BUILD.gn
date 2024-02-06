@@ -7099,6 +7099,8 @@ static_library("browser") {
 
     if (enable_dice_support) {
       sources += [
+        "signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.cc",
+        "signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.h",
         "signin/bound_session_credentials/dice_bound_session_cookie_service.cc",
         "signin/bound_session_credentials/dice_bound_session_cookie_service.h",
         "signin/bound_session_credentials/dice_bound_session_cookie_service_factory.cc",

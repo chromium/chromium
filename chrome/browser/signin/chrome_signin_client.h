@@ -82,6 +82,11 @@ class ChromeSigninClient : public SigninClient {
       absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source) override;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiloginDelegate() const override;
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::optional<account_manager::Account> GetInitialPrimaryAccount() override;
   std::optional<bool> IsInitialPrimaryAccountChild() const override;

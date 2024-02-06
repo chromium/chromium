@@ -139,6 +139,19 @@ void TestSigninClient::OnPrimaryAccountChangedWithEventSource(
     absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
         event_source) {}
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+TestSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
+  return bound_session_delegate_factory_ ? bound_session_delegate_factory_.Run()
+                                         : nullptr;
+}
+
+void TestSigninClient::SetBoundSessionOauthMultiloginDelegateFactory(
+    BoundSessionOauthMultiloginDelegateFactory factory) {
+  bound_session_delegate_factory_ = std::move(factory);
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 std::optional<account_manager::Account>
 TestSigninClient::GetInitialPrimaryAccount() {
