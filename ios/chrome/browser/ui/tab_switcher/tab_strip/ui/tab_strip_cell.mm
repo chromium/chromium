@@ -33,6 +33,7 @@ const CGFloat kSeparatorCornerRadius = 1;
 const CGFloat kSeparatorHeight = 18;
 const CGFloat kSeparatorHorizontalInset = 2;
 const CGFloat kSeparatorGradientWidth = 4;
+const CGFloat kSeparatorBackgroundAlpha = 0.3;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
@@ -348,9 +349,9 @@ UIImage* DefaultFavicon() {
 
 // Updates view colors.
 - (void)updateColors {
-  UIColor* backgroundColor = self.selected
-                                 ? [UIColor colorNamed:kPrimaryBackgroundColor]
-                                 : [UIColor colorNamed:kGrey200Color];
+  UIColor* backgroundColor =
+      self.selected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+                    : [UIColor colorNamed:kTabStripBackgroundColor];
   // Needed to correctly update the `_titleGradientView` colors in incognito.
   backgroundColor =
       [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
@@ -639,9 +640,9 @@ UIImage* DefaultFavicon() {
 // Returns a new gradient view.
 - (GradientView*)createGradientView {
   GradientView* gradientView = [[GradientView alloc]
-      initWithStartColor:[[UIColor colorNamed:kGrey200Color]
+      initWithStartColor:[[UIColor colorNamed:kTabStripBackgroundColor]
                              colorWithAlphaComponent:0]
-                endColor:[UIColor colorNamed:kGrey200Color]
+                endColor:[UIColor colorNamed:kTabStripBackgroundColor]
               startPoint:CGPointMake(0.0f, 0.5f)
                 endPoint:CGPointMake(1.0f, 0.5f)];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -674,7 +675,8 @@ UIImage* DefaultFavicon() {
 // Returns a new decoration view.
 - (UIView*)createDecorationView {
   UIView* tailView = [[UIView alloc] init];
-  tailView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  tailView.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   tailView.translatesAutoresizingMaskIntoConstraints = NO;
   tailView.clipsToBounds = NO;
   tailView.hidden = YES;
@@ -684,16 +686,24 @@ UIImage* DefaultFavicon() {
 // Returns a new separator view.
 - (UIView*)createSeparatorView {
   UIView* separatorView = [[UIView alloc] init];
-  separatorView.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  separatorView.backgroundColor = [UIColor colorNamed:kTabStripBackgroundColor];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
   separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+
+  UIView* backgroundView = [[UIView alloc] init];
+  backgroundView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  backgroundView.backgroundColor = [[UIColor colorNamed:kTextSecondaryColor]
+      colorWithAlphaComponent:kSeparatorBackgroundAlpha];
+  [separatorView addSubview:backgroundView];
   return separatorView;
 }
 
 // Returns a new selected border background view.
 - (UIView*)createSelectedBorderBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
-  backgroundView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  backgroundView.backgroundColor =
+      [UIColor colorNamed:kTabStripBackgroundColor];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;

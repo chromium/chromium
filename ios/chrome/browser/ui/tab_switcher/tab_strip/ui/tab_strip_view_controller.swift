@@ -77,7 +77,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = UIColor(named: kGrey200Color)
+    view.backgroundColor = UIColor(named: kTabStripBackgroundColor)
 
     collectionView.translatesAutoresizingMaskIntoConstraints = false
     collectionView.clipsToBounds = true

@@ -58,6 +58,7 @@ struct TabStripConstants {
     static let horizontalInset: CGFloat = 4
     static let leadingInset: CGFloat = 6
     static let bottomInset: CGFloat = 4
+    static let backgroundColorAlpha: CGFloat = 0.3
   }
 
 }

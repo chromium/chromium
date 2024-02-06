@@ -1063,6 +1063,10 @@ enum HeaderBehaviour {
     const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
+      // Force the UserInterfaceStyle update in incognito.
+      _fakeStatusBarView.overrideUserInterfaceStyle =
+          _isOffTheRecord ? UIUserInterfaceStyleDark
+                          : UIUserInterfaceStyleUnspecified;
     } else {
       [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
     }
@@ -1295,7 +1299,12 @@ enum HeaderBehaviour {
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      _fakeStatusBarView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+      _fakeStatusBarView.backgroundColor =
+          [UIColor colorNamed:kTabStripBackgroundColor];
+      // Force the UserInterfaceStyle update in incognito.
+      _fakeStatusBarView.overrideUserInterfaceStyle =
+          _isOffTheRecord ? UIUserInterfaceStyleDark
+                          : UIUserInterfaceStyleUnspecified;
     } else {
       _fakeStatusBarView.backgroundColor = UIColor.blackColor;
     }
