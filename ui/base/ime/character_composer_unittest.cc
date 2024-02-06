@@ -308,9 +308,10 @@ TEST_F(CharacterComposerTest, CompositionStateIsClearedAfterReset) {
   ExpectUnicodeKeyNotFiltered(VKEY_A, DomCode::US_A, EF_NONE, 'a');
 }
 
-TEST_F(CharacterComposerTest, KeySequenceCompositionPreedit) {
+TEST_F(CharacterComposerTest, KeySequenceCompositionPreeditDisabled) {
   // LATIN SMALL LETTER A WITH ACUTE
-  // preedit_string() is always empty in key sequence composition mode.
+  // preedit_string() is by default always empty in key sequence composition
+  // mode.
   ExpectDeadKeyFiltered(kCombiningAcute);
   EXPECT_TRUE(character_composer_.preedit_string().empty());
   ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
@@ -318,11 +319,42 @@ TEST_F(CharacterComposerTest, KeySequenceCompositionPreedit) {
   EXPECT_TRUE(character_composer_.preedit_string().empty());
 
   // LATIN SMALL LETTER A WITH ACUTE (via Compose key)
-  // preedit_string() is always empty in key sequence composition mode.
+  // preedit_string() is by default always empty in key sequence composition
+  // mode.
   ExpectComposeKeyFiltered();
   EXPECT_TRUE(character_composer_.preedit_string().empty());
   ExpectUnicodeKeyFiltered(VKEY_OEM_7, DomCode::QUOTE, 0, '\'');
   EXPECT_TRUE(character_composer_.preedit_string().empty());
+  ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
+                           std::u16string(1, 0x00E1));
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+}
+
+TEST_F(CharacterComposerTest, KeySequenceCompositionPreeditEnabled) {
+  // Same test instructions as for KeySequenceCompositionPreeditDisabled, but
+  // adjusted expectations.
+
+  // Reconstruct to set flag.
+  // TODO(max@igalia.com): get rid of placement new by making
+  // `character_composer_` a unique_ptr.
+  new (&character_composer_)
+      CharacterComposer(CharacterComposer::PreeditStringMode::kAlwaysEnabled);
+
+  // LATIN SMALL LETTER A WITH ACUTE
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  EXPECT_EQ(character_composer_.preedit_string(),
+            std::u16string(1, kCombiningAcute));
+  ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
+                           std::u16string(1, 0x00E1));
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+
+  // LATIN SMALL LETTER A WITH ACUTE (via Compose key)
+  ExpectComposeKeyFiltered();
+  EXPECT_EQ(
+      character_composer_.preedit_string(),
+      std::u16string(1, CharacterComposer::kPreeditStringComposeKeySymbol));
+  ExpectUnicodeKeyFiltered(VKEY_OEM_7, DomCode::QUOTE, 0, '\'');
+  EXPECT_EQ(character_composer_.preedit_string(), u"'");
   ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
                            std::u16string(1, 0x00E1));
   EXPECT_TRUE(character_composer_.preedit_string().empty());

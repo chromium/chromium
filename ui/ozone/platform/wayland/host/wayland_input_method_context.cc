@@ -50,6 +50,15 @@
 namespace ui {
 namespace {
 
+// Only enable the preedit string for sequence mode (i.e. when using dead keys
+// or the Compose key) on Linux ozone/wayland (see b/220370007).
+constexpr CharacterComposer::PreeditStringMode kPreeditStringMode =
+#if BUILDFLAG(IS_LINUX)
+    CharacterComposer::PreeditStringMode::kAlwaysEnabled;
+#else
+    CharacterComposer::PreeditStringMode::kHexModeOnly;
+#endif  // BUILDFLAG(IS_LINUX)
+
 absl::optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
                                             uint32_t offset) {
   if (offset > text.length())
@@ -245,7 +254,8 @@ WaylandInputMethodContext::WaylandInputMethodContext(
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      text_input_(nullptr) {
+      text_input_(nullptr),
+      character_composer_(kPreeditStringMode) {
   connection_->window_manager()->AddObserver(this);
   Init();
 }

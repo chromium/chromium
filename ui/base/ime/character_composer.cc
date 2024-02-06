@@ -61,9 +61,10 @@ int KeycodeToHexDigit(unsigned int keycode) {
 
 namespace ui {
 
-CharacterComposer::CharacterComposer() : composition_mode_(KEY_SEQUENCE_MODE) {}
+CharacterComposer::CharacterComposer(PreeditStringMode mode)
+    : preedit_string_mode_(mode) {}
 
-CharacterComposer::~CharacterComposer() {}
+CharacterComposer::~CharacterComposer() = default;
 
 void CharacterComposer::Reset() {
   compose_buffer_.clear();
@@ -123,6 +124,11 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
       compose_buffer_.clear();
       UTF32CharacterToUTF16(composed_character_utf32, &composed_character_);
     }
+
+    if (preedit_string_mode_ == PreeditStringMode::kAlwaysEnabled) {
+      UpdatePreeditStringSequenceMode();
+    }
+
     return true;
   }
   // Key press is not a part of composition.
@@ -149,9 +155,29 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
       }
     }
     compose_buffer_.clear();
+
+    if (preedit_string_mode_ == PreeditStringMode::kAlwaysEnabled) {
+      UpdatePreeditStringSequenceMode();
+    }
+
     return true;
   }
   return false;
+}
+
+void CharacterComposer::UpdatePreeditStringSequenceMode() {
+  CHECK_EQ(preedit_string_mode_, PreeditStringMode::kAlwaysEnabled);
+  for (auto key : compose_buffer_) {
+    if (key.IsCharacter()) {
+      base::WriteUnicodeCharacter(key.ToCharacter(), &preedit_string_);
+    } else if (key.IsDeadKey()) {
+      base::WriteUnicodeCharacter(key.ToDeadKeyCombiningCharacter(),
+                                  &preedit_string_);
+    } else if (key.IsComposeKey() && (compose_buffer_.size() == 1)) {
+      base::WriteUnicodeCharacter(kPreeditStringComposeKeySymbol,
+                                  &preedit_string_);
+    }
+  }
 }
 
 bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {

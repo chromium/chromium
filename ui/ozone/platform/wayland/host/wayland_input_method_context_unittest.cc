@@ -16,7 +16,9 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -152,6 +154,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
   void OnCommit(const std::u16string& text) override {
     was_on_commit_called_ = true;
+    last_commit_text_ = text;
   }
   void OnConfirmCompositionText(bool keep_selection) override {
     last_on_confirm_composition_arg_ = keep_selection;
@@ -188,6 +191,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
+
+  absl::optional<std::u16string> last_commit_text() const {
+    return last_commit_text_;
+  }
 
   const absl::optional<bool>& last_on_confirm_composition_arg() const {
     return last_on_confirm_composition_arg_;
@@ -228,6 +235,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
  private:
   bool was_on_commit_called_ = false;
+  absl::optional<std::u16string> last_commit_text_;
   absl::optional<bool> last_on_confirm_composition_arg_;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
@@ -1745,6 +1753,91 @@ TEST_P(WaylandInputMethodContextTest, OnKeySym) {
   ASSERT_EQ(wl::EventMillisecondsToTimeTicks(test_timestamp),
             keyboard_delegate_->last_event_timestamp());
 #endif
+}
+
+namespace {
+
+std::unique_ptr<KeyEvent> CreateKeyEventForCharacterComposer(
+    KeyboardCode keyboard_code,
+    DomCode dom_code,
+    DomKey dom_key) {
+  auto event =
+      std::make_unique<KeyEvent>(ET_KEY_PRESSED, keyboard_code, dom_code,
+                                 EF_NONE, dom_key, EventTimeForNow());
+  // We need to set this flag to make sure the event is sent to
+  // CharacterComposer.
+  ui::SetKeyboardImeFlags(event.get(), ui::kPropertyKeyboardImeIgnoredFlag);
+  return event;
+}
+
+}  // namespace
+
+TEST_P(WaylandInputMethodContextTest, CharacterComposerPreeditStringDeadKey) {
+  const char16_t kCombiningAcute = 0x0301;
+
+  auto event = CreateKeyEventForCharacterComposer(
+      VKEY_UNKNOWN, DomCode::NONE,
+      DomKey::DeadKeyFromCombiningCharacter(kCombiningAcute));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+
+  // Preedit string in sequence mode (i.e. using dead keys or the compose key)
+  // should only be enabled on Linux ozone/wayland. Everywhere else, the preedit
+  // string should always be empty.
+#if BUILDFLAG(IS_LINUX)
+  std::u16string preedit_string(1, kCombiningAcute);
+#else
+  std::u16string preedit_string = u"";
+#endif  // BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      preedit_string);
+
+  event = CreateKeyEventForCharacterComposer(VKEY_A, DomCode::US_A,
+                                             DomKey::FromCharacter('a'));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  // The composed text should be the same on all platforms.
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"á");
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       CharacterComposerPreeditStringComposeKey) {
+  auto event = CreateKeyEventForCharacterComposer(
+      VKEY_COMPOSE, DomCode::ALT_RIGHT, DomKey::COMPOSE);
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+
+#if BUILDFLAG(IS_LINUX)
+  std::u16string preedit_string(
+      1, ui::CharacterComposer::kPreeditStringComposeKeySymbol);
+#else
+  std::u16string preedit_string = u"";
+#endif  // BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      preedit_string);
+
+  event = CreateKeyEventForCharacterComposer(VKEY_OEM_7, DomCode::QUOTE,
+                                             DomKey::FromCharacter('\''));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+
+#if BUILDFLAG(IS_LINUX)
+  preedit_string = u"'";
+#endif  // BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      preedit_string);
+
+  event = CreateKeyEventForCharacterComposer(VKEY_A, DomCode::US_A,
+                                             DomKey::FromCharacter('a'));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  // The composed text should be the same on all platforms.
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"á");
 }
 
 class WaylandInputMethodContextNoKeyboardTest
