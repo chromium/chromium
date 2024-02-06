@@ -116,7 +116,7 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
 
 std::string SerializeStructureHeaderListOfStrings(
     const std::vector<std::string>& strings);
-std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
+std::vector<std::string> DeserializeStructuredHeaderListOfStrings(
     std::string_view header);
 
 }  // namespace network

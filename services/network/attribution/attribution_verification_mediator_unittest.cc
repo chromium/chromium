@@ -137,7 +137,7 @@ TEST_F(AttributionVerificationMediatorTest,
   std::string verification_header;
   headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
                     &verification_header);
-  std::vector<const std::string> verification_headers =
+  const std::vector<std::string> verification_headers =
       DeserializeStructuredHeaderListOfStrings(verification_header);
   // Check that the message was blinded by the Cryptographer before being added
   ASSERT_EQ(verification_headers.size(), 1u);
