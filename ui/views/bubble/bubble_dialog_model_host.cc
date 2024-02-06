@@ -1068,15 +1068,6 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   dialog_side_insets.set_top(0);
   dialog_side_insets.set_bottom(0);
 
-  // If there is a Main Image, the left dialog inset value is no longer the
-  // correct metric. Use the related control metric instead.
-  // TODO(kylixrd): Investigate whether this should be a unique distance metric
-  // or if the related control metric is valid.
-  if (!GetMainImage().IsEmpty()) {
-    dialog_side_insets.set_left(layout_provider->GetDistanceMetric(
-        DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  }
-
   ui::DialogModelField* first_field = nullptr;
   ui::DialogModelField* last_field = nullptr;
 
