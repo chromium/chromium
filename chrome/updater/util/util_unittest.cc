@@ -139,4 +139,34 @@ TEST(Util, DeleteExcept) {
   test::ExpectOnlyMockUpdater(except_executable);
 }
 
+TEST(Util, CeilingDivide) {
+  EXPECT_EQ(CeilingDivide(0, 1), 0);
+  EXPECT_EQ(CeilingDivide(1, 2), 1);
+  EXPECT_EQ(CeilingDivide(1, 1), 1);
+  EXPECT_EQ(CeilingDivide(3, 2), 2);
+  EXPECT_EQ(CeilingDivide(5, 3), 2);
+  EXPECT_EQ(CeilingDivide(4, 2), 2);
+
+  EXPECT_EQ(CeilingDivide(-1, 2), 0);
+  EXPECT_EQ(CeilingDivide(-1, 1), -1);
+  EXPECT_EQ(CeilingDivide(-3, 2), -1);
+  EXPECT_EQ(CeilingDivide(-5, 3), -1);
+  EXPECT_EQ(CeilingDivide(-2, 1), -2);
+  EXPECT_EQ(CeilingDivide(-4, 2), -2);
+
+  EXPECT_EQ(CeilingDivide(1, -2), 0);
+  EXPECT_EQ(CeilingDivide(1, -1), -1);
+  EXPECT_EQ(CeilingDivide(3, -2), -1);
+  EXPECT_EQ(CeilingDivide(5, -3), -1);
+  EXPECT_EQ(CeilingDivide(2, -1), -2);
+  EXPECT_EQ(CeilingDivide(4, -2), -2);
+
+  EXPECT_EQ(CeilingDivide(-0, -1), 0);
+  EXPECT_EQ(CeilingDivide(-1, -2), 1);
+  EXPECT_EQ(CeilingDivide(-1, -1), 1);
+  EXPECT_EQ(CeilingDivide(-3, -2), 2);
+  EXPECT_EQ(CeilingDivide(-5, -3), 2);
+  EXPECT_EQ(CeilingDivide(-4, -2), 2);
+}
+
 }  // namespace updater

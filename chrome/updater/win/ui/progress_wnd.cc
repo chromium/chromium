@@ -21,6 +21,7 @@
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_UTIL_UTIL_H_
 #define CHROME_UPDATER_UTIL_UTIL_H_
 
+#include <cmath>
+#include <concepts>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -224,6 +226,13 @@ bool MigrateLegacyUpdaters(
 
 // Delete everything other than `except` under `except.DirName()`.
 [[nodiscard]] bool DeleteExcept(const std::optional<base::FilePath>& except);
+
+// Returns the quotient of dividing two integer numbers (m/n) rounded up.
+template <typename T>
+  requires std::integral<T>
+[[nodiscard]] constexpr T CeilingDivide(T m, T n) {
+  return std::ceil(static_cast<double>(m) / n);
+}
 
 }  // namespace updater
 
