@@ -46,6 +46,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -114,14 +115,16 @@ void AvatarToolbarButton::UpdateIcon() {
     return;
   }
 
-  gfx::Image gaia_account_image = delegate_->GetGaiaAccountImage();
+  const int icon_size = GetIconSize();
   for (auto state : kButtonStates) {
-    SetImageModel(state, GetAvatarIcon(state, gaia_account_image));
+    SetImageModel(
+        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
   }
   // If `OnUserIdentityChanged()` has been called and the image is not empty,
   // show the animation. If the animation is shown, also resets the delegate's
-  // ButtonTextState so that the animation will not be triggered again.
-  delegate_->MaybeShowIdentityAnimation(gaia_account_image);
+  // `TextState` so that the animation will not be triggered again.
+  // TODO(b/324018028): This call should be moved within the delegate.
+  delegate_->MaybeShowIdentityAnimation();
 
   SetInsets();
 }
@@ -149,71 +152,12 @@ void AvatarToolbarButton::Layout(PassKey) {
 }
 
 void AvatarToolbarButton::UpdateText() {
-  std::optional<SkColor> color;
-  std::u16string text;
-
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
 
-  if (features::IsChromeRefresh2023()) {
-    color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
-  }
-  switch (delegate_->GetState()) {
-    case State::kIncognitoProfile: {
-      const int incognito_window_count = delegate_->GetWindowCount();
-      SetAccessibleName(l10n_util::GetPluralStringFUTF16(
-          IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
-      text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
-                                              incognito_window_count);
-      // TODO(shibalik): Remove this condition to make it generic by refactoring
-      // `ToolbarButton::HighlightColorAnimation`.
-      if (features::IsChromeRefresh2023()) {
-        color = color_provider->GetColor(kColorAvatarButtonHighlightIncognito);
-      }
-      break;
-    }
-    case State::kAnimatedUserIdentity:
-      text = delegate_->GetShortProfileName();
-      break;
-    case State::kInterceptTextShowing: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-      // The signin text is not supported on Lacros.
-      NOTREACHED_NORETURN();
-#else
-      text = delegate_->GetInterceptText();
-      break;
-#endif
-    }
-    case State::kSyncError:
-      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
-      break;
-    case State::kSyncPaused:
-      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
-      break;
-    case State::kGuestSession: {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // On ChromeOS all windows are either Guest or not Guest and the Guest
-      // avatar button is not actionable. Showing the number of open windows is
-      // not as helpful as on other desktop platforms. Please see
-      // crbug.com/1178520.
-      const int guest_window_count = 1;
-#else
-      const int guest_window_count = delegate_->GetWindowCount();
-#endif
-      SetAccessibleName(l10n_util::GetPluralStringFUTF16(
-          IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE, guest_window_count));
-      text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
-                                              guest_window_count);
-      break;
-    }
-    case State::kNormal:
-      break;
-  }
-
   SetInsets();
-  SetTooltipText(GetAvatarTooltipText());
+  SetTooltipText(delegate_->GetAvatarTooltipText());
+  auto [text, color] = delegate_->GetTextAndColor(color_provider);
   SetHighlight(text, color);
   // Update the layout insets after `SetHighlight()` since
   // text might be updated by setting the highlight.
@@ -241,40 +185,13 @@ void AvatarToolbarButton::UpdateText() {
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
-  if (features::IsChromeRefresh2023()) {
-    std::optional<SkColor> color;
-    const auto* const color_provider = GetColorProvider();
-    CHECK(color_provider);
-
-    switch (delegate_->GetState()) {
-      case State::kIncognitoProfile:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightIncognitoForeground);
-        break;
-      case State::kSyncError:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightSyncErrorForeground);
-        break;
-      case State::kSyncPaused:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightNormalForeground);
-        break;
-      case State::kGuestSession:
-      case State::kInterceptTextShowing:
-      case State::kAnimatedUserIdentity:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightDefaultForeground);
-        break;
-      case State::kNormal:
-        color = color_provider->GetColor(
-            kColorAvatarButtonHighlightDefaultForeground);
-        break;
-    }
-
-    return color;
+  if (!features::IsChromeRefresh2023()) {
+    return std::nullopt;
   }
 
-  return std::nullopt;
+  const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
+  return delegate_->GetHighlightTextColor(color_provider);
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
@@ -289,37 +206,14 @@ std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
 
 void AvatarToolbarButton::UpdateInkdrop() {
   CHECK(features::IsChromeRefresh2023());
-  ChromeColorIds hover_color_id = kColorToolbarInkDropHover;
-  ChromeColorIds ripple_color_id = kColorToolbarInkDropRipple;
 
-  if (IsLabelPresentAndVisible()) {
-    switch (delegate_->GetState()) {
-      case State::kIncognitoProfile:
-        hover_color_id = kColorAvatarButtonIncognitoHover;
-        break;
-      case State::kSyncError:
-      case State::kGuestSession:
-      case State::kInterceptTextShowing:
-      case State::kAnimatedUserIdentity:
-        break;
-      case State::kSyncPaused:
-        ripple_color_id = kColorAvatarButtonNormalRipple;
-        break;
-      case State::kNormal:
-        ripple_color_id = kColorToolbarInkDropRipple;
-        break;
-    }
-  }
-
+  auto [hover_color_id, ripple_color_id] = delegate_->GetInkdropColors();
   ConfigureToolbarInkdropForRefresh2023(this, hover_color_id, ripple_color_id);
 }
 
 bool AvatarToolbarButton::ShouldPaintBorder() const {
-  AvatarToolbarButton::State state = delegate_->GetState();
   return (!features::IsChromeRefresh2023()) ||
-         (IsLabelPresentAndVisible() &&
-          (state == State::kGuestSession ||
-           state == State::kAnimatedUserIdentity || state == State::kNormal));
+         (IsLabelPresentAndVisible() && delegate_->ShouldPaintBorder());
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
@@ -419,34 +313,6 @@ void AvatarToolbarButton::AfterPropertyChange(const void* key,
   ToolbarButton::AfterPropertyChange(key, old_value);
 }
 
-std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
-  switch (delegate_->GetState()) {
-    case State::kIncognitoProfile:
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
-    case State::kGuestSession:
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
-    case State::kAnimatedUserIdentity:
-      return delegate_->GetShortProfileName();
-    // kSyncPaused is just a type of sync error with different color, but should
-    // still use GetAvatarSyncErrorDescription() as tooltip.
-    case State::kSyncError:
-    case State::kSyncPaused: {
-      std::optional<AvatarSyncErrorType> error =
-          delegate_->GetAvatarSyncErrorType();
-      DCHECK(error);
-      return l10n_util::GetStringFUTF16(
-          IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP,
-          delegate_->GetShortProfileName(),
-          GetAvatarSyncErrorDescription(*error,
-                                        delegate_->IsSyncFeatureEnabled()));
-    }
-    case State::kInterceptTextShowing:
-    case State::kNormal:
-      return delegate_->GetProfileName();
-  }
-  NOTREACHED_NORETURN();
-}
-
 SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
   bool has_custom_theme =
       this->GetWidget() && this->GetWidget()->GetCustomTheme();
@@ -466,34 +332,6 @@ SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
   }
 
   return ToolbarButton::GetForegroundColor(state);
-}
-
-ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
-    ButtonState state,
-    const gfx::Image& gaia_account_image) const {
-  const int icon_size = GetIconSize();
-  SkColor icon_color = GetForegroundColor(state);
-
-  switch (delegate_->GetState()) {
-    case State::kIncognitoProfile:
-      return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                                ? kIncognitoRefreshMenuIcon
-                                                : kIncognitoIcon,
-                                            icon_color, icon_size);
-    case State::kGuestSession:
-      return profiles::GetGuestAvatar(icon_size);
-    case State::kInterceptTextShowing:
-    case State::kAnimatedUserIdentity:
-    case State::kSyncError:
-    // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
-    // be different.
-    case State::kSyncPaused:
-    case State::kNormal:
-      return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-          delegate_->GetProfileAvatarImage(gaia_account_image, icon_size),
-          icon_size, icon_size, profiles::SHAPE_CIRCLE));
-  }
-  NOTREACHED_NORETURN();
 }
 
 bool AvatarToolbarButton::IsLabelPresentAndVisible() const {

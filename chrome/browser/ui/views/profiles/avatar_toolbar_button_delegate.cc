@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -25,7 +26,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -87,9 +90,8 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     sync_service_observation_.Observe(sync_service);
   }
 
-  AvatarToolbarButton::State state = GetState();
-  if (state == AvatarToolbarButton::State::kIncognitoProfile ||
-      state == AvatarToolbarButton::State::kGuestSession) {
+  bool is_incognito = profile_->IsOffTheRecord();
+  if (is_incognito || profile_->IsGuestSession()) {
     BrowserList::AddObserver(this);
   } else {
     signin::IdentityManager* identity_manager =
@@ -105,13 +107,11 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   // captivie portal signin. It's only enabled for non captive portal Incognito
   // where a menu is available for closing all Incognito windows.
   avatar_toolbar_button_->SetEnabled(
-      state == AvatarToolbarButton::State::kIncognitoProfile &&
-      !profile_->GetOTRProfileID().IsCaptivePortal());
+      is_incognito && !profile_->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we need to disable the button for captivie portal signin.
   avatar_toolbar_button_->SetEnabled(
-      state != AvatarToolbarButton::State::kIncognitoProfile ||
-      !profile_->GetOTRProfileID().IsCaptivePortal());
+      !is_incognito || !profile_->GetOTRProfileID().IsCaptivePortal());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -120,7 +120,7 @@ AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() {
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
-  DCHECK_NE(GetState(), AvatarToolbarButton::State::kIncognitoProfile);
+  DCHECK_NE(ComputeState(), ButtonState::kIncognitoProfile);
   return profiles::GetAvatarNameForProfile(profile_->GetPath());
 }
 
@@ -148,7 +148,6 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
 }
 
 gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
-    gfx::Image gaia_account_image,
     int preferred_size) const {
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
   if (!entry) {  // This can happen if the user deletes the current profile.
@@ -170,6 +169,7 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
   //  - the profile icon wasn't explicitly changed
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
+  gfx::Image gaia_account_image = GetGaiaAccountImage();
   if (!gaia_account_image.IsEmpty() &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
@@ -187,26 +187,27 @@ int AvatarToolbarButtonDelegate::GetWindowCount() const {
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 
-AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
+AvatarToolbarButtonDelegate::ButtonState
+AvatarToolbarButtonDelegate::ComputeState() const {
   if (profile_->IsGuestSession())
-    return AvatarToolbarButton::State::kGuestSession;
+    return ButtonState::kGuestSession;
 
   // Return |kIncognitoProfile| state for all OffTheRecord profile types except
   // guest mode.
   if (profile_->IsOffTheRecord())
-    return AvatarToolbarButton::State::kIncognitoProfile;
+    return ButtonState::kIncognitoProfile;
 
-  if (button_text_state_ == ButtonTextState::kShowingName) {
-    return AvatarToolbarButton::State::kAnimatedUserIdentity;
+  if (button_text_state_ == TextState::kShowingName) {
+    return ButtonState::kAnimatedUserIdentity;
   }
-  if (button_text_state_ == ButtonTextState::kShowingInterceptText) {
-    return AvatarToolbarButton::State::kInterceptTextShowing;
+  if (button_text_state_ == TextState::kShowingInterceptText) {
+    return ButtonState::kInterceptTextShowing;
   }
 
   // Web app has limited toolbar space, thus always show kNormal state.
   if (web_app::AppBrowserController::IsWebApp(browser_) ||
       !SyncServiceFactory::IsSyncAllowed(profile_)) {
-    return AvatarToolbarButton::State::kNormal;
+    return ButtonState::kNormal;
   }
 
   // Show any existing sync errors (sync-the-feature or sync-the-transport).
@@ -214,14 +215,14 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   // ::GetAvatarSyncErrorType(), so the result agrees with
   // AvatarToolbarButtonDelegate::GetAvatarSyncErrorType().
   if (!last_avatar_error_)
-    return AvatarToolbarButton::State::kNormal;
+    return ButtonState::kNormal;
 
   if (last_avatar_error_ == AvatarSyncErrorType::kSyncPaused &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
-    return AvatarToolbarButton::State::kSyncPaused;
+    return ButtonState::kSyncPaused;
   }
 
-  return AvatarToolbarButton::State::kSyncError;
+  return ButtonState::kSyncError;
 }
 
 std::optional<AvatarSyncErrorType>
@@ -229,14 +230,9 @@ AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
   return last_avatar_error_;
 }
 
-bool AvatarToolbarButtonDelegate::IsSyncFeatureEnabled() const {
-  return IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-      signin::ConsentLevel::kSync);
-}
-
-void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation(
-    const gfx::Image& gaia_account_image) {
-  if (button_text_state_ != ButtonTextState::kWaitingForImage ||
+void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation() {
+  const gfx::Image gaia_account_image = GetGaiaAccountImage();
+  if (button_text_state_ != TextState::kWaitingForImage ||
       gaia_account_image.IsEmpty()) {
     return;
   }
@@ -244,7 +240,7 @@ void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation(
   // Check that the user is still signed in. See https://crbug.com/1025674
   if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
           signin::ConsentLevel::kSignin)) {
-    button_text_state_ = ButtonTextState::kNotShowing;
+    button_text_state_ = TextState::kNotShowing;
     return;
   }
 
@@ -261,10 +257,6 @@ void AvatarToolbarButtonDelegate::SetHasInProductHelpPromo(bool has_promo) {
   // (IPH and identity pill) happening concurrently.
   // See https://crbug.com/1198907
   ShowIdentityAnimation();
-}
-
-void AvatarToolbarButtonDelegate::NotifyClick() {
-  MaybeHideIdentityAnimation();
 }
 
 void AvatarToolbarButtonDelegate::OnMouseExited() {
@@ -401,10 +393,10 @@ void AvatarToolbarButtonDelegate::OnSyncShutdown(syncer::SyncService*) {
 
 void AvatarToolbarButtonDelegate::OnUserIdentityChanged() {
   signin_ui_util::RecordAnimatedIdentityTriggered(profile_);
-  button_text_state_ = ButtonTextState::kWaitingForImage;
+  button_text_state_ = TextState::kWaitingForImage;
   // If we already have a gaia image, the pill will be immediately displayed by
   // `UpdateIcon()`. If not, it can still be displayed later, since the button
-  // text state is now set to `ButtonTextState::kWaitingForImage`. This state
+  // text state is now set to `TextState::kWaitingForImage`. This state
   // will trigger the animation in `MaybeShowIdentityAnimation(...)`.
   avatar_toolbar_button_->UpdateIcon();
 }
@@ -415,17 +407,17 @@ void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout() {
   // OnIdentityAnimationTimeout() that will hide it after the proper delay.
   // Also return if the button is showing the signin text rather than the name.
   if (identity_animation_timeout_count_ > 0 ||
-      button_text_state_ == ButtonTextState::kShowingInterceptText) {
+      button_text_state_ == TextState::kShowingInterceptText) {
     return;
   }
 
-  DCHECK_EQ(button_text_state_, ButtonTextState::kShowingName);
+  DCHECK_EQ(button_text_state_, TextState::kShowingName);
   MaybeHideIdentityAnimation();
 }
 
 void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
   // No-op if not showing or if the timeout hasn't passed, yet.
-  if (button_text_state_ != ButtonTextState::kShowingName ||
+  if (button_text_state_ != TextState::kShowingName ||
       identity_animation_timeout_count_ > 0) {
     return;
   }
@@ -438,14 +430,14 @@ void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
     return;
   }
 
-  button_text_state_ = ButtonTextState::kNotShowing;
+  button_text_state_ = TextState::kNotShowing;
   // Update the text to the pre-shown state. This also makes sure that we now
   // reflect changes that happened while the identity pill was shown.
   avatar_toolbar_button_->UpdateText();
 }
 
 void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
-  button_text_state_ = ButtonTextState::kShowingName;
+  button_text_state_ = TextState::kShowingName;
   avatar_toolbar_button_->UpdateText();
 
   // Hide the pill after a while.
@@ -461,23 +453,211 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
 void AvatarToolbarButtonDelegate::ShowInterceptText(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   current_interception_type_ = interception_type;
-  button_text_state_ = ButtonTextState::kShowingInterceptText;
+  button_text_state_ = TextState::kShowingInterceptText;
   avatar_toolbar_button_->UpdateText();
 }
 
 void AvatarToolbarButtonDelegate::HideText() {
-  button_text_state_ = ButtonTextState::kNotShowing;
+  button_text_state_ = TextState::kNotShowing;
   Reset();
 
   avatar_toolbar_button_->UpdateText();
-}
-
-std::u16string AvatarToolbarButtonDelegate::GetInterceptText() {
-  CHECK(current_interception_type_.has_value());
-  return InterceptionTypeToIdentityPillText(current_interception_type_.value());
 }
 #endif
 
 void AvatarToolbarButtonDelegate::Reset() {
   current_interception_type_.reset();
+}
+
+std::pair<std::u16string, std::optional<SkColor>>
+AvatarToolbarButtonDelegate::GetTextAndColor(
+    const ui::ColorProvider* const color_provider) const {
+  std::optional<SkColor> color;
+  std::u16string text;
+
+  if (features::IsChromeRefresh2023()) {
+    color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
+  }
+  switch (ComputeState()) {
+    case ButtonState::kIncognitoProfile: {
+      const int incognito_window_count = GetWindowCount();
+      avatar_toolbar_button_->SetAccessibleName(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
+      text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
+                                              incognito_window_count);
+      // TODO(shibalik): Remove this condition to make it generic by refactoring
+      // `ToolbarButton::HighlightColorAnimation`.
+      if (features::IsChromeRefresh2023()) {
+        color = color_provider->GetColor(kColorAvatarButtonHighlightIncognito);
+      }
+      break;
+    }
+    case ButtonState::kAnimatedUserIdentity:
+      text = GetShortProfileName();
+      break;
+    case ButtonState::kInterceptTextShowing: {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+      // The signin text is not supported on Lacros.
+      NOTREACHED_NORETURN();
+#else
+      CHECK(current_interception_type_.has_value());
+      text = InterceptionTypeToIdentityPillText(
+          current_interception_type_.value());
+      break;
+#endif
+    }
+    case ButtonState::kSyncError:
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
+      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
+      break;
+    case ButtonState::kSyncPaused:
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
+      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
+      break;
+    case ButtonState::kGuestSession: {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // On ChromeOS all windows are either Guest or not Guest and the Guest
+      // avatar button is not actionable. Showing the number of open windows is
+      // not as helpful as on other desktop platforms. Please see
+      // crbug.com/1178520.
+      const int guest_window_count = 1;
+#else
+      const int guest_window_count = GetWindowCount();
+#endif
+      avatar_toolbar_button_->SetAccessibleName(
+          l10n_util::GetPluralStringFUTF16(IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE,
+                                           guest_window_count));
+      text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
+                                              guest_window_count);
+      break;
+    }
+    case ButtonState::kNormal:
+      break;
+  }
+
+  return {text, color};
+}
+
+std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
+    const ui::ColorProvider* const color_provider) const {
+  std::optional<SkColor> color;
+  switch (ComputeState()) {
+    case ButtonState::kIncognitoProfile:
+      color = color_provider->GetColor(
+          kColorAvatarButtonHighlightIncognitoForeground);
+      break;
+    case ButtonState::kSyncError:
+      color = color_provider->GetColor(
+          kColorAvatarButtonHighlightSyncErrorForeground);
+      break;
+    case ButtonState::kSyncPaused:
+      color =
+          color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
+      break;
+    case ButtonState::kGuestSession:
+    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kAnimatedUserIdentity:
+      color = color_provider->GetColor(
+          kColorAvatarButtonHighlightDefaultForeground);
+      break;
+    case ButtonState::kNormal:
+      color = color_provider->GetColor(
+          kColorAvatarButtonHighlightDefaultForeground);
+      break;
+  }
+  return color;
+}
+
+std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
+  switch (ComputeState()) {
+    case ButtonState::kIncognitoProfile:
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
+    case ButtonState::kGuestSession:
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
+    case ButtonState::kAnimatedUserIdentity:
+      return GetShortProfileName();
+    // kSyncPaused is just a type of sync error with different color, but should
+    // still use GetAvatarSyncErrorDescription() as tooltip.
+    case ButtonState::kSyncError:
+    case ButtonState::kSyncPaused: {
+      std::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType();
+      DCHECK(error);
+      return l10n_util::GetStringFUTF16(
+          IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP, GetShortProfileName(),
+          GetAvatarSyncErrorDescription(
+              *error, IdentityManagerFactory::GetForProfile(profile_)
+                          ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
+    }
+    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kNormal:
+      return GetProfileName();
+  }
+}
+
+std::pair<ChromeColorIds, ChromeColorIds>
+AvatarToolbarButtonDelegate::GetInkdropColors() const {
+  CHECK(features::IsChromeRefresh2023());
+
+  ChromeColorIds hover_color_id = kColorToolbarInkDropHover;
+  ChromeColorIds ripple_color_id = kColorToolbarInkDropRipple;
+
+  if (avatar_toolbar_button_->IsLabelPresentAndVisible()) {
+    switch (ComputeState()) {
+      case ButtonState::kIncognitoProfile:
+        hover_color_id = kColorAvatarButtonIncognitoHover;
+        break;
+      case ButtonState::kSyncError:
+      case ButtonState::kGuestSession:
+      case ButtonState::kInterceptTextShowing:
+      case ButtonState::kAnimatedUserIdentity:
+        break;
+      case ButtonState::kSyncPaused:
+        ripple_color_id = kColorAvatarButtonNormalRipple;
+        break;
+      case ButtonState::kNormal:
+        ripple_color_id = kColorToolbarInkDropRipple;
+        break;
+    }
+  }
+
+  return {hover_color_id, ripple_color_id};
+}
+
+ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
+    int icon_size,
+    SkColor icon_color) const {
+  switch (ComputeState()) {
+    case ButtonState::kIncognitoProfile:
+      return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                                ? kIncognitoRefreshMenuIcon
+                                                : kIncognitoIcon,
+                                            icon_color, icon_size);
+    case ButtonState::kGuestSession:
+      return profiles::GetGuestAvatar(icon_size);
+    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kSyncError:
+    // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
+    // should be different.
+    case ButtonState::kSyncPaused:
+    case ButtonState::kNormal:
+      return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+          GetProfileAvatarImage(icon_size), icon_size, icon_size,
+          profiles::SHAPE_CIRCLE));
+  }
+}
+
+bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
+  switch (ComputeState()) {
+    case ButtonState::kGuestSession:
+    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kNormal:
+      return true;
+    case ButtonState::kIncognitoProfile:
+    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kSyncPaused:
+    case ButtonState::kSyncError:
+      return false;
+  }
 }
