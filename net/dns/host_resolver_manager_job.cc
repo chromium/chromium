@@ -641,9 +641,9 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   // Need to create the task even if we're going to post a failure instead of
   // running it, as a "started" job needs a task to be properly cleaned up.
   dns_task_ = std::make_unique<HostResolverDnsTask>(
-      resolver_->dns_client_.get(), key_.host, key_.query_types,
-      &*key_.resolve_context, secure, key_.secure_dns_mode, this, net_log_,
-      tick_clock_, !tasks_.empty() /* fallback_available */,
+      resolver_->dns_client_.get(), key_.host, key_.network_anonymization_key,
+      key_.query_types, &*key_.resolve_context, secure, key_.secure_dns_mode,
+      this, net_log_, tick_clock_, !tasks_.empty() /* fallback_available */,
       https_svcb_options_);
   dns_task_->StartNextTransaction();
   // Schedule a second transaction, if needed. DoH queries can bypass the

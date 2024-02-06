@@ -1179,16 +1179,6 @@ size_t HostCache::max_entries() const {
   return max_entries_;
 }
 
-// static
-std::unique_ptr<HostCache> HostCache::CreateDefaultCache() {
-#if defined(ENABLE_BUILT_IN_DNS)
-  const size_t kDefaultMaxEntries = 1000;
-#else
-  const size_t kDefaultMaxEntries = 100;
-#endif
-  return std::make_unique<HostCache>(kDefaultMaxEntries);
-}
-
 bool HostCache::EvictOneEntry(base::TimeTicks now) {
   DCHECK_LT(0u, entries_.size());
 

@@ -476,9 +476,6 @@ class NET_EXPORT HostCache {
   int network_changes() const { return network_changes_; }
   const EntryMap& entries() const { return entries_; }
 
-  // Creates a default cache.
-  static std::unique_ptr<HostCache> CreateDefaultCache();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HostCacheTest, NoCache);
 

@@ -30,6 +30,7 @@ class DnsSession;
 class DnsServerIterator;
 class DohDnsServerIterator;
 class HostCache;
+class HostResolverCache;
 class URLRequestContext;
 
 // Represents various states of the DoH auto-upgrade process.
@@ -180,6 +181,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   }
 
   HostCache* host_cache() { return host_cache_.get(); }
+  HostResolverCache* host_resolver_cache() {
+    return host_resolver_cache_.get();
+  }
 
   // Invalidate or clear saved per-context cached data that is not expected to
   // stay valid between connections or sessions (eg the HostCache and DNS server
@@ -299,6 +303,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   raw_ptr<URLRequestContext> url_request_context_;
 
   std::unique_ptr<HostCache> host_cache_;
+  std::unique_ptr<HostResolverCache> host_resolver_cache_;
 
   // Current maximum server fallback period. Updated on connection change.
   base::TimeDelta max_fallback_period_;
