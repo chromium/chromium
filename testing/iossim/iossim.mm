@@ -410,8 +410,10 @@ int RunApplication(NSString* app_path,
                    NSMutableArray* cmd_args,
                    NSMutableArray* tests_filter,
                    bool verbose) {
-  NSString* tempFilePath = [NSTemporaryDirectory()
-      stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+  NSString* filename =
+      [NSUUID.UUID.UUIDString stringByAppendingString:@".xctestrun"];
+  NSString* tempFilePath =
+      [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
   [NSFileManager.defaultManager createFileAtPath:tempFilePath
                                         contents:nil
                                       attributes:nil];
