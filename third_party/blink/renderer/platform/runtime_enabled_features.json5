@@ -2816,7 +2816,7 @@
     },
     {
       name: "PageRevealEvent",
-      status: "experimental",
+      status: "stable",
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
