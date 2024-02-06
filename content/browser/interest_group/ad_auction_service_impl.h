@@ -141,7 +141,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // Checks if a join or leave interest group is allowed to be sent from the
   // current renderer. If not, returns false and invokes
   // ReportBadMessageAndDeleteThis().
-  bool JoinOrLeaveApiAllowedFromRenderer(const url::Origin& owner);
+  bool JoinOrLeaveApiAllowedFromRenderer(const url::Origin& owner,
+                                         const char* invoked_method);
+
+  // Checks if `feature` is enabled for the frame, and returns true if so, and
+  // false if not. Additionally, if the feature is enabled, prints a warning to
+  // the console if the feature would not be enabled if the default state of the
+  // feature across cross-origin frames were switched to disabled instead of
+  // enabled.
+  bool IsPermissionPolicyEnabledAndWarnIfNeeded(
+      blink::mojom::PermissionsPolicyFeature feature,
+      const char* method);
 
   // Returns true if `origin` is allowed to perform the specified
   // `interest_group_api_operation` in this frame. Must be called on worklet /

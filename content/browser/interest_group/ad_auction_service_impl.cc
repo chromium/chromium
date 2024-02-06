@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -118,6 +120,41 @@ bool AreAllowedReportingOriginsAttested(
   return true;
 }
 
+// Returns true if changing the default permission policy for `feature` from
+// EnableForAll to EnableForSelf would disable `feature` for frame, and so a
+// warning should be displayed when a call relies on EnableForAll. This method
+// assumes the permission is enabled with the current EnableForAll policy, so it
+// only needs to check if every cross-origin frame up to the root frame allows
+// `feature` for the child frame's origin.
+bool ShouldWarnAboutPermissionPolicyDefault(
+    RenderFrameHostImpl& frame,
+    blink::mojom::PermissionsPolicyFeature feature) {
+  RenderFrameHostImpl* parent = frame.GetParent();
+  if (!parent) {
+    return false;
+  }
+  const auto container_policy =
+      frame.browsing_context_state()->effective_frame_policy().container_policy;
+  const url::Origin& frame_origin = frame.GetLastCommittedOrigin();
+  if (parent->GetLastCommittedOrigin() != frame_origin) {
+    bool found_match = false;
+    for (const auto& declaration : container_policy) {
+      if (declaration.feature == feature) {
+        auto allowlist =
+            blink::PermissionsPolicy::Allowlist::FromDeclaration(declaration);
+        if (!allowlist.Contains(frame_origin)) {
+          return true;
+        }
+        found_match = true;
+      }
+    }
+    if (!found_match) {
+      return true;
+    }
+  }
+  return ShouldWarnAboutPermissionPolicyDefault(*parent, feature);
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -144,7 +181,7 @@ void AdAuctionServiceImpl::CreateMojoService(
 void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group,
     JoinInterestGroupCallback callback) {
-  if (!JoinOrLeaveApiAllowedFromRenderer(group.owner)) {
+  if (!JoinOrLeaveApiAllowedFromRenderer(group.owner, "joinAdInterestGroup")) {
     return;
   }
 
@@ -195,7 +232,7 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
     const url::Origin& owner,
     const std::string& name,
     LeaveInterestGroupCallback callback) {
-  if (!JoinOrLeaveApiAllowedFromRenderer(owner)) {
+  if (!JoinOrLeaveApiAllowedFromRenderer(owner, "leaveAdInterestGroup")) {
     return;
   }
 
@@ -279,7 +316,8 @@ void AdAuctionServiceImpl::ClearOriginJoinedInterestGroups(
     const url::Origin& owner,
     const std::vector<std::string>& interest_groups_to_keep,
     ClearOriginJoinedInterestGroupsCallback callback) {
-  if (!JoinOrLeaveApiAllowedFromRenderer(owner)) {
+  if (!JoinOrLeaveApiAllowedFromRenderer(owner,
+                                         "clearOriginJoinedAdInterestGroups")) {
     return;
   }
 
@@ -300,8 +338,9 @@ void AdAuctionServiceImpl::ClearOriginJoinedInterestGroups(
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing
-  if (!render_frame_host().IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+  if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          "updateAdInterestGroups")) {
     ReportBadMessageAndDeleteThis("Unexpected request");
     return;
   }
@@ -342,9 +381,10 @@ void AdAuctionServiceImpl::RunAdAuction(
       RenderFrameHost::LifecycleState::kPrerendering));
 
   // If the run ad auction API is not allowed for this context by Permissions
-  // Policy, do nothing
-  if (!render_frame_host().IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+  // Policy, do nothing.
+  if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          "runAdAuction")) {
     ReportBadMessageAndDeleteThis("Unexpected request");
     return;
   }
@@ -529,6 +569,13 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     return;
   }
 
+  if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          "getInterestGroupAdAuctionData")) {
+    ReportBadMessageAndDeleteThis("Unexpected request");
+    return;
+  }
+
   BiddingAndAuctionDataConstructionState state;
   state.callback = std::move(callback);
   state.seller = seller;
@@ -688,21 +735,12 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
 }
 
 bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
-    const url::Origin& owner) {
+    const url::Origin& owner,
+    const char* invoked_method) {
   if (origin().scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis(
         "Unexpected request: Interest groups may only be joined or left from "
         "https origins");
-    return false;
-  }
-
-  // If the interest group API is not allowed for this context by Permissions
-  // Policy, do nothing
-  if (!render_frame_host().IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: Interest groups may only be joined or left when "
-        "feature join-ad-interest-group is enabled by Permissions Policy");
     return false;
   }
 
@@ -711,6 +749,44 @@ bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
         "Unexpected request: Interest groups may only be owned by https "
         "origins");
     return false;
+  }
+
+  // If the interest group API is not allowed for this context by Permissions
+  // Policy, do nothing.
+  if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          invoked_method)) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: Interest groups may only be joined or left when "
+        "feature join-ad-interest-group is enabled by Permissions Policy");
+    return false;
+  }
+
+  return true;
+}
+
+bool AdAuctionServiceImpl::IsPermissionPolicyEnabledAndWarnIfNeeded(
+    blink::mojom::PermissionsPolicyFeature feature,
+    const char* invoked_method) {
+  if (!render_frame_host().IsFeatureEnabled(feature)) {
+    return false;
+  }
+
+  // TODO(mmenke):  Cache result of these permissions checks, as they can be
+  // rather expensive.
+  if (ShouldWarnAboutPermissionPolicyDefault(*GetFrame(), feature)) {
+    auto feature_it =
+        blink::GetPermissionsPolicyFeatureToNameMap().find(feature);
+    CHECK(feature_it != blink::GetPermissionsPolicyFeatureToNameMap().end());
+
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "In the future, Permissions Policy feature %s will not be enabled "
+            "by default in cross-origin iframes or same-origin iframes nested "
+            "in cross-origin iframes. Calling %s will be rejected with "
+            "NotAllowedError if it is not explicitly enabled",
+            feature_it->second.data(), invoked_method));
   }
 
   return true;

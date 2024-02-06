@@ -406,15 +406,6 @@ String ErrorMissingRequired(const String& required_field_name) {
                         required_field_name.Utf8().c_str());
 }
 
-String WarningPermissionsPolicy(const String& feature, const String& api) {
-  return String::Format(
-      "In the future, Permissions Policy feature %s will not be enabled by "
-      "default in cross-origin iframes or same-origin iframes nested in "
-      "cross-origin iframes. Calling %s will be rejected with NotAllowedError "
-      "if it is not explicitly enabled",
-      feature.Utf8().c_str(), api.Utf8().c_str());
-}
-
 // Console warnings.
 
 void AddWarningMessageToConsole(const ExecutionContext& execution_context,
@@ -2442,41 +2433,6 @@ bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
   return true;
 }
 
-// Modified from
-// LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy.
-//
-// Checks whether or not a policy-controlled feature would be blocked by our
-// restricted permissions policy EnableForSelf.
-// Under EnableForSelf policy, the features will not be available in
-// cross-origin document unless explicitly enabled.
-// Returns true if the frame is cross-origin relative to the top-level document,
-// or if it is same-origin with the top level, but is embedded in any way
-// through a cross-origin frame (A->B->A embedding).
-bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
-  const Frame* frame = navigator.DomWindow()->GetFrame();
-
-  // Fenced Frames block all permissions, so we shouldn't end up here because
-  // the policy is checked before this method is called.
-  DCHECK(!frame->IsInFencedFrameTree());
-
-  // Get the origin of the top-level document.
-  const SecurityOrigin* top_origin =
-      frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
-
-  // Walk up the frame tree looking for any cross-origin embeds. Even if this
-  // frame is same-origin with the top-level, if it is embedded by a cross-
-  // origin frame (like A->B->A) it would be blocked without a permissions
-  // policy.
-  while (!frame->IsMainFrame()) {
-    if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            top_origin)) {
-      return true;
-    }
-    frame = frame->Tree().Parent();
-  }
-  return false;
-}
-
 void RecordCommonFledgeUseCounters(Document* document) {
   if (!document) {
     return;
@@ -2685,13 +2641,6 @@ ScriptPromise JoinAdInterestGroupInternal(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return ScriptPromise();
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context, WarningPermissionsPolicy("join-ad-interest-group",
-                                           "joinAdInterestGroup"));
   }
 
   return NavigatorAuction::From(ExecutionContext::From(script_state), navigator)
@@ -3308,13 +3257,6 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return ScriptPromise();
   }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context, WarningPermissionsPolicy("join-ad-interest-group",
-                                           "leaveAdInterestGroup"));
-  }
 
   return From(context, navigator)
       .leaveAdInterestGroup(script_state, group_key, exception_state);
@@ -3408,14 +3350,6 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return ScriptPromise();
   }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context,
-        WarningPermissionsPolicy("join-ad-interest-group",
-                                 "clearOriginJoinedAdInterestGroups"));
-  }
 
   return From(context, navigator)
       .clearOriginJoinedAdInterestGroups(
@@ -3443,13 +3377,6 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return;
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context, WarningPermissionsPolicy("join-ad-interest-group",
-                                           "updateAdInterestGroups"));
   }
 
   return From(context, navigator).updateAdInterestGroups();
@@ -3563,12 +3490,6 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
         DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");
     return ScriptPromise();
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context, WarningPermissionsPolicy("run-ad-auction", "runAdAuction"));
   }
 
   return From(ExecutionContext::From(script_state), navigator)
@@ -4219,13 +4140,6 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
         DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");
     return ScriptPromise();
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
-      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
-    AddWarningMessageToConsole(
-        *context, WarningPermissionsPolicy("run-ad-auction",
-                                           "getInterestGroupAdAuctionData"));
   }
 
   return From(ExecutionContext::From(script_state), navigator)
