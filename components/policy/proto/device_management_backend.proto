@@ -912,6 +912,13 @@ message PolicyFetchResponse {
   // to new_public_key_verification_data_signature, but is computed over
   // DEPRECATEDPolicyPublicKeyAndDomain (which is equivalent to
   // PublicKeyVerificationData proto with version field unset).
+  //
+  // Do not remove this unless you know for sure that this is not required by
+  // managed devices any more, including devices that might be pinned to
+  // milestones older than current Stable.
+  // Note: As of February 2024, this is still strictly required by
+  // CloudPolicyValidator, see
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/policy/core/common/cloud/cloud_policy_validator.cc;drc=08b91b49531894cbe9061a1148fd535155c2554b;l=407
   optional bytes new_public_key_verification_signature_deprecated = 7
       [deprecated = true];
 
