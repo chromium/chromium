@@ -828,7 +828,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(itemIdentifier.type == GridItemType::Tab);
   if (_mode != TabGridModeSelection) {
     _draggedItem = itemIdentifier.tabSwitcherItem;
-    return @[ [self.dragDropHandler dragItemForItem:_draggedItem] ];
+    UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
+    if (!dragItem) {
+      return @[];
+    }
+    return @[ dragItem ];
   }
 
   // Make sure that the long pressed cell is selected before initiating a drag

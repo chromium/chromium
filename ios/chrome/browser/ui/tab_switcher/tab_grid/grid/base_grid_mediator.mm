@@ -807,7 +807,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
   NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
   for (web::WebStateID itemID : _selectedEditingItemIDs) {
-    [dragItems addObject:[self dragItemForItemWithID:itemID]];
+    UIDragItem* dragItem = [self dragItemForItemWithID:itemID];
+    if (dragItem) {
+      [dragItems addObject:dragItem];
+    }
   }
   return dragItems;
 }
