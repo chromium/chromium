@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -184,7 +184,13 @@ void FullscreenKeyboardBrowserTestBase::SendShiftShortcut(
 void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // On MacOSX, entering and exiting fullscreen are not synchronous. So we wait
   // for the observer to notice the change of fullscreen state.
-  FullscreenNotificationObserver observer(GetActiveBrowser());
+  bool current =
+      GetActiveBrowser()->exclusive_access_manager()->context()->IsFullscreen();
+  ui_test_utils::FullscreenWaiter waiter(
+      GetActiveBrowser(), current
+                              ? ui_test_utils::FullscreenWaiter::kNoFullscreen
+                              : ui_test_utils::FullscreenWaiter::Expectation{
+                                    .browser_fullscreen = true});
 // Enter fullscreen.
 #if BUILDFLAG(IS_MAC)
   // On MACOSX, Command + Control + F is used.
@@ -205,16 +211,17 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
 // TODO(crbug.com/837438): Remove this once ScopedFakeNSWindowFullscreen fires
 // OnFullscreenStateChanged.
 #if !BUILDFLAG(IS_MAC)
-  observer.Wait();
+  waiter.Wait();
 #endif
 }
 
 void FullscreenKeyboardBrowserTestBase::SendJsFullscreenShortcutAndWait() {
-  FullscreenNotificationObserver observer(GetActiveBrowser());
+  ui_test_utils::FullscreenWaiter waiter(GetActiveBrowser(),
+                                         {.tab_fullscreen = true});
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_S,
                                               false, false, false, false));
   expected_result_ += "KeyS ctrl:false shift:false alt:false meta:false\n";
-  observer.Wait();
+  waiter.Wait();
   ASSERT_TRUE(IsActiveTabFullscreen());
 }
 
@@ -226,10 +233,11 @@ void FullscreenKeyboardBrowserTestBase::SendEscape() {
 
 void FullscreenKeyboardBrowserTestBase::
     SendEscapeAndWaitForExitingFullscreen() {
-  FullscreenNotificationObserver observer(GetActiveBrowser());
+  ui_test_utils::FullscreenWaiter waiter(GetActiveBrowser(),
+                                         {.tab_fullscreen = false});
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       GetActiveBrowser(), ui::VKEY_ESCAPE, false, false, false, false));
-  observer.Wait();
+  waiter.Wait();
   ASSERT_FALSE(IsActiveTabFullscreen());
 }
 

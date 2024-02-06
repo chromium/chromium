@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -2087,9 +2086,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
   EXPECT_TRUE(
       popup_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
 
-  FullscreenNotificationObserver waiter(popup_browser);
-  chrome::ToggleFullscreenMode(popup_browser);
-  waiter.Wait();
+  ui_test_utils::ToggleFullscreenModeAndWait(popup_browser);
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));

@@ -10,14 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-class Browser;
 class Profile;
 
 class StubNotificationUIManager : public NotificationUIManager {
@@ -70,21 +66,6 @@ class StubNotificationUIManager : public NotificationUIManager {
 
   bool is_shutdown_started_ = false;
   GURL last_canceled_source_;
-};
-
-// Helper class that has to be created in the stack to check if the fullscreen
-// setting of a browser is in the desired state.
-class FullscreenStateWaiter {
- public:
-  FullscreenStateWaiter(Browser* browser, bool desired_state);
-  FullscreenStateWaiter(const FullscreenStateWaiter&) = delete;
-  FullscreenStateWaiter& operator=(const FullscreenStateWaiter&) = delete;
-
-  void Wait();
-
- private:
-  const raw_ptr<Browser> browser_;
-  bool desired_state_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_TEST_UTIL_H_

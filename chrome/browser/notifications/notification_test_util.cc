@@ -5,9 +5,6 @@
 #include "chrome/browser/notifications/notification_test_util.h"
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "content/public/test/test_utils.h"
 #include "url/origin.h"
 
 StubNotificationUIManager::StubNotificationUIManager() {}
@@ -137,16 +134,4 @@ void StubNotificationUIManager::CancelAll() {
 void StubNotificationUIManager::StartShutdown() {
   is_shutdown_started_ = true;
   CancelAll();
-}
-
-FullscreenStateWaiter::FullscreenStateWaiter(
-    Browser* browser, bool desired_state)
-    : browser_(browser),
-      desired_state_(desired_state) {}
-
-void FullscreenStateWaiter::Wait() {
-  while (desired_state_ !=
-      browser_->exclusive_access_manager()->context()->IsFullscreen()) {
-    content::RunAllPendingInMessageLoop();
-  }
 }

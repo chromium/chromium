@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -35,13 +35,6 @@ class FullscreenUtilMacTest : public InProcessBrowserTest {
     contents_delegate->ExitFullscreenModeForTab(GetWebContents());
   }
 
-  void ToggleBrowserFullscreen() {
-    {
-      FullscreenNotificationObserver waiter(browser());
-      chrome::ToggleFullscreenMode(browser());
-      waiter.Wait();
-    }
-  }
   FullscreenController* GetFullscreenController() {
     return browser()->exclusive_access_manager()->fullscreen_controller();
   }
@@ -75,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenUtilMacTest, IsInContentFullscreen) {
   EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
 
   // Browser fullscreen
-  ToggleBrowserFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(IsBrowserFullscreen());
   EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
 
@@ -87,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenUtilMacTest, IsInContentFullscreen) {
   ASSERT_TRUE(IsBrowserFullscreen());
   EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
 
-  ToggleBrowserFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_FALSE(IsBrowserFullscreen());
   EXPECT_FALSE(fullscreen_utils::IsInContentFullscreen(browser()));
 }

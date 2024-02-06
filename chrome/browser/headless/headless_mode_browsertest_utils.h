@@ -7,8 +7,6 @@
 
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
-
 namespace views {
 class Widget;
 }
@@ -22,9 +20,6 @@ bool IsPlatformWindowVisible(views::Widget* widget);
 // Returns the expected bounds of the platform window associated with the
 // widget. This method has platform specific implementations.
 gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget);
-
-// Toggles browser fullscreen mode synchronously.
-void ToggleFullscreenModeSync(Browser* browser);
 
 }  // namespace headless::test
 

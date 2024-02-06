@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(test_api.GetShouldPaint());
@@ -536,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(browser_view->IsFullscreen());
   // Caption button container visible again.
@@ -1192,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, TopViewInset) {
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
   // The kTopViewInset should be 0 when in immersive mode.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1206,7 +1207,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, TopViewInset) {
   // End the reveal and exit immersive mode.
   // The kTopViewInset should be 0 when immersive mode is exited.
   revealed_lock.reset();
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 }
@@ -1419,7 +1420,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_LT(0, window->GetProperty(aura::client::kTopViewInset));
 
   // The kTopViewInset should be 0 when in immersive mode.
-  ToggleFullscreenModeAndWait(browser);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser);
   EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1434,7 +1435,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   // The kTopViewInset should be larger than 0 again when immersive mode is
   // exited.
   revealed_lock.reset();
-  ToggleFullscreenModeAndWait(browser);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser);
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_LT(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1455,7 +1456,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   ASSERT_FALSE(browser_view->IsFullscreen());
 
   // Enter immersive mode.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -1481,7 +1482,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
 
   // Enter immersive mode.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   // Should be able to enter immersive mode even when the tablet mode is
   // enabled.
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());

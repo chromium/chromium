@@ -7,9 +7,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -22,17 +22,10 @@
 #include "ash/wm/overview/overview_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Toggles fullscreen mode and waits for the notification.
-void ToggleFullscreenModeAndWait(Browser* browser) {
-  FullscreenNotificationObserver waiter(browser);
-  chrome::ToggleFullscreenMode(browser);
-  waiter.Wait();
-}
-
 // Enters fullscreen mode for tab and waits for the notification.
 void EnterFullscreenModeForTabAndWait(Browser* browser,
                                       content::WebContents* web_contents) {
-  FullscreenNotificationObserver waiter(browser);
+  ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
   static_cast<content::WebContentsDelegate*>(browser)
       ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
   waiter.Wait();
@@ -41,7 +34,7 @@ void EnterFullscreenModeForTabAndWait(Browser* browser,
 // Exits fullscreen mode for tab and waits for the notification.
 void ExitFullscreenModeForTabAndWait(Browser* browser,
                                      content::WebContents* web_contents) {
-  FullscreenNotificationObserver waiter(browser);
+  ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
   browser->exclusive_access_manager()
       ->fullscreen_controller()
       ->ExitFullscreenModeForTab(web_contents);

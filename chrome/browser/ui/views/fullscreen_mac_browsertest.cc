@@ -7,11 +7,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 
@@ -21,14 +21,6 @@ class FullscreenMacTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kImmersiveFullscreen);
   }
 
-  void ToggleBrowserFullscreen() {
-    {
-      FullscreenNotificationObserver waiter(browser());
-      chrome::ToggleFullscreenMode(browser());
-      waiter.Wait();
-    }
-  }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -36,7 +28,7 @@ class FullscreenMacTest : public InProcessBrowserTest {
 // browser enters fullscreen.
 IN_PROC_BROWSER_TEST_F(FullscreenMacTest, ToolbarWidgetFullscreen) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
-  ToggleBrowserFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->top_container()

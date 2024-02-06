@@ -242,44 +242,6 @@ class TabClosingObserver : public TabStripModelObserver {
   int closing_count_ = 0;
 };
 
-class FullscreenOperationComplete {
- public:
-  explicit FullscreenOperationComplete(Browser* browser)
-      : browser_(browser), last_state_(IsFullscreened(browser)) {}
-
-  FullscreenOperationComplete(const FullscreenOperationComplete&) = delete;
-  FullscreenOperationComplete& operator=(const FullscreenOperationComplete&) =
-      delete;
-  ~FullscreenOperationComplete() = default;
-
-  void Wait() {
-    base::RunLoop outer_loop;
-    auto wait_for_state = base::BindRepeating(
-        [](base::RunLoop* outer_loop, Browser* browser, bool* last_state) {
-          if (IsFullscreened(browser) != *last_state) {
-            outer_loop->Quit();
-            *last_state = !(*last_state);
-          }
-        },
-        &outer_loop, browser_, &last_state_);
-
-    base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_state));
-    outer_loop.Run();
-  }
-
- private:
-  static bool IsFullscreened(Browser* browser) {
-    FullscreenController* controller =
-        browser->exclusive_access_manager()->fullscreen_controller();
-    return controller->IsFullscreenForBrowser() ||
-           controller->IsTabFullscreen();
-  }
-
-  raw_ptr<Browser> browser_;
-  bool last_state_;
-};
-
 // Used by CloseWithAppMenuOpen. Posts a CloseWindowCallback and shows the app
 // menu.
 void RunCloseWithAppMenuCallback(Browser* browser) {
@@ -2755,16 +2717,22 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogsDropFullscreen) {
   web_modal::WebContentsModalDialogManagerDelegate* browser_as_dialog_delegate =
       static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser());
 
-  FullscreenOperationComplete full_screen_complete_observer(browser());
   // Simulate the tab requesting fullscreen.
-  browser_as_wc_delegate->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
-                                                    {});
-  full_screen_complete_observer.Wait();
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    browser_as_wc_delegate->EnterFullscreenModeForTab(
+        tab->GetPrimaryMainFrame(), {});
+    waiter.Wait();
+  }
   EXPECT_TRUE(browser_as_wc_delegate->IsFullscreenForTabOrPending(tab));
 
   // The tab gets a modal dialog.
-  browser_as_dialog_delegate->SetWebContentsBlocked(tab, true);
-  full_screen_complete_observer.Wait();
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
+    browser_as_dialog_delegate->SetWebContentsBlocked(tab, true);
+    waiter.Wait();
+  }
 
   // The dialog should drop fullscreen.
   EXPECT_FALSE(browser_as_wc_delegate->IsFullscreenForTabOrPending(tab));

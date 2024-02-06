@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/test/browser_test.h"
 
@@ -78,9 +78,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest, MenuButtonClickable) {
 // Test that the web app menu button opens a menu on click in immersive mode.
 IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest,
                        ImmersiveMenuButtonClickable) {
-  FullscreenNotificationObserver waiter(browser());
-  chrome::ToggleFullscreenMode(browser());
-  waiter.Wait();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       controller_->GetRevealedLock(

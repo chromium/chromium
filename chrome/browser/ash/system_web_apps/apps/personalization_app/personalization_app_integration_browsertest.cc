@@ -23,8 +23,8 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/user_manager/user_manager.h"
@@ -218,7 +218,7 @@ class PersonalizationAppIntegrationBrowserTest
     DCHECK(widget);
     EXPECT_FALSE(widget->IsFullscreen());
 
-    FullscreenNotificationObserver waiter(browser);
+    ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
             u"personalizationTestApi.enterFullscreen();", base::NullCallback());

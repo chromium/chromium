@@ -133,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
   ResultCatcher catcher;
 
   // Set observer to watch for fullscreen.
-  FullscreenNotificationObserver fullscreen_waiter(browser());
-
+  ui_test_utils::FullscreenWaiter fullscreen_waiter(browser(),
+                                                    {.tab_fullscreen = true});
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/testFullscreenEscape.csv")));
 

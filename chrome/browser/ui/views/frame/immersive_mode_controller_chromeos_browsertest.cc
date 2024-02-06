@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
@@ -94,16 +93,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
     return view->ConvertRectToWidget(view->GetLocalBounds());
   }
 
-  // Toggle the browser's fullscreen state.
-  void ToggleFullscreen() {
-    // The fullscreen change notification is sent asynchronously. The
-    // notification is used to trigger changes in whether the shelf is auto
-    // hidden.
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
-
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
@@ -162,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // The window header should be above the web contents.
   int header_height = GetBoundsInWidget(contents_web_view).y();
 
-  ToggleFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_TRUE(controller()->IsEnabled());
   EXPECT_FALSE(controller()->IsRevealed());
@@ -193,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // Exit immersive fullscreen. The web contents should be back below the window
   // header.
-  ToggleFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());
   EXPECT_FALSE(controller()->IsEnabled());
   EXPECT_FALSE(tabstrip->GetVisible());
@@ -230,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // Verify that immersive mode remains if fullscreen is toggled while in tablet
   // mode.
-  ToggleFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(controller()->IsEnabled());
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(false));
@@ -245,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Verify that if the browser is not fullscreened, upon exiting tablet mode,
   // immersive mode is not enabled, and the associated window's top inset is
   // greater than 0 (the top of the window is visible).
-  ToggleFullscreen();
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(controller()->IsEnabled());
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(false));

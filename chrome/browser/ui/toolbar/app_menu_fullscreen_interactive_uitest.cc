@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -80,11 +79,27 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
   ui::Accelerator fullscreen_accelerator_;
   ui::Accelerator close_tab_accelerator_;
 
-  auto CheckFullscreenForBrowser(bool is_fullscreen) {
+  auto CreateFullscreenWaiter(
+      std::unique_ptr<ui_test_utils::FullscreenWaiter>& out,
+      bool is_fullscreen) {
+    return Do(base::BindOnce(
+        [](std::unique_ptr<ui_test_utils::FullscreenWaiter>& out,
+           bool is_fullscreen, Browser* browser) {
+          out = std::make_unique<ui_test_utils::FullscreenWaiter>(
+              browser, ui_test_utils::FullscreenWaiter::Expectation{
+                           .browser_fullscreen = is_fullscreen});
+        },
+        std::ref(out), is_fullscreen, browser()));
+  }
+
+  auto CheckFullscreenForBrowser(
+      std::unique_ptr<ui_test_utils::FullscreenWaiter>& waiter,
+      bool is_fullscreen) {
     return CheckView(
         kBrowserViewElementId,
         base::BindOnce(
-            [](bool is_fullscreen, Browser* browser,
+            [](std::unique_ptr<ui_test_utils::FullscreenWaiter>& waiter,
+               bool is_fullscreen, Browser* browser,
                views::View* browser_view) {
               auto* fullscreen_controller =
                   browser->exclusive_access_manager()->fullscreen_controller();
@@ -93,9 +108,11 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
               // Fullscreen transition is an async process on Mac, which
               // browser_window->IsFullscreen() might changed before transition
               // completed.
+              // TODO(hidehiko): investigate a way to simplify the async
+              // fullscreen handling.
               if (fullscreen_controller->IsControllerInitiatedFullscreen() !=
                   is_fullscreen) {
-                FullscreenNotificationObserver(browser).Wait();
+                waiter->Wait();
               }
               if (fullscreen_controller->IsControllerInitiatedFullscreen() !=
                   is_fullscreen) {
@@ -129,49 +146,58 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
 
               return true;
             },
-            is_fullscreen, browser()));
+            std::ref(waiter), is_fullscreen, browser()));
   }
 };
 
 // Check Toggle Fullscreen
 IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ToggleFullscreen) {
+  std::unique_ptr<ui_test_utils::FullscreenWaiter> waiter1, waiter2;
+
   RunTestSequence(
       // P1. Launch Chrome
       // P2. Hit F11/⌘-Ctrl-F/Full screen button
+      CreateFullscreenWaiter(waiter1, true),
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator_),
       // V2. Make sure chrome is in full screen mode
-      CheckFullscreenForBrowser(true),
+      CheckFullscreenForBrowser(waiter1, true),
       // P3. Hit F11/⌘-Ctrl-F/Full screen button again
+      CreateFullscreenWaiter(waiter2, false),
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator_),
       // V3. Chrome should exit the full screen upon hitting F11 again when in
       // the full screen mode.
-      CheckFullscreenForBrowser(false));
+      CheckFullscreenForBrowser(waiter2, false));
 }
 
 // Check Full screen Notification
 // The original manual test doesn't work on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, Notification) {
+  std::unique_ptr<ui_test_utils::FullscreenWaiter> waiter1;
+
   RunTestSequence(
       // 1. Launch Chrome
       // 2. Hit F11/⌘-Ctrl-F/Full screen button
+      CreateFullscreenWaiter(waiter1, true),
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator_),
       // 3. Verify the notification shown on the top in the full screen mode.
-      CheckFullscreenForBrowser(true),
+      CheckFullscreenForBrowser(waiter1, true),
       InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId)));
 }
 #endif
 
 // Check Context menu in full screen mode
 IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
+  std::unique_ptr<ui_test_utils::FullscreenWaiter> waiter1, waiter2;
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
   RunTestSequence(
       // 1. Wait for the default page to load.
       InstrumentTab(kPrimaryTabId),
       // 2. Hit F11/⌘-Ctrl-F/Full screen button
+      CreateFullscreenWaiter(waiter1, true),
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator_),
       // 3. Make sure the chrome window is in full screen mode
-      CheckFullscreenForBrowser(true),
+      CheckFullscreenForBrowser(waiter1, true),
       // 4. Right click anywhere on the page to open the context menu. This
       // chooses the center of the browser window, which is fine.
       MoveMouseTo(kBrowserViewElementId), ClickMouse(ui_controls::RIGHT),
@@ -181,24 +207,27 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
       // views::MenuController::OpenMenu from the same call stack during the
       // NotifyElementShown.
       InAnyContext(WaitForShow(RenderViewContextMenu::kExitFullscreenMenuItem)),
-      FlushEvents(),
+      FlushEvents(), CreateFullscreenWaiter(waiter2, false),
       InAnyContext(
           SelectMenuItem(RenderViewContextMenu::kExitFullscreenMenuItem)),
-      CheckFullscreenForBrowser(false));
+      CheckFullscreenForBrowser(waiter2, false));
 }
 
 // Check Closing the tab in full screen mode
 IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ClosingTab) {
+  std::unique_ptr<ui_test_utils::FullscreenWaiter> waiter1, waiter2;
   RunTestSequence(
       // 1. Launch Chrome and navigate to few web pages.
       PressButton(kNewTabButtonElementId),
       // 2. Hit F11/⌘-Ctrl-F/Full screen button
+      CreateFullscreenWaiter(waiter1, true),
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator_),
-      CheckFullscreenForBrowser(true),
+      CheckFullscreenForBrowser(waiter1, true),
       // 3. Hit Ctrl+W / Ctrl+F4 [Windows & Linux], ⌘-W [Mac], Ctrl+W [CrOS]
       // when chrome is in the full screen mode. Current tab should be closed
+      CreateFullscreenWaiter(waiter2, true),
       SendAccelerator(kBrowserViewElementId, close_tab_accelerator_),
       // Chrome should not exit full screen mode when you close a tab in full
       // screen mode.
-      CheckFullscreenForBrowser(true));
+      CheckFullscreenForBrowser(waiter2, true));
 }

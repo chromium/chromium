@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
 
   // Enter both browser fullscreen and tab fullscreen. Entering browser
   // fullscreen should enable immersive fullscreen.
-  ToggleFullscreenModeAndWait(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EnterFullscreenModeForTabAndWait(browser(), web_contents);
   EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   // Caption button container is hidden.
@@ -142,7 +142,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
   // Exiting immersive fullscreen should make the caption buttons and the frame
   // visible again.
   {
-    FullscreenNotificationObserver waiter(browser());
+    ui_test_utils::FullscreenWaiter waiter(
+        browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
     browser_view->ExitFullscreen();
     waiter.Wait();
   }

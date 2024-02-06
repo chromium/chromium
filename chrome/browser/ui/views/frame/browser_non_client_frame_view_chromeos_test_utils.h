@@ -15,9 +15,6 @@ namespace content {
 class WebContents;
 }
 
-// Toggles fullscreen mode and waits for the notification.
-void ToggleFullscreenModeAndWait(Browser* browser);
-
 // Enters fullscreen mode for tab and waits for the notification.
 void EnterFullscreenModeForTabAndWait(Browser* browser,
                                       content::WebContents* web_contents);
