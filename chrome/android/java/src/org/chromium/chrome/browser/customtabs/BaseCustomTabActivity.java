@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
@@ -106,6 +107,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected Verifier mVerifier;
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
+    protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -241,7 +243,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> mDelegateFactory.getEphemeralTabCoordinator(),
                         mBackPressManager,
                         () -> mTabController,
-                        () -> mMinimizationManagerHolder.getMinimizationManager());
+                        () -> mMinimizationManagerHolder.getMinimizationManager(),
+                        () -> mFeatureOverridesManager);
         return mBaseCustomTabRootUiCoordinator;
     }
 
@@ -347,6 +350,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
+        mFeatureOverridesManager = component.resolveCustomTabFeatureOverridesManager();
 
         return component;
     }
@@ -790,6 +794,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
+        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(this, mFeatureOverridesManager)) {
+            return false;
+        }
         return mLastPipMode == PictureInPictureMode.MINIMIZED_CUSTOM_TAB;
     }
 }
