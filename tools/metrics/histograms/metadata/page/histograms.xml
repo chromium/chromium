@@ -1482,6 +1482,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus"
+    enum="CookieReadStatus" expires_after="2024-07-01">
+  <owner>johnidel@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    For an attempted cookie read access (document.cookie or via headers),
+    records the status of the access based on the TPCD experiment, including
+    what re-enablement mitigations were applied or skipped. Only recorded for
+    third party, non-partitioned cookies.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
     units="ms" expires_after="2024-02-09">

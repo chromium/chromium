@@ -555,7 +555,8 @@ class PageLoadMetricsObserverInterface {
       const GURL& first_party_url,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) = 0;
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) = 0;
 
   // Called when a cookie is set by a header or via document.cookie.
   virtual void OnCookieChange(
@@ -564,7 +565,8 @@ class PageLoadMetricsObserverInterface {
       const net::CanonicalCookie& cookie,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) = 0;
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) = 0;
 
   // Called when a storage access attempt by the origin |url| to |storage_type|
   // is checked by the content settings manager. |blocked_by_policy| is false

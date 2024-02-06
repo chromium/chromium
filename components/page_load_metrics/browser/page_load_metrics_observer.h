@@ -229,14 +229,16 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const GURL& first_party_url,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) override {}
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) override {}
   void OnCookieChange(
       const GURL& url,
       const GURL& first_party_url,
       const net::CanonicalCookie& cookie,
       bool blocked_by_policy,
       bool is_ad_tagged,
-      const net::CookieSettingOverrides& cookie_setting_overrides) override {}
+      const net::CookieSettingOverrides& cookie_setting_overrides,
+      bool is_partitioned_access) override {}
   void OnStorageAccessed(const GURL& url,
                          const GURL& first_party_url,
                          bool blocked_by_policy,
