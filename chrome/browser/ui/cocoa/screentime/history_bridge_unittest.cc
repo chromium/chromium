@@ -85,8 +85,8 @@ class HistoryBridgeTest : public ::testing::Test {
   void DeleteHistoryBetween(base::Time start, base::Time end) {
     base::CancelableTaskTracker tracker;
     base::RunLoop loop;
-    service()->ExpireHistoryBetween({}, start, end, true, loop.QuitClosure(),
-                                    &tracker);
+    service()->ExpireHistoryBetween({}, history::kNoAppIdFilter, start, end,
+                                    true, loop.QuitClosure(), &tracker);
     loop.Run();
   }
 

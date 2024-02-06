@@ -69,6 +69,9 @@ constexpr VisitedLinkID kInvalidVisitedLinkID = 0;
 // Structure to hold the mapping between each visit's id and its source.
 typedef std::map<VisitID, VisitSource> VisitSourceMap;
 
+// Constant used to represent that no app_id is used for matching.
+inline constexpr absl::optional<std::string> kNoAppIdFilter = absl::nullopt;
+
 // VisitRow -------------------------------------------------------------------
 
 // Holds all information associated with a specific visit. A visit holds time

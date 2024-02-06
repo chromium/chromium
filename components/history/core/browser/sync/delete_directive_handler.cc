@@ -296,7 +296,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
         // Add 1us to cover history entries visited at the end time because
         // time range in directive is inclusive.
         history_backend->ExpireHistoryBetween(
-            std::set<GURL>(), current_start_time,
+            std::set<GURL>(), kNoAppIdFilter, current_start_time,
             current_end_time + base::Microseconds(1),
             /*user_initiated*/ true);
       }
@@ -309,7 +309,7 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
 
   if (!current_start_time.is_null()) {
     history_backend->ExpireHistoryBetween(
-        std::set<GURL>(), current_start_time,
+        std::set<GURL>(), kNoAppIdFilter, current_start_time,
         current_end_time + base::Microseconds(1),
         /*user_initiated*/ true);
   }

@@ -1555,6 +1555,7 @@ void HistoryService::DeleteURLs(const std::vector<GURL>& urls) {
 
 void HistoryService::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
+    absl::optional<std::string> restrict_app_id,
     Time begin_time,
     Time end_time,
     bool user_initiated,
@@ -1565,7 +1566,8 @@ void HistoryService::ExpireHistoryBetween(
   tracker->PostTaskAndReply(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::ExpireHistoryBetween, history_backend_,
-                     restrict_urls, begin_time, end_time, user_initiated),
+                     restrict_urls, restrict_app_id, begin_time, end_time,
+                     user_initiated),
       std::move(callback));
 }
 
@@ -1598,6 +1600,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     WebHistoryService* web_history,
     Time begin_time,
     Time end_time,
+    absl::optional<std::string> app_id,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   // TODO(crbug.com/929111): This should be factored out into a separate class
@@ -1639,7 +1642,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
         /*restrict_urls=*/{}, begin_time, end_time, base::DoNothing(),
         partial_traffic_annotation);
   }
-  ExpireHistoryBetween(/*restrict_urls=*/{}, begin_time, end_time,
+  ExpireHistoryBetween(/*restrict_urls=*/{}, app_id, begin_time, end_time,
                        /*user_initiated=*/true, std::move(callback), tracker);
 }
 

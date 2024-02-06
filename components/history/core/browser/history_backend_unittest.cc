@@ -834,8 +834,8 @@ TEST_F(HistoryBackendTest, DeleteAll) {
 
   // All visits should be deleted for both URLs.
   VisitVector all_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(0U, all_visits.size());
 
   // We should have a favicon and favicon bitmaps for the first URL only. We
@@ -963,8 +963,8 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
 
   // Check that the visit was added.
   VisitVector all_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(1U, all_visits.size());
 
   // Clear all history.
@@ -979,8 +979,8 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
   EXPECT_FALSE(backend_->db_->GetRowForURL(url, &outrow));
 
   // The visit should be deleted.
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(0U, all_visits.size());
 
   // Try and set the title.
@@ -990,8 +990,8 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
   EXPECT_FALSE(backend_->db_->GetRowForURL(url, &outrow));
 
   // The visit should still be deleted.
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(0U, all_visits.size());
 }
 
@@ -1133,7 +1133,8 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   // Expire the visits.
   std::set<GURL> restrict_urls;
   backend_->expire_backend()->ExpireHistoryBetween(
-      restrict_urls, visit_time, base::Time::Now(), /*user_initiated*/ true);
+      restrict_urls, kNoAppIdFilter, visit_time, base::Time::Now(),
+      /*user_initiated*/ true);
 
   // The visit should have been nuked.
   visits.clear();
@@ -1181,8 +1182,8 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
   backend_->AddPage(request);
 
   visits.clear();
-  backend_->db()->GetAllVisitsInRange(visit_time, base::Time::Now(), 5,
-                                      &visits);
+  backend_->db()->GetAllVisitsInRange(visit_time, base::Time::Now(),
+                                      kNoAppIdFilter, 5, &visits);
   // There should be 3 visits: initial visit, server redirect, and client
   // redirect.
   ASSERT_EQ(visits.size(), 3u);
@@ -3140,7 +3141,8 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
 
   // Passing an empty map should be a no-op.
   backend_->ExpireHistory(expire_list);
-  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(), 0, &visits);
+  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(),
+                                      kNoAppIdFilter, 0, &visits);
   EXPECT_EQ(4U, visits.size());
 
   // Trying to delete an unknown URL with the time of the first visit should
@@ -3149,14 +3151,16 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
   expire_list[0].SetTimeRangeForOneDay(args[0].time);
   expire_list[0].urls.insert(GURL("http://google.does-not-exist"));
   backend_->ExpireHistory(expire_list);
-  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(), 0, &visits);
+  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(),
+                                      kNoAppIdFilter, 0, &visits);
   EXPECT_EQ(4U, visits.size());
 
   // Now add the first URL with the same time -- it should get deleted.
   expire_list.back().urls.insert(url_rows[0].url());
   backend_->ExpireHistory(expire_list);
 
-  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(), 0, &visits);
+  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(),
+                                      kNoAppIdFilter, 0, &visits);
   ASSERT_EQ(3U, visits.size());
   EXPECT_EQ(visits[0].url_id, url_rows[1].id());
   EXPECT_EQ(visits[1].url_id, url_rows[2].id());
@@ -3173,7 +3177,8 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
   }
   backend_->ExpireHistory(expire_list);
 
-  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(), 0, &visits);
+  backend_->db()->GetAllVisitsInRange(base::Time(), base::Time(),
+                                      kNoAppIdFilter, 0, &visits);
   ASSERT_EQ(0U, visits.size());
 }
 
@@ -3288,6 +3293,7 @@ TEST_F(HistoryBackendTest, DatabaseErrorSynchronouslyKillAndNotifyBridge) {
   // In-between (before the posted task finishes), we can again delete all
   // history.
   backend_->ExpireHistoryBetween(/*restrict_urls=*/std::set<GURL>(),
+                                 /*restrict_app_id=*/kNoAppIdFilter,
                                  /*begin_time=*/base::Time(),
                                  /*end_time=*/base::Time::Max(),
                                  /*user_initiated*/ true);
@@ -3297,6 +3303,7 @@ TEST_F(HistoryBackendTest, DatabaseErrorSynchronouslyKillAndNotifyBridge) {
   // After DB is destroyed, we can again try to delete all history (with no
   // effect but it should not crash).
   backend_->ExpireHistoryBetween(/*restrict_urls=*/std::set<GURL>(),
+                                 /*restrict_app_id=*/kNoAppIdFilter,
                                  /*begin_time=*/base::Time(),
                                  /*end_time=*/base::Time::Max(),
                                  /*user_initiated*/ true);
@@ -4864,8 +4871,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   // Check that the visits were added.
   VisitVector all_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(2U, all_visits.size());
 
   // Segments exist for both visits.
@@ -4880,8 +4887,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
   backend_->UpdateVisitReferrerOpenerIDs(all_visits[1].visit_id, 0, 0);
 
   VisitVector updated_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &updated_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &updated_visits);
 
   // The second visit no longer belongs to a segment, so the number of visits
   // is decremented.
@@ -4932,8 +4939,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
 
   // Check that the visits were added.
   VisitVector all_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &all_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &all_visits);
   ASSERT_EQ(2U, all_visits.size());
 
   // Segments exist for both visits.
@@ -4950,8 +4957,8 @@ TEST_F(HistoryBackendWithSyncSegmentsDataTest,
                               std::nullopt);
 
   VisitVector updated_visits;
-  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), 0,
-                                     &updated_visits);
+  backend_->db_->GetAllVisitsInRange(base::Time(), base::Time(), kNoAppIdFilter,
+                                     0, &updated_visits);
 
   // The second visit no longer belongs to the segment, so the number of visits
   // is decremented.
@@ -5171,7 +5178,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/5, &visits);
+                                        kNoAppIdFilter, /*max_results=*/5,
+                                        &visits);
     ASSERT_THAT(visits, UnorderedElementsAre(HasVisitID(local_visit_id1),
                                              HasVisitID(local_visit_id2),
                                              HasVisitID(foreign_visit_id1),
@@ -5192,7 +5200,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/5, &visits);
+                                        kNoAppIdFilter, /*max_results=*/5,
+                                        &visits);
     ASSERT_THAT(visits, UnorderedElementsAre(HasVisitID(local_visit_id1),
                                              HasVisitID(local_visit_id2)));
   }
@@ -5227,9 +5236,9 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
   // Setup finished - verify that the visits are there.
   {
     VisitVector visits;
-    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/total_visits + 1,
-                                        &visits);
+    backend_->db()->GetAllVisitsInRange(
+        initial_time, base::Time::Now(), kNoAppIdFilter,
+        /*max_results=*/total_visits + 1, &visits);
     ASSERT_EQ(static_cast<int>(visits.size()), total_visits);
   }
 
@@ -5247,9 +5256,9 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
   // Make sure that all the foreign visits got deleted.
   {
     VisitVector visits;
-    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/total_visits + 1,
-                                        &visits);
+    backend_->db()->GetAllVisitsInRange(
+        initial_time, base::Time::Now(), kNoAppIdFilter,
+        /*max_results=*/total_visits + 1, &visits);
     EXPECT_TRUE(visits.empty());
   }
 }
@@ -5279,7 +5288,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/10, &visits);
+                                        kNoAppIdFilter, /*max_results=*/10,
+                                        &visits);
     ASSERT_EQ(visits.size(), 5u);
   }
 
@@ -5311,7 +5321,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/10, &visits);
+                                        kNoAppIdFilter, /*max_results=*/10,
+                                        &visits);
     std::vector<VisitID> remaining_visit_ids;
     for (const VisitRow& visit : visits) {
       remaining_visit_ids.push_back(visit.visit_id);
@@ -5361,7 +5372,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsResetsIsKnownToSyncFlag) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/5, &visits);
+                                        kNoAppIdFilter, /*max_results=*/5,
+                                        &visits);
     ASSERT_THAT(visits, ElementsAre(HasVisitID(local_visit_id1),
                                     HasVisitID(local_visit_id2)));
     ASSERT_FALSE(visits[0].is_known_to_sync);
@@ -5377,7 +5389,8 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsResetsIsKnownToSyncFlag) {
   {
     VisitVector visits;
     backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
-                                        /*max_results=*/5, &visits);
+                                        kNoAppIdFilter, /*max_results=*/5,
+                                        &visits);
     ASSERT_THAT(visits, ElementsAre(HasVisitID(local_visit_id1),
                                     HasVisitID(local_visit_id2)));
     EXPECT_FALSE(visits[0].is_known_to_sync);
@@ -5689,8 +5702,8 @@ TEST_P(HistoryBackendTestForVisitedLinks, AddWholeRedirectChain) {
   backend_->AddPage(request);
 
   VisitVector visits;
-  backend_->db()->GetAllVisitsInRange(visit_time, base::Time::Now(), 5,
-                                      &visits);
+  backend_->db()->GetAllVisitsInRange(visit_time, base::Time::Now(),
+                                      kNoAppIdFilter, 5, &visits);
   // There should be 2 visits and 2 visited links: server redirect and client
   // redirect.
   ASSERT_EQ(visits.size(), 2u);
