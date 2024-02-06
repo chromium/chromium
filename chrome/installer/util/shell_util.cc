@@ -22,6 +22,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -168,7 +169,7 @@ UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
   static_assert(sizeof(base::MD5Digest) == 16, "size of MD5 not as expected");
   base::MD5Digest md5_digest;
   std::string user_sid_ascii(base::WideToASCII(user_sid));
-  base::MD5Sum(user_sid_ascii.c_str(), user_sid_ascii.length(), &md5_digest);
+  base::MD5Sum(base::as_byte_span(user_sid_ascii), &md5_digest);
   std::string base32_md5 = base32::Base32Encode(
       md5_digest.a, base32::Base32EncodePolicy::OMIT_PADDING);
   // The value returned by the base32 algorithm above must never change.
