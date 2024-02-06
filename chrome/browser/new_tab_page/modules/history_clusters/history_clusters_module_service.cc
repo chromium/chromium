@@ -24,6 +24,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace {
 
@@ -70,7 +71,9 @@ HistoryClustersModuleService::HistoryClustersModuleService(
     history_clusters::HistoryClustersService* history_clusters_service,
     CartService* cart_service,
     TemplateURLService* template_url_service,
-    OptimizationGuideKeyedService* optimization_guide_keyed_service)
+    OptimizationGuideKeyedService* optimization_guide_keyed_service,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service)
     : max_clusters_to_return_(GetMaxClusters()),
       category_boostlist_(GetCategories(
           ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam,
@@ -84,7 +87,8 @@ HistoryClustersModuleService::HistoryClustersModuleService(
           ntp_features::kNtpHistoryClustersModuleUseModelRanking) &&
       optimization_guide_keyed_service) {
     module_ranker_ = std::make_unique<HistoryClustersModuleRanker>(
-        optimization_guide_keyed_service, cart_service_, category_boostlist_);
+        optimization_guide_keyed_service, segmentation_platform_service,
+        cart_service_, category_boostlist_);
   }
 }
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;

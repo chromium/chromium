@@ -16654,6 +16654,16 @@ be describing additional metrics about the same event.
       Number of abandoned carts associated with the cluster.
     </summary>
   </metric>
+  <metric name="NumTimesSeenLast24h">
+    <summary>
+      Number of times the cluster was seen by the user in the last 24 hours.
+    </summary>
+  </metric>
+  <metric name="NumTimesUsedLast24h">
+    <summary>
+      Number of times the cluster was used by the user in the last 24 hours.
+    </summary>
+  </metric>
   <metric name="NumTotalVisits">
     <summary>
       Number of total visits in the same cluster including ones that are not

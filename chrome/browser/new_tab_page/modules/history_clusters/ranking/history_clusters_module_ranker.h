@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/cart/cart_db.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/segmentation_platform/public/database_client.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 extern const char kHistoryClusterSeenEventName[];
 extern const char kHistoryClusterUsedEventName[];
@@ -23,7 +26,12 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}  // namespace segmentation_platform
+
 class CartService;
+struct HistoryClusterMetrics;
 class HistoryClustersModuleRankingModelHandler;
 class HistoryClustersModuleRankingSignals;
 
@@ -32,6 +40,8 @@ class HistoryClustersModuleRanker {
  public:
   HistoryClustersModuleRanker(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service,
       CartService* cart_service,
       const base::flat_set<std::string>& category_boostlist);
   ~HistoryClustersModuleRanker();
@@ -51,8 +61,24 @@ class HistoryClustersModuleRanker {
 #endif
 
  private:
+  // Callback invoked with the segmentation framework's metrics query data is
+  // ready.
+  void OnMetricsQueryDataReady(
+      base::OnceCallback<void(std::vector<history::Cluster>,
+                              std::vector<HistoryClusterMetrics>)> callback,
+      std::vector<history::Cluster> clusters,
+      segmentation_platform::DatabaseClient::ResultStatus status,
+      const segmentation_platform::ModelProvider::Request& result);
+
+  // Callback invoked when the clusters' metrics are ready.
+  void OnClusterMetricsReady(
+      ClustersCallback callback,
+      std::vector<history::Cluster> clusters,
+      std::vector<HistoryClusterMetrics> cluster_metrics);
+
   // Callback invoked when all signals for ranking are ready.
   void OnAllSignalsReady(std::vector<history::Cluster> clusters,
+                         std::vector<HistoryClusterMetrics> cluster_metrics,
                          ClustersCallback callback,
                          bool success,
                          std::vector<CartDB::KeyAndValue> active_carts);
@@ -66,11 +92,19 @@ class HistoryClustersModuleRanker {
       std::vector<CartDB::KeyAndValue> active_carts,
       ClustersCallback callback);
 
+  // The service to use to query cluster category frequency related data.
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
+
   // The cart service used to check for active carts.
   raw_ptr<CartService> cart_service_;
 
   // The category boostlist to use.
   const base::flat_set<std::string> category_boostlist_;
+
+  // The number of days to query for cluster specific metrics data preceding the
+  // current time.
+  int query_day_count_;
 
   // The model returns a float between -1.0 and 0.
   float threshold_param_;

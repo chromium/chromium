@@ -17,6 +17,8 @@ namespace ukm::builders {
 class NewTabPage_HistoryClusters;
 }  // namespace ukm::builders
 
+struct HistoryClusterMetrics;
+
 // The signals used to rank clusters for the history clusters module.
 class HistoryClustersModuleRankingSignals {
  public:
@@ -26,7 +28,8 @@ class HistoryClustersModuleRankingSignals {
   HistoryClustersModuleRankingSignals(
       const std::vector<CartDB::KeyAndValue>& active_carts,
       const base::flat_set<std::string>& category_boostlist,
-      const history::Cluster& cluster);
+      const history::Cluster& cluster,
+      const HistoryClusterMetrics& metrics);
   HistoryClustersModuleRankingSignals();
   ~HistoryClustersModuleRankingSignals();
   HistoryClustersModuleRankingSignals(
@@ -49,6 +52,10 @@ class HistoryClustersModuleRankingSignals {
   size_t num_unique_hosts = 0;
   // The number of abandoned carts associated with the cluster.
   size_t num_abandoned_carts = 0;
+  // The number of times the cluster was seen by the user in the last 24 hours.
+  size_t num_times_seen_last_24h = 0;
+  // The number of times the cluster was used by the user in the last 24 hours.
+  size_t num_times_used_last_24h = 0;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_RANKING_HISTORY_CLUSTERS_MODULE_RANKING_SIGNALS_H_

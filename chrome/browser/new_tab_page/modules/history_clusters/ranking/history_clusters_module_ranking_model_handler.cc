@@ -48,6 +48,12 @@ std::vector<float> ConstructInputVector(
           HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS:
         input_vector.push_back(static_cast<float>(signals.num_abandoned_carts));
         break;
+      case new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_SEEN:
+        input_vector.push_back(signals.num_times_seen_last_24h);
+        break;
+      case new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_USED:
+        input_vector.push_back(signals.num_times_used_last_24h);
+        break;
       default:
         NOTREACHED();
     }

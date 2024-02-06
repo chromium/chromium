@@ -23,7 +23,11 @@ MockHistoryClustersTabHelper::MockHistoryClustersTabHelper(
 MockHistoryClustersTabHelper::~MockHistoryClustersTabHelper() = default;
 
 MockHistoryClustersModuleService::MockHistoryClustersModuleService()
-    : HistoryClustersModuleService(nullptr, nullptr, nullptr, nullptr) {}
+    : HistoryClustersModuleService(nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr,
+                                   nullptr) {}
 
 MockHistoryClustersModuleService::~MockHistoryClustersModuleService() = default;
 

@@ -337,6 +337,12 @@ BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
              "NtpHistoryClustersMaxClusters",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set the history clusters rankers' metrics data query time
+// range in days.
+BASE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays,
+             "NtpHistoryClustersModuleRankingMetricsQueryDays",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, module headers will display an associated icon.
 BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
@@ -452,6 +458,8 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
+    "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
     "NtpHistoryClustersModuleScoreThresholdParam";
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
