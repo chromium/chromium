@@ -43,6 +43,17 @@ Object: {
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
+			headers: {
+				Accept-Ranges: string
+				Connection: string
+				Content-Length: string
+				Content-Type: string
+				Date: string
+				ETag: string
+				Keep-Alive: string
+				Last-Modified: string
+				Server: string
+			}
 			mimeType: string
 			requestId: string
 			responseTime: number

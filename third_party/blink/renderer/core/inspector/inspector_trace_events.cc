@@ -718,6 +718,14 @@ static void CreateLayoutRoot(perfetto::TracedValue context,
   }
 }
 
+static void SetHeaders(perfetto::TracedValue context,
+                       const HTTPHeaderMap& headers) {
+  auto dict = std::move(context).WriteDictionary();
+  for (auto& header : headers) {
+    dict.Add(perfetto::DynamicString(header.key.Ascii()), header.value);
+  }
+}
+
 void inspector_layout_event::EndData(
     perfetto::TracedValue context,
     const HeapVector<LayoutObjectWithDepth>& layout_roots) {
@@ -971,6 +979,8 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
     info.Add("ruleIdMatched",
              response.GetServiceWorkerRouterInfo()->RuleIdMatched());
   }
+
+  SetHeaders(dict.AddItem("headers"), response.HttpHeaderFields());
 }
 
 void inspector_receive_data_event::Data(perfetto::TracedValue context,

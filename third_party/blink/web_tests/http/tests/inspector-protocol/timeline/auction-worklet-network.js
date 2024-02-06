@@ -97,6 +97,15 @@
         validateRelativeMs(data.timing, 'sslEnd');
         validateRelativeMs(data.timing, 'sslStart');
       }
+
+      if (data?.headers?.Date) {
+        data.headers.Date = '<date>';
+      }
+
+      if (data?.headers?.['X-Powered-By']) {
+        data.headers['X-Powered-By'] = '<x-powered-by>';
+      }
+
       // requestTime and finishTime are in TimeTicks, so their absolute values
       // can't be interpreted.
       testRunner.log(
