@@ -34,6 +34,10 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
   void SetFields(const VirtualCardEnrollmentFields& fields) {
     controller_->ui_model_.enrollment_fields = fields;
   }
+#else
+  void SetIsEnrollmentInProgress(bool is_enrollment_in_progress) {
+    controller_->is_enrollment_in_progress_ = is_enrollment_in_progress;
+  }
 #endif  // IS_ANDROID
 
  private:

@@ -199,6 +199,10 @@ class VirtualCardEnrollmentManager {
       VirtualCardEnrollmentRequestType type,
       AutofillClient::PaymentsRpcResult result);
 
+  // Called after virtual card enrollment is completed. Will show enroll result
+  // to users.
+  void OnVirtualCardEnrollCompleted(bool is_vcn_enrolled);
+
   // Resets the state of this VirtualCardEnrollmentManager.
   virtual void Reset();
 

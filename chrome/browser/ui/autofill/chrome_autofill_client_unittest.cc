@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #else
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #endif
@@ -423,6 +424,57 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       CreditCard(),
       ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
       base::DoNothing()));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockVirtualCardEnrollBubbleController
+    : public VirtualCardEnrollBubbleControllerImpl {
+ public:
+  explicit MockVirtualCardEnrollBubbleController(
+      content::WebContents* web_contents)
+      : VirtualCardEnrollBubbleControllerImpl(web_contents) {}
+  ~MockVirtualCardEnrollBubbleController() override = default;
+
+  MOCK_METHOD(void, HideIconAndBubble, (), (override));
+  MOCK_METHOD(bool, IsIconVisible, (), (const override));
+};
+
+class ChromeAutofillClientTestWithVcnEnrollLoadingAndConfirmation
+    : public ChromeAutofillClientTest {
+ public:
+  ChromeAutofillClientTestWithVcnEnrollLoadingAndConfirmation() {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  }
+
+  void SetUp() override {
+    ChromeAutofillClientTest::SetUp();
+
+    SecurityStateTabHelper::CreateForWebContents(web_contents());
+
+    auto mock_virtual_card_bubble_controller =
+        std::make_unique<MockVirtualCardEnrollBubbleController>(web_contents());
+    web_contents()->SetUserData(
+        mock_virtual_card_bubble_controller->UserDataKey(),
+        std::move(mock_virtual_card_bubble_controller));
+  }
+
+  MockVirtualCardEnrollBubbleController& virtual_card_bubble_controller() {
+    return static_cast<MockVirtualCardEnrollBubbleController&>(
+        *VirtualCardEnrollBubbleController::GetOrCreate(web_contents()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromeAutofillClientTestWithVcnEnrollLoadingAndConfirmation,
+       VirtualCardEnrollCompleted_HidesVirtualCardBubbleAndIcon) {
+  ON_CALL(virtual_card_bubble_controller(), IsIconVisible())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(virtual_card_bubble_controller(), HideIconAndBubble);
+  client()->GetPaymentsAutofillClient()->VirtualCardEnrollCompleted(true);
 }
 #endif
 }  // namespace

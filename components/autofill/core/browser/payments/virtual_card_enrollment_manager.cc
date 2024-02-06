@@ -270,17 +270,25 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   }
 
-  LogUpdateVirtualCardEnrollmentRequestResult(
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
-      type, result == AutofillClient::PaymentsRpcResult::kSuccess);
-  Reset();
   // Relay the response to the server card editor page. This also destroys the
   // payments delegate if the editor was already closed.
   if (virtual_card_enrollment_update_response_callback_.has_value()) {
     std::move(virtual_card_enrollment_update_response_callback_.value())
         .Run(result == AutofillClient::PaymentsRpcResult::kSuccess);
   }
-  virtual_card_enrollment_update_response_callback_.reset();
+
+  LogUpdateVirtualCardEnrollmentRequestResult(
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
+      type, result == AutofillClient::PaymentsRpcResult::kSuccess);
+  Reset();
+}
+
+void VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted(
+    bool is_vcn_enrolled) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  autofill_client_->GetPaymentsAutofillClient()->VirtualCardEnrollCompleted(
+      /*is_vcn_enrolled=*/is_vcn_enrolled);
+#endif
 }
 
 void VirtualCardEnrollmentManager::Reset() {
@@ -288,6 +296,7 @@ void VirtualCardEnrollmentManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
   enroll_response_details_received_ = false;
+  virtual_card_enrollment_update_response_callback_.reset();
 }
 
 VirtualCardEnrollmentStrikeDatabase*
@@ -343,7 +352,10 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
       state_.virtual_card_enrollment_fields,
       base::BindOnce(
           &VirtualCardEnrollmentManager::Enroll, weak_ptr_factory_.GetWeakPtr(),
-          /*virtual_card_enrollment_update_response_callback=*/std::nullopt),
+          /*virtual_card_enrollment_update_response_callback=*/
+          base::BindOnce(
+              &VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted,
+              weak_ptr_factory_.GetWeakPtr())),
       base::BindOnce(
           &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
           weak_ptr_factory_.GetWeakPtr()));

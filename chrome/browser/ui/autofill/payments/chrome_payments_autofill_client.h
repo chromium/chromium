@@ -46,6 +46,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
+  void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

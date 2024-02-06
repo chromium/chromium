@@ -37,6 +37,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -255,6 +256,14 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
       web_contents, controller);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
+
+  // VirtualCardEnrollBubbleController::IsEnrollmentInProgress() == true when
+  // the bubble has been accepted and the enrollment is still in progress. In
+  // this case we do not want to offer enrollment again on reshow.
+  if (controller->IsEnrollmentInProgress()) {
+    bubble->SwitchToLoadingState();
+  }
+
   bubble->ShowForReason(is_user_gesture
                             ? VirtualCardEnrollBubbleViews::USER_GESTURE
                             : VirtualCardEnrollBubbleViews::AUTOMATIC);
