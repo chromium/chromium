@@ -33,6 +33,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -426,29 +427,20 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
       CHECK(frame_widget);
-      bool should_increment_id = base::FeatureList::IsEnabled(
-          features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
-      if (should_increment_id) {
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kIncrementLocalSurfaceIdForMainframeSameDocNavigation)) {
         frame_widget->RequestNewLocalSurfaceId();
       }
       frame_widget->NotifyPresentationTime(WTF::BindOnce(
-          [](bool incremented, base::TimeTicks start, base::TimeTicks finish) {
+          [](base::TimeTicks start, base::TimeTicks finish) {
             base::TimeDelta duration = finish - start;
-            if (incremented) {
-              UMA_HISTOGRAM_TIMES(
-                  "Navigation."
-                  "MainframeSameDocumentNavigationCommitToPresentFirstFrame."
-                  "LocalSurfaceIdUpdated",
-                  duration);
-            } else {
-              UMA_HISTOGRAM_TIMES(
-                  "Navigation."
-                  "MainframeSameDocumentNavigationCommitToPresentFirstFrame."
-                  "LocalSurfaceIdNotUpdated",
-                  duration);
-            }
+            base::UmaHistogramTimes(
+                "Navigation."
+                "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
+                duration);
           },
-          should_increment_id, base::TimeTicks::Now()));
+          base::TimeTicks::Now()));
     }
   }
 
