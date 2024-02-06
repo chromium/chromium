@@ -86,9 +86,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void SetFrameVisible(bool) override {}
   bool IsFrameVisible() const override { return true; }
   void SetVisibleAreaLarge(bool) override {}
-  bool IsVisibleAreaLarge() const override { return false; }
   void SetHadUserActivation(bool) override {}
-  bool HadUserActivation() const override { return false; }
   bool IsPageVisible() const override { return true; }
   void SetPaused(bool) override {}
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}

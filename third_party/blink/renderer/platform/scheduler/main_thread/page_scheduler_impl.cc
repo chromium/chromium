@@ -554,15 +554,9 @@ void PageSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context,
 
 void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
-    FrameOriginType frame_origin_type,
-    bool frame_visible,
-    bool is_large,
-    bool had_user_activation,
+    WakeUpBudgetPool* wake_up_budget_pool,
     base::LazyNow* lazy_now) {
   DCHECK(!task_queue->GetWakeUpBudgetPool());
-  WakeUpBudgetPool* wake_up_budget_pool =
-      GetWakeUpBudgetPool(task_queue, frame_origin_type, frame_visible,
-                          is_large, had_user_activation);
   if (!wake_up_budget_pool) {
     return;
   }
@@ -584,28 +578,28 @@ WakeUpBudgetPool* PageSchedulerImpl::GetWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     bool frame_visible,
-    bool is_large,
-    bool had_user_activation) {
+    bool is_important) {
   const bool can_be_intensively_throttled =
       task_queue->CanBeIntensivelyThrottled();
-  const bool is_same_origin =
+  const bool is_same_origin_with_main_frame =
       frame_origin_type == FrameOriginType::kMainFrame ||
       frame_origin_type == FrameOriginType::kSameOriginToMainFrame;
 
   if (IsBackgrounded()) {
     if (can_be_intensively_throttled) {
-      if (is_same_origin)
+      if (is_same_origin_with_main_frame) {
         return same_origin_intensive_wake_up_budget_pool_.get();
-      else
+      } else {
         return cross_origin_intensive_wake_up_budget_pool_.get();
+      }
     }
     return hidden_wake_up_budget_pool_.get();
   }
 
-  if (!is_same_origin) {
+  if (!is_same_origin_with_main_frame) {
     if (!frame_visible) {
       return hidden_wake_up_budget_pool_.get();
-    } else if (!is_large && !had_user_activation) {
+    } else if (!is_important) {
       return unimportant_wake_up_budget_pool_.get();
     }
   }

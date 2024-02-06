@@ -67,12 +67,10 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // The scheduler may throttle tasks associated with cross origin frames using
   // small proportion of the page's visible area.
   virtual void SetVisibleAreaLarge(bool) = 0;
-  virtual bool IsVisibleAreaLarge() const = 0;
 
   // The scheduler may throttle tasks associated with cross origin frames
   // without user activation.
   virtual void SetHadUserActivation(bool) = 0;
-  virtual bool HadUserActivation() const = 0;
 
   // Query the page visibility state for the page associated with this frame.
   // The scheduler may throttle tasks associated with pages that are not
@@ -92,6 +90,8 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // origin frames may use a different scheduling policy from same origin
   // frames.
   virtual void SetCrossOriginToNearestMainFrame(bool) = 0;
+
+  // Returns whether this frame is cross-origin to the nearest main frame.
   virtual bool IsCrossOriginToNearestMainFrame() const = 0;
 
   virtual void SetIsAdFrame(bool is_ad_frame) = 0;

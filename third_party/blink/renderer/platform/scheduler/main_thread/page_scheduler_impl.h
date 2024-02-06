@@ -166,27 +166,20 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // a part of foregrounding the page.
   void SetPageFrozenImpl(bool frozen, NotificationPolicy notification_policy);
 
-  // Adds or removes a |task_queue| from the WakeUpBudgetPool. When the
-  // FrameOriginType, visibility, proportion of the page's visible area or user
-  // activation state of a FrameScheduler changes, it should remove all its
-  // TaskQueues from their current WakeUpBudgetPool and add them back to the
-  // appropriate WakeUpBudgetPool.
+  // Adds `task_queue` to `wake_up_budget_pool`.
   void AddQueueToWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
-                                  FrameOriginType frame_origin_type,
-                                  bool frame_visible,
-                                  bool is_large,
-                                  bool had_user_activation,
+                                  WakeUpBudgetPool* wake_up_budget_pool,
                                   base::LazyNow* lazy_now);
+  // Removes `task_queue` from its current `WakeUpBudgetPool`, if any.
   void RemoveQueueFromWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
                                        base::LazyNow* lazy_now);
-  // Returns the WakeUpBudgetPool to use for |task_queue| which belongs to a
-  // frame with |frame_origin_type|, visibility |frame_visible|,
-  // proportion of the page's visible area |is_large| and |had_user_activation|.
+  // Returns the WakeUpBudgetPool to use for a `task_queue` which belongs to a
+  // frame with the given properties.
   WakeUpBudgetPool* GetWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
                                         FrameOriginType frame_origin_type,
                                         bool frame_visible,
-                                        bool is_large,
-                                        bool had_user_activation);
+                                        bool is_important);
+
   // Initializes WakeUpBudgetPools, if not already initialized.
   void MaybeInitializeWakeUpBudgetPools(base::LazyNow* lazy_now);
 
