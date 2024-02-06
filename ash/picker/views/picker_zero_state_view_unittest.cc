@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/picker/model/picker_category.h"
+#include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -20,15 +21,18 @@
 namespace ash {
 namespace {
 
+using ::testing::Contains;
 using ::testing::IsEmpty;
+using ::testing::Key;
 using ::testing::Not;
 
 using PickerZeroStateViewTest = AshTestBase;
 
-TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
+TEST_F(PickerZeroStateViewTest, CreatesExpressionsSection) {
   PickerZeroStateView view(base::DoNothing());
 
-  EXPECT_THAT(view.section_views_for_testing(), Not(IsEmpty()));
+  EXPECT_THAT(view.section_views_for_testing(),
+              Contains(Key(PickerCategoryType::kExpressions)));
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
@@ -37,12 +41,16 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(
       std::make_unique<PickerZeroStateView>(future.GetRepeatingCallback()));
-  ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
-  ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
+  ASSERT_THAT(view->section_views_for_testing(),
+              Contains(Key(PickerCategoryType::kExpressions)));
+  ASSERT_THAT(view->section_views_for_testing()
+                  .find(PickerCategoryType::kExpressions)
+                  ->second->item_views_for_testing(),
               Not(IsEmpty()));
 
-  views::View* category_view =
-      view->section_views_for_testing()[0]->item_views_for_testing()[0];
+  views::View* category_view = view->section_views_for_testing()
+                                   .find(PickerCategoryType::kExpressions)
+                                   ->second->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
   LeftClickOn(category_view);
 

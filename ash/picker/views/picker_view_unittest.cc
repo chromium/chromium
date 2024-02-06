@@ -9,6 +9,7 @@
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -114,14 +115,11 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 }
 
 // Gets an item view that can be clicked to select a category.
-// TODO: b/316935911 - This assumes that the picker is in the zero state and
-// that the first item is a category. This probably won't be the case once more
-// of the zero state view has been implemented. We should have a better way of
-// getting a category item.
 views::View* GetCategoryItemView(PickerView* picker_view) {
   return picker_view->zero_state_view_for_testing()
-      .section_views_for_testing()[0]
-      ->item_views_for_testing()[0];
+      .section_views_for_testing()
+      .find(PickerCategoryType::kExpressions)
+      ->second->item_views_for_testing()[0];
 }
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {

@@ -6960,6 +6960,9 @@ New install
       <message name="IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the gifs category is selected.">
         Search Gifs
       </message>
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains expression categories, i.e. emojis, symbols, emoticons and gifs.">
+        Expressions
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

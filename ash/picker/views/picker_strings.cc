@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_strings.h"
 
 #include "ash/picker/model/picker_category.h"
+#include "ash/picker/views/picker_category_type.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -38,6 +39,15 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kGifs:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+  }
+}
+
+std::u16string GetSectionTitleForPickerCategoryType(
+    PickerCategoryType category_type) {
+  switch (category_type) {
+    case PickerCategoryType::kExpressions:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EXPRESSIONS_CATEGORY_TYPE_SECTION_TITLE);
   }
 }
 
