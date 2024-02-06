@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -132,6 +134,9 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -361,6 +366,15 @@ class WebviewLoginTest : public OobeBaseTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButtonOobeFlow) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+
+  // Click back to reload (unreachable) identifier page.
+  test::OobeJS().ClickOnPath(kBackButton);
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
@@ -370,8 +384,9 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url(),
       net::HTTP_NOT_FOUND);
 
-  // Click back to reload (unreachable) identifier page.
-  test::OobeJS().ClickOnPath(kBackButton);
+  // Click ESC key to reload (unreachable) identifier page.
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
@@ -470,9 +485,11 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
   // later if it has been cleared.
   InjectCookie(signin_frame_partition_1);
 
-  // Press the back button at a sign-in screen without pre-existing users to
+  // Press ESC key at a sign-in screen without pre-existing users to
   // start a new sign-in attempt.
-  test::OobeJS().ClickOnPath(kBackButton);
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
+  generator.PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+
   WaitForGaiaPageBackButtonUpdate();
   // Expect that we got back to the identifier page, as there are no known users
   // so the sign-in screen will not display user pods.
