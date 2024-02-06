@@ -256,7 +256,7 @@ BackgroundModeManager::BackgroundModeData::GetNewBackgroundApps() {
   // Copy all current extensions into our list of |current_extensions_|.
   for (const auto& application : *applications_) {
     const extensions::ExtensionId& id = application->id();
-    if (current_extensions_.count(id) == 0) {
+    if (!current_extensions_.contains(id)) {
       // Not found in our set yet - add it and maybe return as a previously
       // unseen extension.
       current_extensions_.insert(id);
@@ -327,8 +327,8 @@ BackgroundModeManager::BackgroundModeManager(
     optimizer_ = BackgroundModeOptimizer::Create();
   }
 
-  // If the -keep-alive-for-test flag is passed, then always keep chrome running
-  // in the background until the user explicitly terminates it.
+  // If the --keep-alive-for-test flag is passed, then always keep the browser
+  // running in the background until the user explicitly terminates it.
   if (command_line.HasSwitch(switches::kKeepAliveForTest))
     keep_alive_for_test_ = true;
 
