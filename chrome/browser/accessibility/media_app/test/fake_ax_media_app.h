@@ -27,7 +27,7 @@ class FakeAXMediaApp final : public ash::AXMediaApp {
 
   bool IsOcrServiceEnabled() const { return ocr_service_enabled_; }
   bool IsAccessibilityEnabled() const { return accessibility_enabled_; }
-  const std::vector<const std::string>& PageIdsWithBitmap() const {
+  const std::vector<std::string>& PageIdsWithBitmap() const {
     return page_ids_with_bitmap_;
   }
   const gfx::Insets& GetViewportBox() const { return viewport_box_; }
@@ -42,7 +42,7 @@ class FakeAXMediaApp final : public ash::AXMediaApp {
  private:
   bool ocr_service_enabled_ = false;
   bool accessibility_enabled_ = false;
-  std::vector<const std::string> page_ids_with_bitmap_;
+  std::vector<std::string> page_ids_with_bitmap_;
   gfx::Insets viewport_box_;
 };
 

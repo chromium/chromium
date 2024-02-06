@@ -111,8 +111,7 @@ TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
 }
 
 TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataDocumentFirstLoad) {
-  const std::vector<const std::string> kPageIds{"five", "page", "ids", "in",
-                                                "list"};
+  const std::vector<std::string> kPageIds{"five", "page", "ids", "in", "list"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fakeMetadata;
   for (size_t i = 0; i < kTestNumPages; ++i) {
@@ -160,7 +159,7 @@ TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataNoDuplicatePageIds) {
 }
 
 TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataWithDeleteAndUndoDelete) {
-  const std::vector<const std::string> kPageIds{"pageX", "pageY", "pageZ"};
+  const std::vector<std::string> kPageIds{"pageX", "pageY", "pageZ"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fakeMetadata;
   for (size_t i = 0; i < kTestNumPages; ++i) {
@@ -205,7 +204,7 @@ TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataWithDeleteAndUndoDelete) {
 TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataWithNewPages) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  const std::vector<const std::string> kPageIds{"pageX", "pageY"};
+  const std::vector<std::string> kPageIds{"pageX", "pageY"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fakeMetadata;
   for (size_t i = 0; i < kTestNumPages; ++i) {
@@ -238,8 +237,7 @@ TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  const std::vector<const std::string> kPageIds{"pageW", "pageX", "pageY",
-                                                "pageZ"};
+  const std::vector<std::string> kPageIds{"pageW", "pageX", "pageY", "pageZ"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fakeMetadata;
   for (size_t i = 0; i < kTestNumPages; ++i) {

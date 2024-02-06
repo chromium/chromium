@@ -21,6 +21,14 @@ class ChainedBackNavigationTrackerTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
+  std::vector<GURL> test_urls() {
+    std::vector<GURL> urls;
+    for (uint32_t i = 0; i < min_navigation_cnt_ * 2; ++i) {
+      urls.push_back(GURL("http://foo/" + base::NumberToString(i)));
+    }
+    return urls;
+  }
+
   const uint32_t min_navigation_cnt_ =
       ChainedBackNavigationTracker::kMinimumChainedBackNavigationLength;
   const int64_t max_navigation_interval_ = ChainedBackNavigationTracker::
@@ -28,10 +36,7 @@ class ChainedBackNavigationTrackerTest
 };
 
 TEST_F(ChainedBackNavigationTrackerTest, ChainedBackNavigationStatus) {
-  std::vector<const GURL> urls;
-  for (uint32_t i = 0; i < min_navigation_cnt_ * 2; ++i) {
-    urls.push_back(GURL("http://foo/" + base::NumberToString(i)));
-  }
+  const std::vector<GURL> urls = test_urls();
   for (const GURL& url : urls) {
     NavigateAndCommit(url);
   }
@@ -64,10 +69,7 @@ TEST_F(ChainedBackNavigationTrackerTest, ChainedBackNavigationStatus) {
 
 TEST_F(ChainedBackNavigationTrackerTest,
        ChainedBackNavigationStatus_ResetCountIfIntervalIsTooLong) {
-  std::vector<const GURL> urls;
-  for (uint32_t i = 0; i < min_navigation_cnt_ * 2; ++i) {
-    urls.push_back(GURL("http://foo/" + base::NumberToString(i)));
-  }
+  const std::vector<GURL> urls = test_urls();
   for (const GURL& url : urls) {
     NavigateAndCommit(url);
   }
@@ -107,10 +109,7 @@ TEST_F(ChainedBackNavigationTrackerTest,
 TEST_F(
     ChainedBackNavigationTrackerTest,
     ChainedBackNavigationStatus_ResetCountIfNonBackForwardNavigationHappens) {
-  std::vector<const GURL> urls;
-  for (uint32_t i = 0; i < min_navigation_cnt_ * 2; ++i) {
-    urls.push_back(GURL("http://foo/" + base::NumberToString(i)));
-  }
+  const std::vector<GURL> urls = test_urls();
   for (const GURL& url : urls) {
     NavigateAndCommit(url);
   }
@@ -145,10 +144,7 @@ TEST_F(
 
 TEST_F(ChainedBackNavigationTrackerTest,
        ChainedBackNavigationStatus_BackButtonClicked) {
-  std::vector<const GURL> urls;
-  for (uint32_t i = 0; i < min_navigation_cnt_ * 2; ++i) {
-    urls.push_back(GURL("http://foo/" + base::NumberToString(i)));
-  }
+  const std::vector<GURL> urls = test_urls();
   for (const GURL& url : urls) {
     NavigateAndCommit(url);
   }
