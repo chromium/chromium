@@ -961,6 +961,8 @@ component("ash") {
     "picker/picker_controller.h",
     "picker/picker_insert_media_request.cc",
     "picker/picker_insert_media_request.h",
+    "picker/views/picker_caps_nudge_view.cc",
+    "picker/views/picker_caps_nudge_view.h",
     "picker/views/picker_category_view.cc",
     "picker/views/picker_category_view.h",
     "picker/views/picker_contents_view.cc",

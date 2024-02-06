@@ -11,6 +11,7 @@
 
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_model.h"
+#include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -36,6 +37,8 @@ PickerZeroStateView::PickerZeroStateView(
     SelectCategoryCallback select_category_callback) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+
+  AddChildView(std::make_unique<PickerCapsNudgeView>());
 
   // TODO: b/316935911 - Get actual sections for the categories.
   auto* section_view = AddChildView(
