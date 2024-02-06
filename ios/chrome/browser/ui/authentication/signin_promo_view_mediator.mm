@@ -117,6 +117,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -200,6 +201,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -285,6 +287,7 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -370,6 +373,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -444,6 +448,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -516,6 +521,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

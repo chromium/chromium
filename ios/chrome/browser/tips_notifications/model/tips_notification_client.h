@@ -11,7 +11,6 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
-class Browser;
 enum class TipsNotificationType;
 class PrefRegistrySimple;
 
@@ -64,8 +63,11 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a notification of the given `type` should be sent.
   bool ShouldSendNotification(TipsNotificationType type);
 
-  // Returns the first "foreground active" browser, if any.
-  Browser* GetSceneLevelForegroundActiveBrowser();
+  // Returns true if a Signin notification should be sent.
+  bool ShouldSendSignin();
+
+  // Returns true if a WhatsNew notification should be sent.
+  bool ShouldSendWhatsNew();
 
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
@@ -73,6 +75,7 @@ class TipsNotificationClient : public PushNotificationClient {
   // Helpers to handle notification interactions.
   void ShowDefaultBrowserPromo();
   void ShowWhatsNew();
+  void ShowSignin();
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

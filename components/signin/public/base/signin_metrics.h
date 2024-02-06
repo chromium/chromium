@@ -194,6 +194,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_TAB_ORGANIZATION = 56,
   // Access point for the Save to Drive feature on iOS.
   ACCESS_POINT_SAVE_TO_DRIVE_IOS = 57,
+  // Access point for the Tips Notification on iOS.
+  ACCESS_POINT_TIPS_NOTIFICATION = 58,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

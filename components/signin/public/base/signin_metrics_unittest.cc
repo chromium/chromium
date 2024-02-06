@@ -186,6 +186,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "RestorePrimaryAccountinfoOnProfileLoad";
       case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
         return "TabOrganization";
+      case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+        return "TipsNotification";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

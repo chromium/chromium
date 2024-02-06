@@ -6,9 +6,12 @@
 
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -19,7 +22,13 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 
 namespace {
 
@@ -34,6 +43,19 @@ UNNotificationRequest* NotificationWithIdentifier(
     }
   }
   return nil;
+}
+
+// Returns true if signin is allowed / enabled.
+bool IsSigninEnabled(AuthenticationService* auth_service) {
+  switch (auth_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      return true;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return false;
+  }
 }
 
 }  // namespace
@@ -73,7 +95,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
       ShowWhatsNew();
       break;
     case TipsNotificationType::kSignin:
-      // TODO(crbug.com/1517912) implement Signin interaction.
+      ShowSignin();
       break;
   }
 }
@@ -199,27 +221,29 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kDefaultBrowser:
       return !IsChromeLikelyDefaultBrowser();
     case TipsNotificationType::kWhatsNew:
-      return true;
+      return ShouldSendWhatsNew();
     case TipsNotificationType::kSignin:
-      return true;
+      return ShouldSendSignin();
   }
 }
 
-Browser* TipsNotificationClient::GetSceneLevelForegroundActiveBrowser() {
-  ChromeBrowserState* browser_state = GetApplicationContext()
-                                          ->GetChromeBrowserStateManager()
-                                          ->GetLastUsedBrowserState();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  for (Browser* browser : browser_list->AllRegularBrowsers()) {
-    if (!browser->IsInactive()) {
-      if (browser->GetSceneState().activationLevel ==
-          SceneActivationLevelForegroundActive) {
-        return browser;
-      }
-    }
-  }
-  return nullptr;
+bool TipsNotificationClient::ShouldSendWhatsNew() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+  return !tracker->HasEverTriggered(
+      feature_engagement::kIPHWhatsNewUpdatedFeature, true);
+}
+
+bool TipsNotificationClient::ShouldSendSignin() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+
+  return IsSigninEnabled(auth_service) &&
+         !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
@@ -227,7 +251,7 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() {
 }
 
 void TipsNotificationClient::ShowDefaultBrowserPromo() {
-  raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
   [HandlerForProtocol(browser->GetCommandDispatcher(), PromosManagerCommands)
       maybeDisplayDefaultBrowserPromo];
 }
@@ -236,6 +260,32 @@ void TipsNotificationClient::ShowWhatsNew() {
   raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
   [HandlerForProtocol(browser->GetCommandDispatcher(),
                       BrowserCoordinatorCommands) showWhatsNew];
+}
+
+void TipsNotificationClient::ShowSignin() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If there are identities, kInstantSignin requires less taps.
+    ChromeBrowserState* browser_state = browser->GetBrowserState();
+    operation =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state)
+                ->HasIdentities()
+            ? AuthenticationOperation::kSigninOnly
+            : AuthenticationOperation::kInstantSignin;
+  }
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:operation
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_TIPS_NOTIFICATION
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:nil];
+
+  [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
+      showSignin:command];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(

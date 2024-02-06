@@ -409,6 +409,7 @@ chromium-metrics-reviews@google.com.
   <int value="55" label="Restore primary account on profile load"/>
   <int value="56" label="Tab organization"/>
   <int value="57" label="Save to Drive iOS"/>
+  <int value="58" label="Tips Notification on iOS"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
