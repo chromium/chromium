@@ -336,6 +336,10 @@ void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
     return;
   }
 
+  if (!window->GetProperty(app_restore::kLaunchedFromAppRestoreKey)) {
+    return;
+  }
+
   // Windows with restore window key less than -1 are launched from desk
   // templates or saved desks; we want to stay in overview for these. Windows
   // with restore window key more than -1 are launched from full restore and we

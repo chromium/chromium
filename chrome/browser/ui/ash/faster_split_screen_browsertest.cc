@@ -104,3 +104,23 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
   ASSERT_TRUE(settings_browser);
   ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
 }
+
+// Tests that if partial overview is active, and a window gets session
+// restore'd, partial overview auto-snaps the window. See b/314816288.
+IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
+                       AutoSnapWhileInSessionRestore) {
+  // Snap the window to start partial overview.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window);
+  const ash::WindowSnapWMEvent primary_snap_event(
+      ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
+  window_state->OnWMEvent(&primary_snap_event);
+  ash::WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
+
+  // Open a new browser window. Test it gets auto-snapped.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  aura::Window* window2 = browser2->window()->GetNativeWindow();
+  EXPECT_TRUE(ash::WindowState::Get(window2)->IsSnapped());
+  EXPECT_FALSE(ash::OverviewController::Get()->InOverviewSession());
+}
