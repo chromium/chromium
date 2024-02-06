@@ -37,8 +37,8 @@ _SHARED_STORAGE_UMA_HISTOGRAMS = [
 # Default number of times to run each shared storage action in a story.
 _DEFAULT_NUM_ITERATIONS = 10
 
-# Minimum trace buffer size (in KB) to be used.
-_MIN_TRACE_BUFFER_SIZE = 200000
+# Use maximum allowed trace buffer size (in KB).
+_TRACE_BUFFER_SIZE = 2**32 - 1
 
 
 class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
@@ -114,8 +114,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     else:
       tbm_options = timeline_based_measurement.Options(category_filter)
 
-    buffer_size = self.iterations * _MIN_TRACE_BUFFER_SIZE
-    tbm_options.config.chrome_trace_config.SetTraceBufferSizeInKb(buffer_size)
+    tbm_options.config.chrome_trace_config.SetTraceBufferSizeInKb(
+        _TRACE_BUFFER_SIZE)
 
     for histogram in _SHARED_STORAGE_UMA_HISTOGRAMS:
       tbm_options.config.chrome_trace_config.EnableUMAHistograms(histogram)
