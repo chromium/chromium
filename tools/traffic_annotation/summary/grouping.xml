@@ -310,6 +310,9 @@ after discussions on the right group.
       <annotation id="pepper_tcp_socket"/>
       <annotation id="pepper_udp_socket"/>
       <annotation id="app_install_service_web_app_installer"/>
+      <annotation id="remoting_corp_session_authz_generate_host_token"/>
+      <annotation id="remoting_corp_session_authz_verify_session_token"/>
+      <annotation id="remoting_corp_session_reauthorize_host"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

@@ -45,12 +45,15 @@ source_set("base") {
     "constants.h",
     "corp_service_client.cc",
     "corp_service_client.h",
+    "corp_session_authz_service_client.cc",
+    "corp_session_authz_service_client.h",
     "cpu_utils.cc",
     "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
     "hostname.cc",
     "hostname.h",
+    "internal_headers.h",
     "is_google_email.cc",
     "is_google_email.h",
     "leaky_bucket.cc",
@@ -124,6 +127,7 @@ source_set("base") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//google_apis",
+    "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network/public/cpp",
@@ -140,7 +144,10 @@ source_set("base") {
       "//remoting/internal/proto",
     ]
   } else {
-    deps += [ "//remoting/proto:internal_stubs" ]
+    deps += [
+      ":api_key_stubs",
+      "//remoting/proto:internal_stubs",
+    ]
   }
 
   if (is_win) {
@@ -310,6 +317,15 @@ proto_library("test_proto") {
   testonly = true
 
   sources = [ "protobuf_http_client_test_messages.proto" ]
+}
+
+source_set("api_key_stubs") {
+  public = [ "api_key_stubs.h" ]
+
+  sources = [
+    "api_key_stubs.cc",
+    "api_key_stubs.h",
+  ]
 }
 
 source_set("run_all_unittests") {

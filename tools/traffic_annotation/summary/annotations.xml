@@ -452,4 +452,7 @@ Refer to README.md for content description and update process.
  <item id="pepper_tcp_socket" added_in_milestone="123" content_hash_code="01a37664" os_list="chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />
  <item id="pepper_udp_socket" added_in_milestone="123" content_hash_code="006ee842" os_list="chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />
  <item id="app_install_service_web_app_installer" added_in_milestone="123" content_hash_code="0790ca69" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/web_app_installer.cc" />
+ <item id="remoting_corp_session_authz_generate_host_token" added_in_milestone="123" content_hash_code="045bc7d9" os_list="linux,windows,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
+ <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
+ <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,android" file_path="remoting/base/corp_session_authz_service_client.cc" />
 </annotations>

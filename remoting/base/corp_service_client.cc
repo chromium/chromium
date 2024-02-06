@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
@@ -17,18 +18,6 @@
 #endif
 
 namespace remoting {
-
-namespace {
-
-std::string GetRemotingCorpApiKey() {
-#if BUILDFLAG(REMOTING_INTERNAL)
-  return internal::GetRemotingCorpApiKey();
-#else
-  return "UNKNOWN API KEY";
-#endif
-}
-
-}  // namespace
 
 CorpServiceClient::CorpServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -140,7 +129,7 @@ void CorpServiceClient::ExecuteRequest(
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
-  request_config->api_key = GetRemotingCorpApiKey();
+  request_config->api_key = internal::GetRemotingCorpApiKey();
   request_config->authenticated = false;
   request_config->provide_certificate = true;
   request_config->request_message = std::move(request_message);
