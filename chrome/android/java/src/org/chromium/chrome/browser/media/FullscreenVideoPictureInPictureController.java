@@ -233,12 +233,7 @@ public class FullscreenVideoPictureInPictureController {
         try {
             if (!mActivity.enterPictureInPictureMode(builder.build())) return;
         } catch (IllegalStateException | IllegalArgumentException e) {
-            Log.e(
-                    TAG,
-                    "Error entering PiP with bounds (%d, %d): %s",
-                    bounds.width(),
-                    bounds.height(),
-                    e);
+            Log.e(TAG, "Error entering PiP with bounds %s", bounds, e);
             return;
         }
     }
