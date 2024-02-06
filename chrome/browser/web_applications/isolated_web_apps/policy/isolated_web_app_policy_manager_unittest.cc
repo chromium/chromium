@@ -58,8 +58,6 @@ constexpr char kUpdateManifestUrl6[] =
     "https://example.com/6/update-manifest-6.json";
 constexpr char kUpdateManifestUrl7[] =
     "https://example.com/7/update-manifest-7.json";
-constexpr char kUpdateManifestUrl8[] =
-    "https://example.com/8/update-manifest-8.json";
 
 constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
@@ -78,13 +76,10 @@ constexpr char kUpdateManifestValue5[] = R"(
     [{"version": "1.0.0", "src": "chrome-extension://app5.wbn"}]})";
 constexpr char kUpdateManifestValue6[] = R"(
     {"versions":
-    [{"version": "1.0.0", "src": "https://example.com/app6.swbn"}]})";
+    [{"version": "1.0.0","src": "https://example.com/app6.swbn"}]})";
 constexpr char kUpdateManifestValue7[] = R"(
     {"versions":
     [{"version": "1.0.0", "src": "https://example.com/app7.swbn"}]})";
-constexpr char kUpdateManifestValue8[] = R"(
-    {"versions":
-    [{"version": "1.0.0","src": "https://example.com/app8.swbn"}]})";
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -96,11 +91,10 @@ constexpr char kWebBundleId4[] =
     "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId5[] =
     "eerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-constexpr base::StringPiece kWebBundleId6 = kWebBundleId1;
+constexpr char kWebBundleId6[] =
+    "herugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-constexpr char kWebBundleId8[] =
-    "herugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
@@ -144,7 +138,7 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   IsolatedWebAppExternalInstallOptions app_options_5 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_5)
           .value();
-  // ID of the App 6 is the same as ID of the App 1.
+  // The Web Bundle of the App 6 can't be installed.
   const base::Value policy_value_6 =
       CreatePolicyEntry(kWebBundleId6, kUpdateManifestUrl6);
   IsolatedWebAppExternalInstallOptions app_options_6 =
@@ -156,12 +150,6 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   IsolatedWebAppExternalInstallOptions app_options_7 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_7)
           .value();
-  // The Web Bundle of the App 8 can't be installed.
-  const base::Value policy_value_8 =
-      CreatePolicyEntry(kWebBundleId8, kUpdateManifestUrl8);
-  IsolatedWebAppExternalInstallOptions app_options_8 =
-      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_8)
-          .value();
 
   std::vector<IsolatedWebAppExternalInstallOptions> options;
   options.push_back(std::move(app_options_1));
@@ -171,7 +159,7 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   options.push_back(std::move(app_options_5));
   options.push_back(std::move(app_options_6));
   options.push_back(std::move(app_options_7));
-  options.push_back(std::move(app_options_8));
+
   return options;
 }
 
@@ -226,15 +214,15 @@ class BulkIwaInstallerTest : public ::testing::Test {
     AddJsonResponse(kUpdateManifestUrl5, kUpdateManifestValue5);
     AddJsonResponse(kUpdateManifestUrl6, kUpdateManifestValue6);
     AddJsonResponse(kUpdateManifestUrl7, kUpdateManifestValue7);
-    AddJsonResponse(kUpdateManifestUrl8, kUpdateManifestValue8);
     test_factory_.AddResponse("https://example.com/app1.swbn",
                               "Content of app1");
     test_factory_.AddResponse("https://example.com/app2.swbn",
                               "Content of app2");
+    test_factory_.AddResponse("https://example.com/app6.swbn",
+                              "Content of app6");
     test_factory_.AddResponse("https://example.com/app7.swbn", "",
                               net::HttpStatusCode::HTTP_NOT_FOUND);
-    test_factory_.AddResponse("https://example.com/app8.swbn",
-                              "Content of app8");
+
     test_managed_guest_session_ =
         std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
   }
@@ -279,11 +267,10 @@ TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
   expected_results.at(4) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined;
   expected_results.at(5) = internal::BulkIwaInstaller::
-      EphemeralAppInstallResult::kErrorCantCreateIwaDirectory;
+      EphemeralAppInstallResult::kErrorCantInstallFromWebBundle;
   expected_results.at(6) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorCantDownloadWebBundle;
-  expected_results.at(7) = internal::BulkIwaInstaller::
-      EphemeralAppInstallResult::kErrorCantInstallFromWebBundle;
+
   base::test::TestFuture<
       std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>>
       future;
@@ -296,25 +283,7 @@ TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
 
   const base::FilePath iwa_root_dir = dir_.GetPath().Append(
       internal::BulkIwaInstaller::kEphemeralIwaRootDirectory);
-  ASSERT_TRUE(base::DirectoryExists(iwa_root_dir));
-
-  // There should be 2 directories that represent successfully installed apps.
-  base::FileEnumerator iter(
-      iwa_root_dir, /*recursive=*/false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  int counter = 0;
-  while (!iter.Next().empty()) {
-    EXPECT_TRUE(iter.GetInfo().IsDirectory());
-    ++counter;
-  }
-  EXPECT_EQ(counter, 2);
-
-  EXPECT_TRUE(base::PathExists(
-      iwa_root_dir.Append(kWebBundleId1)
-          .Append(internal::BulkIwaInstaller::kMainSignedWebBundleFileName)));
-  EXPECT_TRUE(base::PathExists(
-      iwa_root_dir.Append(kWebBundleId2)
-          .Append(internal::BulkIwaInstaller::kMainSignedWebBundleFileName)));
+  ASSERT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
 }
 
 // If there is no MGS we don't create root directory for the IWAs.

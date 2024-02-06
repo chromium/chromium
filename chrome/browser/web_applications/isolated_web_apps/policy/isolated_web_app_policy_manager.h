@@ -127,11 +127,11 @@ class BulkIwaInstaller {
   void OnIwaInstalled(base::expected<InstallIsolatedWebAppCommandSuccess,
                                      InstallIsolatedWebAppCommandError> result);
 
-  // Completely removes IWA directory.
-  void WipeCurrentIwaDirectory();
-  void OnCurrentIwaDirectoryWiped(bool wipe_result);
+  // Removes the directory where the IWA has been downloaded.
+  void WipeIwaDownloadDirectory();
+  void OnIwaDownloadDirectoryWiped(bool wipe_result);
 
-  void SetResultAndContinue(EphemeralAppInstallResult result);
+  void FinishWithResult(EphemeralAppInstallResult result);
   void SetResultForAllAndFinish(EphemeralAppInstallResult result);
   void ContinueWithTheNextApp();
 

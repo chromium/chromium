@@ -223,19 +223,14 @@ void BulkIwaInstaller::ContinueWithTheNextApp() {
   DownloadUpdateManifest();
 }
 
-void BulkIwaInstaller::SetResultAndContinue(EphemeralAppInstallResult result) {
+void BulkIwaInstaller::FinishWithResult(EphemeralAppInstallResult result) {
   const auto index =
       std::distance(ephemeral_iwa_install_options_.begin(), current_app_);
   result_vector_.at(index) = result;
 
-  // If the error occurs after the directory for an app had been created,
-  // then we should wipe the directory.
-  if (result != EphemeralAppInstallResult::kSuccess) {
-    WipeCurrentIwaDirectory();
-    return;
-  }
-
-  ContinueWithTheNextApp();
+  // We always copy the downloaded files into the profile during installation.
+  // So we don't need the downloaded file any more.
+  WipeIwaDownloadDirectory();
 }
 
 void BulkIwaInstaller::SetResultForAllAndFinish(
@@ -251,16 +246,16 @@ void BulkIwaInstaller::OnUpdateManifestParsed(
   if (!update_manifest.has_value()) {
     switch (update_manifest.error()) {
       case UpdateManifestFetcher::Error::kDownloadFailed:
-        SetResultAndContinue(
+        FinishWithResult(
             EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed);
         break;
       case UpdateManifestFetcher::Error::kInvalidJson:
       case UpdateManifestFetcher::Error::kInvalidManifest:
-        SetResultAndContinue(
+        FinishWithResult(
             EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed);
         break;
       case UpdateManifestFetcher::Error::kNoApplicableVersion:
-        SetResultAndContinue(
+        FinishWithResult(
             EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined);
         break;
     }
@@ -288,8 +283,7 @@ void BulkIwaInstaller::CreateIwaDirectory() {
 void BulkIwaInstaller::OnIwaDirectoryCreated(const base::FilePath& iwa_dir,
                                              base::File::Error error) {
   if (error != base::File::FILE_OK) {
-    SetResultAndContinue(
-        EphemeralAppInstallResult::kErrorCantCreateIwaDirectory);
+    FinishWithResult(EphemeralAppInstallResult::kErrorCantCreateIwaDirectory);
     return;
   }
 
@@ -340,8 +334,7 @@ void BulkIwaInstaller::OnWebBundleDownloaded(const base::FilePath& path,
   current_bundle_downloader_.reset();
 
   if (net_error != net::OK) {
-    SetResultAndContinue(
-        EphemeralAppInstallResult::kErrorCantDownloadWebBundle);
+    FinishWithResult(EphemeralAppInstallResult::kErrorCantDownloadWebBundle);
     return;
   }
 
@@ -362,24 +355,24 @@ void BulkIwaInstaller::OnIwaInstalled(
     LOG(ERROR) << "Could not install the IWA "
                << current_app_->web_bundle_id().id();
   }
-  SetResultAndContinue(
+  FinishWithResult(
       result.has_value()
           ? EphemeralAppInstallResult::kSuccess
           : EphemeralAppInstallResult::kErrorCantInstallFromWebBundle);
 }
 
-void BulkIwaInstaller::WipeCurrentIwaDirectory() {
+void BulkIwaInstaller::WipeIwaDownloadDirectory() {
   const base::FilePath iwa_path_to_delete(current_app_->app_directory());
   current_app_->reset_app_directory();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&base::DeletePathRecursively, iwa_path_to_delete),
-      base::BindOnce(&BulkIwaInstaller::OnCurrentIwaDirectoryWiped,
+      base::BindOnce(&BulkIwaInstaller::OnIwaDownloadDirectoryWiped,
                      weak_factory_.GetWeakPtr()));
 }
 
-void BulkIwaInstaller::OnCurrentIwaDirectoryWiped(bool wipe_result) {
+void BulkIwaInstaller::OnIwaDownloadDirectoryWiped(bool wipe_result) {
   if (!wipe_result) {
     LOG(ERROR) << "Could not wipe an IWA directory";
   }
