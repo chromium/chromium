@@ -968,7 +968,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult3"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult3"
-    expires_after="2024-03-13">
+    expires_after="2024-09-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1036,7 +1036,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown"
-    units="ms" expires_after="2024-02-25">
+    units="ms" expires_after="2024-09-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1049,7 +1049,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Host.PipeResult"
     enum="PrivacySandboxPrivateAggregationHostPipeResult"
-    expires_after="2024-02-11">
+    expires_after="2024-09-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1065,7 +1065,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Host.TimeoutResult"
     enum="PrivacySandboxPrivateAggregationHostTimeoutResult"
-    expires_after="2024-03-05">
+    expires_after="2024-09-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
