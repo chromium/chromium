@@ -1775,8 +1775,16 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   }
 #endif
 
-  if (notify_parent && !has_been_disposed_) {
-    ChildrenChangedOnAncestorOf(obj);
+  if (!has_been_disposed_) {
+    if (notify_parent) {
+      ChildrenChangedOnAncestorOf(obj);
+    }
+    // TODO(aleventhal) This is for web tests only, in order to record MarkDirty
+    // events. Is there a way to avoid these calls for normal browsing?
+    // Maybe we should use dependency injection from AccessibilityController.
+    if (auto* client = GetWebLocalFrameClient()) {
+      client->HandleAXObjectDetachedForTest(ax_id);
+    }
   }
 
   obj->Detach();

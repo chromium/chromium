@@ -820,6 +820,11 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // This method is ONLY for web tests and is not supposed to be overridden in
   // classes other than web_frame_test_proxy. It's called from accessibility and
+  // is used as a way to notify that an accessibility object has been destroyed.
+  virtual void HandleAXObjectDetachedForTest(unsigned axid) {}
+
+  // This method is ONLY for web tests and is not supposed to be overridden in
+  // classes other than web_frame_test_proxy. It's called from accessibility and
   // is used as a way to tunnel events to the accessibility_controller in web
   // tests.
   virtual void HandleWebAccessibilityEventForTest(
