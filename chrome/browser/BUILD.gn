@@ -5792,6 +5792,8 @@ static_library("browser") {
       "performance_manager/policies/report_page_processes_policy.h",
       "policy/restricted_mgs_policy_provider.cc",
       "policy/restricted_mgs_policy_provider.h",
+      "policy/screen_capture_location_policy_handler.cc",
+      "policy/screen_capture_location_policy_handler.h",
       "policy/system_features_disable_list_policy_handler.cc",
       "policy/system_features_disable_list_policy_handler.h",
       "renderer_context_menu/quick_answers_menu_observer.cc",

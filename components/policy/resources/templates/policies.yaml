@@ -1209,6 +1209,7 @@ policies:
   1208: ToolbarAvatarLabelSettings
   1209: DeviceWeeklyScheduledSuspend
   1210: RemoteAccessHostAllowUrlForwarding
+  1211: ScreenCaptureLocation
 atomic_groups:
   1: Homepage
   2: RemoteAccess

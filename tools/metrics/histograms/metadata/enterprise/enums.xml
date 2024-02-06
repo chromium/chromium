@@ -2025,6 +2025,7 @@ chromium-metrics-reviews@google.com.
   <int value="1208" label="ToolbarAvatarLabelSettings"/>
   <int value="1209" label="DeviceWeeklyScheduledSuspend"/>
   <int value="1210" label="RemoteAccessHostAllowUrlForwarding"/>
+  <int value="1211" label="ScreenCaptureLocation"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
