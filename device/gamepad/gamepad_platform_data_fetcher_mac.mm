@@ -215,13 +215,7 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
     return;
   }
 
-  if (GamepadIdList::Get().HasTriggerRumbleSupport(gamepad_id)) {
-    state->data.vibration_actuator.type =
-        GamepadHapticActuatorType::kTriggerRumble;
-  } else {
-    state->data.vibration_actuator.type =
-        GamepadHapticActuatorType::kDualRumble;
-  }
+  state->data.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
   state->data.vibration_actuator.not_null = new_device->SupportsVibration();
 
   state->data.connected = true;

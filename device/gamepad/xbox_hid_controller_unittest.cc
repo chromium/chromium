@@ -24,9 +24,7 @@ namespace {
 constexpr size_t kReportLength = 9;
 
 constexpr uint8_t kStopVibration[] = {0x03,  // report ID
-                                      0x0f,
-                                      0x00,  // left trigger
-                                      0x00,  // right trigger
+                                      0x03, 0x00, 0x00,
                                       0x00,  // strong magnitude
                                       0x00,  // weak magnitude
                                       0xff, 0x00, 0x01};
@@ -34,9 +32,7 @@ static_assert(sizeof(kStopVibration) == kReportLength,
               "kStopVibration has incorrect size");
 
 constexpr uint8_t kStartVibration[] = {0x03,  // report ID
-                                       0x0f,
-                                       0x7f,  // left trigger
-                                       0xff,  // right trigger
+                                       0x03, 0x00, 0x00,
                                        0xff,  // strong magnitude
                                        0x7f,  // weak magnitude
                                        0xff, 0x00, 0x01};
@@ -53,8 +49,6 @@ constexpr double kZeroStartDelayMillis = 0.0;
 // these magnitudes.
 constexpr double kStrongMagnitude = 1.0;  // 100% intensity
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity
-constexpr double kLeftTrigger = 1.0;      // 100% intensity
-constexpr double kRightTrigger = 0.5;     // 50% intensity
 
 constexpr base::TimeDelta kPendingTaskDuration =
     base::Milliseconds(kDurationMillis);
@@ -100,14 +94,12 @@ class XboxHidControllerTest : public testing::Test {
       double start_delay,
       double strong_magnitude,
       double weak_magnitude,
-      double left_trigger,
-      double right_trigger,
       mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback) {
     gamepad_->PlayEffect(
         mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble,
-        mojom::GamepadEffectParameters::New(kDurationMillis, start_delay,
-                                            strong_magnitude, weak_magnitude,
-                                            left_trigger, right_trigger),
+        mojom::GamepadEffectParameters::New(
+            kDurationMillis, start_delay, strong_magnitude, weak_magnitude,
+            /*left_trigger=*/0, /*right_trigger=*/0),
         std::move(callback), base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -138,8 +130,7 @@ TEST_F(XboxHidControllerTest, PlayEffect) {
   EXPECT_EQ(0, callback_count_);
 
   PostPlayEffect(
-      kZeroStartDelayMillis, kStrongMagnitude, kWeakMagnitude, kLeftTrigger,
-      kRightTrigger,
+      kZeroStartDelayMillis, kStrongMagnitude, kWeakMagnitude,
       base::BindOnce(&XboxHidControllerTest::Callback, base::Unretained(this)));
 
   // Run the queued task and start vibration.
