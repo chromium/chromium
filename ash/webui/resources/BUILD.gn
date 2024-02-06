@@ -83,6 +83,7 @@ grit("help_app_bundle_resources") {
         "//ash/webui/help_app_ui/resources/prod/help_app_bundle_resources.grd"
   } else {
     source = "//ash/webui/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd"
+    deps = [ "//ash/webui/help_app_ui/resources/mock:build_ts" ]
   }
 
   use_brotli = true

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Placeholder js file for mock app. Runs in an isolated guest.
+ * @fileoverview Placeholder file for mock app. Runs in an isolated guest.
  */
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.location.pathname === '/background') {
     // In the background page, don't render the app.
@@ -30,6 +31,7 @@ async function doBackgroundTasks() {
     title: 'Title',
     mainCategoryName: 'Help',
     tags: ['verycomplicatedsearchquery'],
+    tagLocale: '',
     urlPathWithParameters: 'help/sub/3399763/',
     locale: '',
   }]);
@@ -42,7 +44,7 @@ async function doBackgroundTasks() {
  * go/help-app-internal-initInAppSearchIndex and should be kept up to date with
  * the internal version.
  */
- async function initInAppSearchIndex() {
+async function initInAppSearchIndex() {
   await window.customLaunchData.delegate.clearSearchIndex();
   await window.customLaunchData.delegate.addOrUpdateSearchIndex([
     {

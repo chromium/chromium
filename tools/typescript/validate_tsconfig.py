@@ -120,6 +120,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
       # exception.
       'ash/webui/media_app_ui/',
+      # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
+      # remove.
+      'ash/webui/help_app_ui/',
       # TODO(b/315002705): Migrate shimless_rma to TypeScript and remove
       # exception.
       'ash/webui/shimless_rma/',
