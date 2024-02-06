@@ -3866,27 +3866,12 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-webassembly-garbage-collection",
-    "owners": [ "adamk@chromium.org", "jkummerow@chromium.org", "wasm-team@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-webassembly-lazy-compilation",
     "owners": [ "clemensb@chromium.org", "wasm-team@google.com" ],
     // This flag is often used by developers and partners to test
     // impact on performance or startup time if lazy compilation is
     // disabled and thus all code is compiled ahead of time.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-webassembly-relaxed-simd",
-    "owners": [ "gdeepti@chromium.org", "wasm-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "enable-webassembly-stringref",
-    "owners": [ "adamk@chromium.org", "jkummerow@chromium.org", "wasm-team@google.com" ],
-    "expiry_milestone": 122
   },
   {
     "name": "enable-webassembly-tiering",

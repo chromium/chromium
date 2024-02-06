@@ -173,20 +173,9 @@ RenderProcessImpl::RenderProcessImpl()
                         "--experimental-wasm-jspi",
                         "--no-experimental-wasm-jspi");
 
-  SetV8FlagIfOverridden(features::kWebAssemblyGarbageCollection,
-                        "--experimental-wasm-gc", "--no-experimental-wasm-gc");
-
   SetV8FlagIfOverridden(features::kWebAssemblyLazyCompilation,
                         "--wasm-lazy-compilation",
                         "--no-wasm-lazy-compilation");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyRelaxedSimd,
-                        "--experimental-wasm-relaxed-simd",
-                        "--no-experimental-wasm-relaxed-simd");
-
-  SetV8FlagIfOverridden(features::kWebAssemblyStringref,
-                        "--experimental-wasm-stringref",
-                        "--no-experimental-wasm-stringref");
 
   SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
                         "--no-wasm-tier-up");

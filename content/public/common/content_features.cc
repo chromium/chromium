@@ -1181,27 +1181,10 @@ BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable support for the WebAssembly Garbage Collection proposal:
-// https://github.com/WebAssembly/gc.
-BASE_FEATURE(kWebAssemblyGarbageCollection,
-             "WebAssemblyGarbageCollection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable WebAssembly lazy compilation (JIT on first call).
 BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the use of WebAssembly Relaxed SIMD operations
-BASE_FEATURE(kWebAssemblyRelaxedSimd,
-             "WebAssemblyRelaxedSimd",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable support for the WebAssembly Stringref proposal:
-// https://github.com/WebAssembly/stringref.
-BASE_FEATURE(kWebAssemblyStringref,
-             "WebAssemblyStringref",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 BASE_FEATURE(kWebAssemblyTiering,
