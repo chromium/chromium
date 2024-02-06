@@ -17,9 +17,7 @@
 namespace ash {
 namespace {
 
-class TestBubbleContentsWrapper
-    : public BubbleContentsWrapper,
-      public base::SupportsWeakPtr<TestBubbleContentsWrapper> {
+class TestBubbleContentsWrapper final : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
       : BubbleContentsWrapper(GURL(""),
@@ -36,8 +34,11 @@ class TestBubbleContentsWrapper
   // BubbleContentsWrapper:
   void ReloadWebContents() override {}
   base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
-    return AsWeakPtr();
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+ private:
+  base::WeakPtrFactory<TestBubbleContentsWrapper> weak_ptr_factory_{this};
 };
 
 using MakoRewriteViewTest = ChromeViewsTestBase;
