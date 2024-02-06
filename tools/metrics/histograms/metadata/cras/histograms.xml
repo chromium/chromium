@@ -160,7 +160,7 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.BusyloopLength" units="units" expires_after="2024-06-01">
+<histogram name="Cras.BusyloopLength" units="units" expires_after="2024-08-04">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
-    units="%" expires_after="2024-06-01">
+    units="%" expires_after="2024-08-04">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
