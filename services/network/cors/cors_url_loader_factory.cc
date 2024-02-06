@@ -415,11 +415,6 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       }
     }
 
-    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> observer_remote;
-    if (url_loader_network_service_observer_.is_bound()) {
-      url_loader_network_service_observer_->Clone(
-          observer_remote.InitWithNewPipeAndPassReceiver());
-    }
     auto loader = std::make_unique<CorsURLLoader>(
         std::move(receiver), process_id_, request_id, options,
         base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
