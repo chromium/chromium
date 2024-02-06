@@ -73,6 +73,32 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
   loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleManifests) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "multiple_manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(), install_future.GetCallback(),
+      /*use_fallback=*/false);
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+
+  // multiple_manifest_test_page.html includes both manifest_with_id.json and
+  // manifest.json. Section 4.6.7.10 of the HTML spec says the first manifest
+  // should be used.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppManifestId(app_id),
+            https_server()->GetURL("/some_id"));
+}
+
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
