@@ -1651,6 +1651,18 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
       video_frame_is_pure_sw ||
       video_frame->shared_image_format_type() == SharedImageFormatType::kLegacy;
 
+  // It is not possible for VideoFrames holding legacy mailboxes to reach this
+  // function. The reason is the following:
+  // * VideoFrames holding legacy mailboxes must have exactly one texture
+  // * By definition, they are not using multiplanar SharedImages (since they
+  // are not using SharedImage at all)
+  // * This function only has two entrypoints: One from
+  // CopyVideoFrameTexturesToGLTexture() that is conditional on the mailbox
+  // either having more than one texture or holding a multiplanar SharedImage,
+  // and one from CopyVideoFrameYUVDataToGLTexture(), which itself is a codepath
+  // that is used only when the VideoFrame has no textures.
+  DUMP_WILL_BE_CHECK(!video_frame_is_legacy_mailbox);
+
   bool use_legacy_mailboxes_for_upload =
       yuv_rgb_conversion_not_supported || video_frame_is_legacy_mailbox ||
       video_frame_is_pure_sw ||
