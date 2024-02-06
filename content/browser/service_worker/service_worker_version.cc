@@ -2378,9 +2378,8 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   params->controller_receiver = std::move(controller_receiver_);
 
   params->provider_info = std::move(provider_info);
-
+  params->service_worker_token = worker_host_->token();
   params->ukm_source_id = ukm_source_id_;
-
   params->storage_key = key_;
 
   // policy_container_host could be null for registration restored from old DB
