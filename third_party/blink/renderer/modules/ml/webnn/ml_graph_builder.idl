@@ -248,6 +248,7 @@ dictionary MLSplitOptions {
 
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
+  [RaisesException] MLOperand l2Pool2d(MLOperand input, optional MLPool2dOptions options = {});
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);

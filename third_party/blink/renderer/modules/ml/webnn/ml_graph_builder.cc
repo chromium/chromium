@@ -1309,6 +1309,13 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
                      options, exception_state);
 }
 
+MLOperand* MLGraphBuilder::l2Pool2d(const MLOperand* input,
+                                    const MLPool2dOptions* options,
+                                    ExceptionState& exception_state) {
+  return BuildPool2d(this, MLOperator::OperatorKind::kL2Pool2d, input, options,
+                     exception_state);
+}
+
 MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
                                      const MLPool2dOptions* options,
                                      ExceptionState& exception_state) {

@@ -136,7 +136,7 @@ MLOperand* BuildPad(V8TestingScope& scope,
                     const Vector<uint32_t>& endingPadding,
                     const MLPadOptions* options = MLPadOptions::Create());
 
-enum class Pool2dKind { kAverage, kMax };
+enum class Pool2dKind { kAverage, kL2, kMax };
 
 MLOperand* BuildPool2d(
     V8TestingScope& scope,

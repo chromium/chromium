@@ -102,6 +102,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "hardSwish";
     case MLOperator::OperatorKind::kAveragePool2d:
       return "averagePool2d";
+    case MLOperator::OperatorKind::kL2Pool2d:
+      return "l2Pool2d";
     case MLOperator::OperatorKind::kMaxPool2d:
       return "maxPool2d";
     case MLOperator::OperatorKind::kMatmul:

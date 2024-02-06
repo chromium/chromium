@@ -5679,6 +5679,7 @@ interface MLGraphBuilder
     method identity
     method input
     method instanceNormalization
+    method l2Pool2d
     method layerNormalization
     method leakyRelu
     method lesser

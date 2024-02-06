@@ -241,6 +241,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* averagePool2d(const MLOperand* input,
                            const MLPool2dOptions* options,
                            ExceptionState& exception_state);
+  MLOperand* l2Pool2d(const MLOperand* input,
+                      const MLPool2dOptions* options,
+                      ExceptionState& exception_state);
   MLOperand* maxPool2d(const MLOperand* input,
                        const MLPool2dOptions* options,
                        ExceptionState& exception_state);

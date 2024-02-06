@@ -2539,6 +2539,9 @@ MLOperand* BuildPool2d(V8TestingScope& scope,
       output =
           builder->averagePool2d(input, options, scope.GetExceptionState());
       break;
+    case Pool2dKind::kL2:
+      output = builder->l2Pool2d(input, options, scope.GetExceptionState());
+      break;
     case Pool2dKind::kMax:
       output = builder->maxPool2d(input, options, scope.GetExceptionState());
       break;
@@ -2558,6 +2561,9 @@ void CheckPool2dOutput(const MLOperand* input,
     case Pool2dKind::kAverage:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kAveragePool2d);
       break;
+    case Pool2dKind::kL2:
+      EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kL2Pool2d);
+      break;
     case Pool2dKind::kMax:
       EXPECT_EQ(pool2d->Kind(), MLOperator::OperatorKind::kMaxPool2d);
       break;
@@ -2571,7 +2577,8 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  const auto Pool2dKinds = {Pool2dKind::kAverage, Pool2dKind::kMax};
+  const auto Pool2dKinds = {Pool2dKind::kAverage, Pool2dKind::kL2,
+                            Pool2dKind::kMax};
   for (const auto pool2d_kind : Pool2dKinds) {
     {
       // Test pool2d with default options.

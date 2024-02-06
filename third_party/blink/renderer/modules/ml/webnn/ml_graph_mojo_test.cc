@@ -3594,6 +3594,7 @@ struct Pool2dTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     Test(helper, scope, builder, Pool2dKind::kAverage);
+    Test(helper, scope, builder, Pool2dKind::kL2);
     Test(helper, scope, builder, Pool2dKind::kMax);
   }
 
@@ -3641,35 +3642,38 @@ struct Pool2dTester {
     ASSERT_EQ(graph_info->operations.size(), 1u);
     auto& operation = graph_info->operations[0];
     EXPECT_TRUE(operation->is_pool2d());
-    auto& poo2d_mojo = operation->get_pool2d();
+    auto& pool2d_mojo = operation->get_pool2d();
     switch (kind) {
       case Pool2dKind::kAverage:
-        EXPECT_EQ(poo2d_mojo->kind, blink_mojom::Pool2d::Kind::kAveragePool2d);
+        EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kAveragePool2d);
+        break;
+      case Pool2dKind::kL2:
+        EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kL2Pool2d);
         break;
       case Pool2dKind::kMax:
-        EXPECT_EQ(poo2d_mojo->kind, blink_mojom::Pool2d::Kind::kMaxPool2d);
+        EXPECT_EQ(pool2d_mojo->kind, blink_mojom::Pool2d::Kind::kMaxPool2d);
         break;
       default:
         NOTREACHED();
     }
     // Validate window dimensions.
-    EXPECT_EQ(poo2d_mojo->window_dimensions->height,
+    EXPECT_EQ(pool2d_mojo->window_dimensions->height,
               expected_attributes.window_dimensions[0]);
-    EXPECT_EQ(poo2d_mojo->window_dimensions->width,
+    EXPECT_EQ(pool2d_mojo->window_dimensions->width,
               expected_attributes.window_dimensions[1]);
     // Validate explicit padding.
     auto& expected_padding = expected_attributes.padding;
-    EXPECT_EQ(poo2d_mojo->padding->beginning->height, expected_padding[0]);
-    EXPECT_EQ(poo2d_mojo->padding->ending->height, expected_padding[1]);
-    EXPECT_EQ(poo2d_mojo->padding->beginning->width, expected_padding[2]);
-    EXPECT_EQ(poo2d_mojo->padding->ending->width, expected_padding[3]);
+    EXPECT_EQ(pool2d_mojo->padding->beginning->height, expected_padding[0]);
+    EXPECT_EQ(pool2d_mojo->padding->ending->height, expected_padding[1]);
+    EXPECT_EQ(pool2d_mojo->padding->beginning->width, expected_padding[2]);
+    EXPECT_EQ(pool2d_mojo->padding->ending->width, expected_padding[3]);
     // Validate strides
-    EXPECT_EQ(poo2d_mojo->strides->height, expected_attributes.strides[0]);
-    EXPECT_EQ(poo2d_mojo->strides->width, expected_attributes.strides[1]);
+    EXPECT_EQ(pool2d_mojo->strides->height, expected_attributes.strides[0]);
+    EXPECT_EQ(pool2d_mojo->strides->width, expected_attributes.strides[1]);
     // Validate dilations.
-    EXPECT_EQ(poo2d_mojo->dilations->height, expected_attributes.dilations[0]);
-    EXPECT_EQ(poo2d_mojo->dilations->width, expected_attributes.dilations[1]);
-    EXPECT_EQ(poo2d_mojo->layout, expected_attributes.layout);
+    EXPECT_EQ(pool2d_mojo->dilations->height, expected_attributes.dilations[0]);
+    EXPECT_EQ(pool2d_mojo->dilations->width, expected_attributes.dilations[1]);
+    EXPECT_EQ(pool2d_mojo->layout, expected_attributes.layout);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =

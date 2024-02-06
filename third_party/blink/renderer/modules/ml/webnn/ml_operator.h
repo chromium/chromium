@@ -66,6 +66,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kHardSigmoid,
     kHardSwish,
     kAveragePool2d,
+    kL2Pool2d,
     kMatmul,
     kMaxPool2d,
     kPad,
