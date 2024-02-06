@@ -1944,6 +1944,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.TimeToShow.{WarmUpLevel}" units="ms"
+    expires_after="2024-12-31">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    This tracks the time between when the Tab Search WebUI bubble widget is
+    first created and when it is first shown to users as reported by the bubble
+    widget's ui compositor. This metric is only logged for the specific warm-up
+    level. The warm-up level indicates the readiness of the browser when it was
+    about to show this WebUI.
+
+    This metric is emitted when the bubble window is first revealed.
+  </summary>
+  <token key="WarmUpLevel">
+    <variant name="DedicatedRenderer"
+        summary="Uses a renderer that already hosts other top chrome WebUIs"/>
+    <variant name="NavigatedWebContents"
+        summary="Uses a WebContents that has already navigated to this WebUI"/>
+    <variant name="NoRenderer" summary="No renderer can be used"/>
+    <variant name="RedirectedRenderer"
+        summary="Uses a redirected WebContents. Note: currently not used"/>
+    <variant name="SpareRenderer" summary="Uses a spare renderer"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}In{State}List"
     units="tabs" expires_after="2024-12-31">
   <owner>tluk@chromium.org</owner>

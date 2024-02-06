@@ -12,7 +12,38 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+
+namespace {
+
+void DestroySpareRenderProcess() {
+  content::RenderProcessHost* spare_render_process_host =
+      content::RenderProcessHost::GetSpareRenderProcessHostForTesting();
+  if (!spare_render_process_host) {
+    return;
+  }
+
+  content::RenderProcessHostWatcher kill_observer(
+      spare_render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  spare_render_process_host->FastShutdownIfPossible(0);
+  kill_observer.Wait();
+}
+
+// Close the bubble, clear any cached content wrapper, including the ones
+// stored in the contents wrapper service.
+void DestroyBubble(WebUIBubbleManager* bubble_manager, Profile* profile) {
+  bubble_manager->CloseBubble();
+  bubble_manager->ResetContentsWrapperForTesting();
+  if (auto* service =
+          BubbleContentsWrapperServiceFactory::GetForProfile(profile, true)) {
+    service->Shutdown();
+  }
+  base::RunLoop().RunUntilIdle();
+}
+
+}  // namespace
 
 class TestWebUIController : public ui::MojoBubbleWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
@@ -53,10 +84,7 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   // content::BrowserTestBase:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    bubble_manager_ =
-        std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
-            BrowserView::GetBrowserViewForBrowser(browser()),
-            browser()->profile(), GURL("chrome://test"), 1);
+    bubble_manager_ = MakeBubbleManager();
   }
   void TearDownOnMainThread() override {
     bubble_manager_.reset();
@@ -64,6 +92,15 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   }
 
   WebUIBubbleManager* bubble_manager() { return bubble_manager_.get(); }
+
+  // WebContents under the ".top-chrome" pseudo-TLD will reuse the render
+  // process.
+  std::unique_ptr<WebUIBubbleManager> MakeBubbleManager(
+      GURL site_url = GURL("chrome://test.top-chrome")) {
+    return std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
+        BrowserView::GetBrowserViewForBrowser(browser()), browser()->profile(),
+        site_url, 1);
+  }
 
   void DestroyBubbleManager() { bubble_manager_.reset(); }
 
@@ -114,4 +151,39 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
   // the bubble is closed synchronously.
   DestroyBubbleManager();
   EXPECT_FALSE(bubble_view);
+}
+
+// Verifies that the warm-up levels are correctly recorded.
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, WarmupLevel) {
+  // Use the spare renderer if there is one.
+  EXPECT_NE(content::RenderProcessHost::GetSpareRenderProcessHostForTesting(),
+            nullptr);
+  bubble_manager()->ShowBubble();
+  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
+            WebUIBubbleWarmUpLevel::kSpareRenderer);
+
+  // Create a new process if there is no spare renderer.
+  DestroySpareRenderProcess();
+  DestroyBubble(bubble_manager(), browser()->profile());
+  bubble_manager()->ShowBubble();
+  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
+            WebUIBubbleWarmUpLevel::kNoRenderer);
+
+  // Use the process dedicated to top chrome WebUIs if there is one.
+  DestroyBubble(bubble_manager(), browser()->profile());
+  // Use a different domain under .top-chrome so that the WebContents
+  // is not reused if WebUIBubblePerProfilePersistence is enabled.
+  std::unique_ptr<WebUIBubbleManager> another_bubble_manager =
+      MakeBubbleManager(GURL("chrome://test2.top-chrome"));
+  another_bubble_manager->ShowBubble();
+  bubble_manager()->ShowBubble();
+  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
+            WebUIBubbleWarmUpLevel::kDedicatedRenderer);
+
+  // Use the cached WebContents if there is one.
+  bubble_manager()->CloseBubble();
+  base::RunLoop().RunUntilIdle();
+  bubble_manager()->ShowBubble();
+  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
+            WebUIBubbleWarmUpLevel::kNavigatedWebContents);
 }

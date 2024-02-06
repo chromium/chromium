@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
+#include "base/notimplemented.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,7 +48,35 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   bubble_init_start_time_ = base::TimeTicks::Now();
 
+  const content::RenderProcessHost* spare_render_process_host =
+      content::RenderProcessHost::GetSpareRenderProcessHost();
+  bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kNoRenderer;
+
   bubble_view_ = CreateWebUIBubbleDialog(anchor, arrow);
+
+  content::RenderProcessHost* render_process_host = bubble_view_->web_view()
+                                                        ->GetWebContents()
+                                                        ->GetPrimaryMainFrame()
+                                                        ->GetProcess();
+  const bool bubble_using_spare_render_process =
+      render_process_host == spare_render_process_host;
+
+  size_t top_chrome_frames = 0;
+  render_process_host->ForEachRenderFrameHost(
+      [&top_chrome_frames](content::RenderFrameHost* rfh) {
+        top_chrome_frames +=
+            base::EndsWith(rfh->GetSiteInstance()->GetSiteURL().host_piece(),
+                           chrome::kChromeUITopChromeDomain);
+      });
+  const bool bubble_reused_render_process = top_chrome_frames > 1;
+
+  if (bubble_using_cached_web_contents_) {
+    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kNavigatedWebContents;
+  } else if (bubble_using_spare_render_process) {
+    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kSpareRenderer;
+  } else if (bubble_reused_render_process) {
+    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kDedicatedRenderer;
+  }
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
@@ -100,4 +132,22 @@ void WebUIBubbleManager::ResetContentsWrapper() {
 
 void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
   disable_close_bubble_helper_ = true;
+}
+
+std::string ToString(WebUIBubbleWarmUpLevel warmup_level) {
+  switch (warmup_level) {
+    case WebUIBubbleWarmUpLevel::kNoRenderer:
+      return "NoRenderer";
+    case WebUIBubbleWarmUpLevel::kSpareRenderer:
+      return "SpareRenderer";
+    case WebUIBubbleWarmUpLevel::kDedicatedRenderer:
+      return "DedicatedRenderer";
+    case WebUIBubbleWarmUpLevel::kRedirectedWebContents:
+      return "RedirectedWebContents";
+    case WebUIBubbleWarmUpLevel::kNavigatedWebContents:
+      return "NavigatedWebContents";
+    default:
+      NOTIMPLEMENTED();
+      return "";
+  }
 }

@@ -3120,9 +3120,14 @@ void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
 }
 
 // static
-RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
+RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHost() {
   return SpareRenderProcessHostManager::GetInstance()
       .spare_render_process_host();
+}
+
+// static
+RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
+  return GetSpareRenderProcessHost();
 }
 
 // static

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,9 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -26,6 +30,25 @@
 class GURL;
 class Profile;
 class WebUIBubbleDialogView;
+
+// The readiness levels of the browser prior to showing a new WebUI bubble,
+// ordered by increasing readiness. Higher levels have lower latency at the cost
+// of greater memory use.
+enum class WebUIBubbleWarmUpLevel {
+  // No render process is available. No pre-existing process, including spare
+  // renderers, can be used or reused for this WebUI.
+  kNoRenderer,
+  // Uses a spare render process for this WebUI.
+  kSpareRenderer,
+  // Uses a render process that already hosts other WebUIs prior to this WebUI.
+  kDedicatedRenderer,
+  // Uses a WebContents that is initially on a different domain and requires
+  // redirection to this WebUI.
+  // Note: this is not currently used anywhere, but worth further investigation.
+  kRedirectedWebContents,
+  // Uses a WebContents that has already navigated to this WebUI.
+  kNavigatedWebContents,
+};
 
 // WebUIBubbleManager handles the creation / destruction of the WebUI bubble.
 // This is needed to deal with the asynchronous presentation of WebUI.
@@ -44,6 +67,10 @@ class WebUIBubbleManager : public views::WidgetObserver {
   views::Widget* GetBubbleWidget() const;
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
+  }
+  WebUIBubbleWarmUpLevel bubble_warmup_level() const {
+    CHECK(bubble_warmup_level_.has_value());
+    return *bubble_warmup_level_;
   }
 
   // Creates the persistent renderer process if the feature is enabled.
@@ -86,6 +113,10 @@ class WebUIBubbleManager : public views::WidgetObserver {
   // Tracks whether the current bubble was created by reusing a preloaded web
   // contents.
   bool bubble_using_cached_web_contents_ = false;
+
+  // The readiness of the browser when it is about to show this
+  // bubble. See WebUIBubbleWarmUpLevel.
+  std::optional<WebUIBubbleWarmUpLevel> bubble_warmup_level_;
 
   // A timer controlling how long the |cached_web_view_| is cached for.
   std::unique_ptr<base::RetainingOneShotTimer> cache_timer_;
@@ -138,7 +169,8 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
         BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
     if (service && base::FeatureList::IsEnabled(
                        features::kWebUIBubblePerProfilePersistence)) {
-      set_bubble_using_cached_web_contents(true);
+      set_bubble_using_cached_web_contents(
+          !!service->GetBubbleContentsWrapperFromURL(webui_url_));
 
       // If using per-profile WebContents persistence get the associated
       // BubbleContentsWrapper from the BubbleContentsWrapperService.
@@ -194,5 +226,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   const GURL webui_url_;
   const int task_manager_string_id_;
 };
+
+std::string ToString(WebUIBubbleWarmUpLevel warmup_level);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_MANAGER_H_

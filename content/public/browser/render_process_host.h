@@ -775,6 +775,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Return the spare RenderProcessHost, if it exists. There is at most one
   // globally-used spare RenderProcessHost at any time.
+  // TODO(crbug.com/1519190): remove the non-test method once the performance
+  // investigation is finished.
+  static RenderProcessHost* GetSpareRenderProcessHost();
   static RenderProcessHost* GetSpareRenderProcessHostForTesting();
 
   // Registers a callback to be notified when the spare RenderProcessHost is
