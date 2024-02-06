@@ -1338,9 +1338,6 @@ extern const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[];
 extern const char kWebMachineLearningNeuralNetworkName[];
 extern const char kWebMachineLearningNeuralNetworkDescription[];
 
-extern const char kNotificationInteractionHistoryName[];
-extern const char kNotificationInteractionHistoryDescription[];
-
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

@@ -2343,11 +2343,6 @@ const char kSystemProxyForSystemServicesDescription[] =
     "network connectivity to use the system-proxy daemon for authentication to "
     "remote HTTP web proxies.";
 
-const char kNotificationInteractionHistoryName[] =
-    "Notification Interaction History";
-const char kNotificationInteractionHistoryDescription[] =
-    "Enable recording notification count and interaction.";
-
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

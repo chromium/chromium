@@ -5559,15 +5559,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "notification-interaction-history",
-    "owners": [
-      "sideyilmaz@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 126

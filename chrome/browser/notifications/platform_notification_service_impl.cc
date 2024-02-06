@@ -228,14 +228,11 @@ void PlatformNotificationServiceImpl::DisplayNotification(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification.origin_url());
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
     auto* service =
         NotificationsEngagementServiceFactory::GetForProfile(profile_);
     // This service might be missing for incognito profiles and in tests.
     if (service)
       service->RecordNotificationDisplayed(notification.origin_url());
-  }
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
@@ -273,13 +270,11 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
         ->LogPersistentNotificationSize(profile_, notification_data, origin);
   }
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile_);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationDisplayed(notification.origin_url());
+  auto* service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile_);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationDisplayed(notification.origin_url());
   }
 
   permissions::PermissionUmaUtil::RecordPermissionUsage(

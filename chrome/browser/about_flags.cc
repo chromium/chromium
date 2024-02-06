@@ -9668,12 +9668,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyCheckNotificationPermissions)},
 
-    {"notification-interaction-history",
-     flag_descriptions::kNotificationInteractionHistoryName,
-     flag_descriptions::kNotificationInteractionHistoryDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kNotificationInteractionHistory)},
-
     {"safety-check-unused-site-permissions",
      flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
      flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription,
