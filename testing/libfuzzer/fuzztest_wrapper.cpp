@@ -6,14 +6,17 @@
 // executable that contains multiple fuzzers.
 // The fuzzer binary is assumed to be in the same directory as this binary.
 
+#include <iostream>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 
 extern const char* kFuzzerBinary;
-extern const char* kFuzzerName;
+extern const char* kFuzzerArgs;
 
 int main(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
@@ -24,8 +27,22 @@ int main(int argc, const char* const* argv) {
   fuzzer_path = fuzzer_path.AppendASCII(kFuzzerBinary);
   base::LaunchOptions launch_options;
   base::CommandLine cmdline(fuzzer_path);
-  cmdline.AppendArguments(*base::CommandLine::ForCurrentProcess(), false);
-  cmdline.AppendArg(base::StringPrintf("--fuzz=%s", kFuzzerName));
+  std::vector<std::string_view> additional_args = base::SplitStringPiece(
+      kFuzzerArgs, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (auto arg : additional_args) {
+    cmdline.AppendArg(arg);
+  }
+  bool skipped_first = false;
+  for (auto arg : base::CommandLine::ForCurrentProcess()->argv()) {
+    if (!skipped_first) {
+      skipped_first = true;
+      continue;
+    }
+    // We avoid AppendArguments because it parses switches then reorders things.
+    cmdline.AppendArgNative(arg);
+  }
+  std::cerr << "FuzzTest wrapper launching:" << cmdline.GetCommandLineString()
+            << "\n";
   base::Process p = base::LaunchProcess(cmdline, launch_options);
   int exit_code;
   p.WaitForExit(&exit_code);

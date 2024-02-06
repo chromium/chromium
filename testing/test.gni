@@ -259,7 +259,48 @@ template("mixed_test") {
 
       generated_file(_fuzztest_generate_fuzzer + "_constants") {
         outputs = [ "$target_gen_dir/$target_name/constants.cpp" ]
-        contents = [ "const char* kFuzzerName = \"${fuzztest_unit}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
+
+        # If we're building for libfuzzer, we have to pass -undefok=max_len
+        # etc. for every conceivable libfuzzer argument, so that gtest doesn't
+        # get discombobulated by them. List is from https://llvm.org/docs/LibFuzzer.html
+        if (use_libfuzzer) {
+          known_libfuzzer_args = [
+            "help",
+            "seed",
+            "runs",
+            "max_len",
+            "len_control",
+            "timeout",
+            "rss_limit_mb",
+            "malloc_limit_mb",
+            "timeout_exitcode",
+            "error_exitcode",
+            "max_total_time",
+            "merge",
+            "merge_control_file",
+            "minimize_crash",
+            "reload",
+            "jobs",
+            "workers",
+            "dict",
+            "use_counters",
+            "reduce_inputs",
+            "use_value_profile",
+            "only_ascii",
+            "artifact_prefix",
+            "exact_artifact_path",
+            "print_pcs",
+            "print_final_stats",
+            "detect_leaks",
+            "close_fd_mask",
+          ]
+          fuzzer_args =
+              "-undefok=" + string_join(",", known_libfuzzer_args) + " "
+        } else {
+          fuzzer_args = ""
+        }
+        fuzzer_args += "--fuzz=$fuzztest_unit"
+        contents = [ "const char* kFuzzerArgs = \"${fuzzer_args}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
       }
 
       executable(_fuzztest_generate_fuzzer) {
