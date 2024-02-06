@@ -21,6 +21,8 @@
 
 extern const char kHistoryClusterSeenEventName[];
 extern const char kHistoryClusterUsedEventName[];
+extern const char kHistoryClustersSeenCategoriesEventName[];
+extern const char kHistoryClustersUsedCategoriesEventName[];
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;

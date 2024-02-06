@@ -636,6 +636,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.CategoryCountForMinWeightThreshold"
+    units="counts" expires_after="2024-06-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of categories in a cluster that met the minimum threshold to
+    be considered relevant for generating category frequency related metrics
+    used for ranking clusters. Logged at module UI creation time when
+    determining the data to display the module. Only logged on the 1P NTP and
+    when the history clusters module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HistoryClusters.DismissReason"
     enum="NTPHistoryClustersDismissReason" expires_after="2024-05-26">
   <owner>romanarora@chromium.org</owner>
@@ -835,6 +848,23 @@ chromium-metrics-reviews@google.com.
     time when determining if there is necessary data to display the module. Only
     logged on the 1P NTP and when the history clusters module is enabled.
   </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.HistoryClusters.SegmentationPlatformClientReadyAt{State}"
+    enum="Boolean" expires_after="2024-06-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether the segmentation platform client was ready when attempting to
+    record a module related event. Logged at a module lifecycle stage, such as
+    when showing or interacting with modules. Only logged on the 1P NTP and when
+    NTP modules are enabled.
+  </summary>
+  <token key="State">
+    <variant name="Seen" summary="module seen state"/>
+    <variant name="Used" summary="module used state"/>
+  </token>
 </histogram>
 
 <histogram name="NewTabPage.Images.ShownTime{ImageType}" units="ms"
@@ -1325,18 +1355,6 @@ chromium-metrics-reviews@google.com.
     restores a previously dismissed module via the toast on the New Tab Page.
     Every restoral emits a 1 which has no inherent meaning aside from a restoral
     occurred.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Modules.SegmentationPlatformClientReady"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>romanarora@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs whether the segmentation platform client was ready when attempting to
-    record a module related event. Logged at a module lifecycle stage, such as
-    when showing or interacting with modules. Only logged on the 1P NTP and when
-    NTP modules are enabled.
   </summary>
 </histogram>
 

@@ -34,6 +34,10 @@
 
 const char kHistoryClusterSeenEventName[] = "NewTabPage.HistoryClusters.Seen";
 const char kHistoryClusterUsedEventName[] = "NewTabPage.HistoryClusters.Used";
+const char kHistoryClustersSeenCategoriesEventName[] =
+    "NewTabPage.HistoryClusters.SeenCategories";
+const char kHistoryClustersUsedCategoriesEventName[] =
+    "NewTabPage.HistoryClusters.UsedCategories";
 
 HistoryClustersModuleRanker::HistoryClustersModuleRanker(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -103,7 +107,7 @@ void HistoryClustersModuleRanker::RankClusters(
 
   // The resulting vector of floats produced by the queries specified in the
   // `metadata` above is guaranteed to be of size equal to 2 * the size of the
-  // cluster_ids set.
+  // `cluster_ids` set.
   client->ProcessFeatures(
       metadata, base::Time::Now(),
       base::BindOnce(&HistoryClustersModuleRanker::OnMetricsQueryDataReady,

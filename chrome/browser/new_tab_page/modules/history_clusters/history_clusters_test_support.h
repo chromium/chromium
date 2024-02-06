@@ -12,6 +12,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/url_row.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -106,13 +107,18 @@ history::ClusterVisit SampleVisitForURL(
     history::VisitID id,
     GURL url,
     bool has_url_keyed_image = true,
-    const std::vector<std::string>& related_searches = {});
+    const std::vector<std::string>& related_searches = {},
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories = {});
 
-history::Cluster SampleCluster(int id,
-                               int srp_visits,
-                               int non_srp_visits,
-                               const std::vector<std::string> related_searches =
-                                   {"fruits", "red fruits", "healthy fruits"});
+history::Cluster SampleCluster(
+    int64_t id,
+    int srp_visits,
+    int non_srp_visits,
+    const std::vector<std::string>& related_searches = {"fruits", "red fruits",
+                                                        "healthy fruits"},
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories = {});
 
 history::Cluster SampleCluster(int srp_visits,
                                int non_srp_visits,

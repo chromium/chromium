@@ -190,6 +190,14 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // Parameter for setting the maximum number of candidate clusters for the
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
+// Parameter for setting the maximum number of category ids associated with a
+// cluster that will be recorded and queried to determine if a cluster belongs
+// to the most frequently seen or used category.
+extern const char kNtpHistoryClustersModuleMaxCategoriesToRecordParam[];
+// Parameter for setting the minimum category weight required for a category
+// associated with a cluster to be recorded and queried at a later time to
+// determine if a cluster belongs to the most frequently seen or used category.
+extern const char kNtpHistoryClustersModuleMinCategoryWeightToRecordParam[];
 // Parameter for setting the number of days to query for cluster metric data
 // that is used to compute metrics used cluster ranking.
 extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];

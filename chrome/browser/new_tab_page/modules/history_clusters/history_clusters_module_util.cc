@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,6 +41,8 @@ history::ClusterVisit GenerateSampleVisit(
     const std::string& page_title,
     const GURL& url,
     bool has_url_keyed_image,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories = {},
     const base::Time visit_time = base::Time::Now()) {
   history::URLRow url_row = history::URLRow(url);
   url_row.set_title(base::UTF8ToUTF16(page_title));
@@ -49,6 +52,11 @@ history::ClusterVisit GenerateSampleVisit(
   visit_row.is_known_to_sync = true;
   auto content_annotations = history::VisitContentAnnotations();
   content_annotations.has_url_keyed_image = has_url_keyed_image;
+  if (!categories.empty()) {
+    auto model_annotations = history::VisitContentModelAnnotations();
+    model_annotations.categories = categories;
+    content_annotations.model_annotations = std::move(model_annotations);
+  }
   history::AnnotatedVisit annotated_visit;
   annotated_visit.url_row = std::move(url_row);
   annotated_visit.visit_row = std::move(visit_row);
@@ -58,7 +66,6 @@ history::ClusterVisit GenerateSampleVisit(
   sample_visit.url_for_display =
       history_clusters::ComputeURLForDisplay(url, false);
   sample_visit.annotated_visit = std::move(annotated_visit);
-
   return sample_visit;
 }
 
@@ -182,13 +189,15 @@ history::Cluster GenerateSampleCluster(int64_t cluster_id,
            GURL("https://store.google.com/product/nest_doorbell?hl=en-US"),
            current_time - base::Hours(8)}};
 
+  const std::vector<history::VisitContentModelAnnotations::Category>
+      visit_categories = {{"Technology", 98}};
   std::vector<history::ClusterVisit> sample_visits;
   for (int i = 0; i < num_visits; i++) {
     const std::tuple<std::string, GURL, base::Time> kSampleData =
         kSampleUrlVisitData.at(i % kSampleUrlVisitData.size());
     sample_visits.push_back(GenerateSampleVisit(
         i, std::get<0>(kSampleData), std::get<1>(kSampleData), (i < num_images),
-        std::get<2>(kSampleData)));
+        visit_categories, std::get<2>(kSampleData)));
   }
 
   std::string kSampleSearchQuery = "google store products";
