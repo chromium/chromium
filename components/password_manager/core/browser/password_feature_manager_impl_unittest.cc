@@ -148,8 +148,8 @@ TEST_F(PasswordFeatureManagerImplTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSignedOut) {
-  // TODO(crbug.com/1509058): Extract this and similar combinations to helper
-  // methods, e.g. SetUpSignedOut().
+  // TODO(b/324036646): Extract this and similar combinations to helper methods,
+  // e.g. SetUpSignedOut().
   sync_service_.SetAccountInfo({});
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons(

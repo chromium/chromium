@@ -399,7 +399,7 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
     SignInAndEnableSync();
     ASSERT_TRUE(
         SyncDataTypeActiveWaiter(sync_service(), syncer::PREFERENCES).Wait());
-    // TODO(crbug.com/1509058): Re-implement sync suppression and uncomment.
+    // TODO(b/321217859): Re-implement sync suppression and uncomment.
     // ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
     // Pretend the migration finished.

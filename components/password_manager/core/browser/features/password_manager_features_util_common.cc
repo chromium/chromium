@@ -24,8 +24,6 @@ bool CanAccountStorageBeEnabled(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service) {
   CHECK(pref_service);
 
-  // TODO(crbug.com/1509058): Also, on Android the predicate should return true
-  // for syncing and false for signed-in non-syncing users.
   if (!CanCreateAccountStore(pref_service)) {
     return false;
   }
