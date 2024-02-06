@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+
 #include <stdint.h>
 
 #include <vector>
@@ -13,7 +15,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -30,9 +31,9 @@ namespace printing {
 namespace {
 
 scoped_refptr<base::RefCountedBytes> CreateTestData() {
-  const unsigned char blob1[] =
+  const unsigned char kBlob[] =
       "%PDF-1.4123461023561203947516345165913487104781236491654192345192345";
-  std::vector<unsigned char> preview_data(blob1, blob1 + sizeof(blob1));
+  std::vector<unsigned char> preview_data(std::begin(kBlob), std::end(kBlob));
   return base::MakeRefCounted<base::RefCountedBytes>(preview_data);
 }
 
@@ -46,12 +47,12 @@ bool IsShowingWebContentsModalDialog(WebContents* tab) {
 
 class PrintPreviewUIUnitTest : public PrintPreviewTest {
  public:
-  PrintPreviewUIUnitTest() {}
+  PrintPreviewUIUnitTest() = default;
 
   PrintPreviewUIUnitTest(const PrintPreviewUIUnitTest&) = delete;
   PrintPreviewUIUnitTest& operator=(const PrintPreviewUIUnitTest&) = delete;
 
-  ~PrintPreviewUIUnitTest() override {}
+  ~PrintPreviewUIUnitTest() override = default;
 
  protected:
   void SetUp() override {
@@ -59,32 +60,50 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
 
     chrome::NewTab(browser());
   }
+
+  PrintPreviewUI* StartPrintPreview() {
+    WebContents* initiator =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!initiator) {
+      ADD_FAILURE();
+      return nullptr;
+    }
+
+    EXPECT_FALSE(IsShowingWebContentsModalDialog(initiator));
+
+    auto* controller = PrintPreviewDialogController::GetInstance();
+    if (!controller) {
+      ADD_FAILURE();
+      return nullptr;
+    }
+
+    PrintViewManager* print_view_manager =
+        PrintViewManager::FromWebContents(initiator);
+    print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(),
+                                        /*has_selection=*/false);
+    WebContents* preview_dialog =
+        controller->GetOrCreatePreviewDialogForTesting(initiator);
+
+    EXPECT_NE(initiator, preview_dialog);
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+    EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
+
+    PrintPreviewUI* preview_ui =
+        preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
+    if (!preview_ui) {
+      ADD_FAILURE();
+      return nullptr;
+    }
+
+    preview_ui->SetPreviewUIId();
+    return preview_ui;
+  }
 };
 
 // Create/Get a preview tab for initiator.
 TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
-  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(initiator);
-  EXPECT_FALSE(IsShowingWebContentsModalDialog(initiator));
-
-  PrintPreviewDialogController* controller =
-      PrintPreviewDialogController::GetInstance();
-  ASSERT_TRUE(controller);
-
-  PrintViewManager* print_view_manager =
-      PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog =
-      controller->GetOrCreatePreviewDialogForTesting(initiator);
-
-  EXPECT_NE(initiator, preview_dialog);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
-
-  PrintPreviewUI* preview_ui =
-      preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
+  PrintPreviewUI* preview_ui = StartPrintPreview();
   ASSERT_TRUE(preview_ui);
-  preview_ui->SetPreviewUIId();
 
   scoped_refptr<base::RefCountedMemory> data;
   preview_ui->GetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
@@ -110,27 +129,8 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
 
 // Set and get the individual draft pages.
 TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
-  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(initiator);
-
-  PrintPreviewDialogController* controller =
-      PrintPreviewDialogController::GetInstance();
-  ASSERT_TRUE(controller);
-
-  PrintViewManager* print_view_manager =
-      PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog =
-      controller->GetOrCreatePreviewDialogForTesting(initiator);
-
-  EXPECT_NE(initiator, preview_dialog);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
-
-  PrintPreviewUI* preview_ui =
-      preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
+  PrintPreviewUI* preview_ui = StartPrintPreview();
   ASSERT_TRUE(preview_ui);
-  preview_ui->SetPreviewUIId();
 
   scoped_refptr<base::RefCountedMemory> data;
   preview_ui->GetPrintPreviewDataForIndex(FIRST_PAGE_INDEX, &data);
@@ -169,27 +169,8 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
 
 // Test the browser-side print preview cancellation functionality.
 TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
-  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(initiator);
-
-  PrintPreviewDialogController* controller =
-      PrintPreviewDialogController::GetInstance();
-  ASSERT_TRUE(controller);
-
-  PrintViewManager* print_view_manager =
-      PrintViewManager::FromWebContents(initiator);
-  print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(), false);
-  WebContents* preview_dialog =
-      controller->GetOrCreatePreviewDialogForTesting(initiator);
-
-  EXPECT_NE(initiator, preview_dialog);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
-
-  PrintPreviewUI* preview_ui =
-      preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
+  PrintPreviewUI* preview_ui = StartPrintPreview();
   ASSERT_TRUE(preview_ui);
-  preview_ui->SetPreviewUIId();
 
   // Test the initial state.
   EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(
@@ -218,8 +199,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
   WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(initiator);
 
-  PrintPreviewDialogController* controller =
-      PrintPreviewDialogController::GetInstance();
+  auto* controller = PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(controller);
 
   WebContents* preview_dialog =
