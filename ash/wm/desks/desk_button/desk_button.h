@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/shelf/shelf.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -97,6 +98,10 @@ class ASH_EXPORT DeskButton : public views::Button {
 
   // Image for the profile avatar.
   gfx::ImageSkia desk_avatar_image_;
+
+  // Profile summary of the desk's associated profile. It's cached during
+  // `UpdateAvatar()`.
+  LacrosProfileSummary profile_;
 
   // A label that displays the active desk's name.
   raw_ptr<views::Label> desk_name_label_;

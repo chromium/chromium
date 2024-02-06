@@ -237,8 +237,6 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *desk_name_label_);
 
-  UpdateLocaleSpecificSettings();
-
   // Use shelf view as the context menu controller so that it shows the same
   // context menu.
   set_context_menu_controller(
@@ -273,8 +271,8 @@ std::u16string DeskButton::GetTitle() const {
 }
 
 void DeskButton::UpdateUi(const Desk* active_desk) {
-  desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
   UpdateAvatar(active_desk);
+  UpdateLocaleSpecificSettings();
 }
 
 void DeskButton::UpdateAvatar(const Desk* active_desk) {
@@ -289,6 +287,7 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
       if (auto* summary =
               desk_profiles_delegate->GetProfilesSnapshotByProfileId(
                   active_desk->lacros_profile_id())) {
+        profile_ = *summary;
         desk_avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
             summary->icon, skia::ImageOperations::RESIZE_BEST,
             kDeskButtonAvatarSize);
@@ -305,9 +304,23 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
 }
 
 void DeskButton::UpdateLocaleSpecificSettings() {
-  const Desk* active_desk = DesksController::Get()->active_desk();
-  SetAccessibleName(l10n_util::GetStringFUTF16(IDS_SHELF_DESK_BUTTON_TITLE,
-                                               active_desk->name()));
+  // Update the accessible name.
+  DesksController* desk_controller = DesksController::Get();
+  const Desk* active_desk = desk_controller->active_desk();
+  if (desk_avatar_view_ && desk_avatar_view_->GetVisible()) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR, active_desk->name(),
+        base::UTF8ToUTF16(profile_.name), base::UTF8ToUTF16(profile_.email),
+        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
+        base::NumberToString16(desk_controller->GetNumberOfDesks())));
+  } else {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR, active_desk->name(),
+        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
+        base::NumberToString16(desk_controller->GetNumberOfDesks())));
+  }
+
+  // Update the button text since the default desk name can be locale specific.
   desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
 }
 

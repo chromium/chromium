@@ -278,19 +278,16 @@ Style notes:
         See all apps
       </message>
       <message name="IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE" desc="The title used for the previous desk button within the desk button on the shelf.">
-        Previous Desk: <ph name="PREVIOUS_DESK_NAME">$1<ex>Desk 1</ex></ph>, use Search+Space or keyboard shortcut: Shift+Search+<ph name="PREVIOUS_DESK_INDEX">$2<ex>1</ex></ph> to activate.
+        Previous desk: <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>1</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
-      <message name="IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE_16_DESKS" desc="The title used for the previous desk button within the desk button on the shelf when that desk is beyond the 8th desk.">
-        Previous Desk: <ph name="PREVIOUS_DESK_NAME">$1<ex>Desk 12</ex></ph>, use Search+Space to activate.
+      <message name="IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with no profile avatar.">
+        Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>2</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
-      <message name="IDS_SHELF_DESK_BUTTON_TITLE" desc="The title used for the desk button on the shelf.">
-        Current Desk: <ph name="CURRENT_DESK_NAME">$1<ex>Desk 2</ex></ph>, use Search+Space to open all desks menu.
+      <message name="IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with profile avatar.">
+        Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. <ph name="PROFILE_NAME">$2<ex>Profile name</ex></ph> <ph name="EMAIL">$3<ex>test@gmail.com</ex></ph>. Desk <ph name="DESK_INDEX">$4<ex>2</ex></ph> of <ph name="DESK_COUNT">$5<ex>3</ex></ph>.
       </message>
       <message name="IDS_SHELF_NEXT_DESK_BUTTON_TITLE" desc="The title used for the next desk button within the desk button on the shelf.">
-        Next Desk: <ph name="NEXT_DESK_NAME">$1<ex>Desk 3</ex></ph>, use Search+Space or keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX">$2<ex>3</ex></ph> to activate.
-      </message>
-      <message name="IDS_SHELF_NEXT_DESK_BUTTON_TITLE_16_DESKS" desc="The title used for the next desk button within the desk button on the shelf when that desk is beyond the 8th desk.">
-        Next Desk: <ph name="NEXT_DESK_NAME">$1<ex>Desk 14</ex></ph>, use Search+Space to activate.
+        Next desk: <ph name="DESK_NAME">$1<ex>Desk 3</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>3</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
 
 
