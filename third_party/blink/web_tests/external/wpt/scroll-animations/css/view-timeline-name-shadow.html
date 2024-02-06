@@ -6,7 +6,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
-<script src="/resources/declarative-shadow-dom-polyfill.js"></script>
 
 <main id=main></main>
 <script>
@@ -15,10 +14,6 @@
     main.append(template.content.cloneNode(true));
     main.offsetTop;
   }
-
-  setup(() => {
-    polyfill_declarative_shadow_dom(document);
-  });
 </script>
 <style>
   @keyframes anim {
