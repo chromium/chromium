@@ -117,8 +117,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
 }
 
+// Verify that when a group that holds all of the tabs in a window is closing
+// does not close the browser. Instead it should create a new tab.
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       CloseGroupClosesBrowser) {
+                       ClosingLastGroupInBrowserSpawnsNewTab) {
   ShowUi("SetUp");
 
   TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
@@ -143,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   EXPECT_EQ(0u, group_model->ListTabGroups().size());
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
-  EXPECT_EQ(0, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->IsAttemptingToCloseBrowser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(browser()->IsAttemptingToCloseBrowser());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
