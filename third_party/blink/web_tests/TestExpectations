@@ -211,6 +211,14 @@ crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow.w.html [ Failure Pass ]
 crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.w.html [ Failure Pass ]
 
+crbug.com/324053529 css3/filters/effect-reference-composite-hw.html [ Failure Pass ]
+crbug.com/324053529 svg/batik/filters/feTile.svg [ Failure Pass ]
+crbug.com/324053529 [ Linux ] compositing/reflections/masked-reflection-on-composited.html [ Failure Pass ]
+crbug.com/324053529 [ Linux ] css3/filters/effect-all-on-background-hw.html [ Failure Pass ]
+crbug.com/324053529 [ Linux ] css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
+crbug.com/324053529 [ Mac ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+crbug.com/324053529 [ Win ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 
