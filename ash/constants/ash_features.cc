@@ -2759,12 +2759,6 @@ BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the login shelf view is placed in its own widget instead of
-// sharing the shelf widget with other components.
-BASE_FEATURE(kUseLoginShelfWidget,
-             "UseLoginShelfWidget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 BASE_FEATURE(kUseMessagesStagingUrl,
@@ -4408,10 +4402,6 @@ bool IsTrilinearFilteringEnabled() {
 bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       kUnmanagedDeviceDeviceTrustConnectorEnabled);
-}
-
-bool IsUseLoginShelfWidgetEnabled() {
-  return base::FeatureList::IsEnabled(kUseLoginShelfWidget);
 }
 
 bool ShouldUseAndroidStagingSmds() {

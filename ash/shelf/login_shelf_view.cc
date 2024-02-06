@@ -723,11 +723,10 @@ void LoginShelfView::UpdateUi() {
   SetFocusBehavior(is_anything_focusable ? views::View::FocusBehavior::ALWAYS
                                          : views::View::FocusBehavior::NEVER);
 
-  // When the login shelf view is moved to its own widget, the login shelf
+  // The login shelf view lives in its own widget, therefore the login shelf
   // widget needs to change the size according to the login shelf view's
   // preferred size.
-  if (old_preferred_size != GetPreferredSize() &&
-      features::IsUseLoginShelfWidgetEnabled()) {
+  if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
   } else {
     DeprecatedLayoutImmediately();

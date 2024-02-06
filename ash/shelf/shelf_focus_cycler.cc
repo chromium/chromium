@@ -103,18 +103,9 @@ void ShelfFocusCycler::FocusDeskButton(bool last_element) {
 
 void ShelfFocusCycler::FocusShelf(bool last_element) {
   if (shelf_->shelf_widget()->GetLoginShelfView()->GetVisible()) {
-    // TODO(https://crbug.com/1343114): refactor the code below after the login
-    // shelf widget is ready.
-
-    if (features::IsUseLoginShelfWidgetEnabled()) {
-      LoginShelfWidget* login_shelf_widget = shelf_->login_shelf_widget();
-      login_shelf_widget->SetDefaultLastFocusableChild(last_element);
-      Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
-    } else {
-      ShelfWidget* shelf_widget = shelf_->shelf_widget();
-      shelf_widget->set_default_last_focusable_child(last_element);
-      Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
-    }
+    LoginShelfWidget* login_shelf_widget = shelf_->login_shelf_widget();
+    login_shelf_widget->SetDefaultLastFocusableChild(last_element);
+    Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
   } else {
     HotseatWidget* hotseat_widget = shelf_->hotseat_widget();
     hotseat_widget->scrollable_shelf_view()->set_default_last_focusable_child(

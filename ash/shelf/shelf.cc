@@ -470,10 +470,8 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   if (ash::features::IsDeskButtonEnabled()) {
     CreateDeskButtonWidget(shelf_container);
   }
-  if (features::IsUseLoginShelfWidgetEnabled()) {
-    login_shelf_widget_ =
-        std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
-  }
+  login_shelf_widget_ =
+      std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
 
   // Must occur after |shelf_widget_| is constructed because the system tray
   // constructors call back into Shelf::shelf_widget().
