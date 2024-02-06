@@ -101,6 +101,19 @@ TEST(BMPImageDecoderTest, crbug752898) {
   decoder->DecodeFrameBufferAtIndex(0);
 }
 
+// Verify that decoding this image does not crash.
+TEST(BMPImageDecoderTest, invalidBitmapOffset) {
+  static constexpr char kBmpFile[] =
+      "/images/resources/invalid-bitmap-offset.bmp";
+  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  ASSERT_TRUE(data.get());
+
+  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+  decoder->SetData(data.get(), true);
+  decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_TRUE(decoder->Failed());
+}
+
 // Verify that decoding an image with an unnecessary EOF marker does not crash.
 TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   static constexpr char kBmpFile[] = "/images/resources/unnecessary-eof.bmp";

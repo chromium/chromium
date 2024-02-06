@@ -382,6 +382,7 @@
 ../../web_tests/images/resources/invalid-animated-webp2.webp
 ../../web_tests/images/resources/invalid-animated-webp3.webp
 ../../web_tests/images/resources/invalid-animated-webp4.webp
+../../web_tests/images/resources/invalid-bitmap-offset.bmp
 ../../web_tests/images/resources/invalid.jpg
 ../../web_tests/images/resources/invalid_vp8_vp8x.webp
 ../../web_tests/images/resources/jpeg-height-exif-orientation.jpg
