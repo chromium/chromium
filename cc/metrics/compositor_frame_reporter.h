@@ -15,6 +15,7 @@
 
 #include <optional>
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -41,15 +42,19 @@ class FrameSequenceTrackerCollection;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
-  raw_ptr<DroppedFrameCounter> dropped_frame_counter = nullptr;
-  raw_ptr<LatencyUkmReporter> latency_ukm_reporter = nullptr;
-  raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers = nullptr;
-  raw_ptr<EventLatencyTracker, DanglingUntriaged> event_latency_tracker =
+  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+  // stacks.
+  RAW_PTR_EXCLUSION DroppedFrameCounter* dropped_frame_counter = nullptr;
+  RAW_PTR_EXCLUSION LatencyUkmReporter* latency_ukm_reporter = nullptr;
+  RAW_PTR_EXCLUSION FrameSequenceTrackerCollection* frame_sequence_trackers =
       nullptr;
-  raw_ptr<PredictorJankTracker> predictor_jank_tracker = nullptr;
-  raw_ptr<ScrollJankDroppedFrameTracker> scroll_jank_dropped_frame_tracker =
-      nullptr;
-  raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter = nullptr;
+  // TODO(crbug.com/1489080): This member was marked `DanglingUntriaged`
+  // before being unrewritten.
+  RAW_PTR_EXCLUSION EventLatencyTracker* event_latency_tracker = nullptr;
+  RAW_PTR_EXCLUSION PredictorJankTracker* predictor_jank_tracker = nullptr;
+  RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
+      scroll_jank_dropped_frame_tracker = nullptr;
+  RAW_PTR_EXCLUSION ScrollJankUkmReporter* scroll_jank_ukm_reporter = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
@@ -192,7 +197,9 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetLatency() const;
 
      private:
-      raw_ptr<const ProcessedBlinkBreakdown> owner_;
+      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+      // stacks.
+      RAW_PTR_EXCLUSION const ProcessedBlinkBreakdown* owner_;
 
       size_t index_ = 0;
     };
@@ -233,7 +240,9 @@ class CC_EXPORT CompositorFrameReporter {
       bool HasValue() const;
       void SkipBreakdownsIfNecessary();
 
-      raw_ptr<const ProcessedVizBreakdown> owner_;
+      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+      // stacks.
+      RAW_PTR_EXCLUSION const ProcessedVizBreakdown* owner_;
       const bool skip_swap_start_to_swap_end_;
 
       size_t index_ = 0;

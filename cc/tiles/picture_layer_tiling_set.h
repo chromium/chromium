@@ -180,7 +180,9 @@ class CC_EXPORT PictureLayerTilingSet {
    private:
     size_t NextTiling() const;
 
-    raw_ptr<const PictureLayerTilingSet> set_;
+    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+    // stacks.
+    RAW_PTR_EXCLUSION const PictureLayerTilingSet* set_;
     float coverage_scale_;
     PictureLayerTiling::CoverageIterator tiling_iter_;
     size_t current_tiling_;

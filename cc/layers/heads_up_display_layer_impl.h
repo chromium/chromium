@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
@@ -179,7 +179,10 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   // HUD's contents. The actual quad can't be created until UpdateHudTexture()
   // which happens during draw, so we hold this reference to it when
   // constructing the placeholder between these two steps in the draw process.
-  raw_ptr<viz::DrawQuad> placeholder_quad_ = nullptr;
+  //
+  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+  // stacks.
+  RAW_PTR_EXCLUSION viz::DrawQuad* placeholder_quad_ = nullptr;
   // Used for software raster when it will be uploaded to a texture.
   sk_sp<SkSurface> staging_surface_;
 

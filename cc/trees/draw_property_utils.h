@@ -50,9 +50,9 @@ UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
 void CC_EXPORT FindLayersThatNeedUpdates(LayerTreeHost* layer_tree_host,
                                          LayerList* update_layer_list);
 
-void CC_EXPORT FindLayersThatNeedUpdates(
-    LayerTreeImpl* layer_tree_impl,
-    std::vector<raw_ptr<LayerImpl, VectorExperimental>>* visible_layer_list);
+void CC_EXPORT
+FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
+                          std::vector<LayerImpl*>* visible_layer_list);
 
 gfx::Transform CC_EXPORT DrawTransform(const LayerImpl* layer,
                                        const TransformTree& transform_tree,

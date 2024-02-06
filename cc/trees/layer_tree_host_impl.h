@@ -20,6 +20,8 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -218,7 +220,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     std::optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
-    raw_ptr<const RenderSurfaceList> render_surface_list = nullptr;
+    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+    // stacks.
+    RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;
     LayerImplList will_draw_layers;
     bool has_no_damage = false;
     bool may_contain_video = false;

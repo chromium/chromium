@@ -1444,9 +1444,8 @@ void FindLayersThatNeedUpdates(LayerTreeHost* layer_tree_host,
   }
 }
 
-void FindLayersThatNeedUpdates(
-    LayerTreeImpl* layer_tree_impl,
-    std::vector<raw_ptr<LayerImpl, VectorExperimental>>* visible_layer_list) {
+void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
+                               std::vector<LayerImpl*>* visible_layer_list) {
   const PropertyTrees* property_trees = layer_tree_impl->property_trees();
   const EffectTree& effect_tree = property_trees->effect_tree();
 

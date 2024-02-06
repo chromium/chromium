@@ -5,7 +5,7 @@
 #ifndef CC_LAYERS_EFFECT_TREE_LAYER_LIST_ITERATOR_H_
 #define CC_LAYERS_EFFECT_TREE_LAYER_LIST_ITERATOR_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/trees/effect_node.h"
@@ -75,9 +75,11 @@ class CC_EXPORT EffectTreeLayerListIterator {
 
   struct Position {
     State state = State::kEnd;
-    raw_ptr<LayerImpl> current_layer = nullptr;
-    raw_ptr<RenderSurfaceImpl> current_render_surface = nullptr;
-    raw_ptr<RenderSurfaceImpl> target_render_surface = nullptr;
+    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+    // stacks.
+    RAW_PTR_EXCLUSION LayerImpl* current_layer = nullptr;
+    RAW_PTR_EXCLUSION RenderSurfaceImpl* current_render_surface = nullptr;
+    RAW_PTR_EXCLUSION RenderSurfaceImpl* target_render_surface = nullptr;
   };
 
   operator const Position() const {
@@ -119,8 +121,10 @@ class CC_EXPORT EffectTreeLayerListIterator {
   // render surface.
   int lowest_common_effect_tree_ancestor_index_;
 
-  raw_ptr<LayerTreeImpl> layer_tree_impl_;
-  raw_ptr<EffectTree> effect_tree_;
+  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+  // stacks.
+  RAW_PTR_EXCLUSION LayerTreeImpl* layer_tree_impl_;
+  RAW_PTR_EXCLUSION EffectTree* effect_tree_;
 };
 
 }  // namespace cc
