@@ -1267,8 +1267,8 @@ bool AutofillProfile::FinalizeAfterImport() {
   return success;
 }
 
-bool AutofillProfile::HasStructuredData() {
-  return base::ranges::any_of(kStructuredDataTypes, [this](auto type) {
+bool AutofillProfile::HasStructuredData() const {
+  return base::ranges::any_of(kStructuredDataTypes, [this](FieldType type) {
     return !this->GetRawInfo(type).empty();
   });
 }
