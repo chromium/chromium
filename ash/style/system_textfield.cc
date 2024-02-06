@@ -351,6 +351,10 @@ void SystemTextfield::UpdateTextColor() {
   render_text->set_selection_background_focused_color(
       color_provider->GetColor(selection_background_color_id_.value_or(
           cros_tokens::kCrosSysHighlightText)));
+
+  // Set placeholder text color
+  set_placeholder_text_color(color_provider->GetColor(
+      placeholder_text_color_id_.value_or(cros_tokens::kCrosSysDisabled)));
 }
 
 BEGIN_METADATA(SystemTextfield, views::Textfield)
