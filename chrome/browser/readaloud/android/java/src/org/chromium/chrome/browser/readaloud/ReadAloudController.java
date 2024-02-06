@@ -52,6 +52,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -327,6 +328,14 @@ public class ReadAloudController
                         }
 
                         @Override
+                        public void onActivityAttachmentChanged(
+                                Tab tab, @Nullable WindowAndroid window) {
+                            super.onActivityAttachmentChanged(tab, window);
+                            Log.d(TAG, "onActivityAttachmentChanged");
+                            maybeStopPlayback(tab);
+                        }
+
+                        @Override
                         protected void onTabSelected(Tab tab) {
                             super.onTabSelected(tab);
                             if (tab != null && tab.getUrl() != null) {
@@ -347,6 +356,7 @@ public class ReadAloudController
 
                         @Override
                         public void willCloseTab(Tab tab) {
+                            Log.d(TAG, "Tab closed");
                             maybeStopPlayback(tab);
                         }
                     };
