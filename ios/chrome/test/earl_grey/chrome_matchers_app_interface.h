@@ -123,12 +123,6 @@
 // Returns a matcher for the omnibox.
 + (id<GREYMatcher>)omnibox;
 
-// Returns a matcher for the omnibox at the bottom.
-+ (id<GREYMatcher>)omniboxAtBottom;
-
-// Returns a matcher for the omnibox on the top.
-+ (id<GREYMatcher>)omniboxOnTop;
-
 // Returns a matcher for the location view.
 + (id<GREYMatcher>)defocusedLocationView;
 

@@ -48,6 +48,19 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
   return grey_allOf(grey_selected(), BottomAddressBarOption(), nil);
 }
 
+id<GREYMatcher> BottomOmnibox() {
+  return grey_allOf(
+      chrome_test_util::DefocusedLocationView(),
+      grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
+      grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> TopOmnibox() {
+  return grey_allOf(chrome_test_util::DefocusedLocationView(),
+                    grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
+                    grey_sufficientlyVisible(), nil);
+}
+
 }  // namespace
 
 @interface AddressBarPreferenceTestCase : ChromeTestCase
@@ -77,7 +90,7 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 
   [ChromeEarlGrey loadURL:GURL("about:blank")];
   // The address bar should be on top.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxOnTop()]
+  [[EarlGrey selectElementWithMatcher:TopOmnibox()]
       assertWithMatcher:grey_notNil()];
 
   [self openAddressBarPreferenceSettingPage];
@@ -98,9 +111,9 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
       performAction:grey_tap()];
 
   // The address bar should be now on bottom.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxAtBottom()]
+  [[EarlGrey selectElementWithMatcher:BottomOmnibox()]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxOnTop()]
+  [[EarlGrey selectElementWithMatcher:TopOmnibox()]
       assertWithMatcher:grey_nil()];
 }
 
