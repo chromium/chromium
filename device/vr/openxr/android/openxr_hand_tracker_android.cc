@@ -37,10 +37,6 @@ OpenXrHandTrackerAndroid::interaction_profile() const {
   return mojom::OpenXrInteractionProfileType::kAndroidHandGestures;
 }
 
-GamepadMapping OpenXrHandTrackerAndroid::gamepad_mapping() const {
-  return GamepadMapping::kNone;
-}
-
 std::optional<gfx::Transform>
 OpenXrHandTrackerAndroid::GetBaseFromGripTransform() const {
   // We will treat the palm as our grip.

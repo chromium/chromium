@@ -20,7 +20,6 @@ class Transform;
 namespace device {
 
 class GamepadButton;
-enum class GamepadMapping;
 enum class OpenXrButtonType;
 enum class OpenXrHandednessType;
 class OpenXrExtensionHelper;
@@ -39,8 +38,6 @@ class OpenXrExtensionHelper;
 class OpenXrHandController {
  public:
   virtual mojom::OpenXrInteractionProfileType interaction_profile() const = 0;
-
-  virtual GamepadMapping gamepad_mapping() const = 0;
 
   // Gets the `base_from_grip` transform, where the `base` space is the one that
   // was passed in to "Update".

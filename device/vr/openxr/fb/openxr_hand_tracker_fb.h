@@ -26,7 +26,6 @@ class OpenXrHandTrackerFb : public OpenXrHandTracker,
 
   // OpenXrHandController
   mojom::OpenXrInteractionProfileType interaction_profile() const override;
-  GamepadMapping gamepad_mapping() const override;
   std::optional<gfx::Transform> GetBaseFromGripTransform() const override;
   std::optional<gfx::Transform> GetGripFromPointerTransform() const override;
   std::optional<GamepadButton> GetButton(OpenXrButtonType type) const override;

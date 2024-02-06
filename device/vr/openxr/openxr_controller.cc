@@ -330,6 +330,10 @@ XrResult OpenXrController::Update(XrSpace base_space,
   return XR_SUCCESS;
 }
 
+mojom::XRTargetRayMode OpenXrController::GetTargetRayMode() const {
+  return device::mojom::XRTargetRayMode::POINTING;
+}
+
 mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
     XrTime predicted_display_time) {
   // Description only need to be set once unless interaction profiles changes.
@@ -342,7 +346,7 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
     }
     description_ = device::mojom::XRInputSourceDescription::New();
     description_->handedness = GetHandness();
-    description_->target_ray_mode = device::mojom::XRTargetRayMode::POINTING;
+    description_->target_ray_mode = GetTargetRayMode();
     description_->profiles =
         path_helper_->GetInputProfiles(interaction_profile_);
   }
@@ -418,14 +422,27 @@ std::vector<double> OpenXrController::GetAxis(OpenXrAxisType type) const {
   return {axis_state_v2f.currentState.x, axis_state_v2f.currentState.y};
 }
 
-absl::optional<Gamepad> OpenXrController::GetXrStandardGamepad() const {
-  XRStandardGamepadBuilder builder(GetHandness());
+absl::optional<Gamepad> OpenXrController::GetWebXRGamepad() const {
+  // We can return an XR-Standard gamepad as long as the following are true:
+  // 1) It targets via a tracked-pointer
+  // 2) It has a non-null grip space
+  // 3) It has a primary input button.
+  // We assume that any null grip space is due to transient errors, and thus
+  // ignore that requirement for simplicity of developers rather than sending
+  // gamepad add/removed and input source change events due to temporary
+  // tracking loss. We validate the other two requirements below before building
+  // the gamepad.
+  if (GetTargetRayMode() != mojom::XRTargetRayMode::POINTING) {
+    return absl::nullopt;
+  }
 
   absl::optional<GamepadButton> trigger_button =
       GetButton(OpenXrButtonType::kTrigger);
   if (!trigger_button) {
     return absl::nullopt;
   }
+
+  XRStandardGamepadBuilder builder(GetHandness());
   builder.SetPrimaryButton(trigger_button.value());
 
   absl::optional<GamepadButton> squeeze_button =
@@ -485,27 +502,6 @@ absl::optional<Gamepad> OpenXrController::GetXrStandardGamepad() const {
   }
 
   return builder.GetGamepad();
-}
-
-absl::optional<Gamepad> OpenXrController::GetWebXRGamepad() const {
-  auto mapping = GamepadMapping::kNone;
-
-  if (IsCurrentProfileFromHandTracker()) {
-    mapping = hand_tracker_->controller()->gamepad_mapping();
-  } else {
-    for (auto& it : GetOpenXrControllerInteractionProfiles()) {
-      if (interaction_profile_ == it.type) {
-        mapping = it.mapping;
-        break;
-      }
-    }
-  }
-
-  if (mapping == GamepadMapping::kXrStandard) {
-    return GetXrStandardGamepad();
-  }
-
-  return absl::nullopt;
 }
 
 XrResult OpenXrController::UpdateInteractionProfile() {

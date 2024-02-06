@@ -37,10 +37,6 @@ mojom::OpenXrInteractionProfileType OpenXrHandTrackerFb::interaction_profile()
   return mojom::OpenXrInteractionProfileType::kMetaHandAim;
 }
 
-GamepadMapping OpenXrHandTrackerFb::gamepad_mapping() const {
-  return GamepadMapping::kNone;
-}
-
 std::optional<gfx::Transform> OpenXrHandTrackerFb::GetBaseFromGripTransform()
     const {
   // We will treat the palm as our grip.

@@ -99,9 +99,9 @@ class OpenXrController {
   absl::optional<gfx::Transform> GetGripFromPointerTransform(
       XrTime predicted_display_time) const;
 
+  mojom::XRTargetRayMode GetTargetRayMode() const;
   mojom::XRHandedness GetHandness() const;
   std::vector<double> GetAxis(OpenXrAxisType type) const;
-  absl::optional<Gamepad> GetXrStandardGamepad() const;
 
   template <typename T>
   XrResult QueryState(XrAction action, T* action_state) const {
