@@ -60,6 +60,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -193,6 +194,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "http://b/issues/41491395")
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         waitForOptionsMenu();
@@ -488,6 +490,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "http://b/issues/41491395")
     public void testAccountSignIn() throws InterruptedException {
         launchSettingsActivity();
 
