@@ -119,11 +119,11 @@ void IpcNetworkManager::NetworkListChanged(
       DCHECK(it->address.IsIPv6());
       iface_addr = rtc::InterfaceAddress(ip_address, it->ip_address_attributes);
 
-      // Only allow non-private, non-deprecated IPv6 addresses which don't
-      // contain MAC.
+      // Only allow non-link-local, non-loopback, non-deprecated IPv6 addresses
+      // which don't contain MAC.
       if (rtc::IPIsMacBased(iface_addr) ||
           (it->ip_address_attributes & net::IP_ADDRESS_ATTRIBUTE_DEPRECATED) ||
-          rtc::IPIsPrivate(iface_addr)) {
+          rtc::IPIsLinkLocal(iface_addr) || rtc::IPIsLoopback(iface_addr)) {
         continue;
       }
 
