@@ -525,6 +525,15 @@
 ../../web_tests/images/resources/webp-color-profile-lossless.webp
 ../../web_tests/images/resources/webp-color-profile-lossy-alpha.webp
 ../../web_tests/images/resources/webp-color-profile-lossy.webp
+../../web_tests/images/resources/webpfuzz/crbug.364830.webp
+../../web_tests/images/resources/webpfuzz/red3x3-lossless.webp
+../../web_tests/images/resources/webpfuzz/red3x3-lossy.webp
+../../web_tests/images/resources/webpfuzz/size-failure.b186640109.webp
+../../web_tests/images/resources/webpfuzz/test2.webp
+../../web_tests/images/resources/webpfuzz/test3.webp
+../../web_tests/images/resources/webpfuzz/truncated.webp
+../../web_tests/images/resources/webpfuzz/webp-animated-semitransparent4.webp
+../../web_tests/images/resources/webpfuzz/webp-animated.webp
 ../../web_tests/images/resources/wrong-block-length.gif
 ../../web_tests/images/resources/wrong-frame-dimensions.ico
 ../../web_tests/images/resources/ycbcr-420-fast-int-progressive.jpg
