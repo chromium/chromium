@@ -20,6 +20,7 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "media/gpu/buildflags.h"
 
 namespace viz {
 
@@ -167,6 +168,17 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   bool ContainsDelegatedInkPointRendererReceiverForTesting() const {
     return delegated_ink_renderer_receiver_arrived_;
   }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  void DetileOverlay(gpu::Mailbox input,
+                     const gfx::Size& input_visible_size,
+                     gpu::SyncToken input_sync_token,
+                     gpu::Mailbox output,
+                     const gfx::RectF& display_rect,
+                     const gfx::RectF& crop_rect,
+                     gfx::OverlayTransform transform) override {}
+#endif
 
  protected:
   explicit FakeSkiaOutputSurface(

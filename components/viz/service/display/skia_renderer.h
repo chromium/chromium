@@ -19,6 +19,8 @@
 #include "components/viz/service/display_embedder/buffer_queue.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/vulkan/buildflags.h"
+#include "media/gpu/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -551,6 +553,15 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // SwapBuffers() if their use_count reaches 0.
   // TODO(crbug.com/1342015): Move this to SkColor4f.
   base::flat_map<SkColor, SolidColorBuffer> solid_color_buffers_;
+#endif
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  bool is_protected_pool_idle_ = true;
+  std::unique_ptr<BufferQueue> protected_buffer_queue_ = nullptr;
+
+  gpu::Mailbox GetProtectedSharedImage();
+  void MaybeFreeProtectedPool();
 #endif
 };
 

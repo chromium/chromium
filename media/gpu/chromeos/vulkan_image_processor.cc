@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/vulkan_image_processor.h"
 
+#include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
@@ -844,10 +845,9 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
 }
 
 void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
-                                   const gfx::Size& input_coded_size,
                                    const gfx::Size& input_visible_size,
                                    gpu::VulkanImage& out_image,
-                                   const gfx::Rect& display_rect,
+                                   const gfx::RectF& display_rect,
                                    const gfx::RectF& crop_rect,
                                    gfx::OverlayTransform transform,
                                    std::vector<VkSemaphore>& begin_semaphores,
@@ -856,6 +856,14 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
   CHECK(crop_rect.height() <= 1.0f && crop_rect.height() >= 0.0f);
   CHECK(crop_rect.x() <= 1.0f && crop_rect.x() >= 0.0f);
   CHECK(crop_rect.y() <= 1.0f && crop_rect.y() >= 0.0f);
+  constexpr size_t kMM21TileWidth = 16;
+  constexpr size_t kMM21TileHeight = 32;
+  const gfx::Size input_coded_size(
+      base::bits::AlignUp(static_cast<size_t>(input_visible_size.width()),
+                          kMM21TileWidth),
+      base::bits::AlignUp(static_cast<size_t>(input_visible_size.height()),
+                          kMM21TileHeight));
+
   const gfx::Size output_resolution(
       static_cast<int>(display_rect.width() / crop_rect.width()),
       static_cast<int>(display_rect.height() / crop_rect.height()));

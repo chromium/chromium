@@ -27,6 +27,7 @@ include_rules = [
   "+gpu/vulkan",
   "+media/base",
   "+media/filters/video_cadence_estimator.h",
+  "+media/gpu/buildflags.h",
   "+mojo/public/cpp/system",
   "+skia",
   "+third_party/khronos",

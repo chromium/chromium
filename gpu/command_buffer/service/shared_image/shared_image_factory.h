@@ -248,6 +248,13 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
       const Mailbox& mailbox);
 #endif
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_OZONE)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      const Mailbox& mailbox,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl);
+#endif
+
  private:
   const raw_ptr<SharedImageManager> manager_;
   std::unique_ptr<MemoryTypeTracker> tracker_;

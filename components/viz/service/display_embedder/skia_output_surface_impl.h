@@ -28,6 +28,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkOverdrawCanvas.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayListRecorder.h"
@@ -202,6 +203,17 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) override;
   void CheckAsyncWorkCompletionForTesting() override;
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  void DetileOverlay(gpu::Mailbox input,
+                     const gfx::Size& input_visible_size,
+                     gpu::SyncToken input_sync_token,
+                     gpu::Mailbox output,
+                     const gfx::RectF& display_rect,
+                     const gfx::RectF& crop_rect,
+                     gfx::OverlayTransform transform) override;
+#endif
 
  private:
   bool Initialize();

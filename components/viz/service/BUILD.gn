@@ -485,6 +485,10 @@ viz_component("service") {
         "//ui/gfx/x",
       ]
     }
+
+    if (is_chromeos && use_v4l2_codec) {
+      deps += [ "//media/gpu/chromeos:common" ]
+    }
   }
 
   if (skia_use_dawn) {

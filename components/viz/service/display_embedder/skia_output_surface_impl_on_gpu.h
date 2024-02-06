@@ -36,12 +36,18 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
+#include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence_handle.h"
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/chromeos/vulkan_image_processor.h"
+#endif
 
 namespace gfx {
 namespace mojom {
@@ -293,6 +299,16 @@ class SkiaOutputSurfaceImplOnGpu
   gpu::SharedContextState* context_state() const {
     return context_state_.get();
   }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  void DetileOverlay(gpu::Mailbox input,
+                     const gfx::Size& input_visible_size,
+                     gpu::Mailbox output,
+                     const gfx::RectF& display_rect,
+                     const gfx::RectF& crop_rect,
+                     gfx::OverlayTransform transform);
+#endif
 
  private:
   struct MailboxAccessData {
@@ -626,6 +642,12 @@ class SkiaOutputSurfaceImplOnGpu
   SharedImageFormat solid_color_image_format_ = SinglePlaneFormat::kRGBA_8888;
 
   THREAD_CHECKER(thread_checker_);
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_ =
+      media::VulkanImageProcessor::Create();
+#endif
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImplOnGpu> weak_ptr_factory_{this};

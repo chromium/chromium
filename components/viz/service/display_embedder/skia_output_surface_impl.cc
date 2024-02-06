@@ -1732,4 +1732,22 @@ bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
       .isValid();
 }
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+void SkiaOutputSurfaceImpl::DetileOverlay(gpu::Mailbox input,
+                                          const gfx::Size& input_visible_size,
+                                          gpu::SyncToken input_sync_token,
+                                          gpu::Mailbox output,
+                                          const gfx::RectF& display_rect,
+                                          const gfx::RectF& crop_rect,
+                                          gfx::OverlayTransform transform) {
+  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DetileOverlay,
+                             base::Unretained(impl_on_gpu_.get()), input,
+                             input_visible_size, output, display_rect,
+                             crop_rect, transform);
+  EnqueueGpuTask(std::move(task), {input_sync_token}, /*make_current=*/false,
+                 /*need_framebuffer=*/false);
+}
+#endif
+
 }  // namespace viz

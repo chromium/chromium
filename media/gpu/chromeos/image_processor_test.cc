@@ -903,8 +903,10 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
     // TODO(b/251458823): Add tests for more interesting crop and rotation
     // parameters.
     vulkan_image_processor->Process(
-        input_access->GetVulkanImage(), coded_size, visible_rect.size(),
-        output_access->GetVulkanImage(), gfx::Rect(output_size),
+        input_access->GetVulkanImage(), visible_rect.size(),
+        output_access->GetVulkanImage(),
+        gfx::RectF(static_cast<float>(output_size.width()),
+                   static_cast<float>(output_size.height())),
         gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
         end_semaphores);
   }

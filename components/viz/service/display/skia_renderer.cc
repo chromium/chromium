@@ -460,6 +460,12 @@ SkYUVAInfo::Subsampling SubsamplingFromTextureSizes(gfx::Size ya_size,
   return SkYUVAInfo::Subsampling::kUnknown;
 }
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+constexpr size_t kMaxProtectedContentWidth = 3840;
+constexpr size_t kMaxProtectedContentHeight = 2160;
+#endif
+
 }  // namespace
 
 // chrome style prevents this from going in skia_renderer.h, but since it
@@ -1032,6 +1038,12 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
         number_of_buffers);
   }
 #endif
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  protected_buffer_queue_ = std::make_unique<BufferQueue>(
+      skia_output_surface_, skia_output_surface_->GetSurfaceHandle(), 3);
+#endif
 }
 
 SkiaRenderer::~SkiaRenderer() = default;
@@ -1120,6 +1132,30 @@ void SkiaRenderer::FinishDrawingFrame() {
   debug_tint_modulate_count_++;
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_VULKAN) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+// Simple scheme for de-allocating protected buffers: if we go one SwapBuffer
+// cycle without needing a protected shared image, we can delete the protected
+// buffer queue.
+gpu::Mailbox SkiaRenderer::GetProtectedSharedImage() {
+  is_protected_pool_idle_ = false;
+
+  protected_buffer_queue_->Reshape(
+      gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
+      gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::RGBA_8888);
+
+  return protected_buffer_queue_->GetCurrentBuffer();
+}
+
+void SkiaRenderer::MaybeFreeProtectedPool() {
+  if (is_protected_pool_idle_ && protected_buffer_queue_) {
+    protected_buffer_queue_->DestroyBuffers();
+  } else {
+    is_protected_pool_idle_ = true;
+  }
+}
+#endif
+
 void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   DCHECK(visible_);
   DCHECK(output_surface_->capabilities().supports_viewporter ||
@@ -1178,6 +1214,19 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     return false;
   });
 #endif  // BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  if (protected_buffer_queue_) {
+    // Note that we still call BufferQueue::SwapBuffers() even when we suspect
+    // our buffer queue is idle because there might still be in-flight frames
+    // that need to be managed.
+    protected_buffer_queue_->SwapBuffers(
+        gfx::Rect(kMaxProtectedContentWidth, kMaxProtectedContentHeight));
+  }
+
+  MaybeFreeProtectedPool();
+#endif
 }
 
 void SkiaRenderer::SwapBuffersSkipped() {
@@ -1213,6 +1262,14 @@ void SkiaRenderer::SwapBuffersComplete(
     }
     buffer_queue_->SwapBuffersComplete();
   }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  if (protected_buffer_queue_) {
+    protected_buffer_queue_->SwapBuffersComplete();
+  }
+#endif
+
   if (!release_fence.is_null()) {
     // Set release fences to return overlay resources for last frame.
     for (auto& lock : committed_overlay_locks_) {
@@ -2891,6 +2948,35 @@ void SkiaRenderer::ScheduleOverlays() {
     if (overlay.is_root_render_pass) {
       continue;
     }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+    if (overlay.needs_detiling) {
+      if (!absl::holds_alternative<gfx::OverlayTransform>(overlay.transform)) {
+        LOG(ERROR) << "Unsupported transform on tiled protected content.";
+        continue;
+      }
+
+      locks.emplace_back(resource_provider(), overlay.resource_id);
+      auto& lock = locks.back();
+
+      gpu::Mailbox detiled_image = GetProtectedSharedImage();
+      skia_output_surface_->DetileOverlay(
+          overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
+          detiled_image, overlay.display_rect, overlay.uv_rect,
+          absl::get<gfx::OverlayTransform>(overlay.transform));
+      overlay.uv_rect = gfx::RectF(
+          static_cast<float>(overlay.display_rect.width()) /
+              static_cast<float>(kMaxProtectedContentWidth),
+          static_cast<float>(overlay.display_rect.height() /
+                             static_cast<float>(kMaxProtectedContentHeight)));
+      overlay.mailbox = detiled_image;
+      overlay.format = gfx::BufferFormat::RGBA_8888;
+      overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
+
+      continue;
+    }
+#endif
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
     if (overlay.rpdq) {

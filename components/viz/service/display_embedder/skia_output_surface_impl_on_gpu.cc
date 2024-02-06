@@ -2793,4 +2793,49 @@ void SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion() {
   }
 }
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
+    gpu::Mailbox input,
+    const gfx::Size& input_visible_size,
+    gpu::Mailbox output,
+    const gfx::RectF& display_rect,
+    const gfx::RectF& crop_rect,
+    gfx::OverlayTransform transform) {
+  // Note that we don't want to get the device queue from the
+  // VulkanContextProvider because we actually need a special protected device
+  // queue.
+  auto input_representation =
+      shared_image_representation_factory_->ProduceVulkan(
+          input, vulkan_image_processor_->GetVulkanDeviceQueue(),
+          vulkan_image_processor_->GetVulkanImplementation());
+  auto output_representation =
+      shared_image_representation_factory_->ProduceVulkan(
+          output, vulkan_image_processor_->GetVulkanDeviceQueue(),
+          vulkan_image_processor_->GetVulkanImplementation());
+
+  if (!input_representation || !output_representation) {
+    LOG(ERROR) << "Error creating Vulkan representations for detiling.";
+    return;
+  }
+
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto input_access = input_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto output_access = output_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    vulkan_image_processor_->Process(
+        input_access->GetVulkanImage(), input_visible_size,
+        output_access->GetVulkanImage(), display_rect, crop_rect, transform,
+        begin_semaphores, end_semaphores);
+  }
+
+  output_representation->SetCleared();
+}
+#endif
+
 }  // namespace viz
