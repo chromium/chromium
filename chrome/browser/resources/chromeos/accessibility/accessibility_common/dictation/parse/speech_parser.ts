@@ -7,7 +7,6 @@
  */
 
 import {InputController} from '../input_controller.js';
-import {LocaleInfo} from '../locale_info.js';
 import {Macro} from '../macros/macro.js';
 import {MetricsUtils} from '../metrics_utils.js';
 
@@ -18,24 +17,22 @@ import {SimpleParseStrategy} from './simple_parse_strategy.js';
 
 /** SpeechParser handles parsing spoken transcripts into Macros. */
 export class SpeechParser {
-  /** @param {!InputController} inputController to interact with the IME. */
-  constructor(inputController) {
-    /** @private {!InputController} */
+  private inputController_: InputController;
+  private inputTextStrategy_: ParseStrategy;
+  private simpleParseStrategy_: ParseStrategy;
+  private pumpkinParseStrategy_: ParseStrategy;
+
+  /** @param inputController to interact with the IME. */
+  constructor(inputController: InputController) {
     this.inputController_ = inputController;
-
-    /** @private {!ParseStrategy} */
     this.inputTextStrategy_ = new InputTextStrategy(this.inputController_);
-
-    /** @private {!ParseStrategy} */
     this.simpleParseStrategy_ = new SimpleParseStrategy(this.inputController_);
-
-    /** @private {!ParseStrategy} */
     this.pumpkinParseStrategy_ =
         new PumpkinParseStrategy(this.inputController_);
   }
 
   /** Refreshes the speech parser when the locale changes. */
-  refresh() {
+  refresh(): void {
     // Pumpkin has its own strings for command parsing, but we disable it when
     // commands aren't supported for consistency.
     this.simpleParseStrategy_.refresh();
@@ -44,10 +41,9 @@ export class SpeechParser {
 
   /**
    * Parses user text to produce a macro command.
-   * @param {string} text The text to parse.
-   * @return {!Promise<!Macro>}
+   * @param text The text to parse.
    */
-  async parse(text) {
+  async parse(text: string): Promise<Macro> {
     if (this.pumpkinParseStrategy_.isEnabled()) {
       MetricsUtils.recordPumpkinUsed(true);
       const macro = await this.pumpkinParseStrategy_.parse(text);
@@ -62,18 +58,16 @@ export class SpeechParser {
     // Try using `simpleParseStrategy_` as a fall-back.
     if (this.simpleParseStrategy_.isEnabled()) {
       MetricsUtils.recordPumpkinUsed(false);
-      return await /** @type {!Promise<!Macro>} */ (
-          this.simpleParseStrategy_.parse(text));
+      return await this.simpleParseStrategy_.parse(text) as Macro;
     }
 
     // Input text as-is as a catch-all.
     MetricsUtils.recordPumpkinUsed(false);
-    return await /** @type {!Promise<!Macro>} */ (
-        this.inputTextStrategy_.parse(text));
+    return await this.inputTextStrategy_.parse(text) as Macro;
   }
 
   /** For testing purposes only. */
-  disablePumpkinForTesting() {
+  disablePumpkinForTesting(): void {
     this.pumpkinParseStrategy_.setEnabled(false);
   }
 }
