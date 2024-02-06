@@ -1615,6 +1615,18 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.READALOUD_PLAYBACK)
+    public void testKnownReadableTrialCanActivateWithoutPlaybackFlag() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        // Page is readable so activate the trial.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        verify(mReadAloudFeaturesNatives, times(1))
+                .activateSyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+    }
+
+    @Test
     public void testDestroy() {
         // Play tab
         mFakeTranslateBridge.setCurrentLanguage("en");
