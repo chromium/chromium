@@ -9,15 +9,30 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace signin {
 class IdentityManager;
 }
+
+// LINT.IfChange(screen_mode)
+enum class SyncConfirmationScreenMode : int {
+  kUnsupported = 0,
+  kPending = 1,
+  kRestricted = 2,
+  kUnrestricted = 3,
+};
+
+SyncConfirmationScreenMode GetScreenMode(
+    const AccountCapabilities& capabilities);
+// LINT.ThenChange(//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_app.ts:screen_mode)
 
 // WebUI message handler for the sync confirmation dialog. IdentityManager calls
 // in this class use signin::ConsentLevel::kSignin because the user hasn't
@@ -118,6 +133,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   raw_ptr<Browser> browser_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

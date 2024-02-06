@@ -34,6 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -82,20 +83,23 @@ bool IsAnyTypeSyncable(const syncer::SyncService* sync_service,
   return false;
 }
 
-// Implements static compliance with
-// CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability requirement,
-// as if the capability was always set to the opposite of the feature flag.
-//
-// When kMinorModeRestrictionsForHistorySyncOptIn feature is enabled, the
-// compliance is achieved for all users without reading
-// CanShowHistorySyncOptInsWithoutMinorModeRestrictions value.
-bool UnrestrictedMode() {
+// Derives screen mode of sync opt in screen from the
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
+SyncConfirmationScreenMode GetInitialScreenMode(
+    signin::IdentityManager* identity_manager) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOs handles minor modes separately.
-  return true;
+  return SyncConfirmationScreenMode::kUnrestricted;
 #else
-  return !base::FeatureList::IsEnabled(
-      ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+  if (base::FeatureList::IsEnabled(
+          ::switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    AccountInfo account =
+        identity_manager->FindExtendedAccountInfo(account_info);
+    return GetScreenMode(account.capabilities);
+  }
+  return SyncConfirmationScreenMode::kUnrestricted;
 #endif
 }
 
@@ -338,7 +342,10 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   // Registering other variables that are computed above based on multiple
   // factors (e.g. platform).
   source->AddBoolean("useClickableSyncInfoDesc", use_clickable_sync_info_desc);
-  source->AddBoolean("unrestrictedMode", UnrestrictedMode());
+
+  source->AddInteger("screenMode",
+                     static_cast<int>(GetInitialScreenMode(
+                         IdentityManagerFactory::GetForProfile(profile_))));
 }
 
 void SyncConfirmationUI::InitializeForSyncDisabled(
@@ -368,6 +375,9 @@ void SyncConfirmationUI::InitializeForSyncDisabled(
           : IDS_SYNC_DISABLED_CONFIRMATION_CONFIRM_BUTTON_LABEL);
   AddStringResource(source, "syncDisabledConfirmationUndoLabel",
                     IDS_SYNC_DISABLED_CONFIRMATION_UNDO_BUTTON_LABEL);
+
+  source->AddInteger(
+      "screenMode", static_cast<int>(SyncConfirmationScreenMode::kUnsupported));
 }
 
 void SyncConfirmationUI::AddStringResource(content::WebUIDataSource* source,

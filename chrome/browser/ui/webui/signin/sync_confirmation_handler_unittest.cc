@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 
@@ -223,11 +224,32 @@ const char SyncConfirmationHandlerTest::kConsentText3[] = "consentText3";
 const char SyncConfirmationHandlerTest::kConsentText4[] = "consentText4";
 const char SyncConfirmationHandlerTest::kConsentText5[] = "consentText5";
 
-TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
+TEST_F(SyncConfirmationHandlerTest,
+       TestAccountInfoAloneIsNotEnoughToTriggerAccountInfoChange) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
       account_info_.account_id, account_info_.email, account_info_.gaia, "",
       "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(SyncConfirmationHandlerTest,
+       TestSetAccountInfoIfPrimaryAccountAndCapabilitiesReady) {
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info_.account_id, account_info_.email, account_info_.gaia, "",
+      "full_name", "given_name", "locale",
+      "http://picture.example.com/picture.jpg");
+
+  // Both account info and capability are required to trigger SetAccountInfo.
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
 
   base::Value::List args;
   args.Append(kDefaultDialogHeight);
@@ -284,11 +306,18 @@ TEST_F(SyncConfirmationHandlerTest,
   ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
 }
 
-TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoManaged) {
+TEST_F(SyncConfirmationHandlerTest,
+       TestSetAccountInfoManagedIfPrimaryAccountAndCapabilitiesReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
       account_info_.account_id, account_info_.email, account_info_.gaia,
       "google.com", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
+
+  // Both account info and capability are required to trigger SetAccountInfo.
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
 
   base::Value::List args;
   args.Append(kDefaultDialogHeight);

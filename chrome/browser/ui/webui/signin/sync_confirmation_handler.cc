@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -43,6 +45,20 @@ namespace {
 const int kProfileImageSize = 128;
 }  // namespace
 
+SyncConfirmationScreenMode GetScreenMode(
+    const AccountCapabilities& capabilities) {
+  switch (
+      capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions()) {
+    case signin::Tribool::kUnknown:
+      return SyncConfirmationScreenMode::kPending;
+    case signin::Tribool::kFalse:
+      return SyncConfirmationScreenMode::kRestricted;
+    case signin::Tribool::kTrue:
+      return SyncConfirmationScreenMode::kUnrestricted;
+  }
+}
+
 SyncConfirmationHandler::SyncConfirmationHandler(
     Profile* profile,
     const std::unordered_map<std::string, int>& string_to_grd_id_map,
@@ -57,7 +73,6 @@ SyncConfirmationHandler::SyncConfirmationHandler(
 
 SyncConfirmationHandler::~SyncConfirmationHandler() {
   BrowserList::RemoveObserver(this);
-  identity_manager_->RemoveObserver(this);
 
   // Abort signin and prevent sync from starting if none of the actions on the
   // sync confirmation dialog are taken by the user.
@@ -188,11 +203,12 @@ void SyncConfirmationHandler::SetAccountInfo(const AccountInfo& info) {
 
   GURL picture_gurl(info.picture_url);
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
-      picture_gurl, kProfileImageSize, false /* no_silhouette */);
+      picture_gurl, kProfileImageSize, /*no_silhouette=*/false);
 
   base::Value::Dict value;
   value.Set("src", picture_gurl_with_options.spec());
   value.Set("showEnterpriseBadge", info.IsManaged());
+  value.Set("screenMode", static_cast<int>(GetScreenMode(info.capabilities)));
 
   AllowJavascript();
   FireWebUIListener("account-info-changed", value);
@@ -208,7 +224,14 @@ void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  identity_manager_->RemoveObserver(this);
+  if (GetScreenMode(info.capabilities) !=
+      SyncConfirmationScreenMode::kPending) {
+    // AccountCapabilities are fetched asynchronously, so stop observing changes
+    // only after the screen mode derived from the capability is not pending
+    // anymore.
+    identity_manager_observation_.Reset();
+  }
+
   SetAccountInfo(info);
 }
 
@@ -246,8 +269,10 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     return;
   }
 
-  if (!primary_account_info.IsValid()) {
-    identity_manager_->AddObserver(this);
+  if (!(primary_account_info.IsValid() &&
+        GetScreenMode(primary_account_info.capabilities) !=
+            SyncConfirmationScreenMode::kPending)) {
+    identity_manager_observation_.Observe(identity_manager_);
   } else {
     SetAccountInfo(primary_account_info);
   }

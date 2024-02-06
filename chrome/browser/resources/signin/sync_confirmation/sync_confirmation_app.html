@@ -2,6 +2,8 @@
   /* TODO look at UI with inspector to see which lines are overridden by the
    shared config. */
   :host {
+    --button-container-height: calc(2 * var(--action-container-padding) +
+        var(--cr-button-height));
     --sync-benefits-list-color: var(--google-grey-50);
     --sync-benefit-icon-color: var(--google-blue-600);
     color: var(--cr-primary-text-color);
@@ -128,8 +130,6 @@
   }
 
   .main-container:not(.dialog) {
-    --button-container-height: calc(2 * var(--action-container-padding) +
-        var(--cr-button-height));
     display: flex;
     height: calc(100vh - var(--button-container-height));
     width: 100vw;
@@ -209,6 +209,10 @@
     animation: 500ms ease-in-out fade-in-animation;
   }
 
+  .action-container {
+    height: var(--button-container-height); /* Prevent the container from shrinking when buttons are hidden. */
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
       --sync-benefits-list-color: var(--google-grey-800);
@@ -246,8 +250,13 @@
       hidden="[[isModalDialog_]]">
   <div id="contentContainer" class$="[[animationClasses_]]">
     <div id="avatarContainer">
-      <img id="avatar" alt="" src="[[accountImageSrc_]]">
-      <div id="badge" class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+      <iron-icon src="chrome://resources/images/throbber_small.svg"
+        hidden="[[!isPending_(screenMode_)]]">
+      </iron-icon>
+      <img id="avatar" alt="" src="[[accountImageSrc_]]"
+        hidden="[[isPending_(screenMode_)]]">
+      <div id="badge" class="work-badge"
+        hidden="[[shouldHideEnterpriseBadge_(screenMode_, showEnterpriseBadge_)]]">
         <iron-icon icon="cr:domain" alt=""></iron-icon>
       </div>
     </div>
@@ -285,7 +294,10 @@
   <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
   <div class$="action-container tangible-sync-style
       [[getMaybeDialogClass_(isModalDialog_)]]">
-    <cr-button id="confirmButton" on-click="onConfirm_"
+    <cr-button id="confirmButton"
+        class$="[[getConfirmButtonClass_(screenMode_)]]"
+        hidden="[[isPending_(screenMode_)]]"
+        on-click="onConfirm_"
         disabled="[[anyButtonClicked_]]" consent-confirmation
         autofocus="[[isModalDialog_]]">
       $i18n{syncConfirmationConfirmLabel}
@@ -296,8 +308,9 @@
         $i18n{syncConfirmationSettingsLabel}
       </cr-button>
     </if>
-    <cr-button id="notNowButton" on-click="onUndo_"
-        disabled="[[anyButtonClicked_]]">
+    <cr-button id="notNowButton"
+        hidden="[[isPending_(screenMode_)]]"
+        on-click="onUndo_" disabled="[[anyButtonClicked_]]">
       $i18n{syncConfirmationUndoLabel}
     </cr-button>
     <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
