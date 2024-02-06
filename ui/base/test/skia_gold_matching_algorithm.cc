@@ -122,8 +122,6 @@ void SobelSkiaGoldMatchingAlgorithm::AppendAlgorithmToCmdline(
                        ":"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 // PositiveIfOnlyImageAlgorithm ------------------------------------------------
 
 PositiveIfOnlyImageAlgorithm::PositiveIfOnlyImageAlgorithm() = default;
@@ -141,8 +139,6 @@ void PositiveIfOnlyImageAlgorithm::AppendAlgorithmToCmdline(
 std::string PositiveIfOnlyImageAlgorithm::GetCommandLineSwitchName() const {
   return "positive_if_only_image";
 }
-
-#endif  // IS_CHROMEOS_ASH
 
 }  // namespace test
 }  // namespace ui

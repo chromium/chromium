@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
-
 namespace base {
 class CommandLine;
 }
@@ -96,11 +94,9 @@ class SobelSkiaGoldMatchingAlgorithm : public FuzzySkiaGoldMatchingAlgorithm {
   int edge_threshold_{0};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// With this algorithm, an image is regarded to match a golden image if:
-// 1. it is an exact matching, and
-// 2. the matched golden image is the only image in its group.
+// With this algorithm, an image is regarded to match a golden image when:
+//   1. the image is an exact match, and
+//   2. the set of golden images for the test must only contain a single image.
 // This algorithm is used in Ash pixel testing to facilitate the gold image
 // revision update.
 class PositiveIfOnlyImageAlgorithm : public SkiaGoldMatchingAlgorithm {
@@ -113,8 +109,6 @@ class PositiveIfOnlyImageAlgorithm : public SkiaGoldMatchingAlgorithm {
   void AppendAlgorithmToCmdline(base::CommandLine& cmd) const override;
   std::string GetCommandLineSwitchName() const override;
 };
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace test
 }  // namespace ui
