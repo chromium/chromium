@@ -23,6 +23,27 @@ constexpr float kD50_x = 0.9642f;
 constexpr float kD50_y = 1.0f;
 constexpr float kD50_z = 0.8251f;
 
+// Evaluate the specified transfer function using point symmetry around the
+// origin. This means that if the transfer function f is valid only for positive
+// numbers, let g be the extended transfer function for all reals, defined as
+// g(x) = sign(x) * f(abs(x)).
+float skcmsTrFnEvalExt(const skcms_TransferFunction* fn, float x) {
+  if (x < 0) {
+    return -skcms_TransferFunction_eval(fn, -x);
+  } else {
+    return skcms_TransferFunction_eval(fn, x);
+  }
+}
+
+// Same as the above but for the pow function.
+float powExt(float x, float p) {
+  if (x < 0) {
+    return -powf(-x, p);
+  } else {
+    return powf(x, p);
+  }
+}
+
 const skcms_Matrix3x3* getXYDZ65toXYZD50matrix() {
   constexpr float kD65_x = 0.3127f;
   constexpr float kD65_y = 0.3290f;
@@ -142,35 +163,32 @@ skcms_TransferFunction* getSRGBInverseTransferFunction() {
 std::tuple<float, float, float> ApplyInverseTransferFnsRGB(float r,
                                                            float g,
                                                            float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getSRGBInverseTransferFunction(), b));
+  return std::make_tuple(skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), r),
+                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), g),
+                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kSRGB, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
                                                         float g,
                                                         float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFnExt::kProPhotoRGB, b));
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, r),
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, g),
+      skcmsTrFnEvalExt(&SkNamedTransferFnExt::kProPhotoRGB, b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
                                                         float g,
                                                         float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, b));
 }
 
 skcms_TransferFunction* getProPhotoInverseTransferFunction() {
@@ -184,9 +202,9 @@ std::tuple<float, float, float> ApplyInverseTransferFnProPhoto(float r,
                                                                float g,
                                                                float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getProPhotoInverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), b));
 }
 
 skcms_TransferFunction* getAdobeRGBInverseTransferFunction() {
@@ -199,18 +217,17 @@ std::tuple<float, float, float> ApplyInverseTransferFnAdobeRGB(float r,
                                                                float g,
                                                                float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getAdobeRGBInverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), b));
 }
 
 std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
                                                        float g,
                                                        float b) {
-  return std::make_tuple(
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, r),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, g),
-      skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, b));
+  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, r),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, g),
+                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, b));
 }
 
 skcms_TransferFunction* getRec2020nverseTransferFunction() {
@@ -223,9 +240,9 @@ std::tuple<float, float, float> ApplyInverseTransferFnRec2020(float r,
                                                               float g,
                                                               float b) {
   return std::make_tuple(
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), r),
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), g),
-      skcms_TransferFunction_eval(getRec2020nverseTransferFunction(), b));
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), r),
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), g),
+      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), b));
 }
 }  // namespace
 
@@ -407,9 +424,9 @@ std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
   skcms_Vector3 lms_intermediate =
       skcms_Matrix3x3_apply(getXYZToLMSMatrix(), &xyz_input);
 
-  lms_intermediate.vals[0] = pow(lms_intermediate.vals[0], 1.0f / 3.0f);
-  lms_intermediate.vals[1] = pow(lms_intermediate.vals[1], 1.0f / 3.0f);
-  lms_intermediate.vals[2] = pow(lms_intermediate.vals[2], 1.0f / 3.0f);
+  lms_intermediate.vals[0] = powExt(lms_intermediate.vals[0], 1.0f / 3.0f);
+  lms_intermediate.vals[1] = powExt(lms_intermediate.vals[1], 1.0f / 3.0f);
+  lms_intermediate.vals[2] = powExt(lms_intermediate.vals[2], 1.0f / 3.0f);
 
   skcms_Vector3 lab_output =
       skcms_Matrix3x3_apply(getLMSToOklabMatrix(), &lms_intermediate);
