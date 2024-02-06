@@ -135,20 +135,16 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 
 #if BUILDFLAG(IS_ANDROID)
   // May be unused if all runtimes are disabled.
-  [[maybe_unused]] bool preferred_vr_runtime_added = false;
   [[maybe_unused]] const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(ENABLE_OPENXR)
-  if (!preferred_vr_runtime_added &&
-      IsEnabled(command_line, switches::kWebXrRuntimeOpenXr,
+  if (IsEnabled(command_line, switches::kWebXrRuntimeOpenXr,
                 &device::features::kOpenXR)) {
     providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
-    preferred_vr_runtime_added = true;
   }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
-  if (!preferred_vr_runtime_added &&
-      IsEnabled(command_line, switches::kWebXrRuntimeCardboard)) {
+  if (IsEnabled(command_line, switches::kWebXrRuntimeCardboard)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_vr_compositor_delegate_provider =
             vr::Java_VrCompositorDelegateProviderImpl_Constructor(
@@ -156,7 +152,6 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
     providers.emplace_back(std::make_unique<webxr::CardboardDeviceProvider>(
         std::make_unique<webxr::VrCompositorDelegateProvider>(
             std::move(j_vr_compositor_delegate_provider))));
-    preferred_vr_runtime_added = true;
   }
 #endif  // BUILDFLAG(ENABLE_CARDBOARD)
 #if BUILDFLAG(ENABLE_ARCORE)
