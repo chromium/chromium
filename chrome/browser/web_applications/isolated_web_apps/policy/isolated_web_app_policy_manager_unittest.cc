@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -388,6 +390,12 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
         provider().web_contents_manager());
   }
 
+  void AssertAppInstalled(const web_package::SignedWebBundleId& swbn_id) {
+    const WebApp* web_app = fake_provider().registrar_unsafe().GetAppById(
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(swbn_id).app_id());
+    ASSERT_THAT(web_app, testing::NotNull()) << "The app in not installed :(";
+  }
+
   web_package::SignedWebBundleId get_app1_id() { return lazy_app1_id_.value(); }
   web_package::SignedWebBundleId get_app2_id() { return lazy_app2_id_.value(); }
 
@@ -418,10 +426,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalled) {
 
   task_environment()->RunUntilIdle();
 
-  const WebApp* web_app = fake_provider().registrar_unsafe().GetAppById(
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id())
-          .app_id());
-  ASSERT_THAT(web_app, testing::NotNull());
+  AssertAppInstalled(get_app1_id());
 }
 
 // This implementation of the command scheduler can't install an IWA. Instead
@@ -457,14 +462,14 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   absl::optional<web_package::SignedWebBundleId> id_;
 };
 
-class IsolatedWebAppPolicyManagerPolicyRaceTest
+template <typename T>
+class IsolatedWebAppPolicyManagerCustomSchedulerTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
-  TestWebAppCommandScheduler* get_command_scheduler() { return scheduler_; }
+  T* get_command_scheduler() { return scheduler_; }
 
   void SetCommandScheduler() override {
-    std::unique_ptr<TestWebAppCommandScheduler> scheduler =
-        std::make_unique<TestWebAppCommandScheduler>(*profile());
+    std::unique_ptr<T> scheduler = std::make_unique<T>(*profile());
     scheduler_ = scheduler.get();
     fake_provider().SetScheduler(std::move(scheduler));
   }
@@ -475,8 +480,11 @@ class IsolatedWebAppPolicyManagerPolicyRaceTest
   }
 
  private:
-  raw_ptr<TestWebAppCommandScheduler> scheduler_;
+  raw_ptr<T> scheduler_;
 };
+
+using IsolatedWebAppPolicyManagerPolicyRaceTest =
+    IsolatedWebAppPolicyManagerCustomSchedulerTest<TestWebAppCommandScheduler>;
 
 // Verifies that the updating of policy during previous policy processing
 // is handled correctly.
@@ -533,6 +541,156 @@ TEST_F(IsolatedWebAppPolicyManagerPolicyRaceTest,
   // Finish app2 from the third policy update.
   EXPECT_EQ(get_command_scheduler()->FinishWithError(), get_app2_id());
   task_environment()->RunUntilIdle();
+}
+
+// This scheduler is intercepting scheduling of the uninstall command,
+// verifying if the App ID is expected for removal and returns the
+// uninstall error.
+class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
+ public:
+  using WebAppCommandScheduler::WebAppCommandScheduler;
+
+  void UninstallWebApp(const webapps::AppId& app_id,
+                       webapps::WebappUninstallSource uninstall_source,
+                       UninstallJob::Callback callback,
+                       const base::Location& location) override {
+    tried_to_uninstall_ = true;
+    EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
+    EXPECT_EQ(uninstall_source,
+              webapps::WebappUninstallSource::kIwaEnterprisePolicy);
+    auto app = expected_apps_to_remove_.find(app_id);
+    expected_apps_to_remove_.erase(app);
+    std::move(callback).Run(webapps::UninstallResultCode ::kError);
+  }
+
+  void AddExpectedToUninstallApp(const webapps::AppId& app_id) {
+    expected_apps_to_remove_.insert(app_id);
+  }
+
+  size_t GetNumberOfAppsRemainingToUninstall() const {
+    return expected_apps_to_remove_.size();
+  }
+
+  bool TriedToUninstall() { return tried_to_uninstall_; }
+
+ private:
+  base::flat_set<webapps::AppId> expected_apps_to_remove_;
+  bool tried_to_uninstall_ = false;
+};
+
+using IsolatedWebAppPolicyManagerUninstallTest =
+    IsolatedWebAppPolicyManagerCustomSchedulerTest<
+        UninstallWebAppCommandScheduler>;
+
+// Remove the app from policy and check if there will be attempt to uninstall
+// that app.
+TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
+  // Force install 2 apps.
+  {
+    PolicyGenerator policy_generator_2_apps;
+    policy_generator_2_apps.AddForceInstalledIwa(get_app1_id(),
+                                                 GURL(kUpdateManifestUrlApp1));
+    policy_generator_2_apps.AddForceInstalledIwa(get_app2_id(),
+                                                 GURL(kUpdateManifestUrlApp2));
+
+    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                               policy_generator_2_apps.Generate());
+
+    task_environment()->RunUntilIdle();
+
+    AssertAppInstalled(get_app1_id());
+    AssertAppInstalled(get_app2_id());
+  }
+
+  // Now generate a policy with 1 app and expect an attempt to
+  // remove the other app.
+  {
+    PolicyGenerator policy_generator_1_app;
+    policy_generator_1_app.AddForceInstalledIwa(get_app1_id(),
+                                                GURL(kUpdateManifestUrlApp1));
+
+    const webapps::AppId app2_id =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app2_id())
+            .app_id();
+    get_command_scheduler()->AddExpectedToUninstallApp(app2_id);
+    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
+              1U);
+
+    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                               policy_generator_1_app.Generate());
+
+    task_environment()->RunUntilIdle();
+
+    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
+              0U);
+  }
+}
+
+TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
+  // Force install 2 apps.
+  {
+    PolicyGenerator policy_generator;
+    policy_generator.AddForceInstalledIwa(get_app1_id(),
+                                          GURL(kUpdateManifestUrlApp1));
+    policy_generator.AddForceInstalledIwa(get_app2_id(),
+                                          GURL(kUpdateManifestUrlApp2));
+
+    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                               policy_generator.Generate());
+
+    task_environment()->RunUntilIdle();
+
+    AssertAppInstalled(get_app1_id());
+    AssertAppInstalled(get_app2_id());
+  }
+
+  // Set the policy without any app and expect an attempt to uninstall
+  // both previously installed apps.
+  {
+    PolicyGenerator empty_policy;
+
+    const webapps::AppId app1_id =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id())
+            .app_id();
+    const webapps::AppId app2_id =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app2_id())
+            .app_id();
+    get_command_scheduler()->AddExpectedToUninstallApp(app1_id);
+    get_command_scheduler()->AddExpectedToUninstallApp(app2_id);
+    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
+              2U);
+
+    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                               empty_policy.Generate());
+
+    task_environment()->RunUntilIdle();
+
+    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
+              0U);
+  }
+}
+
+// There should not be any attempt to uninstall an app if no apps have been
+// removed from the apps.
+TEST_F(IsolatedWebAppPolicyManagerUninstallTest, NoAppsUninstalled) {
+  PolicyGenerator policy_generator;
+  policy_generator.AddForceInstalledIwa(get_app1_id(),
+                                        GURL(kUpdateManifestUrlApp1));
+  profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                             policy_generator.Generate());
+  task_environment()->RunUntilIdle();
+
+  AssertAppInstalled(get_app1_id());
+
+  policy_generator.AddForceInstalledIwa(get_app2_id(),
+                                        GURL(kUpdateManifestUrlApp2));
+  profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                             policy_generator.Generate());
+  task_environment()->RunUntilIdle();
+
+  AssertAppInstalled(get_app1_id());
+  AssertAppInstalled(get_app2_id());
+  EXPECT_FALSE(get_command_scheduler()->TriedToUninstall());
 }
 
 }  // namespace web_app

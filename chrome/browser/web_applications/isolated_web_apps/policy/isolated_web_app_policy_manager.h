@@ -157,6 +157,27 @@ class BulkIwaInstaller {
   base::WeakPtrFactory<BulkIwaInstaller> weak_factory_{this};
 };
 
+class BulkIwaUninstaller {
+ public:
+  BulkIwaUninstaller(
+      web_app::WebAppProvider* provider,
+      std::vector<web_package::SignedWebBundleId> to_be_removed,
+      base::OnceCallback<void(std::vector<webapps::UninstallResultCode>)>);
+  ~BulkIwaUninstaller();
+  void UninstallApps();
+
+ private:
+  void UninstallApp(const web_package::SignedWebBundleId& id);
+  void OnAppUninstalled(webapps::UninstallResultCode result);
+  std::vector<web_package::SignedWebBundleId> to_be_removed_;
+  std::vector<web_package::SignedWebBundleId>::iterator current_app_;
+  const raw_ptr<web_app::WebAppProvider> provider_;
+  base::OnceCallback<void(std::vector<webapps::UninstallResultCode>)>
+      uninstall_cb_;
+  std::vector<webapps::UninstallResultCode> results_;
+  base::WeakPtrFactory<BulkIwaUninstaller> weak_factory_{this};
+};
+
 }  // namespace internal
 
 // This class is responsible for installing, uninstalling, updating etc.
@@ -176,7 +197,13 @@ class IsolatedWebAppPolicyManager {
  private:
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
-  void OnPolicyProcessed(
+  void OnPolicyProcessed();
+
+  void Uninstall();
+  void OnUninstalled(
+      std::vector<webapps::UninstallResultCode> uninstall_results);
+  void Install();
+  void OnInstalled(
       std::vector<
           web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>
           result);
@@ -185,9 +212,13 @@ class IsolatedWebAppPolicyManager {
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<internal::BulkIwaInstaller> bulk_installer_;
+  std::unique_ptr<internal::BulkIwaUninstaller> bulk_uninstaller_;
   base::OnceClosure on_started_callback_;
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
+
+  std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed_;
+  std::vector<web_package::SignedWebBundleId> to_be_removed_;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

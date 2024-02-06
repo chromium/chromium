@@ -103,6 +103,19 @@ std::vector<web_package::SignedWebBundleId> GetInstalledIwas(
   return installed_ids;
 }
 
+bool IsWebBundleIdInPolicy(
+    const std::vector<web_app::IsolatedWebAppExternalInstallOptions>&
+        apps_in_policy,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  auto are_ids_equal =
+      [web_bundle_id](
+          const web_app::IsolatedWebAppExternalInstallOptions& app_in_policy) {
+        return web_bundle_id == app_in_policy.web_bundle_id();
+      };
+  return std::find_if(apps_in_policy.begin(), apps_in_policy.end(),
+                      are_ids_equal) != apps_in_policy.end();
+}
+
 }  // namespace
 
 namespace web_app {
@@ -379,6 +392,50 @@ void BulkIwaInstaller::OnIwaDownloadDirectoryWiped(bool wipe_result) {
 
   ContinueWithTheNextApp();
 }
+
+BulkIwaUninstaller::BulkIwaUninstaller(
+    web_app::WebAppProvider* provider,
+    std::vector<web_package::SignedWebBundleId> to_be_removed,
+    base::OnceCallback<void(std::vector<webapps::UninstallResultCode>)>
+        uninstall_cb)
+    : to_be_removed_(std::move(to_be_removed)),
+      current_app_(to_be_removed_.begin()),
+      provider_(provider),
+      uninstall_cb_(std::move(uninstall_cb)) {}
+
+BulkIwaUninstaller::~BulkIwaUninstaller() = default;
+
+void BulkIwaUninstaller::UninstallApps() {
+  CHECK(!uninstall_cb_.is_null());
+  CHECK(current_app_ == to_be_removed_.begin());
+
+  if (current_app_ == to_be_removed_.end()) {
+    std::move(uninstall_cb_).Run(std::vector<webapps::UninstallResultCode>());
+    return;
+  }
+
+  UninstallApp(*current_app_);
+}
+
+void BulkIwaUninstaller::UninstallApp(
+    const web_package::SignedWebBundleId& id) {
+  IsolatedWebAppUrlInfo url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(id);
+  provider_->scheduler().UninstallWebApp(
+      url_info.app_id(), webapps::WebappUninstallSource::kIwaEnterprisePolicy,
+      base::BindOnce(&BulkIwaUninstaller::OnAppUninstalled,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BulkIwaUninstaller::OnAppUninstalled(webapps::UninstallResultCode result) {
+  results_.push_back(result);
+  ++current_app_;
+  if (current_app_ == to_be_removed_.end()) {
+    std::move(uninstall_cb_).Run(std::move(results_));
+  } else {
+    UninstallApp(*current_app_);
+  }
+}
 }  // namespace internal
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
@@ -415,6 +472,12 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
 
   policy_is_being_processed_ = true;
 
+  // So far we support only MGS.
+  if (!chromeos::IsManagedGuestSession()) {
+    OnPolicyProcessed();
+    return;
+  }
+
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
       base::BindOnce(&IsolatedWebAppPolicyManager::DoProcessPolicy,
@@ -426,6 +489,10 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
     AllAppsLock& lock,
     base::Value::Dict& debug_info) {
   CHECK(provider_);
+  CHECK(to_be_installed_.empty());
+  CHECK(to_be_removed_.empty());
+  CHECK(!bulk_installer_.get());
+  CHECK(!bulk_uninstaller_.get());
 
   const base::Value::List& iwa_policy_values =
       profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
@@ -439,24 +506,53 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   debug_info.Set("installed_apps", base::ToString(installed_apps));
 
   // This currently only installs apps that aren't already installed.
-  // TODO (peletskyi@): Implement removal in the app in not in the policy.
   // TODO (peletskyi@): As soon as we support version pinning
   // implement force update.
-  std::vector<IsolatedWebAppExternalInstallOptions> to_be_installed;
   for (const IsolatedWebAppExternalInstallOptions& app : apps_in_policy) {
     if (!base::Contains(installed_apps, app.web_bundle_id())) {
-      to_be_installed.push_back(app);
+      to_be_installed_.push_back(app);
     }
   }
-  debug_info.Set("to_be_installed", base::ToString(to_be_installed));
+  debug_info.Set("to_be_installed", base::ToString(to_be_installed_));
 
-  if (to_be_installed.empty()) {
-    OnPolicyProcessed(
-        std::vector<
-            web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>());
-    return;
+  for (const web_package::SignedWebBundleId& installed_app : installed_apps) {
+    if (!IsWebBundleIdInPolicy(apps_in_policy, installed_app)) {
+      to_be_removed_.push_back(installed_app);
+    }
+  }
+  debug_info.Set("to_be_removed", base::ToString(to_be_removed_));
+
+  // Let's start with uninstalling because:
+  // - we free up space for the potential installs;
+  // - usually there is a strong reason why an admin whats to uninstall an app
+  //  (e.g. security vulnerability). So it is better to uninstall it ASAP.
+  Uninstall();
+}
+
+void IsolatedWebAppPolicyManager::Uninstall() {
+  bulk_uninstaller_ = std::make_unique<internal::BulkIwaUninstaller>(
+      provider_, to_be_removed_,
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnUninstalled,
+                     weak_ptr_factory_.GetWeakPtr()));
+  bulk_uninstaller_->UninstallApps();
+}
+
+void IsolatedWebAppPolicyManager::OnUninstalled(
+    std::vector<webapps::UninstallResultCode> uninstall_results) {
+  for (size_t i = 0; i < uninstall_results.size(); ++i) {
+    if (uninstall_results[i] != webapps::UninstallResultCode::kSuccess) {
+      DLOG(WARNING) << "Could not uninstall IWA " << to_be_removed_[i].id()
+                    << " Error: " << static_cast<int>(uninstall_results[i]);
+    }
   }
 
+  bulk_uninstaller_.reset();
+  to_be_removed_.clear();
+
+  Install();
+}
+
+void IsolatedWebAppPolicyManager::Install() {
   std::unique_ptr<internal::BulkIwaInstaller::IwaInstallCommandWrapper>
       installer = std::make_unique<
           internal::BulkIwaInstaller::IwaInstallCommandWrapperImpl>(provider_);
@@ -464,21 +560,29 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   auto url_loader_factory = profile_->GetURLLoaderFactory();
 
   auto install_complete_callback =
-      base::BindOnce(&IsolatedWebAppPolicyManager::OnPolicyProcessed,
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnInstalled,
                      weak_ptr_factory_.GetWeakPtr());
 
   bulk_installer_ = std::make_unique<internal::BulkIwaInstaller>(
-      profile_->GetPath(), to_be_installed, url_loader_factory,
+      profile_->GetPath(), to_be_installed_, url_loader_factory,
       std::move(installer), std::move(install_complete_callback));
   bulk_installer_->InstallEphemeralApps();
 }
 
-void IsolatedWebAppPolicyManager::OnPolicyProcessed(
+void IsolatedWebAppPolicyManager::OnInstalled(
     std::vector<web_app::internal::BulkIwaInstaller::EphemeralAppInstallResult>
         result) {
-  policy_is_being_processed_ = false;
-  bulk_installer_.reset();
   LogIsolatedWebAppInstallResult(std::move(result));
+
+  bulk_installer_.reset();
+  to_be_installed_.clear();
+
+  OnPolicyProcessed();
+}
+
+void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
+  policy_is_being_processed_ = false;
+
   if (!on_started_callback_.is_null()) {
     std::move(on_started_callback_).Run();
   }

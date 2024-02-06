@@ -125,6 +125,8 @@ std::string ConvertUninstallSourceToStringType(
       return "Install URL deduping";
     case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
       return "Healthcare User Install Cleanup";
+    case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
+      return "Isolated Web Apps Enterprise Policy";
   }
 }
 

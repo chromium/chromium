@@ -310,6 +310,7 @@ apps::Readiness ConvertWebappUninstallSourceToReadiness(
     case webapps::WebappUninstallSource::kExternalLockScreen:
     case webapps::WebappUninstallSource::kInstallUrlDeduping:
     case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
+    case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
       return apps::Readiness::kUninstalledByNonUser;
   }
 }
