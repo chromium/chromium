@@ -234,6 +234,13 @@ In addition to that, then you'll need one additional provisioning profile for
 the XCTest module too. It must match the pattern:
 `${prefix}.gtest.${test-suite-name}-module`.
 
+
+### Entitlements
+
+PartitionAlloc-Everywhere is now enabled by default on iOS builds. When running
+on a real device you will need to set the
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
+
 ### Other applications
 
 Other applications like `ios_web_shell` usually will require mobile provisioning
@@ -285,9 +292,6 @@ most useful.
 ```shell
 $ autoninja -C out/Debug-iphonesimulator content_shell
 ```
-
-To run on a live device you will need to set the
-`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
 
 ## Running apps from the command line
 
