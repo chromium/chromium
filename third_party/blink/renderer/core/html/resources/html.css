@@ -652,20 +652,6 @@ input[type="image" i] {
     cursor: pointer;
 }
 
-/* TODO(crbug.com/880258): Use different styles for
-  `-internal-autofill-previewed` and `-internal-autofill-selected`. */
-input:-internal-autofill-previewed,
-input:-internal-autofill-selected,
-textarea:-internal-autofill-previewed,
-textarea:-internal-autofill-selected,
-select:-internal-autofill-previewed,
-select:-internal-autofill-selected {
-  appearance: menulist-button;
-  background-image:none !important;
-  background-color: light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
-  color: FieldText !important;
-}
-
 input[type="radio" i],
 input[type="checkbox" i] {
     margin:3px 3px 3px 4px;
@@ -780,13 +766,6 @@ button:disabled {
   color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
 }
 
-select:disabled,
-optgroup:disabled,
-option:disabled,
-select[disabled]>option {
-    color: light-dark(GrayText, #aaa);
-}
-
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
     border-style: inset
 }
@@ -799,12 +778,6 @@ input:disabled, textarea:disabled {
     cursor: default;
     background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
     color: light-dark(#545454, #aaaaaa);
-}
-
-input:disabled,
-select:disabled,
-textarea:disabled {
-  border-color: rgba(118, 118, 118, 0.3);
 }
 
 option:-internal-spatial-navigation-focus {
@@ -820,6 +793,9 @@ area {
 base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {
   display: none;
+}
+select:-internal-select-author-datalist > datalist:popover-open {
+  display: block;
 }
 input[type="hidden" i] {
   display: none !important;
@@ -937,7 +913,7 @@ input[type="week" i], select {
     text-autospace: no-autospace !important;
 }
 
-select {
+select:not(:-internal-select-author-button) {
     appearance: auto;
     box-sizing: border-box;
     align-items: center;
@@ -948,6 +924,54 @@ select {
     border: 1px solid light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
+}
+
+select:-internal-select-author-datalist > datalist {
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25em;
+  padding: 0.25em 0;
+  background-color: Field;
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  min-block-size: 1lh;
+  position-fallback: -internal-select-datalist-default-fallbacks;
+}
+@position-fallback -internal-select-datalist-default-fallbacks {
+  /* Fallbacks without vertical scrolling */
+  @try {
+    inset-block-start: anchor(auto);
+    inset-inline-start: anchor(auto-same);
+  }
+  /* Fallbacks with vertical scrolling */
+  @try {
+    inset-block-start: anchor(auto);
+    inset-inline-start: anchor(auto-same);
+    block-size: -webkit-fill-available;
+  }
+}
+
+/* This is a copy of the [popover] styles. It may be combined after
+ * removing the StylableSelect flag. */
+select:-internal-select-author-datalist > datalist {
+  position: fixed;
+  width: fit-content;
+  height: fit-content;
+  color: CanvasText;
+}
+select:-internal-select-author-datalist > datalist:popover-open {
+  overlay: auto !important;
+}
+select:-internal-select-author-datalist > datalist:-internal-popover-in-top-layer::backdrop {
+  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  inset: 0;
+  /* Specific to [popover]: */
+  pointer-events: none !important;
+  background-color: transparent;
 }
 
 select:disabled {
@@ -1038,6 +1062,36 @@ option {
     padding: 0 2px 1px 2px;
     white-space: nowrap;
     min-height: 1.2em;
+}
+
+/* The following select style rules have to go after the other
+   select styles in order to have higher precedence. */
+
+/* TODO(crbug.com/880258): Use different styles for
+  `-internal-autofill-previewed` and `-internal-autofill-selected`. */
+input:-internal-autofill-previewed,
+input:-internal-autofill-selected,
+textarea:-internal-autofill-previewed,
+textarea:-internal-autofill-selected,
+select:-internal-autofill-previewed,
+select:-internal-autofill-selected {
+  appearance: menulist-button;
+  background-image:none !important;
+  background-color: light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  color: FieldText !important;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  border-color: rgba(118, 118, 118, 0.3);
+}
+
+select:disabled,
+optgroup:disabled,
+option:disabled,
+select[disabled]>option {
+    color: light-dark(GrayText, #aaa);
 }
 
 output {

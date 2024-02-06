@@ -439,19 +439,21 @@ TEST_F(TextOffsetMappingTest, RangeWithNestedPosition) {
             GetRange("<b>abc <i>d|ef</i> ghi</b>xyz"));
 }
 
-// http://crbug.com//834623
+// http://crbug.com/834623
 TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   SetBodyContent("<select></select>foo");
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -463,13 +465,15 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot></slot>"
+      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
+      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-options\"></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

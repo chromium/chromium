@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_button.h"
@@ -87,6 +88,14 @@ const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
         DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
         return selectlist;
       }
+      break;
+    }
+    case Type::kPopover: {
+      if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+        DEFINE_STATIC_LOCAL(const AtomicString, popover, ("popover"));
+        return popover;
+      }
+      break;
     }
   }
   NOTREACHED_NORETURN();
@@ -113,6 +122,9 @@ void HTMLButtonElement::ParseAttribute(
     } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
                EqualIgnoringASCIICase(params.new_value, "selectlist")) {
       type_ = kSelectlist;
+    } else if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+               EqualIgnoringASCIICase(params.new_value, "popover")) {
+      type_ = kPopover;
     } else {
       type_ = kSubmit;
     }
@@ -144,6 +156,15 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
     if (auto* selectlist = OwnerSelectList()) {
       selectlist->HandleButtonEvent(event);
+    }
+  }
+
+  if (auto* select = OwnerSelect()) {
+    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    // For native popups, use HTMLSelectElement's codepath. For <datalist>
+    // popover popups, use the HTMLFormControlElement popover code path.
+    if (!select->SlottedDatalist()) {
+      select->DefaultEventHandler(event);
     }
   }
 
@@ -249,6 +270,19 @@ HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
     if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
       return selectlist;
     }
+  }
+  return nullptr;
+}
+
+HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
+  // TODO(http://crbug.com/1511354): The first <button> can also have
+  // type=popover behavior if there are no other type=popover buttons:
+  // https://github.com/openui/open-ui/issues/939#issuecomment-1910837275
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled() || type_ != kPopover) {
+    return nullptr;
+  }
+  if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
+    return select;
   }
   return nullptr;
 }

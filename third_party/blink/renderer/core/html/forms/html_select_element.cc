@@ -78,19 +78,6 @@ namespace blink {
 
 using mojom::blink::FormControlType;
 
-namespace {
-
-bool CanAssignToSelectSlot(const Node& node) {
-  // Even if options/optgroups are not rendered as children of menulist SELECT,
-  // we still need to add them to the flat tree through slotting since we need
-  // their ComputedStyle for popup rendering.
-  return node.HasTagName(html_names::kOptionTag) ||
-         node.HasTagName(html_names::kOptgroupTag) ||
-         node.HasTagName(html_names::kHrTag);
-}
-
-}  // namespace
-
 // https://html.spec.whatwg.org/#dom-htmloptionscollection-length
 static const unsigned kMaxListItems = 100000;
 
@@ -1127,6 +1114,15 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
   }
 
+  if (SlottedButton() && SlottedDatalist()) {
+    // If there is a custom <button> and <datalist> at the same time, then the
+    // popover triggering code will handle everything for now.
+    // TODO(crbug.com/1511354): Implement keyboard behavior for stylable
+    // <select> to match <selectlist> and other OpenUI resolutions.
+    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    return;
+  }
+
   if (select_type_->DefaultEventHandler(event)) {
     event.SetDefaultHandled();
     return;
@@ -1252,41 +1248,22 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLSelectElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  // Even if UsesMenuList(), the <slot> is necessary to have ComputedStyles
-  // for <option>s. LayoutFlexibleBox::IsChildAllowed() rejects all of
-  // LayoutObject children except for MenuListInnerElement's.
-
-  option_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
-  root.AppendChild(option_slot_);
   UpdateUserAgentShadowTree(root);
   select_type_->UpdateTextStyleAndContent();
 }
 
 void HTMLSelectElement::ManuallyAssignSlots() {
-  ShadowRoot* shadow_root = UserAgentShadowRoot();
-  DCHECK(shadow_root);
-
-  HeapVector<Member<Node>> option_nodes;
-  for (Node& child : NodeTraversal::ChildrenOf(*this)) {
-    if (!child.IsSlotable())
-      continue;
-    if (CanAssignToSelectSlot(child))
-      option_nodes.push_back(child);
-  }
-  option_slot_->Assign(option_nodes);
+  select_type_->ManuallyAssignSlots();
 }
 
 void HTMLSelectElement::UpdateUserAgentShadowTree(ShadowRoot& root) {
-  // Remove all children of the ShadowRoot except for <slot>.
+  // Remove all children of the ShadowRoot so that select_type_ can set it up
+  // however it wants.
   Node* node = root.firstChild();
   while (node) {
-    if (IsA<HTMLSlotElement>(node)) {
-      node = node->nextSibling();
-    } else {
-      auto* will_be_removed = node;
-      node = node->nextSibling();
-      will_be_removed->remove();
-    }
+    auto* will_be_removed = node;
+    node = node->nextSibling();
+    will_be_removed->remove();
   }
   select_type_->CreateShadowSubtree(root);
 }
@@ -1566,6 +1543,14 @@ bool HTMLSelectElement::HandleInvokeInternal(HTMLElement& invoker,
   select_type_->ShowPicker();
 
   return true;
+}
+
+HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
+  return select_type_->SlottedButton();
+}
+
+HTMLDataListElement* HTMLSelectElement::SlottedDatalist() const {
+  return select_type_->SlottedDatalist();
 }
 
 }  // namespace blink

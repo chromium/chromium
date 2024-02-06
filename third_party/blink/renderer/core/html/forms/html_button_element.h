@@ -47,9 +47,12 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
-  // This return a <selectlist> if this button has type=selectlist and is a
+  // This returns a <selectlist> if this button has type=selectlist and is a
   // descendant of a <selectlist>.
   HTMLSelectListElement* OwnerSelectList() const;
+  // This returns a <select> if this button has type=select and is a direct
+  // child of a <select>.
+  HTMLSelectElement* OwnerSelect() const;
 
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:
@@ -61,7 +64,9 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
     kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
     kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
     kSelectlist =
-        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
+        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList),
+    kPopover =
+        base::to_underlying(mojom::blink::FormControlType::kButtonPopover)
   };
 
   mojom::blink::FormControlType FormControlType() const override;

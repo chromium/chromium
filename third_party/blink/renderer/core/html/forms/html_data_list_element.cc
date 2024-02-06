@@ -33,8 +33,10 @@
 
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -78,6 +80,38 @@ void HTMLDataListElement::DidMoveToNewDocument(Document& old_doc) {
 
 void HTMLDataListElement::Prefinalize() {
   GetDocument().DecrementDataListCount();
+}
+
+HTMLSelectElement* HTMLDataListElement::ParentSelect() const {
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    return nullptr;
+  }
+  return DynamicTo<HTMLSelectElement>(parentNode());
+}
+
+Node::InsertionNotificationRequest HTMLDataListElement::InsertedInto(
+    ContainerNode& parent) {
+  if (auto* select = DynamicTo<HTMLSelectElement>(parent)) {
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      EnsurePopoverData()->setType(PopoverValueType::kAuto);
+      select->IncrementImplicitlyAnchoredElementCount();
+    }
+  }
+  return HTMLElement::InsertedInto(parent);
+}
+
+void HTMLDataListElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+
+  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      // Clean up the popover data we set in InsertedInto. If this datalist is
+      // still considered select-associated, then UpdatePopoverAttribute will
+      // early out.
+      UpdatePopoverAttribute(FastGetAttribute(html_names::kPopoverAttr));
+      select->DecrementImplicitlyAnchoredElementCount();
+    }
+  }
 }
 
 }  // namespace blink

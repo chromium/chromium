@@ -12,6 +12,7 @@ enum FormControlType {
   kButtonSubmit,
   kButtonReset,
   kButtonSelectList,
+  kButtonPopover,
   // https://html.spec.whatwg.org/multipage/form-elements.html#dom-fieldset-type
   kFieldset,
   // https://html.spec.whatwg.org/multipage/input.html#attr-input-type

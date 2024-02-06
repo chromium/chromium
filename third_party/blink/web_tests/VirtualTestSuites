@@ -2632,10 +2632,18 @@
   },
   {
     "prefix": "stylable-select-disabled",
-    "platforms": ["Linux"],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/forms/the-select-element/select-parsing.tentative.html",
-      "fast/forms/select/button-or-datalist-in-select-usecounter.html"
+      "fast/forms/select",
+      "fast/forms/color-scheme/select",
+      "external/wpt/html/semantics/forms/the-selectlist-element",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-none-horizontal.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-lr.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
+      "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html"
     ],
     "args": ["--disable-features=StylableSelect"],
     "expires": "Oct 1, 2024",

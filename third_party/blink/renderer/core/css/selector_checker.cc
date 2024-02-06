@@ -1777,6 +1777,16 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 
       return element.CachedDirectionality() == direction;
     }
+    case CSSSelector::kPseudoSelectAuthorButton:
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedButton();
+      }
+      return false;
+    case CSSSelector::kPseudoSelectAuthorDatalist:
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedDatalist();
+      }
+      return false;
     case CSSSelector::kPseudoDialogInTopLayer:
       if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
         if (dialog->IsModal() &&

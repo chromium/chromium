@@ -143,6 +143,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
@@ -9818,6 +9819,12 @@ Element* Element::ImplicitAnchorElement() {
     }
     if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
       return select_list;
+    }
+    if (auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
+      if (auto* select = datalist->ParentSelect()) {
+        CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+        return select;
+      }
     }
   } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
