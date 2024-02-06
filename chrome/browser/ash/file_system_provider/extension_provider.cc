@@ -70,8 +70,8 @@ IconSet AppServiceIconSet(const extensions::ExtensionId& extension_id) {
 std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
     extensions::ExtensionRegistry* registry,
     const extensions::ExtensionId& extension_id) {
-  const extensions::Extension* const extension = registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
+  const extensions::Extension* const extension =
+      registry->enabled_extensions().GetByID(extension_id);
   if (!extension ||
       !extension->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kFileSystemProvider)) {

@@ -119,8 +119,7 @@ void DoLoadExtension(Profile* profile,
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   DCHECK(extension_registry);
-  if (extension_registry->GetExtensionById(
-          extension_id, extensions::ExtensionRegistry::ENABLED)) {
+  if (extension_registry->enabled_extensions().GetByID(extension_id)) {
     VLOG(1) << "the IME extension(id=\"" << extension_id
             << "\") is already enabled";
     return;

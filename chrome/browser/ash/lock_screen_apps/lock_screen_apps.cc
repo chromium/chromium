@@ -94,8 +94,8 @@ bool IsLockScreenCapable(Profile* profile, const std::string& app_id) {
   }
 
   const extensions::Extension* chrome_app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   if (!chrome_app)
     return false;
   if (!chrome_app->permissions_data()->HasAPIPermission(

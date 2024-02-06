@@ -521,8 +521,8 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
       extensions::ExtensionRegistry::Get(lock_screen_profile_);
 
   // Return the app, in case it's currently loaded.
-  const extensions::Extension* app = extension_registry->GetExtensionById(
-      lock_screen_app_id_, extensions::ExtensionRegistry::ENABLED);
+  const extensions::Extension* app =
+      extension_registry->enabled_extensions().GetByID(lock_screen_app_id_);
   if (app) {
     return app;
   }
@@ -554,8 +554,7 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
   extension_service->AddExtension(lock_profile_app.get());
   extension_service->EnableExtension(lock_profile_app->id());
 
-  app = extension_registry->GetExtensionById(
-      lock_screen_app_id_, extensions::ExtensionRegistry::ENABLED);
+  app = extension_registry->enabled_extensions().GetByID(lock_screen_app_id_);
 
   return app;
 }
