@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <string_view>
+
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -42,7 +44,7 @@ const char kExtraInfoKey[] = "extra_info";
 // statements. If `key` is a string in `dict`, writes it to `out` and returns
 // true. Leaves `out` alone and returns false otherwise.
 bool FindString(const base::Value::Dict& dict,
-                base::StringPiece key,
+                std::string_view key,
                 std::string& out) {
   const std::string* value = dict.FindString(key);
   if (!value)
