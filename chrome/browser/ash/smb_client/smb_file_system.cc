@@ -19,7 +19,7 @@ SmbFileSystem::SmbFileSystem(
     const file_system_provider::ProvidedFileSystemInfo& file_system_info)
     : file_system_info_(file_system_info) {}
 
-SmbFileSystem::~SmbFileSystem() {}
+SmbFileSystem::~SmbFileSystem() = default;
 
 AbortCallback SmbFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
