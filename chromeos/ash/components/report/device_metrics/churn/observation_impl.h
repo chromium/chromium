@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   // Used by ReportController to destruct pending callbacks appropriately.
   base::WeakPtr<ObservationImpl> GetWeakPtr();
 
+  // Testing
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBodyForTesting();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;

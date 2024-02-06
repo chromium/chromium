@@ -7,6 +7,7 @@
 #include <memory>
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
@@ -192,6 +193,10 @@ class ObservationImplDirectCheckInTest : public ObservationImplTestBase {
     observation_impl_->SetLastPingTimestamp(ts);
   }
 
+  std::optional<FresnelImportDataRequest> GenerateImportRequestBody() {
+    return observation_impl_->GenerateImportRequestBodyForTesting();
+  }
+
  private:
   std::unique_ptr<PsmClientManager> psm_client_manager_;
   std::unique_ptr<UseCaseParameters> use_case_params_;
@@ -345,6 +350,192 @@ TEST_F(ObservationImplDirectCheckInTest, ValidateNewDeviceChurnMetadata) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
   EXPECT_TRUE(GetLocalState()->GetBoolean(
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+}
+
+TEST_F(ObservationImplDirectCheckInTest, GenerateImportRequestBody_Successful) {
+  // Observation import will only go through if cohort imported successfully.
+  // Setup initial value to be last active in Jan-2023.
+  // Value represents device was active each of the 18 months prior.
+  // Represents binary: 0100010100 001010010010010101
+  base::Time cur_ts = GetFakeTimeNow();
+  int cur_value = 72393877;
+  GetLocalState()->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                           cur_ts);
+  GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                              cur_value);
+
+  std::optional<FresnelImportDataRequest> import_request =
+      GenerateImportRequestBody();
+  ASSERT_TRUE(import_request.has_value());
+  EXPECT_EQ(import_request.value().import_data_size(), 3);
+}
+
+TEST_F(ObservationImplDirectCheckInTest, GenerateImportRequestBody) {
+  // Observation import will only go through if cohort imported successfully.
+  // Setup initial value to be last active in Jan-2023.
+  // Value represents device was active each of the 18 months prior.
+  // Represents binary: 0100010100 001010010010010101
+  base::Time cur_ts = GetFakeTimeNow();
+  int cur_value = 72393877;
+  GetLocalState()->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                           cur_ts);
+  GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                              cur_value);
+
+  // Field under test.
+  std::optional<FresnelImportDataRequest> import_request;
+
+  // Failure to generate import request body.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, true);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, true);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
+  import_request = GenerateImportRequestBody();
+  EXPECT_EQ(import_request->import_data_size(), 0);
+
+  // Generates period 0 observation.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, false);
+  import_request = GenerateImportRequestBody();
+  EXPECT_EQ(import_request->import_data_size(), 1);
+
+  // Generates period 0 and 1 observations.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);
+  import_request = GenerateImportRequestBody();
+  EXPECT_EQ(import_request->import_data_size(), 2);
+
+  // Generates period 0, 1, and 2 observations.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
+  import_request = GenerateImportRequestBody();
+  EXPECT_EQ(import_request->import_data_size(), 3);
+}
+
+TEST_F(ObservationImplDirectCheckInTest, GenerateObservationImportData) {
+  // Observation import will only go through if cohort imported successfully.
+  // Setup initial value to be last active in Jan-2023.
+  // Value represents device was active each of the 18 months prior.
+  // Represents binary: 0100010100 001010010010010101
+  base::Time cur_ts = GetFakeTimeNow();
+  int cur_value = 72393877;
+  GetLocalState()->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                           cur_ts);
+  GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                              cur_value);
+
+  // Generates period 0, 1, and 2 observations.
+  std::optional<FresnelImportDataRequest> import_request =
+      GenerateImportRequestBody();
+  ASSERT_EQ(import_request->import_data_size(), 3);
+
+  struct {
+    int period;
+    bool expected_monthly_active_status;
+    bool expected_yearly_active_status;
+    const std::string expected_first_active_week;
+    const std::string expected_last_powerwash_week;
+  } kTestCases[] = {
+      {0, false, true, std::string(), std::string()},
+      {1, true, false, std::string(), std::string()},
+      {2, false, true, std::string(), std::string()},
+  };
+
+  // Validate observation import data.
+  FresnelImportData obs_data;
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Period: " << test_case.period);
+    obs_data = import_request->import_data(test_case.period);
+    ASSERT_TRUE(obs_data.has_churn_observation_metadata());
+
+    EXPECT_EQ(obs_data.churn_observation_metadata().monthly_active_status(),
+              test_case.expected_monthly_active_status);
+    EXPECT_EQ(obs_data.churn_observation_metadata().yearly_active_status(),
+              test_case.expected_yearly_active_status);
+    EXPECT_EQ(obs_data.churn_observation_metadata().first_active_week(),
+              test_case.expected_first_active_week);
+    EXPECT_EQ(obs_data.churn_observation_metadata().last_powerwash_week(),
+              test_case.expected_last_powerwash_week);
+  }
+}
+
+TEST_F(ObservationImplDirectCheckInTest, ObservationImportDataNewDeviceChurn) {
+  // Validate metadata when new device churn feature is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kDeviceActiveClientChurnObservationNewDeviceMetadata},
+      /*disabled_features*/ {});
+
+  // Observation import will only go through if cohort imported successfully.
+  // Setup initial value to be last active in Jan-2023.
+  // Value represents device was active each of the 18 months prior.
+  // Represents binary: 0100010100 001010010010010101
+  base::Time cur_ts = GetFakeTimeNow();
+  int cur_value = 72393877;
+  GetLocalState()->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                           cur_ts);
+  GetLocalState()->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                              cur_value);
+
+  struct {
+    const std::string activate_date_vpd;
+    bool is_first_active_week_set_obs_0;
+    bool is_first_active_week_set_obs_1;
+    bool is_first_active_week_set_obs_2;
+  } kTestCases[] = {
+      {"2023-01", true, false, false},
+      {"2022-36", true, false, false},
+
+      /* ActivateDate is > 4 months old */ {"2022-35", false, false, false},
+      /* ActivateDate is undefined */ {std::string(), false, false, false},
+      /* ActivateDate is incorrectly formatted */
+      {"123-456", false, false, false},
+  };
+
+  // Initialize fake statistics provider to test various activate date inputs.
+  system::FakeStatisticsProvider statistics_provider;
+  system::StatisticsProvider::SetTestProvider(&statistics_provider);
+
+  // Validate if new device churn metadata is attached in observation ping.
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test input Activate Date VPD as: "
+                                    << test_case.activate_date_vpd);
+    // Reset boolean to indicate device didn't attach new device churn metadata
+    // in previous observation pings.
+    GetLocalState()->SetBoolean(
+        prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata,
+        false);
+
+    // Set ActivateDate field in FakeStatisticsProvider before reading
+    // ActivateDate in the GenerateImportRequestBody method.
+    statistics_provider.SetMachineStatistic(system::kActivateDateKey,
+                                            test_case.activate_date_vpd);
+
+    // Method under test
+    std::optional<FresnelImportDataRequest> import_request =
+        GenerateImportRequestBody();
+    ASSERT_EQ(import_request->import_data_size(), 3);
+
+    auto obs_data_0 = import_request->import_data(0);
+    auto obs_data_1 = import_request->import_data(1);
+    auto obs_data_2 = import_request->import_data(2);
+
+    ASSERT_TRUE(obs_data_0.has_churn_observation_metadata());
+    ASSERT_TRUE(obs_data_1.has_churn_observation_metadata());
+    ASSERT_TRUE(obs_data_2.has_churn_observation_metadata());
+
+    EXPECT_EQ(obs_data_0.churn_observation_metadata().has_first_active_week(),
+              test_case.is_first_active_week_set_obs_0);
+    EXPECT_EQ(obs_data_1.churn_observation_metadata().has_first_active_week(),
+              test_case.is_first_active_week_set_obs_1);
+    EXPECT_EQ(obs_data_2.churn_observation_metadata().has_first_active_week(),
+              test_case.is_first_active_week_set_obs_2);
+  }
+
+  // Set statistics test provider to nullptr after tests.
+  system::StatisticsProvider::SetTestProvider(nullptr);
 }
 
 }  // namespace ash::report::device_metrics

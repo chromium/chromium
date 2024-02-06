@@ -63,6 +63,11 @@ base::WeakPtr<ObservationImpl> ObservationImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+std::optional<FresnelImportDataRequest>
+ObservationImpl::GenerateImportRequestBodyForTesting() {
+  return GenerateImportRequestBody();
+}
+
 void ObservationImpl::CheckMembershipOprf() {
   PsmClientManager* psm_client_manager = GetParams()->GetPsmClientManager();
 
