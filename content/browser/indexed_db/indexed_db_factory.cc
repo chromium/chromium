@@ -206,31 +206,6 @@ void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
   it->second->ForceClose(/*doom=*/will_be_deleted);
 }
 
-void IndexedDBFactory::ForceSchemaDowngrade(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return;
-  }
-
-  IndexedDBBackingStore* backing_store = it->second->backing_store();
-  leveldb::Status s = backing_store->RevertSchemaToV2();
-  DLOG_IF(ERROR, !s.ok()) << "Unable to force downgrade: " << s.ToString();
-}
-
-V2SchemaCorruptionStatus IndexedDBFactory::HasV2SchemaCorruption(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return V2SchemaCorruptionStatus::kUnknown;
-  }
-
-  IndexedDBBackingStore* backing_store = it->second->backing_store();
-  return backing_store->HasV2SchemaCorruption();
-}
-
 void IndexedDBFactory::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set `context_` to nullptr first to ensure no re-entry into the `context_`

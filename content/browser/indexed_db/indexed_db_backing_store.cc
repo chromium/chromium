@@ -1027,20 +1027,12 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
       return IOErrorStatus();
     }
   } else {
-    if (db_schema_version > indexed_db::kLatestKnownSchemaVersion)
+    if (db_schema_version > indexed_db::kLatestKnownSchemaVersion ||
+        db_schema_version < indexed_db::kEarliestSupportedSchemaVersion) {
       return InternalInconsistencyStatus();
+    }
 
     // Upgrade old backing store.
-    if (s.ok() && db_schema_version < 1) {
-      s = MigrateToV1(write_batch.get());
-    }
-    if (s.ok() && db_schema_version < 2) {
-      s = MigrateToV2(write_batch.get());
-      db_data_version = latest_known_data_version;
-    }
-    if (s.ok() && db_schema_version < 3) {
-      s = MigrateToV3(write_batch.get());
-    }
     if (s.ok() && db_schema_version < 4) {
       s = MigrateToV4(write_batch.get());
     }
@@ -1320,44 +1312,6 @@ Status IndexedDBBackingStore::ValidateBlobFiles() {
       return status;
   }
   return Status::OK();
-}
-
-Status IndexedDBBackingStore::RevertSchemaToV2() {
-#if DCHECK_IS_ON()
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(initialized_);
-#endif
-  const std::string schema_version_key = SchemaVersionKey::Encode();
-  std::string value_buffer;
-  EncodeInt(2, &value_buffer);
-  leveldb::Status s = db_->Put(schema_version_key, &value_buffer);
-  if (!s.ok())
-    INTERNAL_WRITE_ERROR(REVERT_SCHEMA_TO_V2);
-  return s;
-}
-
-V2SchemaCorruptionStatus IndexedDBBackingStore::HasV2SchemaCorruption() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if DCHECK_IS_ON()
-  DCHECK(initialized_);
-#endif
-  const std::string schema_version_key = SchemaVersionKey::Encode();
-
-  int64_t db_schema_version = 0;
-  bool found = false;
-  Status s = GetInt(db_.get(), schema_version_key, &db_schema_version, &found);
-  if (!s.ok())
-    return V2SchemaCorruptionStatus::kUnknown;
-  if (db_schema_version != 2)
-    return V2SchemaCorruptionStatus::kNo;
-
-  bool has_blobs = false;
-  s = AnyDatabaseContainsBlobs(&has_blobs);
-  if (!s.ok())
-    return V2SchemaCorruptionStatus::kUnknown;
-  if (!has_blobs)
-    return V2SchemaCorruptionStatus::kNo;
-  return V2SchemaCorruptionStatus::kYes;
 }
 
 std::unique_ptr<IndexedDBBackingStore::Transaction>
@@ -3857,93 +3811,6 @@ void IndexedDBBackingStore::Transaction::Begin(
   for (const auto& iter : backing_store_->in_memory_external_object_map_) {
     in_memory_external_object_map_[iter.first] = iter.second->Clone();
   }
-}
-
-Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const int64_t db_schema_version = 1;
-  const std::string schema_version_key = SchemaVersionKey::Encode();
-  const std::string data_version_key = DataVersionKey::Encode();
-  Status s;
-
-  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
-  const std::string start_key =
-      DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier_);
-  const std::string stop_key =
-      DatabaseNameKey::EncodeStopKeyForOrigin(origin_identifier_);
-  std::unique_ptr<TransactionalLevelDBIterator> it =
-      db_->CreateIterator(db_->DefaultReadOptions());
-  for (s = it->Seek(start_key);
-       s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
-       s = it->Next()) {
-    int64_t database_id = 0;
-    bool found = false;
-    s = GetInt(db_.get(), it->Key(), &database_id, &found);
-    if (!s.ok()) {
-      INTERNAL_READ_ERROR(SET_UP_METADATA);
-      return s;
-    }
-    if (!found) {
-      INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
-      return InternalInconsistencyStatus();
-    }
-    std::string version_key = DatabaseMetaDataKey::Encode(
-        database_id, DatabaseMetaDataKey::USER_VERSION);
-    std::ignore = PutVarInt(write_batch, version_key,
-                            IndexedDBDatabaseMetadata::DEFAULT_VERSION);
-  }
-
-  return s;
-}
-
-Status IndexedDBBackingStore::MigrateToV2(LevelDBWriteBatch* write_batch) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const int64_t db_schema_version = 2;
-  const std::string schema_version_key = SchemaVersionKey::Encode();
-  const std::string data_version_key = DataVersionKey::Encode();
-  Status s;
-
-  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
-  std::ignore = PutInt(write_batch, data_version_key,
-                       IndexedDBDataFormatVersion::GetCurrent().Encode());
-  return s;
-}
-
-Status IndexedDBBackingStore::MigrateToV3(LevelDBWriteBatch* write_batch) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const int64_t db_schema_version = 3;
-  const std::string schema_version_key = SchemaVersionKey::Encode();
-  const std::string data_version_key = DataVersionKey::Encode();
-  Status s;
-
-  // Up until http://crrev.com/3c0d175b, this migration path did not write
-  // the updated schema version to disk. In consequence, any database that
-  // started out as schema version <= 2 will remain at schema version 2
-  // indefinitely. Furthermore, this migration path used to call
-  // "base::DeletePathRecursively(blob_path_)", so databases stuck at
-  // version 2 would lose their stored Blobs on every open call.
-  //
-  // In order to prevent corrupt databases, when upgrading from 2 to 3 this
-  // will consider any v2 databases with BlobEntryKey entries as corrupt.
-  // https://crbug.com/756447, https://crbug.com/829125,
-  // https://crbug.com/829141
-  bool has_blobs = false;
-  s = AnyDatabaseContainsBlobs(&has_blobs);
-  if (!s.ok()) {
-    INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
-    return InternalInconsistencyStatus();
-  }
-  if (has_blobs) {
-    INTERNAL_CONSISTENCY_ERROR(UPGRADING_SCHEMA_CORRUPTED_BLOBS);
-    return InternalInconsistencyStatus();
-  } else {
-    std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
-  }
-
-  return s;
 }
 
 Status IndexedDBBackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {

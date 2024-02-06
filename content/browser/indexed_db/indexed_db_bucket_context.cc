@@ -185,7 +185,8 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
     return {false, leveldb::Status::Corruption(
                        "Invalid IndexedDB database schema version.")};
   }
-  if (db_schema_version > indexed_db::kLatestKnownSchemaVersion) {
+  if (db_schema_version > indexed_db::kLatestKnownSchemaVersion ||
+      db_schema_version < indexed_db::kEarliestSupportedSchemaVersion) {
     return {false, s};
   }
 

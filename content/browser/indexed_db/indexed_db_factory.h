@@ -93,10 +93,6 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   // multithreading.
   void ForceClose(storage::BucketId bucket_id, bool will_be_deleted);
 
-  void ForceSchemaDowngrade(const storage::BucketLocator& bucket_locator);
-  V2SchemaCorruptionStatus HasV2SchemaCorruption(
-      const storage::BucketLocator& bucket_locator);
-
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   void ContextDestroyed();
 

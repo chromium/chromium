@@ -245,35 +245,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     return future.Take();
   }
 
-  bool RequestSchemaDowngrade(const storage::BucketLocator& bucket_locator) {
-    base::RunLoop loop;
-    bool downgraded;
-    auto control_test = GetControlTest();
-    control_test->ForceSchemaDowngradeForTesting(
-        bucket_locator, base::BindLambdaForTesting([&](bool was_downgraded) {
-          downgraded = was_downgraded;
-          loop.Quit();
-        }));
-    loop.Run();
-    return downgraded;
-  }
-
-  storage::mojom::V2SchemaCorruptionStatus RequestHasV2SchemaCorruption(
-      const storage::BucketLocator& bucket_locator) {
-    base::RunLoop loop;
-    storage::mojom::V2SchemaCorruptionStatus ret;
-    auto control_test = GetControlTest();
-    control_test->HasV2SchemaCorruptionForTesting(
-        bucket_locator,
-        base::BindLambdaForTesting(
-            [&](storage::mojom::V2SchemaCorruptionStatus status) {
-              ret = status;
-              loop.Quit();
-            }));
-    loop.Run();
-    return ret;
-  }
-
   // Synchronously writes to the IndexedDB database at the given storage_key.
   void WriteToIndexedDB(const storage::BucketLocator& bucket_locator,
                         std::string key,
@@ -632,15 +603,6 @@ class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
     return std::vector<BlobModificationTime>();
   }
 };
-
-class IndexedDBBrowserTestWithVersion0Schema : public
-    IndexedDBBrowserTestWithPreexistingLevelDB {
-  std::string EnclosingLevelDBDir() override { return "migration_from_0"; }
-};
-
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion0Schema, MigrationTest) {
-  SimpleTest(GetTestUrl("indexeddb", "migration_test.html"));
-}
 
 class IndexedDBBrowserTestWithVersion3Schema
     : public IndexedDBBrowserTestWithPreexistingLevelDB {
@@ -1227,62 +1189,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
   title_watcher.AlsoWaitForTitle(u"connection closed with error");
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
-}
-
-// The V2 schema corruption test runs in a separate class to avoid corrupting
-// an IDB store that other tests use.
-class IndexedDBBrowserTestV2SchemaCorruption : public IndexedDBBrowserTest {};
-
-// Verify the V2 schema corruption lifecycle:
-// - create a current version backing store (v3 or later)
-// - add an object store, some data, and an object that contains a blob
-// - verify the object+blob are stored in the object store
-// - verify the backing store doesn't have v2 schema corruption
-// - force the schema to downgrade to v2
-// - verify the backing store has v2 schema corruption
-// - verify the object+blob can be fetched
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
-  ASSERT_TRUE(embedded_test_server()->Started() ||
-              embedded_test_server()->InitializeAndListen());
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &StaticFileRequestHandler, s_indexeddb_test_prefix, this));
-  embedded_test_server()->StartAcceptingConnections();
-
-  // Set up the IndexedDB instance so it contains our reference data.
-  std::string test_file =
-      std::string(s_indexeddb_test_prefix) + "v2schemacorrupt_setup.html";
-  SimpleTest(embedded_test_server()->GetURL(test_file));
-
-  // Find the bucket that was created.
-  ASSERT_OK_AND_ASSIGN(
-      const auto bucket_info,
-      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(embedded_test_server()->base_url())))));
-  const auto bucket_locator = bucket_info.ToBucketLocator();
-
-  // Verify the backing store does not have corruption.
-  storage::mojom::V2SchemaCorruptionStatus has_corruption =
-      RequestHasV2SchemaCorruption(bucket_locator);
-  ASSERT_EQ(has_corruption,
-            storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_NO);
-
-  // Revert schema to v2.  This closes the targeted backing store.
-  bool schema_downgrade = RequestSchemaDowngrade(bucket_locator);
-  ASSERT_EQ(schema_downgrade, true);
-
-  // Re-open the backing store and verify it has corruption.
-  test_file =
-      std::string(s_indexeddb_test_prefix) + "v2schemacorrupt_reopen.html";
-  SimpleTest(embedded_test_server()->GetURL(test_file));
-  has_corruption = RequestHasV2SchemaCorruption(bucket_locator);
-  ASSERT_EQ(has_corruption,
-            storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_YES);
-
-  // Verify that the saved blob is get-able with a v2 backing store.
-  test_file =
-      std::string(s_indexeddb_test_prefix) + "v2schemacorrupt_verify.html";
-  SimpleTest(embedded_test_server()->GetURL(test_file));
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ShutdownWithRequests) {

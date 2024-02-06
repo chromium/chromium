@@ -7,12 +7,6 @@ module storage.mojom;
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
-enum V2SchemaCorruptionStatus {
-  CORRUPTION_UNKNOWN,
-  CORRUPTION_NO,
-  CORRUPTION_YES,
-};
-
 enum FailClass {
   NOTHING,
   LEVELDB_ITERATOR,
@@ -49,14 +43,6 @@ interface IndexedDBControlTest {
 
   // Forgets the storage keys and sizes read from disk.
   ResetCachesForTesting() => ();
-
-  // Downgrades databases to V2.
-  ForceSchemaDowngradeForTesting(storage.mojom.BucketLocator bucket_locator) =>
-    (bool downgraded);
-
-  // Returns the corruption status for a given database.
-  HasV2SchemaCorruptionForTesting(storage.mojom.BucketLocator bucket_locator) =>
-      (V2SchemaCorruptionStatus status);
 
   // Does a direct write to a database with a given key/value pair.
   WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,

@@ -511,49 +511,6 @@ void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
-    const storage::BucketLocator& bucket_locator,
-    ForceSchemaDowngradeForTestingCallback callback) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-
-  if (is_incognito() || !LookUpBucket(bucket_locator.id)) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  if (indexeddb_factory_.get()) {
-    indexeddb_factory_->ForceSchemaDowngrade(bucket_locator);
-    std::move(callback).Run(true);
-    return;
-  }
-  ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE,
-      base::DoNothing());
-  std::move(callback).Run(false);
-}
-
-void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
-    const storage::BucketLocator& bucket_locator,
-    HasV2SchemaCorruptionForTestingCallback callback) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-
-  if (is_incognito() || !LookUpBucket(bucket_locator.id)) {
-    std::move(callback).Run(
-        storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_UNKNOWN);
-    return;
-  }
-
-  if (indexeddb_factory_.get()) {
-    std::move(callback).Run(
-        static_cast<storage::mojom::V2SchemaCorruptionStatus>(
-            indexeddb_factory_->HasV2SchemaCorruption(bucket_locator)));
-    return;
-  }
-  return std::move(callback).Run(
-      storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_UNKNOWN);
-}
-
 void IndexedDBContextImpl::WriteToIndexedDBForTesting(
     const storage::BucketLocator& bucket_locator,
     const std::string& key,
