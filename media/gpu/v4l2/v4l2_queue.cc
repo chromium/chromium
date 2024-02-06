@@ -362,7 +362,7 @@ const scoped_refptr<FrameResource>& V4L2Buffer::GetFrameResource() {
 
   // Create the video frame instance if requiring it for the first time.
   if (!frame_) {
-    // TODO(nhebert): switch to NativePixmap FrameResource when it is ready
+    // TODO(nhebert): switch to NativePixmap FrameResource when it is ready.
     frame_ = VideoFrameResource::Create(CreateVideoFrame());
   }
 
@@ -619,10 +619,9 @@ scoped_refptr<VideoFrame> V4L2WritableBufferRef::GetVideoFrame() {
   if (!frame) {
     return nullptr;
   }
-  if (!frame->AsVideoFrameResource()) {
-    NOTREACHED() << "V4L2ReadableBuffer::GetVideoFrame() is only called when "
-                    "the |frame_| is a VideoFrameResource";
-  }
+  LOG_ASSERT(!!frame->AsVideoFrameResource())
+      << "V4L2WritableBufferRef::GetVideoFrame() is only called when the "
+         "|frame_| is a VideoFrameResource";
   return frame->AsVideoFrameResource()->GetMutableVideoFrame();
 }
 
@@ -962,10 +961,9 @@ scoped_refptr<VideoFrame> V4L2ReadableBuffer::GetVideoFrame() {
   if (!frame) {
     return nullptr;
   }
-  if (!frame->AsVideoFrameResource()) {
-    NOTREACHED() << "V4L2ReadableBuffer::GetVideoFrame() is only called when "
-                    "the |frame_| is a VideoFrameResource";
-  }
+  LOG_ASSERT(!!frame->AsVideoFrameResource())
+      << "V4L2ReadableBuffer::GetVideoFrame() is only called when the |frame_| "
+         "is a VideoFrameResource";
   return frame->AsVideoFrameResource()->GetMutableVideoFrame();
 }
 

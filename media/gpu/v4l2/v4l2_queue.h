@@ -206,7 +206,7 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
 // All methods of this class must be called from the same sequence, but
 // instances of V4L2ReadableBuffer objects can be destroyed from any sequence.
 // They can even outlive the V4L2 buffers they originate from. This flexibility
-// is required because V4L2ReadableBufferRefs can be embedded into VideoFrames,
+// is required because V4L2ReadableBufferRefs can be embedded into frames,
 // which are then passed to other threads and not necessarily destroyed before
 // the V4L2Queue buffers are freed.
 class MEDIA_GPU_EXPORT V4L2ReadableBuffer
@@ -508,21 +508,21 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // return |std::nullopt|.
   [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBuffer(
       size_t requested_buffer_id);
-  // Return a V4L2 buffer suitable for the passed VideoFrame.
+  // Return a V4L2 buffer suitable for the passed frame.
   //
   // This method will try as much as possible to always return the same V4L2
   // buffer when the same frame is passed again, to avoid memory unmap
   // operations in the kernel driver.
   //
-  // The operating mode of the queue must be DMABUF, and the VideoFrame must
-  // be backed either by a GpuMemoryBuffer, or by DMABUFs. In the case of
-  // DMABUFs, this method will only work correctly if the same DMABUFs are
-  // passed with each call, i.e. no dup shall be performed.
+  // The operating mode of the queue must be DMABUF, and the frame must be
+  // backed either by a GpuMemoryBuffer, or by DMABUFs. In the case of DMABUFs,
+  // this method will only work correctly if the same DMABUFs are passed with
+  // each call, i.e. no dup shall be performed.
   //
   // This should be the preferred way to obtain buffers when using DMABUF mode,
   // since it will maximize performance in that case provided the number of
-  // different VideoFrames passed to this method does not exceed the number of
-  // V4L2 buffers allocated on the queue.
+  // different frames passed to this method does not exceed the number of V4L2
+  // buffers allocated on the queue.
   [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
       const gfx::GenericSharedMemoryId& id);
 
@@ -609,13 +609,13 @@ class MEDIA_GPU_EXPORT V4L2Queue
   scoped_refptr<V4L2BuffersList> free_buffers_;
 
   // Buffers that have been queued by the client, and not dequeued yet, indexed
-  // by the v4l2_buffer queue ID. The value will be set to the VideoFrame that
-  // has been passed when we queued the buffer, if any.
+  // by the v4l2_buffer queue ID. The value will be set to the FrameResource
+  // that has been passed when we queued the buffer, if any.
   base::small_map<std::map<size_t, scoped_refptr<FrameResource>>>
       queued_buffers_;
 
   // Dictionary of queue buffers (indexed 0... |buffers_| size), indexed by the
-  // unique VideoFrame id (be that a GpuMemoryBuffer ID or a DmaBuf ID).
+  // unique frame id (be that a GpuMemoryBuffer ID or a DmaBuf ID).
   std::map<gfx::GenericSharedMemoryId, size_t> free_buffers_indexes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
