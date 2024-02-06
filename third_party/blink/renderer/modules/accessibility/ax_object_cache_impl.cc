@@ -5077,25 +5077,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   Deque<ui::AXEvent> src_events = pending_events_;
   pending_events_.clear();
 
-  // Dirty objects can be added as a result of serialization. For example,
-  // as children are iterated during depth first traversal in the serializer,
-  // the children sometimes need to be created. The initialization of these
-  // new children can lead to the discovery of parenting changes via
-  // aria-owns, or name changes on an ancestor that collects its name its from
-  // contents. In some cases this has led to an infinite loop, as the
-  // serialization of new dirty objects keeps adding new dirty objects to
-  // consider. The infinite loop is avoided by tracking the number of dirty
-  // objects that can be serialized from the loop, which is the initial
-  // number of dirty objects + kMaxExtraDirtyObjectsToSerialize.
-  // Allowing kMaxExtraDirtyObjectsToSerialize ensures that most important
-  // additional related changes occur at the same time, and that dump event
-  // tests have consistent results (the results change when dirty objects are
-  // processed in separate batches).
-  constexpr int kMaxExtraDirtyObjectsToSerialize = 100;
-
-  size_t num_remaining_objects_to_serialize =
-      dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
-
   HashSet<int32_t> already_serialized_ids;
   int redundant_serialization_count = 0;
 
@@ -5107,7 +5088,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   EnsureSerializer();
 
   ui::AXNodeData::AXNodeDataSize node_data_size;
-  while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
+  while (!dirty_objects_.empty()) {
     AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
     dirty_objects_.pop_front();
     AXObject* obj = current_dirty_object->obj;
@@ -5237,10 +5218,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
             << ObjectFromAXID(event.id);
   }
 
+  CHECK(!HasDirtyObjects());
+
 #if DCHECK_IS_ON()
-  if (!HasDirtyObjects()) {
-    CheckTreeConsistency(*this, *ax_tree_serializer_);
-  }
+  CheckTreeConsistency(*this, *ax_tree_serializer_);
 
   // Provide the expected node count in the last update, so that
   // AXTree::Unserialize() can check for tree consistency on the browser side.
