@@ -381,7 +381,6 @@ void ProfileImpl::RegisterProfilePrefs(
                                 false);
   registry->RegisterIntegerPref(policy::policy_prefs::kForceYouTubeRestrict,
                                 safe_search_api::YOUTUBE_RESTRICT_OFF);
-  registry->RegisterStringPref(prefs::kAllowedDomainsForApps, std::string());
 
   registry->RegisterIntegerPref(prefs::kProfileAvatarIndex, -1);
   // Whether a profile is using an avatar without having explicitely chosen it

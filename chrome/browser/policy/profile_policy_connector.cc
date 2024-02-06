@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/allowed_domains_for_apps_policy_handler.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -448,6 +449,7 @@ void ProfilePolicyConnector::Init(
   migrators.push_back(
       std::make_unique<browser_switcher::BrowserSwitcherPolicyMigrator>());
 #endif
+  migrators.push_back(std::make_unique<AllowedDomainsForAppsPolicyMigrator>());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ConfigurationPolicyProvider* user_policy_delegate_candidate =

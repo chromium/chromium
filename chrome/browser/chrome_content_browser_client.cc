@@ -1523,6 +1523,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, false);
 
+  registry->RegisterStringPref(prefs::kAllowedDomainsForApps, std::string());
+
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
 #endif

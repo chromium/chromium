@@ -39,6 +39,7 @@
 #include "chrome/browser/policy/webhid_device_policy_handler.h"
 #include "chrome/browser/policy/webusb_allow_devices_for_urls_policy_handler.h"
 #include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/profiles/allowed_domains_for_apps_policy_handler.h"
 #include "chrome/browser/profiles/force_safe_search_policy_handler.h"
 #include "chrome/browser/profiles/force_youtube_safety_mode_policy_handler.h"
 #include "chrome/browser/profiles/guest_mode_policy_handler.h"
@@ -907,9 +908,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSSLErrorOverrideAllowedForOrigins,
     prefs::kSSLErrorOverrideAllowedForOrigins,
     base::Value::Type::LIST },
-  { key::kAllowedDomainsForApps,
-    prefs::kAllowedDomainsForApps,
-    base::Value::Type::STRING },
   { key::kEnableMediaRouter,
     prefs::kEnableMediaRouter,
     base::Value::Type::BOOLEAN },
@@ -2940,6 +2938,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<DeviceWeeklyScheduledSuspendPolicyHandler>(
           chrome_schema));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  handlers->AddHandler(std::make_unique<AllowedDomainsForAppsPolicyHandler>());
 
   return handlers;
 }

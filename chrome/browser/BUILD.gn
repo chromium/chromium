@@ -1370,6 +1370,8 @@ static_library("browser") {
     "process_singleton.h",
     "process_singleton_internal.cc",
     "process_singleton_internal.h",
+    "profiles/allowed_domains_for_apps_policy_handler.cc",
+    "profiles/allowed_domains_for_apps_policy_handler.h",
     "profiles/bookmark_model_loaded_observer.cc",
     "profiles/bookmark_model_loaded_observer.h",
     "profiles/chrome_browser_main_extra_parts_profiles.cc",
