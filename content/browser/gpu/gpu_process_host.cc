@@ -151,6 +151,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
       NOTREACHED();
       return nullptr;
     case gpu::GpuMode::HARDWARE_GL:
+    case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
       return kProcessLifetimeEventsHardwareAccelerated;
     case gpu::GpuMode::SWIFTSHADER:
