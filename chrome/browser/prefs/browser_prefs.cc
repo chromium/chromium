@@ -1002,6 +1002,10 @@ constexpr char kUpdateNotificationLastShownMilestone[] =
 constexpr char kSavePasswordsSuspendedByError[] =
     "profile.save_passwords_suspended_by_error";
 #endif
+constexpr char kSafeBrowsingDeepScanPromptSeen[] =
+    "safebrowsing.deep_scan_prompt_seen";
+constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
+    "safebrowsing.esb_enabled_timestamp";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1426,6 +1430,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kSavePasswordsSuspendedByError, false);
 #endif
+  registry->RegisterBooleanPref(kSafeBrowsingDeepScanPromptSeen, false);
+  registry->RegisterTimePref(kSafeBrowsingEsbEnabledTimestamp, base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2696,6 +2702,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kSavePasswordsSuspendedByError);
 #endif
+
+  // Deprecated 02/2024
+  profile_prefs->ClearPref(kSafeBrowsingDeepScanPromptSeen);
+  profile_prefs->ClearPref(kSafeBrowsingEsbEnabledTimestamp);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

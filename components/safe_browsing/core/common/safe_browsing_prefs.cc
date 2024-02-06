@@ -235,9 +235,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
-  registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanPromptSeen, false);
-  registry->RegisterTimePref(prefs::kSafeBrowsingEsbEnabledTimestamp,
-                             base::Time());
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {

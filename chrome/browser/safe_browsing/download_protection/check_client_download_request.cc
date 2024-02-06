@@ -251,11 +251,6 @@ void CheckClientDownloadRequest::MaybeStorePingsForDownload(
 void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {
   if (did_prompt) {
     LogDeepScanEvent(item_, DeepScanEvent::kPromptShown);
-    Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
-    if (profile && profile->GetPrefs()) {
-      profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingDeepScanPromptSeen,
-                                      true);
-    }
   }
 
   base::UmaHistogramBoolean("SBClientDownload.ServerRequestsDeepScanningPrompt",

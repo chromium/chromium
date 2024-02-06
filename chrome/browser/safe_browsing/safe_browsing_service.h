@@ -79,7 +79,6 @@ class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
 class TriggerManager;
 class HashRealTimeService;
-class SafeBrowsingServiceTest;
 
 // Construction needs to happen on the main thread.
 // The SafeBrowsingService owns both the UI and Database managers which do
@@ -237,7 +236,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingQuietPageTest;
   friend class extensions::SafeBrowsingPrivateApiUnitTest;
-  friend class SafeBrowsingServiceTest;
+  friend class SafeBrowsingServerTest;
   friend class SafeBrowsingUIManagerTest;
   friend class TestSafeBrowsingService;
   friend class TestSafeBrowsingServiceFactory;
