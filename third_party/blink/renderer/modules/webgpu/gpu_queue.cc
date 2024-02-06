@@ -392,13 +392,14 @@ void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,
           "Unknown failure in onSubmittedWorkDone");
       break;
     case WGPUQueueWorkDoneStatus_DeviceLost:
+    default:
+      // TODO(dawn:1987): Remove the default case after handling
+      // InstanceDropped.
       resolver->RejectWithDOMException(
           DOMExceptionCode::kOperationError,
           "Device lost during onSubmittedWorkDone (do not use this error for "
           "recovery - it is NOT guaranteed to happen on device loss)");
       break;
-    default:
-      NOTREACHED();
   }
 }
 

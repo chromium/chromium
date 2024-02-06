@@ -404,15 +404,14 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
-    case WGPUCreatePipelineAsyncStatus_Unknown: {
+    case WGPUCreatePipelineAsyncStatus_Unknown:
+    default: {
+      // TODO(dawn:1987): Remove the default case after handling
+      // InstanceDropped.
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
       break;
-    }
-
-    default: {
-      NOTREACHED();
     }
   }
 }
