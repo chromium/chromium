@@ -552,6 +552,10 @@ contrib/power/profiling_util_unittest.py
 contrib/power/stories.py
 contrib/power/top_sites_story.py
 contrib/power/wakeups.py
+contrib/shared_storage/__init__.py
+contrib/shared_storage/page_set.py
+contrib/shared_storage/pages.py
+contrib/shared_storage/shared_storage.py
 contrib/system_health_scroll_jank/__init__.py
 contrib/system_health_scroll_jank/janky_story_set.py
 contrib/system_health_scroll_jank/system_health_scroll_jank.py
