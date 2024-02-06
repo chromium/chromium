@@ -908,12 +908,17 @@ BASE_FEATURE(kVideoToolboxVideoDecoder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
-// A video encoder is enabled to drop a frame in cast mirroring.
+// A video encoder is allowed to drop a frame in cast mirroring.
 BASE_FEATURE(kCastVideoEncoderFrameDrop,
              "CastVideoEncoderFrameDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A hardware video encoder is enabled to drop a frame in WebRTC.
+// A video encoder is allowed to drop a frame in WebCodecs.
+BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
+             "WebCodecsVideoEncoderFrameDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A hardware video encoder is allowed to drop a frame in WebRTC.
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
              "WebRTCHardwareVideoEncoderFrameDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);

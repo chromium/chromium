@@ -141,7 +141,11 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   config.g_lag_in_frames = 0;
   config.rc_max_quantizer = 56;
   config.rc_min_quantizer = 10;
-  config.rc_dropframe_thresh = 0;  // Don't drop frames
+  // Only if latency_mode is real time, a frame might be dropped.
+  config.rc_dropframe_thresh =
+      opts.latency_mode == VideoEncoder::LatencyMode::Realtime
+          ? GetDefaultVideoEncoderDropFrameThreshold()
+          : 0;
 
   config.rc_undershoot_pct = 50;
   config.rc_overshoot_pct = 50;
@@ -623,12 +627,14 @@ base::TimeDelta Av1VideoEncoder::GetFrameDuration(const VideoFrame& frame) {
 void Av1VideoEncoder::DrainOutputs(int temporal_id,
                                    base::TimeDelta ts,
                                    gfx::ColorSpace color_space) {
+  bool dropped_frame = true;
   const aom_codec_cx_pkt_t* pkt = nullptr;
   aom_codec_iter_t iter = nullptr;
   while ((pkt = aom_codec_get_cx_data(codec_.get(), &iter)) != nullptr) {
     if (pkt->kind != AOM_CODEC_CX_FRAME_PKT)
       continue;
 
+    dropped_frame = false;
     VideoEncoderOutput result;
     result.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
     result.timestamp = ts;
@@ -638,7 +644,7 @@ void Av1VideoEncoder::DrainOutputs(int temporal_id,
     if (result.key_frame) {
       // If we got an unexpected key frame, temporal_svc_frame_index needs to
       // be adjusted, because the next frame should have index 1.
-      temporal_svc_frame_index_ = 1;
+      temporal_svc_frame_index_ = 0;
       result.temporal_id = 0;
     } else {
       result.temporal_id = temporal_id;
@@ -648,11 +654,23 @@ void Av1VideoEncoder::DrainOutputs(int temporal_id,
     memcpy(result.data.get(), pkt->data.frame.buf, result.size);
     output_cb_.Run(std::move(result), {});
   }
+
+  if (dropped_frame) {
+    VideoEncoderOutput result;
+    result.timestamp = ts;
+    output_cb_.Run(std::move(result), {});
+    return;
+  }
+
+  if (svc_params_.number_temporal_layers > 1) {
+    temporal_svc_frame_index_++;
+  }
 }
 
 EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
-  if (svc_params_.number_temporal_layers < 2)
+  if (svc_params_.number_temporal_layers <= 1) {
     return 0;
+  }
 
   int temporal_id = 0;
   if (key_frame)
@@ -672,8 +690,6 @@ EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
       break;
     }
   }
-
-  temporal_svc_frame_index_++;
 
   aom_svc_layer_id_t layer_id = {};
   layer_id.temporal_layer_id = temporal_id;

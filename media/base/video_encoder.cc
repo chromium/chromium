@@ -9,9 +9,17 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/system/sys_info.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 
 namespace media {
+
+uint8_t GetDefaultVideoEncoderDropFrameThreshold() {
+  // This function is to be invoked only in WebCodecs usage.
+  // The drop frame threshold is the same as WebRTC.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc
+  return base::FeatureList::IsEnabled(kWebCodecsVideoEncoderFrameDrop) ? 30 : 0;
+}
 
 uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
                                       uint32_t framerate) {

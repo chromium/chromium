@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
@@ -88,7 +89,11 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->rc_min_quantizer = 12;
   }
   config->rc_resize_allowed = 0;
-  config->rc_dropframe_thresh = 0;  // Don't drop frames
+  // Only if latency_mode is real time, a frame might be dropped.
+  config->rc_dropframe_thresh =
+      opts.latency_mode == VideoEncoder::LatencyMode::Realtime
+          ? GetDefaultVideoEncoderDropFrameThreshold()
+          : 0;
   config->g_timebase.num = 1;
   config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
@@ -491,8 +496,18 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
                         VP9E_CONTENT_SCREEN);
     } else {
       static_thresh = 100;
-      // TODO(b/280363228): Set 2 when the latency mode is realtime.
-      vpx_codec_control(codec.get(), VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/);
+      // Tune configs for screen sharing. The values are the same as WebRTC
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+      // 0: camera (default)
+      // 1: screen
+      // 2: screen with allowing drop frame.
+      unsigned int screen_content_mode = 1;
+      if (options.latency_mode == LatencyMode::Realtime &&
+          base::FeatureList::IsEnabled(kWebCodecsVideoEncoderFrameDrop)) {
+        screen_content_mode = 2;
+      }
+      vpx_codec_control(codec.get(), VP8E_SET_SCREEN_CONTENT_MODE,
+                        screen_content_mode);
     }
   }
   vpx_codec_control(codec.get(), VP8E_SET_STATIC_THRESHOLD, static_thresh);
@@ -670,8 +685,6 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     unsigned int index_in_temp_cycle =
         temporal_svc_frame_index_ % codec_config_.ts_periodicity;
     temporal_id = codec_config_.ts_layer_id[index_in_temp_cycle];
-    temporal_svc_frame_index_++;
-
     if (profile_ == VP8PROFILE_ANY) {
       auto* vp8_layers_flags = codec_config_.ts_number_layers == 2
                                    ? vp8_2layers_temporal_flags
@@ -815,24 +828,27 @@ void VpxVideoEncoder::Flush(EncoderStatusCB done_cb) {
     std::move(done_cb).Run(std::move(status));
     return;
   }
-  DrainOutputs(0, base::TimeDelta(), gfx::ColorSpace());
+  DrainOutputs(0, std::nullopt, gfx::ColorSpace());
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 void VpxVideoEncoder::DrainOutputs(int temporal_id,
-                                   base::TimeDelta ts,
+                                   std::optional<base::TimeDelta> ts,
                                    gfx::ColorSpace color_space) {
+  const bool flush = !ts.has_value();
+  bool dropped_frame = true;
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
   while ((pkt = vpx_codec_get_cx_data(codec_.get(), &iter))) {
     if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
+      dropped_frame = false;
       VideoEncoderOutput result;
       result.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
 
       if (result.key_frame) {
-        // If we got an unexpected key frame, temporal_svc_frame_index needs to
-        // be adjusted, because the next frame should have index 1.
-        temporal_svc_frame_index_ = 1;
+        // If we got an unexpected key frame, |temporal_svc_frame_index_| needs
+        // to be adjusted, because the next frame should have index 1.
+        temporal_svc_frame_index_ = 0;
         result.temporal_id = 0;
       } else {
         result.temporal_id = temporal_id;
@@ -840,13 +856,28 @@ void VpxVideoEncoder::DrainOutputs(int temporal_id,
 
       // We don't given timestamps to vpx_codec_encode() that's why
       // pkt->data.frame.pts can't be used here.
-      result.timestamp = ts;
+      result.timestamp = *ts;
       result.color_space = color_space;
       result.size = pkt->data.frame.sz;
       result.data = std::make_unique<uint8_t[]>(result.size);
       memcpy(result.data.get(), pkt->data.frame.buf, result.size);
       output_cb_.Run(std::move(result), {});
     }
+  }
+
+  if (flush) {
+    return;
+  }
+
+  if (dropped_frame) {
+    VideoEncoderOutput result;
+    result.timestamp = *ts;
+    output_cb_.Run(std::move(result), {});
+    return;
+  }
+
+  if (codec_config_.ts_number_layers > 1) {
+    temporal_svc_frame_index_++;
   }
 }
 

@@ -24,6 +24,9 @@ namespace media {
 struct VideoEncoderInfo;
 class VideoFrame;
 
+// Returns the drop frame threshold for media::VideoEncoder used in WebCodecs.
+MEDIA_EXPORT uint8_t GetDefaultVideoEncoderDropFrameThreshold();
+
 MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
                                                    uint32_t framerate);
 
