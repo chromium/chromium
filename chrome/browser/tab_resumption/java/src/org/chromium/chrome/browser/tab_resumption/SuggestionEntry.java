@@ -15,26 +15,26 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final String sourceName;
     public final GURL url;
     public final String title;
-    public final long timestamp;
+    public final long lastActiveTime;
     public final int id;
 
     // Cached Drawable to reduce churn from image fetching and processing with RecyclerView use.
     @Nullable private Drawable mUrlDrawable;
 
-    SuggestionEntry(String sourceName, GURL url, String title, long timestamp, int id) {
+    SuggestionEntry(String sourceName, GURL url, String title, long lastActiveTime, int id) {
         this.sourceName = sourceName;
         this.url = url;
         this.title = title;
-        this.timestamp = timestamp;
+        this.lastActiveTime = lastActiveTime;
         this.id = id;
     }
 
     /** Suggestion comparator that favors recency, and uses other fields for tie-breaking. */
     @Override
     public int compareTo(SuggestionEntry other) {
-        int compareResult = Long.compare(this.timestamp, other.timestamp);
+        int compareResult = Long.compare(this.lastActiveTime, other.lastActiveTime);
         if (compareResult != 0) {
-            return -compareResult; // To sort by decreasing timestamp.
+            return -compareResult; // To sort by decreasing lastActiveTime.
         }
         compareResult = this.sourceName.compareTo(other.sourceName);
         if (compareResult != 0) {

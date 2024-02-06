@@ -146,7 +146,7 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testOnHomeScreen_oneTab() {
         ForeignSessionTab tab1 =
-                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
         PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
@@ -161,12 +161,12 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testOnHomeScreen_multipleTab() {
         ForeignSessionTab tab1 =
-                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
         PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 =
-                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 
@@ -180,12 +180,12 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testOnHomeScreen_selectAndDeselectTabs() {
         ForeignSessionTab tab1 =
-                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
         PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 =
-                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 

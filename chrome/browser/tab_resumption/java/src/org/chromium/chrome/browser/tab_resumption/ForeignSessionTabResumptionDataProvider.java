@@ -87,7 +87,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
     }
 
     private boolean isForeignSessionTabUsable(ForeignSessionTab tab, long currentTimeMs) {
-        if (currentTimeMs - tab.timestamp > STALENESS_THRESHOLD_MS) return false;
+        if (currentTimeMs - tab.lastActiveTime > STALENESS_THRESHOLD_MS) return false;
         String scheme = tab.url.getScheme();
         return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
     }
@@ -104,7 +104,11 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
                     if (isForeignSessionTabUsable(tab, currentTimeMs)) {
                         suggestions.add(
                                 new SuggestionEntry(
-                                        session.name, tab.url, tab.title, tab.timestamp, tab.id));
+                                        session.name,
+                                        tab.url,
+                                        tab.title,
+                                        tab.lastActiveTime,
+                                        tab.id));
                     }
                 }
             }

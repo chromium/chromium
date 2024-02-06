@@ -94,7 +94,7 @@ public class RestoreTabsFeatureHelperUnitTest {
     @Test
     public void testRestoreTabsFeatureHelper_hasValidSyncedDevices() {
         // Setup mock data
-        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
+        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
         ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
