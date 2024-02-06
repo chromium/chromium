@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTabWithLastActiveTime;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -86,8 +87,9 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
         mForeignSessionHelper.destroy();
     }
 
-    private boolean isForeignSessionTabUsable(ForeignSessionTab tab, long currentTimeMs) {
-        if (currentTimeMs - tab.timestamp > STALENESS_THRESHOLD_MS) return false;
+    private boolean isForeignSessionTabUsable(
+            ForeignSessionTabWithLastActiveTime tab, long currentTimeMs) {
+        if (currentTimeMs - tab.lastActiveTime > STALENESS_THRESHOLD_MS) return false;
         String scheme = tab.url.getScheme();
         return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
     }
@@ -97,14 +99,21 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
         long currentTimeMs =
                 (mForcedCurrentTimeMs == 0) ? System.currentTimeMillis() : mForcedCurrentTimeMs;
 
-        List<ForeignSession> foreignSessions = mForeignSessionHelper.getForeignSessions();
+        List<ForeignSession> foreignSessions =
+                mForeignSessionHelper.getForeignSessionsForTabResumptionModule();
         for (ForeignSession session : foreignSessions) {
             for (ForeignSessionWindow window : session.windows) {
-                for (ForeignSessionTab tab : window.tabs) {
+                for (ForeignSessionTab tabRaw : window.tabs) {
+                    ForeignSessionTabWithLastActiveTime tab =
+                            (ForeignSessionTabWithLastActiveTime) tabRaw;
                     if (isForeignSessionTabUsable(tab, currentTimeMs)) {
                         suggestions.add(
                                 new SuggestionEntry(
-                                        session.name, tab.url, tab.title, tab.timestamp, tab.id));
+                                        session.name,
+                                        tab.url,
+                                        tab.title,
+                                        tab.lastActiveTime,
+                                        tab.id));
                     }
                 }
             }

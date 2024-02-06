@@ -62,12 +62,12 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         // Populate `mForeignSessionHelper` with test data.
         ForeignSessionWindow desktopWindow1 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(3, 30, 0),
+                        /* timeForUi= */ makeTimestamp(3, 30, 0),
                         /* sessionId= */ 201,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB1, TAB2)));
         ForeignSessionWindow desktopWindow2 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(9, 15, 20),
+                        /* timeForUi= */ makeTimestamp(9, 15, 20),
                         /* sessionId= */ 202,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB3, TAB4)));
         ForeignSession desktopForeignSession =
@@ -81,7 +81,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
 
         ForeignSessionWindow tabletWindow1 =
                 new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(8, 1, 15),
+                        /* timeForUi= */ makeTimestamp(8, 1, 15),
                         /* sessionId= */ 301,
                         /* tabs= */ new ArrayList<>(Arrays.asList(TAB5, TAB6, TAB7)));
         ForeignSession tabletForeignSession =
@@ -94,7 +94,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
 
         ArrayList<ForeignSession> foreignSessions =
                 new ArrayList<>(Arrays.asList(desktopForeignSession, tabletForeignSession));
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(foreignSessions);
+        when(mForeignSessionHelper.getForeignSessionsForTabResumptionModule())
+                .thenReturn(foreignSessions);
     }
 
     @After
@@ -237,7 +238,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals("My Tablet", firstEntry.sourceName);
         Assert.assertEquals(JUnitTestGURLs.INITIAL_URL, firstEntry.url);
         Assert.assertEquals("Initial", firstEntry.title);
-        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.timestamp);
+        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.timeForUi);
         Assert.assertEquals(106, firstEntry.id);
     }
 

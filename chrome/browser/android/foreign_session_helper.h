@@ -20,6 +20,11 @@ using base::android::ScopedJavaLocalRef;
 // once dependency issues have been resolved.
 class ForeignSessionHelper {
  public:
+  struct Options {
+    // Whether or not to get ForeignSessionTab with `last_active_time`.
+    bool get_last_active_time = false;
+  };
+
   explicit ForeignSessionHelper(Profile* profile);
 
   ForeignSessionHelper(const ForeignSessionHelper&) = delete;
@@ -34,6 +39,9 @@ class ForeignSessionHelper {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& callback);
   jboolean GetForeignSessions(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& result);
+  jboolean GetForeignSessionsForTabResumptionModule(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& result);
   jboolean GetMobileAndTabletForeignSessions(
@@ -56,6 +64,11 @@ class ForeignSessionHelper {
       const base::android::JavaParamRef<jstring>& session_tag);
 
  private:
+  // Shared code for GetForeignSessions*().
+  jboolean GetForeignSessionsInternal(
+      JNIEnv* env,
+      const Options& options,
+      const base::android::JavaParamRef<jobject>& result);
   // Fires |callback_| if it is not null.
   void FireForeignSessionCallback();
   // Returns whether a foreground tab with renderer was restored.

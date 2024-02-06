@@ -111,6 +111,18 @@ public class ForeignSessionHelper {
         }
     }
 
+    /** ForeignSessionTab with extra `lastActiveTime` field. */
+    public static class ForeignSessionTabWithLastActiveTime extends ForeignSessionTab {
+        public final long lastActiveTime;
+
+        @VisibleForTesting
+        public ForeignSessionTabWithLastActiveTime(
+                GURL url, String title, long timestamp, int id, long lastActiveTime) {
+            super(url, title, timestamp, id);
+            this.lastActiveTime = lastActiveTime;
+        }
+    }
+
     @CalledByNative
     private static ForeignSession pushSession(
             List<ForeignSession> sessions,
@@ -135,6 +147,20 @@ public class ForeignSessionHelper {
     private static void pushTab(
             ForeignSessionWindow window, GURL url, String title, long timestamp, int sessionId) {
         ForeignSessionTab tab = new ForeignSessionTab(url, title, timestamp, sessionId);
+        window.tabs.add(tab);
+    }
+
+    @CalledByNative
+    private static void pushTabWithLastActiveTime(
+            ForeignSessionWindow window,
+            GURL url,
+            String title,
+            long timestamp,
+            int sessionId,
+            long lastActiveTime) {
+        ForeignSessionTab tab =
+                new ForeignSessionTabWithLastActiveTime(
+                        url, title, timestamp, sessionId, lastActiveTime);
         window.tabs.add(tab);
     }
 
@@ -177,8 +203,7 @@ public class ForeignSessionHelper {
     }
 
     /**
-     * @return The list of synced foreign sessions. If it fails to get them for some reason will
-     * return an empty list.
+     * @return The list of synced foreign sessions. On failure, an empty list is returned.
      */
     public List<ForeignSession> getForeignSessions() {
         if (!isTabSyncEnabled()) {
@@ -188,6 +213,26 @@ public class ForeignSessionHelper {
         boolean received =
                 ForeignSessionHelperJni.get()
                         .getForeignSessions(mNativeForeignSessionHelper, result);
+        if (!received) {
+            result = Collections.emptyList();
+        }
+
+        return result;
+    }
+
+    /**
+     * @return The list of synced foreign sessions for use by the Tab Resumption Module. On failure,
+     *     an empty list is returned.
+     */
+    public List<ForeignSession> getForeignSessionsForTabResumptionModule() {
+        if (!isTabSyncEnabled()) {
+            return Collections.emptyList();
+        }
+        List<ForeignSession> result = new ArrayList<ForeignSession>();
+        boolean received =
+                ForeignSessionHelperJni.get()
+                        .getForeignSessionsForTabResumptionModule(
+                                mNativeForeignSessionHelper, result);
         if (!received) {
             result = Collections.emptyList();
         }
@@ -303,6 +348,9 @@ public class ForeignSessionHelper {
                 long nativeForeignSessionHelper, ForeignSessionCallback callback);
 
         boolean getForeignSessions(
+                long nativeForeignSessionHelper, List<ForeignSession> resultSessions);
+
+        boolean getForeignSessionsForTabResumptionModule(
                 long nativeForeignSessionHelper, List<ForeignSession> resultSessions);
 
         boolean getMobileAndTabletForeignSessions(

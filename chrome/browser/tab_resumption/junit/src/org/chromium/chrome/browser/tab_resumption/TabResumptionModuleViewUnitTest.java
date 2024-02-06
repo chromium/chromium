@@ -95,7 +95,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
+                        /* timeForUi= */ makeTimestamp(24 - 3, 0, 0),
                         /* id= */ 90);
         mSuggestionBundle.entries.add(entry1);
 
@@ -147,14 +147,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* sourceName= */ "My Tablet",
                         /* url= */ JUnitTestGURLs.BLUE_3,
                         /* title= */ "Blue website with a very long title that might not fit",
-                        /* timestamp= */ makeTimestamp(24 - 1, 60 - 16, 0),
+                        /* timeForUi= */ makeTimestamp(24 - 1, 60 - 16, 0),
                         /* id= */ 50);
         SuggestionEntry entry2 =
                 new SuggestionEntry(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
+                        /* timeForUi= */ makeTimestamp(24 - 3, 0, 0),
                         /* id= */ 90);
         mSuggestionBundle.entries.add(entry1);
         mSuggestionBundle.entries.add(entry2);

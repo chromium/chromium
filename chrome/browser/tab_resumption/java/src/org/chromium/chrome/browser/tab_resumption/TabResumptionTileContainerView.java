@@ -84,7 +84,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
         Resources res = getContext().getResources();
         String recencyString =
                 TabResumptionModuleUtils.getRecencyString(
-                        getResources(), referenceTimeMs - entry.timestamp);
+                        getResources(), referenceTimeMs - entry.timeForUi);
         if (isSingle) {
             String preInfoText =
                     res.getString(R.string.tab_resumption_module_single_pre_info, entry.sourceName);
