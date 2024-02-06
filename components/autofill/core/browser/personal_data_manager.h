@@ -57,7 +57,6 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
-class PaymentsSuggestionBottomSheetMediatorTest;
 class Profile;
 class PrefService;
 
@@ -750,7 +749,6 @@ class PersonalDataManager : public KeyedService,
                            AddAndGetCreditCardArtImage);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
-  friend class ::PaymentsSuggestionBottomSheetMediatorTest;
   friend class PaymentsDataCleaner;
   friend class VirtualCardEnrollmentManagerTest;
 
