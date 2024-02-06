@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_DESK_PROFILES_VIEW_H_
-#define ASH_WM_DESKS_DESK_PROFILES_VIEW_H_
+#ifndef ASH_WM_DESKS_DESK_PROFILES_BUTTON_H_
+#define ASH_WM_DESKS_DESK_PROFILES_BUTTON_H_
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
@@ -82,4 +82,4 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_DESK_PROFILES_VIEW_H_
+#endif  // ASH_WM_DESKS_DESK_PROFILES_BUTTON_H_
