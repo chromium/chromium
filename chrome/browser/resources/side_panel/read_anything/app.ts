@@ -223,6 +223,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   speechStarted = false;
   maxSpeechLength = 175;
 
+  // The node id of the first text node that should be used by Read Aloud.
+  // -1 if the node is not set.
+  firstTextNodeSetForReadAloud = -1;
+
   rate: number = 1;
 
   constructor() {
@@ -347,6 +351,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private createTextNode_(nodeId: number): Node {
+    // When creating text nodes, save the first text node id. We need this
+    // node id to call InitAXPosition in playSpeech. If it's not saved here,
+    // we have to retrieve it through a DOM search such as createTreeWalker,
+    // which can be computationally expensive.
+    // However, since updateContent may be called after speech starts playing,
+    // don't call InitAXPosition from here to avoid interrupting current speech.
+    if (this.firstTextNodeSetForReadAloud < 0) {
+      this.firstTextNodeSetForReadAloud = nodeId;
+    }
+
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
     this.domNodeToAxNodeIdMap_.set(textNode, nodeId);
@@ -410,6 +424,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // TODO(crbug.com/1474951): Handle focus changes for speech, including
   // updating speech state.
   updateContent() {
+    // Each time we rebuild the subtree, we should clear the node id of the
+    // first text node.
+    this.firstTextNodeSetForReadAloud = -1;
+
+    this.updateContentInternal();
+  }
+
+  private updateContentInternal() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
@@ -663,24 +685,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.updateContent();
       }
 
-      // Gather all the messages that can be played. We need nodes, rather
-      // than just text because we need to add a span to the current sentence
-      // in order to use css styling to highlight the text as it's spoken.
-      // Since this modifies the nodes, and we can't do that while we're
-      // iterating over the tree, we gather them first, then speak them.
-      // TODO(crbug.com/1474951): Better handle if a sentence is split across
-      // multiple nodes (e.g. if some text is linked). Right now it will just
-      // sound choppy.
-      const treeRoot = container.firstChild;
-      assert(treeRoot);
-      const treeWalker =
-          document.createTreeWalker(treeRoot, NodeFilter.SHOW_TEXT);
-      treeWalker.nextNode();
-      const axNode = this.domNodeToAxNodeIdMap_.get(treeWalker.currentNode);
       // TODO(crbug.com/1474951): There should be a way to use AXPosition so
       // that this step can be skipped.
-      if (axNode) {
-        chrome.readingMode.initAXPositionWithNode(axNode);
+      if (this.firstTextNodeSetForReadAloud > 0) {
+        chrome.readingMode.initAXPositionWithNode(
+            this.firstTextNodeSetForReadAloud);
         this.highlightAndPlayMessage();
       }
     }
