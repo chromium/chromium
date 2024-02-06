@@ -783,12 +783,7 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       permission_service_(document.GetExecutionContext()),
       permission_observer_receiver_(this, document.GetExecutionContext()),
       render_accessibility_host_(document.GetExecutionContext()),
-      ax_tree_source_(BlinkAXTreeSource::Create(*this)),
-      ax_tree_serializer_(
-          std::make_unique<
-              ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>(
-              ax_tree_source_,
-              /*crash_on_error*/ true)) {
+      ax_tree_source_(BlinkAXTreeSource::Create(*this)) {
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
 
@@ -834,6 +829,15 @@ void AXObjectCacheImpl::EnsureRelationCache() {
   if (!relation_cache_) {
     relation_cache_ = std::make_unique<AXRelationCache>(this);
     relation_cache_->Init();
+  }
+}
+
+void AXObjectCacheImpl::EnsureSerializer() {
+  if (!ax_tree_serializer_) {
+    ax_tree_serializer_ = std::make_unique<
+        ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>(
+        ax_tree_source_,
+        /*crash_on_error*/ true);
   }
 }
 
@@ -4802,7 +4806,9 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
 }
 
 void AXObjectCacheImpl::ResetSerializer() {
-  ax_tree_serializer_->Reset();
+  if (ax_tree_serializer_) {
+    ax_tree_serializer_->Reset();
+  }
 
   // Clear anything about to be serialized, because everything will be
   // reserialized anyway.
@@ -5044,11 +5050,18 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const std::vector<ui::AXEventIntent>& event_intents) {
+  // Add to object to a queue that will be sent to the serializer in
+  // SerializeDirtyObjectsAndEvents().
   dirty_objects_.push_back(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
 
-  if (subtree)
+  // Note: if there is no serializer yet, then there is no need to create one
+  // just to mark a subtree dirty -- descendant nodes will automatically be
+  // serialized in a new serializer anyway, because those nodes hadn't
+  // previously been serialized.
+  if (ax_tree_serializer_ && subtree) {
     MarkSerializerSubtreeDirty(*obj);
+  }
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
@@ -5090,6 +5103,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
             DocumentLifecycle::kLayoutClean);
   DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
                                  DocumentLifecycle::kLayoutClean);
+
+  EnsureSerializer();
 
   ui::AXNodeData::AXNodeDataSize node_data_size;
   while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {

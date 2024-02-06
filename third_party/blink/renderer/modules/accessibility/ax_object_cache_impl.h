@@ -677,9 +677,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   // details.
   void UpdateTreeIfNeeded();
 
-  // Make sure a relation cache exists and is initialized. Mst be called with
+  // Make sure a relation cache exists and is initialized. Must be called with
   // clean layout.
   void EnsureRelationCache();
+
+  // Make sure the AXTreeSerializer has been created.
+  void EnsureSerializer();
 
   // Helpers for CreateAndInit().
   AXObject* CreateFromRenderer(LayoutObject*);
