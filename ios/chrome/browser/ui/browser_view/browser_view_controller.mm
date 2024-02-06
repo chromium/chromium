@@ -1063,10 +1063,6 @@ enum HeaderBehaviour {
     const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
-      // Force the UserInterfaceStyle update in incognito.
-      _fakeStatusBarView.overrideUserInterfaceStyle =
-          _isOffTheRecord ? UIUserInterfaceStyleDark
-                          : UIUserInterfaceStyleUnspecified;
     } else {
       [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
     }
