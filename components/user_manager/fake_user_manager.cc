@@ -265,11 +265,6 @@ User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
   return const_cast<User*>(FindUser(account_id));
 }
 
-std::u16string FakeUserManager::GetUserDisplayName(
-    const AccountId& account_id) const {
-  return std::u16string();
-}
-
 std::optional<std::string> FakeUserManager::GetOwnerEmail() {
   return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
@@ -373,15 +368,6 @@ void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
 bool FakeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return false;
-}
-
-const gfx::ImageSkia& FakeUserManager::GetResourceImageSkiaNamed(int id) const {
-  NOTIMPLEMENTED();
-  return empty_image_;
-}
-
-std::u16string FakeUserManager::GetResourceStringUTF16(int string_id) const {
-  return std::u16string();
 }
 
 void FakeUserManager::ScheduleResolveLocale(

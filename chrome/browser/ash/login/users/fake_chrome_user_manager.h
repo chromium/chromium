@@ -100,7 +100,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                              bool force_online_signin) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
-  std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override;
   void SaveUserType(const user_manager::User* user) override;
@@ -126,8 +125,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const override;
-  std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;

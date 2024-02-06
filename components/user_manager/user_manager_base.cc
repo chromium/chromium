@@ -508,12 +508,6 @@ void UserManagerBase::SaveUserDisplayName(const AccountId& account_id,
   }
 }
 
-std::u16string UserManagerBase::GetUserDisplayName(
-    const AccountId& account_id) const {
-  const User* user = FindUser(account_id);
-  return user ? user->display_name() : std::u16string();
-}
-
 void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
                                            const std::string& display_email) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());

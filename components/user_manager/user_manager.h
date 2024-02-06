@@ -313,12 +313,6 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void UpdateUserAccountData(const AccountId& account_id,
                                      const UserAccountData& account_data) = 0;
 
-  // Returns the display name for user |account_id| if it is known (was
-  // previously set by a |SaveUserDisplayName| call).
-  // Otherwise, returns an empty string.
-  virtual std::u16string GetUserDisplayName(
-      const AccountId& account_id) const = 0;
-
   // Saves user's displayed (non-canonical) email in local state preferences.
   // Ignored If there is no such user.
   virtual void SaveUserDisplayEmail(const AccountId& account_id,
@@ -473,12 +467,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true when the browser has crashed and restarted during the current
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
-
-  // Returns image from resources bundle.
-  virtual const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const = 0;
-
-  // Returns string from resources bundle.
-  virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
 
   // Schedules CheckAndResolveLocale using given task runner and
   // |on_resolved_callback| as reply callback.

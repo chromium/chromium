@@ -276,16 +276,6 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-const gfx::ImageSkia& FakeChromeUserManager::GetResourceImageSkiaNamed(
-    int id) const {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
-}
-
-std::u16string FakeChromeUserManager::GetResourceStringUTF16(
-    int string_id) const {
-  return std::u16string();
-}
-
 void FakeChromeUserManager::ScheduleResolveLocale(
     const std::string& locale,
     base::OnceClosure on_resolved_callback,
@@ -427,11 +417,6 @@ void FakeChromeUserManager::SaveUserDisplayName(
       return;
     }
   }
-}
-
-std::u16string FakeChromeUserManager::GetUserDisplayName(
-    const AccountId& account_id) const {
-  return std::u16string();
 }
 
 void FakeChromeUserManager::SaveUserDisplayEmail(

@@ -1230,16 +1230,6 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImageSkiaNamed(
-    int id) const {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
-}
-
-std::u16string ChromeUserManagerImpl::GetResourceStringUTF16(
-    int string_id) const {
-  return l10n_util::GetStringUTF16(string_id);
-}
-
 void ChromeUserManagerImpl::ScheduleResolveLocale(
     const std::string& locale,
     base::OnceClosure on_resolved_callback,
