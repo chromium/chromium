@@ -26,6 +26,14 @@ source_set("utils") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("default_browser_interest_signals") {
+  sources = [
+    "default_browser_interest_signals.h",
+    "default_browser_interest_signals.mm",
+  ]
+  deps = [ ":utils" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
