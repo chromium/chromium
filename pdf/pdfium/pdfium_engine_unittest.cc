@@ -377,7 +377,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
     // The whole attachment content is too long to do string comparison.
     // Instead, we only verify the checksum value here.
     base::MD5Digest hash;
-    base::MD5Sum(content.data(), content.size(), &hash);
+    base::MD5Sum(content, &hash);
     EXPECT_EQ(kCheckSum, base::MD5DigestToBase16(hash));
   }
 
