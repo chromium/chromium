@@ -494,24 +494,38 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
 #if BUILDFLAG(IS_ANDROID)
   CHECK(format.is_single_plane() && !format.IsLegacyMultiplanar());
 #endif
-  if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
-      format == viz::MultiPlaneFormat::kNV12 ||
-      format == viz::LegacyMultiPlaneFormat::kNV12A ||
-      format == viz::MultiPlaneFormat::kNV12A) {
-    // Y and A planes are R8, UV is RG8.
-    return plane_index == 1 ? wgpu::TextureFormat::RG8Unorm
-                            : wgpu::TextureFormat::R8Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
-             format == viz::MultiPlaneFormat::kP010) {
-    // Y plane is R16, UV is RG16.
-    return plane_index == 0 ? wgpu::TextureFormat::R16Unorm
-                            : wgpu::TextureFormat::RG16Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kI420 ||
-             format == viz::MultiPlaneFormat::kI420A) {
-    // All planes are R8.
-    return wgpu::TextureFormat::R8Unorm;
+  if (format.is_multi_plane()) {
+    int num_channels = format.NumChannelsInPlane(plane_index);
+    switch (format.channel_format()) {
+      case viz::SharedImageFormat::ChannelFormat::k8:
+        return num_channels == 1 ? wgpu::TextureFormat::R8Unorm
+                                 : wgpu::TextureFormat::RG8Unorm;
+      case viz::SharedImageFormat::ChannelFormat::k10:
+      case viz::SharedImageFormat::ChannelFormat::k16:
+        return num_channels == 1 ? wgpu::TextureFormat::R16Unorm
+                                 : wgpu::TextureFormat::RG16Unorm;
+      case viz::SharedImageFormat::ChannelFormat::k16F:
+        // `k16F` channel formats do not support UV planes.
+        CHECK_EQ(num_channels, 1);
+        return wgpu::TextureFormat::R16Float;
+    }
+  } else if (format.IsLegacyMultiplanar()) {
+    // TODO(crbug.com/1366495): Remove legacy multiplanar checks once
+    // multiplanar SI support lands.
+    if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
+        format == viz::LegacyMultiPlaneFormat::kNV12A) {
+      // Y and A planes are R8, UV is RG8.
+      return plane_index == 1 ? wgpu::TextureFormat::RG8Unorm
+                              : wgpu::TextureFormat::R8Unorm;
+    } else if (format == viz::LegacyMultiPlaneFormat::kP010) {
+      // Y plane is R16, UV is RG16.
+      return plane_index == 0 ? wgpu::TextureFormat::R16Unorm
+                              : wgpu::TextureFormat::RG16Unorm;
+    } else {
+      // All planes are R8.
+      CHECK_EQ(format, viz::LegacyMultiPlaneFormat::kYV12);
+      return wgpu::TextureFormat::R8Unorm;
+    }
   } else {
     // Fallback to return single-plane format.
     return ToDawnFormat(format);
