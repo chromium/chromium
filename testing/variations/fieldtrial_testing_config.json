@@ -21058,6 +21058,24 @@
         },
         {
             "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultANGLEVulkan",
+                        "Vulkan",
+                        "VulkanFromANGLE"
+                    ],
+                    "hardware_classes": [
+                        "rex"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "linux"
             ],
             "experiments": [
