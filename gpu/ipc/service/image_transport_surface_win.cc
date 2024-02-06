@@ -47,12 +47,10 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle) {
   if (gl::DirectCompositionSupported()) {
-    auto vsync_callback = delegate->GetGpuVSyncCallback();
     auto settings =
         CreatDCompPresenterSettings(delegate->GetFeatureInfo()->workarounds());
     auto presenter = base::MakeRefCounted<gl::DCompPresenter>(
-        display->GetAs<gl::GLDisplayEGL>(), std::move(vsync_callback),
-        settings);
+        display->GetAs<gl::GLDisplayEGL>(), settings);
     if (!presenter->Initialize()) {
       return nullptr;
     }

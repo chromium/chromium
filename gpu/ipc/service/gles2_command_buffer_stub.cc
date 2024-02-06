@@ -404,10 +404,6 @@ const GpuPreferences& GLES2CommandBufferStub::GetGpuPreferences() const {
   return context_group_->gpu_preferences();
 }
 
-viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
-  return viz::GpuVSyncCallback();
-}
-
 MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
   return context_group_->memory_tracker();
 }

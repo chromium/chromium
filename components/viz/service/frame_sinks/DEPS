@@ -32,4 +32,7 @@ specific_include_rules = {
     "+ui/display/mac/display_link_mac.h",
     "+ui/display/types/display_constants.h",
   ],
+  "external_begin_frame_source_win.h": [
+    "+ui/gl/vsync_thread_win.h",
+  ],
 }

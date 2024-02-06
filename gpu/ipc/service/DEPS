@@ -2,7 +2,6 @@ include_rules = [
   "+cc/paint",
   "+components/crash/core/common/crash_key.h",
   "+components/viz/common/features.h",
-  "+components/viz/common/gpu/gpu_vsync_callback.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/overlay_state/win/overlay_state_service.h",
   "+components/viz/common/resources/resource_sizes.h",

@@ -262,7 +262,6 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback,
     AddChildWindowToBrowserCallback add_child_window_to_browser_callback,
     SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Create");
@@ -287,7 +286,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
       context_state->feature_info(), renderer_settings, sequence_id,
       shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(gpu_vsync_callback),
+      std::move(schedule_gpu_task),
       std::move(add_child_window_to_browser_callback),
       std::move(release_overlays_callback));
   if (!impl_on_gpu->Initialize()) {
@@ -308,7 +307,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback,
     AddChildWindowToBrowserCallback add_child_window_to_browser_callback,
     SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback)
     : dependency_(std::move(deps)),
@@ -332,7 +330,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
           std::move(did_swap_buffer_complete_callback)),
       context_lost_callback_(std::move(context_lost_callback)),
       schedule_gpu_task_(std::move(schedule_gpu_task)),
-      gpu_vsync_callback_(std::move(gpu_vsync_callback)),
       add_child_window_to_browser_callback_(
           std::move(add_child_window_to_browser_callback)),
       release_overlays_callback_(release_overlays_callback),
@@ -1896,10 +1893,6 @@ void SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers(bool enable) {
   output_device_->SetEnableDCLayers(enable);
 }
 
-void SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled(bool enabled) {
-  output_device_->SetGpuVSyncEnabled(enabled);
-}
-
 void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
   output_device_->SetVSyncDisplayID(display_id);
 }
@@ -2480,10 +2473,6 @@ const gpu::gles2::FeatureInfo* SkiaOutputSurfaceImplOnGpu::GetFeatureInfo()
 const gpu::GpuPreferences& SkiaOutputSurfaceImplOnGpu::GetGpuPreferences()
     const {
   return gpu_preferences_;
-}
-
-GpuVSyncCallback SkiaOutputSurfaceImplOnGpu::GetGpuVSyncCallback() {
-  return gpu_vsync_callback_;
 }
 
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(

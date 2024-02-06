@@ -134,8 +134,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   void CreateDirectCompositionSurfaceWin() {
     DirectCompositionSurfaceWin::Settings settings;
     surface_ = base::MakeRefCounted<DirectCompositionSurfaceWin>(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(),
-        DirectCompositionSurfaceWin::VSyncCallback(), settings);
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
     EXPECT_TRUE(surface_->Initialize(GLSurfaceFormat()));
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in

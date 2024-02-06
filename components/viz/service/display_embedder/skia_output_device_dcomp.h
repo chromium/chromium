@@ -63,7 +63,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
   bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

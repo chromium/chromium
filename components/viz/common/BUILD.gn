@@ -157,7 +157,6 @@ viz_component("common") {
     "gpu/context_lost_reason.h",
     "gpu/context_provider.cc",
     "gpu/context_provider.h",
-    "gpu/gpu_vsync_callback.h",
     "gpu/raster_context_provider.cc",
     "gpu/raster_context_provider.h",
     "hit_test/aggregated_hit_test_region.h",

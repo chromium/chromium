@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
-#include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/render_pass_alpha_type.h"
@@ -80,8 +79,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // (i.e. viewport) of its contents for display, allowing the DirectRenderer
     // to apply resize optimization by padding to its width/height.
     bool supports_viewporter = false;
-    // Whether this OutputSurface supports gpu vsync callbacks.
-    bool supports_gpu_vsync = false;
     // OutputSurface's orientation mode.
     OrientationMode orientation_mode = OrientationMode::kLogic;
     // Whether this OutputSurface supports direct composition layers.
@@ -242,13 +239,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // supported.
   virtual void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) = 0;
-
-  // Set a callback for vsync signal from GPU service for begin frames.  The
-  // callbacks must be received on the calling thread.
-  virtual void SetGpuVSyncCallback(GpuVSyncCallback callback);
-
-  // Enable or disable vsync callback based on whether begin frames are needed.
-  virtual void SetGpuVSyncEnabled(bool enabled);
 
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 

@@ -21,15 +21,6 @@
 
 namespace gl {
 
-namespace {
-
-bool SupportsLowLatencyPresentation() {
-  return base::FeatureList::IsEnabled(
-      features::kDirectCompositionLowLatencyPresentation);
-}
-
-}  // namespace
-
 DCompPresenter::PendingFrame::PendingFrame(
     Microsoft::WRL::ComPtr<ID3D11Query> query,
     PresentationCallback callback)
@@ -39,12 +30,8 @@ DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
     PendingFrame&& other) = default;
 
-DCompPresenter::DCompPresenter(GLDisplayEGL* display,
-                               VSyncCallback vsync_callback,
-                               const Settings& settings)
-    : vsync_callback_(std::move(vsync_callback)),
-      vsync_thread_(VSyncThreadWin::GetInstance()),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+DCompPresenter::DCompPresenter(GLDisplayEGL* display, const Settings& settings)
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
@@ -80,8 +67,9 @@ void DCompPresenter::Destroy() {
     std::move(frame.callback).Run(gfx::PresentationFeedback::Failure());
   pending_frames_.clear();
 
-  if (vsync_thread_started_)
-    vsync_thread_->RemoveObserver(this);
+  if (observing_vsync_) {
+    VSyncThreadWin::GetInstance()->RemoveObserver(this);
+  }
 
   // Freeing DComp resources such as visuals and surfaces causes the
   // device to become 'dirty'. We must commit the changes to the device
@@ -106,17 +94,11 @@ bool DCompPresenter::Resize(const gfx::Size& size,
 }
 
 gfx::VSyncProvider* DCompPresenter::GetVSyncProvider() {
-  return vsync_thread_->vsync_provider();
+  return VSyncThreadWin::GetInstance()->vsync_provider();
 }
 
 void DCompPresenter::OnVSync(base::TimeTicks vsync_time,
                              base::TimeDelta interval) {
-  // Main thread will run vsync callback in low latency presentation mode.
-  if (VSyncCallbackEnabled() && !SupportsLowLatencyPresentation()) {
-    DCHECK(vsync_callback_);
-    vsync_callback_.Run(vsync_time, interval);
-  }
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DCompPresenter::HandleVSyncOnMainThread,
@@ -174,18 +156,6 @@ bool DCompPresenter::SupportsViewporter() const {
   return true;
 }
 
-bool DCompPresenter::SupportsGpuVSync() const {
-  return true;
-}
-
-void DCompPresenter::SetGpuVSyncEnabled(bool enabled) {
-  {
-    base::AutoLock auto_lock(vsync_callback_enabled_lock_);
-    vsync_callback_enabled_ = enabled;
-  }
-  StartOrStopVSyncThread();
-}
-
 bool DCompPresenter::SupportsDelegatedInk() {
   return layer_tree_->SupportsDelegatedInk();
 }
@@ -225,30 +195,20 @@ void DCompPresenter::HandleVSyncOnMainThread(base::TimeTicks vsync_time,
                                              base::TimeDelta interval) {
   last_vsync_time_ = vsync_time;
   last_vsync_interval_ = interval;
-
   CheckPendingFrames();
-  if (SupportsLowLatencyPresentation() && VSyncCallbackEnabled() &&
-      pending_frames_.size() < max_pending_frames_) {
-    DCHECK(vsync_callback_);
-    vsync_callback_.Run(vsync_time, interval);
-  }
 }
 
 void DCompPresenter::StartOrStopVSyncThread() {
-  bool start_vsync_thread = VSyncCallbackEnabled() || !pending_frames_.empty();
-  if (vsync_thread_started_ == start_vsync_thread)
+  bool needs_vsync = !pending_frames_.empty();
+  if (observing_vsync_ == needs_vsync) {
     return;
-  vsync_thread_started_ = start_vsync_thread;
-  if (start_vsync_thread) {
-    vsync_thread_->AddObserver(this);
-  } else {
-    vsync_thread_->RemoveObserver(this);
   }
-}
-
-bool DCompPresenter::VSyncCallbackEnabled() const {
-  base::AutoLock auto_lock(vsync_callback_enabled_lock_);
-  return vsync_callback_enabled_;
+  observing_vsync_ = needs_vsync;
+  if (needs_vsync) {
+    VSyncThreadWin::GetInstance()->AddObserver(this);
+  } else {
+    VSyncThreadWin::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void DCompPresenter::CheckPendingFrames() {

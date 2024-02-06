@@ -2,40 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
-#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
+#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_WIN_H_
+#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_WIN_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gl/vsync_thread_win.h"
 
 namespace viz {
 
-class OutputSurface;
-
-// Receives begin frames via OutputSurface::SetGpuVSyncCallback().  Output
-// surface must have |supports_gpu_vsync| capability.  This class is not thread
-// safe so the callbacks must be received on the original thread.  The BFS is
-// guaranteed to outlive the OutputSurface.
-class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
+// Receives begin frames from VSyncThreadWin.
+class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceWin
     : public ExternalBeginFrameSource,
-      public ExternalBeginFrameSourceClient {
+      public ExternalBeginFrameSourceClient,
+      public gl::VSyncThreadWin::VSyncObserver {
  public:
-  GpuVSyncBeginFrameSource(uint32_t restart_id, OutputSurface* output_surface);
+  ExternalBeginFrameSourceWin(
+      uint32_t restart_id,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  GpuVSyncBeginFrameSource(const GpuVSyncBeginFrameSource&) = delete;
-  GpuVSyncBeginFrameSource& operator=(const GpuVSyncBeginFrameSource&) = delete;
+  ExternalBeginFrameSourceWin(const ExternalBeginFrameSourceWin&) = delete;
+  ExternalBeginFrameSourceWin& operator=(const ExternalBeginFrameSourceWin&) =
+      delete;
 
-  ~GpuVSyncBeginFrameSource() override;
+  ~ExternalBeginFrameSourceWin() override;
 
-  // ExternalBeginFrameSource overrides.
+  // ExternalBeginFrameSource implementation.
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   void SetVSyncDisplayID(int64_t display_id) override;
 
-  // BeginFrameSource:
+  // BeginFrameSource implementation.
   void SetDynamicBeginFrameDeadlineOffsetSource(
       DynamicBeginFrameDeadlineOffsetSource*
           dynamic_begin_frame_deadline_offset_source) override;
@@ -43,17 +42,22 @@ class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
- private:
-  void OnGpuVSync(base::TimeTicks vsync_time, base::TimeDelta vsync_interval);
+  // gl::VSyncThreadWin::VSyncObserver implementation.
+  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
 
-  const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   BeginFrameArgsGenerator begin_frame_args_generator_;
 
+  bool observing_vsync_ = false;
   bool run_at_half_refresh_rate_ = false;
   bool skip_next_vsync_ = false;
   base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
+
+  base::WeakPtrFactory<ExternalBeginFrameSourceWin> weak_factory_{this};
 };
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
+#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_WIN_H_

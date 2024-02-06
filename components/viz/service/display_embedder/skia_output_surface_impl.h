@@ -97,8 +97,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void Reshape(const ReshapeParams& params) override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  void SetGpuVSyncCallback(GpuVSyncCallback callback) override;
   void SetVSyncDisplayID(int64_t display_id) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
@@ -207,8 +205,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
  private:
   bool Initialize();
-  void InitializeOnGpuThread(GpuVSyncCallback vsync_callback_runner,
-                             bool* result);
+  void InitializeOnGpuThread(bool* result);
   GrSurfaceCharacterization CreateGrSurfaceCharacterizationRenderPass(
       const gfx::Size& surface_size,
       SkColorType color_type,
@@ -229,9 +226,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void ReleaseOverlays(const std::vector<gpu::Mailbox> released_overlays);
   void BufferPresented(const gfx::PresentationFeedback& feedback);
   void AddChildWindowToBrowser(gpu::SurfaceHandle child_window);
-
-  // Provided as a callback for the GPU thread.
-  void OnGpuVSync(base::TimeTicks timebase, base::TimeDelta interval);
 
   using GpuTask = base::OnceClosure;
   void EnqueueGpuTask(GpuTask task,
@@ -282,7 +276,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   uint64_t sync_fence_release_ = 0;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
-  GpuVSyncCallback gpu_vsync_callback_;
   bool is_displayed_as_overlay_ = false;
   gpu::Mailbox last_swapped_mailbox_;
 

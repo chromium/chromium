@@ -243,8 +243,7 @@ class DCompPresenterTest : public testing::Test {
     DCompPresenter::Settings settings;
     scoped_refptr<DCompPresenter> presenter =
         base::MakeRefCounted<DCompPresenter>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(),
-            DCompPresenter::VSyncCallback(), settings);
+            gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
     EXPECT_TRUE(presenter->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in

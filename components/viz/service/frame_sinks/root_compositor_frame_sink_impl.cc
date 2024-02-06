@@ -25,7 +25,6 @@
 #include "components/viz/service/display_embedder/vsync_parameter_listener.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "ui/base/ozone_buildflags.h"
@@ -42,6 +41,10 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_win.h"
 #endif
 
 namespace viz {
@@ -151,39 +154,35 @@ RootCompositorFrameSinkImpl::Create(
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
                   base::SingleThreadTaskRunner::GetCurrentDefault().get()));
-    } else if (output_surface->capabilities().supports_gpu_vsync) {
-#if BUILDFLAG(IS_WIN)
-      hw_support_for_multiple_refresh_rates =
-          output_surface->capabilities().supports_dc_layers &&
-          params->set_present_duration_allowed;
-#endif
-      // Vsync updates are required to update the FrameRateDecider with
-      // supported refresh rates.
-#if !BUILDFLAG(IS_APPLE)
-      wants_vsync_updates = true;
-#endif
-      external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
-          restart_id, output_surface.get());
     } else {
-      auto time_source = std::make_unique<DelayBasedTimeSource>(
-          base::SingleThreadTaskRunner::GetCurrentDefault().get());
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+      // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
+      if (output_surface->capabilities().supports_dc_layers) {
+        hw_support_for_multiple_refresh_rates =
+            params->set_present_duration_allowed;
+        // Vsync updates are required to update the FrameRateDecider with
+        // supported refresh rates.
+        wants_vsync_updates = true;
+        external_begin_frame_source =
+            std::make_unique<ExternalBeginFrameSourceWin>(
+                restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
+      }
+#elif BUILDFLAG(IS_MAC)
       if (base::FeatureList::IsEnabled(
               features::kCVDisplayLinkBeginFrameSource)) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
-      } else {
-        synthetic_begin_frame_source =
-            std::make_unique<DelayBasedBeginFrameSourceMac>(
-                std::move(time_source), restart_id);
       }
-#else
-      synthetic_begin_frame_source =
-          std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
-                                                       restart_id);
 #endif
+      if (!external_begin_frame_source) {
+        auto time_source = std::make_unique<DelayBasedTimeSource>(
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
+        synthetic_begin_frame_source =
+            std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
+                                                         restart_id);
+      }
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }

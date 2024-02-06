@@ -207,10 +207,6 @@ EGLTimestampClient* GLSurface::GetEGLTimestampClient() {
   return nullptr;
 }
 
-bool GLSurface::SupportsGpuVSync() const {
-  return false;
-}
-
 bool GLSurface::SupportsDelegatedInk() {
   return false;
 }
@@ -220,8 +216,6 @@ void GLSurface::InitDelegatedInkPointRendererReceiver(
         pending_receiver) {
   NOTREACHED();
 }
-
-void GLSurface::SetGpuVSyncEnabled(bool enabled) {}
 
 GLSurface* GLSurface::GetCurrent() {
   return current_surface;

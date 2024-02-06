@@ -2,32 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
+#include "components/viz/service/frame_sinks/external_begin_frame_source_win.h"
+
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/service/display/output_surface.h"
 
 namespace viz {
 
-GpuVSyncBeginFrameSource::GpuVSyncBeginFrameSource(
+ExternalBeginFrameSourceWin::ExternalBeginFrameSourceWin(
     uint32_t restart_id,
-    OutputSurface* output_surface)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExternalBeginFrameSource(this, restart_id),
-      output_surface_(output_surface) {
-  DCHECK(output_surface->capabilities().supports_gpu_vsync);
-  output_surface->SetGpuVSyncCallback(base::BindRepeating(
-      &GpuVSyncBeginFrameSource::OnGpuVSync, base::Unretained(this)));
+      task_runner_(std::move(task_runner)) {}
+
+ExternalBeginFrameSourceWin::~ExternalBeginFrameSourceWin() {
+  if (observing_vsync_) {
+    gl::VSyncThreadWin::GetInstance()->RemoveObserver(this);
+  }
 }
 
-GpuVSyncBeginFrameSource::~GpuVSyncBeginFrameSource() = default;
-
-void GpuVSyncBeginFrameSource::OnGpuVSync(base::TimeTicks vsync_time,
+void ExternalBeginFrameSourceWin::OnVSync(base::TimeTicks vsync_time,
                                           base::TimeDelta vsync_interval) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ExternalBeginFrameSourceWin::OnVSync,
+                       weak_factory_.GetWeakPtr(), vsync_time, vsync_interval));
+    return;
+  }
   vsync_interval_ = vsync_interval;
   if (skip_next_vsync_) {
     TRACE_EVENT_INSTANT0("gpu",
-                         "GpuVSyncBeginFrameSource::OnGpuVSync - skip_vsync",
+                         "ExternalBeginFrameSourceWin::OnVSync - skip_vsync",
                          TRACE_EVENT_SCOPE_THREAD);
     skip_next_vsync_ = false;
     return;
@@ -42,7 +50,7 @@ void GpuVSyncBeginFrameSource::OnGpuVSync(base::TimeTicks vsync_time,
   ExternalBeginFrameSource::OnBeginFrame(begin_frame_args);
 }
 
-BeginFrameArgs GpuVSyncBeginFrameSource::GetMissedBeginFrameArgs(
+BeginFrameArgs ExternalBeginFrameSourceWin::GetMissedBeginFrameArgs(
     BeginFrameObserver* obs) {
   auto frame_time = last_begin_frame_args_.frame_time;
   auto interval = last_begin_frame_args_.interval;
@@ -66,7 +74,8 @@ BeginFrameArgs GpuVSyncBeginFrameSource::GetMissedBeginFrameArgs(
   return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);
 }
 
-void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
+void ExternalBeginFrameSourceWin::SetPreferredInterval(
+    base::TimeDelta interval) {
   auto interval_for_half_refresh_rate = vsync_interval_ * 2;
   constexpr auto kMaxDelta = base::Milliseconds(0.5);
   bool run_at_half_refresh_rate =
@@ -74,26 +83,34 @@ void GpuVSyncBeginFrameSource::SetPreferredInterval(base::TimeDelta interval) {
   if (run_at_half_refresh_rate_ == run_at_half_refresh_rate)
     return;
 
-  TRACE_EVENT1("gpu", "GpuVSyncBeginFrameSource::SetPreferredInterval",
+  TRACE_EVENT1("gpu", "ExternalBeginFrameSourceWin::SetPreferredInterval",
                "run_at_half_refresh_rate", run_at_half_refresh_rate);
   run_at_half_refresh_rate_ = run_at_half_refresh_rate;
   skip_next_vsync_ = false;
 }
 
-void GpuVSyncBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
+void ExternalBeginFrameSourceWin::SetDynamicBeginFrameDeadlineOffsetSource(
     DynamicBeginFrameDeadlineOffsetSource*
         dynamic_begin_frame_deadline_offset_source) {
   begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
       dynamic_begin_frame_deadline_offset_source);
 }
 
-void GpuVSyncBeginFrameSource::OnNeedsBeginFrames(bool needs_begin_frames) {
+void ExternalBeginFrameSourceWin::OnNeedsBeginFrames(bool needs_begin_frames) {
+  if (observing_vsync_ == needs_begin_frames) {
+    return;
+  }
+  observing_vsync_ = needs_begin_frames;
   skip_next_vsync_ = false;
-  output_surface_->SetGpuVSyncEnabled(needs_begin_frames);
+  if (needs_begin_frames) {
+    gl::VSyncThreadWin::GetInstance()->AddObserver(this);
+  } else {
+    gl::VSyncThreadWin::GetInstance()->RemoveObserver(this);
+  }
 }
 
-void GpuVSyncBeginFrameSource::SetVSyncDisplayID(int64_t display_id) {
-  output_surface_->SetVSyncDisplayID(display_id);
+void ExternalBeginFrameSourceWin::SetVSyncDisplayID(int64_t display_id) {
+  // TODO(sunnyps): See if we should use non-primary displays for driving vsync.
 }
 
 }  // namespace viz

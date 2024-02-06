@@ -446,16 +446,6 @@ void SkiaOutputSurfaceImpl::SetUpdateVSyncParametersCallback(
   update_vsync_parameters_callback_ = std::move(callback);
 }
 
-void SkiaOutputSurfaceImpl::SetGpuVSyncEnabled(bool enabled) {
-  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled,
-                             base::Unretained(impl_on_gpu_.get()), enabled);
-  gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
-}
-
-void SkiaOutputSurfaceImpl::SetGpuVSyncCallback(GpuVSyncCallback callback) {
-  gpu_vsync_callback_ = std::move(callback);
-}
-
 void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID,
                              base::Unretained(impl_on_gpu_.get()), display_id);
@@ -1122,29 +1112,9 @@ bool SkiaOutputSurfaceImpl::Initialize() {
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 
-  // This runner could be called from vsync or GPU thread after |this| is
-  // destroyed. We post directly to display compositor thread to check
-  // |weak_ptr_| as |dependency_| may have been destroyed.
-#if BUILDFLAG(IS_ANDROID)
-  // Callback is never used on Android. Doesn't work with WebView because
-  // calling it bypasses SkiaOutputSurfaceDependency.
-  GpuVSyncCallback vsync_callback_runner = base::DoNothing();
-#else
-  GpuVSyncCallback vsync_callback_runner = base::BindRepeating(
-      [](scoped_refptr<base::SingleThreadTaskRunner> runner,
-         base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr,
-         base::TimeTicks timebase, base::TimeDelta interval) {
-        runner->PostTask(FROM_HERE,
-                         base::BindOnce(&SkiaOutputSurfaceImpl::OnGpuVSync,
-                                        weak_ptr, timebase, interval));
-      },
-      base::SingleThreadTaskRunner::GetCurrentDefault(), weak_ptr_);
-#endif
-
   bool result = false;
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImpl::InitializeOnGpuThread,
-                     base::Unretained(this), vsync_callback_runner, &result);
+  auto callback = base::BindOnce(&SkiaOutputSurfaceImpl::InitializeOnGpuThread,
+                                 base::Unretained(this), &result);
   EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   // |capabilities_| will be initialized in InitializeOnGpuThread(), so have to
@@ -1177,9 +1147,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   return result;
 }
 
-void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
-    GpuVSyncCallback vsync_callback_runner,
-    bool* result) {
+void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
   auto did_swap_buffer_complete_callback = base::BindRepeating(
       &SkiaOutputSurfaceImpl::DidSwapBuffersComplete, weak_ptr_);
   auto buffer_presented_callback =
@@ -1198,7 +1166,7 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(vsync_callback_runner),
+      std::move(schedule_gpu_task),
       std::move(add_child_window_to_browser_callback),
       std::move(release_overlays_callback));
   if (!impl_on_gpu_) {
@@ -1403,13 +1371,6 @@ void SkiaOutputSurfaceImpl::AddChildWindowToBrowser(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(client_);
   client_->AddChildWindowToBrowser(child_window);
-}
-
-void SkiaOutputSurfaceImpl::OnGpuVSync(base::TimeTicks timebase,
-                                       base::TimeDelta interval) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (gpu_vsync_callback_)
-    gpu_vsync_callback_.Run(timebase, interval);
 }
 
 void SkiaOutputSurfaceImpl::ScheduleGpuTaskForTesting(
