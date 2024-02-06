@@ -20,7 +20,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -62,16 +61,12 @@ std::unique_ptr<ash::AshWebView> PickerClientImpl::CreateWebView(
 }
 
 void PickerClientImpl::DownloadGifToString(
-    const GURL& url,
+    const ash::ValidGifUrl& url,
     DownloadGifToStringCallback callback) {
   DCHECK(profile_);
-  // For now, only allow gifs from tenor.
-  // TODO: b/316936723 - Once we know what gifs the picker might show, consider
-  // making the method parameters more specific to allowed gif sources.
-  CHECK(url.DomainIs("media.tenor.com") && url.SchemeIs(url::kHttpsScheme));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
+  resource_request->url = url.ToGURL();
   resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 

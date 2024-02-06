@@ -6,15 +6,29 @@
 #define ASH_PUBLIC_CPP_PICKER_PICKER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/functional/callback_forward.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace ash {
+
+class ASH_PUBLIC_EXPORT ValidGifUrl {
+ public:
+  static std::optional<ValidGifUrl> Create(const GURL& url);
+
+  ~ValidGifUrl();
+
+  GURL ToGURL() const;
+
+ private:
+  explicit ValidGifUrl(GURL url);
+
+  GURL url_;
+};
 
 // Lets PickerController in Ash to communicate with the browser.
 class ASH_PUBLIC_EXPORT PickerClient {
@@ -28,7 +42,7 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // Downloads a gif from `url`. If the download is successful, the gif is
   // passed to `callback` as a string of encoded bytes in gif format. Otherwise,
   // `callback` is run with an empty string.
-  virtual void DownloadGifToString(const GURL& url,
+  virtual void DownloadGifToString(const ValidGifUrl& url,
                                    DownloadGifToStringCallback callback) = 0;
 
  protected:

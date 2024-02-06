@@ -34,7 +34,7 @@ class PickerClientImpl
   // ash::PickerClient:
   std::unique_ptr<ash::AshWebView> CreateWebView(
       const ash::AshWebView::InitParams& params) override;
-  void DownloadGifToString(const GURL& url,
+  void DownloadGifToString(const ash::ValidGifUrl& url,
                            DownloadGifToStringCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:

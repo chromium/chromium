@@ -260,7 +260,9 @@ void PickerController::DownloadGifToString(
     std::move(callback).Run(std::string());
     return;
   }
-  client_->DownloadGifToString(url, std::move(callback));
+  std::optional<ValidGifUrl> validated_url = ValidGifUrl::Create(url);
+  CHECK(validated_url.has_value());
+  client_->DownloadGifToString(*validated_url, std::move(callback));
 }
 
 }  // namespace ash
