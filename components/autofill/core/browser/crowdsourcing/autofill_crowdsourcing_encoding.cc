@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/server_prediction_overrides.h"
+#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -150,6 +151,16 @@ FieldType FirstNonCapturedType(const FormStructure& form,
                                const FieldTypeSet& contained_types) {
   for (const auto& field : form) {
     for (auto type : field->possible_types()) {
+      // EMAIL_ADDRESS is exempt from the contained_types requirement, if the
+      // possible_type was determined by a valid email address found within the
+      // field's content. The kAutofillUploadVotesForFieldsWithEmail feature
+      // handles this scenario.
+      if (type == EMAIL_ADDRESS && IsValidEmailAddress(field->value) &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillUploadVotesForFieldsWithEmail)) {
+        continue;
+      }
+
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
           !contained_types.count(type)) {
         return type;
