@@ -21,7 +21,6 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 // <if expr="chromeos_ash">
-import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import './secure_dns_dialog.js';
 // </if>
 

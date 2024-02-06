@@ -5,10 +5,6 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-// <if expr='chromeos_ash'>
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';

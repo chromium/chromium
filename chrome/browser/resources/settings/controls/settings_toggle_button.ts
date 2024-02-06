@@ -13,10 +13,6 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-// <if expr='chromeos_ash'>
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
