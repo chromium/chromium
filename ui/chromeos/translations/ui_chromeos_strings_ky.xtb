@@ -94,7 +94,7 @@
 <translation id="1742316578210444689">Ивритче (транслитерация)</translation>
 <translation id="1747761757048858544">Голландча (Нидерланддар)</translation>
 <translation id="174937106936716857">Жалпы файлдардын саны</translation>
-<translation id="1755345808328621801">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Интернет дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
+<translation id="1755345808328621801">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Web Store'дон анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="1757915090001272240">Жазы латын тамгалары</translation>
 <translation id="1761091787730831947"><ph name="VM_NAME" /> аркылуу бөлүшүү</translation>
 <translation id="1773212559869067373">Аныктыгын текшерүү тастыктамасы жергиликтүү деңгээлде четке кагылды</translation>
@@ -242,7 +242,7 @@
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> форматталууда...</translation>
 <translation id="2951236788251446349">Медуза</translation>
 <translation id="2958458230122209142">Жеке сактагычта орун аз. <ph name="TOTAL_SPACE" /> ичинен <ph name="REMAINING_PERCENTAGE" />% калды.</translation>
-<translation id="2977940621473452797">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Интернет дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
+<translation id="2977940621473452797">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Web Store'дон анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="2984337792991268709">Бүгүн <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">Французча (Канада)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, туташуу</translation>

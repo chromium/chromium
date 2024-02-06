@@ -1146,7 +1146,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="186612162884103683">"<ph name="EXTENSION" />" pode ​​ler e gravar imagens, vídeos e arquivos de som nos locais marcados.</translation>
 <translation id="1867780286110144690">O <ph name="PRODUCT_NAME" /> está pronto para concluir a instalação</translation>
 <translation id="1868553836791672080">A verificação de senhas não está disponível no Chromium</translation>
-<translation id="1868617395637139709">Use a localização para apps e serviços Android.</translation>
+<translation id="1868617395637139709">Usar a localização para apps e serviços Android.</translation>
 <translation id="1869433484041798909">Botão de favorito</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
 <translation id="1871131409931646355">Histórico completo de downloads</translation>
@@ -4260,7 +4260,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Básicas</translation>
-<translation id="4309165024397827958">Permitir que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
+<translation id="4309165024397827958">Permita que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
 <translation id="4309183709806093061">Compartilhar também o áudio do sistema. Este dispositivo vai ser silenciado para evitar feedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K ativos)</translation>
 <translation id="4310132194679586591">Selecione um app no seu dispositivo para abrir este link</translation>
@@ -5609,7 +5609,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5411856344659127989">Se você quer adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione um novo usuário<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
 
 As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="5413640305322530561">Saiba mais sobre dados de uso e diagnóstico.</translation>
+<translation id="5413640305322530561">Saiba mais</translation>
 <translation id="5414198321558177633">Atualizando a lista de perfis. Pode levar alguns minutos..</translation>
 <translation id="5414566801737831689">Ler os ícones dos websites que você visitar</translation>
 <translation id="5414836363063783498">Verificando...</translation>
@@ -6639,7 +6639,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6234108445915742946">Os Termos de Serviço do Chrome serão atualizados em 31 de março</translation>
 <translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o QR code do eSIM na frente dela.</translation>
-<translation id="6237297174664969437">Nas configurações do Chrome, você pode escolher a qualquer momento quais dados de navegação são sincronizados. Nas <ph name="LINK_BEGIN" />configurações do dispositivo<ph name="LINK_END" />, você pode controlar a sincronização dos apps da Web instalados no navegador Chrome. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="6237297174664969437">Nas configurações do Chrome, você escolhe a qualquer momento quais dados de navegação são sincronizados. Nas <ph name="LINK_BEGIN" />configurações do dispositivo<ph name="LINK_END" />, controle a sincronização dos apps da Web instalados no navegador Chrome. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="6237474966939441970">App de anotações com a stylus</translation>
 <translation id="623755660902014047">Modo de leitura</translation>
 <translation id="6238767809035845642">Texto compartilhado de outro dispositivo</translation>
@@ -8123,7 +8123,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7429415133937917139">Simula a saída de uma linha braille atualizável
     na parte superior da tela do painel do ChromeVox</translation>
 <translation id="7431719494109538750">Nenhum dispositivo HID encontrado</translation>
-<translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
@@ -8675,8 +8675,8 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="784934925303690534">Período</translation>
 <translation id="7849656116606005620">Lembrete: a Proteção antirrastreamento está ativada</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ao autorizar que seus dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como falhas do ChromeOS, quais recursos e quanta memória você normalmente usa, e dados de uso e diagnóstico do app Android. Alguns dados agregados também ajudarão apps do Google e nossos parceiros, como os desenvolvedores Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Você pode ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se a configuração "Atividade na Web e de apps" estiver ativada para sua Conta do Google, esses dados do Android vão poder ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e mudar as configurações da sua conta em account.google.com.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />Ative ou desative esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Se a configuração "Atividade na Web e de apps" estiver ativada para sua Conta do Google, esses dados do Android serão salvos nela. Veja e exclua seus dados ou mude as configurações da conta em account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar seus resultados personalizados ou o Google Assistente. Para economizar bateria, você pode acessar as configurações do Google Assistente e ativar o "Ok Google" apenas quando o dispositivo estiver conectado a uma fonte de energia.</translation>
 <translation id="7851457902707056880">O login foi restrito somente à conta do proprietário. Reinicie e faça login com a conta do proprietário. A máquina reiniciará automaticamente dentro de 30 segundos.</translation>
 <translation id="7851716364080026749">Sempre bloquear acesso à câmera e ao microfone</translation>
@@ -10203,7 +10203,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9032097289595078011">Desativar "Pareamento rápido"</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>
-<translation id="9034408118624208974">Começou a usar o Chromebook agora? Ative a sincronização para que o backup das suas preferências seja feito.</translation>
+<translation id="9034408118624208974">Começou a usar o Chromebook agora? Ative a sincronização para ativar o backup das suas preferências.</translation>
 <translation id="903480517321259405">Digite o PIN novamente</translation>
 <translation id="9036484080057916082">Lista de carimbos de data/hora do certificado assinado</translation>
 <translation id="9037054491984310631">Conectado ao dispositivo Bluetooth chamado <ph name="DEVICE" /></translation>
@@ -10246,11 +10246,11 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
         <ph name="BREAK" />
         Saiba mais sobre os dados que o Google coleta e por que em <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
 <translation id="9066782832737749352">Conversão de texto em voz</translation>
-<translation id="9068298336633421551">Permitir que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
+<translation id="9068298336633421551">Permita que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
 <translation id="9068598199622656904">Pressione uma tecla de cada vez para usar os atalhos do teclado, em vez de as manter pressionadas ao mesmo tempo.</translation>
 <translation id="9068878141610261315">Tipo de arquivo incompatível</translation>
 <translation id="9069417381769492963">Nenhum favorito corresponde à sua pesquisa</translation>
-<translation id="9069665781180028115">Os itens selecionados ficarão disponíveis neste Chromebook. Se você está começando a usar o Chromebook agora, sincronize todos os itens para que seja feito backup das suas preferências. Faça mudanças a qualquer momento em "Configurações &gt; Contas".</translation>
+<translation id="9069665781180028115">Os itens selecionados ficarão disponíveis neste dispositivo. Se você está começando a usar o Chromebook agora, sincronize todos os itens para que suas preferências sejam salvas aqui. Faça mudanças a qualquer momento em "Configurações &gt; Contas".</translation>
 <translation id="9070231741075992882">As permissões dadas ao app <ph name="APP_NAME" /> também serão concedidas aos apps instalados e transmitidos por ele.</translation>
 <translation id="9070342919388027491">Guia movida para a esquerda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
