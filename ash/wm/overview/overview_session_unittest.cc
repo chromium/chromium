@@ -7819,7 +7819,18 @@ TEST_F(SplitViewOverviewSessionTest, SelectUnsnappableWindowInSplitView) {
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
-TEST_F(SplitViewOverviewSessionTest, OverviewUnsnappableIndicatorVisibility) {
+// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
+// MSAN/ASAN on CrOS.
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_OverviewUnsnappableIndicatorVisibility \
+  DISABLED_OverviewUnsnappableIndicatorVisibility
+#else
+#define MAYBE_OverviewUnsnappableIndicatorVisibility \
+  OverviewUnsnappableIndicatorVisibility
+#endif
+TEST_F(SplitViewOverviewSessionTest,
+       MAYBE_OverviewUnsnappableIndicatorVisibility) {
   // Create three windows; two normal and one unsnappable, so that when after
   // snapping |window1| to enter split view we can test the state of each normal
   // and unsnappable windows.
@@ -10546,18 +10557,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
-// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
-// MSAN/ASAN on CrOS.
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
-#define MAYBE_OverviewUnsnappableIndicatorVisibility \
-  DISABLED_OverviewUnsnappableIndicatorVisibility
-#else
-#define MAYBE_OverviewUnsnappableIndicatorVisibility \
-  OverviewUnsnappableIndicatorVisibility
-#endif
 TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
-       MAYBE_OverviewUnsnappableIndicatorVisibility) {
+       OverviewUnsnappableIndicatorVisibility) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
