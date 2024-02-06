@@ -40,7 +40,7 @@ copy("copy_src") {
     "background.ts",
     "cache.ts",
     "image_loader.js",
-    "image_loader_client.js",
+    "image_loader_client.ts",
     "image_loader_util.js",
     "image_orientation.ts",
     "image_request_task.js",

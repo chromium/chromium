@@ -22,7 +22,7 @@ tsc_folder =
 files_app_path =
     rebase_path("$target_gen_dir/../../../tsc/file_manager/", root_build_dir)
 image_loader_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+    rebase_path("$root_gen_dir/ui/file_manager/tsc/image_loader",
                 root_build_dir)
 
 optimize_webui("build") {
@@ -43,9 +43,9 @@ optimize_webui("build") {
   ]
 
   deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/file_manager:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }
