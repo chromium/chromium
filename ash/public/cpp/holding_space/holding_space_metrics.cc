@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -84,26 +85,6 @@ std::string ToString(ItemAction action) {
   return std::string();
 }
 
-}  // namespace
-
-// Utilities -------------------------------------------------------------------
-
-// Note that these values are persisted to histograms so must remain unchanged.
-size_t FilePathToExtension(const base::FilePath& file_path) {
-  if (file_path.empty())
-    return kEmptyExtension;
-
-  const std::string extension = base::ToLowerASCII(file_path.Extension());
-  if (extension.empty())
-    return kEmptyExtension;
-
-  auto* const* it = base::ranges::find(kKnownExtensions, extension);
-  if (it == kKnownExtensions.end())
-    return kOtherExtension;
-
-  return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
-}
-
 // Records the counts of the specified holding space `items` to the item count
 // histograms associated with the specified `prefix`.
 void RecordItemCounts(const std::string& prefix,
@@ -172,18 +153,40 @@ void RecordItemCounts(const std::string& prefix,
   }
 }
 
+}  // namespace
+
+// Utilities -------------------------------------------------------------------
+
+// Note that these values are persisted to histograms so must remain unchanged.
+size_t FilePathToExtension(const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    return kEmptyExtension;
+  }
+
+  const std::string extension = base::ToLowerASCII(file_path.Extension());
+  if (extension.empty()) {
+    return kEmptyExtension;
+  }
+
+  const char* const* it = base::ranges::find(kKnownExtensions, extension);
+  if (it == kKnownExtensions.end()) {
+    return kOtherExtension;
+  }
+
+  return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
+}
+
 // Metrics ---------------------------------------------------------------------
 
-void RecordPodAction(PodAction action) {
-  base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
+void RecordBubbleResizeAnimationSmoothness(int smoothness) {
+  CHECK_GE(smoothness, 0);
+  CHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.BubbleResize.Smoothness",
+                               smoothness);
 }
 
 void RecordDownloadsAction(DownloadsAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Downloads.Action.All", action);
-}
-
-void RecordFilesAppChipAction(FilesAppChipAction action) {
-  base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
 }
 
 void RecordFileCreatedFromShowSaveFilePicker(
@@ -195,6 +198,10 @@ void RecordFileCreatedFromShowSaveFilePicker(
   base::UmaHistogramEnumeration(
       "HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext",
       ToFilePickerBindingContext(file_picker_binding_context));
+}
+
+void RecordFilesAppChipAction(FilesAppChipAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
 }
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
@@ -251,6 +258,17 @@ void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
       "HoldingSpace.Item.Action.Launch.Failure.Reason", reason);
 }
 
+void RecordPodAction(PodAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
+}
+
+void RecordPodResizeAnimationSmoothness(int smoothness) {
+  CHECK_GE(smoothness, 0);
+  CHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
+                               smoothness);
+}
+
 void RecordSuggestionsAction(SuggestionsAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Suggestions.Action.All", action);
 }
@@ -279,20 +297,6 @@ void RecordTimeFromFirstEntryToFirstPin(base::TimeDelta time_delta) {
                                 /*min=*/base::TimeDelta(),
                                 /*max=*/base::Days(24),
                                 /*buckets=*/50);
-}
-
-void RecordBubbleResizeAnimationSmoothness(int smoothness) {
-  DCHECK_GE(smoothness, 0);
-  DCHECK_LE(smoothness, 100);
-  base::UmaHistogramPercentage("HoldingSpace.Animation.BubbleResize.Smoothness",
-                               smoothness);
-}
-
-void RecordPodResizeAnimationSmoothness(int smoothness) {
-  DCHECK_GE(smoothness, 0);
-  DCHECK_LE(smoothness, 100);
-  base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
-                               smoothness);
 }
 
 void RecordTotalItemCounts(const std::vector<const HoldingSpaceItem*>& items) {

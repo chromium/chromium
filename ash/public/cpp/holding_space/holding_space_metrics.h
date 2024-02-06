@@ -16,27 +16,7 @@ class TimeDelta;
 
 namespace ash::holding_space_metrics {
 
-// Returns the numeric representation of the extension for `file_path`.
-ASH_PUBLIC_EXPORT size_t FilePathToExtension(const base::FilePath& file_path);
-
-// Enumeration of actions that can be taken on the holding space pod in the
-// shelf. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class PodAction {
-  // kClick (Deprecated) = 0,
-  kShowBubble = 1,
-  kCloseBubble = 2,
-  kShowContextMenu = 3,
-  kShowPreviews = 4,
-  kHidePreviews = 5,
-  kShowPod = 6,
-  kHidePod = 7,
-  kDragAndDropToPin = 8,
-  kMaxValue = kDragAndDropToPin,
-};
-
-// Records the specified `action` taken on the holding space pod in the shelf.
-ASH_PUBLIC_EXPORT void RecordPodAction(PodAction action);
+// Enums -----------------------------------------------------------------------
 
 // Enumeration of actions that can be taken on the holding space downloads
 // button. These values are persisted to logs. Entries should not be renumbered
@@ -46,19 +26,17 @@ enum class DownloadsAction {
   kMaxValue = kClick,
 };
 
-// Records the specified `action` taken on the holding space downloads header.
-ASH_PUBLIC_EXPORT void RecordDownloadsAction(DownloadsAction action);
-
-// Enumeration of actions that can be taken on the holding space Files app chip.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FilesAppChipAction {
-  kClick = 0,
-  kMaxValue = kClick,
+// Enumeration of sources for events that occur in (and to) holding space.
+enum class EventSource {
+  kHoldingSpaceBubble = 0,
+  kHoldingSpaceItem = 1,
+  kHoldingSpaceItemContextMenu = 2,
+  kHoldingSpaceTray = 3,
+  kFilesApp = 4,
+  kTest = 5,
+  kWallpaper = 6,
+  kMaxValue = kWallpaper,
 };
-
-// Records the specified `action` taken on the holding space Files app chip.
-ASH_PUBLIC_EXPORT void RecordFilesAppChipAction(FilesAppChipAction action);
 
 // Enumeration of binding contexts for the file picker used to create a file in
 // fulfillment of a `window.showSaveFilePicker()` request. These values are
@@ -70,12 +48,13 @@ enum class FilePickerBindingContext {
   kMaxValue = kPhotoshopWeb,
 };
 
-// Records that a file picker with the specified `file_picker_binding_context`
-// was used to create the file at the specified `file_path` in fulfillment of a
-// `window.showSaveFilePicker()` request.
-ASH_PUBLIC_EXPORT void RecordFileCreatedFromShowSaveFilePicker(
-    const GURL& file_picker_binding_context,
-    const base::FilePath& file_path);
+// Enumeration of actions that can be taken on the holding space Files app chip.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FilesAppChipAction {
+  kClick = 0,
+  kMaxValue = kClick,
+};
 
 // Enumeration of actions that can be taken on holding space items. These values
 // are persisted to logs. Entries should not be renumbered and numeric values
@@ -93,29 +72,6 @@ enum class ItemAction {
   kResume = 9,
   kMaxValue = kResume,
 };
-
-// Enumeration of sources for events that occur in (and to) holding space.
-enum class EventSource {
-  kHoldingSpaceBubble = 0,
-  kHoldingSpaceItem = 1,
-  kHoldingSpaceItemContextMenu = 2,
-  kHoldingSpaceTray = 3,
-  kFilesApp = 4,
-  kTest = 5,
-  kWallpaper = 6,
-  kMaxValue = kWallpaper,
-};
-
-// Records the specified `action` taken on a set of holding space `items`.
-ASH_PUBLIC_EXPORT void RecordItemAction(
-    const std::vector<const HoldingSpaceItem*>& items,
-    ItemAction action,
-    EventSource event_source);
-
-// Records an attempt to launch a holding space item of the specified `type`
-// backed by the empty file at the specified `file_path`.
-ASH_PUBLIC_EXPORT void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
-                                             const base::FilePath& file_path);
 
 // Enumeration of reasons that a holding space item might fail to launch. These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -136,11 +92,21 @@ enum class ItemLaunchFailureReason {
   kMaxValue = kShutdown,
 };
 
-// Records a failure to launch a holding space item of the specified `type`
-// backed by the file at the specified `file_path` with the specified `reason`.
-ASH_PUBLIC_EXPORT void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
-                                               const base::FilePath& file_path,
-                                               ItemLaunchFailureReason reason);
+// Enumeration of actions that can be taken on the holding space pod in the
+// shelf. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class PodAction {
+  // kClick (Deprecated) = 0,
+  kShowBubble = 1,
+  kCloseBubble = 2,
+  kShowContextMenu = 3,
+  kShowPreviews = 4,
+  kHidePreviews = 5,
+  kShowPod = 6,
+  kHidePod = 7,
+  kDragAndDropToPin = 8,
+  kMaxValue = kDragAndDropToPin,
+};
 
 // Enumeration of actions that can be taken on the holding space suggestions
 // section button. These values are persisted to logs. Entries should not be
@@ -150,6 +116,64 @@ enum class SuggestionsAction {
   kExpand = 1,
   kMaxValue = kExpand,
 };
+
+// Structs ---------------------------------------------------------------------
+
+// Representation of a user's preferences.
+struct ASH_PUBLIC_EXPORT UserPreferences {
+  bool previews_enabled = false;
+  bool suggestions_expanded = false;
+};
+
+// Utilities -------------------------------------------------------------------
+
+// Returns the numeric representation of the extension for `file_path`.
+ASH_PUBLIC_EXPORT size_t FilePathToExtension(const base::FilePath& file_path);
+
+// Metrics ---------------------------------------------------------------------
+
+// Records the `smoothness` of the holding space bubble resize animation. Note
+// that `smoothness` is expected to be between 0 and 100 (inclusively) with
+// 100 representing ideal smoothness of >= 60 frames per second.
+ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
+
+// Records the specified `action` taken on the holding space downloads header.
+ASH_PUBLIC_EXPORT void RecordDownloadsAction(DownloadsAction action);
+
+// Records that a file picker with the specified `file_picker_binding_context`
+// was used to create the file at the specified `file_path` in fulfillment of a
+// `window.showSaveFilePicker()` request.
+ASH_PUBLIC_EXPORT void RecordFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const base::FilePath& file_path);
+
+// Records the specified `action` taken on the holding space Files app chip.
+ASH_PUBLIC_EXPORT void RecordFilesAppChipAction(FilesAppChipAction action);
+
+// Records the specified `action` taken on a set of holding space `items`.
+ASH_PUBLIC_EXPORT void RecordItemAction(
+    const std::vector<const HoldingSpaceItem*>& items,
+    ItemAction action,
+    EventSource event_source);
+
+// Records an attempt to launch a holding space item of the specified `type`
+// backed by the empty file at the specified `file_path`.
+ASH_PUBLIC_EXPORT void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
+                                             const base::FilePath& file_path);
+
+// Records a failure to launch a holding space item of the specified `type`
+// backed by the file at the specified `file_path` with the specified `reason`.
+ASH_PUBLIC_EXPORT void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
+                                               const base::FilePath& file_path,
+                                               ItemLaunchFailureReason reason);
+
+// Records the specified `action` taken on the holding space pod in the shelf.
+ASH_PUBLIC_EXPORT void RecordPodAction(PodAction action);
+
+// Records the `smoothness` of the holding space pod resize animation. Note that
+// `smoothness` is expected to be between 0 and 100 (inclusively) with 100
+// representing ideal smoothness of >= 60 frames per second.
+ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
 
 // Records the specified `action` taken on the holding space suggestions header.
 ASH_PUBLIC_EXPORT void RecordSuggestionsAction(SuggestionsAction action);
@@ -167,25 +191,9 @@ ASH_PUBLIC_EXPORT void RecordTimeFromFirstAvailabilityToFirstEntry(
 ASH_PUBLIC_EXPORT void RecordTimeFromFirstEntryToFirstPin(
     base::TimeDelta time_delta);
 
-// Records the `smoothness` of the holding space bubble resize animation. Note
-// that `smoothness` is expected to be between 0 and 100 (inclusively) with
-// 100 representing ideal smoothness of >= 60 frames per second.
-ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
-
-// Records the `smoothness` of the holding space pod resize animation. Note that
-// `smoothness` is expected to be between 0 and 100 (inclusively) with 100
-// representing ideal smoothness of >= 60 frames per second.
-ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
-
 // Records total counts for the specified holding space `items`.
 ASH_PUBLIC_EXPORT void RecordTotalItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
-
-// Representation of a user's preferences.
-struct ASH_PUBLIC_EXPORT UserPreferences {
-  bool previews_enabled = false;
-  bool suggestions_expanded = false;
-};
 
 // Records a user's preferences.
 ASH_PUBLIC_EXPORT void RecordUserPreferences(UserPreferences user_preferences);
