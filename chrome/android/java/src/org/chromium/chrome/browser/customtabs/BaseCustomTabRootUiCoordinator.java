@@ -82,6 +82,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -398,10 +399,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 .getPageInsightsIntentParams(mIntentDataProvider.get());
     }
 
-    private PageInsightsConfig getPageInsightsConfig(NavigationHandle navigationHandle) {
+    private PageInsightsConfig getPageInsightsConfig(
+            @Nullable NavigationHandle navigationHandle,
+            @Nullable NavigationEntry navigationEntry) {
         return CustomTabsConnection.getInstance()
                 .getPageInsightsConfig(
-                        mIntentDataProvider.get(), navigationHandle, mProfileSupplier);
+                        mIntentDataProvider.get(),
+                        navigationHandle,
+                        navigationEntry,
+                        mProfileSupplier);
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {

@@ -1967,16 +1967,8 @@ public class CustomTabsConnection {
         return PageInsightsIntentParams.getDefaultInstance();
     }
 
-    /**
-     * Returns how the Page Insights feature should be configured for the given params. Only applies
-     * if {@link #shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider)} returns
-     * true.
-     *
-     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
-     *     launched this CCT.
-     * @param navigationHandle the {@link NavigationHandle} for the current page.
-     * @param profileSupplier supplier of the current {@link Profile}.
-     */
+    /** DEPRECATED - do not use. */
+    @Deprecated
     public PageInsightsConfig getPageInsightsConfig(
             BrowserServicesIntentDataProvider intentData,
             @Nullable NavigationHandle navigationHandle,
@@ -1986,7 +1978,6 @@ public class CustomTabsConnection {
                 .setShouldAutoTrigger(false)
                 .setShouldXsurfaceLog(false)
                 .setIsInitialPage(false)
-                .setShouldAttachGaiaToRequest(false)
                 .setServerShouldNotLogOrPersonalize(true)
                 .build();
     }
@@ -2012,7 +2003,6 @@ public class CustomTabsConnection {
                 .setShouldAutoTrigger(false)
                 .setShouldXsurfaceLog(false)
                 .setIsInitialPage(false)
-                .setShouldAttachGaiaToRequest(false)
                 .setServerShouldNotLogOrPersonalize(true)
                 .build();
     }
