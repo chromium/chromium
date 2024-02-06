@@ -18,10 +18,6 @@
 
 namespace blink {
 
-PendingInvalidations::PendingInvalidations() {
-  InvalidationSet::CacheTracingFlag();
-}
-
 void PendingInvalidations::ScheduleInvalidationSetsForNode(
     const InvalidationLists& invalidation_lists,
     ContainerNode& node) {

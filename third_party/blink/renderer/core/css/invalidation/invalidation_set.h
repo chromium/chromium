@@ -117,8 +117,6 @@ class CORE_EXPORT InvalidationSet
     return GetType() == InvalidationType::kInvalidateNthSiblings;
   }
 
-  static void CacheTracingFlag();
-
   bool InvalidatesElement(Element&) const;
   bool InvalidatesTagName(Element&) const;
 
