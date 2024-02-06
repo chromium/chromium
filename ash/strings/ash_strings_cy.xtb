@@ -26,6 +26,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1087110696012418426">Prynhawn Da <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Chwilio eich <ph name="CATEGORY" />, eich ffeiliau, eich apiau a rhagor. Defnyddiwch y bysellau saeth i lywio'ch apiau.</translation>
 <translation id="1093645050124056515">ctrl + alt + saeth i lawr</translation>
+<translation id="1094756674036064790">Diffodd Bluetooth?</translation>
 <translation id="109942774857561566">Rydw i wedi diflasu</translation>
 <translation id="1104084341931202936">Dangos y gosodiadau hygyrchedd</translation>
 <translation id="1104621072296271835">Mae'ch dyfeisiau'n gweithio hyd yn oed yn well gyda'i gilydd</translation>
@@ -660,6 +661,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3660860940251915011">Toglo gwelededd uchel <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
 <translation id="3666266999138159418">Sweipiwch i guddio eich ffenestr arnofio</translation>
+<translation id="3673898235958558034">Pan fyddwch yn diffodd Bluetooth, bydd '<ph name="DEVICE_NAME_1" />' a '<ph name="DEVICE_NAME_2" />' yn datgysylltu o'ch Chromebook.</translation>
 <translation id="367531336287639526">Dewis yr eicon cyntaf i'r chwith o'r bar cyfeiriad</translation>
 <translation id="3677931086890821290">Mae hyn yn caniatáu i bob ap a gwefan sydd â chaniatâd lleoliad a ChromeOS ddefnyddio lleoliad Wi-Fi a rhwydweithiau symudol.</translation>
 <translation id="3679827876008292680">Mynd i'r tab olaf yn y ffenestr</translation>
@@ -915,6 +917,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4666911709726371538">Rhagor o apiau</translation>
 <translation id="4667099493359681081">Wrthi'n lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Mae'r modd Arbed Batri wedi'i droi ymlaen</translation>
+<translation id="4673427585974421255">Cadw ymlaen</translation>
 <translation id="468293128311738995">Apiau o'ch ffôn</translation>
 <translation id="4690510401873698237">Silff ar y gwaelod</translation>
 <translation id="4696813013609194136">Datgloi'r ddyfais gyda chod rhiant</translation>
@@ -1215,6 +1218,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5802516411616338943">Agor Gosodiadau Cyflym</translation>
 <translation id="5804651031882187592">Diffodd y gosodiad "Cloi SIM"</translation>
 <translation id="5805809050170488595">Cliciwch i weithredu <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Pan fyddwch yn diffodd Bluetooth, bydd '<ph name="DEVICE_NAME_1" />', '<ph name="DEVICE_NAME_2" />' a '<ph name="DEVICE_COUNT" />' o ddyfeisiau eraill yn datgysylltu o'ch Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks ar y we</translation>
 <translation id="5825969630400862129">Gosodiadau dyfeisiau cysylltiedig</translation>
 <translation id="5837036133683224804">Stopio <ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="6539852571005954999">Wrthi'n sganio'r lawrlwythiad <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Wrthi'n castio i <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Chwilio lluniau yn ôl cynnwys a rhagolygon lluniau</translation>
+<translation id="6547795021703527064">Pan fyddwch yn diffodd Bluetooth, bydd '<ph name="DEVICE_NAME" />' yn datgysylltu o'ch Chromebook.</translation>
 <translation id="6555373427270923730">Teipiwch gyfeiriad gwe yn y bar cyfeiriad, yna pwyswch <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Gosodiad newydd</translation>

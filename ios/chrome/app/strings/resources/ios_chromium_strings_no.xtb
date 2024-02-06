@@ -100,6 +100,7 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="3833326979834193417">Chromium kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="3855938650519180865">Dette er nytt i Chromium</translation>
 <translation id="3886689467633467988">Logg på dette nettstedet og Chromium for å få bokmerkene dine med mer på alle enhetene dine.</translation>
+<translation id="3904484643286601695">Du kan når som helst oppdatere valgene dine i Chromium-innstillingene.</translation>
 <translation id="394413318816989199">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
@@ -204,6 +205,7 @@ Du bør tenke på følgende:
 
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
+<translation id="6433172051771630690">Tips for å få mest mulig ut av Chromium.</translation>
 <translation id="6502321914804101924">Chromium er logget av</translation>
 <translation id="6563921047760808519">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chromium holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
@@ -256,6 +258,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7990085102929105708">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
 
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">For å få nyttige Chromium-tips, slå på varsler i iOS-innstillingene.</translation>
 <translation id="7995166854192397899">Forslagene er basert på nettleseraktiviteten din på de andre enhetene dine. For å få forslag, logg på Chromium på alle enhetene dine.</translation>
 <translation id="800195749539500647">Få mest mulig ut av Chromium</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>

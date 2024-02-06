@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="310297983047869047">পূৰ্বৱৰ্তী শ্লাইড</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" লুকুৱাওক</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক}one{এই টেবসমূহৰ জৰিয়তে অব্যাহত ৰাখক}other{এই টেবসমূহৰ জৰিয়তে অব্যাহত ৰাখক}}</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>

@@ -3298,6 +3298,7 @@
 <translation id="3497560059572256875">مشاركة رسومات الشعار المبتكرة</translation>
 <translation id="3497915391670770295">الإرسال إلى أجهزتك</translation>
 <translation id="3500417806337761827">‏حدث خطأ أثناء تثبيت المشاركة. سبَق وأن تمّ تثبيت العديد من مشاركات بروتوكول Server Message Block ‏(SMB).</translation>
+<translation id="3500764001796099683">تشغيل تطبيقات الويب المعزولة</translation>
 <translation id="350397915809787283">إذا لم يكن لديك حساب، يُرجى تحديد الخيار الأول لإنشاء حساب.</translation>
 <translation id="3503995387997205657">يمكنك استعادة التطبيقات السابقة.</translation>
 <translation id="3505100368357440862">اقتراحات التسوّق</translation>
@@ -7171,6 +7172,7 @@
 <translation id="6551508934388063976">‏الأمر غير متوفر. اضغط على control-N لفتح نافذة جديدة.</translation>
 <translation id="6551606359270386381">أداة رسم الأشكال البيضاوية</translation>
 <translation id="6551612971599078809">‏يستخدم الموقع الإلكتروني جهاز USB.</translation>
+<translation id="6551620030439692385">الوصول إلى الموقع الجغرافي محظور. تم ضبط المنطقة الزمنية حاليًا على <ph name="TIMEZONE" /> ويمكن تعديلها يدويًا فقط.</translation>
 <translation id="6551739526055143276">‏هذا الحساب مُدار من خلال Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> من المستخدمين</translation>
 <translation id="6555432686520421228">إزالة جميع حسابات المستخدمين وإعادة تعيين جهاز <ph name="IDS_SHORT_PRODUCT_NAME" /> كما لو كان جديدًا.</translation>
@@ -7247,6 +7249,7 @@
 <translation id="6608773371844092260">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في الجانب الأيمن من جهاز <ph name="DEVICE_TYPE" /> هذا. يتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا فقط.</translation>
 <translation id="6609478180749378879">سيتم حفظ بيانات تسجيل الدخول على هذا الجهاز بعد الخروج من "وضع التصفُّح المتخفي". وستتمكّن من تسجيل الدخول إلى هذا الموقع الإلكتروني باستخدام جهازك مرة أخرى لاحقًا.</translation>
 <translation id="6610002944194042868">خيارات الترجمة</translation>
+<translation id="6610064275805055636">إدارة تطبيقات الويب المعزولة</translation>
 <translation id="6611972847767394631">ستجد علامات التبويب هنا</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6613267708691765962">جارٍ البحث عن برامج ضارة…</translation>
@@ -8611,6 +8614,7 @@
 <translation id="7671472752213333268">تطلب الإضافة "<ph name="EXTENSION_NAME" />" إجراء مسح ضوئي من قِبل "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">اختَر الجهاز الذي يحتوي على مفتاح المرور لتسجيل الدخول إلى "<ph name="APP_NAME" />".</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، في <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">الوصول إلى الموقع الجغرافي محظور. تم ضبط الجدول الزمني حاليًا على <ph name="SUNRISE_TIME" /> إلى <ph name="SUNSET_TIME" /> ويمكن تعديله يدويًا فقط.</translation>
 <translation id="7673313156293624327">‏سجلات مدير الاتصال Shill لنظام ChromeOS</translation>
 <translation id="7674416868315480713">‏إيقاف جميع المنافذ التي يتم إعادة توجيهها في نظام التشغيل Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> تطبيق</translation>
@@ -9545,6 +9549,7 @@
 <translation id="8376384591331888629">بما في ذلك ملفات تعريف الارتباط التابعة لجهات خارجية على هذا الموقع الإلكتروني</translation>
 <translation id="8376451933628734023">إذا كان تطبيق الويب هذا يحاول خداعك عن طريق انتحال هوية تطبيق آخر، عليك إلغاء تثبيته.</translation>
 <translation id="8376532149031784008">جارٍ إعادة تحميل <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">سيظل بإمكان الإضافات التي ثبَّتها المشرف قراءة هذا الموقع الإلكتروني وتغييره.</translation>
 <translation id="8376752431516546391">‏اللوحة الجانبية لمحرك بحث Google</translation>
 <translation id="8377625247046155446">سيتم حفظ مفتاح المرور هذا على هذا الجهاز فقط. وسيبقى محفوظًا على هذا الجهاز بعد إغلاق جميع نوافذ التصفّح المتخفي.</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>

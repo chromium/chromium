@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्। आफ्ना एपहरूमा नेभिगेट गर्न एरो कीहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="1093645050124056515">ctrl + alt + डाउन एरो</translation>
+<translation id="1094756674036064790">ब्लुटुथ अफ गर्ने हो?</translation>
 <translation id="109942774857561566">मलाई दिक्क लागिसक्यो</translation>
 <translation id="1104084341931202936">एक्सेसिबिलिटी सेटिङ देखाउनुहोस्</translation>
 <translation id="1104621072296271835">तपाईंका यन्त्रहरूलाई सँगै प्रयोग गरेमा तिनले अझ राम्रो काम गर्छन्</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> को उच्च भिजिबिलिटी मोड अन/अफ गर्नुहोस्</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
 <translation id="3666266999138159418">फ्लोटिङ विन्डो लुकाउन स्वाइप गर्नुहोस्</translation>
+<translation id="3673898235958558034">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME_1" />" र "<ph name="DEVICE_NAME_2" />" डिस्कनेक्ट हुने छन्।</translation>
 <translation id="367531336287639526">एड्रेस बारमा भएको बायाँतिरको पहिलो वस्तु चयन गर्नुहोस्</translation>
 <translation id="3677931086890821290">तपाईंले यसो गर्नुभयो भने लोकेसन प्रयोग गर्ने अनुमति दिइएका सबै एप तथा वेबसाइटहरू अनि ChromeOS ले Wi-Fi र मोबाइल नेटवर्कको लोकेसन प्रयोग गर्न पाउँछन्।</translation>
 <translation id="3679827876008292680">विन्डोमा रहेको अन्तिम ट्याबमा जानुहोस्</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">थप एपहरू</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड गरिँदै छ</translation>
 <translation id="4672539464599646374">ब्याट्री सेभर अन गरिएको छ</translation>
+<translation id="4673427585974421255">अन नै छाड्नुहोस्</translation>
 <translation id="468293128311738995">तपाईंको फोनमा भएका एपहरू</translation>
 <translation id="4690510401873698237">सेल्फ पुछारमा छ</translation>
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
+<translation id="5816222150329690597">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" र अन्य <ph name="DEVICE_COUNT" /> वटा डिभाइस डिस्कनेक्ट हुने छन्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> स्क्यान गरेर डाउनलोड गर्नुहोस्</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6546062506073634094">फोटोमा भएको सामग्री र फोटोको प्रिभ्यूका आधारमा फोटो खोज्ने सुविधा</translation>
+<translation id="6547795021703527064">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME" />" डिस्कनेक्ट हुने छ।</translation>
 <translation id="6555373427270923730">एड्रेस बारमा वेब ठेगाना टाइप गर्नुहोस् अनि <ph name="MODIFIER" /><ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 भर्खरै इन्स्टल गरिएको छ</translation>

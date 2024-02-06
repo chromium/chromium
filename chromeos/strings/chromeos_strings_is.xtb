@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Ekki tókst að hlaða myndum. Athugaðu nettenginguna og reyndu að hlaða myndunum aftur.</translation>
 <translation id="1751249301761991853">Persónulegt</translation>
 <translation id="1753496554272155572">Loka forskoðun veggfóðurs</translation>
+<translation id="1754578112426924640">Breyta hnappi fyrir <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Greiningarforrit</translation>
 <translation id="175763766237925754">Góður (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android er ekki í gangi</translation>
 <translation id="551689408806449779">Tækið aftengdist. Prófaðu að tengjast á ný til að prófa</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">læst</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Skipta sjálfkrafa yfir í dökkt þema við sólarlag</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Miðjujafna</translation>
 <translation id="5703716265115423771">lækka hljóð</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Breyta hnappi fyrir <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Uppfæra <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Miðlungs</translation>
 <translation id="5757187557809630523">næsta lag</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Eyða hnappi fyrir <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
 <translation id="593880865674747800">Búa til fleiri í þessum stíl</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
 <translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>
 <translation id="6791471867139427246">litur lyklaborðsljóss</translation>
+<translation id="6796229976413584781">Flýtilykli eytt</translation>
 <translation id="6798678288485555829">Fletting í texta</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastbúnaðaruppfærslur fyrir ytri tæki</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
+<translation id="7233782086689993269">Flýtilykill endurheimtur</translation>
 <translation id="725133483556299729">Velja netfang</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7271932918253517778">Flýtilyklar sem innihalda lykla í efstu röð lyklaborðsins verða að innihalda <ph name="META_KEY" />-lykilinn.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
 <translation id="7656388927906093505">Tækið er mús.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Breyta notandamynd</translation>
 <translation id="7683228889864052081">litblær lyklaborðs</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">ljós lyklaborðs</translation>
 <translation id="7730077286107534951">Sumar reiknings- og kerfisupplýsingar gætu verið sendar til Google. Við notum þessar upplýsingar til að leysa tæknileg vandamál og bæta þjónustur okkar í samræmi við <ph name="BEGIN_LINK2" />persónuverndarstefnu<ph name="END_LINK2" /> okkar og <ph name="BEGIN_LINK3" />þjónustuskilmála<ph name="END_LINK3" />. Farðu í <ph name="BEGIN_LINK1" />lagalega aðstoð<ph name="END_LINK1" /> til að óska eftir efnislegum breytingum.</translation>
 <translation id="773153675489693198">Fjöldi endurhleðslna</translation>
+<translation id="7746357909584236306">hægt að breyta</translation>
 <translation id="7747039790905080783">Samnotalykill</translation>
 <translation id="7752963721013053477">Frá dögun til rökkurs - sérstakt</translation>
 <translation id="7762130827864645708">Aðgangsorðinu þínu var breytt. Notaðu nýja aðgangsorðið framvegis.</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">No s'han pogut carregar les imatges. Comprova la teva connexió de xarxa o prova de carregar les imatges de nou.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Surt de la previsualització del fons de pantalla</translation>
+<translation id="1754578112426924640">Botó d'edició per a <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplicació de diagnòstic</translation>
 <translation id="175763766237925754">Bo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android no s'està executant</translation>
 <translation id="551689408806449779">El dispositiu s'ha desconnectat. Prova de connectar-te de nou per fer la prova.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">bloquejada</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Canvia automàticament al tema fosc al vespre</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5703716265115423771">abaixa el volum</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Botó d'edició per a <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Actualitza <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5757187557809630523">pista següent</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Botó de supressió per a <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="593880865674747800">Crea'n més amb aquest estil</translation>
 <translation id="5939518447894949180">Restableix</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6791471867139427246">color de la llum del teclat</translation>
+<translation id="6796229976413584781">La drecera s'ha suprimit</translation>
 <translation id="6798678288485555829">Navegació pel text</translation>
 <translation id="680983167891198932">Clau</translation>
 <translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Gestiona la configuració de l'APN de la xarxa. Els APN estableixen una connexió entre una xarxa mòbil i Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualitzacions de microprogramari per a dispositius externs</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
+<translation id="7233782086689993269">La drecera s'ha restaurat</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7271932918253517778">La drecera amb tecles de la fila superior ha d'incloure la tecla de <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7656388927906093505">El dispositiu és un ratolí.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Canvia l'avatar</translation>
 <translation id="7683228889864052081">to del teclat</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">il·luminació del teclat</translation>
 <translation id="7730077286107534951">És possible que algunes dades del compte i del sistema s'enviïn a Google. Farem servir aquestes dades per ajudar a resoldre problemes tècnics i millorar els nostres serveis de conformitat amb la <ph name="BEGIN_LINK2" />política de privadesa<ph name="END_LINK2" /> i les <ph name="BEGIN_LINK3" />condicions del servei<ph name="END_LINK3" />. Per sol·licitar canvis en el contingut, ves a l'<ph name="BEGIN_LINK1" />ajuda legal<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
+<translation id="7746357909584236306">editable</translation>
 <translation id="7747039790905080783">Clau precompartida</translation>
 <translation id="7752963721013053477">De l'alba a la foscor: exclusiu</translation>
 <translation id="7762130827864645708">La contrasenya s'ha canviat correctament. Utilitza la contrasenya nova a partir d'ara.</translation>

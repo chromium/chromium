@@ -3308,6 +3308,7 @@
 <translation id="3497560059572256875">שיתוף הדודל</translation>
 <translation id="3497915391670770295">שליחה אל &amp;המכשירים שלך</translation>
 <translation id="3500417806337761827">‏אירעה שגיאה בטעינת השיתוף. כבר נטענו יותר מדי שיתופי SMB.</translation>
+<translation id="3500764001796099683">‏הפעלה של אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="350397915809787283">אם אין לך חשבון, עליך לבחור באפשרות הראשונה כדי ליצור חשבון.</translation>
 <translation id="3503995387997205657">יש לך אפשרות לשחזר את האפליקציות הקודמות שבהן השתמשת</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
@@ -7185,6 +7186,7 @@
 <translation id="6551508934388063976">‏הפקודה לא זמינה. יש להקיש על Control-N לפתיחת חלון חדש.</translation>
 <translation id="6551606359270386381">כלי האליפסה</translation>
 <translation id="6551612971599078809">‏נעשה שימוש בחיבור USB באתר</translation>
+<translation id="6551620030439692385">הגישה חסומה. אזור הזמן שמוגדר כרגע הוא <ph name="TIMEZONE" />, ואפשר לעדכן אותו רק באופן ידני.</translation>
 <translation id="6551739526055143276">‏הניהול מתבצע באמצעות Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> משתמשים</translation>
 <translation id="6555432686520421228">הסרת כל חשבונות המשתמשים ואיפוס המכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> כך שיהיה כמו חדש.</translation>
@@ -7257,6 +7259,7 @@
 <translation id="6608773371844092260">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבצד ימין של מכשיר <ph name="DEVICE_TYPE" /> הזה. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="6609478180749378879">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי. מאוחר יותר תהיה לך אפשרות להיכנס שוב לחשבון באתר הזה באמצעות המכשיר.</translation>
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
+<translation id="6610064275805055636">‏ניהול של אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="6611972847767394631">הכרטיסיות שלך נמצאות כאן</translation>
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
@@ -8621,6 +8624,7 @@
 <translation id="7671472752213333268">'<ph name="EXTENSION_NAME" />' רוצה לסרוק מ-'<ph name="SCANNER_NAME" />'.</translation>
 <translation id="7672504401554182757">יש לבחור את המכשיר שמכיל את מפתח הגישה עבור <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, ב-<ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">הגישה חסומה. לוח הזמנים שמוגדר כרגע הוא <ph name="SUNRISE_TIME" /> עד <ph name="SUNSET_TIME" />, ואפשר לעדכן אותו רק באופן ידני.</translation>
 <translation id="7673313156293624327">‏יומנים של ChromeOS Shill (Connection Manager)</translation>
 <translation id="7674416868315480713">‏השבתה של כל היציאות שמוגדרת לגביהן העברה ב-Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> אפליקציות</translation>
@@ -9555,6 +9559,7 @@
 <translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>
 <translation id="8376451933628734023">אם אפליקציית האינטרנט הזו מנסה להטעות אותך ולחשוב שמדובר באפליקציה אחרת, צריך להסיר אותה.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> בטעינה מחדש…</translation>
+<translation id="8376610503048439696">לתוספים שהותקנו על ידי האדמין עדיין יש הרשאה לקרוא ולשנות את האתר הזה</translation>
 <translation id="8376752431516546391">‏החלונית הצדדית של חיפוש Google</translation>
 <translation id="8377625247046155446">מפתח הגישה הזה יישמר רק במכשיר הזה. הוא יישאר במכשיר הזה אחרי שסגרת את כל החלונות הפרטיים.</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>

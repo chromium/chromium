@@ -3310,6 +3310,7 @@
 <translation id="3497560059572256875">기념일 로고 공유</translation>
 <translation id="3497915391670770295">내 기기로 보내기(&amp;D)</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
+<translation id="3500764001796099683">분리형 웹 앱 사용 설정</translation>
 <translation id="350397915809787283">계정이 없는 경우 첫 번째 옵션을 선택하여 계정을 만드세요.</translation>
 <translation id="3503995387997205657">이전 앱을 복원할 수 있습니다.</translation>
 <translation id="3505100368357440862">쇼핑 추천</translation>
@@ -7184,6 +7185,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6551508934388063976">명령어가 없습니다. 컨트롤 키와 N을 눌러 새 창을 여세요.</translation>
 <translation id="6551606359270386381">말줄임표 도구</translation>
 <translation id="6551612971599078809">사이트에서 USB를 사용하고 있습니다.</translation>
+<translation id="6551620030439692385">차단되어 있습니다. 현재 시간대가 <ph name="TIMEZONE" />(으)로 설정되어 있으며, 수동으로만 업데이트할 수 있습니다.</translation>
 <translation id="6551739526055143276">Family Link로 관리됨</translation>
 <translation id="655384502888039633">사용자 <ph name="USER_COUNT" />명</translation>
 <translation id="6555432686520421228">모든 사용자 계정을 삭제하고 사용 중인 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기를 재설정하여 새것처럼 만듭니다.</translation>
@@ -7252,6 +7254,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6608773371844092260">지문을 설정하려면 자녀가 <ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
+<translation id="6610064275805055636">분리형 웹 앱 관리</translation>
 <translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
@@ -8615,6 +8618,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7671472752213333268">'<ph name="EXTENSION_NAME" />'에서 '<ph name="SCANNER_NAME" />'부터 스캔하려고 합니다</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" />의 패스키가 있는 기기를 선택하세요.</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />에 포함된 <ph name="HUNG_IFRAME_URL" /></translation>
+<translation id="7672726198839739113">차단되어 있습니다. 현재 일정이 <ph name="SUNRISE_TIME" />~<ph name="SUNSET_TIME" />로 설정되어 있으며, 수동으로만 업데이트할 수 있습니다.</translation>
 <translation id="7673313156293624327">ChromeOS Shill(연결 관리자) 로그</translation>
 <translation id="7674416868315480713">Linux에서 전달되는 모든 포트 비활성화</translation>
 <translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>
@@ -9549,6 +9553,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8376384591331888629">이 사이트의 서드 파티 쿠키 포함</translation>
 <translation id="8376451933628734023">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> 도메인 새로고침 중...</translation>
+<translation id="8376610503048439696">관리자가 설치한 확장 프로그램에서 계속 이 사이트를 읽고 변경할 수 있습니다.</translation>
 <translation id="8376752431516546391">Google 검색 측면 패널</translation>
 <translation id="8377625247046155446">이 패스키는 이 기기에만 저장되며 시크릿 창을 모두 닫은 후에도 이 기기에 남아 있습니다.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>

@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">午安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="1088231044944504242">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容，可使用方向鍵瀏覽應用程式。</translation>
 <translation id="1093645050124056515">ctrl + alt + 向下鍵</translation>
+<translation id="1094756674036064790">要關閉藍牙嗎？</translation>
 <translation id="109942774857561566">我好無聊</translation>
 <translation id="1104084341931202936">顯示無障礙設定</translation>
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
@@ -658,6 +659,7 @@
 <translation id="3660860940251915011">將<ph name="FEATURE_NAME" />功能切換為向附近的所有裝置顯示</translation>
 <translation id="366222428570480733">受管理的使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑動即可隱藏浮動視窗</translation>
+<translation id="3673898235958558034">關閉藍牙後，「<ph name="DEVICE_NAME_1" />」和「<ph name="DEVICE_NAME_2" />」就會與 Chromebook 中斷連線。</translation>
 <translation id="367531336287639526">選取網址列左側的第一個圖示</translation>
 <translation id="3677931086890821290">這項操作會允許具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
 <translation id="3679827876008292680">前往視窗中的最後一個分頁</translation>
@@ -912,6 +914,7 @@
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">正在下載 <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">省電模式已開啟</translation>
+<translation id="4673427585974421255">保持開啟</translation>
 <translation id="468293128311738995">你手機上的應用程式</translation>
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
@@ -1212,6 +1215,7 @@
 <translation id="5802516411616338943">開啟快速設定</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟動「<ph name="NETWORK_NAME" />」</translation>
+<translation id="5816222150329690597">關閉藍牙後，「<ph name="DEVICE_NAME_1" />」、「<ph name="DEVICE_NAME_2" />」和另外 <ph name="DEVICE_COUNT" /> 部裝置就會與 Chromebook 中斷連線。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">設定已連結的裝置</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
@@ -1392,6 +1396,7 @@
 <translation id="6539852571005954999">正在掃描下載項目「<ph name="FILENAME" />」</translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">依內容和圖片預覽搜尋圖片</translation>
+<translation id="6547795021703527064">關閉藍牙後，「<ph name="DEVICE_NAME" />」就會與 Chromebook 中斷連線。</translation>
 <translation id="6555373427270923730">在網址列輸入網址，然後按下 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559976592393364813">詢問系統管理員</translation>

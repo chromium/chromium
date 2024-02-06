@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">සුබ අපරභාගයක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">ඔබගේ <ph name="CATEGORY" />, ගොනු, යෙදුම් සහ තවත් දේ සොයන්න. ඔබගේ යෙදුම්වලට සංචාලනය කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>
 <translation id="1093645050124056515">ctrl + alt + පහළට ඊතලය</translation>
+<translation id="1094756674036064790">බ්ලූටූත් අක්‍රිය කරන්නද?</translation>
 <translation id="109942774857561566">මට කම්මැලියි</translation>
 <translation id="1104084341931202936">ප්‍රවේශ්‍යතා සැකසීම් පෙන්වන්න</translation>
 <translation id="1104621072296271835">ඔබේ උපාංග එක්ව වඩා හොඳින් වැඩ කරයි</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">ඉහළ දෘශ්‍යතා <ph name="FEATURE_NAME" /> ටොගල් කරන්න</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3666266999138159418">ඔබේ පාවෙන කවුළුව සැඟවීමට ස්වයිප් කරන්න</translation>
+<translation id="3673898235958558034">ඔබ බ්ලූටූත් අක්‍රිය කළ විට, "<ph name="DEVICE_NAME_1" />" සහ "<ph name="DEVICE_NAME_2" />" ඔබේ Chromebook වෙතින් විසන්‍ධි වෙයි.</translation>
 <translation id="367531336287639526">ලිපින තීරුවේ වම් පස පළමු නිරූපකය තෝරන්න</translation>
 <translation id="3677931086890821290">මෙය ස්ථාන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට සහ ChromeOS හට Wi-Fi සහ ජංගම ජාල ස්ථානය භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="3679827876008292680">කවුළුවේ අවසාන පටිත්ත වෙත යන්න</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">තවත් යෙදුම්</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> බාගනිමින්</translation>
 <translation id="4672539464599646374">බැටරි සුරැකුම ක්‍රියාත්මකයි</translation>
+<translation id="4673427585974421255">සක්‍රීයව තබන්න</translation>
 <translation id="468293128311738995">ඔබේ දුරකථනය වෙතින් යෙදුම්</translation>
 <translation id="4690510401873698237">පහළ ඇති රාක්කය</translation>
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">ක්ෂණික සැකසීම් විවෘත කරන්න</translation>
 <translation id="5804651031882187592">"SIM අගුළු දැමීමේ" සැකසීම ක්‍රියා විරහිත කරන්න</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> සක්‍රිය කිරීමට ක්ලික් කරන්න</translation>
+<translation id="5816222150329690597">ඔබ බ්ලූටූත් අක්‍රිය කළ විට, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" සහ තවත් උපාංග "<ph name="DEVICE_COUNT" />" ඔබේ Chromebook වෙතින් විසන්‍ධි වෙයි.</translation>
 <translation id="5823239091726045201">වෙබ් මත Google Tasks</translation>
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> වෙත විකාශය කරමින්</translation>
 <translation id="6546062506073634094">අන්තර්ගතය සහ රූප පෙරදසුන් අනුව රූප සෙවීම</translation>
+<translation id="6547795021703527064">ඔබ බ්ලූටූත් අක්‍රිය කළ විට, "<ph name="DEVICE_NAME" />" ඔබේ Chromebook වෙතින් විසන්‍ධි වෙයි.</translation>
 <translation id="6555373427270923730">ලිපින තීරුවෙහි වෙබ් ලිපිනයක් ටයිප් කර, අනතුරුව <ph name="MODIFIER" /><ph name="KEY" /> ඔබන්න</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 නව ස්ථාපනය</translation>

@@ -75,6 +75,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="2689064829982324496">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chrome-a<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="2702250627063295552">Dodaj stavku liste za čitanje u Chrome</translation>
+<translation id="2703746758996815929">Da biste dobijali korisne savete za Chrome, uključite obaveštenja u podešavanjima iOS-a.</translation>
 <translation id="2736805085127235148">Chrome obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="2767464022270041271">Nema sačuvanih lozinki. Google menadžer lozinki može da vam proverava lozinke kada ih sačuvate.</translation>
 <translation id="2789947168960170215">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google menadžer lozinki nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="8865415417596392024">Chrome podaci na nalogu</translation>
+<translation id="8874688701962049679">Saveti kako da na najbolji način koristite Chrome.</translation>
 <translation id="8891935667620843985">Možete da automatski otvarate linkove u Chrome-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.</translation>
 <translation id="8897749957032330183">Lozinke se čuvaju u Google menadžeru lozinki na ovom uređaju.</translation>
 <translation id="8949681853939555434">Podesite Chrome kao podrazumevani pregledač</translation>

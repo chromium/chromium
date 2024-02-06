@@ -3295,6 +3295,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3497560059572256875">Kopīgot svētku logotipu</translation>
 <translation id="3497915391670770295">Sūtīt uz manām &amp;ierīcēm</translation>
 <translation id="3500417806337761827">Iekļaujot kopīgošanu, radās kļūda. Iekļauti pārāk daudzi SMB faili.</translation>
+<translation id="3500764001796099683">Iespējot izolētas tīmekļa lietotnes</translation>
 <translation id="350397915809787283">Ja jums nav konta, atlasiet pirmo opciju, lai izveidotu kontu.</translation>
 <translation id="3503995387997205657">Varat atjaunot iepriekšējās lietotnes</translation>
 <translation id="3505100368357440862">Pirkumu ieteikumi</translation>
@@ -7167,6 +7168,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6551508934388063976">Komanda nav pieejama. Nospiediet taustiņu kombināciju Control-N, lai atvērtu jaunu logu.</translation>
 <translation id="6551606359270386381">Elipses rīks</translation>
 <translation id="6551612971599078809">Vietnē tiek izmantota USB ierīce</translation>
+<translation id="6551620030439692385">Bloķēta. Pašlaik ir iestatīta šāda laika josla: <ph name="TIMEZONE" />. To var atjaunināt tikai manuāli.</translation>
 <translation id="6551739526055143276">Pārvaldīti lietotnē Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> lietotāji</translation>
 <translation id="6555432686520421228">Noņemiet visus lietotāju kontus un atiestatiet savu <ph name="IDS_SHORT_PRODUCT_NAME" /> ierīci, lai izmantotu sākotnējos rūpnīcas iestatījumus.</translation>
@@ -7239,6 +7241,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6608773371844092260">Lai iestatītu pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram ierīces <ph name="DEVICE_TYPE" /> labajā pusē. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6609478180749378879">Pēc tam, kad iziesiet no inkognito režīma, pierakstīšanās dati tiks glabāti šajā ierīcē. Ierīcē varēsiet vēlāk atkal pierakstīties šajā tīmekļa vietnē.</translation>
 <translation id="6610002944194042868">Tulkošanas opcijas</translation>
+<translation id="6610064275805055636">Pārvaldīt izolētas tīmekļa lietotnes</translation>
 <translation id="6611972847767394631">Jūsu cilnes ir pieejamas šeit</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6613267708691765962">Notiek ļaunprātīgas programmatūras meklēšana…</translation>
@@ -8603,6 +8606,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7671472752213333268">Paplašinājums “<ph name="EXTENSION_NAME" />” vēlas veikt meklēšanu no “<ph name="SCANNER_NAME" />”.</translation>
 <translation id="7672504401554182757">Izvēlieties, kurā ierīcē ir vietnes <ph name="APP_NAME" /> piekļuves atslēga.</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, lapā <ph name="PAGE_TITLE" /></translation>
+<translation id="7672726198839739113">Bloķēta. Pašlaik ir iestatīts šāds grafiks: <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" />. To var atjaunināt tikai manuāli.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (savienojumu pārvaldnieka) žurnāli</translation>
 <translation id="7674416868315480713">Deaktivizēt visus portus, kas tiek pārsūtīti sistēmā Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> lietotnes</translation>
@@ -9535,6 +9539,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8376384591331888629">Arī šajā vietnē esošos trešo pušu sīkfailus</translation>
 <translation id="8376451933628734023">Ja šī tīmekļa lietotne ir maldinošs citas lietotnes atdarinājums, atinstalējiet to.</translation>
 <translation id="8376532149031784008">Notiek domēna <ph name="DOMAIN" /> ielāde…</translation>
+<translation id="8376610503048439696">Jūsu administratora instalētie paplašinājumi joprojām var lasīt un mainīt šo vietni.</translation>
 <translation id="8376752431516546391">Google meklēšanas sānu panelis</translation>
 <translation id="8377625247046155446">Šī piekļuves atslēga tiks saglabāta tikai šajā ierīcē. Tā paliks šajā ierīcē pēc visu inkognito režīma logu aizvēršanas.</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>

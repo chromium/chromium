@@ -575,6 +575,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
 <translation id="3989635538409502728">登出</translation>
+<translation id="3994422733891749358">選擇要接收的通知</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">管理員已停用分享密碼功能。</translation>
 <translation id="4002019827078931033">將網址列移至頂部</translation>
@@ -684,6 +685,7 @@
 <translation id="4592368184551360546">鍵盤</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
+<translation id="4607887340472970274">價格追蹤</translation>
 <translation id="4611811151908969241">隱藏「取消追蹤 <ph name="DOMAIN_NAME" />」</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
 <translation id="4616391354457235490">復原</translation>
@@ -724,6 +726,7 @@
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
 <translation id="4803185665210547709">由您的機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">根據個人興趣接收新聞和內容相關通知。</translation>
 <translation id="4805759445554688327">信用卡號碼無效</translation>
 <translation id="4808646838864186379">已取消送貨</translation>
 <translation id="4808744395915275922">更新</translation>
@@ -907,7 +910,7 @@
 <translation id="5737974891429562743">帳戶登入資料已過時。請先更新，然後開始同步資料。</translation>
 <translation id="5738385766833540397">管理如何接收已追蹤產品的減價通知</translation>
 <translation id="5738887413654608789">這樣您便可根據周圍環境探索相關網頁。</translation>
-<translation id="5744274077973758795">已開啟 <ph name="FEATURE_NAME" />通知功能</translation>
+<translation id="5744274077973758795">已開啟「<ph name="FEATURE_NAME" />」通知功能</translation>
 <translation id="5745916533876677730">前往上一個分頁</translation>
 <translation id="574762237186762643">活動</translation>
 <translation id="5748177854685749242">將於 <ph name="DATE" />送達</translation>
@@ -932,7 +935,7 @@
 <translation id="5850913622988109693">追蹤包裹選項</translation>
 <translation id="5854790677617711513">超過 30 天</translation>
 <translation id="5857090052475505287">新資料夾</translation>
-<translation id="5857361196621230935">將分頁加入群組</translation>
+<translation id="5857361196621230935">在群組中加入分頁</translation>
 <translation id="5857770089550859117">必須輸入密碼短語，才能開始同步資料。</translation>
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -1238,6 +1241,7 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 篇未讀嘅文章。</translation>
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">確認</translation>
+<translation id="7417689656810783109">重新命名群組</translation>
 <translation id="7418640008860669073">儲存位置…</translation>
 <translation id="7425346204213733349">系統不會將您變更的書籤、記錄、密碼和其他設定繼續同步至您的 Google 帳戶，但 Google 帳戶內現有的資料仍會保留。</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
@@ -1285,7 +1289,7 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7666861622396822790">你可在「<ph name="BEGIN_LINK" />內容設定<ph name="END_LINK" />」中管理此選項。</translation>
-<translation id="7669493687462784703">要繼續從「<ph name="WEBSITE" />」下載組態設定檔嗎？</translation>
+<translation id="7669493687462784703">要繼續從 <ph name="WEBSITE" /> 下載設定描述檔嗎？</translation>
 <translation id="7671141431838911305">安裝</translation>
 <translation id="7673346542062368520">向左滑動即可使用無痕模式瀏覽。</translation>
 <translation id="7679915578945954324">已複製網址</translation>
@@ -1412,8 +1416,10 @@
 <translation id="8273982424131314219">你將在 <ph name="URL" /> 中填入資料</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="828291969289324795">{count,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8286036467436129157">登入</translation>
+<translation id="8292843446079898078">接收已追蹤產品的減價通知。</translation>
 <translation id="8299417921174340354">如要使用密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="8299613349954694191">開啟無痕式分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8311853334103696030">隱藏「追蹤價格」</translation>
@@ -1421,6 +1427,7 @@
 <translation id="8328777765163860529">全部關閉</translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="834783239627985533">最常瀏覽的網站</translation>
+<translation id="8358401059263985056">開啟通知功能</translation>
 <translation id="8364841868226993049">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」…</translation>
 <translation id="8370406443343902172">前往「設定」…</translation>
 <translation id="8374977641764177587">要啟用通知嗎？</translation>
@@ -1536,7 +1543,7 @@
 <translation id="891282356902782456">此密碼只會儲存至此裝置。如要在其他裝置上使用此密碼，請將密碼儲存在您的 Google 帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="8917490105272468696">係，我同意</translation>
 <translation id="8928133177108699615">桌面模式</translation>
-<translation id="8937676484307616731">開啟 <ph name="FEATURE_NAME" />通知功能</translation>
+<translation id="8937676484307616731">開啟「<ph name="FEATURE_NAME" />」通知功能</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="8953046091948372197">這裡會顯示您的密碼</translation>

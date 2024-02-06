@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Өдрийн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, файлууд, аппууд болон бусад зүйлээ хайгаарай. Аппуудынхаа хооронд шилжихийн тулд суман товчийг ашиглана уу.</translation>
 <translation id="1093645050124056515">ctrl + alt + доош сум</translation>
+<translation id="1094756674036064790">Bluetooth-г унтраах уу?</translation>
 <translation id="109942774857561566">Би уйдаж байна</translation>
 <translation id="1104084341931202936">Нэвтрэлтийн тохиргоог харуулах</translation>
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />-н өндөр харагдцыг асаах/унтраах</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Хяналттай хэрэглэгч</translation>
 <translation id="3666266999138159418">Хөвөгч цонхоо нуухын тулд шударна уу</translation>
+<translation id="3673898235958558034">Та Bluetooth-г унтраах үед "<ph name="DEVICE_NAME_1" />" болон "<ph name="DEVICE_NAME_2" />" таны Chromebook-с сална.</translation>
 <translation id="367531336287639526">Хаяг оруулах хэсгийн зүүн талын эхний дүрс тэмдгийг сонгох</translation>
 <translation id="3677931086890821290">Энэ нь байршлын зөвшөөрөлтэй бүх апп, вебсайт болон ChromeOS-т Wi-Fi, мобайл сүлжээнүүдийн байршлыг ашиглахыг зөвшөөрнө.</translation>
 <translation id="3679827876008292680">Цонхны сүүлийн таб руу очих</translation>
@@ -916,6 +918,7 @@
 <translation id="4666911709726371538">Бусад апп</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />-г татаж байна</translation>
 <translation id="4672539464599646374">Батарей хэмнэгчийг асаасан</translation>
+<translation id="4673427585974421255">Асаалттай үлдээх</translation>
 <translation id="468293128311738995">Таны утасны аппууд</translation>
 <translation id="4690510401873698237">Доор байгаа shelf</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
@@ -1216,6 +1219,7 @@
 <translation id="5802516411616338943">Шуурхай тохиргоог нээх</translation>
 <translation id="5804651031882187592">"SIM-г түгжих" тохиргоог унтраах</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />-г идэвхжүүлэхийн тулд товших</translation>
+<translation id="5816222150329690597">Та Bluetooth-г унтраах үед "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" болон бусад <ph name="DEVICE_COUNT" /> төхөөрөмж таны Chromebook-с сална.</translation>
 <translation id="5823239091726045201">Веб дээрх Google tasks</translation>
 <translation id="5825969630400862129">Холбогдсон төхөөрөмжүүдийн тохиргоо</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>
@@ -1396,6 +1400,7 @@
 <translation id="6539852571005954999">Татах <ph name="FILENAME" />-г скан хийж байна</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />-д дамжуулж байна</translation>
 <translation id="6546062506073634094">Контент болон зургийн урьдчилан үзэлтээр зураг хайх</translation>
+<translation id="6547795021703527064">Та Bluetooth-г унтраах үед "<ph name="DEVICE_NAME" />" таны Chromebook-с сална.</translation>
 <translation id="6555373427270923730">Хаяг оруулах хэсэгт веб хаягийг бичээд дараа нь <ph name="MODIFIER" /><ph name="KEY" />-г дарна уу</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Шинээр суулгасан</translation>

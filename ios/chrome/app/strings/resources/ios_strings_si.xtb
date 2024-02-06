@@ -1412,6 +1412,7 @@
 <translation id="8273982424131314219">ඔබ <ph name="URL" /> වෙත තතු පුරවනු ඇත</translation>
 <translation id="8281781826761538115">පෙරනිමි - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
+<translation id="828291969289324795">{count,plural, =1{නව සමූහයට පටිත්ත එක් කරන්න}one{නව සමූහයට පටිති එක් කරන්න}other{නව සමූහයට පටිති එක් කරන්න}}</translation>
 <translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8286036467436129157">පුරන්න</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>

@@ -575,6 +575,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3968505803272650567">Pamahalaan ang Mga Interes</translation>
 <translation id="3989635538409502728">Mag-sign Out</translation>
+<translation id="3994422733891749358">Piliin ang mga notification na gusto mong matanggap</translation>
 <translation id="3995521777587992544">Progress bar ng pag-load ng page, na-load ang <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Na-disable ng iyong administrator ang pag-share ng password.</translation>
 <translation id="4002019827078931033">Ilipat Ang Address Bar Sa Itaas</translation>
@@ -684,6 +685,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
 <translation id="4606247758155004938">Pinapamahalaan ng iyong organisasyon ang browser mo.</translation>
+<translation id="4607887340472970274">Pagsubaybay sa Presyo</translation>
 <translation id="4611811151908969241">I-hide ang Huwag Nang Subaybayan ang <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Paghahanap gamit ang Google</translation>
 <translation id="4616391354457235490">I-undo</translation>
@@ -724,6 +726,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="478808905805139173">Buksan sa Incognito?</translation>
 <translation id="4803185665210547709">Pinapamahalaan ng iyong organisasyon.
 <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Balita at content batay sa iyong mga interes.</translation>
 <translation id="4805759445554688327">Invalid ang Numero ng Card</translation>
 <translation id="4808646838864186379">Nakansela ang iyong delivery</translation>
 <translation id="4808744395915275922">Mga Update</translation>
@@ -1238,6 +1241,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> (na) hindi pa nababasang artikulo.</translation>
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
+<translation id="7417689656810783109">I-rename ang Grupo</translation>
 <translation id="7418640008860669073">I-save sa...</translation>
 <translation id="7425346204213733349">Hindi na masi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password, at iba pang setting. Gayunpaman, mananatiling naka-store sa Google account mo ang iyong kasalukuyang data.</translation>
 <translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
@@ -1412,8 +1416,10 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8273982424131314219">Maglalagay ka ng impormasyon sa <ph name="URL" /></translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Laktawan</translation>
+<translation id="828291969289324795">{count,plural, =1{Magdagdag ng Tab sa Bagong Grupo}one{Magdagdag ng Mga Tab sa Bagong Grupo}other{Magdagdag ng Mga Tab sa Bagong Grupo}}</translation>
 <translation id="8283172974887967105">Itakda…</translation>
 <translation id="8286036467436129157">Mag-sign In</translation>
+<translation id="8292843446079898078">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo.</translation>
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="8299613349954694191">Magbukas ng tab na Incognito para pribadong i-browse ang web.</translation>
 <translation id="8311853334103696030">I-hide ang Subaybayan ang Presyo</translation>
@@ -1421,6 +1427,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8328777765163860529">Isara Lahat</translation>
 <translation id="8343993175958086504">I-back up ang iyong mga file at gamitin ito sa anumang device.</translation>
 <translation id="834783239627985533">Mga Pinakamadalas Bisitahing Site</translation>
+<translation id="8358401059263985056">I-on ang Mga Notification</translation>
 <translation id="8364841868226993049">Sine-save ang larawan sa Google Photos para sa <ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">Pumunta sa Mga Setting...</translation>
 <translation id="8374977641764177587">I-on ang Mga Notification?</translation>

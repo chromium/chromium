@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">無法載入圖片。請檢查網絡連線，或者嘗試再次載入圖片。</translation>
 <translation id="1751249301761991853">個人化</translation>
 <translation id="1753496554272155572">結束桌布預覽</translation>
+<translation id="1754578112426924640">修改 <ph name="ACCELERATOR_INFO" /> 嘅按鈕。</translation>
 <translation id="1755556344721611131">診斷應用程式</translation>
 <translation id="175763766237925754">好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android 未執行</translation>
 <translation id="551689408806449779">裝置已解除連接。請嘗試重新連接以測試</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">鎖定咗</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落時自動切換至深色主題背景</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">置中</translation>
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">修改 <ph name="SHORTCUT_DESCRIPTION" /> 嘅按鈕。</translation>
 <translation id="5733298426544876109">更新 <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5757187557809630523">下一首歌</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
+<translation id="5928411637936685857">刪除 <ph name="ACCELERATOR_INFO" /> 嘅按鈕。</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="593880865674747800">以此風格製作更多桌布</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">DNS 解析失敗率高</translation>
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
+<translation id="6796229976413584781">刪除咗捷徑</translation>
 <translation id="6798678288485555829">文字導覽</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">流動服務供應商</translation>
+<translation id="7233782086689993269">還原咗快速鍵</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
 <translation id="7271932918253517778">如果快速鍵包括最上排的按鍵，亦需要使用<ph name="META_KEY" />鍵。</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7656388927906093505">裝置類型係滑鼠。</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />，<ph name="ROW_STATUS" />。</translation>
 <translation id="7665800271478495366">改顯示圖片</translation>
 <translation id="7683228889864052081">鍵盤色調</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">鍵盤燈</translation>
 <translation id="7730077286107534951">部分帳戶和系統資料可能會傳送給 Google。我們會按照《<ph name="BEGIN_LINK2" />私隱權政策<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />服務條款<ph name="END_LINK3" />》使用這些資料，協助處理技術問題並改善服務。如要提出內容變更要求，請前往<ph name="BEGIN_LINK1" />法律說明中心<ph name="END_LINK1" />。</translation>
 <translation id="773153675489693198">週期數</translation>
+<translation id="7746357909584236306">可以編輯</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7752963721013053477">黎明到黑夜 - 獨家</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>

@@ -26,6 +26,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1087110696012418426">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="1088231044944504242">Bilatu <ph name="CATEGORY" />, fitxategiak, aplikazioak eta beste. Erabili gezi-teklak aplikazioetan nabigatzeko.</translation>
 <translation id="1093645050124056515">Ktrl + Alt + behera egiteko gezi-tekla</translation>
+<translation id="1094756674036064790">Bluetootha desaktibatu nahi duzu?</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
 <translation id="1104084341931202936">Erakutsi erabilerraztasun-ezarpenak</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
@@ -660,6 +661,7 @@ Konektatu gailua korrontera.</translation>
 <translation id="3660860940251915011">Aktibatu/Desaktibatu <ph name="FEATURE_NAME" /> eginbidearen ikusgaitasun handia</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3666266999138159418">Pasatu hatza leiho gainerakorra ezkutatzeko</translation>
+<translation id="3673898235958558034">Bluetootha desaktibatzen duzunean, "<ph name="DEVICE_NAME_1" />" eta "<ph name="DEVICE_NAME_2" />" Chromebook-etik deskonektatuko dira.</translation>
 <translation id="367531336287639526">Hautatu helbide-barraren ezkerraldeko lehenengo ikonoa</translation>
 <translation id="3677931086890821290">Honen bidez, kokapena erabiltzeko baimena daukaten aplikazio eta webgune guztiek eta ChromeOS-ek wifiaren eta sare mugikorren araberako kokapena erabili ahal izango dute.</translation>
 <translation id="3679827876008292680">Joan leihoko azken fitxara</translation>
@@ -916,6 +918,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4666911709726371538">Aplikazio gehiago</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> deskargatzen</translation>
 <translation id="4672539464599646374">Aktibatu da Bateria-aurreztailea</translation>
+<translation id="4673427585974421255">Mantendu aktibatuta</translation>
 <translation id="468293128311738995">Telefonoko aplikazioak</translation>
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
@@ -1216,6 +1219,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5802516411616338943">Ireki Ezarpen bizkorrak</translation>
 <translation id="5804651031882187592">Desaktibatu "Blokeatu SIMa" ezarpena</translation>
 <translation id="5805809050170488595">Sakatu hau <ph name="NETWORK_NAME" /> aktibatzeko</translation>
+<translation id="5816222150329690597">Bluetootha desaktibatzen duzunean, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" eta beste <ph name="DEVICE_COUNT" /> gailu Chromebook-etik deskonektatuko dira.</translation>
 <translation id="5823239091726045201">Sareko Google Zereginak</translation>
 <translation id="5825969630400862129">Konektatutako gailuen ezarpenak</translation>
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>
@@ -1396,6 +1400,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> eskaneatzen deskargatu ahal izateko</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> gailura igortzen</translation>
 <translation id="6546062506073634094">Edukiaren araberako irudi-bilaketa eta irudien aurrebistak</translation>
+<translation id="6547795021703527064">Bluetootha desaktibatzen duzunean, "<ph name="DEVICE_NAME" />" Chromebook-etik deskonektatuko da.</translation>
 <translation id="6555373427270923730">Idatzi web-helbide bat helbide-barran eta, gero, sakatu <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Berriki instalatu da</translation>

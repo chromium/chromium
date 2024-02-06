@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Cookies van derden zijn beperkt</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
 <translation id="310297983047869047">Vorige dia</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015"><ph name="TITLE_OF_MODULE" /> verbergen</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Doorgaan met dit tabblad}other{Doorgaan met deze tabbladen}}</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804248752222191302">Een site gebruikt de camera</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>

@@ -26,6 +26,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1087110696012418426">Dobar dan <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Pretraživanje kategorije <ph name="CATEGORY" />, fajlova, aplikacija i drugog. Korištenje tipki strelicama za kretanje kroz aplikacije.</translation>
 <translation id="1093645050124056515">Ctrl i Alt i strelica nadolje</translation>
+<translation id="1094756674036064790">Isključiti Bluetooth?</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Prikaži postavke pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji još bolje rade zajedno</translation>
@@ -660,6 +661,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3660860940251915011">Uključite/isključite veliku vidljivost u funkciji <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Prevucite da sakrijete plutajući prozor</translation>
+<translation id="3673898235958558034">Kada isključite Bluetooth, prekinut će se povezanost uređaja "<ph name="DEVICE_NAME_1" />" i "<ph name="DEVICE_NAME_2" />" s Chromebookom.</translation>
 <translation id="367531336287639526">Odaberite prvu ikonu s lijeve strane trake za adresu</translation>
 <translation id="3677931086890821290">Ovo omogućava svim aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokacije WiFi-ja i mobilnih mreža.</translation>
 <translation id="3679827876008292680">Odlazak na posljednju karticu u prozoru</translation>
@@ -915,6 +917,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4667099493359681081">Preuzimanje fajla <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Ušteda baterije je uključena</translation>
+<translation id="4673427585974421255">Ostavi uključeno</translation>
 <translation id="468293128311738995">Aplikacije s vašeg telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
@@ -1215,6 +1218,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="5802516411616338943">Otvori Brze postavke</translation>
 <translation id="5804651031882187592">Isključite postavku "Zaključaj SIM"</translation>
 <translation id="5805809050170488595">Kliknite da aktivirate mrežu <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Kada isključite Bluetooth, prekinut će se povezanost uređaja "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" i još <ph name="DEVICE_COUNT" /> uređaja s Chromebookom.</translation>
 <translation id="5823239091726045201">Google Zadaci na webu</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="6539852571005954999">Preuzimanje fajla <ph name="FILENAME" /> koji se skenira</translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Pretraživanje pomoću slika uz preglede sadržaja i slika</translation>
+<translation id="6547795021703527064">Kada isključite Bluetooth, prekinut će se povezanost uređaja "<ph name="DEVICE_NAME" />" s Chromebookom.</translation>
 <translation id="6555373427270923730">Napišite adresu web lokacije u traku za adresu, a zatim pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalacija</translation>

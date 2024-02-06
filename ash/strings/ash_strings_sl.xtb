@@ -26,6 +26,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1087110696012418426">Dober dan, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem. S puščičnimi tipkami se pomikajte po aplikacijah.</translation>
 <translation id="1093645050124056515">ctrl + alt + puščica dol</translation>
+<translation id="1094756674036064790">Želite izklopiti Bluetooth?</translation>
 <translation id="109942774857561566">Dolgočasim se</translation>
 <translation id="1104084341931202936">Prikaz nastavitev funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="1104621072296271835">Naprave delujejo še bolje skupaj</translation>
@@ -660,6 +661,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3660860940251915011">Preklop visoke vidnosti funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Upravljani uporabnik</translation>
 <translation id="3666266999138159418">Povlecite, če želite skriti plavajoče okno</translation>
+<translation id="3673898235958558034">Ko izklopite Bluetooth, bo povezava naprav »<ph name="DEVICE_NAME_1" />« in »<ph name="DEVICE_NAME_2" />« s Chromebookom prekinjena.</translation>
 <translation id="367531336287639526">Izbira prve ikone levo od naslovne vrstice</translation>
 <translation id="3677931086890821290">To vsem aplikacijam ter spletnim mestom, ki imajo dovoljenje za lokacijo, in sistemu ChromeOS omogoča uporabo lokacije omrežij Wi-Fi in mobilnih omrežij.</translation>
 <translation id="3679827876008292680">Premik na zadnji zavihek v oknu</translation>
@@ -915,6 +917,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4666911709726371538">Več aplikacij</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Varčevanje z energijo baterije je vklopljeno</translation>
+<translation id="4673427585974421255">Pusti vklopljeno</translation>
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
@@ -1215,6 +1218,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5802516411616338943">Odpiranje hitrih nastavitev</translation>
 <translation id="5804651031882187592">Izklop nastavitve zaklepanja kartice SIM</translation>
 <translation id="5805809050170488595">Kliknite, če želite aktivirati omrežje <ph name="NETWORK_NAME" />.</translation>
+<translation id="5816222150329690597">Ko izklopite Bluetooth, bo povezava naprav »<ph name="DEVICE_NAME_1" />«, »<ph name="DEVICE_NAME_2" />« in še <ph name="DEVICE_COUNT" /> s Chromebookom prekinjena.</translation>
 <translation id="5823239091726045201">Google Opravila v spletu</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6539852571005954999">Pregledovanje prenosa: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Predvajanje v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Iskanje slik po vsebini in predogledih slik</translation>
+<translation id="6547795021703527064">Ko izklopite Bluetooth, bo povezava naprave »<ph name="DEVICE_NAME" />« s Chromebookom prekinjena.</translation>
 <translation id="6555373427270923730">Vnesite spletni naslov v naslovno vrstico, nato pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova namestitev</translation>

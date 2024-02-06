@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Kan afbeeldingen niet laden. Check de netwerkverbinding of probeer de afbeeldingen opnieuw te laden.</translation>
 <translation id="1751249301761991853">Persoonlijk</translation>
 <translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
+<translation id="1754578112426924640">Knop Bewerken voor <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android wordt niet uitgevoerd</translation>
 <translation id="551689408806449779">De verbinding met het apparaat is verbroken. Maak opnieuw verbinding om te testen.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">vergrendeld</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatisch overschakelen naar donker thema bij zonsondergang</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centreren</translation>
 <translation id="5703716265115423771">volume omlaag</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Knop Bewerken voor <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5757187557809630523">volgend nummer</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Verboden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Knop Verwijderen voor <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
 <translation id="593880865674747800">Meer maken in deze stijl</translation>
 <translation id="5939518447894949180">Resetten</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
+<translation id="6796229976413584781">Sneltoets verwijderd</translation>
 <translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
+<translation id="7233782086689993269">Sneltoets hersteld</translation>
 <translation id="725133483556299729">E-mailadres selecteren</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7271932918253517778">Sneltoets met toetsen op de bovenste rij moet de <ph name="META_KEY" />-toets bevatten.</translation>
@@ -917,6 +923,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7656388927906093505">Apparaat is een muis.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Avatar wijzigen</translation>
 <translation id="7683228889864052081">tint toetsenbord</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
@@ -926,6 +933,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7718231387947923843">toetsenbordlampje</translation>
 <translation id="7730077286107534951">Bepaalde account- en systeemgegevens worden misschien naar Google gestuurd. We gebruiken deze informatie om technische problemen op te lossen en onze services te verbeteren, in overeenstemming met ons <ph name="BEGIN_LINK2" />Privacybeleid<ph name="END_LINK2" /> en onze <ph name="BEGIN_LINK3" />Servicevoorwaarden<ph name="END_LINK3" />. Als je contentwijzigingen wilt aanvragen, ga je naar de <ph name="BEGIN_LINK1" />juridische Help-pagina<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Aantal oplaadbeurten</translation>
+<translation id="7746357909584236306">bewerkbaar</translation>
 <translation id="7747039790905080783">Eerder gedeelde sleutel</translation>
 <translation id="7752963721013053477">Dageraad tot donker - exclusief</translation>
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>

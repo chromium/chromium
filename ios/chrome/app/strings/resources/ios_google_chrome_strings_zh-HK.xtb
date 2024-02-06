@@ -75,7 +75,9 @@
 <translation id="2689064829982324496">如要在所有網站上登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2702250627063295552">將閱讀清單項目新增至 Chrome</translation>
+<translation id="2703746758996815929">如要取得 Chrome 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
+<translation id="2750626042242931740">你可隨時在 Chrome 設定中更新所選項目。</translation>
 <translation id="2767464022270041271">沒有已儲存的密碼。當您儲存密碼時，「Google 密碼管理工具」可檢查您的密碼。</translation>
 <translation id="2789947168960170215">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2868822340714096138">清除 Chrome 中的瀏覽資料</translation>
@@ -179,7 +181,7 @@
 <translation id="6054613632208573261">預設為使用 Chrome</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
 <translation id="6110625574506755980">部分 Chrome 功能將無法再使用。</translation>
-<translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、書籤和其他資訊。</translation>
+<translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、書籤和其他資料。</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6181930887571472871">切換至 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定您的無痕式分頁。</translation>
@@ -251,8 +253,8 @@
 <translation id="7897703007638178753">查看 Chrome 最近開啟的分頁</translation>
 <translation id="7925119591961387184">選取 [Chrome]。</translation>
 <translation id="7933491483529363150">在 Chrome 中開啟「我的最新分頁」。</translation>
-<translation id="7948283758957877064">Chrome 新功能</translation>
-<translation id="8006014511203279255">隨時可以使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
+<translation id="7948283758957877064">Chrome 的新功能</translation>
+<translation id="8006014511203279255">隨時使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
 <translation id="8065292699993359127">在 Chrome 中以無痕模式開啟網址</translation>
@@ -289,7 +291,7 @@
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的指示。</translation>
 <translation id="8788269841521769222">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
-<translation id="878917453316810648">Chrome 提示：將 Chrome 設為預設瀏覽器</translation>
+<translation id="878917453316810648">Chrome 提示：將 Chrome 設定為預設瀏覽器</translation>
 <translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8855781063981781621">在 iPad 上關閉「封鎖模式」，就能在 Chrome 中停用此模式。</translation>
 <translation id="8856877214925961642">密碼短語加密的資料不包括付款方法和地址。
@@ -297,6 +299,7 @@
 如要變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">「Google 密碼管理工具」無法檢查所有密碼。請明天再試。</translation>
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
+<translation id="8874688701962049679">可協助你充分運用 Chrome 的各項提示。</translation>
 <translation id="8891935667620843985">將 Chrome 設定為「預設瀏覽器應用程式」，即可自動以 Chrome 開啟連結。</translation>
 <translation id="8897749957032330183">密碼會儲存至此裝置上的「Google 密碼管理工具」。</translation>
 <translation id="8949681853939555434">將 Chrome 設定為預設瀏覽器</translation>

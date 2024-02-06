@@ -3292,6 +3292,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3497560059572256875">Doodle Paylaşın</translation>
 <translation id="3497915391670770295">Cihazlarınıza göndərin</translation>
 <translation id="3500417806337761827">Paylaşım əlavə edərkən xəta baş verdi. Hazırda həddindən çox SMB paylaşımı əlavə edilib.</translation>
+<translation id="3500764001796099683">Təcrid edilmiş veb-tətbiqləri aktivləşdirin</translation>
 <translation id="350397915809787283">Hesab yoxdursa, birincini seçərək yaradın.</translation>
 <translation id="3503995387997205657">Əvvəlki tətbiqlərinizi bərpa edə bilərsiniz</translation>
 <translation id="3505100368357440862">Şopinq təklifləri</translation>
@@ -7163,6 +7164,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6551508934388063976">Əmr əlçatmazdır. Yeni pəncərə açmaq üçün control-N basın.</translation>
 <translation id="6551606359270386381">Ellips Aləti</translation>
 <translation id="6551612971599078809">Sayt USB istifadə edir</translation>
+<translation id="6551620030439692385">Bloklanıb. Saat qurşağı <ph name="TIMEZONE" /> olaraq ayarlanıb və yalnız manual qaydada güncəllənə bilər.</translation>
 <translation id="6551739526055143276">Family Link tərəfindən idarə edilir</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> istifadəçi</translation>
 <translation id="6555432686520421228">Tamamilə yeni olmaq üçün bütün istifadəçi hesablarınızı silin və <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazınızı sıfırlayın.</translation>
@@ -7231,6 +7233,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6608773371844092260">Barmaq izini ayarlamaq üçün uşağınızdan bu <ph name="DEVICE_TYPE" /> cihazının sağ tərəfində olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="6609478180749378879">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq. Bu veb sayta daha sonra cihazınızla yenidən daxil ola biləcəksiniz.</translation>
 <translation id="6610002944194042868">Tərcümə Seçimləri</translation>
+<translation id="6610064275805055636">Təcrid edilmiş veb-tətbiqləri idarə edin</translation>
 <translation id="6611972847767394631">Tablarınızı burada tapın</translation>
 <translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
 <translation id="6613267708691765962">Zərərli proqram skanlanır...</translation>
@@ -8594,6 +8597,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" skanerindən skanlamaq istəyir.</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> üçün giriş açarı olan cihazı seçin</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> ünvanında.</translation>
+<translation id="7672726198839739113">Bloklanıb. Cədvəl <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> olaraq ayarlanıb və yalnız manual qaydada güncəllənə bilər.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (bağlantı meneceri) jurnalları</translation>
 <translation id="7674416868315480713">Linux'da yönləndirilən bütün portları deaktiv edin</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> tətbiq</translation>
@@ -9526,6 +9530,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8376384591331888629">Bu saytdakı üçüncü tərəf kukilər daxil olmaqla</translation>
 <translation id="8376451933628734023">Bu veb tətbiq fərqli bir tətbiq olduğunu düşünmənizə çalışırsa, onu ləğv edin.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> yenidən yüklənir...</translation>
+<translation id="8376610503048439696">Administratorun quraşdırdığı artırmalar yenə də bu saytı oxuya və dəyişə bilər</translation>
 <translation id="8376752431516546391">Google Axtarış yan paneli</translation>
 <translation id="8377625247046155446">Bu giriş açarı yalnız bu cihazda yadda saxlanılacaq. Bütün Anonim pəncərələri bağladıqdan sonra o, bu cihazda qalacaq.</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>

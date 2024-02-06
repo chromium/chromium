@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">즐거운 오후 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, 파일, 앱 등을 검색합니다. 앱을 탐색하려면 화살표 키를 사용하세요.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + 아래쪽 화살표</translation>
+<translation id="1094756674036064790">블루투스를 사용 중지하시겠습니까?</translation>
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> 높은 공개 상태 전환</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3666266999138159418">스와이프하여 플로팅 창 숨기기</translation>
+<translation id="3673898235958558034">블루투스를 사용 중지하면 "<ph name="DEVICE_NAME_1" />" 및 "<ph name="DEVICE_NAME_2" />" 기기가 Chromebook에서 연결 해제됩니다.</translation>
 <translation id="367531336287639526">주소 표시줄 왼쪽에 있는 첫 번째 아이콘 선택</translation>
 <translation id="3677931086890821290">이를 통해 위치 정보 액세스 권한이 있고 ChromeOS를 지원하는 모든 앱과 웹사이트에서 Wi-Fi 및 모바일 네트워크 위치를 사용할 수 있습니다.</translation>
 <translation id="3679827876008292680">창의 마지막 탭으로 이동</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">앱 더보기</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> 파일을 다운로드하는 중입니다</translation>
 <translation id="4672539464599646374">절전 모드 사용 설정됨</translation>
+<translation id="4673427585974421255">계속 사용</translation>
 <translation id="468293128311738995">휴대전화 앱</translation>
 <translation id="4690510401873698237">앱 표시줄 하단에 표시</translation>
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">빠른 설정 열기</translation>
 <translation id="5804651031882187592">'SIM 잠금' 설정 사용 중지</translation>
 <translation id="5805809050170488595">클릭하여 <ph name="NETWORK_NAME" /> 활성화</translation>
+<translation id="5816222150329690597">블루투스를 사용 중지하면 "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" 외 <ph name="DEVICE_COUNT" />개 기기가 Chromebook에서 연결 해제됩니다.</translation>
 <translation id="5823239091726045201">웹의 Google 작업</translation>
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">스캔 중인 <ph name="FILENAME" /> 파일 다운로드</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
 <translation id="6546062506073634094">콘텐츠 및 이미지 미리보기로 이미지 검색</translation>
+<translation id="6547795021703527064">블루투스를 사용 중지하면 "<ph name="DEVICE_NAME" />" 기기가 Chromebook에서 연결 해제됩니다.</translation>
 <translation id="6555373427270923730">주소 표시줄에 웹 주소를 입력한 후 <ph name="MODIFIER" /><ph name="KEY" /> 키 누르기</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 새로 설치됨</translation>

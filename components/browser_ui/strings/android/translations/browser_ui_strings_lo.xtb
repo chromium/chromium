@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ຄຸກກີ້ພາກສ່ວນທີສາມຖືກຈຳກັດໄວ້</translation>
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="301521992641321250">ບລັອກອັດຕະໂນມັດແລ້ວ</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນ # ມື້}}</translation>
 <translation id="310297983047869047">ສະໄລ້ກ່ອນໜ້າ</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">ເຊື່ອມຕໍ່ຫາອຸປະກອນ USB ແລ້ວ</translation>
 <translation id="4194328954146351878">ຖາມກ່ອນການອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC (ແນະນຳ)</translation>
 <translation id="4200726100658658164">ເປີດການຕັ້ງຄ່າສະຖານທີ່</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ຈາກ <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">ການແຈ້ງເຕືອນອາດຈະເຮັດໃຫ້ອຸປະກອນສັ່ນ</translation>
 <translation id="4259722352634471385">ການນໍາທາງຖືກບລັອກໄວ້: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015">ເຊື່ອງ "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ສືບຕໍ່ໃຊ້ແຖບນີ້}other{ສືບຕໍ່ໃຊ້ແຖບເຫຼົ່ານີ້}}</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7804248752222191302">ເວັບໄຊກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
 <translation id="7807060072011926525">ສະໜອງໃຫ້ໂດຍ Google</translation>

@@ -26,6 +26,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1087110696012418426">Boa tarde, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Pesquise <ph name="CATEGORY" />, arquivos, apps e muito mais. Use as setas para navegar pelos apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + seta para baixo</translation>
+<translation id="1094756674036064790">Desativar o Bluetooth?</translation>
 <translation id="109942774857561566">Que tédio</translation>
 <translation id="1104084341931202936">Mostrar configurações de acessibilidade</translation>
 <translation id="1104621072296271835">Seus dispositivos funcionam ainda melhor juntos</translation>
@@ -98,7 +99,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1306549533752902673">APPS RECOMENDADOS</translation>
 <translation id="1311294419381837540">Você está transmitindo uma guia. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="1312604459020188865">Intensidade do sinal em <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Sempre mostrar estante</translation>
+<translation id="1316069254387866896">Sempre mostrar a barra</translation>
 <translation id="132346741904777634">Câmera alinhada ao canto esquerdo de cima. Conflito com a superfície do sistema.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
 <translation id="1340378040547539434">Diminuir zoom na página</translation>
@@ -660,6 +661,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3660860940251915011">Ativar/desativar a alta visibilidade do recurso "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">Usuário gerenciado <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Deslize para ocultar a janela flutuante</translation>
+<translation id="3673898235958558034">Quando você desativar o Bluetooth, os dispositivos <ph name="DEVICE_NAME_1" /> e <ph name="DEVICE_NAME_2" /> serão desconectados do Chromebook.</translation>
 <translation id="367531336287639526">Selecionar o primeiro ícone à esquerda da barra de endereço</translation>
 <translation id="3677931086890821290">Isso permite que todos os apps e sites com permissão de localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
 <translation id="3679827876008292680">Ir para a última guia na janela</translation>
@@ -915,6 +917,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4666911709726371538">Mais apps</translation>
 <translation id="4667099493359681081">Fazendo o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Economia de bateria ativada</translation>
+<translation id="4673427585974421255">Deixar ativado</translation>
 <translation id="468293128311738995">Apps do smartphone</translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
@@ -1215,6 +1218,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5802516411616338943">Abrir as Configurações rápidas</translation>
 <translation id="5804651031882187592">Desative a configuração "Bloquear chip"</translation>
 <translation id="5805809050170488595">Clique para ativar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Quando você desativar o Bluetooth, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> e mais <ph name="DEVICE_COUNT" /> dispositivos serão desconectados do Chromebook.</translation>
 <translation id="5823239091726045201">Google Tarefas na Web</translation>
 <translation id="5825969630400862129">Configurações de dispositivos conectados</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6539852571005954999">Verificando o arquivo <ph name="FILENAME" /> para download</translation>
 <translation id="6542521951477560771">Transmitindo para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Pesquisa de imagens por conteúdo e visualizações de imagens</translation>
+<translation id="6547795021703527064">Quando você desativar o Bluetooth, o dispositivo <ph name="DEVICE_NAME" /> será desconectado do Chromebook.</translation>
 <translation id="6555373427270923730">Digite um endereço da Web na barra de endereço e pressione <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>
@@ -1896,7 +1901,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8641510901370802679">Mostrando informações sobre <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Timer de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para adicionar uma pessoa, insira seu código de acesso do familiar responsável do Family Link</translation>
-<translation id="8649597172973390955">Sempre mostrar estante</translation>
+<translation id="8649597172973390955">Sempre mostrar a barra</translation>
 <translation id="8652175077544655965">Fechar configurações</translation>
 <translation id="8653151467777939995">Mostrar configurações de notificação. As notificações estão ativadas</translation>
 <translation id="8660331759611631213">Raiz quadrada de 71</translation>

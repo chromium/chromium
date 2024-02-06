@@ -26,6 +26,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1087110696012418426">Magandang hapon <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Hanapin ang iyong mga <ph name="CATEGORY" />, file, app, at higit pa. Gamitin ang mga arrow key para i-navigate ang iyong mga app.</translation>
 <translation id="1093645050124056515">ctrl + alt + pababang arrow</translation>
+<translation id="1094756674036064790">I-off ang Bluetooth?</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
 <translation id="1104084341931202936">Ipakita ang mga setting ng pagiging naa-access</translation>
 <translation id="1104621072296271835">Gagana nang mas maayos ang iyong mga device kung magkakasama</translation>
@@ -660,6 +661,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3660860940251915011">I-toggle ang mataas na visibility ng <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Pinapamahalaang user na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Mag-swipe para i-hide ang iyong naka-float na window</translation>
+<translation id="3673898235958558034">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME_1" />" at "<ph name="DEVICE_NAME_2" />" sa iyong Chromebook.</translation>
 <translation id="367531336287639526">Piliin ang unang icon sa kaliwa ng address bar</translation>
 <translation id="3677931086890821290">Binibigyang-daan nito ang lahat ng app at website na may pahintulot sa lokasyon at ChromeOS na gumamit ng Wi-Fi at lokasyon ng mga mobile network.</translation>
 <translation id="3679827876008292680">Pumunta sa huling tab sa window</translation>
@@ -915,6 +917,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4666911709726371538">Higit pang app</translation>
 <translation id="4667099493359681081">Dina-download ang <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Na-on ang Pantipid ng Baterya</translation>
+<translation id="4673427585974421255">I-on lang</translation>
 <translation id="468293128311738995">Mga app mula sa iyong telepono</translation>
 <translation id="4690510401873698237">Nasa ibaba ang shelf</translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
@@ -1215,6 +1218,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5802516411616338943">Buksan ang Mga Mabilisang Setting</translation>
 <translation id="5804651031882187592">I-off ang setting na "I-lock ang SIM"</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" at <ph name="DEVICE_COUNT" /> (na) iba pang device sa iyong Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Paghahanap ng larawan ayon sa mga preview ng content at larawan</translation>
+<translation id="6547795021703527064">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME" />" sa iyong Chromebook.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Kaka-install lang</translation>

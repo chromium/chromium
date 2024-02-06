@@ -75,6 +75,7 @@ Tasub teada
 <translation id="2689064829982324496">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chrome'ist<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2702250627063295552">Lisa Chrome'i lugemisloendi üksus</translation>
+<translation id="2703746758996815929">Lülitage iOS-i seadetes märguanded sisse, et saada Chrome'i kohta kasulikke nõuandeid.</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="2789947168960170215">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>
+<translation id="8874688701962049679">Nõuanded Chrome’i kasutamiseks.</translation>
 <translation id="8891935667620843985">Saate Chrome'is linke avada automaatselt, muutes selle oma vaikebrauserirakenduseks.</translation>
 <translation id="8897749957032330183">Paroolid salvestatakse selles seadmes Google'i paroolihaldurisse.</translation>
 <translation id="8949681853939555434">Chrome'i vaikebrauseriks määramine</translation>

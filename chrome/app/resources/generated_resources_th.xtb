@@ -1717,6 +1717,7 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{เปิดทั้งหมดในกลุ่มแท็บใหม่}=1{เปิดในกลุ่มแท็บใหม่}other{เปิดทั้งหมด ({COUNT}) ในกลุ่มแท็บใหม่}}</translation>
 <translation id="2285942871162473373">จำลายนิ้วมือไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="2287617382468007324">ที่อยู่ IPP ของการพิมพ์</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{ระบบได้นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ}other{ระบบได้นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ}}</translation>
 <translation id="2287944065963043964">หน้าจอการเข้าสู่ระบบ</translation>
 <translation id="2290615375132886363">ปุ่มนำทางในแท็บเล็ต</translation>
 <translation id="2291452790265535215">ลองใช้แผงด้านข้างสําหรับบุ๊กมาร์ก เส้นทางการท่องเว็บ และอื่นๆ</translation>
@@ -3293,6 +3294,7 @@
 <translation id="3497560059572256875">แชร์ Doodle</translation>
 <translation id="3497915391670770295">ส่งไปยังอุปกรณ์ของคุณ</translation>
 <translation id="3500417806337761827">เกิดข้อผิดพลาดในการต่อเชื่อมการแชร์ มีการต่อเชื่อม SMB เป็นจำนวนมากอยู่แล้ว</translation>
+<translation id="3500764001796099683">เปิดใช้ Isolated Web App</translation>
 <translation id="350397915809787283">หากคุณไม่มีบัญชี ให้เลือกตัวเลือกแรกเพื่อสร้างบัญชี</translation>
 <translation id="3503995387997205657">คุณสามารถคืนค่าแอปก่อนหน้าได้</translation>
 <translation id="3505100368357440862">คำแนะนำการเลือกซื้อ</translation>
@@ -4301,6 +4303,7 @@
 <translation id="4275788652681621337">ปิดแผงด้านข้าง</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4277434192562187284">แหล่งที่มาของการกำหนดค่า XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{นำสิทธิ์ออกจากเว็บไซต์แล้ว 1 รายการ}other{นำสิทธิ์ออกจากเว็บไซต์แล้ว {NUM_SITES} รายการ}}</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
 <translation id="4278498748067682896">คุณจะใช้ Kiosk &amp; Signage Upgrade ซึ่งอนุญาตให้อุปกรณ์ทำงานในโหมดคีออสก์หรือป้ายเท่านั้น หากต้องการให้ผู้ใช้ลงชื่อเข้าใช้อุปกรณ์ โปรดย้อนกลับแล้วลงทะเบียนด้วย Chrome Enterprise Upgrade</translation>
 <translation id="4278779213160967034">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังดาวน์โหลดไฟล์</translation>
@@ -7165,6 +7168,7 @@
 <translation id="6551508934388063976">คำสั่งไม่สามารถใช้งานได้ กด Control-N เพื่อเปิดหน้าต่างใหม่</translation>
 <translation id="6551606359270386381">เครื่องมือวงรี</translation>
 <translation id="6551612971599078809">เว็บไซต์กำลังใช้ USB</translation>
+<translation id="6551620030439692385">ถูกบล็อก ปัจจุบันเขตเวลาตั้งค่าเป็น <ph name="TIMEZONE" /> และสามารถอัปเดตได้ด้วยตัวเองเท่านั้น</translation>
 <translation id="6551739526055143276">จัดการโดย Family Link</translation>
 <translation id="655384502888039633">ผู้ใช้ <ph name="USER_COUNT" /> คน</translation>
 <translation id="6555432686520421228">ลบบัญชีผู้ใช้ทั้งหมดและรีเซ็ตอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> ของคุณให้เหมือนใหม่</translation>
@@ -7233,6 +7237,7 @@
 <translation id="6608773371844092260">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> เครื่องนี้ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="6609478180749378879">ข้อมูลการลงชื่อเข้าใช้จะจัดเก็บอยู่ในอุปกรณ์นี้หลังจากออกจากโหมดไม่ระบุตัวตน โดยจะลงชื่อเข้าใช้เว็บไซต์นี้ด้วยอุปกรณ์ของคุณอีกครั้งในภายหลังได้</translation>
 <translation id="6610002944194042868">ตัวเลือกการแปลภาษา</translation>
+<translation id="6610064275805055636">จัดการ Isolated Web App</translation>
 <translation id="6611972847767394631">ค้นหาแท็บของคุณที่นี่</translation>
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
@@ -8596,6 +8601,7 @@
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" ต้องการสแกนจาก "<ph name="SCANNER_NAME" />"</translation>
 <translation id="7672504401554182757">เลือกอุปกรณ์ที่มีพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> ใน <ph name="PAGE_TITLE" /></translation>
+<translation id="7672726198839739113">ถูกบล็อก ปัจจุบันกำหนดเวลาตั้งค่าเป็น <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> และสามารถอัปเดตได้ด้วยตัวเองเท่านั้น</translation>
 <translation id="7673313156293624327">บันทึก ChromeOS Shill (โปรแกรมจัดการการเชื่อมต่อ)</translation>
 <translation id="7674416868315480713">ปิดใช้งานทุกพอร์ตที่กำลังส่งต่อใน Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> แอป</translation>
@@ -9529,6 +9535,7 @@
 <translation id="8376384591331888629">รวมคุกกี้ของบุคคลที่สามในเว็บไซต์นี้</translation>
 <translation id="8376451933628734023">โปรดถอนการติดตั้งหากเว็บแอปนี้พยายามหลอกล่อคุณให้คิดว่าเป็นแอปอื่น</translation>
 <translation id="8376532149031784008">กำลังโหลด <ph name="DOMAIN" /> ซ้ำ...</translation>
+<translation id="8376610503048439696">ส่วนขยายที่ติดตั้งโดยผู้ดูแลระบบจะยังคงอ่านและเปลี่ยนแปลงเว็บไซต์นี้ได้</translation>
 <translation id="8376752431516546391">แผงด้านข้างของ Google Search</translation>
 <translation id="8377625247046155446">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>

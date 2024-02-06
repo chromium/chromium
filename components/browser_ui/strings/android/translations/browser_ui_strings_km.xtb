@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ខូគី​ភាគីទីបី​ត្រូវបាន​ដាក់កំហិត</translation>
 <translation id="3008272652534848354">កំណត់​ការអនុញ្ញាត​ឡើងវិញ</translation>
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">អនុញ្ញាត​ការចូល​របស់ភាគីទីបី​សម្រាប់​គេហទំព័រ​ជាក់លាក់។</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ផុតកំណត់​ថ្ងៃស្អែក}other{ផុតកំណត់​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
 <translation id="310297983047869047">ស្លាយ​មុន</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">បានភ្ជាប់​ទៅ​ឧបករណ៍ USB</translation>
 <translation id="4194328954146351878">សួរ​មុនពេល​អនុញ្ញាតឱ្យ​គេហទំព័រមើលឃើញ និងផ្លាស់ប្ដូរព័ត៌មាននៅលើឧបករណ៍ NFC (បានណែនាំ)</translation>
 <translation id="4200726100658658164">បើកការកំណត់ទីតាំង</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> ពី <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">ការជូនដំណឹងអាចនឹងធ្វើឲ្យឧបករណ៍ញ័រ</translation>
 <translation id="4259722352634471385">ការរុករកត្រូវបានរារាំង៖ <ph name="URL" /></translation>
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015">លាក់ "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{បន្ត​ជាមួយ​ផ្ទាំងនេះ}other{បន្ត​ជាមួយ​ផ្ទាំងទាំងនេះ}}</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7804248752222191302">គេហទំព័រមួយកំពុងប្រើប្រាស់កាមេរ៉ារបស់អ្នក</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>

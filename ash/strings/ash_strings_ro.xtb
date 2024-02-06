@@ -26,6 +26,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1087110696012418426">Bună ziua, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele. Folosește tastele săgeți ca să navighezi prin aplicații.</translation>
 <translation id="1093645050124056515">ctrl + alt + săgeată în jos</translation>
+<translation id="1094756674036064790">Dezactivezi Bluetooth?</translation>
 <translation id="109942774857561566">M-am plictisit</translation>
 <translation id="1104084341931202936">Afișează setările de accesibilitate</translation>
 <translation id="1104621072296271835">Dispozitivele funcționează și mai bine împreună</translation>
@@ -660,6 +661,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3660860940251915011">Activează / dezactivează vizibilitatea crescută pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Glisează pentru a ascunde fereastra flotantă</translation>
+<translation id="3673898235958558034">Când dezactivezi Bluetooth, <ph name="DEVICE_NAME_1" /> și <ph name="DEVICE_NAME_2" /> se vor deconecta de la Chromebook.</translation>
 <translation id="367531336287639526">Selectează prima pictogramă din stânga barei de adrese</translation>
 <translation id="3677931086890821290">Astfel, toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
 <translation id="3679827876008292680">Accesează ultima filă din fereastră</translation>
@@ -915,6 +917,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4666911709726371538">Mai multe aplicații</translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Economisirea bateriei este activată</translation>
+<translation id="4673427585974421255">Menține activată</translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
@@ -1215,6 +1218,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5802516411616338943">Deschide Setările rapide</translation>
 <translation id="5804651031882187592">Dezactivează setarea Blochează cardul SIM</translation>
 <translation id="5805809050170488595">Dă clic pentru a activa <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Când dezactivezi Bluetooth, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> și încă <ph name="DEVICE_COUNT" /> dispozitive se vor deconecta de la Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks pe web</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6539852571005954999">Se scanează <ph name="FILENAME" /> pentru descărcare</translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Căutare de imagini după conținut și previzualizări ale imaginilor</translation>
+<translation id="6547795021703527064">Când dezactivezi Bluetooth, <ph name="DEVICE_NAME" /> se va deconecta de la Chromebook.</translation>
 <translation id="6555373427270923730">Introdu o adresă web în bara de adrese, apoi apasă pe <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalare nouă</translation>

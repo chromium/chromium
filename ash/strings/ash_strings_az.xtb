@@ -26,6 +26,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1087110696012418426">Günortanız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın. Tətbiqləri axtarmaq üçün ox düymələrindən istifadə edin.</translation>
 <translation id="1093645050124056515">ctrl + alt + aşağı ox</translation>
+<translation id="1094756674036064790">Bluetooth deaktiv edilsin?</translation>
 <translation id="109942774857561566">Darıxıram</translation>
 <translation id="1104084341931202936">Əlçatımlılıq ayarlarını göstərin</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
@@ -660,6 +661,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> üçün yüksək görünmə dərəcəsini aktiv/deaktiv edin</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> İdarə edilən istifadəçi</translation>
 <translation id="3666266999138159418">Üzən pəncərəni gizlətmək üçün sürüşdürün</translation>
+<translation id="3673898235958558034">Bluetooth-u deaktiv edəndə "<ph name="DEVICE_NAME_1" />" və "<ph name="DEVICE_NAME_2" />" Chromebook-dan ayrılacaq.</translation>
 <translation id="367531336287639526">Ünvan panelinin solundakı birinci ikonanı seçin</translation>
 <translation id="3677931086890821290">Məkan icazəsi olan tətbiq və veb-saytlara, habelə ChromeOS-a Wi-Fi və mobil şəbəkə məkanından istifadə icazəsi verilir.</translation>
 <translation id="3679827876008292680">Pəncərədə sonuncu taba keçin</translation>
@@ -915,6 +917,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4666911709726371538">Daha çox tətbiq</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> endirilir</translation>
 <translation id="4672539464599646374">Enerjiyə Qənaət aktivdir</translation>
+<translation id="4673427585974421255">Aktiv saxlayın</translation>
 <translation id="468293128311738995">Telefonunuzdan tətbiqlər</translation>
 <translation id="4690510401873698237">Rəf aşağıdadır</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
@@ -1215,6 +1218,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5802516411616338943">Cəld ayarları açın</translation>
 <translation id="5804651031882187592">"SIM'i kilidləyin" ayarını deaktiv edin</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> şəbəkəsini aktiv etmək üçün toxunun</translation>
+<translation id="5816222150329690597">Bluetooth-u deaktiv edəndə "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" və digər <ph name="DEVICE_COUNT" /> cihaz Chromebook-dan ayrılacaq.</translation>
 <translation id="5823239091726045201">Vebdə Google tapşırıqları</translation>
 <translation id="5825969630400862129">Qoşulmuş cihazların ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>
@@ -1395,6 +1399,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="6539852571005954999"><ph name="FILENAME" /> endirməsi skanlanır</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
 <translation id="6546062506073634094">Kontent və şəkil önizləməsi əsasında şəkil axtarışı</translation>
+<translation id="6547795021703527064">Bluetooth-u deaktiv edəndə "<ph name="DEVICE_NAME" />" Chromebook-dan ayrılacaq.</translation>
 <translation id="6555373427270923730">Ünvan panelində veb-ünvanı yazıb, <ph name="MODIFIER" /><ph name="KEY" /> düyməsini basın</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Yeni quraşdırma</translation>

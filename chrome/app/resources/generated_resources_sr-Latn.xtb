@@ -3291,6 +3291,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3497560059572256875">Deli dudl logotip</translation>
 <translation id="3497915391670770295">Pošalji na uređaje</translation>
 <translation id="3500417806337761827">Greška pri instalaciji deljene stavke. Previše SMB deljenih stavki je već instalirano.</translation>
+<translation id="3500764001796099683">Omogući izolovane veb-aplikacije</translation>
 <translation id="350397915809787283">Ako nemate nalog, izaberite prvu opciju da biste ga otvorili.</translation>
 <translation id="3503995387997205657">Možete da vratite prethodne aplikacije</translation>
 <translation id="3505100368357440862">Predlozi za kupovinu</translation>
@@ -7166,6 +7167,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6551508934388063976">Komanda nije dostupna. Pritisnite control-N da biste otvorili novi prozor.</translation>
 <translation id="6551606359270386381">Alatka za elipse</translation>
 <translation id="6551612971599078809">Sajt koristi USB</translation>
+<translation id="6551620030439692385">Blokirano. Vremenska zona je trenutno podešena na <ph name="TIMEZONE" /> i može da se ažurira samo ručno.</translation>
 <translation id="6551739526055143276">Nalogom upravlja Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> korisnika</translation>
 <translation id="6555432686520421228">Uklonite sve korisničke naloge i restartujte <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaj da bi bio kao nov.</translation>
@@ -7238,6 +7240,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6608773371844092260">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta u gornjem desnom uglu ovog <ph name="DEVICE_TYPE" /> uređaja. Podaci o otisku prsta deteta se bezbedno čuvaju na ovom <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
 <translation id="6609478180749378879">Podaci o prijavljivanju se čuvaju na ovom uređaju kada izađete iz režima bez arhiviranja. Kasnije ćete moći da se ponovo prijavite na ovaj veb-sajt pomoću svog uređaja.</translation>
 <translation id="6610002944194042868">Opcije prevoda</translation>
+<translation id="6610064275805055636">Upravljajte izolovanim veb-aplikacijama</translation>
 <translation id="6611972847767394631">Pronađite kartice ovde</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6613267708691765962">Traži se malver...</translation>
@@ -8602,6 +8605,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> želi da skenira sa uređaja <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Odaberite koji uređaj ima pristupni kôd za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, na stranici <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokirano. Raspored je trenutno podešen na <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> i može da se ažurira samo ručno.</translation>
 <translation id="7673313156293624327">Evidencije ChromeOS Shill-a (menadžer veze)</translation>
 <translation id="7674416868315480713">Deaktiviraj sve portove koji se prosleđuju u Linux-u</translation>
 <translation id="7674537509496907005">Aplikacija: <ph name="APP_COUNT" /></translation>
@@ -9535,6 +9539,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>
 <translation id="8376451933628734023">Ako ova veb-aplikacija pokušava da vas prevari da je neka druga aplikacija, deinstalirajte je.</translation>
 <translation id="8376532149031784008">Ponovo se učitava <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Dodaci koje je instalirao administrator i dalje mogu da čitaju i menjaju ovaj sajt</translation>
 <translation id="8376752431516546391">Bočna tabla Google pretrage</translation>
 <translation id="8377625247046155446">Ovaj pristupni kôd će se sačuvati samo na ovom uređaju. On će ostati na ovom uređaju kada zatvorite sve prozore bez arhiviranja.</translation>
 <translation id="8378714024927312812">Ovim upravlja organizacija</translation>

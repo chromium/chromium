@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">शुभ दुपार <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">तुमचे <ph name="CATEGORY" />, फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा. तुमची अ‍ॅप्स नेव्हिगेट करण्यासाठी, अ‍ॅरो की वापरा.</translation>
 <translation id="1093645050124056515">ctrl + alt + down arrow</translation>
+<translation id="1094756674036064790">ब्लूटूथ बंद करायचे आहे का?</translation>
 <translation id="109942774857561566">मला कंटाळा आला आहे</translation>
 <translation id="1104084341931202936">ॲक्सेसिबिलिटी सेटिंग्ज दाखवा</translation>
 <translation id="1104621072296271835">तुमची डिव्हाइस एकत्र आणखी चांगले काम करतात</translation>
@@ -195,7 +196,7 @@
 <translation id="174102739345480129">मार्कर बंद आहे.</translation>
 <translation id="1743570585616704562">ओळखले नाही</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> ही सूचना कोलॅप्स करा</translation>
-<translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉंफिगर केलेल्या इनपुट पद्धती.</translation>
+<translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉन्फिगर केलेल्या इनपुट पद्धती.</translation>
 <translation id="1747336645387973286">शेवटची तारीख <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1749109475624620922">विंडो <ph name="WINDOW_TITLE" /> सर्व डेस्कना असाइन केले</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> ची उच्च दृश्यमानता टॉगल करा</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="3666266999138159418">तुमची फ्लोटिंग विंडो लपवण्यासाठी स्वाइप करा</translation>
+<translation id="3673898235958558034">तुम्ही ब्लूटूथ बंद करता, तेव्हा "<ph name="DEVICE_NAME_1" />" आणि "<ph name="DEVICE_NAME_2" />" तुमच्या Chromebook वरून डिस्कनेक्ट केली जातील.</translation>
 <translation id="367531336287639526">अ‍ॅड्रेस बारच्या डावीकडील पहिला आयकन निवडा</translation>
 <translation id="3677931086890821290">हे स्थान परवानगीसह सर्व अ‍ॅप्स व वेबसाइट आणि ChromeOS ला वाय-फाय व मोबाइल नेटवर्क स्थान वापरण्याची अनुमती देते.</translation>
 <translation id="3679827876008292680">विंडोमधील मागील टॅबवर जा</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">आणखी अ‍ॅप्‍स</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड करत आहे</translation>
 <translation id="4672539464599646374">बॅटरी सेव्हर सुरू केले आहे</translation>
+<translation id="4673427585974421255">सुरू ठेवा</translation>
 <translation id="468293128311738995">तुमच्या फोनवरील अ‍ॅप्स</translation>
 <translation id="4690510401873698237">शेल्फ तळाशी आहे</translation>
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">क्विक सेटिंग्ज उघडा</translation>
 <translation id="5804651031882187592">"सिम लॉक करा" सेटिंग बंद करा</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
+<translation id="5816222150329690597">तुम्ही ब्लूटूथ बंद करता, तेव्हा "<ph name="DEVICE_NAME_1" />" "<ph name="DEVICE_NAME_2" />" आणि <ph name="DEVICE_COUNT" /> इतर डिव्हाइस Chromebook वरून डिस्कनेक्ट केली जातील.</translation>
 <translation id="5823239091726045201">वेबवर Google कार्ये</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> डाउनलोड स्कॅन करत आहे</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
 <translation id="6546062506073634094">आशय आणि इमेज पूर्वावलोकनांद्वारे इमेज शोध</translation>
+<translation id="6547795021703527064">तुम्ही ब्लूटूथ बंद करता, तेव्हा "<ph name="DEVICE_NAME" />" तुमच्या Chromebook वरून डिस्कनेक्ट केली जातील.</translation>
 <translation id="6555373427270923730">ॲड्रेस बारमध्ये वेब अ‍ॅड्रेस टाइप करा आणि त्यानंतर <ph name="MODIFIER" /><ph name="KEY" /> प्रेस करा</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 नवीन इंस्टॉल केले आहे</translation>
@@ -1660,7 +1665,7 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7659861092419699379">डेस्‍क आणि विंडो बंद केल्या आहेत</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> शी लिंक केलेल्या डिव्हाइसवर तुमचे <ph name="NAME" /> दिसेल</translation>
-<translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
+<translation id="7662283695561029522">कॉन्फिगर करण्यासाठी टॅप करा</translation>
 <translation id="7670953955701272011">Google Calendar यामध्ये ही तारीख उघडा</translation>
 <translation id="7671610481353807627">अ‍ॅप्स रंगानुसार क्रमाने लावली जातात</translation>
 <translation id="7672095158465655885"><ph name="NAME" />, <ph name="SUBTEXT" /> शी कनेक्ट केलेले</translation>

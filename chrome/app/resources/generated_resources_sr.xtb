@@ -3291,6 +3291,7 @@
 <translation id="3497560059572256875">Дели дудл логотип</translation>
 <translation id="3497915391670770295">Пошаљи на уређаје</translation>
 <translation id="3500417806337761827">Грешка при инсталацији дељене ставке. Превише SMB дељених ставки је већ инсталирано.</translation>
+<translation id="3500764001796099683">Омогући изоловане веб-апликације</translation>
 <translation id="350397915809787283">Ако немате налог, изаберите прву опцију да бисте га отворили.</translation>
 <translation id="3503995387997205657">Можете да вратите претходне апликације</translation>
 <translation id="3505100368357440862">Предлози за куповину</translation>
@@ -7166,6 +7167,7 @@
 <translation id="6551508934388063976">Команда није доступна. Притисните control-N да бисте отворили нови прозор.</translation>
 <translation id="6551606359270386381">Алатка за елипсе</translation>
 <translation id="6551612971599078809">Сајт користи USB</translation>
+<translation id="6551620030439692385">Блокирано. Временска зона је тренутно подешена на <ph name="TIMEZONE" /> и може да се ажурира само ручно.</translation>
 <translation id="6551739526055143276">Налогом управља Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> корисника</translation>
 <translation id="6555432686520421228">Уклоните све корисничке налоге и рестартујте <ph name="IDS_SHORT_PRODUCT_NAME" /> уређај да би био као нов.</translation>
@@ -7238,6 +7240,7 @@
 <translation id="6608773371844092260">Да бисте подесили отисак прста, нека дете додирне сензор за отисак прста у горњем десном углу овог <ph name="DEVICE_TYPE" /> уређаја. Подаци о отиску прста детета се безбедно чувају на овом <ph name="DEVICE_TYPE" /> уређају и увек остају на њему.</translation>
 <translation id="6609478180749378879">Подаци о пријављивању се чувају на овом уређају када изађете из режима без архивирања. Касније ћете моћи да се поново пријавите на овај веб-сајт помоћу свог уређаја.</translation>
 <translation id="6610002944194042868">Опције превода</translation>
+<translation id="6610064275805055636">Управљајте изолованим веб-апликацијама</translation>
 <translation id="6611972847767394631">Пронађите картице овде</translation>
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
 <translation id="6613267708691765962">Тражи се малвер...</translation>
@@ -8602,6 +8605,7 @@
 <translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> жели да скенира са уређаја <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Одаберите који уређај има приступни кôд за апликацију <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, на страници <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Блокирано. Распоред је тренутно подешен на <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> и може да се ажурира само ручно.</translation>
 <translation id="7673313156293624327">Евиденције ChromeOS Shill-а (менаџер везе)</translation>
 <translation id="7674416868315480713">Деактивирај све портове који се прослеђују у Linux-у</translation>
 <translation id="7674537509496907005">Апликација: <ph name="APP_COUNT" /></translation>
@@ -9535,6 +9539,7 @@
 <translation id="8376384591331888629">Укључујући колачиће трећих страна на овом сајту</translation>
 <translation id="8376451933628734023">Ако ова веб-апликација покушава да вас превари да је нека друга апликација, деинсталирајте је.</translation>
 <translation id="8376532149031784008">Поново се учитава <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Додаци које је инсталирао администратор и даље могу да читају и мењају овај сајт</translation>
 <translation id="8376752431516546391">Бочна табла Google претраге</translation>
 <translation id="8377625247046155446">Овај приступни кôд ће се сачувати само на овом уређају. Он ће остати на овом уређају када затворите све прозоре без архивирања.</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>

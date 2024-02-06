@@ -204,6 +204,7 @@
 
 רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
+<translation id="6433172051771630690">‏טיפים שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="6502321914804101924">‏יצאת מהחשבון ב-Chromium</translation>
 <translation id="6563921047760808519">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chromium<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">‏עכשיו יש ב-Chromium תמיכה במדיניות משתמש בחשבון המנוהל שלך</translation>
@@ -256,6 +257,7 @@
 <translation id="7990085102929105708">‏אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chromium לא תסונכרן.
 
 רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">‏כדי לקבל טיפים מועילים ל-Chromium, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="7995166854192397899">‏ההצעות מבוססות על פעילות הגלישה במכשירים האחרים שלך. כדי לקבל הצעות, צריך להיכנס ל-Chromium בכל המכשירים.</translation>
 <translation id="800195749539500647">‏איך ליהנות מהמיטב של Chromium</translation>
 <translation id="8013573822802650211">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון בכל המכשירים</translation>

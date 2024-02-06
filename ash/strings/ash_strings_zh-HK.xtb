@@ -26,6 +26,7 @@
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，午安：</translation>
 <translation id="1088231044944504242">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容，可使用方向鍵瀏覽應用程式。</translation>
 <translation id="1093645050124056515">Ctrl 鍵 + Alt 鍵 + 向下箭咀鍵</translation>
+<translation id="1094756674036064790">要關閉藍牙嗎？</translation>
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
@@ -607,11 +608,11 @@
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連接 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">捷徑列中的應用程式</translation>
-<translation id="3537350467437346467">你查看過這個項目</translation>
+<translation id="3537350467437346467">你已查看</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3540893133818942399">取消設定查看手機最近的相片和媒體</translation>
 <translation id="3542066395059568317">系統會顯示建議，讓您繼續使用上次開啟的內容。只要在建議上按一下右鍵即可移除。</translation>
-<translation id="3547318469722231257">你修改過這個項目</translation>
+<translation id="3547318469722231257">你已修改</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏 Developer Tools 面板</translation>
 <translation id="3554637740840164787">已經將<ph name="ITEM_TITLE" />置頂</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">將「<ph name="FEATURE_NAME" />」功能切換為是否向附近的所有裝置顯示</translation>
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑動即可隱藏浮動視窗</translation>
+<translation id="3673898235958558034">關閉藍牙後，「<ph name="DEVICE_NAME_1" />」和「<ph name="DEVICE_NAME_2" />」將會與 Chromebook 中斷連線。</translation>
 <translation id="367531336287639526">選取網址列左方的第一個圖示</translation>
 <translation id="3677931086890821290">此操作會允許所有獲得位置權限的應用程式和網站和 ChromeOS 使用 Wi-Fi 和流動網絡位置。</translation>
 <translation id="3679827876008292680">前往視窗中的最後一個分頁</translation>
@@ -703,7 +705,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
-<translation id="3882323608730650973">修改過</translation>
+<translation id="3882323608730650973">已修改</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -897,7 +899,7 @@
 <translation id="4582666543382004902">已關閉熱點以使用 Wi-Fi。如要使用熱點，請關閉 Wi-Fi。</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
-<translation id="4596442969149038771"><ph name="USER" /> 分享了這個項目</translation>
+<translation id="4596442969149038771"><ph name="USER" />已分享</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="462160925400706389">已連結 <ph name="NAME" /></translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">已開啟「慳電模式」</translation>
+<translation id="4673427585974421255">保持開啟</translation>
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
@@ -1214,6 +1217,7 @@
 <translation id="5802516411616338943">開啟「快速設定」</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">關閉藍牙後，「<ph name="DEVICE_NAME_1" />」、「<ph name="DEVICE_NAME_2" />」和 <ph name="DEVICE_COUNT" /> 部其他裝置將會與 Chromebook 中斷連線。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
@@ -1394,6 +1398,7 @@
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">按內容和圖片預覽搜尋圖片</translation>
+<translation id="6547795021703527064">關閉藍牙後，「<ph name="DEVICE_NAME" />」將會與 Chromebook 中斷連線。</translation>
 <translation id="6555373427270923730">在網址列中輸入網址，然後按 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559976592393364813">詢問管理員</translation>
@@ -2039,7 +2044,7 @@
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請騰出空間。</translation>
 <translation id="954520015070501466">30 分鐘</translation>
-<translation id="954786879461589145"><ph name="USER" />修改過這個項目</translation>
+<translation id="954786879461589145"><ph name="USER" />已修改</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>

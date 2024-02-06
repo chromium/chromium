@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique sua conexão de rede ou tente carregar novamente.</translation>
 <translation id="1751249301761991853">Pessoal</translation>
 <translation id="1753496554272155572">Sair da visualização do plano de fundo</translation>
+<translation id="1754578112426924640">Botão "Editar" para o atalho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnóstico</translation>
 <translation id="175763766237925754">Bom (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">O Android não está funcionando</translation>
 <translation id="551689408806449779">O dispositivo foi desconectado. Reconecte-se para testar</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">bloqueada</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Mudar automaticamente para o tema escuro ao anoitecer</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Botão "Editar" para o atalho <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Atualizar o <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativada</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os arquivos foram digitalizados e salvos em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Botão "Excluir" para o atalho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Arquivo não encontrado</translation>
 <translation id="593880865674747800">Criar mais conteúdo nesse estilo</translation>
 <translation id="5939518447894949180">Redefinir</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Falha em resoluções de DNS</translation>
 <translation id="6768237774506518020">Taxa elevada de erro de resolução de DNS</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
+<translation id="6796229976413584781">Atalho excluído</translation>
 <translation id="6798678288485555829">Navegação de texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
+<translation id="7233782086689993269">Atalho restaurado</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
 <translation id="7271932918253517778">O atalho com as teclas da primeira fileira precisa incluir a tecla <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Latência de HTTPS alta</translation>
 <translation id="7656388927906093505">Este dispositivo é um mouse.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Mudar o avatar</translation>
 <translation id="7683228889864052081">matiz do teclado</translation>
 <translation id="7690294790491645610">Confirmar nova senha</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">luz do teclado</translation>
 <translation id="7730077286107534951">Talvez alguns dados sobre a conta e o sistema sejam enviados ao Google. Usamos essas informações para ajudar a solucionar problemas técnicos e aprimorar nossos serviços, conforme nossa <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e nossos <ph name="BEGIN_LINK3" />Termos de Serviço<ph name="END_LINK3" />. Para pedir mudanças no conteúdo, acesse a página de <ph name="BEGIN_LINK1" />Ajuda jurídica<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Contagem de ciclos</translation>
+<translation id="7746357909584236306">editável</translation>
 <translation id="7747039790905080783">Chave pré-compartilhada</translation>
 <translation id="7752963721013053477">Do amanhecer à escuridão (exclusivo)</translation>
 <translation id="7762130827864645708">Senha modificada. De agora em diante, use a nova senha.</translation>

@@ -204,6 +204,7 @@ Aspectes que cal tenir en compte:
 
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
+<translation id="6433172051771630690">Consells per treure el màxim partit de Chromium.</translation>
 <translation id="6502321914804101924">S'ha tancat la sessió de Chromium</translation>
 <translation id="6563921047760808519">Més informació sobre <ph name="BEGIN_LINK" />com Chromium manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium ara admet polítiques dels usuaris per al compte gestionat</translation>
@@ -256,6 +257,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7990085102929105708">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chromium no se sincronitzarà.
 
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Per rebre consells útils sobre Chromium, activa les notificacions a la configuració d'iOS.</translation>
 <translation id="7995166854192397899">Els suggeriments es basen en la teva activitat de navegació als altres dispositius que fas servir. Per rebre suggeriments, inicia la sessió a Chromium en tots els teus dispositius.</translation>
 <translation id="800195749539500647">Treu el màxim profit de Chromium</translation>
 <translation id="8013573822802650211">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió en tots els dispositius</translation>

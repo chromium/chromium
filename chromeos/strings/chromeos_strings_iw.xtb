@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">לא ניתן היה לטעון את התמונות. כדאי לבדוק את החיבור לרשת או לנסות לטעון את התמונות שוב.</translation>
 <translation id="1751249301761991853">התאמה אישית</translation>
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
+<translation id="1754578112426924640">לחצן לעריכת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
 <translation id="175763766237925754">טוב (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">‏מערכת Android לא פועלת</translation>
 <translation id="551689408806449779">המכשיר נותק. כדי לבצע את הבדיקה, יש לחבר את המכשיר מחדש.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">נעולה</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">מעבר אוטומטי לעיצוב כהה בשקיעה</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">לחצן לעריכת מקש הקיצור <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">בינוני</translation>
 <translation id="5757187557809630523">הטראק הבא</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">לחצן למחיקת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="593880865674747800">יצירת טפטים נוספים בסגנון הזה</translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
+<translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
+<translation id="7233782086689993269">מקש הקיצור שוחזר</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7271932918253517778">מקש קיצור עם מקשים בשורה העליונה צריך לכלול את המקש '<ph name="META_KEY" />'.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />,‏ <ph name="ACCELERATOR_INFO" />,‏ <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">החלפת הדמות</translation>
 <translation id="7683228889864052081">כוונון הגוון במקלדת</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">תאורה במקלדת</translation>
 <translation id="7730077286107534951">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו. כדי לבקש שינויים בתוכן, צריך לעבור אל <ph name="BEGIN_LINK1" />העזרה המשפטית<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
+<translation id="7746357909584236306">ניתנת לעריכה</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
 <translation id="7752963721013053477">מעלות השחר עד לרדת החושך – בלעדי</translation>
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>

@@ -1717,6 +1717,7 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法辨識你的指紋，請再試一次。</translation>
 <translation id="2287617382468007324">列印 IPP 位址</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{為保護你的資料，系統已將權限從近期未造訪的網站中移除}other{為保護你的資料，系統已將權限從近期未造訪的網站中移除}}</translation>
 <translation id="2287944065963043964">登入畫面</translation>
 <translation id="2290615375132886363">平板電腦瀏覽按鈕</translation>
 <translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
@@ -3293,6 +3294,7 @@
 <translation id="3497560059572256875">分享 Doodle</translation>
 <translation id="3497915391670770295">傳送到你的裝置(&amp;D)</translation>
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
+<translation id="3500764001796099683">啟用隔離網頁應用程式</translation>
 <translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
 <translation id="3503995387997205657">你可以還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
@@ -4300,6 +4302,7 @@
 <translation id="4275788652681621337">關閉側邊面板</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="4278390842282768270">允許</translation>
 <translation id="4278498748067682896">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="4278779213160967034">這項程序可能需要幾分鐘才能完成。正在下載檔案。</translation>
@@ -7163,6 +7166,7 @@
 <translation id="6551508934388063976">無法使用指令。按下 Ctrl + N 鍵可開啟新視窗。</translation>
 <translation id="6551606359270386381">橢圓形工具</translation>
 <translation id="6551612971599078809">網站正在使用 USB 裝置</translation>
+<translation id="6551620030439692385">系統已封鎖這項功能。時區目前設為「<ph name="TIMEZONE" />」，只能手動更新。</translation>
 <translation id="6551739526055143276">由 Family Link 管理</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位使用者</translation>
 <translation id="6555432686520421228">移除所有使用者帳戶，並將你的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設為原廠狀態。</translation>
@@ -7231,6 +7235,7 @@
 <translation id="6608773371844092260">如要設定指紋，請讓孩子輕觸這部「<ph name="DEVICE_TYPE" />」右側的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="6609478180749378879">系統會在無痕模式結束後將登入資料儲存在這部裝置上。你可以再次透過這部裝置登入這個網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
+<translation id="6610064275805055636">管理隔離網頁應用程式</translation>
 <translation id="6611972847767394631">你可以在這裡找到已開啟的分頁</translation>
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
@@ -8595,6 +8600,7 @@
 <translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="SCANNER_NAME" />」掃描。</translation>
 <translation id="7672504401554182757">選擇哪一部裝置有「<ph name="APP_NAME" />」的密碼金鑰</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (在「<ph name="PAGE_TITLE" />」中)。</translation>
+<translation id="7672726198839739113">系統已封鎖這項功能。時刻表目前設為<ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />，只能手動更新。</translation>
 <translation id="7673313156293624327">ChromeOS Shill (連線管理員) 記錄</translation>
 <translation id="7674416868315480713">停用所有在 Linux 中轉接的連接埠</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個應用程式</translation>
@@ -9528,6 +9534,7 @@
 <translation id="8376384591331888629">包括這個網站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果這個網頁應用程式企圖讓你誤認為其他應用程式，請解除安裝。</translation>
 <translation id="8376532149031784008">正在重新載入 <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">系統管理員安裝的擴充功能仍可讀取及變更這個網站</translation>
 <translation id="8376752431516546391">Google 搜尋側邊面板</translation>
 <translation id="8377625247046155446">這個密碼金鑰只會儲存在這部裝置中。關閉所有無痕視窗後，密碼金鑰會保存在這部裝置上。</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>

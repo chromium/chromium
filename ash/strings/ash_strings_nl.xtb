@@ -26,6 +26,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1087110696012418426">Goedemiddag <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps… Gebruik de pijltoetsen om door je apps te navigeren.</translation>
 <translation id="1093645050124056515">ctrl + alt + pijl-omlaag</translation>
+<translation id="1094756674036064790">Bluetooth uitzetten?</translation>
 <translation id="109942774857561566">Ik verveel me</translation>
 <translation id="1104084341931202936">Toegankelijkheidsinstellingen bekijken</translation>
 <translation id="1104621072296271835">Je apparaten werken samen nog beter</translation>
@@ -660,6 +661,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3660860940251915011">Hoge zichtbaarheid voor <ph name="FEATURE_NAME" /> aan-/uitzetten</translation>
 <translation id="366222428570480733">Beheerde gebruiker <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Swipe om het zwevende venster te verbergen</translation>
+<translation id="3673898235958558034">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_NAME_1" /> en <ph name="DEVICE_NAME_2" /> met je Chromebook verbroken.</translation>
 <translation id="367531336287639526">Het eerste icoon links van de adresbalk selecteren</translation>
 <translation id="3677931086890821290">Hiermee kunnen alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="3679827876008292680">Naar het laatste tabblad in het venster gaan</translation>
@@ -915,6 +917,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4666911709726371538">Meer apps</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> downloaden</translation>
 <translation id="4672539464599646374">Batterijbesparing staat aan</translation>
+<translation id="4673427585974421255">Aan laten</translation>
 <translation id="468293128311738995">Apps op je telefoon</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
@@ -1215,6 +1218,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5802516411616338943">Snelle instellingen openen</translation>
 <translation id="5804651031882187592">De instelling Simkaart vergrendelen uitzetten</translation>
 <translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te activeren</translation>
+<translation id="5816222150329690597">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> en <ph name="DEVICE_COUNT" /> andere apparaten met je Chromebook verbroken.</translation>
 <translation id="5823239091726045201">Google Tasks op het web</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
@@ -1395,6 +1399,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> scannen voor downloaden</translation>
 <translation id="6542521951477560771">Er wordt gecast naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Afbeeldingen zoeken op basis van content en afbeeldingsvoorbeelden</translation>
+<translation id="6547795021703527064">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_NAME" /> met je Chromebook verbroken.</translation>
 <translation id="6555373427270923730">Typ een webadres in de adresbalk en druk dan op <ph name="MODIFIER" /> en <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nieuwe installatie</translation>

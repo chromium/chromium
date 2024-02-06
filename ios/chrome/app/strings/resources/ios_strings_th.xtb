@@ -575,6 +575,7 @@
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3968505803272650567">จัดการความสนใจ</translation>
 <translation id="3989635538409502728">ออกจากระบบ</translation>
+<translation id="3994422733891749358">เลือกการแจ้งเตือนที่ต้องการรับ</translation>
 <translation id="3995521777587992544">แถบความคืบหน้าการโหลดหน้าเว็บ โหลดแล้ว <ph name="EMAIL" /></translation>
 <translation id="3997522473364371632">ผู้ดูแลระบบปิดใช้การแชร์รหัสผ่าน</translation>
 <translation id="4002019827078931033">ย้ายแถบที่อยู่ไปยังด้านบน</translation>
@@ -684,6 +685,7 @@
 <translation id="4592368184551360546">แป้นพิมพ์</translation>
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606247758155004938">องค์กรของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
+<translation id="4607887340472970274">การติดตามราคา</translation>
 <translation id="4611811151908969241">ซ่อน "เลิกติดตาม <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">กำลังค้นหาด้วย Google</translation>
 <translation id="4616391354457235490">เลิกทำ</translation>
@@ -724,6 +726,7 @@
 <translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="4803185665210547709">จัดการโดยองค์กร
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">ข่าวและเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="4805759445554688327">หมายเลขบัตรไม่ถูกต้อง</translation>
 <translation id="4808646838864186379">ยกเลิกการนำส่งแล้ว</translation>
 <translation id="4808744395915275922">อัปเดต</translation>
@@ -1238,6 +1241,7 @@
 <translation id="7409985198648820906">บทความที่ยังไม่ได้อ่าน <ph name="UNREAD_COUNT" /> รายการ</translation>
 <translation id="7412027924265291969">ดำเนินการต่อ</translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
+<translation id="7417689656810783109">เปลี่ยนชื่อกลุ่ม</translation>
 <translation id="7418640008860669073">บันทึกใน...</translation>
 <translation id="7425346204213733349">การเปลี่ยนแปลงบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google ของคุณอีกต่อไป อย่างไรก็ตาม ข้อมูลที่คุณมีจะยังคงจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
@@ -1412,8 +1416,10 @@
 <translation id="8273982424131314219">คุณจะกรอกข้อมูลลงใน <ph name="URL" /></translation>
 <translation id="8281781826761538115">ค่าเริ่มต้น - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ข้าม</translation>
+<translation id="828291969289324795">{count,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="8283172974887967105">ตั้งค่า…</translation>
 <translation id="8286036467436129157">ลงชื่อเข้าใช้</translation>
+<translation id="8292843446079898078">รับการแจ้งเตือนเมื่อราคาผลิตภัณฑ์ที่ติดตามต่ำลง</translation>
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8311853334103696030">ซ่อน "ติดตามราคา"</translation>
@@ -1421,6 +1427,7 @@
 <translation id="8328777765163860529">ปิดทั้งหมด</translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="834783239627985533">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
+<translation id="8358401059263985056">เปิดการแจ้งเตือน</translation>
 <translation id="8364841868226993049">กำลังบันทึกรูปภาพใน Google Photos สำหรับ <ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">ไปที่การตั้งค่า...</translation>
 <translation id="8374977641764177587">เปิดการแจ้งเตือนไหม</translation>

@@ -76,7 +76,9 @@ Bularni hisobga olish kerak:
 <translation id="2689064829982324496">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chrome brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="2702250627063295552">Saqlangan sahifalar bandini Chromeʼa qoʻshish</translation>
+<translation id="2703746758996815929">Chrome haqida tavsiyalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
 <translation id="2736805085127235148">Chrome bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
+<translation id="2750626042242931740">Tanlovlarni istalgan vaqt Chrome sozlamalari orqali yangilash mumkin.</translation>
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2789947168960170215">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Chrome brauzer maʼlumotlarini tozalash</translation>
@@ -298,6 +300,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
+<translation id="8874688701962049679">Chromedan unumli foydalanish maslahatlari.</translation>
 <translation id="8891935667620843985">Saytlar Chrome brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya.</translation>
 <translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="8949681853939555434">Chromeni asosiy brauzer deb belgilang</translation>

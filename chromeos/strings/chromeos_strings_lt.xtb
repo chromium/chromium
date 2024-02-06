@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Nepavyko įkelti vaizdų. Patikrinkite tinklo ryšį arba pabandykite dar kartą įkelti vaizdus.</translation>
 <translation id="1751249301761991853">Suasmeninimas</translation>
 <translation id="1753496554272155572">Išeiti iš ekrano fono peržiūros</translation>
+<translation id="1754578112426924640">„<ph name="ACCELERATOR_INFO" />“ redagavimo mygtukas.</translation>
 <translation id="1755556344721611131">Diagnostikos programa</translation>
 <translation id="175763766237925754">Geras (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">„Android“ neveikia</translation>
 <translation id="551689408806449779">Įrenginys atjungtas. Bandykite prisijungti dar kartą ir išbandykite</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">užrakinta</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatiškai perjungti į tamsiąją temą saulei leidžiantis</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5703716265115423771">garsumo mažinimas</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> iš <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">„<ph name="SHORTCUT_DESCRIPTION" />“ redagavimo mygtukas.</translation>
 <translation id="5733298426544876109">Atnaujinti „<ph name="DEVICE_NAME" />“</translation>
 <translation id="574392208103952083">Vidutinis</translation>
 <translation id="5757187557809630523">kitas takelis</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">„<ph name="ACCELERATOR_INFO" />“ ištrynimo mygtukas.</translation>
 <translation id="5931523347251946569">Failas nerastas</translation>
 <translation id="593880865674747800">Kurkite daugiau šiuo stiliumi</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6791471867139427246">klaviatūros šviesos spalva</translation>
+<translation id="6796229976413584781">Spartusis klavišas ištrintas</translation>
 <translation id="6798678288485555829">Teksto naršymas</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Tvarkyti tinklo APN nustatymus. APN užmezga ryšį tarp mobiliojo ryšio tinklo ir interneto. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
+<translation id="7233782086689993269">Spartusis klavišas atkurtas</translation>
 <translation id="725133483556299729">El. pašto adreso pasirinkimas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7271932918253517778">Į spartųjį klavišą su viršutinės eilutės klavišais turi būti įtrauktas klavišas „<ph name="META_KEY" />“.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7656388927906093505">Įrenginys yra pelė.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Keisti pseudoportretą</translation>
 <translation id="7683228889864052081">klaviatūros atspalvis</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">klaviatūros lemputė</translation>
 <translation id="7730077286107534951">Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta į sistemą „Google“. Šią informaciją naudojame spręsdami technines problemas ir tobulindami paslaugas pagal mūsų <ph name="BEGIN_LINK2" />privatumo politiką<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />paslaugų teikimo sąlygas<ph name="END_LINK3" />. Jei norite pateikti turinio pakeitimų užklausą, eikite į <ph name="BEGIN_LINK1" />teisinės pagalbos puslapį<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Ciklų skaičius</translation>
+<translation id="7746357909584236306">redaguotina</translation>
 <translation id="7747039790905080783">Paruoštas bendrinti raktas</translation>
 <translation id="7752963721013053477">Nuo aušros iki sutemų – išskirtinis</translation>
 <translation id="7762130827864645708">Slaptažodis sėkmingai pakeistas. Nuo šiol naudokite naują slaptažodį.</translation>

@@ -75,6 +75,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="2689064829982324496">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="2702250627063295552">Tambahkan Item Daftar Bacaan ke Chrome</translation>
+<translation id="2703746758996815929">Untuk mendapatkan tips Chrome yang berguna, aktifkan notifikasi di setelan iOS.</translation>
 <translation id="2736805085127235148">Notifikasi Chrome saat ini dinonaktifkan di setelan perangkat.</translation>
 <translation id="2767464022270041271">Tidak ada sandi tersimpan. Pengelola Sandi Google dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="2789947168960170215">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="8865415417596392024">Data Chrome di akun Anda</translation>
+<translation id="8874688701962049679">Tips untuk mengoptimalkan penggunaan Chrome.</translation>
 <translation id="8891935667620843985">Anda dapat membuka link di Chrome secara otomatis dengan menjadikan Chrome sebagai Aplikasi Browser Default Anda.</translation>
 <translation id="8897749957032330183">Sandi disimpan ke Pengelola Sandi Google di perangkat ini.</translation>
 <translation id="8949681853939555434">Setel Chrome sebagai Browser Default Anda</translation>

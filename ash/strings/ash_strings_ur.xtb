@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">سہ پہر بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="1088231044944504242">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں۔ اپنی ایپس کو نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدیں استعمال کریں۔</translation>
 <translation id="1093645050124056515">‏ctrl + alt + نیچے تیر کا نشان</translation>
+<translation id="1094756674036064790">بلوٹوتھ آف کریں؟</translation>
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> کی اعلی مرئیت کو ٹوگل کریں</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3666266999138159418">فلوٹنگ ونڈو کو چھپانے کے لیے سوائپ کریں</translation>
+<translation id="3673898235958558034">‏بلوٹوتھ آف کرنے پر "<ph name="DEVICE_NAME_1" />" اور "<ph name="DEVICE_NAME_2" />" آپ کی Chromebook سے غیر منسلک ہو جائیں گے۔</translation>
 <translation id="367531336287639526">ایڈریس بار کے بائیں جانب موجود پہلے آئیکن کو منتخب کریں</translation>
 <translation id="3677931086890821290">‏اس سے سبھی ایپس اور ویب سائٹس کو مقام کی اجازت اور ChromeOS کے ساتھ Wi-Fi اور موبائل نیٹ ورکس کا مقام استعمال کرنے کی اجازت ملتی ہے۔</translation>
 <translation id="3679827876008292680">ونڈو میں آخری ٹیب پر جائیں</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4672539464599646374">بیٹری سیور کو آن کیا گیا</translation>
+<translation id="4673427585974421255">آن رکھیں</translation>
 <translation id="468293128311738995">آپ کے فون سے ایپس</translation>
 <translation id="4690510401873698237">شیلف نچلے حصے میں ہے</translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">فوری ترتیبات کھولیں</translation>
 <translation id="5804651031882187592">‏"SIM کو مقفل کریں" کی ترتیب آف کریں</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
+<translation id="5816222150329690597">‏بلوٹوتھ آف کرنے پر "<ph name="DEVICE_NAME_1" />" اور "<ph name="DEVICE_NAME_2" />" اور <ph name="DEVICE_COUNT" /> آلات آپ کی Chromebook سے غیر منسلک ہو جائیں گے۔</translation>
 <translation id="5823239091726045201">‏ویب پر Google ٹاسکس</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">اسکین ہونے والی <ph name="FILENAME" /> کو ڈاؤن لوڈ کریں</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="6546062506073634094">مواد اور تصویر کے پیش منظر کے لحاظ سے 'تصاویر کا استعمال کر کے تلاش'</translation>
+<translation id="6547795021703527064">‏بلوٹوتھ آف کرنے پر "<ph name="DEVICE_NAME" />" آپ کی Chromebook سے غیر منسلک ہو جائے گا۔</translation>
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559976592393364813">منتظم سے پوچھیں</translation>

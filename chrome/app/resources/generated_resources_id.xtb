@@ -3308,6 +3308,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3497560059572256875">Bagikan Doodle</translation>
 <translation id="3497915391670770295">Kirim ke &amp;Perangkat Anda</translation>
 <translation id="3500417806337761827">Error saat memasang fitur berbagi SMB. Terlalu banyak fitur berbagi SMB yang telah terpasang.</translation>
+<translation id="3500764001796099683">Aktifkan aplikasi web terisolasi</translation>
 <translation id="350397915809787283">Jika Anda belum memiliki akun, pilih opsi pertama untuk membuat akun.</translation>
 <translation id="3503995387997205657">Anda dapat memulihkan aplikasi sebelumnya</translation>
 <translation id="3505100368357440862">Saran belanja</translation>
@@ -7184,6 +7185,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6551508934388063976">Perintah tidak tersedia. Tekan Control-N untuk membuka jendela baru.</translation>
 <translation id="6551606359270386381">Alat Elips</translation>
 <translation id="6551612971599078809">Situs menggunakan USB</translation>
+<translation id="6551620030439692385">Diblokir. Zona waktu saat ini disetel ke <ph name="TIMEZONE" /> dan hanya dapat diperbarui secara manual.</translation>
 <translation id="6551739526055143276">Dikelola oleh Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> pengguna</translation>
 <translation id="6555432686520421228">Hapus semua akun pengguna dan reset perangkat <ph name="IDS_SHORT_PRODUCT_NAME" /> Anda agar menjadi seperti baru.</translation>
@@ -7252,6 +7254,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6608773371844092260">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" /> ini. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6609478180749378879">Data login akan disimpan di perangkat ini setelah Anda keluar dari mode Samaran. Anda dapat login ke situs ini dengan perangkat Anda lagi nanti.</translation>
 <translation id="6610002944194042868">Opsi Terjemahan</translation>
+<translation id="6610064275805055636">Kelola aplikasi web terisolasi</translation>
 <translation id="6611972847767394631">Temukan tab Anda di sini</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
 <translation id="6613267708691765962">Memindai malware...</translation>
@@ -8615,6 +8618,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" ingin memindai dari "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Pilih perangkat yang memiliki kunci sandi untuk <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, di <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Diblokir. Jadwal saat ini disetel ke <ph name="SUNRISE_TIME" /> — <ph name="SUNSET_TIME" /> dan hanya dapat diperbarui secara manual.</translation>
 <translation id="7673313156293624327">Log Shill (Pengelola Koneksi) ChromeOS</translation>
 <translation id="7674416868315480713">Nonaktifkan semua port yang diteruskan di Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikasi</translation>
@@ -9548,6 +9552,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8376384591331888629">Menyertakan cookie pihak ketiga di situs ini</translation>
 <translation id="8376451933628734023">Uninstal aplikasi web ini jika mencoba mengelabui Anda agar berpikir bahwa ini adalah aplikasi yang berbeda.</translation>
 <translation id="8376532149031784008">Memuat ulang <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Ekstensi yang diinstal oleh administrator masih dapat membaca dan mengubah situs ini</translation>
 <translation id="8376752431516546391">Panel samping Google Penelusuran</translation>
 <translation id="8377625247046155446">Kunci sandi ini hanya akan disimpan di perangkat ini. Kunci akan tetap ada di perangkat ini setelah Anda menutup semua jendela Samaran.</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>

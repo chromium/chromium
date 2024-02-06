@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Tidak dapat memuat foto. Periksa koneksi jaringan Anda atau coba muat foto lagi.</translation>
 <translation id="1751249301761991853">Pribadi</translation>
 <translation id="1753496554272155572">Keluar dari pratinjau wallpaper</translation>
+<translation id="1754578112426924640">Tombol edit untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikasi Diagnostik</translation>
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="551689408806449779">Perangkat telah terputus. Coba hubungkan kembali untuk melakukan pengujian</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">terkunci</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Otomatis beralih ke tema gelap saat matahari terbenam</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5703716265115423771">menurunkan volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Tombol edit untuk <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Sedang</translation>
 <translation id="5757187557809630523">lagu berikutnya</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Terlarang</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Tombol hapus untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
 <translation id="593880865674747800">Buat lebih banyak wallpaper dengan gaya ini</translation>
 <translation id="5939518447894949180">Reset</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
+<translation id="6796229976413584781">Pintasan dihapus</translation>
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Update firmware untuk perangkat eksternal</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
+<translation id="7233782086689993269">Pintasan dipulihkan</translation>
 <translation id="725133483556299729">Pilih email</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan tombol baris atas harus menyertakan tombol <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="7656388927906093505">Perangkat adalah mouse.</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>
 <translation id="7683228889864052081">hue keyboard</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">lampu keyboard</translation>
 <translation id="7730077286107534951">Beberapa informasi akun dan sistem dapat dikirimkan ke Google. Kami menggunakan informasi ini untuk membantu mengatasi masalah teknis dan meningkatkan kualitas layanan kami, sesuai dengan <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami. Untuk meminta perubahan konten, buka <ph name="BEGIN_LINK1" />Bantuan Hukum<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Jumlah siklus</translation>
+<translation id="7746357909584236306">dapat diedit</translation>
 <translation id="7747039790905080783">Kunci yang dibagikan sebelumnya</translation>
 <translation id="7752963721013053477">Dawn to dark - eksklusif</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>

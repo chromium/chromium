@@ -26,6 +26,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1087110696012418426">Tere päevast, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud. Kasutage rakenduste vahel navigeerimiseks nooleklahve.</translation>
 <translation id="1093645050124056515">ctrl + alt + allanool</translation>
+<translation id="1094756674036064790">Kas lülitada Bluetooth välja?</translation>
 <translation id="109942774857561566">Mul on igav</translation>
 <translation id="1104084341931202936">Kuvab juurdepääsetavuse seaded</translation>
 <translation id="1104621072296271835">Teie seadmed töötavad koos veelgi paremini</translation>
@@ -660,6 +661,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3660860940251915011">Lülitage funktsiooni <ph name="FEATURE_NAME" /> hea nähtavuse režiim sisse/välja</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
 <translation id="3666266999138159418">Pühkige ujuva akna peitmiseks</translation>
+<translation id="3673898235958558034">Kui lülitate Bluetoothi välja, katkestavad „<ph name="DEVICE_NAME_1" />” ja „<ph name="DEVICE_NAME_2" />” ühenduse teie Chromebookiga.</translation>
 <translation id="367531336287639526">Vali aadressiribast vasakul esimene ikoon</translation>
 <translation id="3677931086890821290">See võimaldab kõigil asukohale juurdepääsu loaga rakendustel ja veebisaitidel ning ChromeOS-il kasutada WiFi- ja mobiilsidevõrkude asukohta.</translation>
 <translation id="3679827876008292680">Aknas viimasele vahelehele liikumine</translation>
@@ -916,6 +918,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4666911709726371538">Rohkem rakendusi</translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="4672539464599646374">Akusäästja on sisse lülitatud</translation>
+<translation id="4673427585974421255">Jäta sisselülitatuks</translation>
 <translation id="468293128311738995">Rakendused teie telefonist</translation>
 <translation id="4690510401873698237">Riiul asub allpool</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
@@ -1216,6 +1219,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5802516411616338943">Ava kiirseaded</translation>
 <translation id="5804651031882187592">Lülitage seade „SIM-i lukustamine“ välja</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
+<translation id="5816222150329690597">Kui lülitate Bluetoothi välja, katkestavad „<ph name="DEVICE_NAME_1" />”, „<ph name="DEVICE_NAME_2" />” ja veel <ph name="DEVICE_COUNT" /> seadet ühenduse teie Chromebookiga.</translation>
 <translation id="5823239091726045201">Google Tasks veebis</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
@@ -1396,6 +1400,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6539852571005954999">Allalaaditava faili <ph name="FILENAME" /> skannimine</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Pildiotsing sisu ja piltide eelvaadete järgi</translation>
+<translation id="6547795021703527064">Kui lülitate Bluetoothi välja, katkestab „<ph name="DEVICE_NAME" />” ühenduse teie Chromebookiga.</translation>
 <translation id="6555373427270923730">Sisestage veebiaadress aadressiribale ja vajutage klahvikombinatsiooni <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Uus installimine</translation>

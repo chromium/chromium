@@ -26,6 +26,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1087110696012418426">Good afternoon <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Search your <ph name="CATEGORY" />, files, apps and more. Use the arrow keys to navigate your apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + down arrow</translation>
+<translation id="1094756674036064790">Turn off Bluetooth?</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
@@ -660,6 +661,7 @@ Connect your device to power.</translation>
 <translation id="3660860940251915011">Toggle <ph name="FEATURE_NAME" /> high visibility</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
 <translation id="3666266999138159418">Swipe to hide your floating window</translation>
+<translation id="3673898235958558034">When you turn off Bluetooth, '<ph name="DEVICE_NAME_1" />' and '<ph name="DEVICE_NAME_2" />' will disconnect from your Chromebook.</translation>
 <translation id="367531336287639526">Select first icon to the left of address bar</translation>
 <translation id="3677931086890821290">This allows all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="3679827876008292680">Go to last tab in window</translation>
@@ -915,6 +917,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Battery Saver turned on</translation>
+<translation id="4673427585974421255">Keep on</translation>
 <translation id="468293128311738995">Apps from your phone</translation>
 <translation id="4690510401873698237">Shelf on bottom</translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
@@ -1215,6 +1218,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5802516411616338943">Open Quick Settings</translation>
 <translation id="5804651031882187592">Turn off 'Lock SIM' setting</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">When you turn off Bluetooth, '<ph name="DEVICE_NAME_1" />', '<ph name="DEVICE_NAME_2" />' and <ph name="DEVICE_COUNT" /> other devices will disconnect from your Chromebook.</translation>
 <translation id="5823239091726045201">Google tasks on web</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Image search by content and image previews</translation>
+<translation id="6547795021703527064">When you turn off Bluetooth, '<ph name="DEVICE_NAME" />' will disconnect from your Chromebook.</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 New install</translation>

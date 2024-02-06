@@ -204,6 +204,7 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
+<translation id="6433172051771630690">Saveti kako da na najbolji način koristite Chromium.</translation>
 <translation id="6502321914804101924">Chromium je odjavljen</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost podataka<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium sada podržava smernice za korisnika za upravljani nalog</translation>
@@ -256,6 +257,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7990085102929105708">Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chromium-a se neće sinhronizovati.
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Da biste dobijali korisne savete za Chromium, uključite obaveštenja u podešavanjima iOS-a.</translation>
 <translation id="7995166854192397899">Predlozi su zasnovani na aktivnostima pregledanja na drugim uređajima. Da biste dobijali predloge, prijavite se u Chromium na svim uređajima.</translation>
 <translation id="800195749539500647">Koristite Chromium na najbolji način</translation>
 <translation id="8013573822802650211">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se na svim uređajima</translation>

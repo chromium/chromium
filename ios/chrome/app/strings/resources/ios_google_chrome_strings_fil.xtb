@@ -75,7 +75,9 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2689064829982324496">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="2702250627063295552">Magdagdag ng Item sa Listahan ng Babasahin sa Chrome</translation>
+<translation id="2703746758996815929">Para makakuha ng mga kapaki-pakinabang na tip sa Chrome, i-on ang mga notification sa iyong mga setting ng iOS.</translation>
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
+<translation id="2750626042242931740">Puwede mong i-update ang iyong mga pinili anumang oras sa Mga Setting ng Chrome.</translation>
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2789947168960170215">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">I-clear ang Data Mula sa Pagba-browse sa Chrome</translation>
@@ -297,6 +299,7 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
+<translation id="8874688701962049679">Mga tip para masulit ang Chrome.</translation>
 <translation id="8891935667620843985">Awtomatiko mong mabubuksan ang mga link sa Chrome sa pamamagitan ng pagtatakda nito bilang iyong Default na Browser App.</translation>
 <translation id="8897749957032330183">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
 <translation id="8949681853939555434">Itakda ang Chrome bilang iyong Default na Browser</translation>

@@ -3308,6 +3308,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3497560059572256875">Share Doodle</translation>
 <translation id="3497915391670770295">Send to Your &amp;Devices</translation>
 <translation id="3500417806337761827">Error mounting share. Too many SMB shares are already mounted.</translation>
+<translation id="3500764001796099683">Enable isolated web apps</translation>
 <translation id="350397915809787283">If you don't have an account, select the first option to create one.</translation>
 <translation id="3503995387997205657">You can restore your previous apps</translation>
 <translation id="3505100368357440862">Shopping suggestions</translation>
@@ -7184,6 +7185,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6551508934388063976">Command unavailable. Press control-N to open a new window.</translation>
 <translation id="6551606359270386381">Ellipse tool</translation>
 <translation id="6551612971599078809">Site is using USB</translation>
+<translation id="6551620030439692385">Blocked. Time zone is currently set to <ph name="TIMEZONE" /> and can only be updated manually.</translation>
 <translation id="6551739526055143276">Managed by Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> users</translation>
 <translation id="6555432686520421228">Remove all user accounts and reset your <ph name="IDS_SHORT_PRODUCT_NAME" /> device to be just like new.</translation>
@@ -7252,6 +7254,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6608773371844092260">To set up fingerprint, have your child touch the fingerprint sensor at the right hand side of this <ph name="DEVICE_TYPE" />. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
 <translation id="6610002944194042868">Translate Options</translation>
+<translation id="6610064275805055636">Manage isolated web apps</translation>
 <translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6613267708691765962">Scanning for malware...</translation>
@@ -8616,6 +8619,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7671472752213333268">'<ph name="EXTENSION_NAME" />' wants to scan from '<ph name="SCANNER_NAME" />'.</translation>
 <translation id="7672504401554182757">Choose which device has the passkey for <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blocked. Schedule is currently set to <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" /> and can only be updated manually.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (Connection Manager) Logs</translation>
 <translation id="7674416868315480713">Deactivate all ports being forwarded in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
@@ -9549,6 +9553,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
 <translation id="8376451933628734023">If this web app is trying to trick you into thinking it's a different app, uninstall it.</translation>
 <translation id="8376532149031784008">Reloading <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Extensions installed by your administrator can still read and change this site</translation>
 <translation id="8376752431516546391">Google Search side panel</translation>
 <translation id="8377625247046155446">This passkey will only be saved on this device. It will remain on this device after you close all incognito windows.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>

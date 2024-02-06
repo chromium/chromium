@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">สวัสดียามบ่าย <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">ค้นหา<ph name="CATEGORY" /> ไฟล์ แอป และอื่นๆ ใช้แป้นลูกศรเพื่อไปยังส่วนต่างๆ ของแอป</translation>
 <translation id="1093645050124056515">Ctrl + Alt + ลูกศรลง</translation>
+<translation id="1094756674036064790">ปิดบลูทูธไหม</translation>
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
@@ -656,6 +657,7 @@
 <translation id="3660860940251915011">เปิด/ปิดระดับการเข้าถึงสูงของ <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ปัดเพื่อซ่อนหน้าต่างแบบลอย</translation>
+<translation id="3673898235958558034">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME_1" />" และ "<ph name="DEVICE_NAME_2" />" จะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="367531336287639526">เลือกไอคอนแรกทางด้านซ้ายของแถบที่อยู่</translation>
 <translation id="3677931086890821290">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงตำแหน่งและ ChromeOS ใช้ตำแหน่ง Wi-Fi และเครือข่ายมือถือได้</translation>
 <translation id="3679827876008292680">ไปยังแท็บสุดท้ายในหน้าต่าง</translation>
@@ -910,6 +912,7 @@
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">เปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
+<translation id="4673427585974421255">เปิดไว้</translation>
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
@@ -1210,6 +1213,7 @@
 <translation id="5802516411616338943">เปิดการตั้งค่าด่วน</translation>
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" และอุปกรณ์อื่นอีก <ph name="DEVICE_COUNT" /> เครื่องจะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
@@ -1390,6 +1394,7 @@
 <translation id="6539852571005954999">กำลังสแกน <ph name="FILENAME" /> เพื่อดาวน์โหลด</translation>
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">ค้นหารูปภาพตามเนื้อหาและตัวอย่างรูปภาพ</translation>
+<translation id="6547795021703527064">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME" />" จะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="6555373427270923730">พิมพ์ที่อยู่เว็บในแถบที่อยู่แล้วกด <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ติดตั้งใหม่</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">이미지를 로드할 수 없습니다. 네트워크 연결을 확인하거나 이미지를 다시 로드해 보세요.</translation>
 <translation id="1751249301761991853">개인</translation>
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />의 수정 버튼입니다.</translation>
 <translation id="1755556344721611131">진단 앱</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android 실행되고 있지 않음</translation>
 <translation id="551689408806449779">기기 연결이 해제되었습니다. 테스트하려면 다시 연결해 보세요.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">잠김</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">일몰 시 어두운 테마로 자동 전환</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5703716265115423771">볼륨 작게</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />의 수정 버튼입니다.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5757187557809630523">다음 트랙입니다</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" />의 삭제 버튼입니다.</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="593880865674747800">이 스타일로 더 만들기</translation>
 <translation id="5939518447894949180">초기화</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6791471867139427246">키보드 조명 색상</translation>
+<translation id="6796229976413584781">단축키가 삭제됨</translation>
 <translation id="6798678288485555829">텍스트 탐색</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">외부 기기 펌웨어 업데이트</translation>
 <translation id="7216409898977639127">이동통신사</translation>
+<translation id="7233782086689993269">단축키가 복원됨</translation>
 <translation id="725133483556299729">이메일 선택</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7271932918253517778">맨 위 행의 단축키에는 <ph name="META_KEY" /> 키가 포함되어야 합니다.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">아바타 변경</translation>
 <translation id="7683228889864052081">키보드 색조</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">키보드 조명</translation>
 <translation id="7730077286107534951">일부 계정 및 시스템 정보가 Google로 전송될 수 있습니다. 이러한 정보는 Google <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다. 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말<ph name="END_LINK1" />로 이동하세요.</translation>
 <translation id="773153675489693198">사이클 수</translation>
+<translation id="7746357909584236306">수정 가능</translation>
 <translation id="7747039790905080783">사전 공유 키</translation>
 <translation id="7752963721013053477">새벽부터 밤까지 - 전용</translation>
 <translation id="7762130827864645708">비밀번호가 변경되었습니다. 지금부터 새로운 비밀번호를 사용해 주세요.</translation>

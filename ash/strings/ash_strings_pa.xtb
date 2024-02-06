@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ। ਆਪਣੀਆਂ ਐਪਾਂ ਵਿੱਚ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ।</translation>
 <translation id="1093645050124056515">Ctrl + alt + ਹੇਠਾਂ ਤੀਰ</translation>
+<translation id="1094756674036064790">ਕੀ ਬਲੂਟੁੱਥ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">ਉੱਚ ਦਿਖਣਯੋਗਤਾ <ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="3666266999138159418">ਆਪਣੀ ਫਲੋਟਿੰਗ ਵਿੰਡੋ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="3673898235958558034">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME_1" />" ਅਤੇ "<ph name="DEVICE_NAME_2" />" ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
 <translation id="367531336287639526">ਪਤਾ ਬਾਰ ਦੇ ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਪਹਿਲੇ ਪ੍ਰਤੀਕ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="3677931086890821290">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਵਾਈ-ਫਾਈ ਅਤੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦਾ ਟਿਕਾਣਾ ਵਰਤਣ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਕੋਲ ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਅਤੇ ChromeOS ਹੈ।</translation>
 <translation id="3679827876008292680">ਵਿੰਡੋ ਵਿੱਚ ਆਖਰੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">ਹੋਰ ਐਪਾਂ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4672539464599646374">ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
+<translation id="4673427585974421255">ਚਾਲੂ ਰੱਖੋ</translation>
 <translation id="468293128311738995">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਐਪਾਂ</translation>
 <translation id="4690510401873698237">ਹੇਠਲੇ 'ਤੇ ਸ਼ੈਲਫ਼</translation>
 <translation id="4696813013609194136">ਮਾਂ-ਪਿਓ ਦੇ ਕੋਡ ਨਾਲ ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -1216,6 +1219,7 @@
 <translation id="5802516411616338943">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="5804651031882187592">"ਸਿਮ ਲਾਕ" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="5816222150329690597">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ਅਤੇ <ph name="DEVICE_COUNT" /> ਹੋਰ ਡੀਵਾਈਸ ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
 <translation id="5823239091726045201">ਵੈੱਬ 'ਤੇ Google Tasks</translation>
 <translation id="5825969630400862129">ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -1396,6 +1400,7 @@
 <translation id="6539852571005954999">ਡਾਊਨਲੋਡ ਹੋ ਰਹੀ <ph name="FILENAME" /> ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6546062506073634094">ਸਮੱਗਰੀ ਅਤੇ ਚਿੱਤਰ ਦੀਆਂ ਪੂਰਵ-ਝਲਕਾਂ ਮੁਤਾਬਕ ਚਿੱਤਰ ਖੋਜ</translation>
+<translation id="6547795021703527064">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME" />" ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="6555373427270923730">ਪਤਾ ਬਾਰ ਵਿੱਚ ਵੈੱਬ ਪਤਾ ਟਾਈਪ ਕਰੋ, ਫਿਰ <ph name="MODIFIER" /><ph name="KEY" /> ਦਬਾਓ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>

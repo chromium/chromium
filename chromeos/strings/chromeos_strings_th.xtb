@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">โหลดรูปภาพไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายหรือลองโหลดรูปภาพอีกครั้ง</translation>
 <translation id="1751249301761991853">ส่วนบุคคล</translation>
 <translation id="1753496554272155572">ออกจากตัวอย่างวอลเปเปอร์</translation>
+<translation id="1754578112426924640">ปุ่มแก้ไขสำหรับ <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="1755556344721611131">แอปการวินิจฉัย</translation>
 <translation id="175763766237925754">ดี (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android ไม่ทำงาน</translation>
 <translation id="551689408806449779">ยกเลิกการเชื่อมต่ออุปกรณ์แล้ว ลองเชื่อมต่ออีกครั้งเพื่อทดสอบ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ล็อกอยู่</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">เปลี่ยนเป็นธีมมืดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="5703716265115423771">ลดระดับเสียง</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">ปุ่มแก้ไขสำหรับ<ph name="SHORTCUT_DESCRIPTION" /></translation>
 <translation id="5733298426544876109">อัปเดต <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5757187557809630523">แทร็กถัดไป</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>
+<translation id="5928411637936685857">ปุ่มลบสำหรับ <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
 <translation id="593880865674747800">สร้างเพิ่มเติมในสไตล์นี้</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6791471867139427246">สีไฟแป้นพิมพ์</translation>
+<translation id="6796229976413584781">ลบแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="6798678288485555829">การนำทางสำหรับข้อความ</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
+<translation id="7233782086689993269">คืนค่าแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7271932918253517778">แป้นพิมพ์ลัดที่ประกอบด้วยแป้นแถวบนสุดต้องมีแป้น<ph name="META_KEY" />รวมอยู่ด้วย</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7656388927906093505">อุปกรณ์เป็นเมาส์</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" /></translation>
 <translation id="7665800271478495366">เปลี่ยนรูปโปรไฟล์</translation>
 <translation id="7683228889864052081">โทนสีแป้นพิมพ์</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">ไฟแป้นพิมพ์</translation>
 <translation id="7730077286107534951">อาจมีการส่งข้อมูลระบบและบัญชีบางอย่างไปยัง Google เราใช้ข้อมูลนี้เพื่อช่วยแก้ปัญหาด้านเทคนิคและปรับปรุงบริการโดยเป็นไปตาม<ph name="BEGIN_LINK2" />นโยบายความเป็นส่วนตัว<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />ข้อกำหนดในการให้บริการ<ph name="END_LINK3" /> หากต้องการส่งคำขอเปลี่ยนแปลงเนื้อหา โปรดไปที่<ph name="BEGIN_LINK1" />ความช่วยเหลือด้านกฎหมาย<ph name="END_LINK1" /></translation>
 <translation id="773153675489693198">จำนวนรอบ</translation>
+<translation id="7746357909584236306">แก้ไขได้</translation>
 <translation id="7747039790905080783">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="7752963721013053477">รุ่งเช้าจนถึงกลางคืน - พิเศษเฉพาะคุณ</translation>
 <translation id="7762130827864645708">เปลี่ยนรหัสผ่านสำเร็จ โปรดใช้รหัสผ่านใหม่จากนี้ไป</translation>

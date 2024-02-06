@@ -3305,6 +3305,7 @@
 <translation id="3497560059572256875">‏هم‌رسانی Doodle</translation>
 <translation id="3497915391670770295">ارسال به دستگاه‌های شما</translation>
 <translation id="3500417806337761827">‏هنگام نشاندن هم‌رسانی خطایی روی داد. هم‌رسانی‌های SMB زیادی نشانده شده است.</translation>
+<translation id="3500764001796099683">فعال کردن برنامه‌های وب مجزا</translation>
 <translation id="350397915809787283">اگر حساب ندارید، اولین گزینه را برای ایجاد حساب انتخاب کنید.</translation>
 <translation id="3503995387997205657">می‌توانید برنامه‌های قبلی‌تان را بازیابی کنید</translation>
 <translation id="3505100368357440862">پیشنهادهای خرید</translation>
@@ -7181,6 +7182,7 @@
 <translation id="6551508934388063976">‏فرمان در دسترس نیست. برای باز کردن پنجره‌ای جدید، Control-N را فشار دهید.</translation>
 <translation id="6551606359270386381">ابزار بیضی</translation>
 <translation id="6551612971599078809">‏سایت درحال استفاده از USB است</translation>
+<translation id="6551620030439692385">مسدودشده. درحال‌حاضر منطقه زمانی روی <ph name="TIMEZONE" /> تنظیم شده است و آن را فقط به‌صورت دستی می‌توان به‌روز کرد.</translation>
 <translation id="6551739526055143276">‏تحت مدیریت Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> کاربر</translation>
 <translation id="6555432686520421228">همه حساب‌های کاربر حذف شود و دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> شما بازنشانی شود تا جدید شود.</translation>
@@ -7251,6 +7253,7 @@
 <translation id="6608773371844092260">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در سمت راست این <ph name="DEVICE_TYPE" /> لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="6609478180749378879">پس‌از خروج از «حالت ناشناس»، داده‌های ورود به سیستم در این دستگاه ذخیره خواهد شد. بعداً می‌توانید با دستگاهتان دوباره به سیستم این وب‌سایت وارد شوید.</translation>
 <translation id="6610002944194042868">گزینه‌های ترجمه</translation>
+<translation id="6610064275805055636">مدیریت برنامه‌های وب مجزا</translation>
 <translation id="6611972847767394631">برگه‌هایتان را در اینجا پیدا کنید</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6613267708691765962">درحال اسکن کردن برای یافتن بدافزار…</translation>
@@ -8615,6 +8618,7 @@
 <translation id="7671472752213333268">‫«<ph name="EXTENSION_NAME" />» می‌خواهد ازطریق «<ph name="SCANNER_NAME" />» اسکن کند.</translation>
 <translation id="7672504401554182757">انتخاب کنید کدام دستگاه حاوی گذرکلید <ph name="APP_NAME" /> است</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، در <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">مسدودشده. درحال‌حاضر زمان‌بندی روی <ph name="SUNRISE_TIME" /> تا <ph name="SUNSET_TIME" /> تنظیم شده است و آن را فقط به‌صورت دستی می‌توان به‌روز کرد.</translation>
 <translation id="7673313156293624327">‏گزارش‌های Shill (مدیر اتصال) ChromeOS</translation>
 <translation id="7674416868315480713">‏غیرفعال کردن همه درگاه‌های بازارسال‌شده در Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> برنامه</translation>
@@ -9547,6 +9551,7 @@
 <translation id="8376384591331888629">شامل کوکی‌های شخص ثالث در این سایت می‌شود</translation>
 <translation id="8376451933628734023">اگر این برنامه وب می‌خواهد شما را فریب دهد که فکر کنید برنامه دیگری است، آن را حذف نصب کنید.</translation>
 <translation id="8376532149031784008">درحال بار کردن مجدد <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">افزونه‌هایی که سرپرست شما نصب کرده است همچنان می‌توانند این سایت را بخوانند و تغییر دهند</translation>
 <translation id="8376752431516546391">‏پانل کناری «جستجوی Google»</translation>
 <translation id="8377625247046155446">این گذرکلید فقط در این دستگاه ذخیره خواهد شد. پس‌از بستن همه «پنجره‌های ناشناس»، این گذرکلید در این دستگاه باقی خواهد ماند.</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>

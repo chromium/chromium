@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">画像を読み込めませんでした。ネットワーク接続を確認するか、画像をもう一度読み込んでみてください。</translation>
 <translation id="1751249301761991853">パーソナライズ</translation>
 <translation id="1753496554272155572">壁紙のプレビューを終了</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> の編集ボタン。</translation>
 <translation id="1755556344721611131">診断アプリ</translation>
 <translation id="175763766237925754">良好（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android は実行されていません</translation>
 <translation id="551689408806449779">デバイスの接続が解除されました。テストするには再接続してください</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ロック中</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日の入り時にダークテーマへ自動的に切り替える</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">中央揃え</translation>
 <translation id="5703716265115423771">音量を下げる</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> の編集ボタン。</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> を更新します。</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5757187557809630523">次のトラック</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">ON</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> の削除ボタン。</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="593880865674747800">このスタイルでさらに作成</translation>
 <translation id="5939518447894949180">リセット</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS 解決に失敗しました</translation>
 <translation id="6768237774506518020">DNS 解決の失敗率が高くなっています</translation>
 <translation id="6791471867139427246">キーボード ライトの色</translation>
+<translation id="6796229976413584781">ショートカットを削除しました</translation>
 <translation id="6798678288485555829">テキスト内の移動</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
+<translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="725133483556299729">メールアドレスを選択</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7271932918253517778">最上段のキーを使用するショートカットには、<ph name="META_KEY" /> キーを含める必要があります。</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />、<ph name="ACCELERATOR_INFO" />、<ph name="ROW_STATUS" />。</translation>
 <translation id="7665800271478495366">アバターを変更</translation>
 <translation id="7683228889864052081">キーボードの色調</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">キーボード ライト</translation>
 <translation id="7730077286107534951">アカウント情報とシステム情報の一部が Google に送信されます。この情報は、Google の<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に基づき、技術的な問題への対処やサービス改善のために使用されます。コンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的事項に関するヘルプ<ph name="END_LINK1" />をご覧ください。</translation>
 <translation id="773153675489693198">サイクル回数</translation>
+<translation id="7746357909584236306">編集可能</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7752963721013053477">夜明けから夜更けまで - 限定</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>

@@ -3311,6 +3311,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3497560059572256875">Deli priložnostni logotip z drugimi</translation>
 <translation id="3497915391670770295">Pošlji v &amp;naprave</translation>
 <translation id="3500417806337761827">Napaka pri vpenjanju deljenja. Vpetih je preveč deljenj SMB.</translation>
+<translation id="3500764001796099683">Omogočanje izoliranih spletnih aplikacij</translation>
 <translation id="350397915809787283">Če nimate računa, izberite prvo možnost, da ga ustvarite.</translation>
 <translation id="3503995387997205657">Obnovite lahko prejšnje aplikacije.</translation>
 <translation id="3505100368357440862">Predlogi za nakupovanje</translation>
@@ -7189,6 +7190,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6551508934388063976">Ukaz ni na voljo. Odprite novo okno s pritiskom tipk CTRL + N.</translation>
 <translation id="6551606359270386381">Orodje za elipse</translation>
 <translation id="6551612971599078809">Spletno mesto uporablja USB</translation>
+<translation id="6551620030439692385">Blokirano. Časovni pas je trenutno nastavljen na <ph name="TIMEZONE" /> in ga je mogoče posodobiti samo ročno.</translation>
 <translation id="6551739526055143276">Upravljan s storitvijo Family Link</translation>
 <translation id="655384502888039633">št. uporabnikov: <ph name="USER_COUNT" /></translation>
 <translation id="6555432686520421228">Odstrani vse uporabniške račune in ponastavi napravo <ph name="IDS_SHORT_PRODUCT_NAME" /> na nastavitve kot pri novi.</translation>
@@ -7263,6 +7265,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6608773371844092260">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov na desni strani te naprave <ph name="DEVICE_TYPE" />. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Podatki za prijavo se bodo shranili v tej napravi, ko zaprete anonimni način. Pozneje se boste lahko z napravo znova prijavili v to spletno mesto.</translation>
 <translation id="6610002944194042868">Možnosti prevajanja</translation>
+<translation id="6610064275805055636">Upravljanje izoliranih spletnih aplikacij</translation>
 <translation id="6611972847767394631">Poiščite svoje zavihke tukaj</translation>
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
 <translation id="6613267708691765962">Iskanje zlonamerne programske opreme …</translation>
@@ -8627,6 +8630,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7671472752213333268">»<ph name="EXTENSION_NAME" />« želi iskati iz optičnega bralnika »<ph name="SCANNER_NAME" />«.</translation>
 <translation id="7672504401554182757">Izberite, katera naprava ima ključ za dostop za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, na strani storitve <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokirano. Razpored je trenutno nastavljen na <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> in ga je mogoče posodobiti samo ročno.</translation>
 <translation id="7673313156293624327">Dnevniki orodja Shill (upravitelj povezav) za ChromeOS</translation>
 <translation id="7674416868315480713">Onemogoči vsa vrata, posredovana v Linux</translation>
 <translation id="7674537509496907005">Št. aplikacij: <ph name="APP_COUNT" /></translation>
@@ -9560,6 +9564,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8376384591331888629">Vključno s piškotki drugih mest na tem spletnem mestu</translation>
 <translation id="8376451933628734023">Če vas ta spletni program poskuša zavesti, da gre za drug program, ga odmestite.</translation>
 <translation id="8376532149031784008">Vnovično nalaganje domene <ph name="DOMAIN" /> …</translation>
+<translation id="8376610503048439696">Razširitve, ki jih namesti skrbnik, lahko še vedno berejo in spreminjajo to spletno mesto</translation>
 <translation id="8376752431516546391">Stransko podokno Iskanja Google</translation>
 <translation id="8377625247046155446">Ta ključ za dostop bo shranjen samo v tej napravi. V tej napravi bo ostal, ko zaprete vsa anonimna okna.</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>

@@ -75,6 +75,7 @@ Considerações:
 <translation id="2689064829982324496">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="2702250627063295552">Adicionar item da Lista de leitura ao Chrome</translation>
+<translation id="2703746758996815929">Para receber dicas úteis sobre o Chrome, ative as notificações nos ajustes do iOS.</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2789947168960170215">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
+<translation id="8874688701962049679">Dicas para aproveitar o Chrome ao máximo.</translation>
 <translation id="8891935667620843985">Defina o Chrome como seu navegador padrão para abrir links nele automaticamente.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
 <translation id="8949681853939555434">Definir o Chrome como seu navegador padrão</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">تعذَّر تحميل الصور. يُرجى التحقُّق من الاتصال بالشبكة أو إعادة محاولة تحميل الصور.</translation>
 <translation id="1751249301761991853">إعدادات التخصيص</translation>
 <translation id="1753496554272155572">إغلاق معاينة الخلفية</translation>
+<translation id="1754578112426924640">زر تعديل <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
 <translation id="175763766237925754">إشارة جيدة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">‏Android لا يعمل.</translation>
 <translation id="551689408806449779">انقطع اتصال الجهاز. يُرجى إعادة توصيل الجهاز لاختباره.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">مقفَل</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">التبديل تلقائيًا إلى المظهر الداكن عند الغروب</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5703716265115423771">صوت منخفض</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">زر تعديل الاختصار <ph name="SHORTCUT_DESCRIPTION" /></translation>
 <translation id="5733298426544876109">تحديث <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5757187557809630523">المقطع الصوتي التالي</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">زر حذف <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
 <translation id="593880865674747800">إنشاء المزيد من الخلفيات على غرار هذا النمط</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="6791471867139427246">لون إضاءة لوحة المفاتيح</translation>
+<translation id="6796229976413584781">تم حذف الاختصار.</translation>
 <translation id="6798678288485555829">التنقّل بين أجزاء النص</translation>
 <translation id="680983167891198932">المفتاح</translation>
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">يمكنك إدارة إعدادات اسم نقطة الوصول للشبكة. وتُنشئ أسماء نقاط الوصول اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">تحديثات البرامج الثابتة للأجهزة الخارجية</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
+<translation id="7233782086689993269">تمت استعادة الاختصار.</translation>
 <translation id="725133483556299729">اختيار عنوان البريد الإلكتروني</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7271932918253517778">إنّ الاختصار المكوَّن من أحد مفاتيح الصف العلوي يجب أن يشتمل على مفتاح <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />، <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">تغيير الصورة الرمزية</translation>
 <translation id="7683228889864052081">التدرّج اللوني في إضاءة لوحة المفاتيح</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">إضاءة لوحة المفاتيح</translation>
 <translation id="7730077286107534951">‏قد يتم إرسال بعض المعلومات عن الحساب والنظام إلى Google. نستخدم هذه المعلومات للمساعدة في معالجة المشاكل الفنية وتحسين خدماتنا، بما يتوافق مع <ph name="BEGIN_LINK2" />سياسة الخصوصية<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />بنود الخدمة<ph name="END_LINK3" />. لطلب إجراء تغييرات في المحتوى، يُرجى الانتقال إلى صفحة <ph name="BEGIN_LINK1" />المساعدة القانونية<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
+<translation id="7746357909584236306">قابل للتعديل</translation>
 <translation id="7747039790905080783">المفتاح المشترَك مسبقًا</translation>
 <translation id="7752963721013053477">صورة متحركة حصرية تعرض منظرًا من الفجر إلى الليل</translation>
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>

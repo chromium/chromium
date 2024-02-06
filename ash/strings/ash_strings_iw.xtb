@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">אחה"צ טובים <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד. אפשר להשתמש במקשי החיצים כדי לנווט בין האפליקציות.</translation>
 <translation id="1093645050124056515">‏Ctrl +‏ Alt + חץ למטה</translation>
+<translation id="1094756674036064790">‏להשבית את Bluetooth?</translation>
 <translation id="109942774857561566">משעמם לי</translation>
 <translation id="1104084341931202936">צפייה בהגדרות הנגישות</translation>
 <translation id="1104621072296271835">ביחד, המכשירים שלך יוכלו לעבוד עוד יותר טוב</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">הפעלת מצב החשיפה הגבוהה של <ph name="FEATURE_NAME" /> או השבתה שלו</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> משתמש מנוהל</translation>
 <translation id="3666266999138159418">ניתן להחליק להסתרת החלון הצף</translation>
+<translation id="3673898235958558034">‏אם משביתים את Bluetooth, המכשירים <ph name="DEVICE_NAME_1" /> ו-<ph name="DEVICE_NAME_2" /> יתנתקו מ-Chromebook.</translation>
 <translation id="367531336287639526">בחירת הסמל הראשון מימין לסרגל הכתובות</translation>
 <translation id="3677931086890821290">‏כך כל האפליקציות והאתרים עם הרשאת המיקום ו-ChromeOS יוכלו להשתמש במיקום ב-Wi-Fi וברשתות סלולריות.</translation>
 <translation id="3679827876008292680">מעבר לכרטיסייה האחרונה בחלון</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">עוד אפליקציות</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="4672539464599646374">התכונה 'חיסכון בסוללה' הופעלה</translation>
+<translation id="4673427585974421255">‏אני רוצה להמשיך להשתמש ב-Bluetooth</translation>
 <translation id="468293128311738995">אפליקציות מהטלפון שלך</translation>
 <translation id="4690510401873698237">המדף בחלק התחתון</translation>
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">פתיחת ההגדרות המהירות</translation>
 <translation id="5804651031882187592">‏השבתת ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="5805809050170488595">יש ללחוץ כדי להפעיל את <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">‏אם משביתים את Bluetooth, המכשירים <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> ו-<ph name="DEVICE_COUNT" /> מכשירים נוספים יתנתקו מ-Chromebook.</translation>
 <translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">מתבצעת סריקה של קובץ ההורדה <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ההעברה אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
 <translation id="6546062506073634094">חיפוש תמונות לפי תוכן ותצוגות מקדימות של תמונות</translation>
+<translation id="6547795021703527064">‏אם משביתים את Bluetooth, המכשיר <ph name="DEVICE_NAME" /> יתנתק מ-Chromebook.</translation>
 <translation id="6555373427270923730">הקלדת כתובת אינטרנט בסרגל הכתובות והקשה על <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 התקנה חדשה</translation>

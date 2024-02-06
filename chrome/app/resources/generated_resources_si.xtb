@@ -3297,6 +3297,7 @@
 <translation id="3497560059572256875">Doodle බෙදා ගන්න</translation>
 <translation id="3497915391670770295">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3500417806337761827">පංගුව නැංවීමේ දෝෂය. දැනටමත් නංවා ඇත SMB පංගු සංඛ්‍යාව ඉතා වැඩියි.</translation>
+<translation id="3500764001796099683">එකලා වෙබ් යෙදුම් සබල කරන්න</translation>
 <translation id="350397915809787283">ඔබට ගිණුමක් නොමැති නම්, එකක් තැනීම සඳහා පළමු විකල්පය තෝරන්න.</translation>
 <translation id="3503995387997205657">ඔබට ඔබගේ පෙර යෙදුම ප්‍රතිසාධනය කළ හැකිය</translation>
 <translation id="3505100368357440862">සාප්පු සවාරි යෝජනා</translation>
@@ -7172,6 +7173,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6551508934388063976">විධන නොමැත. නව කවුළුවක් විවෘත කිරීමට control-N ඔබන්න.</translation>
 <translation id="6551606359270386381">ඉලිප්ස මෙවලම</translation>
 <translation id="6551612971599078809">වෙබ් අඩවිය USB භාවිත කරයි</translation>
+<translation id="6551620030439692385">අවහිර කර ඇත වේලා කලාපය දැනට <ph name="TIMEZONE" /> වෙත සකසා ඇති අතර එය යාවත්කාලීන කළ හැක්කේ හස්තීයව පමණි.</translation>
 <translation id="6551739526055143276">Family Link මගින් කළමනාකරණය කෙරේ</translation>
 <translation id="655384502888039633">පරිශීලකයන් <ph name="USER_COUNT" /> ක්</translation>
 <translation id="6555432686520421228">සියලු පරිශීලක ගිණුම් ඉවත් කර ඔබේ උපාංගය නව උපාංගයක් සේ පත්කිරීමට ඔබේ <ph name="IDS_SHORT_PRODUCT_NAME" /> නැවත සකසන්න.</translation>
@@ -7242,6 +7244,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6608773371844092260">ඇඟිලි සලකුණ පිහිටුවීම සඳහා, ඔබේ දරුවාට මෙම <ph name="DEVICE_TYPE" /> හි දකුණු පස ඇති ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කිරීමට සලස්වන්න. ඔබේ දරුවාගේ ඇඟිලි සලකුණු දත්ත ආරක්ෂිතව ගබඩා කෙරෙන අතර කිසි විටක ඔබේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="6609478180749378879">ඔබ අප්‍රසිද්ධ ප්‍රකාරයෙන් පිට වූ පසු පුරන දත්ත මෙම උපාංගය තුළ ගබඩා කරනු ඇත. ඔබට ඔබගේ උපාංගය සමඟ නැවත මෙම වෙබ් අඩවියට පිරීමට හැකි වනු ඇත.</translation>
 <translation id="6610002944194042868">පරිවර්තන විකල්ප</translation>
+<translation id="6610064275805055636">එකලා වෙබ් යෙදුම් කළමනා කරන්න</translation>
 <translation id="6611972847767394631">ඔබගේ පටිති මෙහි සොයන්න</translation>
 <translation id="661266467055912436">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි.</translation>
 <translation id="6613267708691765962">අනිෂ්ට මෘදුකාංග සඳහා ස්කෑන් කරමින්...</translation>
@@ -8605,6 +8608,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" හට "<ph name="SCANNER_NAME" />" වෙතින් ස්කෑන් කිරීමට අවශ්‍යයි.</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> සඳහා මුරයතුර ඇත්තේ කුමන උපාංගයට ද යන්න තෝරා ගන්න</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> තුළ.</translation>
+<translation id="7672726198839739113">අවහිර කර ඇත කාලසටහන දැනට <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> ලෙස සකසා ඇති අතර යාවත්කාලීන කළ හැක්කේ හස්තීයව පමණි.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (සම්බන්ධතා කළමනාකරු) ලොග</translation>
 <translation id="7674416868315480713">ලිනක්ස් තුළ යොමු කෙරෙන සියලුම තොටවල් ක්‍රියා විරහිත කරන්න</translation>
 <translation id="7674537509496907005">යෙදුම් <ph name="APP_COUNT" /></translation>
@@ -9536,6 +9540,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8376384591331888629">මෙම අඩවියෙහි තෙවන පාර්ශ්ව කුකි ඇතුළුව</translation>
 <translation id="8376451933628734023">මෙම වෙබ් යෙදුම එය වෙනත් යෙදුමක් යැයි සිතීමට ඔබව රැවටීමට උත්සාහ කරන්නේ නම්, එය අස්ථාපනය කරන්න.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> නැවත පූරණය වේ...</translation>
+<translation id="8376610503048439696">ඔබේ පරිපාලක විසින් ස්ථාපනය කරන ලද දිගුවලට තවමත් මෙම වෙබ් අඩවිය කියවා වෙනස් කළ හැක</translation>
 <translation id="8376752431516546391">Google සෙවීම් පැති පැනලය</translation>
 <translation id="8377625247046155446">මෙම මුරයතුර මෙම උපාංගයේ පමණක් සුරැකෙනු ඇත. ඔබ සියලු අප්‍රකට කවුළු වැසූ පසු එය මෙම උපාංගයේ පවතිනු ඇත.</translation>
 <translation id="8378714024927312812">ඔබේ ආයතනය විසින් කළමනා කෙරේ</translation>

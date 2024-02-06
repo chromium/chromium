@@ -3287,6 +3287,7 @@
 <translation id="3497560059572256875">Doodle を共有</translation>
 <translation id="3497915391670770295">お使いのデバイスに送信(&amp;D)</translation>
 <translation id="3500417806337761827">共有フォルダのマウントエラー。マウントされた SMB 共有の数が上限を超えています。</translation>
+<translation id="3500764001796099683">独立したウェブアプリを有効にする</translation>
 <translation id="350397915809787283">アカウントがない場合は、最初のオプションを選択して作成してください。</translation>
 <translation id="3503995387997205657">前回のアプリを復元できます</translation>
 <translation id="3505100368357440862">おすすめのショッピング情報</translation>
@@ -3537,7 +3538,7 @@
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注: Google は、デバイスが受信するデモモードのバージョンを特定し、デモモードの使用状況を測定する目的でこの情報を使用します。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="3703166520839776970">この問題がまだ解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
+<translation id="3703166520839776970">問題が解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
 <translation id="370415077757856453">JavaScript がブロックされました</translation>
 <translation id="3704331259350077894">処理が停止した</translation>
@@ -7157,6 +7158,7 @@
 <translation id="6551508934388063976">コマンドを使用できません。Ctrl+N を押して新しいウィンドウを開いてください。</translation>
 <translation id="6551606359270386381">楕円ツール</translation>
 <translation id="6551612971599078809">サイトで USB が使用されています</translation>
+<translation id="6551620030439692385">ブロックされています。現在、タイムゾーンは <ph name="TIMEZONE" /> に設定されており、手動でのみ更新できます。</translation>
 <translation id="6551739526055143276">ファミリー リンクの管理対象</translation>
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
@@ -7225,6 +7227,7 @@
 <translation id="6608773371844092260">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
+<translation id="6610064275805055636">独立したウェブアプリを管理する</translation>
 <translation id="6611972847767394631">ここからタブを確認できます</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
@@ -8587,6 +8590,7 @@
 <translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」が「<ph name="SCANNER_NAME" />」のスキャンをリクエストしています。</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> のパスキーがあるデバイスを選択してください</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> 内の <ph name="HUNG_IFRAME_URL" /> が停止しています。</translation>
+<translation id="7672726198839739113">ブロックされています。現在、スケジュールは <ph name="SUNRISE_TIME" />～<ph name="SUNSET_TIME" /> に設定されており、手動でのみ更新できます。</translation>
 <translation id="7673313156293624327">ChromeOS Shill（接続マネージャー）のログ</translation>
 <translation id="7674416868315480713">Linux で転送中のポートをすべて無効にする</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個のアプリ</translation>
@@ -9519,6 +9523,7 @@
 <translation id="8376384591331888629">サイト上のサードパーティ Cookie も対象</translation>
 <translation id="8376451933628734023">このウェブアプリが別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> を再読み込みしています...</translation>
+<translation id="8376610503048439696">管理者がインストールした拡張機能では、このサイトの読み取りや変更が可能です</translation>
 <translation id="8376752431516546391">Google 検索サイドパネル</translation>
 <translation id="8377625247046155446">このパスキーはこのデバイスにのみ保存されます。すべてのシークレット ウィンドウを閉じた後も、パスキーはこのデバイスには残ります。</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>

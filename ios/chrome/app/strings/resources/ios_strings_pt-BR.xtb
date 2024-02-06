@@ -1240,7 +1240,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="741204030948306876">Sim</translation>
 <translation id="7418640008860669073">Salvar em…</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
-<translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7436239899443308800">{count,plural, =1{1 guia}one{{count} guia}other{{count} guias}}</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
@@ -1412,6 +1412,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
+<translation id="828291969289324795">{count,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8286036467436129157">Fazer login</translation>
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>

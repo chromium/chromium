@@ -75,6 +75,7 @@ Hafðu í huga:
 <translation id="2689064829982324496">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="2702250627063295552">Bæta leslistaatriði við Chrome</translation>
+<translation id="2703746758996815929">Til að fá gagnleg ráð um Chrome skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
 <translation id="2736805085127235148">Slökkt er á Chrome-tilkynningum í stillingum tækisins.</translation>
 <translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="2789947168960170215">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
 <translation id="8865415417596392024">Chrome-gögn á reikningnum þínum</translation>
+<translation id="8874688701962049679">Ráð um að fá sem mest út úr Chrome.</translation>
 <translation id="8891935667620843985">Þú getur opnað tengla sjálfkrafa í Chrome með því að stilla það sem sjálfgefið vafraforrit.</translation>
 <translation id="8897749957032330183">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
 <translation id="8949681853939555434">Stilltu Chrome sem sjálfgefinn vafra</translation>

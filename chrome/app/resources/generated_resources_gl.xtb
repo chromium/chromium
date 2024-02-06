@@ -3292,6 +3292,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar aos teus &amp;dispositivos</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
+<translation id="3500764001796099683">Activar aplicacións web illadas</translation>
 <translation id="350397915809787283">Se non tes ningunha conta, selecciona a primeira opción para crear unha.</translation>
 <translation id="3503995387997205657">Xa podes restaurar as aplicacións antigas</translation>
 <translation id="3505100368357440862">Suxestións de compras</translation>
@@ -7167,6 +7168,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6551508934388063976">Comando non dispoñible. Preme control-N para abrir unha ventá nova.</translation>
 <translation id="6551606359270386381">Ferramenta de elipses</translation>
 <translation id="6551612971599078809">O sitio está utilizando un USB</translation>
+<translation id="6551620030439692385">Bloqueado. Actualmente o fuso horario está definido como <ph name="TIMEZONE" /> e só se pode modificar manualmente.</translation>
 <translation id="6551739526055143276">Contas xestionadas por Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> usuarios</translation>
 <translation id="6555432686520421228">Elimina todas as contas de usuario e restablece o dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> como se fose novo.</translation>
@@ -7235,6 +7237,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6608773371844092260">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente situado na parte dereita deste dispositivo (<ph name="DEVICE_TYPE" />). Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="6609478180749378879">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito. Poderás iniciar sesión de novo neste sitio web desde o teu dispositivo máis tarde.</translation>
 <translation id="6610002944194042868">Opcións de tradución</translation>
+<translation id="6610064275805055636">Xestionar aplicacións web illadas</translation>
 <translation id="6611972847767394631">Atopa aquí as túas pestanas</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
@@ -8598,6 +8601,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> quere escanear documentos desde <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Escolle o dispositivo que ten a clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, en <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Bloqueado. Actualmente o horario está definido de <ph name="SUNRISE_TIME" /> a <ph name="SUNSET_TIME" /> e só se pode modificar manualmente.</translation>
 <translation id="7673313156293624327">Rexistros de ChromeOS Shill (xestor de conexións)</translation>
 <translation id="7674416868315480713">Desactivar todos os portos que se estean encamiñando en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicacións</translation>
@@ -9530,6 +9534,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8376384591331888629">Incluír as cookies de terceiros deste sitio</translation>
 <translation id="8376451933628734023">Se esta aplicación web está tentando enganarte para que penses que se trata dunha distinta, desinstálaa.</translation>
 <translation id="8376532149031784008">Volvendo cargar <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">As extensións instaladas pola persoa administradora poderán seguir lendo e modificando este sitio</translation>
 <translation id="8376752431516546391">Panel lateral da Busca de Google</translation>
 <translation id="8377625247046155446">Esta clave de acceso só se gardará neste dispositivo. Permanecerá neste dispositivo despois de que peches todas as ventás do modo de incógnito.</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>

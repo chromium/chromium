@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Суреттерді жүктеу мүмкін болмады. Желі байланысын тексеріңіз немесе суреттерді қайта жүктеп көріңіз.</translation>
 <translation id="1751249301761991853">Жеке</translation>
 <translation id="1753496554272155572">Тұсқағазды алдын ала көру режимінен шығу</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> бойынша өзгерту түймесі.</translation>
 <translation id="1755556344721611131">Diagnostics қолданбасы</translation>
 <translation id="175763766237925754">Жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android іске қосылмаған.</translation>
 <translation id="551689408806449779">Құрылғы ажыратылған. Сынау үшін қайта қосылып көріңіз.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">құлыпталған</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Күн батқанда, қараңғы режимге автоматты түрде ауысу</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Ортаға</translation>
 <translation id="5703716265115423771">дыбыс деңгейін төмендету</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> бойынша өзгерту түймесі.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> жаңарту</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5757187557809630523">келесі трек</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Тыйым салынды</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}other{Файлдарыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> бойынша жою түймесі.</translation>
 <translation id="5931523347251946569">Файл табылмады.</translation>
 <translation id="593880865674747800">Осындай стильдегі көбірек тұсқағаз жасау</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
 <translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары.</translation>
 <translation id="6791471867139427246">пернетақта жарығының түсі</translation>
+<translation id="6796229976413584781">Пернелер тіркесімі жойылды</translation>
 <translation id="6798678288485555829">Мәтін навигациясы</translation>
 <translation id="680983167891198932">Кілт</translation>
 <translation id="6816797338148849397">Таңдауға қатысты ақпарат қолжетімді. Оны пайдалану үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Желінің APN параметрлерін басқаруға арналған. APN аттары ұялы желі мен интернет арасында байланыс орнатады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
+<translation id="7233782086689993269">Пернелер тіркесімі қалпына келді</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
 <translation id="7271932918253517778">Жоғарғы жол пернелері бар пернелер тіркесімі <ph name="META_KEY" /> пернесін қамтуы керек.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7656388927906093505">Бұл — тінтуір.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Аватарды өзгерту</translation>
 <translation id="7683228889864052081">пернетақта реңкі</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">пернетақта жарығы</translation>
 <translation id="7730077286107534951">Аккаунт және жүйе туралы кейбір ақпарат Google-ға жіберілуі мүмкін. Бұл ақпарат <ph name="BEGIN_LINK2" />Құпиялық саясаты<ph name="END_LINK2" /> мен <ph name="BEGIN_LINK3" />Қызмет көрсету шарттарына<ph name="END_LINK3" /> сәйкес техникалық мәселелерді шешу және қызметтерімізді жақсарту үшін пайдаланылады. Контентті өзгертуді сұрау үшін <ph name="BEGIN_LINK1" />Құқықтық анықтамаға<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="773153675489693198">Цикл саны</translation>
+<translation id="7746357909584236306">өзгертуге болады</translation>
 <translation id="7747039790905080783">Алдын ала бөлісілген код</translation>
 <translation id="7752963721013053477">Таң атқаннан қараңғыға дейін – эксклюзивті</translation>
 <translation id="7762130827864645708">Құпия сөзіңіз өзгерді. Бұдан былай жаңа құпия сөзді пайдаланыңыз.</translation>

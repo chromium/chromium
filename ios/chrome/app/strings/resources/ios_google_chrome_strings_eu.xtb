@@ -75,6 +75,7 @@ Kontuan hartu beharrekoak:
 <translation id="2689064829982324496">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chrome-ko saioa<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
 <translation id="2702250627063295552">Gehitu irakurketa-zerrendako elementu bat Chrome-n</translation>
+<translation id="2703746758996815929">Chrome-ri buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
 <translation id="2736805085127235148">Chrome-ren jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="2767464022270041271">Ez dago pasahitzik gordeta. Gordetako pasahitzak egiaztatzeko gai da Google-ren Pasahitz-kudeatzailea.</translation>
 <translation id="2789947168960170215">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="8865415417596392024">Kontuan gordeta dauzkazun Chrome-ko datuak</translation>
+<translation id="8874688701962049679">Chrome-ri etekinik handiena ateratzeko aholkuak.</translation>
 <translation id="8891935667620843985">Ezarri Chrome arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
 <translation id="8897749957032330183">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="8949681853939555434">Ezarri Chrome arakatzaile lehenetsi gisa</translation>

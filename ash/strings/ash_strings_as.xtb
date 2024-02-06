@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">শুভ অপৰাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">আপোনাৰ <ph name="CATEGORY" />, ফাইল, এপ্‌ আৰু আন বহুতো সন্ধান কৰক। আপোনাৰ এপ্‌সমূহ নেভিগে’ট কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="1093645050124056515">ctrl + alt + তলমুৱা কাঁড়</translation>
+<translation id="1094756674036064790">ব্লুটুথ অফ কৰিবনে?</translation>
 <translation id="109942774857561566">মই বিৰক্ত হৈছোঁ</translation>
 <translation id="1104084341931202936">সাধ্য সুবিধাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1104621072296271835">আপোনাৰ ডিভাইচসমূহে একেলগে আৰু ভালকৈ কাম কৰে</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />ৰ উচ্চ দৃশ্যমানতা ট’গল কৰক</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
 <translation id="3666266999138159418">আপোনাৰ উপঙি থকা ৱিণ্ড’ লুকুৱাবলৈ ছোৱাইপ কৰক</translation>
+<translation id="3673898235958558034">আপুনি ব্লুটুথ অফ কৰিলে আপোনাৰ Chromebookৰ পৰা "<ph name="DEVICE_NAME_1" />" আৰু "<ph name="DEVICE_NAME_2" />"ৰ সংযোগ বিচ্ছিন্ন হ’ব।</translation>
 <translation id="367531336287639526">ঠিকনাৰ বাৰৰ বাওঁফালে থকা প্ৰথম চিহ্নটো বাছনি কৰক</translation>
 <translation id="3677931086890821290">এইটোৱে অৱস্থানৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইট আৰু ChromeOSক ৱাই-ফাই আৰু ম’বাইল নেটৱৰ্কৰ অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিয়ে।</translation>
 <translation id="3679827876008292680">ৱিণ্ড’ত থকা শেষৰ টেবটোলৈ যাওক</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">অধিক এপ্‌</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="4672539464599646374">বেটাৰী সঞ্চয়কাৰী অন কৰা হৈছে</translation>
+<translation id="4673427585974421255">অন কৰি ৰাখক</translation>
 <translation id="468293128311738995">আপোনাৰ ফ’ন থকা এপ্</translation>
 <translation id="4690510401873698237">শ্বেল্ফ একেবাৰে তলিত আছে</translation>
 <translation id="4696813013609194136">অভিভাৱকৰ এক্সেছ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">ক্ষিপ্ৰ ছেটিং খোলক</translation>
 <translation id="5804651031882187592">"ছিম লক কৰক" ছেটিংটো অফ কৰক</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> সক্ৰিয় কৰিবলৈ টিপক</translation>
+<translation id="5816222150329690597">আপুনি ব্লুটুথ অফ কৰিলে আপোনাৰ Chromebookৰ পৰা "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" আৰু অন্য <ph name="DEVICE_COUNT" /> টা ডিভাইচৰ সংযোগ বিচ্ছিন্ন হ’ব।</translation>
 <translation id="5823239091726045201">ৱেবত Google কার্য</translation>
 <translation id="5825969630400862129">সংযুক্ত হৈ থকা ডিভাইচৰ ছেটিংসমূহ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /> বন্ধ কৰক</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> স্কেনিং ডাউনল’ড কৰক</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> লৈ কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="6546062506073634094">সমল আৰু প্ৰতিচ্ছবিৰ পূৰ্বদৰ্শন অনুসৰি প্ৰতিচ্ছবিৰ সন্ধান</translation>
+<translation id="6547795021703527064">আপুনি ব্লুটুথ অফ কৰিলে আপোনাৰ Chromebookৰ পৰা "<ph name="DEVICE_NAME" />"ৰ সংযোগ বিচ্ছিন্ন হ’ব।</translation>
 <translation id="6555373427270923730">ঠিকনাৰ বাৰত এটা ৱেব ঠিকনা এটা টাইপ কৰক, তাৰ পাছত <ph name="MODIFIER" /><ph name="KEY" /> টিপক</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 নতুনকৈ ইনষ্টল কৰা</translation>

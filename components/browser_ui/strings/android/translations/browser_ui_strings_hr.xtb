@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Kolačići treće strane su ograničeni</translation>
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Dopusti prijavu treće strane za određenu web-lokaciju.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Istječe sutra}one{Istječe za # dan}few{Istječe za # dana}other{Istječe za # dana}}</translation>
 <translation id="310297983047869047">Prethodni slajd</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Pitaj prije omogućavanja web-lokacijama da vide i mijenjaju podatke na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> S uređaja <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dopušteno</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015">Sakrij <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7791543448312431591">Dodajte</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nastavite s ovom karticom}one{Nastavite s ovim karticama}few{Nastavite s ovim karticama}other{Nastavite s ovim karticama}}</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web-lokacija upotrebljava vašu kameru</translation>
 <translation id="7807060072011926525">Omogućuje Google</translation>

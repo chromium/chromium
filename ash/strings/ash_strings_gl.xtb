@@ -26,6 +26,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1087110696012418426">Boas tardes, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis. Usa as teclas das frechas para moverte polas aplicacións.</translation>
 <translation id="1093645050124056515">control + alt + frecha abaixo</translation>
+<translation id="1094756674036064790">Queres desactivar o Bluetooth?</translation>
 <translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
@@ -660,6 +661,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3660860940251915011">Activar ou desactivar o modo de alta visibilidade de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
 <translation id="3666266999138159418">Pasa o dedo para ocultar a ventá flotante</translation>
+<translation id="3673898235958558034">Se desactivas o Bluetooth, <ph name="DEVICE_NAME_1" /> e <ph name="DEVICE_NAME_2" /> desconectaranse do teu Chromebook.</translation>
 <translation id="367531336287639526">Selecciona a primeira icona á esquerda da barra de enderezos</translation>
 <translation id="3677931086890821290">Desta forma, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poderán utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
 <translation id="3679827876008292680">Ir á última pestana da ventá</translation>
@@ -916,6 +918,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4666911709726371538">Máis aplicacións</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Activouse a función Aforro de batería</translation>
+<translation id="4673427585974421255">Manter activado</translation>
 <translation id="468293128311738995">Aplicacións do teu teléfono</translation>
 <translation id="4690510401873698237">O estante está na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
@@ -1216,6 +1219,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5802516411616338943">Abrir Configuración rápida</translation>
 <translation id="5804651031882187592">Desactivar a opción Bloquear SIM</translation>
 <translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Se desactivas o Bluetooth, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> e <ph name="DEVICE_COUNT" /> dispositivos máis desconectaranse do teu Chromebook.</translation>
 <translation id="5823239091726045201">Tarefas de Google na Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
@@ -1396,6 +1400,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="6539852571005954999">Escaneando ficheiro <ph name="FILENAME" /> para descargalo</translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Busca de imaxes por contido e vistas previas</translation>
+<translation id="6547795021703527064">Se desactivas o Bluetooth, <ph name="DEVICE_NAME" /> desconectarase do teu Chromebook.</translation>
 <translation id="6555373427270923730">Escribe un enderezo web na barra de enderezos e despois preme <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalación</translation>

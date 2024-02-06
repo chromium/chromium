@@ -1806,6 +1806,7 @@ Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna dapat memilih f
       Jika <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (nilai 1) disetel, hanya variasi yang dianggap sebagai perbaikan keamanan atau stabilitas penting yang akan diterapkan ke <ph name="PRODUCT_NAME" />.
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan dapat diterapkan ke browser. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
+<translation id="2402537890732357732">Selalu tampilkan label pengelolaan</translation>
 <translation id="2402547085566757554">Jangan gunakan Halaman Tab Baru sebagai halaman beranda</translation>
 <translation id="240713331529749993">Jika kebijakan ini disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus di Android. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com. Perlu diketahui bahwa Android akan mengisolasi situs sensitif tertentu secara default mulai <ph name="PRODUCT_NAME" /> versi 77, dan kebijakan ini memperluas mode tersebut untuk mengisolasi asal tambahan tertentu.
 
@@ -4650,6 +4651,11 @@ Untuk perangkat terkelola, kebijakan ini diaktifkan secara default dan metrik ak
 Untuk perangkat yang tidak dikelola, pengguna dapat membuat keputusan untuk mengirim metrik.</translation>
 <translation id="4694138212536142867">Aktifkan pelaporan status hardware perangkat</translation>
 <translation id="4697581738794063407">Mengontrol fitur filter parameter URL</translation>
+<translation id="4698147321113652592">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
+
+Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang-tindih.
+
+Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.</translation>
 <translation id="4698895924806859508">Jangan laporkan peristiwa jaringan</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
@@ -6375,6 +6381,7 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6181783961196084973">Nilai tombol alih pengumpulan data aktivitas aplikasi. Jika disetel ke benar (true), aktivitas aplikasi pengguna akan dilaporkan ke server dengan tujuan untuk ditampilkan di aplikasi <ph name="PRODUCT_NAME" /> anak dan orang tua. Jika disetel ke salah (false), fitur Batas waktu per aplikasi akan tetap berfungsi, tetapi tidak ada data yang akan dilaporkan ke server dan oleh karena itu, tidak ada data yang akan ditampilkan di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Nonaktifkan Upgrade HTTPS.</translation>
 <translation id="6182563940865917569">Izinkan Chrome memutar media secara otomatis</translation>
+<translation id="6187632100458475876">Setelan label avatar toolbar terkelola</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
 <translation id="6191963383731098056">Kebijakan ini memungkinkan admin mengonfigurasi warna tema <ph name="PRODUCT_NAME" />. String input harus berupa string warna hex valid yang sesuai dengan format "#RRGGBB".
 
@@ -7438,6 +7445,7 @@ error (yaitu, situs yang dianggap tidak aman).
 
 Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default
 pemblokiran permintaan semacam itu akan diterapkan.</translation>
+<translation id="6915524162137327111">Tampilkan label pengelolaan selama 30 detik</translation>
 <translation id="6919819553978815392">Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> akan mengaktifkan login tamu. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
 
       Jika kebijakan ini disetel ke salah (false), <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> tidak akan mengizinkan profil tamu dimulai.
@@ -8711,6 +8719,11 @@ Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif
           Kebijakan ini dihapus di Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nama tujuan <ph name="PRODUCT_NAME" /></translation>
+<translation id="797820628785995988">Jika kebijakan ini disetel, semua jenis data yang ditentukan akan dikecualikan dari sinkronisasi, baik untuk <ph name="CHROME_SYNC_NAME" /> maupun sinkronisasi profil roaming. Hal ini berguna untuk mengurangi ukuran profil roaming atau membatasi jenis data yang diupload ke Server <ph name="CHROME_SYNC_NAME" />.
+
+      Jenis data saat ini untuk kebijakan ini adalah: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls", "wifiConfigurations". Nama-nama tersebut peka huruf besar/kecil.
+
+      Catatan: Pembaruan Kebijakan Dinamis hanya didukung di <ph name="PRODUCT_NAME" /> versi 123 dan yang lebih baru. Menonaktifkan "autofill" juga akan menonaktifkan "payments". "typedUrls" merujuk pada semua histori penjelajahan.</translation>
 <translation id="7982057585796399404">Menyetel kebijakan akan menentukan daftar aplikasi dan ekstensi yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna. Izin akan diberikan secara implisit, termasuk untuk API ekstensi enterprise.deviceAttributes dan enterprise.platformKeys. (Dua API ini tidak tersedia untuk aplikasi dan ekstensi yang tidak diinstal otomatis.)
 
 Jika kebijakan tidak disetel, tidak ada aplikasi atau ekstensi yang diinstal otomatis, dan pengguna dapat meng-uninstal aplikasi atau ekstensi apa pun di <ph name="PRODUCT_NAME" />.
@@ -9004,6 +9017,10 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
 <translation id="8250048892729838843">Kebijakan ini tidak digunakan lagi. Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
+<translation id="8254792295762772851">Jika kebijakan ini tidak disetel atau disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (nilai 0), label Kerja atau Sekolah akan ditampilkan di samping avatar toolbar.
+Label ini hanya akan ditampilkan jika akun yang digunakan untuk login adalah akun terkelola.
+
+Jika kebijakan ini disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (nilai 1), label Kerja atau Sekolah akan ditampilkan di samping avatar toolbar selama 30 detik setelah membuka profil.</translation>
 <translation id="8256006033157034334">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 
@@ -9622,6 +9639,7 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubah fungsi ini. Jika Anda tidak menyetelnya, pengguna akan diizinkan mengubah setelan.</translation>
 <translation id="8707790573162457301">Jalankan pembersihan disk otomatis selama login</translation>
+<translation id="8712609946151927008">Menjadwalkan interval penangguhan mingguan</translation>
 <translation id="8713535263782304771">Nonaktifkan Safe Browsing</translation>
 <translation id="8714556680280715750">URL yang dapat dikunjungi pengguna untuk mempelajari lebih lanjut. Jika tidak disetel,
 tidak akan ada URL "pelajari lebih lanjut" di penginstal. Jika ada, URL harus menggunakan

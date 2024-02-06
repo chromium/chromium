@@ -75,6 +75,7 @@
 <translation id="2689064829982324496">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chrome-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2702250627063295552">Унших жагсаалтын зүйлийг Chrome-д нэмэх</translation>
+<translation id="2703746758996815929">Chrome-н хэрэгтэй зөвлөгөөнүүдийг авахын тулд iOS тохиргоондоо мэдэгдлүүдийг асаана уу.</translation>
 <translation id="2736805085127235148">Chrome-н мэдэгдлийг одоогоор таны төхөөрөмжийн тохиргоонд унтраасан байна.</translation>
 <translation id="2767464022270041271">Хадгалсан ямар ч нууц үг алга. Google Password Manager таныг нууц үгнүүдээ хадгалсан үед тэдгээрийг шалгах боломжтой.</translation>
 <translation id="2789947168960170215">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@
 Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Password Manager бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
+<translation id="8874688701962049679">Chrome-г бүрэн ашиглах зөвлөгөөнүүд.</translation>
 <translation id="8891935667620843985">Та Chrome-г өгөгдмөл хөтчийн програм болгосноор холбоосуудыг автоматаар нээх боломжтой.</translation>
 <translation id="8897749957032330183">Нууц үгнүүдийг энэ төхөөрөмж дээр Google Password Manager-т хадгалдаг.</translation>
 <translation id="8949681853939555434">Chrome-г өгөгдмөл хөтчөөрөө тохируулах</translation>

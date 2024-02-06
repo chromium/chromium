@@ -1732,6 +1732,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2285109769884538519">{COUNT,plural, =0{Buka semua dalam kumpulan tab &amp;baharu}=1{Buka dalam kumpulan tab &amp;baharu}other{Buka semua ({COUNT}) dalam kumpulan tab &amp;baharu}}</translation>
 <translation id="2285942871162473373">Cap jari anda tidak dapat dicam. Cuba lagi.</translation>
 <translation id="2287617382468007324">Mencetak Alamat IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}other{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}}</translation>
 <translation id="2287944065963043964">Skrin log masuk</translation>
 <translation id="2290615375132886363">Butang navigasi tablet</translation>
 <translation id="2291452790265535215">Cuba gunakan panel sisi untuk penanda halaman, perjalanan dan pelbagai lagi</translation>
@@ -4317,6 +4318,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4275788652681621337">Tutup panel sisi</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
 <translation id="4277434192562187284">Sumber konfigurasi XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Kebenaran dialih keluar daripada 1 laman}other{Kebenaran dialih keluar daripada {NUM_SITES} laman}}</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
 <translation id="4278498748067682896">Anda akan menggunakan Peningkatan Kios &amp; Papan Tanda yang hanya membenarkan peranti berjalan dalam mod kios atau papan tanda. Jika anda ingin pengguna log masuk ke peranti, sila kembali dan daftar menggunakan Peningkatan Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Proses ini mungkin mengambil masa beberapa minit. Memuat turun fail.</translation>

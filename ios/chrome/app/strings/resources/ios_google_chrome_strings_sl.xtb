@@ -75,6 +75,7 @@ Kaj je treba upoštevati:
 <translation id="2689064829982324496">Če se želite odjaviti iz računa Google na vseh spletnih mestih, <ph name="BEGIN_LINK" />se odjavite iz Chroma<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="2702250627063295552">Dodajanje elementa bralnega seznama v Chromu</translation>
+<translation id="2703746758996815929">Če želite prejemati uporabne nasvete za Chrome, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="2736805085127235148">Obvestila za Chrome so trenutno izklopljena v nastavitvah naprave.</translation>
 <translation id="2767464022270041271">Ni shranjenih gesel. Googlov upravitelj gesel lahko preveri gesla, če jih shranite.</translation>
 <translation id="2789947168960170215">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="8865415417596392024">Podatki v Chromu v računu</translation>
+<translation id="8874688701962049679">Nasveti, kako najbolje izkoristiti Chrome.</translation>
 <translation id="8891935667620843985">Če nastavite Chrome kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.</translation>
 <translation id="8897749957032330183">Gesla so shranjena v Googlovem upravitelju gesel v tej napravi.</translation>
 <translation id="8949681853939555434">Nastavite Chrome kot privzeti brskalnik</translation>

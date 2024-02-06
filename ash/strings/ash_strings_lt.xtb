@@ -26,6 +26,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1087110696012418426">Laba diena, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Ieškokite <ph name="CATEGORY" />, failų, programų ir kt. Naršykite programas rodyklių klavišais.</translation>
 <translation id="1093645050124056515">„Ctrl“ + „Alt“ + rodyklė žemyn</translation>
+<translation id="1094756674036064790">Išjungti „Bluetooth“?</translation>
 <translation id="109942774857561566">„I’m bored“ (Man nuobodu)</translation>
 <translation id="1104084341931202936">Rodyti pritaikymo neįgaliesiems nustatymus</translation>
 <translation id="1104621072296271835">Jūsų įrenginiai kartu veikia dar geriau</translation>
@@ -660,6 +661,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3660860940251915011">Perjungti funkcijos „<ph name="FEATURE_NAME" />“ didelį matomumą</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
 <translation id="3666266999138159418">Perbraukite, kad paslėptumėte slankųjį langą</translation>
+<translation id="3673898235958558034">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME_1" />“ ir „<ph name="DEVICE_NAME_2" />“ bus atjungti nuo „Chromebook“.</translation>
 <translation id="367531336287639526">Pasirinkti pirmą piktogramą adreso juostos kairėje</translation>
 <translation id="3677931086890821290">Tai leidžia visoms programoms ir svetainėms, turinčioms leidimą pasiekti vietovės duomenis ir „ChromeOS“, naudoti „Wi-Fi“ ir mobiliojo ryšio tinklų vietovę.</translation>
 <translation id="3679827876008292680">Eiti į paskutinį skirtuką lange</translation>
@@ -915,6 +917,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4666911709726371538">Daugiau programų</translation>
 <translation id="4667099493359681081">Atsisiunčiamas failas <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Įjungta akumuliatoriaus tausojimo priemonė</translation>
+<translation id="4673427585974421255">Palikti įjungtą</translation>
 <translation id="468293128311738995">Programos iš telefono</translation>
 <translation id="4690510401873698237">Lentyna apačioje</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
@@ -1215,6 +1218,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5802516411616338943">Atidaryti sparčiuosius nustatymus</translation>
 <translation id="5804651031882187592">Nustatymo „Užrakinti SIM kortelę“ išjungimas</translation>
 <translation id="5805809050170488595">Spustelėkite, kad suaktyvintumėte „<ph name="NETWORK_NAME" />“</translation>
+<translation id="5816222150329690597">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME_1" />“, „<ph name="DEVICE_NAME_2" />“ ir kiti įrenginiai (<ph name="DEVICE_COUNT" />) bus atjungti nuo „Chromebook“.</translation>
 <translation id="5823239091726045201">„Google Tasks“ žiniatinklyje</translation>
 <translation id="5825969630400862129">Susietų įrenginių nustatymai</translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
@@ -1395,6 +1399,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6539852571005954999">Atsisiųsti nuskaitomą „<ph name="FILENAME" />“</translation>
 <translation id="6542521951477560771">Perduodama į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6546062506073634094">Vaizdų paieška pagal turinį ir vaizdų peržiūras</translation>
+<translation id="6547795021703527064">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME" />“ bus atjungtas nuo „Chromebook“.</translation>
 <translation id="6555373427270923730">Įveskite žiniatinklio adresą adreso juostoje, tada paspauskite <ph name="MODIFIER" /> <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Naujas įdiegimas</translation>

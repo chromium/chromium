@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Şəkilləri yükləmək mümkün olmadı. Şəbəkə bağlantınızı yoxlayın və ya şəkilləri yenidən yükləməyə cəhd edin.</translation>
 <translation id="1751249301761991853">Şəxsi</translation>
 <translation id="1753496554272155572">Divar kağızı önizləməsindən çıxın</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> üçün redaktə düyməsi.</translation>
 <translation id="1755556344721611131">Diaqnostika tətbiqi</translation>
 <translation id="175763766237925754">Yaxşı (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android işləmir</translation>
 <translation id="551689408806449779">Cihaz ayrılıb. Test etmək üçün yenidən qoşmağa çalışın</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">kilidli</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Gün batımında avtomatik olaraq tünd temaya keçin</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Mərkəzi edin</translation>
 <translation id="5703716265115423771">həcmi azaldın</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> üçün redaktə düyməsi.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5757187557809630523">növbəti trek</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> üçün silmə düyməsi.</translation>
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
 <translation id="593880865674747800">Bu üslubda daha çoxunu yaradın</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6791471867139427246">klaviatura işıq rəngi</translation>
+<translation id="6796229976413584781">Qısayol silindi</translation>
 <translation id="6798678288485555829">Mətn naviqasiyası</translation>
 <translation id="680983167891198932">Açar</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Şəbəkə APN ayarlarını idarə edin. APN mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Xarici cihazlar üçün proqram güncəlləmələri</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
+<translation id="7233782086689993269">Qısayol bərpa edildi</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7271932918253517778">Üst sıra düymələri olan qısayolda <ph name="META_KEY" /> düyməsi olmalıdır.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
 <translation id="7656388927906093505">Cihaz mausdur.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Avatarı dəyişdirin</translation>
 <translation id="7683228889864052081">klaviatura çaları</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">işıqlı klaviatura</translation>
 <translation id="7730077286107534951">Bəzi hesab və sistem məlumatları Google-a göndərilə bilər. <ph name="BEGIN_LINK2" />Məxfilik Siyasətinə<ph name="END_LINK2" /> və <ph name="BEGIN_LINK3" />Xidmət Şərtlərinə<ph name="END_LINK3" /> əsasən texniki problemləri həll etmək və xidmətləri təkmilləşdirmək üçün bu məlumatdan istifadə edirik. Kontent dəyişikliyi tələb etmək üçün <ph name="BEGIN_LINK1" />Hüquqi Kömək<ph name="END_LINK1" /> bölməsinə keçin.</translation>
 <translation id="773153675489693198">Dövrə sayı</translation>
+<translation id="7746357909584236306">redaktə edilə bilən</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
 <translation id="7752963721013053477">Sübhdən axşama - eksklüziv</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>

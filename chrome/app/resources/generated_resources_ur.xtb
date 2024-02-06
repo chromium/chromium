@@ -3295,6 +3295,7 @@
 <translation id="3497560059572256875">‏Doodle کا اشتراک کریں</translation>
 <translation id="3497915391670770295">اپنے آلات پر بھیجیں</translation>
 <translation id="3500417806337761827">‏اشتراک کو ماؤنٹ کرنے میں خرابی۔ بہت سارے SMB اشتراکات پہلے ہی ماؤنٹ کیے گئے ہیں۔</translation>
+<translation id="3500764001796099683">عیلحدہ کردہ ویب ایپس کو فعال کریں</translation>
 <translation id="350397915809787283">اگر آپ کے پاس اکاؤنٹ نہیں ہے تو اسے تخلیق کرنے کے لیے پہلا اختیار منتخب کریں۔</translation>
 <translation id="3503995387997205657">آپ اپنی گزشتہ ایپس کو بحالی کر سکتے ہیں</translation>
 <translation id="3505100368357440862">خریداری کی تجاویز</translation>
@@ -7169,6 +7170,7 @@
 <translation id="6551508934388063976">‏کمانڈ دستیاب نہیں ہے۔ ایک نئی ونڈو کھولنے کیلئے control-N دبائیں۔</translation>
 <translation id="6551606359270386381">بیضوی ٹول</translation>
 <translation id="6551612971599078809">‏سائٹ USB کا استعمال کر رہی ہے</translation>
+<translation id="6551620030439692385">مسدود ہے۔ ٹائم زون فی الحال <ph name="TIMEZONE" /> پر سیٹ ہے اور اسے صرف دستی طور پر اپ ڈیٹ کیا جا سکتا ہے۔</translation>
 <translation id="6551739526055143276">‏Family Link کے زیر انتظام ہے</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> صارفین</translation>
 <translation id="6555432686520421228">بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا <ph name="IDS_SHORT_PRODUCT_NAME" /> دوبارہ ترتیب دیں۔</translation>
@@ -7237,6 +7239,7 @@
 <translation id="6608773371844092260">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے اس <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="6609478180749378879">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔ بعد میں، آپ اپنے آلے کی مدد سے اس ویب سائٹ پر دوبارہ سائن ان کر سکیں گے۔</translation>
 <translation id="6610002944194042868">ترجمہ کے اختیارات</translation>
+<translation id="6610064275805055636">عیلحدہ کردہ ویب ایپس کا نظم کریں</translation>
 <translation id="6611972847767394631">یہاں اپنے ٹیبز تلاش کریں</translation>
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6613267708691765962">میلوئیر کے لیے اسکین کیا جا رہا ہے...</translation>
@@ -8600,6 +8603,7 @@
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" سے اسکین کرنا چاہتے ہیں۔</translation>
 <translation id="7672504401554182757">منتخب کریں کہ کس آلہ میں <ph name="APP_NAME" /> کے لئے پاس کی ہو</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، <ph name="PAGE_TITLE" /> میں۔</translation>
+<translation id="7672726198839739113">مسدود ہے۔ ٹائم زون فی الحال <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> پر سیٹ ہے اور اسے صرف دستی طور پر اپ ڈیٹ کیا جا سکتا ہے۔</translation>
 <translation id="7673313156293624327">‏ChromeOS Shill (کنکشن مینیجر) لاگز</translation>
 <translation id="7674416868315480713">‏Linux میں فارورڈ کی جا رہی سبھی پورٹس کو غیر فعال کریں</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ایپس</translation>
@@ -9532,6 +9536,7 @@
 <translation id="8376384591331888629">اس سائٹ میں فریق ثالث کوکیز سمیت</translation>
 <translation id="8376451933628734023">اگر یہ ویب ایپ آپ کو سوچنے پر مجبور کر رہی ہو کہ یہ ایک مختلف ایپ ہے تو اسے اَن انسٹال کریں۔</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> کو دوبارہ لوڈ کیا جا رہا ہے...</translation>
+<translation id="8376610503048439696">آپ کے منتظم کے ذریعے انسٹال کردہ ایکسٹینشنز اب بھی اس سائٹ کو پڑھ اور تبدیل کر سکتی ہیں</translation>
 <translation id="8376752431516546391">‏Google تلاش کا سائیڈ پینل</translation>
 <translation id="8377625247046155446">یہ پاس کی صرف اس آلہ میں محفوظ ہوگی۔ آپ کے تمام پوشیدگی ونڈوز بند کرنے بعد یہ اس آلہ پر باقی رہے گی۔</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>

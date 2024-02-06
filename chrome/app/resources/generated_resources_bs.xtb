@@ -1731,6 +1731,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2285109769884538519">{COUNT,plural, =0{Otvori sve u &amp;novoj grupi kartica}=1{Otvori u &amp;novoj grupi kartica}one{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}few{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}other{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}}</translation>
 <translation id="2285942871162473373">Prepoznavanje vašeg otiska prsta nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2287617382468007324">IPP adresa štampanja</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokaciju koju niste posjećivali u posljednje vrijeme}one{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}few{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}other{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}}</translation>
 <translation id="2287944065963043964">Ekran za prijavu</translation>
 <translation id="2290615375132886363">Dugmad za navigaciju po tabletu</translation>
 <translation id="2291452790265535215">Isprobajte bočnu ploču za oznake, putovanja i još mnogo toga</translation>
@@ -3307,6 +3308,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3497560059572256875">Dijeli crtež</translation>
 <translation id="3497915391670770295">Pošaljite na svoje &amp;uređaje</translation>
 <translation id="3500417806337761827">Greška prilikom aktiviranja dijeljenja. Previše MSP dijeljenja je već aktivirano.</translation>
+<translation id="3500764001796099683">Omogućite izolirane web aplikacije</translation>
 <translation id="350397915809787283">Ako nemate račun, odaberite prvu opciju da ga kreirate.</translation>
 <translation id="3503995387997205657">Možete vratiti prethodne aplikacije</translation>
 <translation id="3505100368357440862">Prijedlozi za kupovinu</translation>
@@ -4315,6 +4317,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4275788652681621337">Zatvori bočnu ploču</translation>
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4277434192562187284">Izvor konfiguracije za XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Dopuštenja su uklonjena za jednu web-lokaciju}one{Dopuštenja su uklonjena za {NUM_SITES} web-lokaciju}few{Dopuštenja su uklonjena za {NUM_SITES} web-lokacije}other{Dopuštenja su uklonjena za {NUM_SITES} web-lokacija}}</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="4278498748067682896">Koristit ćete Kiosk i Nadogradnju potpisivanja što dozvoljava uređaju da radi samo u načinu rada kioska ili potpisivanja. Ako želite da se korisnici prijave na uređaj, vratite se i prijavite pomoću nadogradnje Chrome Enterprisea.</translation>
 <translation id="4278779213160967034">Ovo može potrajati nekoliko minuta. Preuzimanje fajlova.</translation>
@@ -7183,6 +7186,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6551508934388063976">Komanda nije dostupna. Pritiniste control-N da otvorite novi prozor.</translation>
 <translation id="6551606359270386381">Alat za crtanje elipsi</translation>
 <translation id="6551612971599078809">Web lokacija koristi USB</translation>
+<translation id="6551620030439692385">Blokirano. Vremenska zona je trenutno postavljena na <ph name="TIMEZONE" /> i može se ažurirati samo ručno.</translation>
 <translation id="6551739526055143276">Računom upravlja Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> korisnika</translation>
 <translation id="6555432686520421228">Uklonite sve korisničke račune i ponovo pokrenite <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaj koji će biti kao nov.</translation>
@@ -7255,6 +7259,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6608773371844092260">Da postavite otisak prsta, dijete treba dodirnuti senzor za otisak prsta na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Podaci otiska prsta vašeg djeteta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Podaci za prijavu će se pohraniti na ovom uređaju nakon što izađete iz anonimnog načina rada. Moći ćete se ponovo prijaviti na ovu web lokaciju svojim uređajem kasnije.</translation>
 <translation id="6610002944194042868">Opcije za prevođenje</translation>
+<translation id="6610064275805055636">Upravljajte izoliranim web aplikacijama</translation>
 <translation id="6611972847767394631">Ovdje pronađite svoje kartice</translation>
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
 <translation id="6613267708691765962">Skeniranje radi provjere prisustva zlonamjernog softvera…</translation>
@@ -8619,6 +8624,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" želi skenirati putem skenera "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Odaberite uređaj koji ima pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, na stranici <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokirano. Raspored je trenutno postavljen na <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> i može se ažurirati samo ručno.</translation>
 <translation id="7673313156293624327">Zapisnici ChromeOS Shill-a (Upravitelj veza)</translation>
 <translation id="7674416868315480713">Deaktiviranje svih priključaka koji se prosljeđuju u Linuxu</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikacije(a)</translation>
@@ -9552,6 +9558,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8376384591331888629">Uključujući kolačiće treće strane na ovoj web lokaciji</translation>
 <translation id="8376451933628734023">Ako vas ova web aplikacija pokušava prevariti da mislite da je neka druga, deinstalirajte je.</translation>
 <translation id="8376532149031784008">Ponovno učitavanje stranice <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">Ekstenzije koje je instalirao administrator i dalje mogu čitati i mijenjati ovu web lokaciju</translation>
 <translation id="8376752431516546391">Bočna ploča Google Pretraživanja</translation>
 <translation id="8377625247046155446">Ovaj pristupni ključ će se sačuvati samo na ovom uređaju. Ostat će na ovom uređaju nakon što zatvorite sve anonimne prozore.</translation>
 <translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>

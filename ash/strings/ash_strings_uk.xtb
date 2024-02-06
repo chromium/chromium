@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Доброго дня, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Шукайте <ph name="CATEGORY" />, файли, додатки тощо. Натискайте клавіші зі стрілками, щоб переходити між додатками.</translation>
 <translation id="1093645050124056515">ctrl + alt + стрілка вниз</translation>
+<translation id="1094756674036064790">Вимкнути Bluetooth?</translation>
 <translation id="109942774857561566">Мені нудно</translation>
 <translation id="1104084341931202936">Показати налаштування функцій доступності</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">Перемикач режиму високої видимості для функції "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3666266999138159418">Проведіть пальцем, щоб сховати плаваюче вікно</translation>
+<translation id="3673898235958558034">Якщо ви вимкнете Bluetooth, пристрої <ph name="DEVICE_NAME_1" /> і <ph name="DEVICE_NAME_2" /> від’єднаються від Chromebook.</translation>
 <translation id="367531336287639526">Вибрати значок ліворуч від адресного рядка</translation>
 <translation id="3677931086890821290">Усі додатки й веб-сайти, які мають дозвіл на доступ до геоданих, і ChromeOS зможуть використовувати Wi-Fi і мобільні мережі для геолокації.</translation>
 <translation id="3679827876008292680">Перейти на останню вкладку у вікні</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Режим енергозбереження ввімкнено</translation>
+<translation id="4673427585974421255">Не вимикати</translation>
 <translation id="468293128311738995">Додатки з вашого телефона</translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">Відкрити Швидкі налаштування</translation>
 <translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Якщо ви вимкнете Bluetooth, пристрої <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> і ще <ph name="DEVICE_COUNT" /> від’єднаються від Chromebook.</translation>
 <translation id="5823239091726045201">Google Завдання у веб-переглядачі</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6546062506073634094">Пошук зображень за вмістом і попереднім переглядом</translation>
+<translation id="6547795021703527064">Якщо ви вимкнете Bluetooth, пристрій <ph name="DEVICE_NAME" /> від’єднається від Chromebook.</translation>
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>

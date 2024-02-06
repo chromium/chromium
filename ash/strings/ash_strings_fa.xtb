@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">بعدازظهر به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="1088231044944504242">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر. برای پیمایش برنامه‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
 <translation id="1093645050124056515">مهار + دگرساز + پایین‌بر</translation>
+<translation id="1094756674036064790">بلوتوث خاموش شود؟</translation>
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">روشن/خاموش کردن سطح بالای رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3666266999138159418">برای پنهان کردن پنجره شناور، تند بکشید</translation>
+<translation id="3673898235958558034">‏وقتی بلوتوث را خاموش می‌کنید، اتصال «<ph name="DEVICE_NAME_1" />» و «<ph name="DEVICE_NAME_2" />» از Chromebook قطع خواهد شد.</translation>
 <translation id="367531336287639526">انتخاب اولین نماد در سمت راست نوار نشانی</translation>
 <translation id="3677931086890821290">‏با این کار، همه برنامه‌ها و وب‌سایت‌های دارای اجازه مکان و ChromeOS مجاز می‌شوند از مکان شبکه‌های تلفن همراه و Wi-Fi استفاده کنند.</translation>
 <translation id="3679827876008292680">رفتن به آخرین برگه در پنجره</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">«بهینه‌سازی باتری» روشن شد</translation>
+<translation id="4673427585974421255">روشن باشد</translation>
 <translation id="468293128311738995">برنامه‌های تلفن شما</translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">باز کردن «تنظیمات فوری»</translation>
 <translation id="5804651031882187592">خاموش کردن تنظیم «قفل کردن سیم‌کارت»</translation>
 <translation id="5805809050170488595">برای فعال‌سازی <ph name="NETWORK_NAME" /> کلیک کنید</translation>
+<translation id="5816222150329690597">‏وقتی بلوتوث را خاموش می‌کنید، اتصال «<ph name="DEVICE_NAME_1" />»، «<ph name="DEVICE_NAME_2" />» و <ph name="DEVICE_COUNT" /> دستگاه دیگر از Chromebook قطع خواهد شد.</translation>
 <translation id="5823239091726045201">‏‫Google Tasks در وب</translation>
 <translation id="5825969630400862129">تنظیمات دستگاه‌های متصل</translation>
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">بارگیری <ph name="FILENAME" /> درحال اسکن</translation>
 <translation id="6542521951477560771">پخش محتوا به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">تصویر را براساس پیش‌نمای تصویر و محتوا جستجو کنید</translation>
+<translation id="6547795021703527064">‏وقتی بلوتوث را خاموش می‌کنید، اتصال «<ph name="DEVICE_NAME" />» از Chromebook قطع خواهد شد.</translation>
 <translation id="6555373427270923730">نشانی وبی را در نوار نشانی تایپ کنید و سپس <ph name="MODIFIER" /><ph name="KEY" /> را فشار دهید</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 نصب جدید</translation>

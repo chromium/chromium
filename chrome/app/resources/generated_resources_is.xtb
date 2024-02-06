@@ -3309,6 +3309,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3497560059572256875">Deila dúllu</translation>
 <translation id="3497915391670770295">Senda í tækin þín</translation>
 <translation id="3500417806337761827">Villa við tengingu skráageymslu. Of margar SMB-geymslur eru þegar tengdar.</translation>
+<translation id="3500764001796099683">Kveikja á einangruðum vefforritum</translation>
 <translation id="350397915809787283">Ef þú ert ekki með reikning skaltu velja fyrsta valkostinn til að búa hann til.</translation>
 <translation id="3503995387997205657">Þú getur endurheimt fyrri forrit</translation>
 <translation id="3505100368357440862">Innkaupatillögur</translation>
@@ -7185,6 +7186,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6551508934388063976">Skipun óaðgengileg. Ýttu á Ctrl+N til að opna nýjan glugga.</translation>
 <translation id="6551606359270386381">Sporbaugsverkfæri</translation>
 <translation id="6551612971599078809">Vefsvæðið notar USB</translation>
+<translation id="6551620030439692385">Á bannlista. Tímabelti er nú stillt á <ph name="TIMEZONE" /> og aðeins er hægt að uppfæra það handvirkt.</translation>
 <translation id="6551739526055143276">Í umsjón Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> notendur</translation>
 <translation id="6555432686520421228">Fjarlæga alla notendareikninga og núllstilla <ph name="IDS_SHORT_PRODUCT_NAME" /> tækið þannig að það verði eins og þegar það var nýtt.</translation>
@@ -7255,6 +7257,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6608773371844092260">Til að skrá fingrafar skaltu láta barnið snerta fingrafaralesarann hægra megin í <ph name="DEVICE_TYPE" />. Fingrafaragögn barnsins eru í öruggri geymslu og fara aldrei út fyrir þetta <ph name="DEVICE_TYPE" />-tæki.</translation>
 <translation id="6609478180749378879">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu. Þú getur skráð þig aftur inn á þetta vefsvæði með tækinu þínu síðar.</translation>
 <translation id="6610002944194042868">Valkostir þýðinga</translation>
+<translation id="6610064275805055636">Stjórna einangruðum vefforritum</translation>
 <translation id="6611972847767394631">Finndu flipana þína hér</translation>
 <translation id="661266467055912436">Eykur öryggi þitt og allra á vefnum.</translation>
 <translation id="6613267708691765962">Leitar að spilliforritum...</translation>
@@ -8618,6 +8621,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />“ vill skanna með „<ph name="SCANNER_NAME" />“.</translation>
 <translation id="7672504401554182757">Veldu hvaða tæki er með aðgangslykil fyrir <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, á <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Á bannlista. Áætlun er nú stillt á <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> og aðeins er hægt að uppfæra hana handvirkt.</translation>
 <translation id="7673313156293624327">Annálar ChromeOS Shill (tengingarstjórnun)</translation>
 <translation id="7674416868315480713">Gera framsendingu allra gátta óvirka í Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> forrit</translation>
@@ -9550,6 +9554,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8376384591331888629">Hafa fótspor þriðju aðila á þessu vefsvæði með</translation>
 <translation id="8376451933628734023">Þú ættir að fjarlægja þetta vefforrit ef það reynir að plata þig með því að þykjast vera eitthvert annað forrit.</translation>
 <translation id="8376532149031784008">Endurhleður <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Viðbætur sem stjórnandi hefur sett upp geta áfram lesið þetta vefsvæði og breytt því</translation>
 <translation id="8376752431516546391">Hliðargluggi í Google-leit</translation>
 <translation id="8377625247046155446">Þessi aðgangslykill verður aðeins vistaður í þessu tæki. Hann verður áfram í þessu tæki eftir að þú lokar öllum huliðsgluggum.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>

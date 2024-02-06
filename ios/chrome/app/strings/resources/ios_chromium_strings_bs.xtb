@@ -100,6 +100,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3833326979834193417">Chromium automatski pokreće sigurnosnu provjeru svakog dana da vas zaštiti od narušavanja podataka, nesigurnih web lokacija i drugog. U Postavkama možete pronaći više informacija o sigurnosnoj provjeri.</translation>
 <translation id="3855938650519180865">Šta je novo u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web lokaciju i u Chromium da dobijete svoje oznake i još mnogo toga na svim svojim uređajima.</translation>
+<translation id="3904484643286601695">Svoje odabire uvijek možete ažurirati u postavkama Chromiuma.</translation>
 <translation id="394413318816989199">Šifriranje pristupnim izrazom ne obuhvata načine plaćanja i adrese.
 
 Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
@@ -204,6 +205,7 @@ Stvari za razmatranje:
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga Google pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je sada još bolji! Dostupna je nova verzija.</translation>
+<translation id="6433172051771630690">Savjeti za iskorištavanje svih prednosti Chromiuma.</translation>
 <translation id="6502321914804101924">Odjavljeni ste iz Chromiuma</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium sada podržava korisnička pravila za vaš upravljani račun</translation>
@@ -256,6 +258,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7990085102929105708">Načini plaćanja i adrese s Google Paya se neće šifrirati. Historija pregledanja iz Chromiuma se neće sinhronizirati.
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Da dobijate korisne savjete za Chromium, uključite obavještenja u postavkama iOS-a.</translation>
 <translation id="7995166854192397899">Prijedlozi se zasnivaju na vašoj aktivnosti pregledanja na drugim uređajima. Da dobijate prijedloge, prijavite se u Chromium na svim svojim uređajima.</translation>
 <translation id="800195749539500647">Iskoristite sve prednosti Chromiuma</translation>
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>

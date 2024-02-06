@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Не вдалося завантажити зображення. Перевірте з’єднання з мережею або повторіть спробу.</translation>
 <translation id="1751249301761991853">Персоналізація</translation>
 <translation id="1753496554272155572">Закрити попередній перегляд фонового малюнка</translation>
+<translation id="1754578112426924640">Кнопка "Редагувати" для комбінації клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Додаток Діагностика</translation>
 <translation id="175763766237925754">Добрий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android не працює</translation>
 <translation id="551689408806449779">Пристрій відключено. Щоб продовжити тестування, спробуйте підключитися знову.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">заблоковано</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматично вмикати темну тему після заходу сонця</translation>
 <translation id="5578477003638479617">Технологія UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5703716265115423771">зменшити гучність</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Кнопка "Редагувати" для опису "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Середній</translation>
 <translation id="5757187557809630523">наступна композиція</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Кнопка "Видалити" для комбінації клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Файл не знайдено</translation>
 <translation id="593880865674747800">Створити більше в цьому стилі</translation>
 <translation id="5939518447894949180">Скинути</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6791471867139427246">колір підсвічування клавіатури</translation>
+<translation id="6796229976413584781">Комбінацію клавіш видалено</translation>
 <translation id="6798678288485555829">Навігація текстом</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею і Інтернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Оновлення мікропрограми для зовнішніх пристроїв</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
+<translation id="7233782086689993269">Комбінацію клавіш відновлено</translation>
 <translation id="725133483556299729">Вибрати електронну адресу</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7271932918253517778">Комбінація з клавішами верхнього рядка має містити клавішу <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="7656388927906093505">Це миша.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Змінити аватар</translation>
 <translation id="7683228889864052081">відтінок клавіатури</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">підсвічування клавіатури</translation>
 <translation id="7730077286107534951">Певні дані про ваш обліковий запис і систему можуть надсилатися в Google. Ми застосовуємо цю інформацію відповідно до <ph name="BEGIN_LINK2" />Політики конфіденційності<ph name="END_LINK2" /> й <ph name="BEGIN_LINK3" />Умов використання<ph name="END_LINK3" />, щоб вирішувати технічні проблеми й покращувати наші сервіси. Щоб надіслати запит на змінення контенту, перейдіть на <ph name="BEGIN_LINK1" />сторінку правової довідки<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Кількість циклів</translation>
+<translation id="7746357909584236306">доступно для редагування</translation>
 <translation id="7747039790905080783">Спільний ключ</translation>
 <translation id="7752963721013053477">Від світанку до заходу сонця – ексклюзивно</translation>
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>

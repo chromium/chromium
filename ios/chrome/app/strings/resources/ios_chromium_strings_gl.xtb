@@ -204,6 +204,7 @@ Cuestións que debes ter en conta:
 
 Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
+<translation id="6433172051771630690">Consellos para tirar o máximo proveito de Chromium.</translation>
 <translation id="6502321914804101924">Pechaches a sesión en Chromium</translation>
 <translation id="6563921047760808519">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chromium a privacidade dos teus datos<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium xa admite políticas de usuario para a túa conta xestionada</translation>
@@ -256,6 +257,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="7990085102929105708">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chromium.
 
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Se queres recibir consellos útiles sobre Chromium, activa as notificacións na configuración de iOS.</translation>
 <translation id="7995166854192397899">As suxestións baséanse na túa actividade de navegación noutros dispositivos. Para recibir suxestións, inicia sesión en Chromium en todos os teus dispositivos.</translation>
 <translation id="800195749539500647">Tira o máximo proveito de Chromium</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>

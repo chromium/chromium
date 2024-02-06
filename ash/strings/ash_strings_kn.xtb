@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">ಶುಭ ಮಧ್ಯಾಹ್ನ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="1088231044944504242">ನಿಮ್ಮ <ph name="CATEGORY" />, ಫೈಲ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಹುಡುಕಿ. ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಬಾಣದ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="1093645050124056515">ctrl + alt + ಡೌನ್ ಆ್ಯರೋ</translation>
+<translation id="1094756674036064790">ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="109942774857561566">ನನಗೆ ಬೇಜಾರಾಗಿದೆ</translation>
 <translation id="1104084341931202936">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1104621072296271835">ನಿಮ್ಮ ಸಾಧನಗಳು ಜೊತೆಯಲ್ಲಿ ಇನ್ನೂ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011">ಹೆಚ್ಚಿನ ಗೋಚರತೆಯ <ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
 <translation id="3666266999138159418">ನಿಮ್ಮ ಫ್ಲೋಟಿಂಗ್ ವಿಂಡೋವನ್ನು ಮರೆಮಾಡಲು ಸ್ವೈಪ್ ಮಾಡಿ</translation>
+<translation id="3673898235958558034">ನೀವು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದಾಗ, "<ph name="DEVICE_NAME_1" />" ಮತ್ತು "<ph name="DEVICE_NAME_2" />" ಸಾಧನಗಳು ನಿಮ್ಮ Chromebook ನಿಂದ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="367531336287639526">ವಿಳಾಸ ಪಟ್ಟಿಯ ಎಡಭಾಗದಲ್ಲಿರುವ ಮೊದಲ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3677931086890821290">ಇದು ಸ್ಥಳ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಹಾಗೂ ವೈ-ಫೈ ಮತ್ತು ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳ ಸ್ಥಳವನ್ನು ಬಳಸಲು ChromeOS ಅನ್ನು ಅನುಮತಿಸುತ್ತದೆ.</translation>
 <translation id="3679827876008292680">ವಿಂಡೋದಲ್ಲಿ ಕೊನೆಯ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4672539464599646374">ಬ್ಯಾಟರಿ ಸೇವರ್ ಅನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4673427585974421255">ಆನ್ ಆಗಿರಿಸಿ</translation>
 <translation id="468293128311738995">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4690510401873698237">ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಶೆಲ್ಫ್ ಇದೆ</translation>
 <translation id="4696813013609194136">ಪೋಷಕ ಕೋಡ್ ಬಳಸಿಕೊಂಡು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5804651031882187592">"SIM ಅನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="5816222150329690597">ನೀವು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದಾಗ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ಮತ್ತು <ph name="DEVICE_COUNT" /> ಇತರ ಸಾಧನಗಳು ನಿಮ್ಮ Chromebook ನಿಂದ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="5823239091726045201">ವೆಬ್‌ನಲ್ಲಿ Google ಕಾರ್ಯಗಳು</translation>
 <translation id="5825969630400862129">ಕನೆಕ್ಟ್ ಮಾಡಿದ ಸಾಧನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /> ನಿಲ್ಲಿಸಿ</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">ಸ್ಕ್ಯಾನ್ ಆಗುತ್ತಿರುವ <ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6546062506073634094">ಕಂಟೆಂಟ್‌ ಮತ್ತು ಚಿತ್ರದ ಪೂರ್ವವೀಕ್ಷಣೆಗಳ ಮೂಲಕ ಚಿತ್ರ ಹುಡುಕಾಟ</translation>
+<translation id="6547795021703527064">ನೀವು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದಾಗ, "<ph name="DEVICE_NAME" />" ಸಾಧನವು ನಿಮ್ಮ Chromebook ನಿಂದ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="6555373427270923730">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ ವಿಳಾಸವನ್ನು ಟೈಪ್‌ ಮಾಡಿ, ನಂತರ <ph name="MODIFIER" /><ph name="KEY" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ಹೊಸ ಇನ್‌ಸ್ಟಾಲ್</translation>

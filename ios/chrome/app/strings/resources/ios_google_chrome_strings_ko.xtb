@@ -75,6 +75,7 @@
 <translation id="2689064829982324496">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="2695886661449553974">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2702250627063295552">Chrome에 읽기 목록 항목 추가</translation>
+<translation id="2703746758996815929">유용한 Chrome 도움말을 확인하려면 iOS 설정에서 알림을 사용 설정하세요</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2789947168960170215">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
@@ -297,6 +298,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="8857676124663337448">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
+<translation id="8874688701962049679">Chrome을 최대한 활용하기 위한 도움말입니다.</translation>
 <translation id="8891935667620843985">Chrome을 기본 브라우저 앱으로 설정하면 링크가 자동으로 Chrome에서 열립니다.</translation>
 <translation id="8897749957032330183">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="8949681853939555434">Chrome을 기본 브라우저로 설정</translation>

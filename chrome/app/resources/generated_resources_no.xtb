@@ -1727,6 +1727,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2285109769884538519">{COUNT,plural, =0{Åpne alle i &amp;ny fanegruppe}=1{Åpne i &amp;ny fanegruppe}other{Åpne alle ({COUNT}) i &amp;ny fanegruppe}}</translation>
 <translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv på nytt.</translation>
 <translation id="2287617382468007324">IPP-adresse for utskrift</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{For å beskytte dataene dine har vi fjernet tillatelsene fra et nettsted du ikke har besøkt i det siste}other{For å beskytte dataene dine har vi fjernet tillatelsene fra nettsteder du ikke har besøkt i det siste}}</translation>
 <translation id="2287944065963043964">Påloggingsskjerm</translation>
 <translation id="2290615375132886363">Navigeringsknapper i nettbrettmodus</translation>
 <translation id="2291452790265535215">Prøv å bruke sidepanelet for bokmerker, søkereiser med mer</translation>
@@ -3303,6 +3304,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3497560059572256875">Del doodlen</translation>
 <translation id="3497915391670770295">Send til &amp;enhetene dine</translation>
 <translation id="3500417806337761827">Feil ved innsetting av delt nettverksressurs. Det er allerede satt inn for mange delte SMB-nettverksressurser.</translation>
+<translation id="3500764001796099683">Aktiver isolerte nettapper</translation>
 <translation id="350397915809787283">Hvis du ikke har noen konto, velger du det første alternativet for å opprette en.</translation>
 <translation id="3503995387997205657">Du kan gjenopprette de tidligere appene dine</translation>
 <translation id="3505100368357440862">Handelsforslag</translation>
@@ -4309,6 +4311,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4275788652681621337">Lukk sidepanelet</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4277434192562187284">XML-konfigurasjonskilde</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Tillatelsene er fjernet fra 1 nettsted}other{Tillatelsene er fjernet fra {NUM_SITES} nettsteder}}</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4278498748067682896">Du kommer til å bruke en Kiosk og skilt-oppgradering, som gjør at enheten kun kan kjøres i kiosk- eller skiltmodus. Hvis du vil at brukere skal logge på enheten, må du gå tilbake og registrere den med Chrome Enterprise-oppgraderingen.</translation>
 <translation id="4278779213160967034">Denne prosessen kan ta noen minutter. Laster ned filer.</translation>
@@ -7175,6 +7178,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6551508934388063976">Kommandoen er utilgjengelig. Trykk på control-N for å åpne et nytt vindu.</translation>
 <translation id="6551606359270386381">Ellipseverktøy</translation>
 <translation id="6551612971599078809">Nettstedet bruker USB</translation>
+<translation id="6551620030439692385">Blokkert. Tidssonen er for øyeblikket <ph name="TIMEZONE" />, og den kan bare oppdateres manuelt.</translation>
 <translation id="6551739526055143276">Administreres av Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> brukere</translation>
 <translation id="6555432686520421228">Fjern alle brukerkontoer og tilbakestill <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten din til fabrikkstandard.</translation>
@@ -7243,6 +7247,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6608773371844092260">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Påloggingsdata blir lagret på denne enheten når du går ut av Inkognitomodus. Du kan logge på dette nettstedet med enheten din igjen senere.</translation>
 <translation id="6610002944194042868">Alternativer for oversettelse</translation>
+<translation id="6610064275805055636">Administrer isolerte nettapper</translation>
 <translation id="6611972847767394631">Se fanene dine her</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6613267708691765962">Skanner etter skadelig programvare …</translation>
@@ -8607,6 +8612,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7671472752213333268">«<ph name="EXTENSION_NAME" />» vil skanne fra «<ph name="SCANNER_NAME" />».</translation>
 <translation id="7672504401554182757">Velg hvilken enhet som har tilgangsnøkkelen for <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> på <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokkert. Tidsplanen er for øyeblikket <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" />, og den kan bare oppdateres manuelt.</translation>
 <translation id="7673313156293624327">Logger for ChromeOS Shill (tilkoblingsbehandling)</translation>
 <translation id="7674416868315480713">Deaktiver alle porter som viderekobles i Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apper</translation>
@@ -9540,6 +9546,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8376384591331888629">Inkludert informasjonskapsler fra tredjeparter på dette nettstedet</translation>
 <translation id="8376451933628734023">Hvis denne nettappen prøver å lure deg til å tro at det er en annen app, må du avinstallere det.</translation>
 <translation id="8376532149031784008">Laster inn <ph name="DOMAIN" /> på nytt …</translation>
+<translation id="8376610503048439696">Utvidelser som administratoren din har installert, kan fremdeles lese og endre dette nettstedet</translation>
 <translation id="8376752431516546391">Google Søk-sidepanelet</translation>
 <translation id="8377625247046155446">Denne tilgangsnøkkelen lagres bare på denne enheten. Den blir værende på denne enheten når du har lukket alle inkognitovinduer.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>

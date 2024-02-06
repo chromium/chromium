@@ -26,6 +26,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1087110696012418426">God ettermiddag, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">Søk i <ph name="CATEGORY" />, filer, apper med mer. Bruk piltastene til å navigere i appene dine.</translation>
 <translation id="1093645050124056515">ctrl + alt + nedoverpil</translation>
+<translation id="1094756674036064790">Vil du slå av Bluetooth?</translation>
 <translation id="109942774857561566">Jeg kjeder meg</translation>
 <translation id="1104084341931202936">Vis innstillinger for tilgjengelighet</translation>
 <translation id="1104621072296271835">Enhetene fungerer enda bedre sammen</translation>
@@ -660,6 +661,7 @@ Koble enheten til strøm.</translation>
 <translation id="3660860940251915011">Slå av/på høy synlighet for <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
 <translation id="3666266999138159418">Sveip for å skjule det flytende vinduet</translation>
+<translation id="3673898235958558034">Når du slår av Bluetooth, blir «<ph name="DEVICE_NAME_1" />» og «<ph name="DEVICE_NAME_2" />» koblet fra Chromebooken.</translation>
 <translation id="367531336287639526">Velg det første ikonet til venstre for adressefeltet</translation>
 <translation id="3677931086890821290">Dette gir alle apper og nettsteder med posisjonstillatelse og ChromeOS tillatelse til å bruke wifi- og mobilnettverksposisjon.</translation>
 <translation id="3679827876008292680">Gå til den siste fanen i vinduet</translation>
@@ -915,6 +917,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Batterisparing er slått på</translation>
+<translation id="4673427585974421255">Behold på</translation>
 <translation id="468293128311738995">Apper fra telefonen din</translation>
 <translation id="4690510401873698237">Hyllen er nederst</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
@@ -1215,6 +1218,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5802516411616338943">Åpne Hurtiginnstillinger</translation>
 <translation id="5804651031882187592">Slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Når du slår av Bluetooth, blir «<ph name="DEVICE_NAME_1" />», «<ph name="DEVICE_NAME_2" />» og <ph name="DEVICE_COUNT" /> enheter til koblet fra Chromebooken.</translation>
 <translation id="5823239091726045201">Google Oppgaver på nettet</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1399,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6539852571005954999">Nedlastingen skannes: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Bildesøk basert på innhold og bildeforhåndsvisninger</translation>
+<translation id="6547795021703527064">Når du slår av Bluetooth, blir «<ph name="DEVICE_NAME" />» koblet fra Chromebooken.</translation>
 <translation id="6555373427270923730">Skriv inn en nettadresse i adressefeltet, og trykk deretter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nylig installert</translation>

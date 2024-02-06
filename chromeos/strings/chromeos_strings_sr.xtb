@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Учитавање слика није успело. Проверите мрежну везу или пробајте да поново учитате слику.</translation>
 <translation id="1751249301761991853">Лично</translation>
 <translation id="1753496554272155572">Изађите из прегледа позадине</translation>
+<translation id="1754578112426924640">Дугме Измени за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Апликација Дијагностика</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android није покренут</translation>
 <translation id="551689408806449779">Прекинута је веза са уређајем. Пробајте поново да се повежете ради тестирања</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">закључано</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Аутоматски прелазите на тамну тему у време заласка сунца</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="5703716265115423771">утишај звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Дугме Измени за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ажурирајте <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5757187557809630523">следећа песма</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Фајл је скениран и сачуван у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Дугме Избриши за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Фајл није пронађен</translation>
 <translation id="593880865674747800">Направите још позадина у овом стилу</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
 <translation id="6768237774506518020">Велика стопа неуспеха DNS разрешавања</translation>
 <translation id="6791471867139427246">боја осветљења тастатуре</translation>
+<translation id="6796229976413584781">Пречица је избрисана</translation>
 <translation id="6798678288485555829">Кретање кроз текст</translation>
 <translation id="680983167891198932">Кључ</translation>
 <translation id="6816797338148849397">Доступне су информације везане за ваш избор. Користите тастер са стрелицом нагоре да бисте им приступили.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања фирмвера за екстерне уређаје</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
+<translation id="7233782086689993269">Пречица је враћена</translation>
 <translation id="725133483556299729">Изаберите имејл</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7271932918253517778">Пречица са тастерима у горњем реду треба да садржи тастер <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Велико HTTPS кашњење</translation>
 <translation id="7656388927906093505">Уређај је миш.</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Промените аватар</translation>
 <translation id="7683228889864052081">нијанса тастатуре</translation>
 <translation id="7690294790491645610">Потврдите нову лозинку</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">светло тастатуре</translation>
 <translation id="7730077286107534951">Неке информације о налогу и систему могу да се шаљу Google-у. Ове информације користимо за решавање техничких проблема и побољшавање услуга у складу са нашом <ph name="BEGIN_LINK2" />политиком приватности<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />условима коришћења услуге<ph name="END_LINK3" />. Да бисте затражили промене садржаја, идите у одељак <ph name="BEGIN_LINK1" />Правна помоћ<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Број циклуса</translation>
+<translation id="7746357909584236306">може да се мења</translation>
 <translation id="7747039790905080783">Тајни кључ</translation>
 <translation id="7752963721013053477">Од свитања до мрака – ексклузивно</translation>
 <translation id="7762130827864645708">Лозинка је промењена. Од сада користите нову лозинку.</translation>

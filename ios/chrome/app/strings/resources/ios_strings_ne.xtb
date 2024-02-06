@@ -1412,6 +1412,7 @@
 <translation id="8273982424131314219">तपाईंले <ph name="URL" /> मा जानकारी भर्नु पर्ने हुन्छ</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
+<translation id="828291969289324795">{count,plural, =1{यो ट्याब नयाँ समूहमा हाल्नुहोस्}other{यी ट्याबहरू नयाँ समूहमा हाल्नुहोस्}}</translation>
 <translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
 <translation id="8286036467436129157">साइन इन गर्नुहोस्</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>

@@ -575,6 +575,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
 <translation id="3989635538409502728">Afmelden</translation>
+<translation id="3994422733891749358">Kies welke meldingen je wilt krijgen</translation>
 <translation id="3995521777587992544">Voortgangsbalk voor laden van pagina, <ph name="EMAIL" /> geladen.</translation>
 <translation id="3997522473364371632">Wachtwoord delen is uitgezet door je beheerder.</translation>
 <translation id="4002019827078931033">Adresbalk naar boven verplaatsen</translation>
@@ -684,6 +685,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4592368184551360546">Toetsenbord</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606247758155004938">Je browser wordt beheerd door je organisatie.</translation>
+<translation id="4607887340472970274">Prijzen volgen</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> niet meer volgen verbergen</translation>
 <translation id="461440297010471931">Zoeken met Google</translation>
 <translation id="4616391354457235490">Ongedaan maken</translation>
@@ -724,6 +726,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="478808905805139173">Openen in incognitomodus?</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Nieuws en content op basis van je interesses.</translation>
 <translation id="4805759445554688327">Ongeldig creditcardnummer</translation>
 <translation id="4808646838864186379">Je bezorging is geannuleerd</translation>
 <translation id="4808744395915275922">Updates</translation>
@@ -1238,6 +1241,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ongelezen artikelen.</translation>
 <translation id="7412027924265291969">Doorgaan</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
+<translation id="7417689656810783109">Naam van groep wijzigen</translation>
 <translation id="7418640008860669073">Opslaan in…</translation>
 <translation id="7425346204213733349">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account.</translation>
 <translation id="7431991332293347422">Beheren hoe je browsegeschiedenis wordt gebruikt om Google Zoeken en meer te personaliseren</translation>
@@ -1412,8 +1416,10 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8273982424131314219">Je vult informatie in op <ph name="URL" /></translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
+<translation id="828291969289324795">{count,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
 <translation id="8283172974887967105">Instellen…</translation>
 <translation id="8286036467436129157">Inloggen</translation>
+<translation id="8292843446079898078">Krijg meldingen over prijsdalingen voor producten die je volgt.</translation>
 <translation id="8299417921174340354">Als je wachtwoorden wilt gebruiken, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="8299613349954694191">Open een incognitotabblad om privé op internet te browsen.</translation>
 <translation id="8311853334103696030">Prijs volgen verbergen</translation>
@@ -1421,6 +1427,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8328777765163860529">Alles sluiten</translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="834783239627985533">Meest bezochte sites</translation>
+<translation id="8358401059263985056">Meldingen aanzetten</translation>
 <translation id="8364841868226993049">Afbeelding in Google Foto's opslaan voor <ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">Naar Instellingen…</translation>
 <translation id="8374977641764177587">Meldingen aanzetten?</translation>

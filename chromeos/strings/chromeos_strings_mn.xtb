@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Зургийг ачаалж чадсангүй. Сүлжээний холболтоо шалгах эсвэл зургуудыг дахин ачаалж үзнэ үү</translation>
 <translation id="1751249301761991853">Хувийн</translation>
 <translation id="1753496554272155572">Дэлгэцийн зургийг урьдчилан үзэхээс гарах</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />-н засах товчлуур.</translation>
 <translation id="1755556344721611131">Оношилгооны апп</translation>
 <translation id="175763766237925754">Сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android ажиллахгүй байна</translation>
 <translation id="551689408806449779">Төхөөрөмж салсан байна. Туршихын тулд дахин холбогдохоор оролдоно уу</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">түгжсэн</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Нар жаргах үед бараан загвар луу автоматаар сэлгэх</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Төв</translation>
 <translation id="5703716265115423771">дууны түвшинг хасах</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-н <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />-н засах товчлуур.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />-г шинэчлэх</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
 <translation id="5757187557809630523">дараагийн бичлэг</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" />-н устгах товчлуур.</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
 <translation id="593880865674747800">Ийм загвартай илүү их дэлгэцийн зураг үүсгэх</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
 <translation id="6791471867139427246">гарын гэрлийн өнгө</translation>
+<translation id="6796229976413584781">Товчлолыг устгасан</translation>
 <translation id="6798678288485555829">Текстийн навигац</translation>
 <translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Гадаад төхөөрөмжүүдийн жижиг программын шинэчлэлтүүд</translation>
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
+<translation id="7233782086689993269">Товчлолыг сэргээсэн</translation>
 <translation id="725133483556299729">Имэйл сонгох</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7271932918253517778">Дээд талын мөрийн товчнуудтай товчлол нь <ph name="META_KEY" /> товчийг оруулах шаардлагатай.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7656388927906093505">Төхөөрөмж нь хулгана байна.</translation>
 <translation id="7658239707568436148">Болих</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Аватар өөрчлөх</translation>
 <translation id="7683228889864052081">гарын өнгө</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">гарын гэрэл</translation>
 <translation id="7730077286107534951">Зарим бүртгэл болон системийн мэдээллийг Google рүү илгээж болзошгүй. Бид энэ мэдээллийг <ph name="BEGIN_LINK2" />нууцлалын бодлого<ph name="END_LINK2" /> ба <ph name="BEGIN_LINK3" />үйлчилгээний нөхцөлийн<ph name="END_LINK3" /> дагуу техникийн асуудлуудыг шийдвэрлэхэд туслах болон үйлчилгээнүүдээ сайжруулахад ашиглана. Контентын өөрчлөлтийн хүсэлт тавихын тулд <ph name="BEGIN_LINK1" />Хууль эрх зүйн тусламж<ph name="END_LINK1" /> руу очно уу.</translation>
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
+<translation id="7746357909584236306">засах боломжтой</translation>
 <translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7752963721013053477">Үүр цайхаас шөнө хүртэл - онцгой</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>

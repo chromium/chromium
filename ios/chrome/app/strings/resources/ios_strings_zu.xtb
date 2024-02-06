@@ -575,6 +575,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
 <translation id="3968505803272650567">Phatha ongaba nentshisekelo kukho</translation>
 <translation id="3989635538409502728">Phuma ngemvume</translation>
+<translation id="3994422733891749358">Khetha izaziso ofuna ukuzithola</translation>
 <translation id="3995521777587992544">Ibha yenqubo yokulayisha ikhasi, i-<ph name="EMAIL" /> ilayishiwe.</translation>
 <translation id="3997522473364371632">Ukwabelana ngephasiwedi kukhutshazwe umlawuli wakho.</translation>
 <translation id="4002019827078931033">Hambisa Ibha Lekheli Phezulu</translation>
@@ -684,6 +685,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4592368184551360546">Ikhibhodi</translation>
 <translation id="4601095002996233687">Ukuskena okujulile kokudawunilodwa okusolisayo.</translation>
 <translation id="4606247758155004938">Ibhrawuza yakho iphethwe inhlangano yakho.</translation>
+<translation id="4607887340472970274">Ukulandelela Intengo</translation>
 <translation id="4611811151908969241">Fihla Ukuyekela Ukulandela <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Ukusesha nge-Google</translation>
 <translation id="4616391354457235490">Hlehlisa</translation>
@@ -724,6 +726,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="478808905805139173">Uyivula ku-incognito?</translation>
 <translation id="4803185665210547709">Kuphethwe inhlangano yakho.
 <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Izindaba nokuqukethwe okususelwe kuzintshisekelo zakho.</translation>
 <translation id="4805759445554688327">Inombolo yekhadi engavumelekile</translation>
 <translation id="4808646838864186379">Okudilivwayo kwakho kukhanseliwe</translation>
 <translation id="4808744395915275922">Izibuyekezo</translation>
@@ -1238,6 +1241,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ama-athikili angafundiwe.</translation>
 <translation id="7412027924265291969">Qhubeka</translation>
 <translation id="741204030948306876">Yebo, ngingenile</translation>
+<translation id="7417689656810783109">Qamba Kabusha Iqembu</translation>
 <translation id="7418640008860669073">Londoloza kokuthi...</translation>
 <translation id="7425346204213733349">Izinguquko kumabhukhimakhi akho, umlando, amaphasiwedi, nezinye izilungiselelo ngeke kusavumelaniswa ku-akhawunti yakho ye-Google. Yize kunjalo, idatha yakho ekhona izohlala igcinwe ku-akhawunti yakho ye-Google.</translation>
 <translation id="7431991332293347422">Lawula ukuthi umlando wakho wokuphequlula usetshenziswa kanjani ukuze kwenziwe kube ngokwakho Usesho nokuningi</translation>
@@ -1414,6 +1418,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8281886186245836920">Yeqa</translation>
 <translation id="8283172974887967105">Setha…</translation>
 <translation id="8286036467436129157">Ngena Ngemvume</translation>
+<translation id="8292843446079898078">Thola izexwayiso zokwehla kwentengo yemikhiqizo oyilandelelayo.</translation>
 <translation id="8299417921174340354">Ukuze usebenzise amaphasiwedi, kuzomele uqale usethe ikhodi yokudlula kudivayisi yakho.</translation>
 <translation id="8299613349954694191">Vula i ithebhu ye-incognito ukuze uphequlule iwebhu ngokuyimfihlo.</translation>
 <translation id="8311853334103696030">Fihla Inani Lethrekhi</translation>
@@ -1421,6 +1426,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8328777765163860529">Vala konke</translation>
 <translation id="8343993175958086504">Yenza isipele izinto zakho futhi uzisebenzise kunoma iyiphi idivayisi.</translation>
 <translation id="834783239627985533">Amasayithi Avakashelwe Kaningi</translation>
+<translation id="8358401059263985056">Vula Izaziso</translation>
 <translation id="8364841868226993049">Ilondoloza umfanekiso ku-Google Photos ka-<ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">Iya kokuthi Amasethingi...</translation>
 <translation id="8374977641764177587">Vula Izaziso?</translation>

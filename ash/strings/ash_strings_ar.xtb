@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="1088231044944504242">يمكنك البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك. ويمكنك استخدام مفاتيح الأسهم للتنقّل بين التطبيقات.</translation>
 <translation id="1093645050124056515">‏‫ctrl‏ + alt + السهم المتّجه للأسفل</translation>
+<translation id="1094756674036064790">هل تريد إيقاف البلوتوث؟</translation>
 <translation id="109942774857561566">أشعر بالملل</translation>
 <translation id="1104084341931202936">عرض إعدادات تسهيل الاستخدام</translation>
 <translation id="1104621072296271835">تعمل أجهزتك بشكل أفضل وهي مرتبطة معًا</translation>
@@ -661,6 +662,7 @@
 <translation id="3660860940251915011">إيقاف أو تفعيل وضع الظهور العالي لميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">المستخدِم المُدار <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">مرِّر سريعًا لإخفاء النافذة العائمة.</translation>
+<translation id="3673898235958558034">‏عند إيقاف البلوتوث، سيتم إلغاء ربط "<ph name="DEVICE_NAME_1" />" و"<ph name="DEVICE_NAME_2" />" بجهاز Chromebook.</translation>
 <translation id="367531336287639526">اختيار الرمز الأول على يمين شريط العناوين</translation>
 <translation id="3677931086890821290">‏يتيح هذا الإجراء لجميع التطبيقات والمواقع الإلكترونية التي لديها إذن تحديد الموقع الجغرافي ونظام التشغيل ChromeOS استخدام الموقع الجغرافي لشبكة Wi-Fi وشبكات الجوّال.</translation>
 <translation id="3679827876008292680">الانتقال إلى علامة التبويب الأخيرة في النافذة</translation>
@@ -917,6 +919,7 @@
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4667099493359681081">جارٍ تنزيل <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">وضع "توفير شحن البطارية" مُفعَّل.</translation>
+<translation id="4673427585974421255">عدم الإيقاف</translation>
 <translation id="468293128311738995">تطبيقات من هاتفك</translation>
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
@@ -1217,6 +1220,7 @@
 <translation id="5802516411616338943">فتح "الإعدادات السريعة"</translation>
 <translation id="5804651031882187592">‏إيقاف الإعداد "قفل شريحة SIM"</translation>
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
+<translation id="5816222150329690597">‏عند إيقاف البلوتوث، سيتم إلغاء ربط "<ph name="DEVICE_NAME_1" />" و"<ph name="DEVICE_NAME_2" />" و<ph name="DEVICE_COUNT" /> جهاز آخر بجهاز Chromebook.</translation>
 <translation id="5823239091726045201">‏"مهام Google" على الويب</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
@@ -1397,6 +1401,7 @@
 <translation id="6539852571005954999">جارٍ فحص الملف <ph name="FILENAME" /> لتنزيله</translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">البحث عن الصور حسب المحتوى ومعاينات الصور</translation>
+<translation id="6547795021703527064">‏عند إيقاف البلوتوث، سيتم إلغاء ربط "<ph name="DEVICE_NAME" />" بجهاز Chromebook.</translation>
 <translation id="6555373427270923730">‏اكتب عنوان الويب في شريط العناوين، ثم اضغط على ‎<ph name="MODIFIER" /><ph name="KEY" />.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 مثبَّت حديثًا</translation>

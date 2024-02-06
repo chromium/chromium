@@ -2272,7 +2272,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2692901429679246677">Aiguamarina</translation>
 <translation id="2693134906590795721">Sons de càrrega</translation>
 <translation id="2693176596243495071">S'ha produït un error desconegut. Torna-ho a provar més tard o contacta amb l'administrador si el problema no es resol.</translation>
-<translation id="2698147581454716013">Aquest és un dispositiu agrupat i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
+<translation id="2698147581454716013">Aquest és un dispositiu amb llicència integrada i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
 <translation id="2699911226086014512">Ha fallat l'operació del PIN; codi: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicia la sessió, <ph name="EMAIL" /></translation>
@@ -3293,6 +3293,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3497560059572256875">Comparteix el doodle</translation>
 <translation id="3497915391670770295">Envia als teus &amp;dispositius</translation>
 <translation id="3500417806337761827">S'ha produït un error en activar l'ús compartit. Ja hi ha activats massa comparticions d'SMB.</translation>
+<translation id="3500764001796099683">Activa les aplicacions web aïllades</translation>
 <translation id="350397915809787283">Si no tens cap compte, selecciona la primera opció per crear-ne un.</translation>
 <translation id="3503995387997205657">Pots restaurar les aplicacions anteriors</translation>
 <translation id="3505100368357440862">Suggeriments de compra</translation>
@@ -7166,6 +7167,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6551508934388063976">L'ordre no està disponible. Premeu Ctrl + N per obrir una finestra nova.</translation>
 <translation id="6551606359270386381">Eina d'el·lipse</translation>
 <translation id="6551612971599078809">El lloc web fa servir USB</translation>
+<translation id="6551620030439692385">S'ha bloquejat. Actualment, la zona horària està establerta en <ph name="TIMEZONE" /> i només es pot actualitzar manualment.</translation>
 <translation id="6551739526055143276">Gestionats per Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> usuaris</translation>
 <translation id="6555432686520421228">Suprimeix tots els comptes d'usuari i restableix el dispositiu <ph name="IDS_SHORT_PRODUCT_NAME" />, com si fos nou.</translation>
@@ -7234,6 +7236,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6608773371844092260">Per configurar una impremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha a la part dreta d'aquest <ph name="DEVICE_TYPE" />. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit. Podràs tornar a iniciar la sessió en aquest lloc web amb el teu dispositiu més endavant.</translation>
 <translation id="6610002944194042868">Opcions del Traductor</translation>
+<translation id="6610064275805055636">Gestiona les aplicacions web aïllades</translation>
 <translation id="6611972847767394631">Aquí trobaràs les teves pestanyes</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6613267708691765962">S'està cercant programari maliciós...</translation>
@@ -8598,6 +8601,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" vol escanejar des de "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Tria quin dispositiu té la clau d'accés per a <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, a <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">S'ha bloquejat. Actualment, la programació està establerta en <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> i només es pot actualitzar manualment.</translation>
 <translation id="7673313156293624327">Registres de Shill (gestor de connexions) de ChromeOS</translation>
 <translation id="7674416868315480713">Desactiva tots els ports que es redirigeixen a Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicacions</translation>
@@ -9532,6 +9536,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8376384591331888629">Incloses les galetes de tercers en aquest lloc web</translation>
 <translation id="8376451933628734023">Si aquesta aplicació web està provant d'enganyar-te perquè pensis que és una altra aplicació, desinstal·la-la.</translation>
 <translation id="8376532149031784008">S'està tornant a carregar <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Les extensions instal·lades per l'administrador poden continuar llegint i canviant aquest lloc web</translation>
 <translation id="8376752431516546391">Tauler lateral de la Cerca de Google</translation>
 <translation id="8377625247046155446">Aquesta clau d'accés només es desarà en aquest dispositiu. S'hi conservarà després que tanquis totes les finestres d'incògnit.</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>

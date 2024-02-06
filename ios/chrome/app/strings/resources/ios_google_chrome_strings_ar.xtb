@@ -75,6 +75,7 @@
 <translation id="2689064829982324496">‏للخروج من حسابك على Google في جميع المواقع الإلكترونية، عليك <ph name="BEGIN_LINK" />تسجيل الخروج من Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2702250627063295552">‏إضافة عنصر "قائمة القراءة" إلى متصفِّح Chrome</translation>
+<translation id="2703746758996815929">‏للحصول على نصائح مفيدة حول Chrome، يمكنك تفعيل الإشعارات في إعدادات أجهزة iOS.</translation>
 <translation id="2736805085127235148">‏إنّ إشعارات Chrome غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2789947168960170215">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
+<translation id="8874688701962049679">‏نصائح حول الاستفادة إلى أقصى حدّ من Chrome</translation>
 <translation id="8891935667620843985">‏يمكنك فتح الروابط في Chrome تلقائيًا من خلال جعله تطبيق المتصفّح التلقائي.</translation>
 <translation id="8897749957032330183">‏يتم حفظ كلمات المرور في "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
 <translation id="8949681853939555434">‏اختيار Chrome ليكون متصفِّحك التلقائي</translation>

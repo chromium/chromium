@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">প্ৰতিচ্ছবি ল’ড কৰিব পৰা নগ’ল। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক অথবা প্ৰতিচ্ছবিসমূহ পুনৰ ল’ড কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1753496554272155572">ৱালপেপাৰৰ পূৰ্বদৰ্শনৰ পৰা বাহিৰ হওক</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />ৰ বাবে সম্পাদনা কৰাৰ বুটাম।</translation>
 <translation id="1755556344721611131">ডায়েগন’ষ্টিক্স এপ্</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android চলি থকা নাই</translation>
 <translation id="551689408806449779">ডিভাইচৰ সংযোগ বিচ্ছিন্ন হৈছে। পৰীক্ষাটোৰ সৈতে পুনৰ সংযোগ কৰিবলৈ চেষ্টা কৰক</translation>
 <translation id="5519195206574732858">এলটিই</translation>
+<translation id="5543701552415191873">লক কৰা আছে</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">সূৰ্যাস্তৰ সময়ত স্বয়ংক্ৰিয়ভাৱে গাঢ় ৰঙৰ থীমলৈ সলনি কৰক</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5703716265115423771">ভলিউম কমাওক</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />ৰ বাবে সম্পাদনা কৰাৰ বুটাম।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডে’ট কৰক</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>
 <translation id="5757187557809630523">পৰৱৰ্তী ট্ৰেক</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" />ৰ বাবে মচাৰ বুটাম।</translation>
 <translation id="5931523347251946569">ফাইলটো পোৱা নগ’ল</translation>
 <translation id="593880865674747800">এই শৈলীত অধিক সৃষ্টি কৰক</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="6791471867139427246">কীব’ৰ্ডৰ পোহৰৰ ৰং</translation>
+<translation id="6796229976413584781">শ্বৰ্টকাট মচা হ’ল</translation>
 <translation id="6798678288485555829">পাঠ নেভিগেশ্বন</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য উপলব্ধ। এক্সেছ কৰিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">নেটৱৰ্ক এপিএনৰ ছেটিং পৰিচালনা কৰক। এপিএনে চেলুলাৰ নেটৱৰ্ক আৰু ইণ্টাৰনেটৰ মাজত এটা সংযোগ স্থাপন কৰে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰৰ আপডে’ট</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
+<translation id="7233782086689993269">শ্বৰ্টকাট পুনঃস্থাপন কৰা হ’ল</translation>
 <translation id="725133483556299729">ইমেইল বাছনি কৰক</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7271932918253517778">একেবাৰে ওপৰৰ শাৰীৰ কীসমূহ থকা শ্বৰ্টকাটত <ph name="META_KEY" /> কী অন্তৰ্ভুক্ত হ’ব লাগিব।</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="7656388927906093505">ডিভাইচটো এটা মাউচ।</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />।</translation>
 <translation id="7665800271478495366">অৱতাৰ সলনি কৰক</translation>
 <translation id="7683228889864052081">কীব’ৰ্ডৰ বৰণ</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">কীব’ৰ্ডৰ পোহৰ</translation>
 <translation id="7730077286107534951">একাউণ্ট আৰু ছিষ্টেম সম্পৰ্কীয় কিছুমান তথ্য Googleলৈ পঠিওৱা হ’ব পাৰে। এই তথ্যখিনি আমি কাৰিকৰী সমস্যাসমূহ সমাধান কৰিবলৈ আৰু আমাৰ সেৱা উন্নত কৰিবলৈ <ph name="BEGIN_LINK2" />গোপনীয়তা নীতি<ph name="END_LINK2" /> আৰু <ph name="BEGIN_LINK3" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK3" /> অনুযায়ী ব্যৱহাৰ কৰিম। সমলৰ সালসলনিৰ অনুৰোধ জনাবলৈ <ph name="BEGIN_LINK1" />আইনী সহায়<ph name="END_LINK1" />লৈ যাওক।</translation>
 <translation id="773153675489693198">চক্ৰৰ গণনা</translation>
+<translation id="7746357909584236306">সম্পাদনাযোগ্য</translation>
 <translation id="7747039790905080783">পূৰ্বতে শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="7752963721013053477">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে - বিশেষ</translation>
 <translation id="7762130827864645708">আপোনাৰ পাছৱৰ্ড সলনি কৰাৰ প্ৰক্ৰিয়াটো সফল হৈছে। অনুগ্ৰহ কৰি এতিয়াৰ পৰা নতুন পাছৱৰ্ডটো ব্যৱহাৰ কৰক।</translation>

@@ -575,6 +575,7 @@
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3968505803272650567">আগ্ৰহসমূহ পৰিচালনা কৰক</translation>
 <translation id="3989635538409502728">ছাইন আউট কৰক</translation>
+<translation id="3994422733891749358">আপুনি লাভ কৰিব বিচৰা জাননীসমূহ বাছনি কৰক</translation>
 <translation id="3995521777587992544">পৃষ্ঠা ল’ড হোৱাৰ প্ৰগতিৰ বাৰ, <ph name="EMAIL" /> ল’ড হৈছে।</translation>
 <translation id="3997522473364371632">আপোনাৰ প্ৰশাসকে পাছৱৰ্ড শ্বেয়াৰ কৰাটো অক্ষম কৰিছে।</translation>
 <translation id="4002019827078931033">ঠিকনাৰ বাৰ ওপৰলৈ লৈ যাওক</translation>
@@ -684,6 +685,7 @@
 <translation id="4592368184551360546">কীব’ৰ্ড</translation>
 <translation id="4601095002996233687">সন্দেহজনক ডাউনল’ডৰ বাবে বিস্তাৰিত স্কেনৰ সুবিধা</translation>
 <translation id="4606247758155004938">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে।</translation>
+<translation id="4607887340472970274">মূল্য ট্ৰেকিং</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" />ক আনফ’ল’ কৰাৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="461440297010471931">Googleৰ জৰিয়তে সন্ধান কৰি থকা হৈছে</translation>
 <translation id="4616391354457235490">আনডু কৰক</translation>
@@ -724,6 +726,7 @@
 <translation id="478808905805139173">ইনক’গনিট’ ম’ডত খুলিবনে?</translation>
 <translation id="4803185665210547709">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">আপোনাৰ আগ্ৰহৰ ওপৰত ভিত্তি কৰি লাভ কৰা বাতৰি আৰু সমল।</translation>
 <translation id="4805759445554688327">কার্ডৰ নম্বৰ অমান্য</translation>
 <translation id="4808646838864186379">আপোনাৰ ডেলিভাৰীটো বাতিল কৰা হৈছে</translation>
 <translation id="4808744395915275922">আপডে’টসমূহ</translation>
@@ -1238,6 +1241,7 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" />টা নপঢ়া প্ৰবন্ধ।</translation>
 <translation id="7412027924265291969">অব্যাহত ৰাখক</translation>
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
+<translation id="7417689656810783109">গোটটোৰ নতুন নাম দিয়ক</translation>
 <translation id="7418640008860669073">ইয়াত ছেভ কৰক...</translation>
 <translation id="7425346204213733349">আপোনাৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহত কৰা সলনি কার্যসমূহ আপোনাৰ Google একাউণ্টত আৰু ছিংক কৰা নহয়। তথাপিও, আপোনাৰ পূর্বে থকা ডেটাসমূহ নিজৰ Google একাউণ্টত সঞ্চিত হৈ থাকিব।</translation>
 <translation id="7431991332293347422">আপোনাক Search আৰু অন্য সেৱাসমূহত ব্যক্তিগতকৰণ কৰা অভিজ্ঞতা প্ৰদান কৰিবলৈ কেনেকৈ আপোনাৰ ব্ৰাউজিংৰ ইতিহাস ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
@@ -1412,8 +1416,10 @@
 <translation id="8273982424131314219">আপুনি <ph name="URL" />ত তথ্য পূৰ কৰিব</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
+<translation id="828291969289324795">{count,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="8283172974887967105">ছেট কৰক…</translation>
 <translation id="8286036467436129157">ছাইন ইন কৰক</translation>
+<translation id="8292843446079898078">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহৰ বাবে মূল্য কমাৰ সতৰ্কবাৰ্তা লাভ কৰক।</translation>
 <translation id="8299417921174340354">পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ আপুনি প্ৰথমে নিজৰ ডিভাইচত এটা পাছক’ড ছেট কৰিবই লাগিব।</translation>
 <translation id="8299613349954694191">ৱেব ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ কোনো ইনক’গনিট‘ টেব খোলক।</translation>
 <translation id="8311853334103696030">দাম ট্ৰেক কৰক লুকুৱাওক</translation>
@@ -1421,6 +1427,7 @@
 <translation id="8328777765163860529">সকলো বন্ধ কৰক</translation>
 <translation id="8343993175958086504">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক।</translation>
 <translation id="834783239627985533">আটাইতকৈ বেছিকৈ চোৱা ছাইটসমূহ</translation>
+<translation id="8358401059263985056">জাননী অন কৰক</translation>
 <translation id="8364841868226993049"><ph name="USER_EMAIL" />ৰ বাবে Google Photosত প্ৰতিচ্ছবি ছেভ কৰি থকা হৈছে...</translation>
 <translation id="8370406443343902172">ছেটিঙলৈ যাওক...</translation>
 <translation id="8374977641764177587">জাননী অন কৰিবনে?</translation>

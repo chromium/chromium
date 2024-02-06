@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Methu â llwytho lluniau. Gwiriwch eich cysylltiad rhwydwaith neu rhowch gynnig arall ar lwytho'r lluniau.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Gadael rhagolwg papur wal</translation>
+<translation id="1754578112426924640">Botwm golygu ar gyfer <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Ap diagnosteg</translation>
 <translation id="175763766237925754">Da (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Nid yw Android yn rhedeg</translation>
 <translation id="551689408806449779">Mae'r ddyfais wedi'i datgysylltu. Rhowch gynnig ar ailgysylltu i'r prawf</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">wedi'i gloi</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Newid yn awtomatig i thema dywyll ar fachlud haul</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Canoli</translation>
 <translation id="5703716265115423771">lleihau'r sain</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Botwm golygu ar gyfer <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Diweddaru <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Canolig</translation>
 <translation id="5757187557809630523">trac nesaf</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Gwaharddedig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Mae eich ffeil wedi'i sganio a'i chadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Botwm dileu ar gyfer <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Ni chanfuwyd y ffeil</translation>
 <translation id="593880865674747800">Creu rhagor yn yr arddull hon</translation>
 <translation id="5939518447894949180">Ailosod</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Cydraniadau DNS wedi methu</translation>
 <translation id="6768237774506518020">Cyfradd fethiant cydraniad DNS uchel</translation>
 <translation id="6791471867139427246">lliw golau bysellfwrdd</translation>
+<translation id="6796229976413584781">Llwybr byr wedi'i ddileu</translation>
 <translation id="6798678288485555829">Llywio testun</translation>
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Diweddariadau cadarnwedd ar gyfer dyfeisiau allanol</translation>
 <translation id="7216409898977639127">Darparwr Rhwydwaith Symudol</translation>
+<translation id="7233782086689993269">Llwybr byr wedi'i adfer</translation>
 <translation id="725133483556299729">Dewis e-bost</translation>
 <translation id="7271040990581020067">Mae'r sganiwr wrthi'n cael ei ddefnyddio. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="7271932918253517778">Mae angen i lwybr byr gyda bysellau rhes uchaf gynnwys y fysell <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Cuddni HTTPS uchel</translation>
 <translation id="7656388927906093505">Mae'r ddyfais yn llygoden.</translation>
 <translation id="7658239707568436148">Canslo</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Newid rhithffurf</translation>
 <translation id="7683228889864052081">arlliw bysellfwrdd</translation>
 <translation id="7690294790491645610">Cadarnhau cyfrinair newydd</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">golau bysellfwrdd</translation>
 <translation id="7730077286107534951">Mae'n bosib y byddwn yn anfon peth gwybodaeth system a chyfrif at Google. Rydym yn defnyddio'r wybodaeth hon i helpu i fynd i'r afael â materion technegol a gwella ein gwasanaethau, yn amodol ar ein <ph name="BEGIN_LINK2" />Polisi Preifatrwydd<ph name="END_LINK2" /> a'n <ph name="BEGIN_LINK3" />Telerau Gwasanaeth<ph name="END_LINK3" />. I ofyn am newidiadau cynnwys, ewch i <ph name="BEGIN_LINK1" />Gymorth Cyfreithiol<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Cyfrif cylch gwefru</translation>
+<translation id="7746357909584236306">gellir ei olygu</translation>
 <translation id="7747039790905080783">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="7752963721013053477">O'r wawr i'r tywyllwch - unigryw</translation>
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>

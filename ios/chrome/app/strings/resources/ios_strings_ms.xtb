@@ -575,6 +575,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3968505803272650567">Urus Minat</translation>
 <translation id="3989635538409502728">Log Keluar</translation>
+<translation id="3994422733891749358">Pilih pemberitahuan yang mahu anda terima</translation>
 <translation id="3995521777587992544">Bar kemajuan pemuatan halaman, <ph name="EMAIL" /> dimuatkan.</translation>
 <translation id="3997522473364371632">Perkongsian kata laluan dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="4002019827078931033">Alihkan Bar Alamat Ke Bahagian Atas</translation>
@@ -684,6 +685,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4592368184551360546">Papan kekunci</translation>
 <translation id="4601095002996233687">Imbasan secara mendalam untuk muat turun yang mencurigakan.</translation>
 <translation id="4606247758155004938">Penyemak imbas anda diurus oleh organisasi anda.</translation>
+<translation id="4607887340472970274">Penjejakan Harga</translation>
 <translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Mencari dengan Google</translation>
 <translation id="4616391354457235490">Buat asal</translation>
@@ -724,6 +726,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="478808905805139173">Buka dalam Inkognito?</translation>
 <translation id="4803185665210547709">Diurus oleh organisasi anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Berita dan kandungan berdasarkan minat anda.</translation>
 <translation id="4805759445554688327">Nombor Kad Tidak Sah</translation>
 <translation id="4808646838864186379">Penghantaran anda telah dibatalkan</translation>
 <translation id="4808744395915275922">Kemaskinian</translation>
@@ -1238,6 +1241,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikel belum dibaca.</translation>
 <translation id="7412027924265291969">Teruskan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7417689656810783109">Namakan Semula Kumpulan</translation>
 <translation id="7418640008860669073">Simpan dalam...</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
@@ -1415,6 +1419,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab pada Kumpulan Baharu}other{Tambahkan Tab pada Kumpulan Baharu}}</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
 <translation id="8286036467436129157">Log Masuk</translation>
+<translation id="8292843446079898078">Terima makluman penurunan harga untuk produk yang anda jejaki.</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8311853334103696030">Sembunyikan Jejak Harga</translation>
@@ -1422,6 +1427,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="834783239627985533">Laman yang Paling Kerap Dilawati</translation>
+<translation id="8358401059263985056">Hidupkan Pemberitahuan</translation>
 <translation id="8364841868226993049">Menyimpan imej dalam Google Photos untuk <ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">Akses Tetapan...</translation>
 <translation id="8374977641764177587">Hidupkan Pemberitahuan?</translation>

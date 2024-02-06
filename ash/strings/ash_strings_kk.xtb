@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Қайырлы күн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеңіз. Бір қолданбадан екіншісіне өту үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="1093645050124056515">ctrl + alt + төмен бағыт пернесі</translation>
+<translation id="1094756674036064790">Bluetooth-ды өшіру керек пе?</translation>
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
@@ -660,6 +661,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> үшін тез табылу режимін қосу немесе өшіру</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Қалқымалы терезені жасыру үшін сырғытыңыз.</translation>
+<translation id="3673898235958558034">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME_1" />" және "<ph name="DEVICE_NAME_2" />" құрылғылары Chromebook-тен ажыратылады.</translation>
 <translation id="367531336287639526">Мекенжай жолағының сол жағындағы бірінші белгішені таңдау</translation>
 <translation id="3677931086890821290">Бұл геодеректі пайдалану рұқсаты мен ChromeOS жүйесі бар барлық қолданба мен веб-сайттың Wi-Fi және мобильді желілер орындарын пайдалануына мүмкіндік береді.</translation>
 <translation id="3679827876008292680">Терезедегі соңғы қойындыға өту</translation>
@@ -915,6 +917,7 @@
 <translation id="4666911709726371538">Басқа қолданбалар</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
 <translation id="4672539464599646374">Батареяны үнемдеу режимі қосылды.</translation>
+<translation id="4673427585974421255">Қосулы қалдыру</translation>
 <translation id="468293128311738995">Телефондағы қолданбалар</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
@@ -1215,6 +1218,7 @@
 <translation id="5802516411616338943">Жылдам параметрлерді ашу</translation>
 <translation id="5804651031882187592">"SIM картасын құлыптау" параметрін өшіру</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
+<translation id="5816222150329690597">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" және тағы <ph name="DEVICE_COUNT" /> құрылғы Chromebook-тен ажыратылады.</translation>
 <translation id="5823239091726045201">Ғаламтордағы Google Tasks</translation>
 <translation id="5825969630400862129">Байланыстырылған құрылғылар параметрлері</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
@@ -1395,6 +1399,7 @@
 <translation id="6539852571005954999">Жүктеп алынған <ph name="FILENAME" /> файлы сканерленіп жатыр</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="6546062506073634094">Суретті ішінде не нәрсе бейнеленгеніне және алғы көрінісіне байланысты іздеу</translation>
+<translation id="6547795021703527064">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME" />" құрылғысы Chromebook-тен ажыратылады.</translation>
 <translation id="6555373427270923730">Мекенжай жолағына веб-мекенжайды енгізіп, <ph name="MODIFIER" /><ph name="KEY" /> пернесін басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңадан орнатылды</translation>

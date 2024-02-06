@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Couldn’t load images. Check your network connection or try loading the images again.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Exit wallpaper preview</translation>
+<translation id="1754578112426924640">Edit button for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostics app</translation>
 <translation id="175763766237925754">Good (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android not running</translation>
 <translation id="551689408806449779">Device has been disconnected. Try reconnecting to test</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">locked</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatically switch to Dark theme at sunset</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5703716265115423771">volume down</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Edit button for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">next track</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Delete button for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">File not found</translation>
 <translation id="593880865674747800">Create more in this style</translation>
 <translation id="5939518447894949180">Reset</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="6791471867139427246">keyboard light colour</translation>
+<translation id="6796229976413584781">Shortcut deleted</translation>
 <translation id="6798678288485555829">Text navigation</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware updates for external devices</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
+<translation id="7233782086689993269">Shortcut restored</translation>
 <translation id="725133483556299729">Select email</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7271932918253517778">Shortcuts with top row keys need to include the <ph name="META_KEY" /> key.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Change avatar</translation>
 <translation id="7683228889864052081">keyboard hue</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">keyboard light</translation>
 <translation id="7730077286107534951">Some account and system information may be sent to Google. We use this information to help address technical issues and improve our services, subject to our <ph name="BEGIN_LINK2" />Privacy Policy<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Terms of Service<ph name="END_LINK3" />. To request content changes, go to <ph name="BEGIN_LINK1" />Legal Help<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Cycle count</translation>
+<translation id="7746357909584236306">editable</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
 <translation id="7752963721013053477">Dawn to dark – exclusive</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>

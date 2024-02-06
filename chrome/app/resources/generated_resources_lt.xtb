@@ -3311,6 +3311,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3497560059572256875">Bendrinti papuoštą logotipą</translation>
 <translation id="3497915391670770295">Siųsti į įrenginius</translation>
 <translation id="3500417806337761827">Montuojant bendrinimą įvyko klaida. Jau sumontuota per daug mažų ir vidutinių įmonių bendrinimų.</translation>
+<translation id="3500764001796099683">Įgalinti izoliuotas žiniatinklio programas</translation>
 <translation id="350397915809787283">Jei neturite paskyros, pasirinkite pirmąją parinktį, kad ją sukurtumėte.</translation>
 <translation id="3503995387997205657">Galite atkurti ankstesnes programas</translation>
 <translation id="3505100368357440862">Apsipirkimo pasiūlymai</translation>
@@ -7188,6 +7189,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6551508934388063976">Komanda negalima. Paspauskite „Control“ – N, kad atidarytumėte naują langą.</translation>
 <translation id="6551606359270386381">Elipsės įrankis</translation>
 <translation id="6551612971599078809">Svetainėje naudojamas USB</translation>
+<translation id="6551620030439692385">Užblokuota. Šiuo metu laiko juosta nustatyta į <ph name="TIMEZONE" /> ir ją galima atnaujinti tik neautomatiškai.</translation>
 <translation id="6551739526055143276">Tvarkoma naudojant „Family Link“</translation>
 <translation id="655384502888039633">Naudotojų: <ph name="USER_COUNT" /></translation>
 <translation id="6555432686520421228">Pašalinamos visos naudotojų paskyros ir „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginys nustatomas iš naujo, kad būtų kaip naujas.</translation>
@@ -7262,6 +7264,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6608773371844092260">Jei norite nustatyti piršto atspaudą, paprašykite, kad vaikas paliestų piršto atspaudo jutiklį dešinėje šio „<ph name="DEVICE_TYPE" />“ pusėje. Vaiko piršto atspaudo duomenys patikimai saugomi ir niekada nepatenka už „<ph name="DEVICE_TYPE" />“ ribų.</translation>
 <translation id="6609478180749378879">Prisijungimo duomenys bus saugomi šiame įrenginyje, kai išjungsite inkognito režimą. Vėl galėsite prisijungti prie šios svetainės naudodami savo įrenginį vėliau.</translation>
 <translation id="6610002944194042868">Vertimo parinktys</translation>
+<translation id="6610064275805055636">Tvarkyti izoliuotas žiniatinklio programas</translation>
 <translation id="6611972847767394631">Čia rasite savo skirtukus</translation>
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
 <translation id="6613267708691765962">Nuskaitoma, ar nėra kenkėjiškų programų...</translation>
@@ -8626,6 +8629,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7671472752213333268">Plėtinys „<ph name="EXTENSION_NAME" />“ nori nuskaityti iš „<ph name="SCANNER_NAME" />“.</translation>
 <translation id="7672504401554182757">Pasirinkite, kuriame įrenginyje bus „passkey“, skirtas „<ph name="APP_NAME" />“</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, puslapyje „<ph name="PAGE_TITLE" />“.</translation>
+<translation id="7672726198839739113">Užblokuota. Šiuo metu tvarkaraštis nustatytas į <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> ir jį galima atnaujinti tik neautomatiškai.</translation>
 <translation id="7673313156293624327">„ChromeOS“ „Shill“ (ryšio valdytojo) žurnalai</translation>
 <translation id="7674416868315480713">Išaktyvinti visus sistemoje „Linux“ persiunčiamus prievadus</translation>
 <translation id="7674537509496907005">Programų: <ph name="APP_COUNT" /></translation>
@@ -9559,6 +9563,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8376384591331888629">Įskaitant trečiosios šalies slapukus jūsų svetainėje</translation>
 <translation id="8376451933628734023">Jei ši žiniatinklio programa bando apsimesti kita programa, ją pašalinkite.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> įkeliama iš naujo...</translation>
+<translation id="8376610503048439696">Administratoriaus įdiegti plėtiniai vis tiek galės skaityti ir keisti šią svetainę</translation>
 <translation id="8376752431516546391">„Google“ paieškos šoninis skydelis</translation>
 <translation id="8377625247046155446">Šis „passkey“ bus išsaugotas tik šiame įrenginyje. Jis liks šiame įrenginyje, kai uždarysite visus inkognito langus.</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>

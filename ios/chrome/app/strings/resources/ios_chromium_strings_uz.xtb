@@ -40,7 +40,7 @@
 <translation id="2054703085270098503">Chromium bilan himoyalaning</translation>
 <translation id="2098023844024447022">Oxirgi varagʻimni Chromiumda och</translation>
 <translation id="2109439615198500433">Chromium maslahati</translation>
-<translation id="2147210759439165826">Chromium masalahatlarini olish uchun kontentni varaqlang.</translation>
+<translation id="2147210759439165826">Chromium maslahatlarini olish uchun kontentni varaqlang.</translation>
 <translation id="2168108852149185974">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
 <translation id="2178608107313874732">Chromium hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="2195025571279539885">Chromium har doim bu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni taklif qilsinmi?</translation>
@@ -99,6 +99,7 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="3833326979834193417">Chromium maʼlumotlarni oshkor qilish, xavfli saytlar va boshqalardan himoyalash uchun har kuni Xavfsizlik tekshiruvini bajaradi. Xavfsizlik tekshiruvi haqida batafsil axborotni Sozlamalardan olish mumkin.</translation>
 <translation id="3855938650519180865">Yangilangan Chromium</translation>
 <translation id="3886689467633467988">Bukmarklar va boshqalarni barcha qurilmalarda olish uchun bu sayt va Chromiumga Google hisobingizdan kiring.</translation>
+<translation id="3904484643286601695">Tanlovlarni istalgan vaqt Chromium sozlamalari orqali yangilash mumkin.</translation>
 <translation id="394413318816989199">Kodli ibora bilan shifrlash ichiga toʻlov usullari va manzillar kirmaydi.
 
 Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
@@ -203,6 +204,7 @@ Bularni hisobga olish kerak:
 
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium ancha yaxshilandi! Yangi versiya mavjud.</translation>
+<translation id="6433172051771630690">Chromiumdan unumli foydalanish maslahatlari.</translation>
 <translation id="6502321914804101924">Chromium hisobidan chiqarildi</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium maʼlumotlaringizni qanday xavfsiz saqlashi<ph name="END_LINK" /> haqida batafsil</translation>
 <translation id="6625409903340039086">Chromium endi boshqariladigan hisobingiz uchun foydalanuvchi siyosatlarini qoʻllab-quvvatlaydi</translation>
@@ -255,6 +257,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7990085102929105708">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.
 
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Chromium haqida tavsiyalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
 <translation id="7995166854192397899">Tavsiyalar boshqa qurilmalardagi brauzer tarixi asosida tuziladi. Tavsiyalar olish uchun barcha qurilmalarda Chromium hisobiga kiring.</translation>
 <translation id="800195749539500647">Chromiumdan unumli foydalaning</translation>
 <translation id="8013573822802650211">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>

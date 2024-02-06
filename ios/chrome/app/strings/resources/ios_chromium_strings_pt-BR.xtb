@@ -204,6 +204,7 @@ Considerações:
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
+<translation id="6433172051771630690">Dicas para aproveitar o Chromium ao máximo.</translation>
 <translation id="6502321914804101924">A conta foi desconectada do Chromium</translation>
 <translation id="6563921047760808519">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chromium mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">O Chromium agora tem suporte a políticas do usuário na sua conta gerenciada</translation>
@@ -256,6 +257,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7990085102929105708">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Para receber dicas úteis sobre o Chromium, ative as notificações nos ajustes do iOS.</translation>
 <translation id="7995166854192397899">As sugestões são baseadas na sua atividade de navegação em outros dispositivos. Para receber sugestões, faça login no Chromium em todos os seus dispositivos.</translation>
 <translation id="800195749539500647">Aproveite o Chromium ao máximo</translation>
 <translation id="8013573822802650211">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>

@@ -75,6 +75,7 @@ Things to consider:
 <translation id="2689064829982324496">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2702250627063295552">Add Reading List item to Chrome</translation>
+<translation id="2703746758996815929">To get helpful Chrome tips, turn on notifications in your iOS settings.</translation>
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2789947168960170215">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Password Manager couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
+<translation id="8874688701962049679">Tips on getting the most out of Chrome.</translation>
 <translation id="8891935667620843985">You can open links in Chrome automatically by making it your default browser app.</translation>
 <translation id="8897749957032330183">Passwords are saved to Google Password Manager on this device.</translation>
 <translation id="8949681853939555434">Set Chrome as your default browser</translation>

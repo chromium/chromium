@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Slike se nisu mogle učitati. Provjerite mrežnu vezu ili ponovo pokušajte učitati slike.</translation>
 <translation id="1751249301761991853">Lično</translation>
 <translation id="1753496554272155572">Izlaz iz pregleda pozadinske slike</translation>
+<translation id="1754578112426924640">Uredite dugme za <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacija Diagnostics</translation>
 <translation id="175763766237925754">Dobro (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android nije pokrenut</translation>
 <translation id="551689408806449779">Prekinuta je veza s uređajem. Pokušajte ponovo povezati da testirate</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">zaključano</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatski prebacite na tamnu temu prilikom zalaska sunca</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Sredina</translation>
 <translation id="5703716265115423771">dugme za stišavanje zvuka</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Uredite dugme za prečicu <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ažuriranje aplikacije <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Srednje</translation>
 <translation id="5757187557809630523">sljedeća numera</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaš fajl je uspješno skeniran i sačuvan u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Izbrišite dugme za <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="593880865674747800">Kreiraj više u ovom stilu</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS rezolucije nisu uspjele</translation>
 <translation id="6768237774506518020">Visoka stopa neuspjeha DNS rezolucije</translation>
 <translation id="6791471867139427246">boja osvjetljenja tastature</translation>
+<translation id="6796229976413584781">Prečica je izbrisana</translation>
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Upravljajte mrežnim postavkama za APN. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ažuriranja firmvera za vanjske uređaje</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
+<translation id="7233782086689993269">Prečica je vraćena</translation>
 <translation id="725133483556299729">Odabir e-poruke</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
 <translation id="7271932918253517778">Prečica s tipkama u gornjem redu mora uključivati tipku <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Promjena avatara</translation>
 <translation id="7683228889864052081">nijansa tastature</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">osvjetljenje tastature</translation>
 <translation id="7730077286107534951">Neke informacije o računu i sistemu mogu se slati Googleu. Koristimo te informacije da riješimo tehničke probleme i poboljšamo usluge podložno svojim <ph name="BEGIN_LINK2" />Pravilima privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korištenja usluge<ph name="END_LINK3" />. Da zatražite promjene sadržaja, posjetite <ph name="BEGIN_LINK1" />Pravnu pomoć<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
+<translation id="7746357909584236306">može se urediti</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7752963721013053477">Od svitanja do sumraka – ekskluzivna verzija</translation>
 <translation id="7762130827864645708">Uspješno ste promijenili lozinku. Od sada koristite novu lozinku.</translation>

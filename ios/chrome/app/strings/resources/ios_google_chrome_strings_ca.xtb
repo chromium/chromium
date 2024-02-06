@@ -75,6 +75,7 @@ Aspectes que cal tenir en compte:
 <translation id="2689064829982324496">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2702250627063295552">Afegeix un element de llista de lectura a Chrome</translation>
+<translation id="2703746758996815929">Per rebre consells útils sobre Chrome, activa les notificacions a la configuració d'iOS.</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2789947168960170215">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
+<translation id="8874688701962049679">Consells per treure el màxim partit de Chrome.</translation>
 <translation id="8891935667620843985">Pots obrir enllaços automàticament a l'aplicació Chrome convertint-la en la predeterminada com a navegador.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
 <translation id="8949681853939555434">Defineix Chrome com a navegador predeterminat</translation>

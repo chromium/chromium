@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Hindi ma-load ang mga larawan. Suriin ang iyong koneksyon sa network o subukang i-load ulit ang mga larawan.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
+<translation id="1754578112426924640">I-edit ang button para sa <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostics app</translation>
 <translation id="175763766237925754">Mabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
 <translation id="551689408806449779">Na-disconnect ang device. Subukang kumonekta ulit para subukan</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">naka-lock</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Awtomatikong lumipat sa madilim na tema sa paglubog ng araw</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5703716265115423771">hinaan ang volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">I-edit ang button para sa <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5757187557809630523">susunod na track</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">I-delete ang button para sa <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Hindi nahanap ang file</translation>
 <translation id="593880865674747800">Gumawa pa gamit ang ganitong istilo</translation>
 <translation id="5939518447894949180">I-reset</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6791471867139427246">kulay ng liwanag ng keyboard</translation>
+<translation id="6796229976413584781">Na-delete ang shortcut</translation>
 <translation id="6798678288485555829">Pag-navigate sa text</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
+<translation id="7233782086689993269">Na-restore ang shortcut</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7271932918253517778">Kailangang kasama ang <ph name="META_KEY" /> key sa shortcut na may mga top row key.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
 <translation id="7656388927906093505">Mouse ang device.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Palitan ang avatar</translation>
 <translation id="7683228889864052081">hue ng keyboard</translation>
 <translation id="7690294790491645610">Kumpirmahin ang bagong password</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">liwanag ng keyboard</translation>
 <translation id="7730077286107534951">Puwedeng ipadala sa Google ang ilang impormasyon ng account at system. Ginagamit namin ang impormasyong ito para makatulong na lutasin ang mga teknikal na isyu at mapahusay ang aming mga serbisyo, na napapailalim sa aming <ph name="BEGIN_LINK2" />Patakaran sa Privacy<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo<ph name="END_LINK3" />. Para mag-request ng mga pagbabago sa content, pumunta sa <ph name="BEGIN_LINK1" />Legal na Tulong<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
+<translation id="7746357909584236306">nae-edit</translation>
 <translation id="7747039790905080783">Preshared key</translation>
 <translation id="7752963721013053477">Madaling araw hanggang pagdilim - eksklusibo</translation>
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>

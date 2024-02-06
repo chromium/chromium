@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="310297983047869047">上一張投影片</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
@@ -403,6 +405,7 @@
 <translation id="7770832849480336015">隱藏「<ph name="TITLE_OF_MODULE" />」</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{繼續使用這個分頁}other{繼續使用這些分頁}}</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用你的攝影機</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>

@@ -3299,6 +3299,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3497560059572256875">Jaga Doodle'i vigurlogo</translation>
 <translation id="3497915391670770295">Saatmine teie &amp;seadmetesse</translation>
 <translation id="3500417806337761827">Viga ühiskasutusse andmisel. SMB on ühiskasutusse antud juba liiga paljudele kasutajatele.</translation>
+<translation id="3500764001796099683">Isoleeritud veebirakenduste lubamine</translation>
 <translation id="350397915809787283">Kui teil pole kontot, valige selle loomiseks esimene valik.</translation>
 <translation id="3503995387997205657">Saate oma varasemad rakendused taastada</translation>
 <translation id="3505100368357440862">Ostusoovitused</translation>
@@ -7174,6 +7175,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6551508934388063976">Käsk pole saadaval. Uue akna avamiseks vajutage klahve Ctrl + N.</translation>
 <translation id="6551606359270386381">Ovaaljoonetööriist</translation>
 <translation id="6551612971599078809">Sait kasutab USB-seadet</translation>
+<translation id="6551620030439692385">Blokeeritud. Praegune ajavöönd on <ph name="TIMEZONE" /> ja seda saab muuta ainult käsitsi.</translation>
 <translation id="6551739526055143276">Hallatakse Family Linkiga</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> kasutajat</translation>
 <translation id="6555432686520421228">Eemaldage kõik kasutajakontod ja lähtestage seade <ph name="IDS_SHORT_PRODUCT_NAME" />, et taas nullist alustada.</translation>
@@ -7242,6 +7244,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6608773371844092260">Sõrmejälje seadistamiseks paluge lapsel puudutada seadme <ph name="DEVICE_TYPE" /> paremas servas olevat sõrmejäljeandurit. Teie lapse sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata kunagi seadmest <ph name="DEVICE_TYPE" /> väljapoole.</translation>
 <translation id="6609478180749378879">Sisselogimisandmed salvestatakse sellesse seadmesse pärast inkognito režiimist väljumist. Hiljem saate oma seadmega sellele veebisaidile uuesti sisse logida.</translation>
 <translation id="6610002944194042868">Tõlkimise valikud</translation>
+<translation id="6610064275805055636">Isoleeritud veebirakenduste haldamine</translation>
 <translation id="6611972847767394631">Oma vahekaardid leiate siit</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6613267708691765962">Pahavara otsimine …</translation>
@@ -8606,6 +8609,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />” soovib skannida skannerist „<ph name="SCANNER_NAME" />”</translation>
 <translation id="7672504401554182757">Valige, millises seadmes on rakenduse <ph name="APP_NAME" /> pääsuvõti</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> lehel <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokeeritud. Praegune ajakava on <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> ja seda saab muuta ainult käsitsi.</translation>
 <translation id="7673313156293624327">ChromeOS-i Shilli (ühenduse haldur) logid</translation>
 <translation id="7674416868315480713">Inaktiveeri kõik pordid, mis Linuxis on edasi suunatud</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> rakendust</translation>
@@ -9539,6 +9543,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8376384591331888629">Sh sellel saidil olevad kolmanda osapoole küpsisefailid</translation>
 <translation id="8376451933628734023">Kui see veebirakendus üritab jätta muljet, et tegemist on teise rakendusega, desinstallige see.</translation>
 <translation id="8376532149031784008">Domeeni <ph name="DOMAIN" /> uuesti laadimine …</translation>
+<translation id="8376610503048439696">Teie administraatori installitud laiendused pääsevad endiselt sellele saidile juurde ja saavad seda muuta.</translation>
 <translation id="8376752431516546391">Google’i otsingu külgpaneel</translation>
 <translation id="8377625247046155446">See pääsuvõti salvestatakse ainult sellesse seadmesse. Pärast kõigi inkognito akende sulgemist jääb see sellesse seadmesse.</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>

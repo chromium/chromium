@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">फोटोहरू लोड गर्न सकिएन। आफ्नो नेटवर्क कनेक्सन जाँच्नुहोस् वा ती फोटोहरू फेरि लोड गरी हेर्नुहोस्।</translation>
 <translation id="1751249301761991853">व्यक्तिगत</translation>
 <translation id="1753496554272155572">वालपेपरको प्रिभ्यूबाट बाहिरिनुहोस्</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> परिवर्तन गर्ने बटन।</translation>
 <translation id="1755556344721611131">डाइग्नोस्टिक्स एप</translation>
 <translation id="175763766237925754">राम्रो (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android चलिरहेको छैन</translation>
 <translation id="551689408806449779">डिभाइस डिस्कनेक्ट गरिएको छ। परीक्षण गर्न रिकनेक्ट गरी हेर्नुहोस्</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">लक गरिएको छ</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गरियोस्</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">केन्द्र</translation>
 <translation id="5703716265115423771">आवाज सानो</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> पृष्ठ</translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> परिवर्तन गर्ने बटन।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5757187557809630523">"अर्को ट्र्याक" जनाउने आइकन</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तपाईंको फाइल स्क्यान गर्ने काम पूरा भएको छ र उक्त फाइल <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएको छ।}other{तपाईंका फाइलहरू स्क्यान गर्ने काम पूरा भएको छ र ती फाइलहरू <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएका छन्।}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> मेटाउने बटन।</translation>
 <translation id="5931523347251946569">फाइल भेट्टिएन</translation>
 <translation id="593880865674747800">यो शैलीका थप वालपेपरहरू बनाउनुहोस्</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS रिजोल्युसन पूरा हुन सकेनन्</translation>
 <translation id="6768237774506518020">DNS रिजोल्युसन पूरा हुन नसक्ने दर उच्च छ</translation>
 <translation id="6791471867139427246">किबोर्डको प्रकाशको रङ</translation>
+<translation id="6796229976413584781">सर्टकट मेटाइयो</translation>
 <translation id="6798678288485555829">टेक्स्ट नेभिगेसन</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिभाइसहरूका लागि फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
+<translation id="7233782086689993269">सर्टकट रिस्टोर गरियो</translation>
 <translation id="725133483556299729">इमेल चयन गर्नुहोस्</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7271932918253517778">सिरानमा भएको रोका कीहरू भएको सर्टकटमा <ph name="META_KEY" /> की समावेश हुनु पर्छ।</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
 <translation id="7656388927906093505">यो डिभाइस माउस हो।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />।</translation>
 <translation id="7665800271478495366">अवतार बदल्नुहोस्</translation>
 <translation id="7683228889864052081">किबोर्डको ब्याकलाइटको रङ</translation>
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">किबोर्डको ब्याकलाइटको प्रकाश</translation>
 <translation id="7730077286107534951">खाता तथा सिस्टमसम्बन्धी केही जानकारी Google मा पठाइन सक्छ। हामी यो जानकारी प्राविधिक समस्याहरू समाधान गर्ने र हाम्रा सेवाहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि हाम्रो <ph name="BEGIN_LINK2" />गोपनीयता नीति<ph name="END_LINK2" /> तथा <ph name="BEGIN_LINK3" />सेवाका सर्तहरू<ph name="END_LINK3" />बमोजिम प्रयोग गर्छौँ। सामग्री परिवर्तन गरिदिन अनुरोध गर्न "<ph name="BEGIN_LINK1" />कानुनी सहायता<ph name="END_LINK1" />" मा जानुहोस्।</translation>
 <translation id="773153675489693198">साइकल काउन्ट</translation>
+<translation id="7746357909584236306">सम्पादन गर्न मिल्छ</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
 <translation id="7752963721013053477">डन टु डार्क - विशेष</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
