@@ -92,7 +92,7 @@ void EditLabel::PerformPulseAnimation(int pulse_count) {
   DCHECK(pulse_layer_);
 
   // Initial bounds in its widget coordinate.
-  auto view_bounds = ConvertRectToWidget(bounds());
+  auto view_bounds = ConvertRectToWidget(gfx::Rect(size()));
 
   // Set initial properties.
   pulse_layer_->SetBounds(view_bounds);
