@@ -6363,11 +6363,33 @@ void Element::FocusWithinStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
-void Element::SetHasFocusWithinUpToAncestor(bool flag, Element* ancestor) {
-  for (Element* element = this; element && element != ancestor;
+void Element::SetHasFocusWithinUpToAncestor(bool flag,
+                                            Element* ancestor,
+                                            bool need_snap_container_search) {
+  bool reached_ancestor = false;
+  for (Element* element = this;
+       element && (need_snap_container_search || !reached_ancestor);
        element = FlatTreeTraversal::ParentElement(*element)) {
-    element->SetHasFocusWithin(flag);
-    element->FocusWithinStateChanged();
+    if (!reached_ancestor && element != ancestor) {
+      element->SetHasFocusWithin(flag);
+      element->FocusWithinStateChanged();
+    }
+    // If |ancestor| or any of its ancestors is a snap container, that snap
+    // container needs to know which one of its descendants newly gained or lost
+    // focus even if its own HasFocusWithin state has not changed.
+    if (element != this && need_snap_container_search) {
+      if (const auto* box = element->GetLayoutBoxForScrolling()) {
+        if (box->Style() && !box->Style()->GetScrollSnapType().is_none) {
+          if (GetDocument().GetFrame() && GetDocument().GetFrame()->View()) {
+            // Tag the enclosing snap container for an update so it can be
+            // updated with focus information.
+            GetDocument().GetFrame()->View()->AddPendingSnapUpdate(
+                box->GetScrollableArea());
+          }
+        }
+      }
+    }
+    reached_ancestor |= element == ancestor;
   }
 }
 

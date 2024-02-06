@@ -850,7 +850,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void Focus(const FocusOptions*);
 
   virtual void SetFocused(bool received, mojom::blink::FocusType);
-  void SetHasFocusWithinUpToAncestor(bool, Element* ancestor);
+  void SetHasFocusWithinUpToAncestor(bool,
+                                     Element* ancestor,
+                                     bool need_snap_container_search = false);
   void FocusStateChanged();
   void FocusVisibleStateChanged();
   void FocusWithinStateChanged();

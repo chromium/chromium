@@ -1280,7 +1280,7 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
     CopyProperties(scroller_.get(), snap_area_.get());
     scroller_->AddChild(snap_area_);
     SnapAreaData snap_area_data(ScrollSnapAlign(SnapAlignment::kStart),
-                                gfx::RectF(500, 500, 100, 100), false,
+                                gfx::RectF(500, 500, 100, 100), false, false,
                                 snap_area_id_);
 
     // Set up snap container data.
@@ -1415,7 +1415,7 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
     CopyProperties(scroller_a_.get(), snap_area_a_.get());
     scroller_a_->AddChild(snap_area_a_);
     SnapAreaData snap_area_data_a(ScrollSnapAlign(SnapAlignment::kStart),
-                                  gfx::RectF(500, 500, 100, 100), false,
+                                  gfx::RectF(500, 500, 100, 100), false, false,
                                   snap_area_a_id_);
 
     snap_area_b_ = Layer::Create();
@@ -1424,7 +1424,7 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
     CopyProperties(scroller_b_.get(), snap_area_b_.get());
     scroller_b_->AddChild(snap_area_b_);
     SnapAreaData snap_area_data_b(ScrollSnapAlign(SnapAlignment::kStart),
-                                  gfx::RectF(500, 500, 100, 100), false,
+                                  gfx::RectF(500, 500, 100, 100), false, false,
                                   snap_area_b_id_);
 
     // Set up snap container data.

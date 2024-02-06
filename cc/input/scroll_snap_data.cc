@@ -544,8 +544,7 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
     if (distance > smallest_distance) {
       return;
     }
-    if (distance < smallest_distance ||
-        candidate.element_id() == active_element_id) {
+    if (distance < smallest_distance || candidate.has_focus_within()) {
       smallest_distance = distance;
       closest = candidate;
     }
@@ -572,6 +571,7 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
              : IsSnapportCoveredOnAxis(axis, intended_position, area.rect))) {
       if (std::optional<SnapSearchResult> covering =
               FindCoveringCandidate(area, axis, candidate, intended_position)) {
+        covering->set_has_focus_within(area.has_focus_within);
         if (covering->snap_offset() == intended_position) {
           SetOrUpdateResult(*covering, &covering_intended, active_element_id);
         } else {
@@ -642,6 +642,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
     }
     result.Clip(max_position_.y(), max_position_.x());
   }
+  result.set_has_focus_within(area.has_focus_within);
   result.set_element_id(area.element_id);
   return result;
 }

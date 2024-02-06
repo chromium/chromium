@@ -765,7 +765,8 @@ class LayerTreeHostImplTest : public testing::Test,
         ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
         gfx::RectF(0, 0, 200, 200), gfx::PointF(300, 300));
     SnapAreaData area_data(ScrollSnapAlign(SnapAlignment::kStart),
-                           gfx::RectF(50, 50, 100, 100), false, ElementId(10));
+                           gfx::RectF(50, 50, 100, 100), false, false,
+                           ElementId(10));
     container_data.AddSnapAreaData(area_data);
     GetScrollNode(overflow)->snap_container_data.emplace(container_data);
     DrawFrame();
@@ -3110,9 +3111,9 @@ TEST_F(LayerTreeHostImplTest, NativeFlingInSnapArea) {
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -7261,7 +7262,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   host_impl_->OuterViewportScrollNode()->snap_container_data.emplace(container);
 
   DrawFrame();
@@ -19045,9 +19046,9 @@ TEST_F(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
   GetScrollNode(snapping_layer)->snap_container_data.emplace(container);
   DrawFrame();
 

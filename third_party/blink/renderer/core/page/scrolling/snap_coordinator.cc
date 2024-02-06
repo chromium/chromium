@@ -256,6 +256,8 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   snap_area_data.must_snap =
       (area_style->ScrollSnapStop() == EScrollSnapStop::kAlways);
 
+  snap_area_data.has_focus_within = snap_area.GetNode()->HasFocusWithin();
+
   snap_area_data.element_id =
       CompositorElementIdFromDOMNodeId(snap_area.GetNode()->GetDomNodeId());
 

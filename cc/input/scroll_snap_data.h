@@ -117,6 +117,11 @@ class SnapSearchResult {
   std::optional<gfx::RangeF> covered_range() const { return covered_range_; }
   void set_covered_range(const gfx::RangeF& range) { covered_range_ = range; }
 
+  bool has_focus_within() const { return has_focus_within_; }
+  void set_has_focus_within(bool has_focus_within) {
+    has_focus_within_ = has_focus_within;
+  }
+
  private:
   // Scroll offset corresponding to this snap position. If covered_range_ is set
   // then this will be a position inside the range. In the covered case, the
@@ -133,6 +138,10 @@ class SnapSearchResult {
 
   // The ElementId of the snap area that corresponds to this SnapSearchResult.
   ElementId element_id_;
+
+  // Whether the snap area generating this result has focus or has a descendant
+  // element which has focus.
+  bool has_focus_within_;
 
   // This is set if the validity of this result derives from the fact that the
   // snap area covers the viewport, as described in the spec section on
@@ -159,13 +168,19 @@ struct SnapAreaData {
   SnapAreaData(const ScrollSnapAlign& align,
                const gfx::RectF& rec,
                bool msnap,
+               bool has_focus_within,
                ElementId id)
-      : scroll_snap_align(align), rect(rec), must_snap(msnap), element_id(id) {}
+      : scroll_snap_align(align),
+        rect(rec),
+        must_snap(msnap),
+        has_focus_within(has_focus_within),
+        element_id(id) {}
 
   bool operator==(const SnapAreaData& other) const {
     return (other.element_id == element_id) &&
            (other.scroll_snap_align == scroll_snap_align) &&
-           (other.rect == rect) && (other.must_snap == must_snap);
+           (other.rect == rect) && (other.must_snap == must_snap) &&
+           (other.has_focus_within == has_focus_within);
   }
 
   bool operator!=(const SnapAreaData& other) const { return !(*this == other); }
@@ -181,6 +196,9 @@ struct SnapAreaData {
   // Whether this area has scroll-snap-stop: always.
   // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-stop
   bool must_snap;
+
+  // Whether this area has focus or has a descendant element which has focus.
+  bool has_focus_within = false;
 
   // ElementId of the corresponding snap area.
   ElementId element_id;
