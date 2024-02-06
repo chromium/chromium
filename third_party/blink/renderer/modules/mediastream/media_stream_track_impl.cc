@@ -933,11 +933,6 @@ void MediaStreamTrackImpl::SendWheel(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
-void MediaStreamTrackImpl::GetZoomLevel(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
-  std::move(callback).Run(std::nullopt, "Unsupported.");
-}
-
 void MediaStreamTrackImpl::SetZoomLevel(
     int zoom_level,
     base::OnceCallback<void(DOMException*)> callback) {

@@ -69,17 +69,6 @@ void OnCapturedSurfaceControlResult(
     CapturedSurfaceControlResult result) {
   std::move(callback).Run(CscResultToDOMException(result));
 }
-
-void OnGetZoomLevelResult(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback,
-    std::optional<int> zoom_level,
-    CapturedSurfaceControlResult result) {
-  // Note that OnGetZoomLevelResult() will shortly be removed (by m123),
-  // so this translation back to String is temporary.
-  const DOMException* const exception = CscResultToDOMException(result);
-  std::move(callback).Run(zoom_level,
-                          /*error=*/exception ? exception->message() : "");
-}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -275,22 +264,6 @@ void MediaStreamVideoCapturerSource::SendWheel(
       blink::mojom::blink::CapturedWheelAction::New(
           relative_x, relative_y, wheel_delta_x, wheel_delta_y),
       WTF::BindOnce(&OnCapturedSurfaceControlResult, std::move(callback)));
-}
-
-void MediaStreamVideoCapturerSource::GetZoomLevel(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  const std::optional<base::UnguessableToken>& session_id =
-      device().serializable_session_id();
-  if (!session_id.has_value()) {
-    std::move(callback).Run(std::nullopt, "Missing session ID.");
-    return;
-  }
-
-  GetMediaStreamDispatcherHost()->GetZoomLevel(
-      session_id.value(),
-      WTF::BindOnce(&OnGetZoomLevelResult, std::move(callback)));
 }
 
 void MediaStreamVideoCapturerSource::SetZoomLevel(

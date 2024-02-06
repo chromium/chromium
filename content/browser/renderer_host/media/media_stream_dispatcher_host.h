@@ -137,8 +137,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void SendWheel(const base::UnguessableToken& device_id,
                  blink::mojom::CapturedWheelActionPtr action,
                  SendWheelCallback callback) override;
-  void GetZoomLevel(const base::UnguessableToken& device_id,
-                    GetZoomLevelCallback callback) override;
   void SetZoomLevel(const base::UnguessableToken& device_id,
                     int32_t zoom_level,
                     SetZoomLevelCallback callback) override;

@@ -4265,25 +4265,6 @@ void MediaStreamManager::SendWheel(
   controller->SendWheel(std::move(action), std::move(callback));
 }
 
-void MediaStreamManager::GetZoomLevel(
-    GlobalRenderFrameHostId capturer_rfh_id,
-    const base::UnguessableToken& session_id,
-    base::OnceCallback<void(std::optional<int> zoom_level,
-                            blink::mojom::CapturedSurfaceControlResult result)>
-        callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  CapturedSurfaceControlResult result;
-  CapturedSurfaceController* const controller =
-      GetCapturedSurfaceController(capturer_rfh_id, session_id, result);
-  if (!controller) {
-    std::move(callback).Run(std::nullopt, result);
-    return;
-  }
-
-  controller->GetZoomLevel(std::move(callback));
-}
-
 void MediaStreamManager::SetZoomLevel(
     GlobalRenderFrameHostId capturer_rfh_id,
     const base::UnguessableToken& session_id,

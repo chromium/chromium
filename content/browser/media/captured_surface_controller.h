@@ -61,14 +61,6 @@ class CONTENT_EXPORT CapturedSurfaceController {
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
-  // Get the zoom level of the captured tab.
-  // TODO(crbug.com/1466247): Remove this function when GetZoomLevel in the
-  // JavaScript API has been made synhronous.
-  virtual void GetZoomLevel(
-      base::OnceCallback<void(
-          std::optional<int> zoom_level,
-          blink::mojom::CapturedSurfaceControlResult result)> reply_callback);
-
   // Set the zoom level of the captured tab.
   virtual void SetZoomLevel(
       int zoom_level,

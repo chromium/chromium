@@ -580,11 +580,6 @@ void MediaStreamVideoSource::SendWheel(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
 }
 
-void MediaStreamVideoSource::GetZoomLevel(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
-  std::move(callback).Run(false, "Unsupported.");
-}
-
 void MediaStreamVideoSource::SetZoomLevel(
     int zoom_level,
     base::OnceCallback<void(DOMException*)> callback) {

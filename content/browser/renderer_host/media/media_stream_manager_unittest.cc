@@ -316,8 +316,6 @@ class TestMediaStreamDispatcherHost
   void SendWheel(const base::UnguessableToken& device_id,
                  blink::mojom::CapturedWheelActionPtr action,
                  SendWheelCallback callback) override {}
-  void GetZoomLevel(const base::UnguessableToken& device_id,
-                    GetZoomLevelCallback callback) override {}
   void SetZoomLevel(const base::UnguessableToken& device_id,
                     int32_t zoom_level,
                     SetZoomLevelCallback callback) override {}
@@ -380,10 +378,8 @@ blink::StreamControls GetAudioStreamControls(std::string hmac_device_id) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1466247): Add other APIs (setZoomLevel, getZoomLevel).
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
-  kGetZoomLevel,
   kSetZoomLevel,
 };
 
@@ -1941,14 +1937,6 @@ class MediaStreamManagerCapturedSurfaceControlTest
         &result_);
   }
 
-  void GetZoomLevel(
-      GlobalRenderFrameHostId gdm_rfhid,
-      std::optional<base::UnguessableToken> session_id = std::nullopt) {
-    media_stream_manager_->GetZoomLevel(
-        gdm_rfhid, session_id.value_or(video_device_.session_id()),
-        MakeGetZoomLevelCallback());
-  }
-
   void SetZoomLevel(
       GlobalRenderFrameHostId gdm_rfhid,
       std::optional<base::UnguessableToken> session_id = std::nullopt) {
@@ -1994,10 +1982,6 @@ class MediaStreamManagerCapturedSurfaceControlActionTest
         SendWheel(gdm_rfhid, session_id);
         return;
       }
-      case CapturedSurfaceControlAPI::kGetZoomLevel: {
-        GetZoomLevel(gdm_rfhid, session_id);
-        return;
-      }
       case CapturedSurfaceControlAPI::kSetZoomLevel: {
         SetZoomLevel(gdm_rfhid, session_id);
         return;
@@ -2013,7 +1997,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     MediaStreamManagerCapturedSurfaceControlActionTest,
     testing::Values(CapturedSurfaceControlAPI::kSendWheel,
-                    CapturedSurfaceControlAPI::kGetZoomLevel,
                     CapturedSurfaceControlAPI::kSetZoomLevel));
 
 TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest, SuccessfulIfValid) {
