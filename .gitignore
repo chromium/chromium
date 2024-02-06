@@ -358,4 +358,9 @@ vs-chromium-project.txt
 # Ignore the default results output directory for tools/run-swarmed.py
 /results
 
+# Build scripts 
 /replay_build_scripts/node_modules
+
+# Reclient
+/buildtools/reclient_cfgs/reproxy.cfg
+/third_party/reclient_configs

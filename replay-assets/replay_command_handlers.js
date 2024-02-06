@@ -11,6 +11,7 @@ const {
   logTrace: logTrace_,
   warning: warning_,
   fromJsIsReplayScriptAlive: isReplayScriptAlive,
+  hasDiverged,
   setCDPMessageCallback,
   sendCDPMessage: sendCDPMessageRaw,
   setCommandCallback,
@@ -294,7 +295,13 @@ function CHECK_ALIVE(message) {
   if (!isReplayScriptAlive()) {
     const err = new Error(`ReplayScript UNALIVE - ${message}`);
     err.code = CDPERROR_NOTALIVE;
-    throw err;
+    if (hasDiverged()) {
+      throw err;
+    } else {
+      // Since we don't know enough about the circumstances here yet,
+      // let's not crash an RTP for it.
+      warning(err.stack);
+    }
   }
 }
 

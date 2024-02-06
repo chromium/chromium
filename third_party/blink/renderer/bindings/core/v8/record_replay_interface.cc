@@ -910,6 +910,11 @@ static void fromJsIsReplayScriptAlive(const v8::FunctionCallbackInfo<v8::Value>&
   args.GetReturnValue().Set(v8::Number::New(isolate, gReplayScriptsAlive));
 }
 
+static void fromJsHasDiverged(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+  args.GetReturnValue().Set(v8::Number::New(isolate, recordreplay::HasDivergedFromRecording()));
+}
+
 // Function to invoke on CDP responses and events.
 static v8::Eternal<v8::Function>* gCDPMessageCallback;
 
@@ -2523,6 +2528,8 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   // CDP debugger functionality
   SetFunctionProperty(isolate, args, "fromJsIsReplayScriptAlive",
                       fromJsIsReplayScriptAlive);
+  SetFunctionProperty(isolate, args, "hasDiverged",
+                      fromJsHasDiverged);
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage", SendCDPMessage);
