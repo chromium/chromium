@@ -88,18 +88,6 @@ NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
 NSString* const kTailoredPromoInteractionCount =
     @"tailoredPromoInteractionCount";
 
-// TODO(crbug.com/1445218): Remove in M116+.
-// Key in storage containing an NSDate indicating the last time a user
-// interacted with the "remind me later" panel.
-NSString* const kRemindMeLaterPromoActionInteraction =
-    @"remindMeLaterPromoActionInteraction";
-
-// TODO(crbug.com/1445240): Remove in M116+.
-// Key in storage containing a bool indicating if the user tapped on
-// button to open settings.
-NSString* const kOpenSettingsActionInteraction =
-    @"openSettingsActionInteraction";
-
 // Key in storage containing the timestamp of the last time the user opened the
 // app via first-party intent.
 NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
@@ -895,7 +883,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
     kDisplayedFullscreenPromoCount,
     kTailoredPromoInteractionCount,
     kGenericPromoInteractionCount,
-    kRemindMeLaterPromoActionInteraction,
     // clang-format on
   ];
 
@@ -970,15 +957,6 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in) {
 bool IsPostRestoreDefaultBrowserEligibleUser() {
   return IsFirstSessionAfterDeviceRestore() == signin::Tribool::kTrue &&
          IsChromeLikelyDefaultBrowser();
-}
-
-void CleanupUnusedStorage() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // TODO(crbug.com/1445240): Remove in M116+.
-  [defaults removeObjectForKey:kOpenSettingsActionInteraction];
-  // TODO(crbug.com/1445218): Remove in M116+.
-  [defaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
 }
 
 DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type) {

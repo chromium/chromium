@@ -305,10 +305,6 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in);
 // post restore default browser promo.
 bool IsPostRestoreDefaultBrowserEligibleUser();
 
-// Removes unused data from NSUserDefaults. This method should be periodically
-// pruned of cleanups that have been present for multiple milestones.
-void CleanupUnusedStorage();
-
 // Converts Default browser promo type NSEnum to an enum that can be used by
 // UMA.
 DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type);

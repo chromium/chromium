@@ -597,9 +597,6 @@ void ApplicationContextImpl::CreateLocalState() {
   // Cleanup obsolete preferences.
   MigrateObsoleteLocalStatePrefs(local_state_.get());
 
-  // Delete obsolete data from user storage.
-  CleanupUnusedStorage();
-
   // Delete obsolete data from NSUserDefaults.
   MigrateObsoleteUserDefault();
 }
