@@ -34,7 +34,7 @@
         "properties": {
           "windowId": {
             "type": "integer",
-            "description": "The id of the window to open the action popup in. Defaults to the currently-active window if unspecified.",
+            "description": "The ID of the window to open the action popup in. Defaults to the currently-active window if unspecified.",
             "optional": true
           }
         }
@@ -311,7 +311,7 @@
         "optional": true,
         "name": "tabId",
         "minimum": 0,
-        "description": "The id of the tab for which you want to modify the action."
+        "description": "The ID of the tab for which you want to modify the action."
       }],
       "returns_async": {
         "name": "callback",
@@ -327,7 +327,7 @@
         "optional": true,
         "name": "tabId",
         "minimum": 0,
-        "description": "The id of the tab for which you want to modify the action."
+        "description": "The ID of the tab for which you want to modify the action."
       }],
       "returns_async": {
         "name": "callback",
@@ -344,7 +344,7 @@
           "optional": true,
           "name": "tabId",
           "minimum": 0,
-          "description": "The id of the tab for which you want check enabled status."
+          "description": "The ID of the tab for which you want check enabled status."
         }
       ],
       "returns_async": {
