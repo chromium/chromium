@@ -4506,6 +4506,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Wallet.BoardingPass.Detected" enum="BooleanDetected"
+    expires_after="2024-12-31">
+  <owner>hanfeng@google.com</owner>
+  <owner>wallet-1p-integrations@google.com</owner>
+  <summary>
+    Records detected flight boarding pass barcode images on each page load. It's
+    only enabled on the Chrome Android app. It's only emitted once on page load,
+    either detected or not detected.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebContentsState.SavedStateVersion" units="version"
     expires_after="2024-06-01">
   <owner>ellyjones@chromium.org</owner>
