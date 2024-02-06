@@ -27,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Delegate that manages the observer for the modal dialog on new tab group creation. */
-public class TabGroupCreationDialogDelegate {
+public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -44,21 +44,9 @@ public class TabGroupCreationDialogDelegate {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
+    @Override
     public void destroy() {
-        TabModelFilterProvider tabModelFilterProvider =
-                mTabModelSelectorSupplier.get().getTabModelFilterProvider();
-
-        if (mRegularObserver != null) {
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
-                    .removeTabGroupObserver(mRegularObserver);
-            mRegularObserver = null;
-        }
-
-        if (mIncognitoObserver != null) {
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
-                    .removeTabGroupObserver(mIncognitoObserver);
-            mIncognitoObserver = null;
-        }
+        detachObservers();
 
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier = null;
@@ -68,6 +56,7 @@ public class TabGroupCreationDialogDelegate {
     // TODO(crbug.com/1517346): Make this private and initialize it only when TabModelSelector's tab
     // state has been initialized.
     /** Add an TabGroupModelFilterObserver to notify when a new tab group is being created. */
+    @Override
     public void addObservers() {
         TabModelFilterProvider tabModelFilterProvider =
                 mTabModelSelectorSupplier.get().getTabModelFilterProvider();
@@ -109,6 +98,29 @@ public class TabGroupCreationDialogDelegate {
         return observer;
     }
 
+    /** Remove observers monitoring tab group creation that display a custom dialog. */
+    @Override
+    public void removeObservers() {
+        detachObservers();
+    }
+
+    private void detachObservers() {
+        TabModelFilterProvider tabModelFilterProvider =
+                mTabModelSelectorSupplier.get().getTabModelFilterProvider();
+
+        if (mRegularObserver != null) {
+            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
+                    .removeTabGroupObserver(mRegularObserver);
+            mRegularObserver = null;
+        }
+
+        if (mIncognitoObserver != null) {
+            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
+                    .removeTabGroupObserver(mIncognitoObserver);
+            mIncognitoObserver = null;
+        }
+    }
+
     protected void showDialog(int tabCount) {
         View customView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_group_creation_dialog, null);
@@ -122,8 +134,8 @@ public class TabGroupCreationDialogDelegate {
                                         tabCount));
 
         List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
-        ColorPickerCoordinator.Delegate delegate =
-                new ColorPickerCoordinator.Delegate() {
+        ColorPickerDelegate delegate =
+                new ColorPickerDelegate() {
                     @Override
                     public int getColorPickerUIComponent() {
                         return R.layout.tab_group_color_picker_container;

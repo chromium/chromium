@@ -40,6 +40,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
+import java.util.List;
 import java.util.function.DoubleConsumer;
 
 /** Impl class that will resolve components for tab management. */
@@ -203,5 +204,22 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             onToolbarAlphaChange);
         }
         return Pair.create(new TabSwitcherPaneAdapter(pane), pane);
+    }
+
+    @Override
+    public TabGroupCreationDialog createTabGroupCreationDialogDelegate(
+            @NonNull Activity activity,
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        return new TabGroupCreationDialogDelegate(
+                activity, modalDialogManager, tabModelSelectorSupplier);
+    }
+
+    @Override
+    public ColorPicker createColorPickerCoordinator(
+            @NonNull Context context,
+            @NonNull List<Integer> colors,
+            @NonNull ColorPickerDelegate delegate) {
+        return new ColorPickerCoordinator(context, colors, delegate);
     }
 }

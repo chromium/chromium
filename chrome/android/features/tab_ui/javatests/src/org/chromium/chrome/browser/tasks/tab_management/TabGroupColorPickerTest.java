@@ -65,8 +65,8 @@ public class TabGroupColorPickerTest {
                         colors.add(i);
                     }
 
-                    ColorPickerCoordinator.Delegate delegate =
-                            new ColorPickerCoordinator.Delegate() {
+                    ColorPickerDelegate delegate =
+                            new ColorPickerDelegate() {
                                 @Override
                                 public int getColorPickerUIComponent() {
                                     return R.layout.tab_group_color_picker_container;

@@ -9,6 +9,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -19,7 +21,7 @@ import java.util.List;
 public class ColorPickerMediator {
     private final @NonNull List<PropertyModel> mColorItems;
     private final @NonNull List<Integer> mColors;
-    private int mSelectedColor;
+    private ObservableSupplierImpl<Integer> mSelectedColorSupplier = new ObservableSupplierImpl<>();
 
     public ColorPickerMediator(List<Integer> colors) {
         this(colors, new ArrayList<>());
@@ -67,10 +69,10 @@ public class ColorPickerMediator {
             model.set(ColorPickerItemProperties.IS_SELECTED, isSelected);
         }
 
-        mSelectedColor = selectedColor;
+        mSelectedColorSupplier.set(selectedColor);
     }
 
-    int getSelectedColor() {
-        return mSelectedColor;
+    ObservableSupplier<Integer> getSelectedColorSupplier() {
+        return mSelectedColorSupplier;
     }
 }

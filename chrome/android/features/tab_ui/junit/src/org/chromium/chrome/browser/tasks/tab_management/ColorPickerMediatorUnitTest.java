@@ -78,6 +78,6 @@ public class ColorPickerMediatorUnitTest {
             }
         }
 
-        assertEquals(selectedColor, mMediator.getSelectedColor());
+        assertEquals(selectedColor, (int) mMediator.getSelectedColorSupplier().get());
     }
 }
