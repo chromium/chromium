@@ -161,6 +161,14 @@ id<GREYMatcher> Omnibox() {
   return [ChromeMatchersAppInterface omnibox];
 }
 
+id<GREYMatcher> OmniboxAtBottom() {
+  return [ChromeMatchersAppInterface omniboxAtBottom];
+}
+
+id<GREYMatcher> OmniboxOnTop() {
+  return [ChromeMatchersAppInterface omniboxOnTop];
+}
+
 id<GREYMatcher> OmniboxPopupRow() {
   return [ChromeMatchersAppInterface omniboxPopupRow];
 }
