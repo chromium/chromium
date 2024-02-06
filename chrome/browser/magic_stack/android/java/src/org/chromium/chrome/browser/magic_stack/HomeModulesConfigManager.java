@@ -34,4 +34,12 @@ public interface HomeModulesConfigManager {
      */
     @ModuleType
     Set<Integer> getEnabledModuleList();
+
+    /**
+     * Sets the user preference for whether the given module type is enabled.
+     *
+     * @param moduleType {@link ModuleType} needed to be notified to the listeners.
+     * @param enabled True is the module type is enabled.
+     */
+    void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled);
 }

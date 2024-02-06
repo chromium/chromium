@@ -117,7 +117,7 @@ public class HomeModulesContextMenuManager {
             @NonNull MenuItem menuItem, @NonNull ModuleProvider moduleProvider) {
         switch (menuItem.getItemId()) {
             case ContextMenuItemId.HIDE_MODULE:
-                mModuleDelegate.removeModule(moduleProvider.getModuleType());
+                mModuleDelegate.removeModuleAndDisable(moduleProvider.getModuleType());
                 HomeModulesMetricsUtils.recordContextMenuRemoveModule(
                         mModuleDelegate.getHostSurfaceType(), moduleProvider.getModuleType());
                 return true;

@@ -43,6 +43,9 @@ public interface ModuleDelegate {
     /** Removes a module from the magic stack. */
     void removeModule(@ModuleType int moduleType);
 
+    /** Removes a module from the magic stack and disable it from the settings. */
+    void removeModuleAndDisable(@ModuleType int moduleType);
+
     /** Called when the user wants to open the settings to customize modules. */
     void customizeSettings();
 

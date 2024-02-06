@@ -246,6 +246,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
+    public void removeModuleAndDisable(int moduleType) {
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(moduleType, false);
+    }
+
+    @Override
     public void customizeSettings() {
         mModuleDelegateHost.customizeSettings();
     }

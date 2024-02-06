@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -205,6 +206,19 @@ public class HomeModulesCoordinatorUnitTest {
 
         mCoordinator.destroy();
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());
+    }
+
+    @Test
+    @SmallTest
+    public void testRemoveModuleAndDisable() {
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity, mModuleDelegateHost, mView, mHomeModulesConfigManager);
+
+        mCoordinator.removeModuleAndDisable(ModuleType.PRICE_CHANGE);
+        verify(mHomeModulesConfigManager)
+                .setPrefModuleTypeEnabled(eq(ModuleType.PRICE_CHANGE), eq(false));
     }
 
     private void setupAndVerifyTablets() {
