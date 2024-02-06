@@ -26,6 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
@@ -72,6 +73,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
@@ -198,6 +200,7 @@ class TabImpl implements Tab {
     private long mTimestampMillis;
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
+    private @Nullable Token mTabGroupId;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
     /**
@@ -1737,6 +1740,21 @@ class TabImpl implements Tab {
         mRootId = rootId;
         for (TabObserver observer : mObservers) {
             observer.onRootIdChanged(this, rootId);
+        }
+    }
+
+    @Override
+    public @Nullable Token getTabGroupId() {
+        return mTabGroupId;
+    }
+
+    @Override
+    public void setTabGroupId(@Nullable Token tabGroupId) {
+        assert tabGroupId == null || !tabGroupId.isZero() : "A TabGroupId token must be non-zero.";
+        if (Objects.equals(mTabGroupId, tabGroupId) || isDestroyed()) return;
+        mTabGroupId = tabGroupId;
+        for (TabObserver observer : mObservers) {
+            observer.onTabGroupIdChanged(this, tabGroupId);
         }
     }
 

@@ -14,6 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -88,6 +89,8 @@ public class TabStateFileManager {
             new LinkedList<>();
 
     private static boolean sDeferredStartupComplete;
+
+    private static final long NO_TAB_GROUP_ID = 0L;
 
     private static final int MAX_CONCURRENT_FLATBUFFER_MIGRATIONS = 1;
 
@@ -368,6 +371,18 @@ public class TabStateFileManager {
                                 + " Assuming last navigation committed timestamp is"
                                 + " TabState.TIMESTAMP_NOT_SET");
             }
+            try {
+                long tokenHigh = stream.readLong();
+                long tokenLow = stream.readLong();
+                Token tabGroupId = new Token(tokenHigh, tokenLow);
+                tabState.tabGroupId = tabGroupId.isZero() ? null : tabGroupId;
+            } catch (EOFException eof) {
+                tabState.tabGroupId = null;
+                Log.w(
+                        TAG,
+                        "Failed to read tabGroupId token from tab state."
+                                + " Assuming tabGroupId is null");
+            }
             // If FlatBuffer schema is enabled, but we restored using Legacy TabState, that
             // means the FlatBuffer file doesn't exist yet (e.g. Tab has gone uninteracted with
             // and there hasn't been an opportunity to migrate it to the FlatBuffer format).
@@ -498,6 +513,14 @@ public class TabStateFileManager {
             dataOutputStream.writeInt(state.rootId);
             dataOutputStream.writeInt(state.userAgent);
             dataOutputStream.writeLong(state.lastNavigationCommittedTimestampMillis);
+            long tokenHigh = NO_TAB_GROUP_ID;
+            long tokenLow = NO_TAB_GROUP_ID;
+            if (state.tabGroupId != null) {
+                tokenHigh = state.tabGroupId.getHigh();
+                tokenLow = state.tabGroupId.getLow();
+            }
+            dataOutputStream.writeLong(tokenHigh);
+            dataOutputStream.writeLong(tokenLow);
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.SaveTime", SystemClock.elapsedRealtime() - startTime);
         } catch (FileNotFoundException e) {

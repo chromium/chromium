@@ -10,11 +10,13 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.flatbuffer.TabGroupIdToken;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.TabStateFlatBufferV1;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
@@ -26,6 +28,7 @@ import java.nio.ByteBuffer;
 /** {@link TabStateSerializer} backed by a FlatBuffer */
 public class FlatBufferTabStateSerializer implements TabStateSerializer {
     private static final String NULL_OPENER_APP_ID = " ";
+    private static final long NO_TAB_GROUP_ID = 0L;
 
     private final boolean mIsEncrypted;
 
@@ -85,6 +88,14 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         TabStateFlatBufferV1.addUserAgent(fbb, getUserAgentTypeToFlatBuffer(state.userAgent));
         TabStateFlatBufferV1.addLastNavigationCommittedTimestampMillis(
                 fbb, state.lastNavigationCommittedTimestampMillis);
+        long tokenHigh = NO_TAB_GROUP_ID;
+        long tokenLow = NO_TAB_GROUP_ID;
+        if (state.tabGroupId != null) {
+            tokenHigh = state.tabGroupId.getHigh();
+            tokenLow = state.tabGroupId.getLow();
+        }
+        TabStateFlatBufferV1.addTabGroupId(
+                fbb, TabGroupIdToken.createTabGroupIdToken(fbb, tokenHigh, tokenLow));
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
@@ -106,6 +117,11 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.timestampMillis = tabStateFlatBuffer.timestampMillis();
             state.lastNavigationCommittedTimestampMillis =
                     tabStateFlatBuffer.lastNavigationCommittedTimestampMillis();
+            Token tabGroupId =
+                    new Token(
+                            tabStateFlatBuffer.tabGroupId().high(),
+                            tabStateFlatBuffer.tabGroupId().low());
+            state.tabGroupId = tabGroupId.isZero() ? null : tabGroupId;
             state.userAgent = getTabUserAgentTypeFromFlatBuffer(tabStateFlatBuffer.userAgent());
             state.tabLaunchTypeAtCreation =
                     getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());

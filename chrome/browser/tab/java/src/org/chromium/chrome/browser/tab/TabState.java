@@ -8,6 +8,7 @@ import android.graphics.Color;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.ui.util.ColorUtils;
 
 /** Object that contains the state of a tab, including its navigation history. */
@@ -22,7 +23,17 @@ public class TabState {
     public WebContentsState contentsState;
 
     public int parentId = Tab.INVALID_TAB_ID;
+
+    // TODO(crbug/1524345): deprecate this field once tabGroupId has finished replacing it.
+    /**
+     * The legacy tab group ID. This field is planned to be replaced by {@link tabGroupId}. While
+     * the "AndroidTabGroupStableIds" is rolled out, tab groups will be associated with both a
+     * rootId and a tabGroupId. Each tab group will have one unique value for each of these fields.
+     */
     public int rootId;
+
+    /** The tab group ID. */
+    public @Nullable Token tabGroupId;
 
     public long timestampMillis = TIMESTAMP_NOT_SET;
     public String openerAppId;

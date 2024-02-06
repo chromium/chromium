@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -160,6 +161,12 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
                     @Override
                     public void onRootIdChanged(Tab tab, int newRootId) {
+                        if (!tab.isInitialized()) return;
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+
+                    @Override
+                    public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {
                         if (!tab.isInitialized()) return;
                         updateIsDirty(DirtinessState.DIRTY);
                     }
