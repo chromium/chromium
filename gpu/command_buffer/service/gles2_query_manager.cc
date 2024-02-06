@@ -174,9 +174,8 @@ void SummedIntegerQuery::Process(bool did_finish) {
   MarkAsCompleted(summed_result);
 }
 
-class AsyncReadPixelsCompletedQuery
-    : public GLES2QueryManager::GLES2Query,
-      public base::SupportsWeakPtr<AsyncReadPixelsCompletedQuery> {
+class AsyncReadPixelsCompletedQuery final
+    : public GLES2QueryManager::GLES2Query {
  public:
   AsyncReadPixelsCompletedQuery(GLES2QueryManager* manager,
                                 GLenum target,
@@ -194,6 +193,7 @@ class AsyncReadPixelsCompletedQuery
  protected:
   void Complete();
   ~AsyncReadPixelsCompletedQuery() override;
+  base::WeakPtrFactory<AsyncReadPixelsCompletedQuery> weak_ptr_factory_{this};
 };
 
 AsyncReadPixelsCompletedQuery::AsyncReadPixelsCompletedQuery(
@@ -218,7 +218,8 @@ void AsyncReadPixelsCompletedQuery::Resume() {
 void AsyncReadPixelsCompletedQuery::End(base::subtle::Atomic32 submit_count) {
   MarkAsPending(submit_count);
   gles2_query_manager()->decoder()->WaitForReadPixels(
-      base::BindOnce(&AsyncReadPixelsCompletedQuery::Complete, AsWeakPtr()));
+      base::BindOnce(&AsyncReadPixelsCompletedQuery::Complete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AsyncReadPixelsCompletedQuery::QueryCounter(
