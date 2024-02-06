@@ -13,6 +13,9 @@ namespace ash {
 
 std::u16string GetLabelForPickerCategory(PickerCategory category);
 
+std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
+    PickerCategory category);
+
 }  // namespace ash
 
 #endif  // ASH_PICKER_VIEWS_PICKER_STRINGS_H_

@@ -44,7 +44,7 @@ PickerSearchFieldView::PickerSearchFieldView(
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetPlaceholderText(l10n_util::GetStringUTF16(
-              IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT))
+              IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT))
           // TODO(b/309706053): Replace this once the strings are finalized.
           .SetAccessibleName(u"placeholder")
           .Build());

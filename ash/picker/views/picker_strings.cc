@@ -23,4 +23,22 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
   }
 }
 
+std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
+    PickerCategory category) {
+  switch (category) {
+    case PickerCategory::kEmojis:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EMOJIS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kSymbols:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SYMBOLS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kEmoticons:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EMOTICONS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kGifs:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+  }
+}
+
 }  // namespace ash
