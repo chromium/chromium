@@ -695,7 +695,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilInteractive" units="ms"
-    expires_after="2024-03-06">
+    expires_after="2025-02-06">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
