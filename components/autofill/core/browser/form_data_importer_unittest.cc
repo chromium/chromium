@@ -4100,8 +4100,8 @@ TEST_F(FormDataImporterTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-          CreditCard::RecordType::kVirtualCard);
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kVirtualCard);
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kVirtualCard);
@@ -4133,8 +4133,8 @@ TEST_F(FormDataImporterTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-          CreditCard::RecordType::kLocalCard);
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalCard);
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kVirtualCard);
@@ -4160,7 +4160,7 @@ TEST_F(FormDataImporterTest,
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
       form_data_importer()
-          .GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

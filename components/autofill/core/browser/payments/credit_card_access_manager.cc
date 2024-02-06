@@ -77,7 +77,7 @@ CreditCardAccessManager::~CreditCardAccessManager() {
   if (client_) {
     if (auto* form_data_importer = client_->GetFormDataImporter()) {
       form_data_importer
-          ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+          ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
               std::nullopt);
     }
   }
@@ -285,7 +285,7 @@ void CreditCardAccessManager::FetchCreditCard(
   // authentication happened. This variable will be set to a value if a payments
   // autofill non-interactive flow successfully completes.
   client_->GetFormDataImporter()
-      ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+      ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           std::nullopt);
 
   // Return error if authentication is already in progress, but don't reset
@@ -1209,8 +1209,9 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // This local or full server card autofill flow did not have any interactive
     // authentication, so notify the FormDataImporter of this.
     client_->GetFormDataImporter()
-        ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-            card_->record_type());
+        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+            payments::MandatoryReauthManager::
+                GetNonInteractivePaymentMethodType(card_->record_type()));
 
     // `OnCreditCardFetchedCallback` makes a copy of `card` and `cvc` before it
     // asynchronously fills them into the form. Thus we can safely call
@@ -1403,8 +1404,9 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
     // field in FormDataImporter so that MandatoryReauthManager can decide
     // whether to offer mandatory re-auth opt-in for this user.
     client_->GetFormDataImporter()
-        ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-            record_type);
+        ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+            payments::MandatoryReauthManager::
+                GetNonInteractivePaymentMethodType(record_type));
 
     autofill_metrics::LogServerCardUnmaskResult(
         autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,

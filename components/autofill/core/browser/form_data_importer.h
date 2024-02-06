@@ -28,6 +28,7 @@ namespace autofill {
 
 class AddressProfileSaveManager;
 class CreditCardSaveManager;
+enum class NonInteractivePaymentMethodType;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
@@ -134,14 +135,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 
   // This should only set
-  // `card_record_type_if_non_interactive_authentication_flow_completed_` to a
-  // value when there was an autofill with no interactive authentication,
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_` to
+  // a value when there was an autofill with no interactive authentication,
   // otherwise it should set to nullopt.
-  void SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-      std::optional<CreditCard::RecordType>
-          card_record_type_if_non_interactive_authentication_flow_completed_);
-  std::optional<CreditCard::RecordType>
-  GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted() const;
+  void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+      std::optional<NonInteractivePaymentMethodType>
+          payment_method_type_if_non_interactive_authentication_flow_completed_);
+  std::optional<NonInteractivePaymentMethodType>
+  GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const;
 
  private:
   // Defines a candidate for address profile import.
@@ -365,12 +366,13 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // If the most recent payments autofill flow had a non-interactive
   // authentication,
-  // `card_record_type_if_non_interactive_authentication_flow_completed_` will
-  // contain the record type of the card that had the non-interactive
-  // authentication, otherwise it will be nullopt. The reason we store a
-  // `CreditCard::RecordType` here instead of a boolean is for logging purposes.
-  std::optional<CreditCard::RecordType>
-      card_record_type_if_non_interactive_authentication_flow_completed_;
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_`
+  // will contain the type of payment method that had the non-interactive
+  // authentication, otherwise it will be nullopt. This is for logging purposes
+  // to log the type of non interactive payment method type that triggers
+  // mandatory reauth.
+  std::optional<NonInteractivePaymentMethodType>
+      payment_method_type_if_non_interactive_authentication_flow_completed_;
 
   // The instrument id of the card that has been most recently retrieved via
   // Autofill Downstream (card retrieval from server). This can be used to

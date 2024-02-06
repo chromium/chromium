@@ -13,7 +13,15 @@
 
 namespace autofill {
 
-class AutofillClient;
+// Non-interactive payment method denotes that the autofill procedure occurs
+// without requiring user interaction for authentication.
+enum class NonInteractivePaymentMethodType {
+  kLocalCard = 0,
+  kFullServerCard = 1,
+  kVirtualCard = 2,
+  kMaskedServerCard = 3,
+  kMaxValue = kMaskedServerCard,
+};
 
 namespace payments {
 
@@ -36,6 +44,22 @@ class MandatoryReauthManager {
   MandatoryReauthManager(const MandatoryReauthManager&) = delete;
   MandatoryReauthManager& operator=(const MandatoryReauthManager&) = delete;
   virtual ~MandatoryReauthManager();
+
+  static NonInteractivePaymentMethodType GetNonInteractivePaymentMethodType(
+      CreditCard::RecordType card_record_type);
+
+  // Helper method to get all NonInteractivePaymentMethodType for testing
+  // purpose.
+  static std::vector<NonInteractivePaymentMethodType>
+  GetAllNonInteractivePaymentMethodTypesForTesting() {
+    std::vector<NonInteractivePaymentMethodType> all_types;
+    for (int i = static_cast<int>(NonInteractivePaymentMethodType::kLocalCard);
+         i <= static_cast<int>(NonInteractivePaymentMethodType::kMaxValue);
+         ++i) {
+      all_types.push_back(static_cast<NonInteractivePaymentMethodType>(i));
+    }
+    return all_types;
+  }
 
   // Initiates an authentication flow. This method calls
   // `DeviceAuthenticator::Authenticate`, which is only implemented on Android.
@@ -73,8 +97,8 @@ class MandatoryReauthManager {
   // authentication, and will hold the record type of the card that had the most
   // recent non-interactive authentication.
   virtual bool ShouldOfferOptin(
-      std::optional<CreditCard::RecordType>
-          card_record_type_if_non_interactive_authentication_flow_completed);
+      std::optional<NonInteractivePaymentMethodType>
+          payment_method_type_if_non_interactive_authentication_flow_completed);
 
   // Starts the opt-in flow. This flow includes an opt-in bubble, an
   // authentication step, and then a confirmation bubble. This function should

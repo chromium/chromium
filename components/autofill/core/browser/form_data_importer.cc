@@ -734,8 +734,9 @@ bool FormDataImporter::ProcessExtractedCreditCard(
           client_->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
-          card_record_type_if_non_interactive_authentication_flow_completed_)) {
-    card_record_type_if_non_interactive_authentication_flow_completed_.reset();
+          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
+    payment_method_type_if_non_interactive_authentication_flow_completed_
+        .reset();
     mandatory_reauth_manager->StartOptInFlow();
     return true;
   }
@@ -1185,17 +1186,16 @@ void FormDataImporter::OnBrowsingHistoryCleared(
 }
 
 void FormDataImporter::
-    SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-        std::optional<CreditCard::RecordType>
-            card_record_type_if_non_interactive_authentication_flow_completed) {
-  card_record_type_if_non_interactive_authentication_flow_completed_ =
-      card_record_type_if_non_interactive_authentication_flow_completed;
+    SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+        std::optional<NonInteractivePaymentMethodType>
+            payment_method_type_if_non_interactive_authentication_flow_completed) {
+  payment_method_type_if_non_interactive_authentication_flow_completed_ =
+      payment_method_type_if_non_interactive_authentication_flow_completed;
 }
 
-std::optional<CreditCard::RecordType>
-FormDataImporter::GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
-    const {
-  return card_record_type_if_non_interactive_authentication_flow_completed_;
+std::optional<NonInteractivePaymentMethodType> FormDataImporter::
+    GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const {
+  return payment_method_type_if_non_interactive_authentication_flow_completed_;
 }
 
 }  // namespace autofill
