@@ -580,23 +580,22 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
         if (availableScreenSpace <= 0 && sExceptionReporter != null) {
             String logMessage =
-                    String.format(
-                            "there is no screen space for app menn, mIsByPermanentButton = "
-                                    + mIsByPermanentButton
-                                    + ", anchorViewOffset = "
-                                    + anchorViewOffset
-                                    + ", appDimensions.height() = "
-                                    + appDimensions.height()
-                                    + ", anchorView.getHeight() = "
-                                    + anchorView.getHeight()
-                                    + " padding.top = "
-                                    + padding.top
-                                    + ", padding.bottom = "
-                                    + padding.bottom
-                                    + ", footerHeight = "
-                                    + footerHeight
-                                    + ", headerHeight = "
-                                    + headerHeight);
+                    "there is no screen space for app menn, mIsByPermanentButton = "
+                            + mIsByPermanentButton
+                            + ", anchorViewOffset = "
+                            + anchorViewOffset
+                            + ", appDimensions.height() = "
+                            + appDimensions.height()
+                            + ", anchorView.getHeight() = "
+                            + anchorView.getHeight()
+                            + " padding.top = "
+                            + padding.top
+                            + ", padding.bottom = "
+                            + padding.bottom
+                            + ", footerHeight = "
+                            + footerHeight
+                            + ", headerHeight = "
+                            + headerHeight;
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> sExceptionReporter.onResult(new Throwable(logMessage)));
