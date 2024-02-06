@@ -109,7 +109,7 @@ public class StartSurfaceTestUtils {
     public static final String START_SURFACE_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:";
 
-    public static final String START_SURFACE_ON_TABLET_TEST_PARAMS =
+    public static final String IMMEDIATE_RETURN_TEST_PARAMS =
             "force-fieldtrial-params=Study.Group:"
                     + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM
                     + "/0";
