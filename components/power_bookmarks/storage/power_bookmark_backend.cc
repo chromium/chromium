@@ -36,7 +36,8 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
   db_.reset();
 
-  // Substitute a dummy implementation when the feature is disabled.
+  // Substitute a dummy implementation when the feature is disabled. Note that
+  // `use_database` is the PowerBookmarkBackend feature toggle on the call site.
   if (use_database) {
     db_ = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
     bool success = db_->Init();
@@ -64,9 +65,10 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PowerBookmarkBackend::GetSyncControllerDelegate() {
-  if (!bridge_ && bridge_->initialized()) {
-    return nullptr;
-  }
+  // When the current method is called, the bridge is expected to exist
+  // (`use_database` in the Init() method is set iff the PowerBookmarkBackend
+  // feature toggle is enabled).
+  CHECK(bridge_);
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
