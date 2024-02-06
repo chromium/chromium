@@ -25,6 +25,8 @@ static_library("feature_status_tracker") {
     "hardware_offloading_supported_provider.h",
     "logged_in_user_enabled_provider.cc",
     "logged_in_user_enabled_provider.h",
+    "power_connected_provider.cc",
+    "power_connected_provider.h",
     "quick_pair_feature_status_tracker.h",
     "quick_pair_feature_status_tracker_impl.cc",
     "quick_pair_feature_status_tracker_impl.h",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
     "fast_pair_support_utils_unittest.cc",
     "hardware_offloading_supported_provider_unittest.cc",
     "logged_in_user_enabled_provider_unittest.cc",
+    "power_connected_provider_unittest.cc",
     "screen_state_enabled_provider_unittest.cc",
   ]
 
