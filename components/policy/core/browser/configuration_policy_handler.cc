@@ -100,8 +100,10 @@ bool TypeCheckingPolicyHandler::CheckAndGetValue(const char* policy,
   // It is safe to use `value_unsafe()` as multiple policy types are handled.
   *value = entry ? entry->value_unsafe() : nullptr;
   if (*value && (*value)->type() != value_type) {
-    errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
-                     base::Value::GetTypeName(value_type));
+    if (errors) {
+      errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(value_type));
+    }
     return false;
   }
   return true;
@@ -394,8 +396,10 @@ bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
   const base::Value* required_value =
       policies.GetValueUnsafe(required_policy_name_);
   if (!required_value) {
-    errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
-                     required_policy_name_);
+    if (errors) {
+      errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+                       required_policy_name_);
+    }
     return false;
   }
   return handler_->CheckPolicySettings(policies, errors);
@@ -758,7 +762,7 @@ bool SimpleDeprecatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
   if (policies.Get(new_policy_handler_->policy_name())) {
-    if (policies.Get(legacy_policy_handler_->policy_name())) {
+    if (policies.Get(legacy_policy_handler_->policy_name()) && errors) {
       errors->AddError(legacy_policy_handler_->policy_name(),
                        IDS_POLICY_OVERRIDDEN,
                        new_policy_handler_->policy_name());
@@ -822,12 +826,16 @@ bool CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
   if (policy->source == policy::POLICY_SOURCE_MERGED) {
     for (const auto& conflict : policy->conflicts) {
       if (!IsCloudOnlyPolicy(conflict.entry())) {
-        errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+        if (errors) {
+          errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+        }
         return false;
       }
     }
   } else if (!IsCloudOnlyPolicy(*policy)) {
-    errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    if (errors) {
+      errors->AddError(policy_name, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    }
     return false;
   }
 
