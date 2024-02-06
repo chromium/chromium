@@ -17,34 +17,39 @@ import './common_styles/oobe_common_styles.css.js';
 import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PinKeyboardElement} from '//resources/ash/common/quick_unlock/pin_keyboard.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-import {OobeDialogHostBehavior} from './behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from './behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
 import {OobeTypes} from './oobe_types.js';
+import {getTemplate} from './security_token_pin.html.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- */
-const SecurityTokenPinBase =
-    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
+const SecurityTokenPinBase = mixinBehaviors(
+                                 [
+                                   OobeI18nBehavior,
+                                   OobeDialogHostBehavior,
+                                 ],
+                                 PolymerElement) as {
+  new (): PolymerElement & OobeI18nBehaviorInterface &
+      OobeDialogHostBehaviorInterface,
+};
 
 /**
  * @polymer
  */
 export class SecurityTokenPin extends SecurityTokenPinBase {
   static get is() {
-    return 'security-token-pin';
+    return 'security-token-pin' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Contains the OobeTypes.SecurityTokenPinDialogParameters object. It can
@@ -56,24 +61,22 @@ export class SecurityTokenPin extends SecurityTokenPinBase {
        */
       parameters: {
         type: Object,
-        observer: 'onParametersChanged_',
+        observer: 'onParametersChanged',
       },
 
       /**
        * Whether the current state is the wait for the processing completion
        * (i.e., the backend is verifying the entered PIN).
-       * @private
        */
-      processingCompletion_: {
+      processingCompletion: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Whether the input is currently non-empty.
-       * @private
        */
-      hasValue_: {
+      hasValue: {
         type: Boolean,
         value: false,
       },
@@ -81,165 +84,164 @@ export class SecurityTokenPin extends SecurityTokenPinBase {
       /**
        * Whether the user has made changes in the input field since the dialog
        * was initialized or reset.
-       * @private
        */
-      userEdited_: {
+      userEdited: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Whether the user can change the value in the input field.
-       * @private
        */
-      canEdit_: {
+      canEdit: {
         type: Boolean,
         computed:
-            'computeCanEdit_(parameters.enableUserInput, processingCompletion_)',
+            'computeCanEdit(parameters.enableUserInput, processingCompletion)',
       },
 
       /**
        * Whether the user can submit a login request.
-       * @private
        */
-      canSubmit_: {
+      canSubmit: {
         type: Boolean,
-        computed: 'computeCanSubmit_(parameters.enableUserInput, ' +
-            'hasValue_, processingCompletion_)',
+        computed: 'computeCanSubmit(parameters.enableUserInput, ' +
+            'hasValue, processingCompletion)',
       },
     };
   }
 
-  focus() {
+  parameters: object;
+  private processingCompletion: boolean;
+  private hasValue: boolean;
+  private userEdited: boolean;
+  private canEdit: boolean;
+  private canSubmit: boolean;
+
+  override focus(): void {
     // Note: setting the focus synchronously, to avoid flakiness in tests due to
     // racing between the asynchronous caret positioning and the PIN characters
     // input.
-    this.$.pinKeyboard.focusInputSynchronously();
+    this.getPinKeyboard().focusInputSynchronously();
   }
 
   /**
-   * Computes the value of the canEdit_ property.
-   * @param {boolean} enableUserInput
-   * @param {boolean} processingCompletion
-   * @return {boolean}
-   * @private
+   * Computes the value of the canEdit property.
    */
-  computeCanEdit_(enableUserInput, processingCompletion) {
+  private computeCanEdit(
+      enableUserInput: boolean, processingCompletion: boolean): boolean {
     return enableUserInput && !processingCompletion;
   }
 
   /**
-   * Computes the value of the canSubmit_ property.
-   * @param {boolean} enableUserInput
-   * @param {boolean} hasValue
-   * @param {boolean} processingCompletion
-   * @return {boolean}
-   * @private
+   * Computes the value of the canSubmit property.
    */
-  computeCanSubmit_(enableUserInput, hasValue, processingCompletion) {
+  private computeCanSubmit(
+      enableUserInput: boolean, hasValue: boolean,
+      processingCompletion: boolean): boolean {
     return enableUserInput && hasValue && !processingCompletion;
   }
 
   /**
    * Invoked when the "Back" button is clicked.
-   * @private
    */
-  onBackClicked_() {
+  private onBackClicked(): void {
     this.dispatchEvent(
         new CustomEvent('cancel', {bubbles: true, composed: true}));
   }
 
+  private getPinKeyboard(): PinKeyboardElement {
+    const pinKeyboard =
+        this.shadowRoot?.querySelector<PinKeyboardElement>('#pinKeyboard');
+    assert(pinKeyboard instanceof PinKeyboardElement);
+    return pinKeyboard;
+  }
+
   /**
    * Invoked when the "Next" button is clicked or Enter is pressed.
-   * @private
    */
-  onSubmit_() {
-    if (!this.canSubmit_) {
+  private onSubmit(): void {
+    if (!this.canSubmit) {
       // Disallow submitting when it's not allowed or while proceeding the
       // previous submission.
       return;
     }
-    this.processingCompletion_ = true;
+    this.processingCompletion = true;
+
     this.dispatchEvent(new CustomEvent(
         'completed',
-        {bubbles: true, composed: true, detail: this.$.pinKeyboard.value}));
+        {bubbles: true, composed: true, detail: this.getPinKeyboard().value}));
   }
 
   /**
    * Observer that is called when the |parameters| property gets changed.
-   * @private
    */
-  onParametersChanged_() {
+  private onParametersChanged(): void {
     // Reset the dialog to the initial state.
-    this.$.pinKeyboard.value = '';
-    this.processingCompletion_ = false;
-    this.hasValue_ = false;
-    this.userEdited_ = false;
+    this.getPinKeyboard().value = '';
+    this.processingCompletion = false;
+    this.hasValue = false;
+    this.userEdited = false;
 
     this.focus();
   }
 
   /**
    * Observer that is called when the user changes the PIN input field.
-   * @param {!CustomEvent<{pin: string}>} e
-   * @private
    */
-  onPinChange_(e) {
-    this.hasValue_ = e.detail.pin.length > 0;
-    this.userEdited_ = true;
+  private onPinChange(e: CustomEvent<{pin: string}>): void {
+    this.hasValue = e.detail.pin.length > 0;
+    this.userEdited = true;
   }
 
   /**
    * Returns whether the error label should be shown.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {boolean} userEdited
-   * @return {boolean}
-   * @private
    */
-  isErrorLabelVisible_(parameters, userEdited) {
+  private isErrorLabelVisible(
+      parameters: OobeTypes.SecurityTokenPinDialogParameters,
+      userEdited: boolean): boolean {
     return parameters && parameters.hasError && !userEdited;
   }
 
   /**
    * Returns whether the PIN attempts left count should be shown.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @return {boolean}
-   * @private
    */
-  isAttemptsLeftVisible_(parameters) {
+  private isAttemptsLeftVisible(
+      parameters: OobeTypes.SecurityTokenPinDialogParameters): boolean {
     return parameters && parameters.formattedAttemptsLeft !== '';
   }
 
   /**
    * Returns whether there is a visible label for the PIN input field
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {boolean} userEdited
-   * @return {boolean}
-   * @private
    */
-  isLabelVisible_(parameters, userEdited) {
-    return this.isErrorLabelVisible_(parameters, userEdited) ||
-        this.isAttemptsLeftVisible_(parameters);
+  private isLabelVisible(
+      parameters: OobeTypes.SecurityTokenPinDialogParameters,
+      userEdited: boolean): boolean {
+    return this.isErrorLabelVisible(parameters, userEdited) ||
+        this.isAttemptsLeftVisible(parameters);
   }
 
   /**
    * Returns the label to be used for the PIN input field.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {boolean} userEdited
-   * @return {string}
-   * @private
    */
-  getLabel_(parameters, userEdited) {
-    if (!this.isLabelVisible_(parameters, userEdited)) {
+  private getLabel(
+      parameters: OobeTypes.SecurityTokenPinDialogParameters,
+      userEdited: boolean): string {
+    if (!this.isLabelVisible(parameters, userEdited)) {
       // Neither error nor the number of left attempts are to be displayed.
       return '';
     }
-    if (!this.isErrorLabelVisible_(parameters, userEdited) &&
-        this.isAttemptsLeftVisible_(parameters)) {
+    if (!this.isErrorLabelVisible(parameters, userEdited) &&
+        this.isAttemptsLeftVisible(parameters)) {
       // There's no error, but the number of left attempts has to be displayed.
       return parameters.formattedAttemptsLeft;
     }
     return parameters.formattedError;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SecurityTokenPin.is]: SecurityTokenPin;
   }
 }
 

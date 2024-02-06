@@ -60,35 +60,35 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'securityTokenPinDialogTitle')]]
   </h1>
   <div slot="subtitle" id="subtitle">
-    <span id="description" hidden="[[processingCompletion_]]">
+    <span id="description" hidden="[[processingCompletion]]">
       [[i18nDynamic(locale, 'securityTokenPinDialogSubtitle')]]
     </span>
   </div>
   <paper-progress slot="progress" id="progress"
-      hidden="[[!processingCompletion_]]"
-      indeterminate="[[processingCompletion_]]">
+      hidden="[[!processingCompletion]]"
+      indeterminate="[[processingCompletion]]">
   </paper-progress>
   <div slot="content" class="content-centered">
-    <div id="pinKeyboardContainer" hidden="[[processingCompletion_]]">
+    <div id="pinKeyboardContainer" hidden="[[processingCompletion]]">
       <pin-keyboard id="pinKeyboard" allow-non-digit
-          has-error="[[isErrorLabelVisible_(parameters, userEdited_)]]"
-          aria-label="[[getLabel_(parameters, userEdited_)]]"
-          on-pin-change="onPinChange_" on-submit="onSubmit_"
-          disabled="[[!canEdit_]]">
+          has-error="[[isErrorLabelVisible(parameters, userEdited)]]"
+          aria-label="[[getLabel(parameters, userEdited)]]"
+          on-pin-change="onPinChange" on-submit="onSubmit"
+          disabled="[[!canEdit]]">
         <div id="errorContainer" role="alert" problem
-            invisible$="[[!isLabelVisible_(parameters, userEdited_)]]">
+            invisible$="[[!isLabelVisible(parameters, userEdited)]]">
           <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
-          <span id="error">[[getLabel_(parameters, userEdited_)]]</span>
+          <span id="error">[[getLabel(parameters, userEdited)]]</span>
         </div>
       </pin-keyboard>
     </div>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="back" on-click="onBackClicked_">
+    <oobe-back-button id="back" on-click="onBackClicked">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="submit" on-click="onSubmit_"
-        disabled="[[!canSubmit_]]"></oobe-next-button>
+    <oobe-next-button id="submit" on-click="onSubmit"
+        disabled="[[!canSubmit]]"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

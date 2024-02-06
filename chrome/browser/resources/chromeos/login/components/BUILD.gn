@@ -59,7 +59,6 @@ group("closure_compile") {
     ":oobe_slide",
     ":oobe_types",
     ":progress_list_item",
-    ":security_token_pin",
     ":web_view_loader",
   ]
 }
@@ -209,22 +208,6 @@ js_library("progress_list_item") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("security_token_pin") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
-  deps = [
-    ":oobe_types",
-    "./behaviors:oobe_i18n_behavior",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    # pin_keyboard_externs.js is a band-aid to let this closure-compiled JS
-    # library depend on the typescript file pin_keyboard.ts. If you remove this
-    # dependency, consider deleting the externs file if it's not used
-    # elsewhere.
-    "//ash/webui/common/resources/quick_unlock/pin_keyboard_externs.js",
-  ]
-}
-
 js_library("web_view_loader") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_loader.js" ]
   deps = []
@@ -266,6 +249,5 @@ html_to_js("web_components_local") {
     "oobe_screens_list.js",
     "oobe_slide.js",
     "progress_list_item.js",
-    "security_token_pin.js",
   ]
 }
