@@ -44,19 +44,18 @@ std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
 
 namespace updater {
 
-// This template function enables logging enum value as the underlying type.
-template <typename T>
-std::ostream& operator<<(
-    typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream,
-    const T& e) {
-  return stream << base::to_underlying(e);
-}
-
 namespace tagging {
 struct TagArgs;
 }
 
 struct RegistrationRequest;
+
+// Inserts an enum value as the underlying type.
+template <typename T>
+  requires std::is_enum_v<T>
+std::ostream& operator<<(std::ostream& os, const T& e) {
+  return os << base::to_underlying(e);
+}
 
 // Returns the versioned install directory under which the program stores its
 // executables. For example, on macOS this function may return

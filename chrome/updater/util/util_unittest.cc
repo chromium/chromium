@@ -31,16 +31,6 @@
 
 namespace updater {
 
-namespace {
-
-enum class TestEnum {
-  kEnumValue1 = 0L,
-  kEnumValue2 = 5L,
-  kEnumValue3,
-};
-
-}  // namespace
-
 TEST(Util, AppArgsAndAP) {
   base::test::ScopedCommandLine original_command_line;
   {
@@ -119,10 +109,15 @@ TEST(Util, GetCrxDiffCacheDirectory) {
 }
 
 TEST(Util, StreamEnumValue) {
+  enum class TestEnum {
+    kValue1 = 0L,
+    kValue2 = 5L,
+    kValue3,
+  };
+
   std::stringstream output;
-  output << "First: " << TestEnum::kEnumValue1
-         << ", second: " << TestEnum::kEnumValue2
-         << ", third: " << TestEnum::kEnumValue3;
+  output << "First: " << TestEnum::kValue1 << ", second: " << TestEnum::kValue2
+         << ", third: " << TestEnum::kValue3;
   EXPECT_EQ(output.str(), "First: 0, second: 5, third: 6");
 }
 
