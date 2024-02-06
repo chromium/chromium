@@ -2149,16 +2149,9 @@ void SplitViewController::OnWindowSnapped(
     return;
   }
 
-  // When `window` is snapped, it may push the divider position due to its
-  // minimum size constraint. If the other snap position holds a previously
-  // snapped window, we should update the other's snapped bounds to account for
-  // the newly snapped `window`.
   // TODO(b/322576687): Consolidate the snapped bounds calculation between
   // clamshell and tablet mode.
-  if (InTabletMode() && primary_window_ && secondary_window_) {
-    UpdateSnappedBounds(window == primary_window_ ? secondary_window_.get()
-                                                  : primary_window_.get());
-  }
+  UpdateSnappedWindowsAndDividerBounds();
 }
 
 void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
