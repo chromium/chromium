@@ -42,7 +42,7 @@ namespace smb_client {
 // Allows Files App to mount SMB filesystems.
 class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface {
  public:
-  SmbFileSystem(
+  explicit SmbFileSystem(
       const file_system_provider::ProvidedFileSystemInfo& file_system_info);
   SmbFileSystem(const SmbFileSystem&) = delete;
   SmbFileSystem& operator=(const SmbFileSystem&) = delete;
