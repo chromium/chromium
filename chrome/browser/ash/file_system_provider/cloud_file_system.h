@@ -24,6 +24,7 @@ class IOBuffer;
 
 namespace base {
 class FilePath;
+class MetronomeTimer;
 }  // namespace base
 
 class GURL;
@@ -131,8 +132,11 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
 
  private:
   const std::string GetFileSystemId() const;
+  void OnTimer();
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
   raw_ptr<ContentCache> content_cache_;  // Not owned.
+  base::MetronomeTimer timer_;
+  int file_manager_watchers_ = 0;
 
   base::WeakPtrFactory<CloudFileSystem> weak_ptr_factory_{this};
 };

@@ -13,12 +13,18 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
 
 namespace ash::file_system_provider {
 
 namespace {
+
+// The frequency that the FSP syncs with the cloud when the File Manager is a
+// watcher.
+constexpr base::TimeDelta kFileManagerWatcherInterval = base::Seconds(15);
 
 std::ostream& operator<<(std::ostream& out,
                          const std::vector<base::FilePath>& entry_paths) {
@@ -232,6 +238,16 @@ AbortCallback CloudFileSystem::AddWatcher(
           << origin.spec() << "', entry_path = '" << entry_path
           << "', recursive = '" << recursive << "', persistent = '"
           << persistent << "'}";
+
+  // Set timer if the File Manager is a watcher.
+  file_manager_watchers_ +=
+      file_manager::util::IsFileManagerURL(origin) ? 1 : 0;
+  if (file_manager_watchers_ > 0 && !timer_.IsRunning()) {
+    timer_.Start(FROM_HERE, kFileManagerWatcherInterval,
+                 base::BindRepeating(&CloudFileSystem::OnTimer,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  }
+
   return file_system_->AddWatcher(origin, entry_path, recursive, persistent,
                                   std::move(callback),
                                   std::move(notification_callback));
@@ -245,6 +261,14 @@ void CloudFileSystem::RemoveWatcher(
   VLOG(2) << "RemoveWatcher {fsid = '" << GetFileSystemId() << "', origin = '"
           << origin.spec() << "', entry_path = '" << entry_path
           << "', recursive = '" << recursive << "'}";
+
+  // Stop timer if the File Manager is not a watcher.
+  file_manager_watchers_ -=
+      file_manager::util::IsFileManagerURL(origin) ? 1 : 0;
+  if (file_manager_watchers_ == 0 && timer_.IsRunning()) {
+    timer_.Stop();
+  }
+
   file_system_->RemoveWatcher(origin, entry_path, recursive,
                               std::move(callback));
 }
@@ -305,6 +329,11 @@ CloudFileSystem::StartUserInteraction() {
 
 const std::string CloudFileSystem::GetFileSystemId() const {
   return file_system_->GetFileSystemInfo().file_system_id();
+}
+
+void CloudFileSystem::OnTimer() {
+  VLOG(2) << "OnTimer";
+  // TODO(b/317137739): Sync with the cloud.
 }
 
 }  // namespace ash::file_system_provider
