@@ -200,14 +200,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   views::corewm::TooltipController* tooltip_controller();
 
+  void ScheduleRelayout();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            UpdateWindowShapeFromWindowMask);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            MakesParentChildRelationship);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest, OnRotateFocus);
-
-  void ScheduleRelayout();
 
   // Set visibility and fire OnNativeWidgetVisibilityChanged() if it changed.
   void SetVisible(bool visible);

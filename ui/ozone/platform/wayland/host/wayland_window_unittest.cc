@@ -580,6 +580,57 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   }
 }
 
+// Checks that geometry is set when decoration insets change even when bounds or
+// scale don't.
+TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
+  // The bounds never change throughout this test
+  constexpr gfx::Rect kBounds{980, 1188};
+
+  window_->SetBoundsInDIP(kBounds);
+
+  auto state = InitializeWlArrayWithActivatedState();
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output = server->output();
+    // Send the window to |output|.
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl_surface_send_enter(surface->resource(), output->resource());
+  });
+
+  const auto kInitialInsets = gfx::Insets::TLBR(20, 36, 52, 36);
+  auto bounds_with_insets = kBounds;
+  bounds_with_insets.Inset(kInitialInsets);
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  PostToServerAndWait([id = surface_id_, bounds_with_insets](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
+  });
+  window_->SetDecorationInsets(&kInitialInsets);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+
+  const auto kNewInsets = gfx::Insets::TLBR(10, 10, 10, 10);
+  bounds_with_insets = kBounds;
+  bounds_with_insets.Inset(kNewInsets);
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  PostToServerAndWait([id = surface_id_, bounds_with_insets](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
+  });
+
+  // Change insets here so that these are detected when a new state is requested
+  // from the server.
+  window_->SetDecorationInsets(&kNewInsets);
+  SendConfigureEvent(surface_id_, bounds_with_insets.size(), state);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+}
+
 #if BUILDFLAG(IS_LINUX)
 // Checks that when the window gets some of its edges tiled, it notifies the
 // delegate appropriately.

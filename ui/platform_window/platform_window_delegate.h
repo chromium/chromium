@@ -116,9 +116,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
     bool operator==(const State& rhs) const {
-      return std::tie(bounds_dip, size_px, window_scale, raster_scale) ==
-             std::tie(rhs.bounds_dip, rhs.size_px, rhs.window_scale,
-                      rhs.raster_scale);
+      return std::tie(bounds_dip, size_px, window_scale, raster_scale,
+                      insets) == std::tie(rhs.bounds_dip, rhs.size_px,
+                                          rhs.window_scale, rhs.raster_scale,
+                                          rhs.insets);
     }
 
     // Bounds in DIP.
@@ -132,6 +133,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
     // Scale to raster the window at.
     float raster_scale = 1.0;
+
+    // Insets in DIP. Used in platforms where window decorations are drawn by
+    // the client.
+    gfx::Insets insets;
 
     // Returns true if updating from the given State |old| to this state
     // should produce a frame.

@@ -1227,6 +1227,9 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
   state.size_px =
       gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
+  // This will ensure that if insets at the time of the request changed, a new
+  // frame is produced when the state is applied.
+  state.insets = GetDecorationInsetsInDIP();
 
   StateRequest req{.state = state, .serial = serial};
   if (in_flight_requests_.empty()) {
@@ -1351,16 +1354,23 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
+  auto old_latched_insets = latched_insets_;
+  latched_insets_ = GetDecorationInsetsInDIP();
 
   // Update the geometry if the bounds are different or the window scale has
-  // been changed. If geometry is not updated on window scale update, the insets
-  // are set in a wrong way. That is, aura provides insets in pixels, which are
-  // converted by the device scale factor known from the display. It can be
-  // different from the one that the |latch_state_.window_scale| has. As a
-  // result, the geometry is set with wrong values as Wayland requires them to
-  // be in DIP.
+  // been changed or if the insets have changed since the last latched request.
+  // If geometry is not updated on window scale update, the insets are set in a
+  // wrong way. That is, aura provides insets in pixels, which are converted by
+  // the device scale factor known from the display. It can be different from
+  // the one that the |latch_state_.window_scale| has. As a result, the geometry
+  // is set with wrong values as Wayland requires them to be in DIP.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
-      req.state.window_scale != old_state.window_scale) {
+      req.state.window_scale != old_state.window_scale ||
+      // If insets change that is a geometry change even when the bounds or
+      // scale remain the same. The updated insets may not be known at the time
+      // of the request, hence the need to check this if there are changes in
+      // insets since it latched the last time.
+      old_latched_insets != latched_insets_) {
     SetWindowGeometry(req.state.bounds_dip.size());
   }
   UpdateWindowMask();

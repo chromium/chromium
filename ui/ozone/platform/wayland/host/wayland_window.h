@@ -652,6 +652,9 @@ class WaylandWindow : public PlatformWindow,
   // server. See the comments on applied_state_ for further explanation.
   PlatformWindowDelegate::State latched_state_;
 
+  // Stores the insets in DIP at the time of the last latched state.
+  gfx::Insets latched_insets_;
+
   // In-flight state requests. Once a frame comes from the GPU
   // process with the appropriate viz sequence number, ack_configure request
   // with |serial| will be sent to the Wayland compositor if needed.
