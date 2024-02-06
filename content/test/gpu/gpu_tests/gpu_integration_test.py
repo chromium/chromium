@@ -542,7 +542,10 @@ class GpuIntegrationTest(
 
   # pylint: disable=no-self-use
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
-    return False
+    # TODO(crbug.com/323927831): Remove this once the flaky crashes on certain
+    # Mac machines go away.
+    retry_on_ventura = 'ventura' in self.GetPlatformTags(self.browser)
+    return retry_on_ventura
   # pylint: enable=no-self-use
 
   def _DetermineFirstTestRetryWorkaround(self, test_name: str) -> bool:
