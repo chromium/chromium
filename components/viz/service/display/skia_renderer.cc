@@ -2689,6 +2689,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     params->opacity = 1.f;
   }
 
+  // Auto-restore canvas state after applying clipShader and draw.
+  SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
   if (vertex_alpha) {
     // If they are all the same value, combine it with the overall opacity,
     // otherwise use a mask filter to emulate vertex opacity interpolation
@@ -2731,10 +2733,13 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       float a2 = quad->vertex_opacity[2] * quad_alpha;
       SkColor4f gradient_colors[2] = {SkColor4f({a1, a1, a1, a1}),
                                       SkColor4f({a2, a2, a2, a2})};
+      SkMatrix matrix =
+          gfx::TransformToFlattenedSkMatrix(params->content_device_transform);
       sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-          gradient_pts, gradient_colors, nullptr /*sk_sp<SkColorSpace>*/,
-          nullptr, 2, SkTileMode::kClamp);
-      paint.setMaskFilter(SkShaderMaskFilter::Make(std::move(gradient)));
+          gradient_pts, gradient_colors, /*colorSpace=*/nullptr,
+          /*pos=*/nullptr, /*count=*/2, SkTileMode::kClamp, /*flags=*/0,
+          /*localMatrix=*/&matrix);
+      current_canvas_->clipShader(std::move(gradient));
       // shared quad opacity was folded into the gradient, so this will shorten
       // any color filter chain needed for background blending
       quad_alpha = 1.f;
