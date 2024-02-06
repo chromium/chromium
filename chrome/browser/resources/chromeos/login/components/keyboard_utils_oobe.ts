@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/ash/common/assert.js';
+import {assert} from '//resources/js/assert.js';
 
 import {KeyboardUtils} from './keyboard_utils.js';
 
@@ -21,11 +21,7 @@ export const KEYBOARD_UTILS_FOR_INJECTION = {
   DATA: '',
 };
 
-/**
- *
- * @param {string} sourceCode
- */
-function prepareKeyboardUtilsForInjection(sourceCode) {
+function prepareKeyboardUtilsForInjection(sourceCode: string): void {
   // The closure compiler version is outdated.
   // TODO(b:260015147) Remove during TS migration.
   assert(typeof sourceCode.replaceAll == 'function');
@@ -43,15 +39,15 @@ function prepareKeyboardUtilsForInjection(sourceCode) {
   KEYBOARD_UTILS_FOR_INJECTION.DATA = finalSourceCode;
 }
 
-function fetchKeyboardUtilsSource() {
+function fetchKeyboardUtilsSource(): void {
   const keyboardUtilsUrl = 'components/keyboard_utils.js';
   const xhr = new XMLHttpRequest();
   xhr.responseType = 'text';
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 /* DONE */) {
       assert(200 === xhr.status);
-      assert(typeof xhr.response == 'string');
-      prepareKeyboardUtilsForInjection(xhr.response);
+      assert(xhr.responseType === 'text');
+      prepareKeyboardUtilsForInjection(xhr.responseText);
     }
   };
   xhr.open('GET', keyboardUtilsUrl, true);

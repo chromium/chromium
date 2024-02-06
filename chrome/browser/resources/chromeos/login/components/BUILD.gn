@@ -42,9 +42,6 @@ group("closure_compile") {
     ":api_keys_notice",
     ":display_manager_types",
     ":hd_iron_icon",
-    ":keyboard_utils",
-    ":keyboard_utils_oobe",
-    ":long_touch_detector",
     ":oobe_a11y_option",
     ":oobe_carousel",
     ":oobe_cr_lottie",
@@ -86,20 +83,6 @@ js_library("hd_iron_icon") {
   ]
   extra_deps = [ ":web_components" ]
 }
-
-js_library("keyboard_utils") {
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("keyboard_utils_oobe") {
-}
-
-js_library("long_touch_detector") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.js" ]
-  deps = []
-  extra_deps = [ ":copy_js" ]
-}
-
 
 js_library("oobe_a11y_option") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.js" ]
@@ -212,8 +195,6 @@ js_library("web_view_loader") {
 copy("copy_js") {
   sources = [
     "display_manager_types.js",
-    "keyboard_utils.js",
-    "long_touch_detector.js",
     "oobe_select.js",
     "oobe_types.js",
     "web_view_loader.js",

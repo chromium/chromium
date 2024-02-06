@@ -237,6 +237,7 @@ js_library("cr_ui") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":copy_js" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("display_manager") {
@@ -246,8 +247,6 @@ js_library("display_manager") {
   deps = [
     ":multi_tap_detector",
     "components:display_manager_types",
-    "components:keyboard_utils",
-    "components:keyboard_utils_oobe",
     "components:oobe_types",
   ]
   extra_deps = [ ":copy_js" ]
@@ -303,9 +302,9 @@ ts_library("build_ts") {
   ]
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

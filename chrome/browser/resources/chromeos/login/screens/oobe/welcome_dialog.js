@@ -121,9 +121,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     this.currentLanguage = '';
     this.timezoneButtonVisible = false;
 
-    /**
-     * @private {LongTouchDetector}
-     */
     this.titleLongTouchDetector_ = null;
     /**
      * This is stored ID of currently focused element to restore id on returns
