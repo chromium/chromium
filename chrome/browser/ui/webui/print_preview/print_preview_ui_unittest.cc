@@ -304,9 +304,8 @@ TEST_F(PrintPreviewUIUnitTest,
   // conversion.
   // The actual N-up conversion will put both pages onto 1 sheet, for a 2-up
   // conversion, but that is outside the scope of this test case.
-  // TODO(crbug.com/41496759): Fix the return values.
-  EXPECT_EQ(1u, preview_ui->GetPageToNupConvertIndex(1));
-  EXPECT_EQ(2u, preview_ui->GetPageToNupConvertIndex(2));
+  EXPECT_EQ(0u, preview_ui->GetPageToNupConvertIndex(1));
+  EXPECT_EQ(1u, preview_ui->GetPageToNupConvertIndex(2));
 
   // There is no page at index 3 to render, so this call fails.
   EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(3));

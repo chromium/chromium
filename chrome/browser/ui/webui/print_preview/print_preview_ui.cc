@@ -742,9 +742,9 @@ bool PrintPreviewUI::LastPageComposited(uint32_t page_index) const {
 }
 
 uint32_t PrintPreviewUI::GetPageToNupConvertIndex(uint32_t page_index) const {
-  for (uint32_t index : pages_to_render_) {
-    if (page_index == index) {
-      return index;
+  for (size_t i = 0; i < pages_to_render_.size(); ++i) {
+    if (page_index == pages_to_render_[i]) {
+      return i;
     }
   }
   return kInvalidPageIndex;
