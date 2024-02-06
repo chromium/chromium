@@ -288,7 +288,7 @@
 <translation id="2496626742194544812">前往第一個分頁</translation>
 <translation id="2499505845365628575">你可以在<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />中查看所有瀏覽記錄。</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
-<translation id="2511117522375201202">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組遭外洩的密碼，可能導致安全性風險。</translation>
+<translation id="2511117522375201202">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組密碼外洩，可能導致安全性風險。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具。</translation>
 <translation id="2542268842667970959">隱藏「安全檢查」</translation>
@@ -1203,7 +1203,7 @@
 <translation id="7349129508108954623">允許 Chrome 使用 Google 地圖，為偵測到的地址提供路線和當地資訊。</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353432112255316844">驗證身分</translation>
-<translation id="7367530036083223701">在主畫面上使用「密碼管理工具」小工具安全存取密碼。</translation>
+<translation id="7367530036083223701">使用「密碼管理工具」在主畫面提供的小工具，就能安全存取密碼。</translation>
 <translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="739101637685146669">要將哪個網址加入書籤？</translation>
@@ -1436,7 +1436,7 @@
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>
 <translation id="8548878600947630424">在網頁中尋找...</translation>
-<translation id="854938212724803178">你有 1 組遭外洩的密碼，請立即修正以確保安全。</translation>
+<translation id="854938212724803178">你有 1 組密碼外洩，請立即修正確保安全。</translation>
 <translation id="8556590991644167667">{count,plural, =1{你已忽略 {count} 則警告}other{你已忽略 {count} 則警告}}</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
@@ -1457,7 +1457,7 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">目前使用的密碼不容易讓人猜中</translation>
 <translation id="8668210798914567634">此網頁內容已儲存至你的閱讀清單。</translation>
-<translation id="8674716540979958118">你使用的密碼已外洩。</translation>
+<translation id="8674716540979958118">你有密碼外洩。</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="868773710103052534">大功告成！</translation>
 <translation id="8692689525339542358">守護網頁瀏覽安全，有效防堵危險網站、下載內容和擴充功能。</translation>

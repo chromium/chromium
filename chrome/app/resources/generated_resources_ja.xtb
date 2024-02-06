@@ -3484,7 +3484,7 @@
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注: Google は、デバイスが受信するデモモードのバージョンを特定し、デモモードの使用状況を測定する目的でこの情報を使用します。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="3703166520839776970">この問題がまだ解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
+<translation id="3703166520839776970">問題が解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
 <translation id="370415077757856453">JavaScript がブロックされました</translation>
 <translation id="3704331259350077894">処理が停止した</translation>

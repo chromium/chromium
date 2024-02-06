@@ -834,7 +834,7 @@
 <translation id="7216409898977639127">Интернет провайдери</translation>
 <translation id="725133483556299729">Электрондук почта дарегин тандоо</translation>
 <translation id="7271040990581020067">Сканер учурда колдонулуп жатат. Кийинчерээк кайталаңыз.</translation>
-<translation id="7273347807225967898">Ыкчам баскыч жеткиликсиз. Өзгөртүү баскычы менен жаңы ыкчам баскычты басыңыз (ctrl, alt, shift, издөө же жүргүзгүч).</translation>
+<translation id="7273347807225967898">Ыкчам баскыч жеткиликсиз. Өзгөртүүчү баскыч менен жаңы ыкчам баскычты басыңыз (ctrl, alt, shift, издөө же жүргүзгүч).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Жеңил шамал</translation>
 <translation id="7287310195820267359">Тушкагаз жыйнактары</translation>
@@ -944,7 +944,7 @@
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
 <translation id="8094062939584182041">Google'га бул маселе жөнүндө сизге электрондук кат жөнөтүүгө уруксат берүү</translation>
 <translation id="8104083085214006426">Ачык жана кооптуу тармакты колдонуп жатасыз</translation>
-<translation id="8111706652656628199">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүү баскычы менен жаңы ыкчам баскычты басыңыз (ctrl, alt, издөө же жүргүзгүч).</translation>
+<translation id="8111706652656628199">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч менен жаңы ыкчам баскычты басыңыз (ctrl, alt, издөө же жүргүзгүч).</translation>
 <translation id="811820734797650957">(Android) Шлюздун байланышын текшерүүгө болот</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафикти эсептегичтерди сурануу</translation>
