@@ -672,6 +672,7 @@ public final class ProductionSupportedFlagList {
                 "Enable attribution reporting to cross the app/web barrier by letting "
                         + "the WebView use OS-level attribution."),
         Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP2, "Sets a fixed thread pool cap"),
+        Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
                 BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
                 "Enables showing the cancel dialog by calling preventDefault() "
