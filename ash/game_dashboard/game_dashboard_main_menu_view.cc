@@ -718,8 +718,8 @@ void GameDashboardMainMenuView::MaybeDecorateSetupButton(bool is_o4c) {
   if (!GetGameControlsSetupButton() || is_o4c) {
     return;
   }
-  PerformPulseAnimationForSetupButton(/*pulse_count=*/0);
   ShowNudgeForSetupButton();
+  PerformPulseAnimationForSetupButton(/*pulse_count=*/0);
 }
 
 void GameDashboardMainMenuView::PerformPulseAnimationForSetupButton(
@@ -749,7 +749,7 @@ void GameDashboardMainMenuView::PerformPulseAnimationForSetupButton(
 
   // Initial setup button bounds in its widget coordinate.
   const auto setup_bounds =
-      setup_button->ConvertRectToWidget(setup_button->bounds());
+      setup_button->ConvertRectToWidget(gfx::Rect(setup_button->size()));
 
   // Set initial properties.
   const float initial_corner_radius = setup_bounds.height() / 2.0f;
