@@ -17,8 +17,7 @@
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "net/base/network_interfaces.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Calculates the broadcast address of a network interface.
 net::IPAddress CalculateBroadcastAddress(
@@ -114,7 +113,6 @@ class NetBiosHostLocator final : public HostLocator {
   base::WeakPtrFactory<NetBiosHostLocator> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETBIOS_HOST_LOCATOR_H_

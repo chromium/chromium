@@ -13,8 +13,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "url/url_canon_stdstring.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -205,5 +204,4 @@ void SmbUrl::Reset() {
   url_.clear();
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

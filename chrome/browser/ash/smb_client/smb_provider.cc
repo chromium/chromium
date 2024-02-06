@@ -17,8 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 SmbProvider::SmbProvider()
     : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
@@ -71,5 +70,4 @@ bool SmbProvider::RequestMount(
   return true;
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

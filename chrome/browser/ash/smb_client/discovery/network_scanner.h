@@ -13,8 +13,7 @@
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 #include "net/base/ip_address.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Holds the number of in-flight requests and the callback to call once all the
 // HostLocators are finished. Also holds the hosts found from the HostLocators
@@ -106,7 +105,6 @@ class NetworkScanner {
   base::WeakPtrFactory<NetworkScanner> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETWORK_SCANNER_H_

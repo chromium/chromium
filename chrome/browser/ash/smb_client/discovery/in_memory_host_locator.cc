@@ -7,8 +7,7 @@
 #include <map>
 #include <utility>
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 InMemoryHostLocator::InMemoryHostLocator() = default;
 InMemoryHostLocator::InMemoryHostLocator(bool should_run_synchronously)
@@ -44,5 +43,4 @@ void InMemoryHostLocator::RunCallback() {
   std::move(stored_callback_).Run(true /* success */, host_map_);
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

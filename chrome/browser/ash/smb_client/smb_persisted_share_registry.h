@@ -17,8 +17,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class SmbUrl;
 
@@ -53,7 +52,6 @@ class SmbPersistedShareRegistry {
   const raw_ptr<Profile> profile_;
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_PERSISTED_SHARE_REGISTRY_H_

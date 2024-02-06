@@ -16,8 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 constexpr char kDelimiter[] = "@@";
@@ -91,5 +90,4 @@ std::optional<std::string> GetUserFromFileSystemId(
   return components[2].substr(strlen(kUserPrefix));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

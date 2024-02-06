@@ -14,8 +14,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_change_notifier.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 bool IsMLan(const net::NetworkInterface& interface) {
@@ -195,5 +194,4 @@ bool NetBiosHostLocator::WouldOverwriteResult(
          results_.at(hostname) != sender_ip.address();
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

@@ -15,8 +15,7 @@ class IPAddress;
 class IPEndPoint;
 }  // namespace net
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // FakeNetBiosClient is used for testing the NetBiosHostLocator.
 // FakeNetBiosClient is constructed with a map of IPs -> Packets to simulate
@@ -44,7 +43,6 @@ class FakeNetBiosClient : public NetBiosClientInterface {
   std::map<net::IPEndPoint, std::vector<uint8_t>> fake_data_;
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_FAKE_NETBIOS_CLIENT_H_

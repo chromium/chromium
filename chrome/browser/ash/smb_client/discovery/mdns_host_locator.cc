@@ -17,8 +17,7 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -350,5 +349,4 @@ void MDnsHostLocator::Impl::FireCallback(bool success) {
   std::move(callback_).Run(success, std::move(results_));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

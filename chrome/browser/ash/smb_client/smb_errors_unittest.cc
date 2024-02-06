@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/dbus/smbprovider/directory_entry.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class SmbErrorsTest : public ::testing::Test {
  public:
@@ -60,5 +59,4 @@ TEST_F(SmbErrorsTest, SmbErrorToMountResult) {
             TranslateErrorToMountResult(smbprovider::ERROR_OPERATION_FAILED));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

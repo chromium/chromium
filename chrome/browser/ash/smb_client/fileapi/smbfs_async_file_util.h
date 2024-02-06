@@ -11,8 +11,7 @@
 
 class Profile;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // The implementation of storage::AsyncFileUtil for SmbFs. This forwards to a
 // AsyncFileUtil for native files by default.
@@ -50,7 +49,6 @@ class SmbFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
   base::WeakPtrFactory<SmbFsAsyncFileUtil> weak_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_FILEAPI_SMBFS_ASYNC_FILE_UTIL_H_

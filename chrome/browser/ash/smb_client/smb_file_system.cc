@@ -11,8 +11,7 @@
 #include "chrome/browser/ash/smb_client/smb_file_system_id.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 using file_system_provider::AbortCallback;
 
@@ -228,5 +227,4 @@ SmbFileSystem::StartUserInteraction() {
   return nullptr;
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

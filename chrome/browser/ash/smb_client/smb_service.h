@@ -37,8 +37,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class SmbKerberosCredentialsUpdater;
 class SmbShareInfo;
@@ -259,7 +258,6 @@ class SmbService : public KeyedService,
   base::WeakPtrFactory<SmbService> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_H_

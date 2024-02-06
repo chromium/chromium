@@ -18,8 +18,7 @@
 #include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -333,5 +332,4 @@ TEST_F(SmbShareFinderTest, TestEmptyDiscoveryWithNonEmptyShareCallback) {
   ExpectAllSharesHaveBeenFound();
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

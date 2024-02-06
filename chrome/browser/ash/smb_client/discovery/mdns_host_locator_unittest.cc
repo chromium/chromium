@@ -5,8 +5,7 @@
 #include "chrome/browser/ash/smb_client/discovery/mdns_host_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class MDnsHostLocatorTest : public testing::Test {
  public:
@@ -28,5 +27,4 @@ TEST_F(MDnsHostLocatorTest, RemoveLocal) {
   EXPECT_EQ(RemoveLocal("QNAP.LoCaL"), "QNAP");
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

@@ -9,8 +9,7 @@
 
 #include "url/third_party/mozilla/url_parse.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Represents an SMB URL.
 // This class stores a URL using url::Component and can contain either a
@@ -75,7 +74,6 @@ class SmbUrl {
   std::string share_;
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_URL_H_

@@ -15,8 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -85,5 +84,4 @@ void SmbServiceFactory::RegisterProfilePrefs(
   SmbService::RegisterProfilePrefs(registry);
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
