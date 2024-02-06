@@ -19,7 +19,6 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
@@ -39,10 +38,6 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/containers/cxx20_erase.h"
-#endif
 
 namespace web_app {
 
@@ -559,24 +554,6 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
   for (const GURL& url_to_remove : urls_to_remove) {
     urls_to_remove_debug->Append(url_to_remove.spec());
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // This check ensures that on Chrome OS, the messages app is not uninstalled
-  // automatically when SynchronizeInstalledApps() is called for preinstalled
-  // apps.
-  // TODO(crbug.com/1239801): Once Messages has been migrated to be a
-  // preinstalled app, this logic can be removed because the
-  // PreInstalledWebAppManager will take care of this.
-  if (!urls_to_remove.empty() &&
-      ConvertExternalInstallSourceToSource(install_source) ==
-          WebAppManagement::kDefault) {
-    base::EraseIf(urls_to_remove, [&](const GURL& url) {
-      return url.spec() ==
-                 "https://messages-web.sandbox.google.com/web/authentication" ||
-             url.spec() == "https://messages.google.com/web/authentication";
-    });
-  }
-#endif
 
   // Run callback immediately if there's no work to be done.
   if (urls_to_remove.empty() && desired_apps_install_options.empty()) {
