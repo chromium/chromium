@@ -468,12 +468,15 @@ void DoParseAfterNonSpecialScheme(const CHAR* spec,
 
 // The main parsing function for non-special scheme URLs.
 template <typename CHAR>
-void DoParseNonSpecialURL(const CHAR* spec, int spec_len, Parsed* parsed) {
+void DoParseNonSpecialURL(const CHAR* spec,
+                          int spec_len,
+                          bool trim_path_end,
+                          Parsed* parsed) {
   DCHECK(spec_len >= 0);
 
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
-  TrimURL(spec, &begin, &spec_len);
+  TrimURL(spec, &begin, &spec_len, trim_path_end);
 
   int after_scheme;
   if (DoExtractScheme(spec, spec_len, &parsed->scheme)) {
@@ -1074,11 +1077,25 @@ void ParseStandardURL(const char16_t* url, int url_len, Parsed* parsed) {
 }
 
 void ParseNonSpecialURL(const char* url, int url_len, Parsed* parsed) {
-  DoParseNonSpecialURL(url, url_len, parsed);
+  DoParseNonSpecialURL(url, url_len, /*trim_path_end=*/true, parsed);
 }
 
 void ParseNonSpecialURL(const char16_t* url, int url_len, Parsed* parsed) {
-  DoParseNonSpecialURL(url, url_len, parsed);
+  DoParseNonSpecialURL(url, url_len, /*trim_path_end=*/true, parsed);
+}
+
+void ParseNonSpecialURLInternal(const char* url,
+                                int url_len,
+                                bool trim_path_end,
+                                Parsed* parsed) {
+  DoParseNonSpecialURL(url, url_len, trim_path_end, parsed);
+}
+
+void ParseNonSpecialURLInternal(const char16_t* url,
+                                int url_len,
+                                bool trim_path_end,
+                                Parsed* parsed) {
+  DoParseNonSpecialURL(url, url_len, trim_path_end, parsed);
 }
 
 void ParsePathURL(const char* url,

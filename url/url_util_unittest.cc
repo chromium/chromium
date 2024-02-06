@@ -421,7 +421,8 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
       ParseNonSpecialURL(test.base, strlen(test.base), &base_parsed);
     } else {
-      ParsePathURL(test.base, strlen(test.base), false, &base_parsed);
+      ParsePathURL(test.base, strlen(test.base), /*trim_path_end=*/true,
+                   &base_parsed);
     }
 
     std::string resolved;
@@ -766,7 +767,8 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
       ParseNonSpecialURL(test.base.data(), test.base.size(), &base_parsed);
     } else {
-      ParsePathURL(test.base.data(), test.base.size(), false, &base_parsed);
+      ParsePathURL(test.base.data(), test.base.size(), /*trim_path_end=*/true,
+                   &base_parsed);
     }
 
     std::string resolved;
