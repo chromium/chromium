@@ -1227,7 +1227,7 @@ const base::FeatureParam<LcppResourceLoadPriority>
 
 const base::FeatureParam<bool>
     kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements{
-        &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", false};
+        &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", true};
 
 const base::FeatureParam<bool>
     kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement{
