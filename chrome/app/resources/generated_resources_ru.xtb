@@ -1627,7 +1627,7 @@
 <translation id="2204387456724731099">Не удалось перевести выбранный текст</translation>
 <translation id="2207116775853792104">Оставить расширение</translation>
 <translation id="2210462644007531147">Установка не выполнена</translation>
-<translation id="2211245494465528624">Настроить синхронизацию</translation>
+<translation id="2211245494465528624">Настройка синхронизации</translation>
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214884991347062907">Неверный пароль. Повторите попытку.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
@@ -3743,7 +3743,7 @@
 <translation id="3826440694796503677">Администратор запретил добавлять другие аккаунты Google.</translation>
 <translation id="3827774300009121996">Полноэкранный режим</translation>
 <translation id="3828029223314399057">Искать в закладках</translation>
-<translation id="3828953470056652895">Я принимаю <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условия использования Google Play<ph name="END_LINK3" /></translation>
+<translation id="3828953470056652895">Я принимаю <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и ChromeOS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условия использования Google Play<ph name="END_LINK3" /></translation>
 <translation id="3829530269338026191">Вкладка "<ph name="WINDOW_TITLE" />" использует много памяти: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Общая папка SMB</translation>
 <translation id="3830470485672984938">Использовать другой ключ доступа</translation>
@@ -9246,7 +9246,7 @@
 <translation id="8146177459103116374">Вы уже зарегистрированы на этом устройстве и можете <ph name="LINK2_START" />войти, используя свои регистрационные данные<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Добавьте и упорядочьте предпочтительные языки. Сайты будут по возможности показываться на них. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Не удалось выполнить вход. Обратитесь к системному администратору или повторите попытку.</translation>
-<translation id="8147346945017130012">Помогите нам повышать производительность и совершенствовать функции Chrome и Chrome OS, разрешив автоматическую отправку в Google отчетов о сбоях и информации об использовании и диагностике.</translation>
+<translation id="8147346945017130012">Помогите нам повышать производительность и совершенствовать функции Chrome и ChromeOS, разрешив автоматическую отправку в Google отчетов о сбоях и информации об использовании и диагностике.</translation>
 <translation id="8147900440966275470">Найдена <ph name="NUM" /> вкладка</translation>
 <translation id="814870937590541483">Другие действия с файлами на Google Диске</translation>
 <translation id="8148760431881541277">Ограничение на вход</translation>

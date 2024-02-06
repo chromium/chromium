@@ -1295,7 +1295,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">準備中</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
-<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，我們即可為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量等資訊。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。如果同時開啟應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
+<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，我們即可為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量等資訊。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。如果同時開啟應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 ChromeOS 裝置的設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google 帳戶的「網路和應用程式活動」設定開啟後，系統可能會將 Android 資料儲存到你的 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體。<ph name="BEGIN_LINK" />進一步瞭解如何讓特定網站保持使用中的狀態<ph name="END_LINK" /></translation>
@@ -2445,7 +2445,7 @@
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
-<translation id="2812171980080389735">已儲存網路和密碼，方便即時連線</translation>
+<translation id="2812171980080389735">儲存的網路和密碼，方便即時連線</translation>
 <translation id="2813094189969465044">家長監護</translation>
 <translation id="2813765525536183456">新增設定檔(&amp;A)</translation>
 <translation id="281390819046738856">無法簽署要求。</translation>
@@ -2544,7 +2544,7 @@
 <translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
 <translation id="2889043468805635730">未發現問題</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結...</translation>
-<translation id="2890206081124517553">記住你不同裝置的桌面背景</translation>
+<translation id="2890206081124517553">記住不同裝置的桌面背景</translation>
 <translation id="2891464434568738544">目前未開啟任何網站。請前往任一網站，並將該網站加入這份清單。</translation>
 <translation id="2891566119238851894">開啟側邊面板中的搜尋工具列。側邊面板中的搜尋工具列未開啟。</translation>
 <translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
@@ -2879,7 +2879,7 @@
 <translation id="3162853326462195145">學校帳戶</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
 <translation id="3163201441334626963">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
-<translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
+<translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用您的 Google 帳戶密碼加密。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
 <translation id="3165734944977250074">檔案已不存在，因此無法移動</translation>
@@ -5199,7 +5199,7 @@
 <translation id="4981449534399733132">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請先<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
 <translation id="4983159853748980742">系統未分享你的密碼。請檢查網際網路連線，並確定你已登入 Chrome，然後再試一次。</translation>
 <translation id="4985206706500620449">你已允許這個網站使用第三方 Cookie</translation>
-<translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
+<translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4986728572522335985">這項操作將刪除這個安全金鑰上的所有資料，包括 PIN 碼</translation>
 <translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -5338,7 +5338,7 @@
 <translation id="5095507226704905004">檔案已不存在，因此無法複製</translation>
 <translation id="5095848221827496531">取消選取</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
-<translation id="5097306410549350357">進一步瞭解如何使用位置資訊設定</translation>
+<translation id="5097306410549350357">進一步瞭解如何使用位置資訊服務</translation>
 <translation id="5097349930204431044">你造訪的網站可以判斷你喜愛的內容，並在接下來的瀏覽過程中顯示建議廣告</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
@@ -5359,7 +5359,7 @@
 <translation id="5112577000029535889">開發人員工具(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{已移動 1 個檔案}other{已移動 {NUM_OF_FILES} 個檔案}}</translation>
 <translation id="511313294362309725">開啟快速配對</translation>
-<translation id="5113384440341086023">從 Play 商店安裝的應用程式以及從 Chrome 瀏覽器安裝的網頁應用程式</translation>
+<translation id="5113384440341086023">從 Play 商店安裝的應用程式，以及從 Chrome 瀏覽器安裝的網頁應用程式</translation>
 <translation id="51143538739122961">插入並輕觸安全金鑰</translation>
 <translation id="5115309401544567011">請將 <ph name="DEVICE_TYPE" /> 接上電源。</translation>
 <translation id="5115338116365931134">單一登入 (SSO)</translation>
@@ -6766,7 +6766,7 @@
 <translation id="6234108445915742946">Chrome《服務條款》將於 3 月 31 日變更</translation>
 <translation id="6234474535228214774">等待安裝中</translation>
 <translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
-<translation id="6237297174664969437">你隨時可以在 Chrome 設定中選擇要同步處理哪些瀏覽器資料。在<ph name="LINK_BEGIN" />裝置設定<ph name="LINK_END" />中，可以控管透過 Chrome 瀏覽器安裝的網頁應用程式的同步處理功能。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
+<translation id="6237297174664969437">你隨時可以在 Chrome 設定中選擇要同步處理哪些瀏覽器資料，也可以在<ph name="LINK_BEGIN" />裝置設定<ph name="LINK_END" />中，控管如何同步處理透過 Chrome 瀏覽器安裝的網頁應用程式。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
 <translation id="623755660902014047">閱讀模式</translation>
 <translation id="6238767809035845642">從其他裝置分享的文字</translation>
@@ -7517,7 +7517,7 @@
 <translation id="6826872289184051766">透過 USB 進行驗證</translation>
 <translation id="6827121912381363404">允許所有擴充功能讀取及變更 <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">選取即可查看更多選項</translation>
-<translation id="6827517233063803343">當你使用 Google 帳戶登入後，所有 Chrome OS 裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
+<translation id="6827517233063803343">使用 Google 帳戶登入後，所有 ChromeOS 裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="6827767090350758381">2022 年 12 月之後，舊版 Chrome 應用程式將無法在 Windows 裝置上開啟。如要更新至新版本或移除這個應用程式，請與系統管理員聯絡。</translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如果要同步處理資料，請輸入你的通關密語</translation>
@@ -7670,7 +7670,7 @@
 <translation id="6949434160682548041">密碼 (選填)</translation>
 <translation id="6950143189069683062">記憶體詳細資料</translation>
 <translation id="6950627417367801484">還原應用程式</translation>
-<translation id="6954910832698269894">開啟裝置同步功能，即可還原先前 Chromebook 上的應用程式、設定、Wi-Fi 網路和桌布。你隨時可以前往「設定」&gt;「帳戶」進行變更。</translation>
+<translation id="6954910832698269894">開啟裝置同步功能，即可還原舊 Chromebook 上的應用程式、設定、Wi-Fi 網路和桌布。你隨時可以前往「設定」&gt;「帳戶」進行變更。</translation>
 <translation id="6954936693361896459">改為投放這個分頁</translation>
 <translation id="6955446738988643816">檢查彈出式視窗</translation>
 <translation id="6955535239952325894">受管理的瀏覽器已停用這項設定</translation>
@@ -8277,7 +8277,7 @@
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂端
         模擬可重新整理的點字顯示器輸出結果</translation>
 <translation id="7431719494109538750">找不到 HID 裝置</translation>
-<translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
+<translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7432200167665670017">你的管理員已封鎖「<ph name="EXTENSION_NAME" />」(應用程式 ID：<ph name="EXTENSION_ID" />)</translation>
 <translation id="7433708794692032816">插入智慧型卡片才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">保留</translation>
@@ -9576,7 +9576,7 @@
 <translation id="8403807918453631441"><ph name="BRAND" />可以檢查你儲存的密碼</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
-<translation id="8408270600235826886">您可以控制要分享哪些資料給 Google。您隨時可以在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
+<translation id="8408270600235826886">您可以控制要分享哪些資料給 Google，並隨時在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
 <translation id="84098433273647700">目前安裝的主題。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全螢幕</translation>

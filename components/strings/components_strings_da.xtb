@@ -173,7 +173,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Tjek indstillingerne for din sikre DNS</translation>
 <translation id="1307966114820526988">Udfasede funktioner</translation>
-<translation id="1308113895091915999">Tilgængeligt kampagnetilbud</translation>
+<translation id="1308113895091915999">Tilgængeligt promoveringstilbud</translation>
 <translation id="1309375166585231290">Dine forældre har ikke sagt, at det er OK endnu</translation>
 <translation id="1314311879718644478">Vis indhold med augmented reality</translation>
 <translation id="1314509827145471431">Bind i højre side</translation>
@@ -808,7 +808,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2526280916094749336">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Din CVC er på forsiden af dit kort. Det er den 4-cifrede kode øverst til højre over dit kortnummer.</translation>
 <translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
-<translation id="253493526287553278">Se oplysninger om kampagnekode</translation>
+<translation id="253493526287553278">Se oplysninger om promoveringskode</translation>
 <translation id="2535585790302968248">Åbn en ny inkognitofane for at browse privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
 <translation id="2536110899380797252">Tilføj adresse</translation>
@@ -1275,7 +1275,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3478033058537426179">Efter gruppe</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3484560055331845446">Du kan miste adgangen til din Google-konto. Chrome anbefaler, at du skifter din adgangskode nu. Du bliver bedt om at logge ind.</translation>
-<translation id="3484861421501147767">Påmindelse: En gemt kampagnekode er tilgængelig</translation>
+<translation id="3484861421501147767">Påmindelse: En gemt promoveringskode er tilgængelig</translation>
 <translation id="3487845404393360112">Bakke 4</translation>
 <translation id="3492199565975299728">Gade</translation>
 <translation id="3493660662684070951">Lastbiler, kassevogne og SUV'er</translation>

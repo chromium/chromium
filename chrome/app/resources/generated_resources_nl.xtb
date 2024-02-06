@@ -321,7 +321,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1236009322878349843">Telefoon bewerken</translation>
 <translation id="1239594683407221485">De content van het apparaat verkennen in de app Bestanden.</translation>
 <translation id="1239841552505950173">App starten</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />servicevoorwaarden<ph name="END_LINK2" /> van deze site.</translation>
 <translation id="1241066500170667906">Experimentstatus selecteren voor <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Meer talen</translation>
 <translation id="1241381048229838873">Alle bookmarks tonen</translation>
@@ -10444,7 +10444,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9068598199622656904">Druk op 1 toets tegelijk voor sneltoetsen in plaats van dat je toetsen tegelijk ingedrukt moet houden.</translation>
 <translation id="9068878141610261315">Niet-ondersteund bestandstype</translation>
 <translation id="9069417381769492963">Er zijn geen bookmarks die overeenkomen met je zoekopdracht</translation>
-<translation id="9069665781180028115">Geselecteerde items zijn beschikbaar op deze Chromebook. Als je nieuw bent bij Chromebook, synchroniseer je alle items zodat om een back-up van je voorkeuren te maken. Je kunt altijd wijzigingen aanbrengen via Instellingen &gt; Accounts.</translation>
+<translation id="9069665781180028115">Geselecteerde items zijn beschikbaar op deze Chromebook. Als je nieuw bent bij Chromebook, synchroniseer je alle items om een back-up van je voorkeuren te maken. Je kunt altijd wijzigingen aanbrengen via Instellingen &gt; Accounts.</translation>
 <translation id="9070231741075992882">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor de geïnstalleerde en gestreamde versies van de app.</translation>
 <translation id="9070342919388027491">Tabblad naar links verplaatst</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -195,7 +195,7 @@
 <translation id="174102739345480129">मार्कर बंद आहे.</translation>
 <translation id="1743570585616704562">ओळखले नाही</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> ही सूचना कोलॅप्स करा</translation>
-<translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉंफिगर केलेल्या इनपुट पद्धती.</translation>
+<translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉन्फिगर केलेल्या इनपुट पद्धती.</translation>
 <translation id="1747336645387973286">शेवटची तारीख <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1749109475624620922">विंडो <ph name="WINDOW_TITLE" /> सर्व डेस्कना असाइन केले</translation>
@@ -1653,7 +1653,7 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7659861092419699379">डेस्‍क आणि विंडो बंद केल्या आहेत</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> शी लिंक केलेल्या डिव्हाइसवर तुमचे <ph name="NAME" /> दिसेल</translation>
-<translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
+<translation id="7662283695561029522">कॉन्फिगर करण्यासाठी टॅप करा</translation>
 <translation id="7670953955701272011">Google Calendar यामध्ये ही तारीख उघडा</translation>
 <translation id="7671610481353807627">अ‍ॅप्स रंगानुसार क्रमाने लावली जातात</translation>
 <translation id="7672095158465655885"><ph name="NAME" />, <ph name="SUBTEXT" /> शी कनेक्ट केलेले</translation>

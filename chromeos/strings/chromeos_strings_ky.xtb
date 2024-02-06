@@ -475,7 +475,7 @@
 <translation id="4469288414739283461">Жер көшөгөсү</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
-<translation id="4500722292849917410">Ыкчам баскыч жеткиликсиз. Өзгөртүү баскычы (ctrl, alt, shift же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
+<translation id="4500722292849917410">Ыкчам баскыч жеткиликсиз. Өзгөртүүчү баскыч (ctrl, alt, shift же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейстин түсү</translation>
 <translation id="4503223151711056411">Солго жебе</translation>
 <translation id="4507392511610824664">жарыктыгын көбөйтүү</translation>
@@ -550,7 +550,7 @@
 <translation id="4969079779290789265">Бөлүү</translation>
 <translation id="4972592110715526173">режимди өзгөртүү</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
-<translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүү баскычы (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
+<translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
 <translation id="4987769320337599931">Тармактык коргоо</translation>
 <translation id="4988526792673242964">Барактар</translation>

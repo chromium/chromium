@@ -1290,7 +1290,7 @@
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 账号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 账号开启“网络与应用活动记录”设置，您的 Android 数据可能会保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">您添加的网站将始终保持活跃状态，且系统不会从它们中释放内存。<ph name="BEGIN_LINK" />详细了解如何让特定网站保持活跃状态<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="197288927597451399">保留</translation>
@@ -4818,7 +4818,7 @@
 <translation id="4682481611456523884">此网站上的嵌入式内容无法使用它们保存的与您相关的信息</translation>
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
-<translation id="4684427112815847243">同步所有数据类型</translation>
+<translation id="4684427112815847243">同步所有数据</translation>
 <translation id="4685096503970466594">关闭“<ph name="FEATURE_NAME" />”功能</translation>
 <translation id="4687238339694011189">请确保您的打印机已开机，且已连接到 Chromebook 所用网络或使用 USB 线</translation>
 <translation id="4687613760714619596">未知设备 (<ph name="DEVICE_ID" />)</translation>
@@ -9569,7 +9569,7 @@
 <translation id="8403807918453631441">您需要先保存密码，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
-<translation id="8408270600235826886">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
+<translation id="8408270600235826886">您可以控制与 Google 分享哪些数据，并且随时可在“设置”中进行更改。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
 <translation id="84098433273647700">您已安装的当前主题。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全屏</translation>

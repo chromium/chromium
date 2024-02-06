@@ -2273,7 +2273,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2692901429679246677">Aiguamarina</translation>
 <translation id="2693134906590795721">Sons de càrrega</translation>
 <translation id="2693176596243495071">S'ha produït un error desconegut. Torna-ho a provar més tard o contacta amb l'administrador si el problema no es resol.</translation>
-<translation id="2698147581454716013">Aquest és un dispositiu agrupat i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
+<translation id="2698147581454716013">Aquest és un dispositiu amb llicència integrada i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
 <translation id="2699911226086014512">Ha fallat l'operació del PIN; codi: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicia la sessió, <ph name="EMAIL" /></translation>

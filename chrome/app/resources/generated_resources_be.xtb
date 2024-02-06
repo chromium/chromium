@@ -1009,7 +1009,7 @@
 <translation id="1757301747492736405">Чакаецца выдаленне</translation>
 <translation id="175772926354468439">Уключыць тэму</translation>
 <translation id="1757786065507923842">Не ўдалося запытаць бацькоўскі дазвол.</translation>
-<translation id="17584710573359123">Прагледзець у Chrome Web Store</translation>
+<translation id="17584710573359123">Прагледзець у Вэб-краме Chrome</translation>
 <translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" перапрызначана для дзеяння "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960">Уліковыя запісы карыстальніка <ph name="NAME" /></translation>
 <translation id="176272781006230109">прапановы тавараў</translation>
@@ -1220,7 +1220,7 @@
 <translation id="1904603806662441960">Кіраванне дазволамі сайтаў на выкарыстанне камеры ў Chrome</translation>
 <translation id="1905375423839394163">Назва прылады Chromebook</translation>
 <translation id="1906181697255754968">Сайты звычайна атрымліваюць доступ да файлаў і папак на прыладзе для работы такіх функцый, як аўтаматычнае захаванне зробленага</translation>
-<translation id="1906488504371069394">Больш пашырэнняў і тэм можна знайсці ў <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
+<translation id="1906488504371069394">Больш пашырэнняў і тэм можна знайсці ў <ph name="BEGIN_LINK" />Вэб-краме Chrome<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Уводзьце тэкст з дапамогай голасу. Каб зрабіць гэта, трэба націснуць Пошук + D і надыктаваць тэкст.</translation>
 <translation id="1907659324308286326">Некаторым аксесуарам Thunderbolt і USB4 для належнай працы патрабуецца доступ да памяці.</translation>
 <translation id="1908591798274282246">Зноў адкрыць закрытую групу</translation>
@@ -2253,7 +2253,7 @@
 <translation id="2673873887296220733">Скапіраваць 1 файл у сэрвіс "<ph name="CLOUD_PROVIDER" />" перад адкрыццём?</translation>
 <translation id="267442004702508783">абнавіць</translation>
 <translation id="2674764818721168631">Выключана</translation>
-<translation id="2676084251379299915">Гэта пашырэнне было адключана згодна з карпаратыўнай палітыкай, бо яно больш не даступнае ў Chrome Web Store.</translation>
+<translation id="2676084251379299915">Гэта пашырэнне было адключана згодна з карпаратыўнай палітыкай, бо яно больш не даступнае ў Вэб-краме Chrome.</translation>
 <translation id="2678063897982469759">Паўторна ўключыць</translation>
 <translation id="2678100101831051676">Не ўдалося запусціць трансляцыю.</translation>
 <translation id="2678468611080193228">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
@@ -2675,7 +2675,7 @@
 <translation id="2996286169319737844">Даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="2996722619877761919">Карашок па доўгім краі</translation>
 <translation id="2996932914629936323">З усіх сінхранізаваных прылад будзе выдалена гісторыя</translation>
-<translation id="2998097899774209901">Уключана • Гэта пашырэнне парушае палітыку Chrome Web Store</translation>
+<translation id="2998097899774209901">Уключана • Гэта пашырэнне парушае палітыку Вэб-крамы Chrome</translation>
 <translation id="2998267783395280091">Знойдзена сетка</translation>
 <translation id="3000378525979847272">Дазволена: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Монафанія</translation>
@@ -2708,7 +2708,7 @@
 <translation id="3012631534724231212">(акно iframe)</translation>
 <translation id="3012804260437125868">Толькі бяспечныя падключэнні на тым жа сайце</translation>
 <translation id="3012917896646559015">Звяжыцеся з вытворцам абсталявання, каб адправіць камп'ютар у рамонт.</translation>
-<translation id="3013652227108802944">Выключана • Гэта пашырэнне парушае палітыку Chrome Web Store</translation>
+<translation id="3013652227108802944">Выключана • Гэта пашырэнне парушае палітыку Вэб-крамы Chrome</translation>
 <translation id="301525898020410885">Мова зададзена вашай арганізацыяй</translation>
 <translation id="3015639418649705390">Перазапусціць</translation>
 <translation id="3016381065346027039">Запісаў у журнале няма</translation>
@@ -3656,7 +3656,7 @@
 <translation id="3775432569830822555">Сертыфікат сервера SSL</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3776508619697147021">Сайты могуць запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
-<translation id="3776796446459804932">Гэта пашырэнне парушае палітыку Chrome Web Store.</translation>
+<translation id="3776796446459804932">Гэта пашырэнне парушае палітыку Вэб-крамы Chrome.</translation>
 <translation id="3777483481409781352">Не ўдалося актываваць сотавую прыладу</translation>
 <translation id="3777796259512476958">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў</translation>
 <translation id="3778208826288864398">Ключ бяспекі заблакіраваны, бо занадта шмат разоў быў уведзены няправільны PIN-код. Вам трэба будзе скінуць ключ бяспекі.</translation>
@@ -5053,7 +5053,7 @@
 <translation id="4870724079713069532">З дапамогай гэтай праграмы можна адкрываць і змяняць сумяшчальныя файлы ў Правадніку і іншых праграмах. Каб указаць, якія файлы павінны адкрывацца ў гэтай праграме стандартна, <ph name="BEGIN_LINK" />перайдзіце ў налады Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Каб атрымаць звесткі пра канфігурацыю, увядзіце атрыманы ад адміністратара пароль</translation>
 <translation id="4870995365819149457">Некаторыя спасылкі, якія падтрымліваюцца, па-ранейшаму будуць адкрывацца ў праграмах "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" і яшчэ адной праграме.</translation>
-<translation id="4871308555310586478">Не з Chrome Web Store.</translation>
+<translation id="4871308555310586478">Не з Вэб-крамы Chrome.</translation>
 <translation id="4871322859485617074">PIN-код змяшчае недапушчальныя сімвалы</translation>
 <translation id="4871370605780490696">Дадаць закладку</translation>
 <translation id="4871568871368204250">Выключыць сінхранізацыю</translation>
@@ -5804,7 +5804,7 @@
 <translation id="5470735824776589490">Трэба перазапусціць прыладу, перш чым скідваць налады з дапамогай Powerwash. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Вітаю! Мой голас будзе выкарыстоўвацца для сінтэзу маўлення.</translation>
 <translation id="5472627187093107397">Захоўваць паролі для гэтага сайта</translation>
-<translation id="5473062644742711742">Больш інструментаў даступнасці можна знайсці ў Chrome Web Store</translation>
+<translation id="5473062644742711742">Больш інструментаў даступнасці можна знайсці ў Вэб-краме Chrome</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Працягваючы, вы згаджаецеся, што гэта прылада таксама можа аўтаматычна спампоўваць і ўсталёўваць абнаўленні і праграмы ад Google, аператара вашага дзіцяці і вытворцы прылады, магчыма, з выкарыстаннем сотавай перадачы даных. Некаторыя з гэтых праграм могуць прапаноўваць куплі ў праграмах.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-код павінен змяшчаць як мінімум 1 сімвал}one{PIN-код павінен змяшчаць як мінімум # сімвал}few{PIN-код павінен змяшчаць як мінімум # сімвалы}many{PIN-код павінен змяшчаць як мінімум # сімвалаў}other{PIN-код павінен змяшчаць як мінімум # сімвала}}</translation>
@@ -6022,7 +6022,7 @@
 <translation id="5636996382092289526">Каб выкарыстоўваць сетку "<ph name="NETWORK_ID" />", спачатку можа спатрэбіцца <ph name="LINK_START" />наведаць старонку ўваходу ў сетку<ph name="LINK_END" />, якая адкрыецца аўтаматычна праз некалькі секунд. Калі гэтага не адбылося, сетку выкарыстоўваць нельга.</translation>
 <translation id="5637476008227280525">Уключэнне мабільнай перадачы даных</translation>
 <translation id="563821631542362636">Дазволіць сайту захоўваць даныя</translation>
-<translation id="5638309510554459422">Шукайце пашырэнні і тэмы ў <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
+<translation id="5638309510554459422">Шукайце пашырэнні і тэмы ў <ph name="BEGIN_LINK" />Вэб-краме Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Перазагрузіць гэту старонку (утрымлівайце, каб убачыць больш варыянтаў)</translation>
 <translation id="5640133431808313291">Кіраванне ключамі бяспекі</translation>
 <translation id="5640159004008030285">Гэты пароль захаваны толькі на дадзенай прыладзе. Каб мець магчымасць выкарыстоўваць яго на іншых прыладах, <ph name="BEGIN_LINK" />захавайце гэты пароль ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
@@ -7067,7 +7067,7 @@
 <translation id="6476482583633999078">Хуткасць маўлення</translation>
 <translation id="6477822444490674459">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Захаваць небяспечны файл?</translation>
-<translation id="6479881432656947268">Наведаць Chrome Web Store</translation>
+<translation id="6479881432656947268">Наведаць Вэб-краму Chrome</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Абагульвайце файлы і іншае змесціва з прыладамі паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6482559668224714696">Лупа для поўнаэкраннага рэжыму</translation>
@@ -8204,7 +8204,7 @@
 <translation id="737728204345822099">На ключы бяспекі можа быць пакінуты запіс пра наведванне вамі гэтага вэб-сайта.</translation>
 <translation id="7377451353532943397">Працягваць блакіраваць доступ да датчыкаў</translation>
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
-<translation id="73786666777299047">Адкрыць Chrome Web Store</translation>
+<translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
 <translation id="7380272457268061606">Адключыць аднаўленне лакальных даных?</translation>
 <translation id="7380459290951585794">Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi</translation>
 <translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
@@ -8292,7 +8292,7 @@
 <translation id="7434509671034404296">Для распрацоўшчыкаў</translation>
 <translation id="7434757724413878233">Паскарэнне мышы</translation>
 <translation id="7434969625063495310">Не ўдалося дадаць сервер друку. Праверце канфігурацыю сервера і паўтарыце спробу.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Праверце 1 пашырэнне, якое было выдалена з Chrome Web Store}one{Праверце {NUM_EXTENSIONS} пашырэнне, якое было выдалена з Chrome Web Store}few{Праверце {NUM_EXTENSIONS} пашырэнні, якія былі выдалены з Chrome Web Store}many{Праверце {NUM_EXTENSIONS} пашырэнняў, якія былі выдалены з Chrome Web Store}other{Праверце {NUM_EXTENSIONS} пашырэння, якія былі выдалены з Chrome Web Store}}</translation>
+<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Праверце 1 пашырэнне, якое было выдалена з Вэб-крамы Chrome}one{Праверце {NUM_EXTENSIONS} пашырэнне, якое было выдалена з Вэб-крамы Chrome}few{Праверце {NUM_EXTENSIONS} пашырэнні, якія былі выдалены з Вэб-крамы Chrome}many{Праверце {NUM_EXTENSIONS} пашырэнняў, якія былі выдалены з Вэб-крамы Chrome}other{Праверце {NUM_EXTENSIONS} пашырэння, якія былі выдалены з Вэб-крамы Chrome}}</translation>
 <translation id="7436921188514130341">На жаль, падчас перайменавання адбылася памылка.</translation>
 <translation id="7439519621174723623">Каб працягнуць, дадайце назву прылады</translation>
 <translation id="7441736532026945583">Каб прыбраць групу з панэлі ўкладак, выберыце "Схаваць групу"</translation>
@@ -9968,7 +9968,7 @@
 <translation id="8708000541097332489">Ачысціць пасля выхаду</translation>
 <translation id="870805141700401153">Індывідуальнае падпісванне кода ў Microsoft</translation>
 <translation id="8708671767545720562">&amp;Дадатковая інфармацыя</translation>
-<translation id="8709368517685334931">Больш раннія тэмы можна знайсці ў Chrome Web Store</translation>
+<translation id="8709368517685334931">Больш раннія тэмы можна знайсці ў Вэб-краме Chrome</translation>
 <translation id="8710550057342691420">Упарадкаваць падобныя ўкладкі</translation>
 <translation id="8711402221661888347">Салёныя агуркі</translation>
 <translation id="8711538096655725662">Доступ даецца аўтаматычна на ўсіх сайтах, якія вы наведваеце</translation>

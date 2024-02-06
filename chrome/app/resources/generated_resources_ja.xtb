@@ -927,7 +927,7 @@
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
 <translation id="1692713444215319269">色反転、拡大鏡、表示設定</translation>
-<translation id="1695487653372841667">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。</translation>
+<translation id="1695487653372841667">あなたは Google と共有するデータを設定することができ、これは [設定] でいつでも変更できます。</translation>
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
@@ -1083,7 +1083,7 @@
 <translation id="1810070166657251157">スマートフォンに保存されているパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
 <translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> は <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の使用を続行できません</translation>
+<translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> をキャストしています</translation>
 <translation id="1813278315230285598">サービス</translation>
 <translation id="18139523105317219">EDI パーティ名</translation>
@@ -2538,7 +2538,7 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2889043468805635730">問題は見つかりませんでした</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存する</translation>
+<translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存します</translation>
 <translation id="2891464434568738544">現在、追加されたサイトはありません。このサイトをリストに追加するには、サイトにアクセスしてください。</translation>
 <translation id="2891566119238851894">サイドパネルで検索を開きます。サイドパネルで検索が開いていません。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
@@ -3537,7 +3537,7 @@
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注: Google は、デバイスが受信するデモモードのバージョンを特定し、デモモードの使用状況を測定する目的でこの情報を使用します。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="3703166520839776970">この問題がまだ解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
+<translation id="3703166520839776970">問題が解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
 <translation id="370415077757856453">JavaScript がブロックされました</translation>
 <translation id="3704331259350077894">処理が停止した</translation>
@@ -8269,7 +8269,7 @@
 <translation id="7429415133937917139">点字ディスプレイの出力を
     画面上部の ChromeVox パネルにシミュレートします</translation>
 <translation id="7431719494109538750">HID デバイスは見つかりませんでした</translation>
-<translation id="7431991332293347422">検索などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
+<translation id="7431991332293347422">検索などのカスタマイズに閲覧履歴がどのように使われるかを管理する</translation>
 <translation id="7432200167665670017">「<ph name="EXTENSION_NAME" />」（アプリ ID: <ph name="EXTENSION_ID" />）は管理者によってブロックされています</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> を引き続き使用するにはスマートカードを挿入してください</translation>
 <translation id="7433957986129316853">そのままにする</translation>
@@ -10439,7 +10439,7 @@
 <translation id="9068598199622656904">キーボード ショートカットで複数のキーを同時に押すのではなく、1 つずつ押します</translation>
 <translation id="9068878141610261315">サポートされていないファイル形式です</translation>
 <translation id="9069417381769492963">検索条件に一致するブックマークはありません</translation>
-<translation id="9069665781180028115">選択したアイテムはこの Chromebook で使用できるようになります。Chromebook を初めて使用する場合は、すべてのアイテムを同期して設定をバックアップします。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
+<translation id="9069665781180028115">選択した項目はこの Chromebook で使用できるようになります。Chromebook を初めてお使いになる場合は、すべての項目を同期すると設定のバックアップが作成されます。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> に許可した権限は、インストール（ストリーミング）されるアプリにも適用されます。</translation>
 <translation id="9070342919388027491">タブを左に移動しました</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

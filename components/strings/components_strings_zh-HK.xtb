@@ -2458,7 +2458,7 @@
 <translation id="5838732667866024867">你可以用向左/向右箭咀睇到圖表嘅價格變化</translation>
 <translation id="5840318881868981258">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="5841338463993781099">要儲存在帳戶中嗎？</translation>
-<translation id="5843987376989109187">目前尚不支援這個語言。
+<translation id="5843987376989109187">目前不支援此語言。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">電力供應</translation>
 <translation id="5851548754964597211">分頁清單</translation>
@@ -4109,7 +4109,7 @@
 <translation id="9049981332609050619">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證無效。</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9051072642122229460">咖啡及濃縮咖啡機</translation>
-<translation id="9051260467258969162">請重新<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />，再返回這個分頁取得寫入協助</translation>
+<translation id="9051260467258969162">請重新<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />並返回此分頁，才能取得撰寫協助</translation>
 <translation id="9053840549256861041">我們即將推出名為「廣告成效評估」的全新廣告私隱功能。Chrome 只會在網站間分享非常有限的資料 (例如向使用者放送廣告的時段)，以協助網站評估廣告成效。</translation>
 <translation id="9056953843249698117">商店</translation>
 <translation id="9062620674789239642">此檔案可能已被移動、編輯或刪除。</translation>

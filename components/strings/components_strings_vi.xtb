@@ -1733,7 +1733,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4336913590841287350">Chính sách này chưa được hỗ trợ làm chính sách người dùng trên iOS.</translation>
 <translation id="4340575312453649552">Chrome đã xóa quảng cáo này vì quảng cáo sử dụng quá nhiều tài nguyên của thiết bị.</translation>
 <translation id="4340810192899866471">Nhập từ JSON</translation>
-<translation id="4340982228985273705">Máy tính này không được coi là máy tính do doanh nghiệp quản lý, vì vậy, chính sách này chỉ có thể tự động cài đặt các tiện ích được lưu trữ trên Chrome Web Store. URL cập nhật Chrome Web Store là "<ph name="CWS_UPDATE_URL" />".</translation>
+<translation id="4340982228985273705">Máy tính này không được coi là máy tính do doanh nghiệp quản lý, vì vậy, chính sách này chỉ có thể tự động cài đặt các tiện ích được lưu trữ trên Cửa hàng Chrome trực tuyến. URL cập nhật Cửa hàng Chrome trực tuyến là "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206">Kết nối đến <ph name="SITE" /> không an toàn</translation>
 <translation id="4349365535725594680">Không thể chia sẻ nội dung bảo mật</translation>
 <translation id="4349810866125026513">Vẫn tải lên</translation>
