@@ -3,20 +3,12 @@
 // found in the LICENSE file.
 
 import '/shared/settings/controls/settings_toggle_button.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-// <if expr="not chromeos_ash">
-import '../relaunch_confirmation_dialog.js';
-
-// </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './ai_page.html.js';
 
@@ -37,13 +29,7 @@ export enum SettingsAiPageFeaturePrefName {
   WALLPAPER_SEARCH = 'optimization_guide.wallpaper_search_setting_state',
 }
 
-export interface SettingsAiPageElement {
-  $: {
-    toast: CrToastElement,
-  };
-}
-
-const SettingsAiPageElementBase = RelaunchMixin(PrefsMixin(PolymerElement));
+const SettingsAiPageElementBase = PrefsMixin(PolymerElement);
 
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
@@ -93,15 +79,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private showTabOrganizationControl_: boolean;
   private showWallpaperSearchControl_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
-
-  private onToggleChange_() {
-    this.$.toast.show();
-  }
-
-  private onRestartClick_(e: Event) {
-    e.stopPropagation();
-    this.performRestart(RestartType.RESTART);
-  }
 
   private isExpanded_(): boolean {
     return this.getPref(SettingsAiPageFeaturePrefName.MAIN).value ===

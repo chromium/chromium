@@ -82,12 +82,9 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
               MODEL_EXECUTION_FEATURE_COMPOSE),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 
-  // Checks that Compose is still disabled.
-  // TODO(b/321073908): Update this test once enabling takes immediate effect.
-  EXPECT_EQ(base::unexpected(
-                compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide),
-            GetComposeEnabling().IsEnabled());
-  EXPECT_FALSE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
+  // Checks that Compose is immediately enabled.
+  EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
+  EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
 }

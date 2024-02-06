@@ -13,8 +13,7 @@
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
     label="$i18n{aiPageMainLabel}"
-    sub-label="$i18n{aiPageMainSublabel}"
-    on-settings-boolean-control-change="onToggleChange_">
+    sub-label="$i18n{aiPageMainSublabel}">
 </settings-toggle-button>
 
 <iron-collapse opened="[[isExpanded_(
@@ -26,8 +25,7 @@
         numeric-unchecked-values="[[numericUncheckedValues_]]"
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
         label="$i18n{aiComposeLabel}"
-        sub-label="$i18n{aiComposeSublabel}"
-        on-settings-boolean-control-change="onToggleChange_">
+        sub-label="$i18n{aiComposeSublabel}">
     </settings-toggle-button>
     <settings-toggle-button
         class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
@@ -36,8 +34,7 @@
         numeric-unchecked-values="[[numericUncheckedValues_]]"
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
         label="$i18n{experimentalAdvancedFeature2Label}"
-        sub-label="$i18n{experimentalAdvancedFeature2Sublabel}"
-        on-settings-boolean-control-change="onToggleChange_">
+        sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
     </settings-toggle-button>
     <settings-toggle-button
         class$="[[getWallpaperSearchHrCssClass_(
@@ -47,20 +44,8 @@
         numeric-unchecked-values="[[numericUncheckedValues_]]"
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
         label="$i18n{experimentalAdvancedFeature3Label}"
-        sub-label="$i18n{experimentalAdvancedFeature3Sublabel}"
-        on-settings-boolean-control-change="onToggleChange_">
+        sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
     </settings-toggle-button>
   </div>
 </iron-collapse>
 
-<cr-toast id="toast">
-  <div>$i18n{restartToApplyChanges}</div>
-  <cr-button on-click="onRestartClick_">$i18n{restart}</cr-button>
-</cr-toast>
-
-<if expr="not chromeos_ash">
-<template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
-  <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
-      on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
-</template>
-</if>

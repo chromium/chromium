@@ -4,16 +4,14 @@
 
 'chrome://settings/settings.js';
 
-import {LifetimeBrowserProxyImpl, SettingsAiPageFeaturePrefName as PrefName, SettingsToggleButtonElement, SettingsAiPageElement, CrSettingsPrefs, SettingsPrefsElement, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
+import {SettingsAiPageFeaturePrefName as PrefName, SettingsToggleButtonElement, SettingsAiPageElement, CrSettingsPrefs, SettingsPrefsElement, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -21,9 +19,6 @@ suite('ExperimentalAdvancedPage', function() {
   });
 
   function createPage() {
-    lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
-    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-ai-page');
     page.prefs = settingsPrefs.prefs;
@@ -33,7 +28,6 @@ suite('ExperimentalAdvancedPage', function() {
   // Test that interacting with the main toggle
   //  - updates the corresponding pref
   //  - updates the iron-collapse opened status
-  //  - shows the restart toast
   test('MainToggle', () => {
     createPage();
     page.setPrefValue(PrefName.MAIN, FeatureOptInState.NOT_INITIALIZED);
@@ -46,21 +40,18 @@ suite('ExperimentalAdvancedPage', function() {
     // Check NOT_INITIALIZED case.
     assertFalse(mainToggle.checked);
     assertFalse(collapse.opened);
-    assertFalse(page.$.toast.open);
 
     // Check ENABLED case.
     mainToggle.click();
     assertEquals(FeatureOptInState.ENABLED, page.getPref(PrefName.MAIN).value);
     assertTrue(mainToggle.checked);
     assertTrue(collapse.opened);
-    assertTrue(page.$.toast.open);
 
     // Check DISABLED case.
     mainToggle.click();
     assertEquals(FeatureOptInState.DISABLED, page.getPref(PrefName.MAIN).value);
     assertFalse(mainToggle.checked);
     assertFalse(collapse.opened);
-    assertTrue(page.$.toast.open);
   });
 
   test('FeatureTogglesVisibility', () => {
@@ -110,7 +101,6 @@ suite('ExperimentalAdvancedPage', function() {
         page.shadowRoot!.querySelectorAll<SettingsToggleButtonElement>(
             'iron-collapse settings-toggle-button');
     assertEquals(3, toggles.length);
-    assertFalse(page.$.toast.open);
 
     for (const toggle of toggles) {
       assertTrue(!!toggle.pref);
@@ -131,10 +121,6 @@ suite('ExperimentalAdvancedPage', function() {
     assertPrefs(
         FeatureOptInState.ENABLED, FeatureOptInState.NOT_INITIALIZED,
         FeatureOptInState.NOT_INITIALIZED);
-    assertTrue(page.$.toast.open);
-
-    // Manually hide toast to test the next toggle, normally stays open.
-    page.$.toast.hide();
 
     toggles[1]!.click();
     assertPrefs(
@@ -145,51 +131,22 @@ suite('ExperimentalAdvancedPage', function() {
     assertPrefs(
         FeatureOptInState.ENABLED, FeatureOptInState.ENABLED,
         FeatureOptInState.ENABLED);
-    assertTrue(page.$.toast.open);
-    page.$.toast.hide();
 
     // Check turning off toggles one by one.
     toggles[0]!.click();
     assertPrefs(
         FeatureOptInState.DISABLED, FeatureOptInState.ENABLED,
         FeatureOptInState.ENABLED);
-    assertTrue(page.$.toast.open);
-    page.$.toast.hide();
 
     toggles[1]!.click();
     assertPrefs(
         FeatureOptInState.DISABLED, FeatureOptInState.DISABLED,
         FeatureOptInState.ENABLED);
-    assertTrue(page.$.toast.open);
-    page.$.toast.hide();
 
     toggles[2]!.click();
     assertPrefs(
         FeatureOptInState.DISABLED, FeatureOptInState.DISABLED,
         FeatureOptInState.DISABLED);
-    assertTrue(page.$.toast.open);
-  });
-
-  test('RelaunchToast', () => {
-    loadTimeData.overrideValues({
-      showComposeControl: true,
-      showTabOrganizationControl: true,
-      showWallpaperSearchControl: true,
-    });
-    createPage();
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        'iron-collapse settings-toggle-button');
-    assertTrue(!!toggle);
-    assertFalse(toggle.checked);
-    assertFalse(page.$.toast.open);
-
-    toggle.click();
-    assertTrue(page.$.toast.open);
-    const restartButton = page.$.toast.querySelector('cr-button');
-    assertTrue(!!restartButton);
-
-    restartButton.click();
-    return lifetimeBrowserProxy.whenCalled('restart');
   });
 
   test('FeatureTogglesSeparators', () => {

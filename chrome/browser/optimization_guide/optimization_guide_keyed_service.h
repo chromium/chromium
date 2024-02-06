@@ -175,10 +175,6 @@ class OptimizationGuideKeyedService
     return optimization_guide_logger_.get();
   }
 
-  // Simulates browser restart. Useful for testing controller functionality
-  // where some of the settings change take effect on browser restart.
-  void SimulateBrowserRestartForControllerTesting();
-
  private:
   friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;

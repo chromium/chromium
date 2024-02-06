@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -51,7 +52,7 @@ class WallpaperSearchServiceBrowserTest : public InProcessBrowserTest {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // PRE_ simulates a browser restart.
 IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
-                       PRE_EnablingWallpaperSearchEnablesGM3) {
+                       PRE_EnablingWallpaperSearchEnables) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
       browser()->profile());
 
@@ -65,10 +66,13 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
-                       EnablingWallpaperSearchEnablesGM3) {
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeRefresh2023));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeWebuiRefresh2023));
-  EXPECT_TRUE(features::IsChromeWebuiRefresh2023());
+                       EnablingWallpaperSearchEnables) {
+  // Wallpaper search feature should be enabled.
+  auto* keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -88,7 +92,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
-                       PRE_EnablingWallpaperSearchEnablesGM3) {
+                       PRE_EnablingWallpaperSearchEnables) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       "test@example.com", signin::ConsentLevel::kSync);
@@ -110,18 +114,12 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
 }
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
-                       EnablingWallpaperSearchEnablesGM3) {
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // This test edits flags in chrome://flags, which doesn't work for
-  // Chrome-OS-on-Linux. It might cause parts of this test to flake.
-  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/chromeos_build_instructions.md#flags
-  if (!IsRunningOnChromeOS()) {
-    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeRefresh2023));
-  }
-#else
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeRefresh2023));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeWebuiRefresh2023));
-  EXPECT_TRUE(features::IsChromeWebuiRefresh2023());
-#endif  // !BUILDFLAG(IS_CHROMEOS_DEVICE)
+                       EnablingWallpaperSearchEnables) {
+  // Wallpaper search feature should be enabled.
+  auto* keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
