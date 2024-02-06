@@ -20,6 +20,12 @@
               label="$i18n{plusAddressSettings}"
               on-click="onPlusAddressClick_"
               role-description="$i18n{subpageArrowRoleDescription}"
+              <if expr="_google_chrome">
+                start-icon="settings-internal:plus-addresses-logo"
+              </if>
+              <if expr="not _google_chrome">
+                start-icon="settings:email"
+              </if>
               external>
           </cr-link-row>
         </template>

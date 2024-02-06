@@ -13,6 +13,12 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+// </if>
+// <if expr="not _google_chrome">
+import '../icons.html.js';
+// </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
