@@ -344,6 +344,16 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // If `only_visible` is true, only forms visible in the layout are sent.
   void SendPasswordForms(bool only_visible);
 
+  // Performs necessary feasibility checks and triggers password suggestions
+  // for the current domain on the `element`. `trigger_source` is used to
+  // distinguish between the ways of how Autofill was triggered.
+  bool ShowSuggestionsForDomain(const blink::WebInputElement& element,
+                                AutofillSuggestionTriggerSource trigger_source);
+
+  // Performs necessary feasibility checks and triggers manual fallback
+  // suggestion on the provided `element`.
+  bool ShowManualFallbackSuggestions(const blink::WebInputElement& element);
+
   // Instructs the browser to show a pop-up suggesting which credentials could
   // be filled. `show_on_password_field` should indicate whether the pop-up is
   // to be shown on the password field instead of on the username field. If the
