@@ -15,7 +15,8 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_explanation"
-        android:summary="@string/settings_topics_page_explanation_description" />
+        android:summary="@string/settings_topics_page_explanation_description"
+        android:layout="@layout/topics_explanation_summary" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="active_topics"

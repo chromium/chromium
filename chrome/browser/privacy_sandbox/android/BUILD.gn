@@ -177,6 +177,7 @@ android_resources("java_resources") {
     "java/res/layout/privacy_sandbox_notice_restricted.xml",
     "java/res/layout/privacy_sandbox_notice_row.xml",
     "java/res/layout/privacy_sandbox_notice_row_dropdown.xml",
+    "java/res/layout/topics_explanation_summary.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ad_measurement_preference.xml",
     "java/res/xml/block_list_preference.xml",
