@@ -58,6 +58,9 @@ struct ASH_PUBLIC_EXPORT WeatherInfo {
   WeatherInfo& operator=(const WeatherInfo&);
   ~WeatherInfo();
 
+  // The description of the weather condition.
+  std::optional<std::string> condition_description;
+
   // The url of the weather condition icon image.
   std::optional<std::string> condition_icon_url;
 

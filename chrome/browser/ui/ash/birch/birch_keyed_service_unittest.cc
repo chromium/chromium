@@ -329,11 +329,11 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   auto& tabs = Shell::Get()->birch_model()->GetTabsForTest();
   ASSERT_EQ(tabs.size(), 2u);
 
-  EXPECT_EQ(tabs[0].title, base::UTF16ToUTF8(kTabTitle1));
+  EXPECT_EQ(tabs[0].title, kTabTitle1);
   EXPECT_EQ(tabs[0].url, GURL(kExampleURL1));
   EXPECT_EQ(tabs[0].session_name, kSessionName1);
 
-  EXPECT_EQ(tabs[1].title, base::UTF16ToUTF8(kTabTitle2));
+  EXPECT_EQ(tabs[1].title, kTabTitle2);
   EXPECT_EQ(tabs[1].url, GURL(kExampleURL2));
   EXPECT_EQ(tabs[1].session_name, kSessionName2);
 }

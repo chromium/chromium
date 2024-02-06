@@ -11,20 +11,22 @@
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 // The base item which is stored by the birch model.
 struct ASH_EXPORT BirchItem {
-  explicit BirchItem(const std::string& title);
+  BirchItem(const std::u16string& title, const ui::ImageModel icon);
   BirchItem(BirchItem&&) = default;
   BirchItem(const BirchItem&);
   BirchItem& operator=(const BirchItem&);
   ~BirchItem();
   bool operator==(const BirchItem& rhs) const = default;
 
-  const std::string title;
+  const std::u16string title;
+  const ui::ImageModel icon;
 };
 
 // A birch item which contains file path and time information.
@@ -32,8 +34,8 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
   BirchFileItem(const base::FilePath& file_path,
                 const std::optional<base::Time>& timestamp);
   BirchFileItem(BirchFileItem&&) = default;
-  BirchFileItem(const BirchFileItem&);
-  BirchFileItem& operator=(const BirchFileItem&);
+  BirchFileItem(const BirchFileItem&) = delete;
+  BirchFileItem& operator=(const BirchFileItem&) = delete;
   bool operator==(const BirchFileItem& rhs) const = default;
   ~BirchFileItem();
 
@@ -46,7 +48,7 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
 
 // A birch item which contains tab and session information.
 struct ASH_EXPORT BirchTabItem : public BirchItem {
-  BirchTabItem(const std::string& title,
+  BirchTabItem(const std::u16string& title,
                const GURL& url,
                const base::Time& timestamp,
                const GURL& favicon_url,
@@ -61,6 +63,22 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
   const base::Time timestamp;
   const GURL favicon_url;
   const std::string session_name;
+
+  // Intended for debugging.
+  std::string ToString() const;
+};
+
+struct ASH_EXPORT BirchWeatherItem : public BirchItem {
+  BirchWeatherItem(const std::u16string& weather_description,
+                   const std::u16string& temperature,
+                   ui::ImageModel icon);
+  BirchWeatherItem(BirchWeatherItem&&) = default;
+  BirchWeatherItem(const BirchWeatherItem&) = delete;
+  BirchWeatherItem& operator=(const BirchWeatherItem&) = delete;
+  bool operator==(const BirchWeatherItem& rhs) const = default;
+  ~BirchWeatherItem();
+
+  const std::u16string temperature;
 
   // Intended for debugging.
   std::string ToString() const;

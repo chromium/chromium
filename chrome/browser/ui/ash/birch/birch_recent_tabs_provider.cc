@@ -44,9 +44,9 @@ void BirchRecentTabsProvider::GetRecentTabs() {
         const sessions::SerializedNavigationEntry& current_navigation =
             tab->navigations.at(tab->normalized_navigation_index());
         items.emplace_back(
-            base::UTF16ToUTF8(current_navigation.title()),
-            current_navigation.virtual_url(), current_navigation.timestamp(),
-            current_navigation.favicon_url(), session->GetSessionName());
+            current_navigation.title(), current_navigation.virtual_url(),
+            current_navigation.timestamp(), current_navigation.favicon_url(),
+            session->GetSessionName());
       }
     }
   }

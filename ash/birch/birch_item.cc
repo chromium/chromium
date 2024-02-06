@@ -12,13 +12,15 @@
 
 namespace ash {
 
-BirchItem::BirchItem(const std::string& title) : title(title) {}
+BirchItem::BirchItem(const std::u16string& title, ui::ImageModel icon)
+    : title(title), icon(std::move(icon)) {}
 
 BirchItem::~BirchItem() = default;
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
                              const std::optional<base::Time>& timestamp)
-    : BirchItem(file_path.BaseName().value()),
+    : BirchItem(base::UTF8ToUTF16(file_path.BaseName().value()),
+                ui::ImageModel()),
       file_path(file_path),
       timestamp(timestamp) {}
 
@@ -26,21 +28,38 @@ BirchFileItem::~BirchFileItem() = default;
 
 std::string BirchFileItem::ToString() const {
   std::stringstream ss;
-  ss << "title: " << title << ", file_path:" << file_path;
+  ss << "File item : {title: " << base::UTF16ToUTF8(title)
+     << ", file_path:" << file_path;
   if (timestamp.has_value()) {
     ss << ", timestamp: "
        << base::UTF16ToUTF8(
               base::TimeFormatShortDateAndTime(timestamp.value()));
   }
+  ss << "}";
   return ss.str();
 }
 
-BirchTabItem::BirchTabItem(const std::string& title,
+BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
+                                   const std::u16string& temperature,
+                                   ui::ImageModel icon)
+    : BirchItem(weather_description, std::move(icon)),
+      temperature(temperature) {}
+
+BirchWeatherItem::~BirchWeatherItem() = default;
+
+std::string BirchWeatherItem::ToString() const {
+  std::stringstream ss;
+  ss << "Weather item: {title: " << base::UTF16ToUTF8(title)
+     << ", temperature:" << base::UTF16ToUTF8(temperature) << "}";
+  return ss.str();
+}
+
+BirchTabItem::BirchTabItem(const std::u16string& title,
                            const GURL& url,
                            const base::Time& timestamp,
                            const GURL& favicon_url,
                            const std::string& session_name)
-    : BirchItem(title),
+    : BirchItem(title, ui::ImageModel()),
       url(url),
       timestamp(timestamp),
       favicon_url(favicon_url),
@@ -52,8 +71,9 @@ BirchTabItem::~BirchTabItem() = default;
 
 std::string BirchTabItem::ToString() const {
   std::stringstream ss;
-  ss << "title: " << title << ", url:" << url << ", timestamp:" << timestamp
-     << ", favicon_url:" << favicon_url << ", session_name:" << session_name;
+  ss << "title: " << base::UTF16ToUTF8(title) << ", url:" << url
+     << ", timestamp:" << timestamp << ", favicon_url:" << favicon_url
+     << ", session_name:" << session_name;
   return ss.str();
 }
 

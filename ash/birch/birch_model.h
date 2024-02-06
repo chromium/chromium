@@ -5,12 +5,17 @@
 #ifndef ASH_BIRCH_BIRCH_MODEL_H_
 #define ASH_BIRCH_BIRCH_MODEL_H_
 
+#include <optional>
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_item.h"
 #include "base/observer_list.h"
 
 namespace ash {
+
+class BirchWeatherProvider;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
@@ -39,8 +44,8 @@ class ASH_EXPORT BirchModel {
   void RequestBirchDataFetch();
 
   void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
-
   void SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items);
+  void SetWeatherItems(std::vector<BirchWeatherItem> weather_items);
 
   void SetClient(BirchClient* client) { birch_client_ = client; }
 
@@ -51,6 +56,10 @@ class ASH_EXPORT BirchModel {
     return recent_tab_items_;
   }
 
+  const std::vector<BirchWeatherItem>& GetWeatherForTest() const {
+    return weather_items_;
+  }
+
  private:
   // A type-specific list of items for all file suggestion items.
   std::vector<BirchFileItem> file_suggest_items_;
@@ -58,7 +67,12 @@ class ASH_EXPORT BirchModel {
   // A type-specific list of items for all tab items.
   std::vector<BirchTabItem> recent_tab_items_;
 
+  // A type-specific list of weather items.
+  std::vector<BirchWeatherItem> weather_items_;
+
   raw_ptr<BirchClient> birch_client_ = nullptr;
+
+  std::unique_ptr<BirchWeatherProvider> weather_provider_;
 
   base::ObserverList<Observer> observers_;
 };

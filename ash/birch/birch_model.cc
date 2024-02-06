@@ -4,9 +4,16 @@
 
 #include "ash/birch/birch_model.h"
 
+#include "ash/birch/birch_weather_provider.h"
+#include "ash/constants/ash_features.h"
+
 namespace ash {
 
-BirchModel::BirchModel() = default;
+BirchModel::BirchModel() {
+  if (features::IsBirchWeatherEnabled()) {
+    weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
+  }
+}
 
 BirchModel::~BirchModel() = default;
 
@@ -39,6 +46,13 @@ void BirchModel::SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items) {
   }
 
   recent_tab_items_ = std::move(recent_tab_items);
+}
+
+void BirchModel::SetWeatherItems(std::vector<BirchWeatherItem> weather_items) {
+  if (weather_items == weather_items_) {
+    return;
+  }
+  weather_items_ = std::move(weather_items);
 
   for (auto& observer : observers_) {
     observer.OnItemsChanged();
@@ -49,6 +63,9 @@ void BirchModel::RequestBirchDataFetch() {
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
     birch_client_->RequestBirchDataFetch();
+  }
+  if (weather_provider_) {
+    weather_provider_->RequestDataFetch();
   }
 }
 
