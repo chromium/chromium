@@ -23,6 +23,7 @@ const char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 const char kPlusAddressManagementUrlName[] = "manage-url";
 const char kPlusAddressExcludedSitesName[] = "excluded-sites";
 const char kPlusAddressErrorReportUrlName[] = "error-report-url";
+const char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 
 const base::FeatureParam<std::string>
     kEnterprisePlusAddressSuggestionLabelOverride{
@@ -46,5 +47,7 @@ const base::FeatureParam<std::string> kPlusAddressExcludedSites{
     &kFeature, kPlusAddressExcludedSitesName, ""};
 const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
     &kFeature, kPlusAddressErrorReportUrlName, ""};
+const base::FeatureParam<bool> kDisableForForbiddenUsers{
+    &kFeature, kDisableForForbiddenUsersName, false};
 
 }  // namespace plus_addresses

@@ -18,6 +18,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -522,6 +523,93 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   ASSERT_TRUE(service.GetPlusAddress(bar_origin).has_value());
   EXPECT_EQ(service.GetPlusAddress(bar_origin).value(), "plus+bar@plus.plus");
   EXPECT_TRUE(service.IsPlusAddress("plus+bar@plus.plus"));
+}
+
+TEST_F(PlusAddressServicePolling,
+       DisableForForbiddenUsers_Enabled_404sDontDisableFeature) {
+  features()->Reset();
+  features()->InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {"server-url", server_url.spec()},
+                                    {"oauth-scope", "scope.example"},
+                                    {"sync-with-server", "true"},
+                                    {"disable-for-forbidden-users", "true"},
+                                });
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  // The service starts the timer on construction and issues a request to
+  // poll.
+  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
+                             std::move(client));
+  EXPECT_TRUE(service.is_enabled());
+  // Unblock the initial polling request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, "", net::HTTP_NOT_FOUND);
+  EXPECT_TRUE(service.is_enabled());
+}
+
+TEST_F(PlusAddressServicePolling,
+       DisableForForbiddenUsers_Enabled_403sDisableFeature) {
+  features()->Reset();
+  features()->InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {"server-url", server_url.spec()},
+                                    {"oauth-scope", "scope.example"},
+                                    {"sync-with-server", "true"},
+                                    {"disable-for-forbidden-users", "true"},
+                                });
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  // The service starts the timer on construction and issues a request to
+  // poll.
+  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
+                             std::move(client));
+  EXPECT_TRUE(service.is_enabled());
+  // Unblock the initial polling request.
+  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
+  // Simulate failed responses for the successive retry requests
+  for (int i = 0; i < service.MAX_INITIAL_POLL_RETRY_ATTEMPTS; i++) {
+    EXPECT_TRUE(service.is_enabled());
+    ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
+    test_url_loader_factory.SimulateResponseForPendingRequest(
+        plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
+  }
+  // Service is finally disabled once retries are exhausted.
+  EXPECT_FALSE(service.is_enabled());
+}
+
+TEST_F(PlusAddressServicePolling,
+       DisableForForbiddenUsers_Disabled_403DoesntRetryOrDisableFeature) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressClient client(identity_test_env.identity_manager(),
+                           test_shared_loader_factory);
+  // The service starts the timer on construction and issues a request to
+  // poll.
+  PlusAddressService service(identity_test_env.identity_manager(), prefs(),
+                             std::move(client));
+  EXPECT_TRUE(service.is_enabled());
+  // Unblock the initial polling request.
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
+  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_TRUE(service.is_enabled());
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.

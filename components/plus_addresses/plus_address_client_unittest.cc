@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -325,6 +326,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
       token, base::Time::Max());
 
   AdvanceTimeTo(start_time + latency_);
+  // TODO (kaklilu): Checks behavior when response body isn't null.
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       Endpoint(), "", net::HTTP_NOT_FOUND));
 
@@ -423,7 +425,7 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  base::test::TestFuture<const PlusAddressMap&> future;
+  base::test::TestFuture<const PlusAddressMapOrError&> future;
   client.GetAllPlusAddresses(future.GetCallback());
   ASSERT_FALSE(future.IsReady());
   ASSERT_TRUE(identity_test_env.IsAccessTokenRequestPending());
@@ -454,7 +456,7 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetClockForTesting(test_clock());
 
-  base::test::TestFuture<const PlusAddressMap&> future;
+  base::test::TestFuture<const PlusAddressMapOrError&> future;
   // Initiate a request...
   client.GetAllPlusAddresses(future.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -493,24 +495,28 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
 }
 
 TEST_F(PlusAddressClientRequests,
-       GetAllPlusAddressesV1_FailedRequestDoesntRunCallback) {
+       GetAllPlusAddressesV1_RunsCallbackOnNetworkError) {
   identity_test_env.MakePrimaryAccountAvailable(email_address,
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetClockForTesting(test_clock());
 
-  base::test::TestFuture<const PlusAddressMap&> future;
   // Initiate a request...
-  client.GetAllPlusAddresses(future.GetCallback());
+  base::test::TestFuture<const PlusAddressMapOrError&> callback;
+  client.GetAllPlusAddresses(callback.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       token, base::Time::Max());
 
-  // The request fails and the callback is never run
+  // Check that the callback is run with the expected PlusAddressRequestError.
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       fullProfileEndpoint, "", net::HTTP_NOT_FOUND));
-  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(callback.IsReady());
+  EXPECT_FALSE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get().error().type(),
+            PlusAddressRequestErrorType::kNetworkError);
+  EXPECT_EQ(callback.Get().error().http_response_code(), net::HTTP_NOT_FOUND);
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(
@@ -530,7 +536,7 @@ TEST_F(
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
 
-  base::test::TestFuture<const PlusAddressMap&> first;
+  base::test::TestFuture<const PlusAddressMapOrError&> first;
   // Send two requests in quick succession
   client.GetAllPlusAddresses(first.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -785,7 +791,7 @@ TEST_F(PlusAddressClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
 }
 
 TEST_F(PlusAddressClientNullServerUrl, GetAllPlusAddresses_SendsNoRequest) {
-  base::test::TestFuture<const PlusAddressMap&> callback;
+  base::test::TestFuture<const PlusAddressMapOrError&> callback;
 
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
 

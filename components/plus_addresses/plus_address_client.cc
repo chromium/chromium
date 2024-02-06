@@ -16,6 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -165,12 +166,13 @@ void PlusAddressClient::ConfirmPlusAddress(
                               std::move(on_completed)));
 }
 
-void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
+void PlusAddressClient::GetAllPlusAddresses(
+    PlusAddressMapRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
   GetAuthToken(base::BindOnce(&PlusAddressClient::GetAllPlusAddressesInternal,
-                              base::Unretained(this), std::move(callback)));
+                              base::Unretained(this), std::move(on_completed)));
 }
 
 void PlusAddressClient::ReservePlusAddressInternal(
@@ -264,8 +266,8 @@ void PlusAddressClient::ConfirmPlusAddressInternal(
 }
 
 void PlusAddressClient::GetAllPlusAddressesInternal(
-    PlusAddressMapCallback callback,
-    absl::optional<std::string> auth_token) {
+    PlusAddressMapRequestCallback on_completed,
+    std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
     return;
   }
@@ -293,7 +295,7 @@ void PlusAddressClient::GetAllPlusAddressesInternal(
       base::BindOnce(&PlusAddressClient::OnGetAllPlusAddressesComplete,
                      // Safe since this class owns the loader_for_sync_.
                      base::Unretained(this), clock_->Now(),
-                     std::move(callback)),
+                     std::move(on_completed)),
       // TODO(b/301984623) - Measure average download size and change this.
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
@@ -315,6 +317,7 @@ void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
   // Destroy the loader before returning.
   loaders_for_creation_.erase(it);
   if (!response) {
+    // TODO(crbug.com/1467623): Check response code & propagate it here.
     std::move(on_completed)
         .Run(base::unexpected(PlusAddressRequestError(
             PlusAddressRequestErrorType::kNetworkError)));
@@ -341,20 +344,28 @@ void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
 
 void PlusAddressClient::OnGetAllPlusAddressesComplete(
     base::Time request_start,
-    PlusAddressMapCallback callback,
+    PlusAddressMapRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
   PlusAddressMetrics::RecordNetworkRequestLatency(
       PlusAddressNetworkRequestType::kList, clock_->Now() - request_start);
+  std::optional<int> response_code;
   if (loader_for_sync_ && loader_for_sync_->ResponseInfo() &&
       loader_for_sync_->ResponseInfo()->headers) {
     PlusAddressMetrics::RecordNetworkRequestResponseCode(
         PlusAddressNetworkRequestType::kList,
         loader_for_sync_->ResponseInfo()->headers->response_code());
+    response_code.emplace(
+        loader_for_sync_->ResponseInfo()->headers->response_code());
   }
   // Destroy the loader before returning.
   loader_for_sync_.reset();
   if (!response) {
+    PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+    if (response_code.has_value()) {
+      error.set_http_response_code(response_code.value());
+    }
+    std::move(on_completed).Run(base::unexpected(error));
     return;
   }
   PlusAddressMetrics::RecordNetworkRequestResponseSize(
@@ -364,13 +375,17 @@ void PlusAddressClient::OnGetAllPlusAddressesComplete(
       *response,
       base::BindOnce(&PlusAddressParser::ParsePlusAddressMapFromV1List)
           .Then(base::BindOnce(
-              [](PlusAddressMapCallback callback,
-                 absl::optional<PlusAddressMap> result) {
-                if (result.has_value()) {
-                  std::move(callback).Run(result.value());
+              [](PlusAddressMapRequestCallback callback,
+                 std::optional<PlusAddressMap> result) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(
+                      base::unexpected(PlusAddressRequestError(
+                          PlusAddressRequestErrorType::kParsingError)));
+                  return;
                 }
+                std::move(callback).Run(result.value());
               },
-              std::move(callback))));
+              std::move(on_completed))));
 }
 
 void PlusAddressClient::GetAuthToken(TokenReadyCallback callback) {

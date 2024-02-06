@@ -32,6 +32,9 @@ namespace plus_addresses {
 class PlusAddressService : public KeyedService,
                            public signin::IdentityManager::Observer {
  public:
+  // Limits the number of retries allowed for the initial poll request.
+  const int MAX_INITIAL_POLL_RETRY_ATTEMPTS = 1;
+
   // Used to simplify testing in cases where calls depending on external classes
   // can be mocked out.
   PlusAddressService();
@@ -111,6 +114,11 @@ class PlusAddressService : public KeyedService,
   // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
 
+  // Error handling for failed requests made by GetAllPlusAddresses.
+  //
+  // This is used to determine if the account is forbidden on the startup poll.
+  void HandlePollingError(PlusAddressRequestError error);
+
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
@@ -159,6 +167,15 @@ class PlusAddressService : public KeyedService,
   // Defaults to NONE to enable this service while refresh tokens (and potential
   // auth errors) are loading.
   GoogleServiceAuthError primary_account_auth_error_;
+
+  // Tracks the number of attempts made to fetch the PlusAddressMap from the
+  // remote server after the initial request made at service construction.
+  int initial_poll_retry_attempt_ = 0;
+
+  // Stores whether the account for this ProfileKeyedService is forbidden from
+  // using the remote server. This is populated once on the initial poll request
+  // and not updated afterwards.
+  std::optional<bool> account_is_forbidden_ = std::nullopt;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

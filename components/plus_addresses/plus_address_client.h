@@ -65,9 +65,8 @@ class PlusAddressClient {
                           PlusAddressRequestCallback on_completed);
 
   // Initiates a request to get all plus addresses from the remote enterprise-
-  // specified server and only runs callback with them if the request to
-  // the server completes successfully and returns the expected response.
-  void GetAllPlusAddresses(PlusAddressMapCallback callback);
+  // specified server and runs `on_completed` when the request is completed.
+  void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed);
 
   // Initiates a request for a new OAuth token. If the request succeeds, this
   // runs `on_fetched` with the retrieved token. Must be run on the UI thread.
@@ -85,9 +84,9 @@ class PlusAddressClient {
   void ConfirmPlusAddressInternal(const url::Origin& origin,
                                   const std::string& plus_address,
                                   PlusAddressRequestCallback on_completed,
-                                  absl::optional<std::string> auth_token);
-  void GetAllPlusAddressesInternal(PlusAddressMapCallback callback,
-                                   absl::optional<std::string> auth_token);
+                                  std::optional<std::string> auth_token);
+  void GetAllPlusAddressesInternal(PlusAddressMapRequestCallback on_completed,
+                                   std::optional<std::string> auth_token);
 
   // This is shared by the Reserve and Confirm PlusAddress methods since
   // they both use `loaders_for_creation_` and have the same return type.
@@ -98,7 +97,7 @@ class PlusAddressClient {
       PlusAddressRequestCallback on_completed,
       std::unique_ptr<std::string> response);
   void OnGetAllPlusAddressesComplete(base::Time request_start,
-                                     PlusAddressMapCallback callback,
+                                     PlusAddressMapRequestCallback on_completed,
                                      std::unique_ptr<std::string> response);
   // Runs callback and any pending_callbacks_ blocked on the token.
   void OnTokenFetched(TokenReadyCallback callback,

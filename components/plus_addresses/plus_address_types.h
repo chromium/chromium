@@ -26,8 +26,6 @@ enum class PlusAddressRequestErrorType {
   kOAuthError = 2,
 };
 
-// TODO: crbug.com/1467623 - This should have more structured information (e.g.
-// HTTP response code).
 class PlusAddressRequestError {
  public:
   explicit PlusAddressRequestError(PlusAddressRequestErrorType error_type) {
@@ -36,8 +34,17 @@ class PlusAddressRequestError {
 
   PlusAddressRequestErrorType type() const { return error_type_; }
 
+  void set_http_response_code(int code) {
+    CHECK(error_type_ == PlusAddressRequestErrorType::kNetworkError);
+    http_response_code_.emplace(code);
+  }
+
+  int http_response_code() const { return http_response_code_.value(); }
+
  private:
   PlusAddressRequestErrorType error_type_;
+  // Only set when error_type_ = PlusAddressRequestErrorType::kNetworkError;
+  std::optional<int> http_response_code_;
 };
 
 // Only used by Autofill.
@@ -45,9 +52,17 @@ typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 typedef std::unordered_map<std::string, std::string> PlusAddressMap;
 typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;
 // Holds either a PlusProfile or an error that prevented us from getting it.
+using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
+using PlusAddressRequestCallback =
+    base::OnceCallback<void(const PlusProfileOrError&)>;
 typedef base::expected<PlusProfile, PlusAddressRequestError> PlusProfileOrError;
 typedef base::OnceCallback<void(const PlusProfileOrError&)>
     PlusAddressRequestCallback;
+// Holds either a PlusAddressMap or an error that prevented us from getting it.
+typedef base::expected<PlusAddressMap, PlusAddressRequestError>
+    PlusAddressMapOrError;
+typedef base::OnceCallback<void(const PlusAddressMapOrError&)>
+    PlusAddressMapRequestCallback;
 
 // Defined for use in metrics and to share code for certain network-requests.
 enum class PlusAddressNetworkRequestType {
