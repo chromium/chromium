@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /** Activity for displaying the browsing history manager. */
 public class HistoryActivity extends SnackbarActivity {
@@ -36,13 +37,13 @@ public class HistoryActivity extends SnackbarActivity {
                         getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
         String clientPackageName =
                 IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_PACKAGE_NAME);
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = getProfileProvider().getOriginalProfile();
         mHistoryManager =
                 new HistoryManager(
                         this,
                         true,
                         getSnackbarManager(),
-                        isIncognito ? profile.getPrimaryOTRProfile(true) : profile,
+                        ProfileProvider.getOrCreateProfile(getProfileProvider(), isIncognito),
                         /* Supplier<Tab>= */ null,
                         showHistoryClustersImmediately,
                         historyClustersQuery,

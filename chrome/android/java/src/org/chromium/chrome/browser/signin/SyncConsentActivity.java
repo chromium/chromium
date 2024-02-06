@@ -40,10 +40,7 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_activity);
-
-        // TODO(crbug/1410601): Pass the Profile information via the launching Intent and remove
-        // getLastUsedRegularProfile below.
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = getProfileProvider().getOriginalProfile();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);

@@ -104,7 +104,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+        mModel = BookmarkModel.getForProfile(getProfileProvider().getOriginalProfile());
         mBookmarkId =
                 BookmarkId.getBookmarkIdFromString(getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         mModel.addObserver(mBookmarkModelObserver);
@@ -161,7 +161,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
             mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
             Resources res = getResources();
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = getProfileProvider().getOriginalProfile();
             mFolderSelectRowCoordinator =
                     new ImprovedBookmarkRowCoordinator(
                             this,
