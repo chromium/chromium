@@ -102,6 +102,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // Updates the progression of the progress indicator.
   void UpdateProgressRing();
 
+  // This is used to track the current session snapshot, if any.
+  std::optional<FocusModeSession::Snapshot> session_snapshot_;
+
   // Image view of the focus mode lamp.
   const raw_ptr<views::ImageView> image_view_;
 
