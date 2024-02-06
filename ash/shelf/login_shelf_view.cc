@@ -207,25 +207,21 @@ void LoginShelfView::RequestShutdown() {
     return;
   }
   base::RecordAction(base::UserMetricsAction("Shelf_ShutDown"));
-  if (base::FeatureList::IsEnabled(features::kShutdownConfirmationBubble)) {
-    Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-    // When the created ShelfShutdownConfirmationBubble is destroyed, it would
-    // call LoginShelfView::OnRequestShutdownCancelled() in the destructor to
-    // ensure that the pointer test_shutdown_confirmation_bubble_ here is
-    // cleaned up.
-    // And ShelfShutdownConfirmationBubble would be destroyed when it's
-    // dismissed or its buttons were presses.
-    shutdown_confirmation_button_->SetIsActive(true);
+  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+  // When the created ShelfShutdownConfirmationBubble is destroyed, it would
+  // call LoginShelfView::OnRequestShutdownCancelled() in the destructor to
+  // ensure that the pointer test_shutdown_confirmation_bubble_ here is
+  // cleaned up.
+  // And ShelfShutdownConfirmationBubble would be destroyed when it's
+  // dismissed or its buttons were presses.
+  shutdown_confirmation_button_->SetIsActive(true);
 
-    test_shutdown_confirmation_bubble_ = new ShelfShutdownConfirmationBubble(
-        shutdown_confirmation_button_, shelf->alignment(),
-        base::BindOnce(&LoginShelfView::OnRequestShutdownConfirmed,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&LoginShelfView::OnRequestShutdownCancelled,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    OnRequestShutdownConfirmed();
-  }
+  test_shutdown_confirmation_bubble_ = new ShelfShutdownConfirmationBubble(
+      shutdown_confirmation_button_, shelf->alignment(),
+      base::BindOnce(&LoginShelfView::OnRequestShutdownConfirmed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&LoginShelfView::OnRequestShutdownCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 LoginShelfView::LoginShelfView(

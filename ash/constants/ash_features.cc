@@ -2619,11 +2619,6 @@ BASE_FEATURE(kDemoModeGMSCoreWindowCloser,
              "DemoModeGMSCoreWindowCloser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the shutdown confirmation bubble from the login shelf view.
-BASE_FEATURE(kShutdownConfirmationBubble,
-             "ShutdownConfirmationBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Moves toasts to the bottom-side corner where the status area is instead of
 // the center when enabled.
 BASE_FEATURE(kSideAlignedToasts,

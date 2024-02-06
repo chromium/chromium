@@ -17627,21 +17627,6 @@
             ]
         }
     ],
-    "ShutdownConfirmationBubble": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220923",
-                    "enable_features": [
-                        "ShutdownConfirmationBubble"
-                    ]
-                }
-            ]
-        }
-    ],
     "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [

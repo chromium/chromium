@@ -1060,11 +1060,6 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 
   ~LoginShelfViewWithShutdownConfirmationTest() override = default;
 
-  void SetUp() override {
-    LoginShelfViewTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kShutdownConfirmationBubble);
-  }
-
   base::HistogramTester& histograms() { return histograms_; }
 
  protected:
@@ -1116,8 +1111,6 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
  private:
   // Histogram value verifier.
   base::HistogramTester histograms_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that shutdown confirmation bubble appears after pressing the
