@@ -2591,6 +2591,21 @@ void NetworkHandler::FetchKeepAliveRequestWillBeSent(
           .SetMixedContentType(Security::MixedContentTypeEnum::Blockable)
           .Build();
 
+  if (request.request_body) {
+    request_info->SetHasPostData(true);
+    std::string post_data;
+    auto data_entries =
+        std::make_unique<protocol::Array<protocol::Network::PostDataEntry>>();
+    if (GetPostData(*request.request_body, data_entries.get(), &post_data)) {
+      if (!post_data.empty()) {
+        request_info->SetPostData(post_data);
+      }
+      if (data_entries->size()) {
+        request_info->SetPostDataEntries(std::move(data_entries));
+      }
+    }
+  }
+
   frontend_->RequestWillBeSent(
       request_id, request_id, url, std::move(request_info), current_ticks,
       current_wall_time, std::move(initiator), redirect_emitted_extra_info,
