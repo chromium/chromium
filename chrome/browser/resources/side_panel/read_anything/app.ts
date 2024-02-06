@@ -476,6 +476,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   onSpeechRateChange(rate: number) {
     this.rate = rate;
+    this.resetSpeechPostSettingChange_();
   }
 
   getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
