@@ -4584,6 +4584,32 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
+TEST_F(FederatedAuthRequestImplTest, MultiIdpLoggedOut) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  // Mark both IDPs as logged out so the request fails early.
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
+
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters,
+                             kConfigurationMultiIdpValid);
+  base::RunLoop().RunUntilIdle();
+  // The callback must be delayed.
+  EXPECT_FALSE(auth_helper_.was_callback_called());
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(kConfigurationMultiIdpValid, expectations);
+}
+
 TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,

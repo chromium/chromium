@@ -1055,9 +1055,11 @@ void FederatedAuthRequestImpl::RequestToken(
     // At this point either all IDPs are signed out or mediation:silent was used
     // and there are no returning accounts. For now reject with a generic error.
     // TODO(crbug.com/1307709): Handle FedCmMetrics properly for multiple IDPs.
+    bool should_delay_callback =
+        mediation_requirement_ == MediationRequirement::kSilent ? false : true;
     CompleteRequestWithError(
         FederatedAuthRequestResult::kError, TokenStatus::kNotSignedInWithIdp,
-        /*token_error=*/std::nullopt, /*should_delay_callback=*/false);
+        /*token_error=*/std::nullopt, should_delay_callback);
     return;
   }
   CHECK(!unique_idps.empty());
