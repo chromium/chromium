@@ -89,7 +89,6 @@ bool ShouldSkipSession(const SyncedSession& session) {
 
 void JNI_ForeignSessionHelper_CopyTabToJava(
     JNIEnv* env,
-    const ForeignSessionHelper::Options& options,
     const sessions::SessionTab& tab,
     ScopedJavaLocalRef<jobject>& j_window) {
   int selected_index = tab.normalized_navigation_index();
@@ -101,23 +100,14 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
 
   GURL tab_url = current_navigation.virtual_url();
 
-  if (options.get_last_active_time) {
-    Java_ForeignSessionHelper_pushTabWithLastActiveTime(
-        env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
-        ConvertUTF16ToJavaString(env, current_navigation.title()),
-        tab.timestamp.InMillisecondsSinceUnixEpoch(), tab.tab_id.id(),
-        tab.last_active_time.InMillisecondsSinceUnixEpoch());
-  } else {
-    Java_ForeignSessionHelper_pushTab(
-        env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
-        ConvertUTF16ToJavaString(env, current_navigation.title()),
-        tab.timestamp.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
-  }
+  Java_ForeignSessionHelper_pushTab(
+      env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
+      ConvertUTF16ToJavaString(env, current_navigation.title()),
+      tab.timestamp.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
 }
 
 void JNI_ForeignSessionHelper_CopyWindowToJava(
     JNIEnv* env,
-    const ForeignSessionHelper::Options& options,
     const sessions::SessionWindow& window,
     ScopedJavaLocalRef<jobject>& j_window) {
   for (const auto& tab_ptr : window.tabs) {
@@ -127,13 +117,12 @@ void JNI_ForeignSessionHelper_CopyWindowToJava(
       return;
     }
 
-    JNI_ForeignSessionHelper_CopyTabToJava(env, options, session_tab, j_window);
+    JNI_ForeignSessionHelper_CopyTabToJava(env, session_tab, j_window);
   }
 }
 
 void JNI_ForeignSessionHelper_CopySessionToJava(
     JNIEnv* env,
-    const ForeignSessionHelper::Options& options,
     const SyncedSession& session,
     ScopedJavaLocalRef<jobject>& j_session) {
   for (const auto& window_pair : session.windows) {
@@ -148,8 +137,7 @@ void JNI_ForeignSessionHelper_CopySessionToJava(
         env, j_session, window.timestamp.InMillisecondsSinceUnixEpoch(),
         window.window_id.id()));
 
-    JNI_ForeignSessionHelper_CopyWindowToJava(env, options, window,
-                                              last_pushed_window);
+    JNI_ForeignSessionHelper_CopyWindowToJava(env, window, last_pushed_window);
   }
 }
 
@@ -206,9 +194,17 @@ void ForeignSessionHelper::SetOnForeignSessionCallback(
   callback_.Reset(env, callback);
 }
 
-jboolean ForeignSessionHelper::GetForeignSessionsInternal(
+void ForeignSessionHelper::FireForeignSessionCallback() {
+  if (callback_.is_null()) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  Java_ForeignSessionCallback_onUpdated(env, callback_);
+}
+
+jboolean ForeignSessionHelper::GetForeignSessions(
     JNIEnv* env,
-    const Options& options,
     const JavaParamRef<jobject>& result) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
@@ -252,41 +248,16 @@ jboolean ForeignSessionHelper::GetForeignSessionsInternal(
         static_cast<int>(session.GetDeviceFormFactor())));
 
     // Push the full session, with tabs ordered by visual position.
-    JNI_ForeignSessionHelper_CopySessionToJava(env, options, session,
+    JNI_ForeignSessionHelper_CopySessionToJava(env, session,
                                                last_pushed_session);
   }
 
   return true;
 }
 
-void ForeignSessionHelper::FireForeignSessionCallback() {
-  if (callback_.is_null()) {
-    return;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  Java_ForeignSessionCallback_onUpdated(env, callback_);
-}
-
-jboolean ForeignSessionHelper::GetForeignSessions(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& result) {
-  Options options = {.get_last_active_time = false};
-  return GetForeignSessionsInternal(env, options, result);
-}
-
-jboolean ForeignSessionHelper::GetForeignSessionsForTabResumptionModule(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& result) {
-  Options options = {.get_last_active_time = true};
-  return GetForeignSessionsInternal(env, options, result);
-}
-
 jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
     JNIEnv* env,
     const JavaParamRef<jobject>& result) {
-  Options options = {.get_last_active_time = false};
-
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
     return false;
@@ -313,7 +284,7 @@ jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
           static_cast<int>(session->GetDeviceFormFactor())));
 
       // Push the full session, with tabs ordered by visual position.
-      JNI_ForeignSessionHelper_CopySessionToJava(env, options, *session,
+      JNI_ForeignSessionHelper_CopySessionToJava(env, *session,
                                                  last_pushed_session);
     } else {
       skipped_tabs_on_restore++;

@@ -141,7 +141,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timeForUi= */ makeTimestamp(12, 0, 0),
+                        /* timestamp= */ makeTimestamp(12, 0, 0),
                         /* id= */ 90);
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
@@ -191,7 +191,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timeForUi= */ makeTimestamp(16, 0, 0),
+                        /* timestamp= */ makeTimestamp(16, 0, 0),
                         /* id= */ 45);
         SuggestionEntry entryNewer =
                 new SuggestionEntry(
