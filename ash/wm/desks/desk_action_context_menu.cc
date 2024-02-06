@@ -97,15 +97,13 @@ DeskActionContextMenu::DeskActionContextMenu(Config config)
           gfx::Size(kIconProfileSize, kIconProfileSize));
 
       context_menu_model_.AddItemWithIcon(
-          static_cast<int>(kDynamicProfileStart + i),
-          base::UTF8ToUTF16(summary.name),
+          static_cast<int>(kDynamicProfileStart + i), summary.name,
           ui::ImageModel::FromImageSkia(
               gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
                   kIconProfileSize, icon)));
 
       auto entry_index = context_menu_model_.GetItemCount() - 1;
-      context_menu_model_.SetMinorText(entry_index,
-                                       base::UTF8ToUTF16(summary.email));
+      context_menu_model_.SetMinorText(entry_index, summary.email);
 
       if (summary.profile_id == config_.current_lacros_profile_id) {
         context_menu_model_.SetMinorIcon(

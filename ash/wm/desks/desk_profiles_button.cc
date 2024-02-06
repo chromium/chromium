@@ -114,7 +114,7 @@ void DeskProfilesButton::LoadIconForProfile() {
         ui::ImageModel::FromImageSkia(
             gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
                 kIconButtonSize, kIconButtonSize.width() / 2, summary->icon)));
-    SetTooltipText(base::UTF8ToUTF16(summary->name));
+    SetTooltipText(summary->name);
   } else {
     SetImageModel(ButtonState::STATE_NORMAL, ui::ImageModel());
     SetTooltipText(u"");

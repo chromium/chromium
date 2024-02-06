@@ -303,8 +303,10 @@ void AddDummyLacrosDeskProfiles(size_t count) {
   for (size_t i = 0; i != count; ++i) {
     LacrosProfileSummary summary;
     summary.profile_id = GetDummyLacrosDeskProfileId(i);
-    summary.name = base::StringPrintf("Lacros user %lu", i + 1);
-    summary.email = base::StringPrintf("email%lu@gmail.com", i + 1);
+    summary.name =
+        base::UTF8ToUTF16(base::StringPrintf("Lacros user %lu", i + 1));
+    summary.email =
+        base::UTF8ToUTF16(base::StringPrintf("email%lu@gmail.com", i + 1));
     summary.icon = gfx::test::CreateImageSkia(32, 32);
 
     GetDeskProfilesTestDelegate().UpdateTestProfile(std::move(summary));

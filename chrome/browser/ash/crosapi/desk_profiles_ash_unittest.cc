@@ -76,21 +76,21 @@ TEST_F(DeskProfilesAshTest, GetSnapshot) {
   // Snapshot order should match update order.
   SendProfileUpdate({{124u, "profile 1"}, {102u, "profile 2"}});
   EXPECT_THAT(delegate().GetProfilesSnapshot(),
-              ElementsAre(EqualsProfile(124u, "profile 1"),
-                          EqualsProfile(102u, "profile 2")));
+              ElementsAre(EqualsProfile(124u, u"profile 1"),
+                          EqualsProfile(102u, u"profile 2")));
 
   // Updated profile remains in place, new profile goes at the end.
   SendProfileUpdate({{124u, "profile 1 renamed"}, {100u, "profile 3"}});
   EXPECT_THAT(delegate().GetProfilesSnapshot(),
-              ElementsAre(EqualsProfile(124u, "profile 1 renamed"),
-                          EqualsProfile(102u, "profile 2"),
-                          EqualsProfile(100u, "profile 3")));
+              ElementsAre(EqualsProfile(124u, u"profile 1 renamed"),
+                          EqualsProfile(102u, u"profile 2"),
+                          EqualsProfile(100u, u"profile 3")));
 
   // Removing a profile does not change the order among other profiles.
   SendProfileRemoved(102);
   EXPECT_THAT(delegate().GetProfilesSnapshot(),
-              ElementsAre(EqualsProfile(124u, "profile 1 renamed"),
-                          EqualsProfile(100u, "profile 3")));
+              ElementsAre(EqualsProfile(124u, u"profile 1 renamed"),
+                          EqualsProfile(100u, u"profile 3")));
 }
 
 TEST_F(DeskProfilesAshTest, ObserverTest) {
@@ -99,13 +99,13 @@ TEST_F(DeskProfilesAshTest, ObserverTest) {
 
   SendProfileUpdate({{106u, "profile 2"}, {104u, "profile 3"}});
   EXPECT_THAT(observer.ConsumeUpdates(),
-              ElementsAre(EqualsProfile(106u, "profile 2"),
-                          EqualsProfile(104u, "profile 3")));
+              ElementsAre(EqualsProfile(106u, u"profile 2"),
+                          EqualsProfile(104u, u"profile 3")));
   EXPECT_THAT(observer.ConsumeRemoves(), ElementsAre());
 
   SendProfileUpdate({{106u, "profile 2 renamed"}});
   EXPECT_THAT(observer.ConsumeUpdates(),
-              ElementsAre(EqualsProfile(106u, "profile 2 renamed")));
+              ElementsAre(EqualsProfile(106u, u"profile 2 renamed")));
 
   // Removal of unknown profile is not propagated to observers.
   SendProfileRemoved(102u);
