@@ -3396,29 +3396,33 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     // Since rx_bytes may be larger than the maximum value representable by
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
-    uint64_t rx_bytes;
-    const base::Value* rb = tc_dict.Find("rx_bytes");
-    DCHECK(rb);
-    if (rb->type() == base::Value::Type::INTEGER) {
-      rx_bytes = rb->GetInt();
-    } else if (rb->type() == base::Value::Type::DOUBLE) {
-      rx_bytes = std::floor(rb->GetDouble());
+    uint64_t rx_bytes = 0;
+    if (const base::Value* const rb = tc_dict.Find("rx_bytes")) {
+      if (rb->is_int()) {
+        rx_bytes = rb->GetInt();
+      } else if (rb->is_double()) {
+        rx_bytes = std::floor(rb->GetDouble());
+      } else {
+        LOG(ERROR) << "Unexpected type " << rb->type() << " for rx_bytes";
+      }
     } else {
-      NOTREACHED();
+      LOG(ERROR) << "Missing field: rx_bytes";
     }
 
     // Since tx_bytes may be larger than the maximum value representable by
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
-    uint64_t tx_bytes;
-    const base::Value* tb = tc_dict.Find("tx_bytes");
-    DCHECK(tb);
-    if (tb->type() == base::Value::Type::INTEGER) {
-      tx_bytes = tb->GetInt();
-    } else if (tb->type() == base::Value::Type::DOUBLE) {
-      tx_bytes = std::floor(tb->GetDouble());
+    uint64_t tx_bytes = 0;
+    if (const base::Value* const tb = tc_dict.Find("tx_bytes")) {
+      if (tb->is_int()) {
+        tx_bytes = tb->GetInt();
+      } else if (tb->is_double()) {
+        tx_bytes = std::floor(tb->GetDouble());
+      } else {
+        LOG(ERROR) << "Unexpected type " << tb->type() << " for tx_bytes";
+      }
     } else {
-      NOTREACHED();
+      LOG(ERROR) << "Missing field: tx_bytes";
     }
 
     counters.push_back(mojom::TrafficCounter::New(
