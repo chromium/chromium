@@ -365,7 +365,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   // the considerable overhead of flush verification in
   // 'VerifySyncTokensCHROMIUM'.
   for (auto& resource : frame.resource_list) {
-    if (prev_frame_verified_tokens_.find(resource.mailbox_holder.sync_token) !=
+    // Copy the token and set it as flush verified as the tokens, which
+    // |prev_frame_verified_tokens| has, have that flag set. If that is not done
+    // locally here, the comparison of the tokens fails as all fields of each
+    // tokens are compared during ::find().
+    auto tmp_sync_token = resource.mailbox_holder.sync_token;
+    tmp_sync_token.SetVerifyFlush();
+    if (prev_frame_verified_tokens_.find(tmp_sync_token) !=
         prev_frame_verified_tokens_.end()) {
       resource.mailbox_holder.sync_token.SetVerifyFlush();
     }
@@ -375,14 +381,11 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
 
   prev_frame_verified_tokens_.clear();
+  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {
     if (resource.mailbox_holder.sync_token.verified_flush()) {
       prev_frame_verified_tokens_.insert(resource.mailbox_holder.sync_token);
     }
-  }
-
-  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
-  for (auto& resource : frame.resource_list) {
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,
                  resource.color_space.GetContentColorUsage());
@@ -752,6 +755,14 @@ void SurfaceTreeHost::ApplyRoundedCornersToSurfaceTree(
   gfx::RRectF rounded_corners_bounds(bounds, radii);
   ApplyAndPropagateRoundedCornersToSurfaceTree(root_surface(),
                                                rounded_corners_bounds);
+}
+
+scoped_refptr<viz::RasterContextProvider>
+SurfaceTreeHost::SetRasterContextProviderForTesting(
+    scoped_refptr<viz::RasterContextProvider> context_provider_test) {
+  auto old_provider = context_provider_;
+  context_provider_ = context_provider_test;
+  return old_provider;
 }
 
 void SurfaceTreeHost::ApplyAndPropagateRoundedCornersToSurfaceTree(
