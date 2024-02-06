@@ -814,6 +814,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
         return 'cr:security';
+      case SearchResultIcon.kSnapWindowSuggestions:
+        return 'os-settings:snap-window-suggestions';
       case SearchResultIcon.kStorage:
         return isRevampEnabled ? 'os-settings:storage' :
                                  'os-settings:hard-drive';

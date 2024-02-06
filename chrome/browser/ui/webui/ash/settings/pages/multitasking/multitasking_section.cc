@@ -21,6 +21,27 @@ using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
+namespace {
+
+const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kSnapWindowSuggestions,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSnapWindowSuggestions},
+       {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT1,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT2,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT3,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT4,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+}  // namespace
+
 MultitaskingSection::MultitaskingSection(Profile* profile,
                                          SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
@@ -28,7 +49,10 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
   CHECK(search_tag_registry);
   CHECK(ash::features::IsOsSettingsRevampWayfindingEnabled());
 
-  // TODO(sophiewen): Add multitasking search tags.
+  if (ShouldShowMultitasking()) {
+    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+    updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
+  }
 }
 
 MultitaskingSection::~MultitaskingSection() = default;
