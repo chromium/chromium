@@ -257,7 +257,7 @@ const CGFloat kLabelStackSpacing = 5.0;
 
 // Called when the view has been tapped.
 - (void)tabResumptionItemTapped:(UIGestureRecognizer*)sender {
-  [self.commandHandler openTabResumptionItem];
+  [self.commandHandler openTabResumptionItem:_item];
 }
 
 @end

@@ -9,6 +9,7 @@
 class GURL;
 @class QuerySuggestionConfig;
 enum class SafetyCheckItemType;
+@class TabResumptionItem;
 
 // Commands protocol allowing the ContentSuggestions ViewControllers to interact
 // with the coordinator layer, and from there to the rest of the application.
@@ -19,7 +20,7 @@ enum class SafetyCheckItemType;
 - (void)openMostRecentTab;
 
 // Opens the displayed tab resumption item.
-- (void)openTabResumptionItem;
+- (void)openTabResumptionItem:(TabResumptionItem*)item;
 
 @end
 

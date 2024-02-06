@@ -4,6 +4,7 @@
 
 source_set("tab_resumption") {
   sources = [
+    "tab_resumption_helper_delegate.h",
     "tab_resumption_item.h",
     "tab_resumption_item.mm",
     "tab_resumption_view.h",
@@ -39,6 +40,8 @@ source_set("helper") {
     "//components/sync_sessions",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

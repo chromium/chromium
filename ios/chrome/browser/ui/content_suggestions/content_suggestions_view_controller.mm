@@ -876,12 +876,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.audience didSelectSetUpListItem:view.type];
 }
 
-#pragma mark - TabResumptionViewDelegate methods
-
-- (void)tabResumptionViewTapped {
-  [self.suggestionCommandHandler openTabResumptionItem];
-}
-
 #pragma mark - ContentSuggestionsSelectionActions
 
 - (void)contentSuggestionsElementTapped:(UIGestureRecognizer*)sender {
