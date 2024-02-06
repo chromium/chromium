@@ -171,6 +171,27 @@ public final class AwBrowserProcess {
     }
 
     /**
+     * Configures child process launcher for tests. This is required for multiprocess mode to ensure
+     * the process type of the child process is WebView, but many of the other fields from
+     * configureChildProcessLauncher do not work in testing, so tests need a customized version of
+     * that method.
+     */
+    public static void configureChildProcessLauncherForTesting() {
+        final boolean isExternalService = false;
+        final boolean bindToCaller = false;
+        final boolean ignoreVisibilityForImportance = false;
+        ChildProcessCreationParams.set(
+                ContextUtils.getApplicationContext().getPackageName(),
+                /* privilegedServicesName= */ null,
+                ContextUtils.getApplicationContext().getPackageName(),
+                /* sandboxedServicesName= */ null,
+                isExternalService,
+                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
+                bindToCaller,
+                ignoreVisibilityForImportance);
+    }
+
+    /**
      * Starts the chromium browser process running within this process. Creates threads
      * and performs other per-app resource allocations; must not be called from zygote.
      * Note: it is up to the caller to ensure this is only called once.
