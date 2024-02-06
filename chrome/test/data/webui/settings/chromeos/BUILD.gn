@@ -23,7 +23,6 @@ build_webui_tests("build") {
     "apn_subpage_test.ts",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
-    "esim_remove_profile_dialog_test.js",
     "fake_canvas_context.ts",
     "fake_input_method_private.ts",
     "fake_language_settings_private.ts",
@@ -126,6 +125,7 @@ build_webui_tests("build") {
 
     "internet_page/cellular_setup_dialog_test.ts",
     "internet_page/esim_install_error_dialog_test.ts",
+    "internet_page/esim_remove_profile_dialog_test.ts",
     "internet_page/esim_rename_dialog_test.ts",
     "internet_page/hotspot_config_dialog_test.ts",
     "internet_page/hotspot_subpage_test.ts",

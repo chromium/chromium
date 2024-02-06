@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, EsimRemoveProfileDialog) {
-  RunSettingsTest("esim_remove_profile_dialog_test.js");
+  RunSettingsTest("internet_page/esim_remove_profile_dialog_test.js");
 }
 
 class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
