@@ -15,7 +15,7 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
 void FacilitatedPaymentsDriver::DidFinishLoad(const GURL& url) const {
-  manager_->DidFinishLoad(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
 }
 
 }  // namespace payments::facilitated

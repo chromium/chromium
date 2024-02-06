@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 
 #include "base/functional/callback.h"
+#include "base/test/task_environment.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,7 +59,13 @@ class MockOptimizationGuideDecider
 
 class FacilitatedPaymentsManagerTest : public testing::Test {
  public:
-  FacilitatedPaymentsManagerTest() {
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  void SetUp() override {
+    attempt_number_ = 1;
+    allowlist_result_ = optimization_guide::OptimizationGuideDecision::kUnknown;
+    timer_.Stop();
     optimization_guide_decider_ =
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
@@ -66,93 +73,253 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
         driver_.get(), optimization_guide_decider_.get());
   }
 
+  optimization_guide::OptimizationGuideDecision& GetAllowlistCheckResult() {
+    return allowlist_result_;
+  }
+
+  // Sets the allowlist `decision` (true or false).
+  void SetAllowlistDecision(
+      optimization_guide::OptimizationGuideDecision decision) {
+    allowlist_result_ = decision;
+  }
+
+  // Sets allowlist `decision` after `delay`.
+  void SimulateDelayedAllowlistDecision(
+      base::TimeDelta delay,
+      optimization_guide::OptimizationGuideDecision decision) {
+    timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&FacilitatedPaymentsManagerTest::SetAllowlistDecision,
+                       base::Unretained(this), decision));
+  }
+
+  void FastForwardBy(base::TimeDelta duration) {
+    task_environment_.FastForwardBy(duration);
+    task_environment_.RunUntilIdle();
+  }
+
+  // Checks if allowlist decision (true or false) is made. If not,
+  // advances time by `kOptimizationGuideDeciderWaitTime` and checks again,
+  // `kMaxAttemptsForAllowlistCheck` times.
+  void AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached() {
+    while (allowlist_result_ ==
+               optimization_guide::OptimizationGuideDecision::kUnknown &&
+           attempt_number_ < kMaxAttemptsForAllowlistCheck) {
+      FastForwardBy(kOptimizationGuideDeciderWaitTime);
+      ++attempt_number_;
+    }
+  }
+
+  // Advance to a point in time when PIX code detection should have been
+  // triggered.
+  void AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision() {
+    // The PIX code detection is triggered at least `kPageLoadWaitTime` after
+    // page load.
+    base::TimeDelta time_to_trigger_pix_detection =
+        std::max(base::Seconds(0),
+                 kPageLoadWaitTime -
+                     (attempt_number_ - 1) * kOptimizationGuideDeciderWaitTime);
+    FastForwardBy(time_to_trigger_pix_detection);
+  }
+
  protected:
-  std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
+  optimization_guide::OptimizationGuideDecision allowlist_result_;
   std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
+
+ private:
+  int attempt_number_;  // Number of attempts at checking the allowlist.
+  base::OneShotTimer timer_;
 };
 
 // Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
 // registered when RegisterPixOptimizationGuide is called.
-TEST_F(FacilitatedPaymentsManagerTest, TestRegisterPixOptimizationGuide) {
+TEST_F(FacilitatedPaymentsManagerTest, TestRegisterPixAllowlist) {
   EXPECT_CALL(*optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST)))
       .Times(1);
 
-  manager_->RegisterPixOptimizationGuide();
+  manager_->RegisterPixAllowlist();
 }
 
-// Test that `ShouldDetectPixCode` returns true for merchant websites not in the
-// allowlist.
-TEST_F(FacilitatedPaymentsManagerTest, TestShouldDetectPixCode_UrlInAllowlist) {
+// Test that the PIX code detection is triggered for webpages in the allowlist.
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_InAllowlistDecision) {
   GURL url("https://example.com/");
-  ON_CALL(*optimization_guide_decider_,
-          CanApplyOptimization(
-              testing::Eq(url),
-              testing::Eq(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-              testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                  testing::Eq(nullptr))))
-      .WillByDefault(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kTrue));
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
 
-  EXPECT_TRUE(manager_->ShouldDetectPixCode(url));
-}
-
-// Test that `ShouldDetectPixCode` returns false for merchant websites not in
-// the allowlist.
-TEST_F(FacilitatedPaymentsManagerTest,
-       TestShouldDetectPixCode_UrlNotInAllowlist) {
-  GURL url("https://example.com/");
-  ON_CALL(*optimization_guide_decider_,
-          CanApplyOptimization(
-              testing::Eq(url),
-              testing::Eq(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-              testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                  testing::Eq(nullptr))))
-      .WillByDefault(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kFalse));
-
-  EXPECT_FALSE(manager_->ShouldDetectPixCode(url));
-}
-
-// Test that PIX code detection is triggered for webpages in the allowlist.
-TEST_F(FacilitatedPaymentsManagerTest,
-       TestDidFinishLoad_UrlInAllowlist_PixCodeDetectionTriggered) {
-  GURL url("https://example.com/");
-  ON_CALL(*optimization_guide_decider_,
-          CanApplyOptimization(
-              testing::Eq(url),
-              testing::Eq(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-              testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                  testing::Eq(nullptr))))
-      .WillByDefault(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kTrue));
-
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
-  manager_->DidFinishLoad(url);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
 
-// Test that PIX code detection is not triggered for webpages not in the
+// Test that the PIX code detection is not triggered for webpages not in the
 // allowlist.
-TEST_F(FacilitatedPaymentsManagerTest,
-       TestDidFinishLoad_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_NotInAllowlistDecision) {
   GURL url("https://example.com/");
-  ON_CALL(*optimization_guide_decider_,
-          CanApplyOptimization(
-              testing::Eq(url),
-              testing::Eq(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
-              testing::Matcher<optimization_guide::OptimizationMetadata*>(
-                  testing::Eq(nullptr))))
-      .WillByDefault(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kFalse));
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kFalse);
 
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
-  manager_->DidFinishLoad(url);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
+}
+
+// Test that if the allowlist checking infra is not ready after
+// `kMaxAttemptsForAllowlistCheck` attempts, PIX code detection is not
+// triggered.
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_DecisionDelay_NoDecision) {
+  GURL url("https://example.com/");
+
+  // The default decision is kUnknown.
+  // Allowlist check should be attempted once every
+  // `kOptimizationGuideDeciderWaitTime` until decision is received or
+  // `kMaxAttemptsForAllowlistCheck` attempts are made.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(kMaxAttemptsForAllowlistCheck)
+      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
+  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
+}
+
+// Test that the allowlist decision infra is given some time (short) to start-up
+// and make decision.
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_DecisionDelay_InAllowlistDecision) {
+  GURL url("https://example.com/");
+
+  // Simulate that the allowlist checking infra gets ready after 1.5s and
+  // returns positive decision.
+  base::TimeDelta decision_delay = base::Seconds(1.5);
+  SimulateDelayedAllowlistDecision(
+      decision_delay, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  // Allowlist check should be attempted once every
+  // `kOptimizationGuideDeciderWaitTime` until decision is received.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(decision_delay / kOptimizationGuideDeciderWaitTime + 1)
+      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
+  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
+}
+
+// Test that the allowlist decision infra is given some time (short) to start-up
+// and make decision.
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_DecisionDelay_NotInAllowlistDecision) {
+  GURL url("https://example.com/");
+
+  // Simulate that the allowlist checking infra gets ready after 1.5s and
+  // returns negative decision.
+  base::TimeDelta decision_delay = base::Seconds(1.5);
+  SimulateDelayedAllowlistDecision(
+      decision_delay, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  // Allowlist check should be attempted once every
+  // `kOptimizationGuideDeciderWaitTime` until decision is received.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(decision_delay / kOptimizationGuideDeciderWaitTime + 1)
+      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
+  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
+}
+
+// Test that the allowlist decision infra is given some time (short) to start-up
+// and make decision. If the infra does not get ready within the given time,
+// then PIX code detection is not run even if the infra eventually returns a
+// decision.
+TEST_F(
+    FacilitatedPaymentsManagerTest,
+    TestDelayedCheckAllowlistAndTriggerPixCodeDetection_DecisionDelay_LongDelay_InAllowlistDecision) {
+  GURL url("https://example.com/");
+
+  // Simulate that the allowlist checking infra gets ready after 3.5s and
+  // returns positive decision.
+  base::TimeDelta decision_delay = base::Seconds(3.5);
+  SimulateDelayedAllowlistDecision(
+      decision_delay, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  // The default decision is kUnknown.
+  // Allowlist check should be attempted once every
+  // `kOptimizationGuideDeciderWaitTime` until decision is received or
+  // `kMaxAttemptsForAllowlistCheck` attempts are made.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(kMaxAttemptsForAllowlistCheck)
+      .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
+  EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
+
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
+  AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
 
 }  // namespace payments::facilitated
