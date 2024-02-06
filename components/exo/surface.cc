@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/exo/buffer.h"
 #include "components/exo/frame_sink_resource_manager.h"
+#include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
@@ -29,6 +30,7 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -1465,6 +1467,7 @@ void Surface::UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint) {
 // reconstructed. This is important for performance reasons in the occlusion
 // code and correctness in the per edge anti-alias code.
 static viz::SharedQuadState* AppendOrCreateSharedQuadState(
+    viz::DrawQuad::Material quad_type,
     float opacity,
     const std::unique_ptr<viz::CompositorRenderPass>& render_pass,
     const gfx::Transform quad_to_target_transform,
@@ -1497,7 +1500,14 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
     }
   }
 
-  if (quad_state && is_sealed_union &&
+  bool prev_texture_draw_quad = false;
+  if (!render_pass->quad_list.empty()) {
+    prev_texture_draw_quad = render_pass->quad_list.back()->material ==
+                             viz::DrawQuad::Material::kTextureContent;
+  }
+
+  if (quad_type != viz::DrawQuad::Material::kTextureContent &&
+      !prev_texture_draw_quad && quad_state && is_sealed_union &&
       quad_to_target_transform == quad_state->quad_to_target_transform &&
       opacity == quad_state->opacity &&
       quad_clip_rect == quad_state->clip_rect &&
@@ -1671,7 +1681,13 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
     if (state_.basic_state.alpha != 0.0f) {
+      const bool requires_texture_draw_quad =
+          state_.basic_state.only_visible_on_secure_output ||
+          state_.overlay_priority_hint != OverlayPriority::LOW;
+
       const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
+          requires_texture_draw_quad ? viz::DrawQuad::Material::kTextureContent
+                                     : viz::DrawQuad::Material::kTiledContent,
           state_.basic_state.alpha, render_pass, quad_to_target_transform,
           quad_rect, msk, quad_clip_rect, are_contents_opaque);
 
@@ -1681,9 +1697,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       const bool force_rgbx_for_opaque =
           are_contents_opaque && current_resource_has_alpha_;
       // Draw quad is only needed if buffer is not fully transparent.
-      const bool requires_texture_draw_quad =
-          state_.basic_state.only_visible_on_secure_output ||
-          state_.overlay_priority_hint != OverlayPriority::LOW;
 
       if (requires_texture_draw_quad) {
         viz::TextureDrawQuad* texture_quad =
@@ -1750,8 +1763,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
   } else {
     const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
-        state_.basic_state.alpha, render_pass, quad_to_target_transform,
-        quad_rect, msk, quad_clip_rect, are_contents_opaque);
+        viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
+        render_pass, quad_to_target_transform, quad_rect, msk, quad_clip_rect,
+        are_contents_opaque);
     SkColor4f color = state_.buffer.has_value() && state_.buffer->buffer()
                           ? state_.buffer->buffer()->GetColor()
                           : SkColors::kBlack;
