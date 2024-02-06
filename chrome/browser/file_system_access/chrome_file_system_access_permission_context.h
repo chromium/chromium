@@ -206,6 +206,8 @@ class ChromeFileSystemAccessPermissionContext
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin) const;
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin) const;
 
+  std::vector<base::FilePath> GetGrantedPaths(const url::Origin& origin);
+
   void SetMaxIdsPerOriginForTesting(unsigned int max_ids) {
     max_ids_per_origin_ = max_ids;
   }
@@ -231,6 +233,10 @@ class ChromeFileSystemAccessPermissionContext
   PersistedGrantType GetPersistedGrantTypeForTesting(
       const url::Origin& origin) {
     return GetPersistedGrantType(origin);
+  }
+
+  bool OriginHasExtendedPermissionForTesting(const url::Origin& origin) {
+    return OriginHasExtendedPermission(origin);
   }
 
   bool HasExtendedPermissionForTesting(const url::Origin& origin,
@@ -277,6 +283,11 @@ class ChromeFileSystemAccessPermissionContext
   // type.
   bool OriginHasReadAccess(const url::Origin& origin);
   bool OriginHasWriteAccess(const url::Origin& origin);
+
+  // Enable or disable extended permissions as a result of user
+  // interaction with the File System Access Page Info UI.
+  void SetOriginExtendedPermissionByUser(const url::Origin& origin);
+  void RemoveOriginExtendedPermissionByUser(const url::Origin& origin);
 
   // Called by FileSystemAccessTabHelper when a top-level frame was navigated
   // away from `origin` to some other origin. Is virtual for testing purposes.
@@ -444,6 +455,16 @@ class ChromeFileSystemAccessPermissionContext
   // Returns whether the origin has extended permission enabled via user
   // opt-in or by having an actively installed PWA.
   bool OriginHasExtendedPermission(const url::Origin& origin);
+  // Removes extended permissions for grants. Does not update the content
+  // setting type for extended permissions.
+  // This method should only be called for an origin that already has extended
+  // permissions.
+  void RemoveExtendedPermission(const url::Origin& origin);
+  // Upgrades permission grants to extended grants. Does not update the content
+  // setting type for extended permissions.
+  // This method should only be called for an origin that does not already
+  // have extended permissions.
+  void UpgradeToExtendedPermission(const url::Origin& origin);
 
   // Retrieve the persisted grant type for a given origin.
   PersistedGrantType GetPersistedGrantType(const url::Origin& origin);
