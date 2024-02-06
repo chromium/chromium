@@ -18,6 +18,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/style/system_toast_style.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -175,8 +176,9 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
   EXPECT_TRUE(work_area_bounds().Contains(expected_grid_bounds));
 
   if (!Shell::Get()->IsInTabletMode() && faster_split_screen_setup) {
-    EXPECT_TRUE(
-        GetOverviewGridForRoot(window->GetRootWindow())->no_windows_widget());
+    auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
+    EXPECT_TRUE(overview_grid->faster_splitview_widget_for_testing());
+    EXPECT_FALSE(overview_grid->no_windows_widget());
   }
 
   return split_view_overview_session;
@@ -327,8 +329,9 @@ TEST_F(FasterSplitScreenTest, Basic) {
 
   // Enter overview normally. Test no widget.
   ToggleOverview();
-  EXPECT_FALSE(
-      GetOverviewGridForRoot(w1->GetRootWindow())->no_windows_widget());
+  auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
+  EXPECT_FALSE(overview_grid->no_windows_widget());
+  EXPECT_FALSE(overview_grid->faster_splitview_widget_for_testing());
 }
 
 TEST_F(FasterSplitScreenTest, CycleSnap) {
@@ -571,6 +574,25 @@ TEST_F(FasterSplitScreenTest, SkipPairingOnKeyEvent) {
   EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->window_cycle_controller()->IsCycling());
+}
+
+TEST_F(FasterSplitScreenTest, SkipPairingToast) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+
+  auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
+  ASSERT_TRUE(overview_grid);
+  auto* faster_splitview_widget =
+      overview_grid->faster_splitview_widget_for_testing();
+  ASSERT_TRUE(faster_splitview_widget);
+  auto* toast_view = views::AsViewClass<SystemToastStyle>(
+      faster_splitview_widget->GetContentsView()->children()[0]);
+  ASSERT_TRUE(toast_view);
+  LeftClickOn(toast_view->dismiss_button());
+
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 TEST_F(FasterSplitScreenTest, DontStartPartialOverviewAfterSkippingPairing) {

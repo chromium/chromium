@@ -20,6 +20,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -76,7 +77,12 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
   auto* overview_grid =
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
-  auto* settings_button = overview_grid->GetSettingsButtonForTesting();
+  ASSERT_TRUE(overview_grid);
+  auto* faster_splitview_widget =
+      overview_grid->faster_splitview_widget_for_testing();
+  ASSERT_TRUE(faster_splitview_widget);
+  auto* settings_button = views::AsViewClass<ash::IconButton>(
+      faster_splitview_widget->GetContentsView()->children()[1]);
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.
