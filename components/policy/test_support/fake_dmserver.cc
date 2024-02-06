@@ -23,6 +23,11 @@
 #include "components/policy/test_support/request_handler_for_policy.h"
 #include "components/policy/test_support/test_server_helpers.h"
 
+#define RETURN_IF_FALSE(expr) \
+  if (!expr) {                \
+    return false;             \
+  }
+
 namespace fakedms {
 
 namespace {
@@ -77,6 +82,193 @@ BuildWaitRemoteCommandResultResponse(const em::RemoteCommandResult& result) {
   remote_command_result->set_timestamp(result.timestamp());
   remote_command_result->set_payload(result.payload());
   return resp;
+}
+
+void ParsePolicyUser(const base::Value::Dict* dict,
+                     policy::PolicyStorage* policy_storage) {
+  const std::string* policy_user = dict->FindString(kPolicyUserKey);
+  if (policy_user) {
+    LOG(INFO) << "Adding " << *policy_user << " as a policy user";
+    policy_storage->set_policy_user(*policy_user);
+  } else {
+    LOG(INFO) << "The policy_user key isn't found and the default policy "
+                 "user "
+              << policy::kDefaultUsername << " will be used";
+  }
+}
+
+void ParseManagedUsers(const base::Value::Dict* dict,
+                       policy::PolicyStorage* policy_storage) {
+  const base::Value::List* managed_users = dict->FindList(kManagedUsersKey);
+  if (managed_users) {
+    for (const base::Value& managed_user : *managed_users) {
+      const std::string* managed_val = managed_user.GetIfString();
+      if (managed_val) {
+        LOG(INFO) << "Adding " << *managed_val << " as a managed user";
+        policy_storage->add_managed_user(*managed_val);
+      }
+    }
+  }
+}
+
+void ParseDeviceAffiliationIds(const base::Value::Dict* dict,
+                               policy::PolicyStorage* policy_storage) {
+  const base::Value::List* device_affiliation_ids =
+      dict->FindList(kDeviceAffiliationIdsKey);
+  if (device_affiliation_ids) {
+    for (const base::Value& device_affiliation_id : *device_affiliation_ids) {
+      const std::string* device_affiliation_id_val =
+          device_affiliation_id.GetIfString();
+      if (device_affiliation_id_val) {
+        LOG(INFO) << "Adding " << *device_affiliation_id_val
+                  << " as a device affiliation id";
+        policy_storage->add_device_affiliation_id(*device_affiliation_id_val);
+      }
+    }
+  }
+}
+
+void ParseUserAffiliationIds(const base::Value::Dict* dict,
+                             policy::PolicyStorage* policy_storage) {
+  const base::Value::List* user_affiliation_ids =
+      dict->FindList(kUserAffiliationIdsKey);
+  if (user_affiliation_ids) {
+    for (const base::Value& user_affiliation_id : *user_affiliation_ids) {
+      const std::string* user_affiliation_id_val =
+          user_affiliation_id.GetIfString();
+      if (user_affiliation_id_val) {
+        LOG(INFO) << "Adding " << *user_affiliation_id_val
+                  << " as a user affiliation id";
+        policy_storage->add_user_affiliation_id(*user_affiliation_id_val);
+      }
+    }
+  }
+}
+
+void ParseDirectoryApiId(const base::Value::Dict* dict,
+                         policy::PolicyStorage* policy_storage) {
+  const std::string* directory_api_id = dict->FindString(kDirectoryApiIdKey);
+  if (directory_api_id) {
+    LOG(INFO) << "Adding " << *directory_api_id << " as a directory API ID";
+    policy_storage->set_directory_api_id(*directory_api_id);
+  }
+}
+
+bool ParseAllowSetDeviceAttributes(const base::Value::Dict* dict,
+                                   policy::PolicyStorage* policy_storage) {
+  if (const base::Value* v = dict->Find(kAllowSetDeviceAttributesKey); v) {
+    std::optional<bool> allow_set_device_attributes = v->GetIfBool();
+    if (!allow_set_device_attributes.has_value()) {
+      LOG(ERROR)
+          << "The allow_set_device_attributes key isn't a bool, found type "
+          << v->type() << ", found value " << *v;
+      return false;
+    }
+    policy_storage->set_allow_set_device_attributes(
+        allow_set_device_attributes.value());
+  }
+  return true;
+}
+
+bool ParseUseUniversalSigningKeys(const base::Value::Dict* dict,
+                                  policy::PolicyStorage* policy_storage) {
+  const base::Value* use_universal_signing_keys =
+      dict->Find(kUseUniversalSigningKeysKey);
+  if (use_universal_signing_keys) {
+    std::optional<bool> maybe_value = use_universal_signing_keys->GetIfBool();
+    if (!maybe_value.has_value()) {
+      LOG(ERROR)
+          << "The use_universal_signing_keys key isn't a bool, found type "
+          << use_universal_signing_keys->type() << ", found value "
+          << *use_universal_signing_keys;
+      return false;
+    }
+    if (maybe_value.value()) {
+      policy_storage->signature_provider()->SetUniversalSigningKeys();
+    }
+  }
+  return true;
+}
+
+void ParseRobotApiAuthCode(const base::Value::Dict* dict,
+                           policy::PolicyStorage* policy_storage) {
+  const std::string* robot_api_auth_code =
+      dict->FindString(kRobotApiAuthCodeKey);
+  if (robot_api_auth_code) {
+    LOG(INFO) << "Adding " << *robot_api_auth_code
+              << " as a robot api auth code";
+    policy_storage->set_robot_api_auth_code(*robot_api_auth_code);
+  }
+}
+
+bool ParseRequestErrors(const base::Value::Dict* dict,
+                        FakeDMServer* fake_dmserver) {
+  const base::Value::Dict* request_errors = dict->FindDict(kRequestErrorsKey);
+  if (request_errors) {
+    for (auto request_error : *request_errors) {
+      std::optional<int> net_error_code = request_error.second.GetIfInt();
+      if (!net_error_code.has_value()) {
+        LOG(ERROR) << "The error code isn't an int";
+        return false;
+      }
+      LOG(INFO) << "Configuring request " << request_error.first << " to error "
+                << net_error_code.value();
+      fake_dmserver->ConfigureRequestError(
+          request_error.first,
+          static_cast<net::HttpStatusCode>(net_error_code.value()));
+    }
+  }
+  return true;
+}
+
+bool ParseInitialEnrollmentState(const base::Value::Dict* dict,
+                                 policy::PolicyStorage* policy_storage) {
+  const base::Value::Dict* initial_enrollment_state =
+      dict->FindDict(kInitialEnrollmentStateKey);
+  if (initial_enrollment_state) {
+    for (auto state : *initial_enrollment_state) {
+      const base::Value::Dict* state_val = state.second.GetIfDict();
+      if (!state_val) {
+        LOG(ERROR) << "The current state value for key " << state.first
+                   << " isn't a dict";
+        return false;
+      }
+      const std::string* management_domain =
+          state_val->FindString(kManagementDomainKey);
+      if (!management_domain) {
+        LOG(ERROR) << "The management_domain key isn't a string";
+        return false;
+      }
+      std::optional<int> initial_enrollment_mode =
+          state_val->FindInt(kInitialEnrollmentModeKey);
+      if (!initial_enrollment_mode.has_value()) {
+        LOG(ERROR) << "The initial_enrollment_mode key isn't an int";
+        return false;
+      }
+      policy::PolicyStorage::InitialEnrollmentState initial_value;
+      initial_value.management_domain = *management_domain;
+      initial_value.initial_enrollment_mode = static_cast<
+          enterprise_management::DeviceInitialEnrollmentStateResponse::
+              InitialEnrollmentMode>(initial_enrollment_mode.value());
+      policy_storage->SetInitialEnrollmentState(state.first, initial_value);
+    }
+  }
+  return true;
+}
+
+bool ParseCurrentKeyIndex(const base::Value::Dict* dict,
+                          policy::PolicyStorage* policy_storage) {
+  if (const base::Value* v = dict->Find(kCurrentKeyIndexKey); v) {
+    std::optional<int> current_key_index = v->GetIfInt();
+    if (!current_key_index.has_value()) {
+      LOG(ERROR) << "The current_key_index key isn't an int, found type "
+                 << v->type() << ", found value " << *v;
+      return false;
+    }
+    policy_storage->signature_provider()->set_current_key_version(
+        current_key_index.value());
+  }
+  return true;
 }
 
 }  // namespace
@@ -543,178 +735,7 @@ bool FakeDMServer::SetExternalPolicyPayload(
   return true;
 }
 
-bool FakeDMServer::ReadPolicyBlobFile() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
-  if (!base::PathExists(policy_blob_path_)) {
-    LOG(INFO) << "Policy blob file doesn't exist yet.";
-    return true;
-  }
-  JSONFileValueDeserializer deserializer(policy_blob_path_);
-  int error_code = 0;
-  std::string error_msg;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(&error_code, &error_msg);
-  if (!value) {
-    LOG(ERROR) << "Failed to read the policy blob file " << policy_blob_path_
-               << ": " << error_msg;
-    return false;
-  }
-  LOG(INFO) << "Deserialized value of the policy blob: " << *value;
-  const base::Value::Dict* dict = value->GetIfDict();
-  if (!dict) {
-    LOG(ERROR) << "Policy blob isn't a dict";
-    return false;
-  }
-
-  const std::string* policy_user = dict->FindString(kPolicyUserKey);
-  if (policy_user) {
-    LOG(INFO) << "Adding " << *policy_user << " as a policy user";
-    policy_storage()->set_policy_user(*policy_user);
-  } else {
-    LOG(INFO) << "The policy_user key isn't found and the default policy "
-                 "user "
-              << policy::kDefaultUsername << " will be used";
-  }
-
-  const base::Value::List* managed_users = dict->FindList(kManagedUsersKey);
-  if (managed_users) {
-    for (const base::Value& managed_user : *managed_users) {
-      const std::string* managed_val = managed_user.GetIfString();
-      if (managed_val) {
-        LOG(INFO) << "Adding " << *managed_val << " as a managed user";
-        policy_storage()->add_managed_user(*managed_val);
-      }
-    }
-  }
-
-  const base::Value::List* device_affiliation_ids =
-      dict->FindList(kDeviceAffiliationIdsKey);
-  if (device_affiliation_ids) {
-    for (const base::Value& device_affiliation_id : *device_affiliation_ids) {
-      const std::string* device_affiliation_id_val =
-          device_affiliation_id.GetIfString();
-      if (device_affiliation_id_val) {
-        LOG(INFO) << "Adding " << *device_affiliation_id_val
-                  << " as a device affiliation id";
-        policy_storage()->add_device_affiliation_id(*device_affiliation_id_val);
-      }
-    }
-  }
-
-  const base::Value::List* user_affiliation_ids =
-      dict->FindList(kUserAffiliationIdsKey);
-  if (user_affiliation_ids) {
-    for (const base::Value& user_affiliation_id : *user_affiliation_ids) {
-      const std::string* user_affiliation_id_val =
-          user_affiliation_id.GetIfString();
-      if (user_affiliation_id_val) {
-        LOG(INFO) << "Adding " << *user_affiliation_id_val
-                  << " as a user affiliation id";
-        policy_storage()->add_user_affiliation_id(*user_affiliation_id_val);
-      }
-    }
-  }
-
-  const std::string* directory_api_id = dict->FindString(kDirectoryApiIdKey);
-  if (directory_api_id) {
-    LOG(INFO) << "Adding " << *directory_api_id << " as a directory API ID";
-    policy_storage()->set_directory_api_id(*directory_api_id);
-  }
-
-  if (const base::Value* v = dict->Find(kAllowSetDeviceAttributesKey); v) {
-    std::optional<bool> allow_set_device_attributes = v->GetIfBool();
-    if (!allow_set_device_attributes.has_value()) {
-      LOG(ERROR)
-          << "The allow_set_device_attributes key isn't a bool, found type "
-          << v->type() << ", found value " << *v;
-      return false;
-    }
-    policy_storage()->set_allow_set_device_attributes(
-        allow_set_device_attributes.value());
-  }
-
-  const base::Value* use_universal_signing_keys =
-      dict->Find(kUseUniversalSigningKeysKey);
-  if (use_universal_signing_keys) {
-    std::optional<bool> maybe_value = use_universal_signing_keys->GetIfBool();
-    if (!maybe_value.has_value()) {
-      LOG(ERROR)
-          << "The use_universal_signing_keys key isn't a bool, found type "
-          << use_universal_signing_keys->type() << ", found value "
-          << *use_universal_signing_keys;
-      return false;
-    }
-    if (maybe_value.value()) {
-      policy_storage()->signature_provider()->SetUniversalSigningKeys();
-    }
-  }
-
-  const std::string* robot_api_auth_code =
-      dict->FindString(kRobotApiAuthCodeKey);
-  if (robot_api_auth_code) {
-    LOG(INFO) << "Adding " << *robot_api_auth_code
-              << " as a robot api auth code";
-    policy_storage()->set_robot_api_auth_code(*robot_api_auth_code);
-  }
-
-  const base::Value::Dict* request_errors = dict->FindDict(kRequestErrorsKey);
-  if (request_errors) {
-    for (auto request_error : *request_errors) {
-      std::optional<int> net_error_code = request_error.second.GetIfInt();
-      if (!net_error_code.has_value()) {
-        LOG(ERROR) << "The error code isn't an int";
-        return false;
-      }
-      LOG(INFO) << "Configuring request " << request_error.first << " to error "
-                << net_error_code.value();
-      EmbeddedPolicyTestServer::ConfigureRequestError(
-          request_error.first,
-          static_cast<net::HttpStatusCode>(net_error_code.value()));
-    }
-  }
-
-  const base::Value::Dict* initial_enrollment_state =
-      dict->FindDict(kInitialEnrollmentStateKey);
-  if (initial_enrollment_state) {
-    for (auto state : *initial_enrollment_state) {
-      const base::Value::Dict* state_val = state.second.GetIfDict();
-      if (!state_val) {
-        LOG(ERROR) << "The current state value for key " << state.first
-                   << " isn't a dict";
-        return false;
-      }
-      const std::string* management_domain =
-          state_val->FindString(kManagementDomainKey);
-      if (!management_domain) {
-        LOG(ERROR) << "The management_domain key isn't a string";
-        return false;
-      }
-      std::optional<int> initial_enrollment_mode =
-          state_val->FindInt(kInitialEnrollmentModeKey);
-      if (!initial_enrollment_mode.has_value()) {
-        LOG(ERROR) << "The initial_enrollment_mode key isn't an int";
-        return false;
-      }
-      policy::PolicyStorage::InitialEnrollmentState initial_value;
-      initial_value.management_domain = *management_domain;
-      initial_value.initial_enrollment_mode = static_cast<
-          enterprise_management::DeviceInitialEnrollmentStateResponse::
-              InitialEnrollmentMode>(initial_enrollment_mode.value());
-      policy_storage()->SetInitialEnrollmentState(state.first, initial_value);
-    }
-  }
-
-  if (const base::Value* v = dict->Find(kCurrentKeyIndexKey); v) {
-    std::optional<int> current_key_index = v->GetIfInt();
-    if (!current_key_index.has_value()) {
-      LOG(ERROR) << "The current_key_index key isn't an int, found type "
-                 << v->type() << ", found value " << *v;
-      return false;
-    }
-    policy_storage()->signature_provider()->set_current_key_version(
-        current_key_index.value());
-  }
-
+bool FakeDMServer::ParsePolicies(const base::Value::Dict* dict) {
   const base::Value::List* policies = dict->FindList(kPoliciesKey);
   if (policies) {
     for (const base::Value& policy : *policies) {
@@ -750,6 +771,45 @@ bool FakeDMServer::ReadPolicyBlobFile() {
       }
     }
   }
+
+  return true;
+}
+
+bool FakeDMServer::ReadPolicyBlobFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
+  if (!base::PathExists(policy_blob_path_)) {
+    LOG(INFO) << "Policy blob file doesn't exist yet.";
+    return true;
+  }
+  JSONFileValueDeserializer deserializer(policy_blob_path_);
+  int error_code = 0;
+  std::string error_msg;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(&error_code, &error_msg);
+  if (!value) {
+    LOG(ERROR) << "Failed to read the policy blob file " << policy_blob_path_
+               << ": " << error_msg;
+    return false;
+  }
+  LOG(INFO) << "Deserialized value of the policy blob: " << *value;
+  const base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
+    LOG(ERROR) << "Policy blob isn't a dict";
+    return false;
+  }
+
+  ParsePolicyUser(dict, policy_storage());
+  ParseManagedUsers(dict, policy_storage());
+  ParseDeviceAffiliationIds(dict, policy_storage());
+  ParseUserAffiliationIds(dict, policy_storage());
+  ParseDirectoryApiId(dict, policy_storage());
+  ParseRobotApiAuthCode(dict, policy_storage());
+  RETURN_IF_FALSE(ParseAllowSetDeviceAttributes(dict, policy_storage()));
+  RETURN_IF_FALSE(ParseUseUniversalSigningKeys(dict, policy_storage()));
+  RETURN_IF_FALSE(ParseRequestErrors(dict, this));
+  RETURN_IF_FALSE(ParseInitialEnrollmentState(dict, policy_storage()));
+  RETURN_IF_FALSE(ParseCurrentKeyIndex(dict, policy_storage()));
+  RETURN_IF_FALSE(ParsePolicies(dict));
 
   return true;
 }
