@@ -128,12 +128,23 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_MINIMUM(),
                /* min_version = */ 1,
                /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_MIRROR_PAD,
+               tflite::ops::builtin::Register_MIRROR_PAD(),
+               /* min_version = */ 1,
+               /* max_version = */ 2);
     AddBuiltin(tflite::BuiltinOperator_MUL,
                tflite::ops::builtin::Register_MUL(),
                /* min_version = */ 1,
                /* max_version = */ 4);
     AddBuiltin(tflite::BuiltinOperator_NEG,
                tflite::ops::builtin::Register_NEG());
+    AddBuiltin(tflite::BuiltinOperator_PAD,
+               tflite::ops::builtin::Register_PAD(),
+               /* min_version = */ 1,
+               /* max_version = */ 2);
+    AddBuiltin(tflite::BuiltinOperator_PADV2,
+               tflite::ops::builtin::Register_PADV2(), /* min_version = */ 1,
+               /* max_version = */ 2);
     AddBuiltin(tflite::BuiltinOperator_POW,
                tflite::ops::builtin::Register_POW());
     AddBuiltin(tflite::BuiltinOperator_RELU,
@@ -213,64 +224,7 @@ class TfLiteRuntime {
   std::unique_ptr<tflite::Interpreter> interpreter_;
 };
 
-}  // namespace
-
-class FakeWebNNModel : public blink_mojom::Model {
- public:
-  FakeWebNNModel() : runtime_(std::make_unique<TfLiteRuntime>()) {}
-  FakeWebNNModel(const FakeWebNNModel&) = delete;
-  FakeWebNNModel(FakeWebNNModel&&) = delete;
-  ~FakeWebNNModel() override = default;
-
-  FakeMLModelLoader::LoadFn CreateFromThis() {
-    return WTF::BindRepeating(&FakeWebNNModel::OnCreateModel,
-                              WTF::Unretained(this));
-  }
-
- private:
-  void OnCreateModel(mojo_base::BigBuffer buffer,
-                     blink_mojom::ModelLoader::LoadCallback callback) {
-    blink_mojom::ModelInfoPtr info = blink_mojom::ModelInfo::New();
-    EXPECT_EQ(runtime_->Load(buffer, info), kTfLiteOk);
-    // Hold the flatbuffer for computing with tflite runtime.
-    buffer_ = std::move(buffer);
-
-    receiver_.reset();
-    std::move(callback).Run(blink_mojom::LoadModelResult::kOk,
-                            receiver_.BindNewPipeAndPassRemote(),
-                            std::move(info));
-  }
-
-  // Override methods from blink_mojom::Model.
-  void Compute(const WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>& input,
-               blink_mojom::Model::ComputeCallback callback) override {
-    WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> named_output;
-    EXPECT_EQ(runtime_->Compute(input, named_output), kTfLiteOk);
-    std::move(callback).Run(blink_mojom::ComputeResult::kOk, named_output);
-  }
-
-  mojo::Receiver<blink_mojom::Model> receiver_{this};
-  std::unique_ptr<TfLiteRuntime> runtime_;
-  // The buffer of tflite model must be alive for computing.
-  mojo_base::BigBuffer buffer_;
-};
-
 class MLGraphTestTfLite : public MLGraphTestBase {};
-
-ScopedMLService::ScopedMLService()
-    : loader_(std::make_unique<FakeMLModelLoader>()),
-      model_(std::make_unique<FakeWebNNModel>()),
-      ml_service_(std::make_unique<FakeMLService>()) {}
-
-ScopedMLService::~ScopedMLService() = default;
-
-void ScopedMLService::SetUpMLService(V8TestingScope& scope) {
-  ml_service_->SetCreateModelLoader(loader_->CreateFromThis());
-  loader_->SetLoad(model_->CreateFromThis());
-
-  ml_service_binder_ =
-      std::make_unique<ScopedSetMLServiceBinder>(ml_service_.get(), scope);
-}
 
 template <typename T>
 struct ElementWiseAddTester {
@@ -403,40 +357,6 @@ struct ElementWiseAddTester {
   }
 };
 
-TEST_P(MLGraphTestTfLite, BuildGraphWithTfliteModel) {
-  MLGraphV8TestingScope scope;
-
-  {
-    // Test element-wise add operator for two 1-D tensors.
-    ElementWiseAddTester<float>{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {1.0, 2.0}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {3.0, 4.0}},
-        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                     .dimensions = {2},
-                     .values = {4.0, 6.0}}}
-        .Test(*this, scope);
-  }
-  {
-    // Test element-wise add operator for 1-D tensor broadcasting to 2-D
-    // tensor.
-    ElementWiseAddTester<float>{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2, 2},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {5.0, 6.0}},
-        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                     .dimensions = {2, 2},
-                     .values = {6.0, 8.0, 8.0, 10.0}}}
-        .Test(*this, scope);
-  }
-}
-
 template <typename T>
 struct EluTester {
   OperandInfo<T> input;
@@ -479,6 +399,123 @@ struct EluTester {
   }
 };
 
+template <typename T>
+struct Conv2dExceptionTester {
+  OperandInfo<T> input;
+  OperandInfo<T> filter;
+  String error_message;
+
+  void Test(MLGraphTestTfLite& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLConv2dOptions* options = MLConv2dOptions::Create()) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* filter_operand =
+        BuildConstant(builder, filter.dimensions, filter.data_type,
+                      filter.values, scope.GetExceptionState());
+    auto* output_operand =
+        BuildConv2d(scope, builder, input_operand, filter_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_THAT(graph, testing::IsNull());
+    EXPECT_EQ(build_exception->message(), error_message);
+  }
+};
+
+}  // namespace
+
+class FakeWebNNModel : public blink_mojom::Model {
+ public:
+  FakeWebNNModel() : runtime_(std::make_unique<TfLiteRuntime>()) {}
+  FakeWebNNModel(const FakeWebNNModel&) = delete;
+  FakeWebNNModel(FakeWebNNModel&&) = delete;
+  ~FakeWebNNModel() override = default;
+
+  FakeMLModelLoader::LoadFn CreateFromThis() {
+    return WTF::BindRepeating(&FakeWebNNModel::OnCreateModel,
+                              WTF::Unretained(this));
+  }
+
+ private:
+  void OnCreateModel(mojo_base::BigBuffer buffer,
+                     blink_mojom::ModelLoader::LoadCallback callback) {
+    blink_mojom::ModelInfoPtr info = blink_mojom::ModelInfo::New();
+    EXPECT_EQ(runtime_->Load(buffer, info), kTfLiteOk);
+    // Hold the flatbuffer for computing with tflite runtime.
+    buffer_ = std::move(buffer);
+
+    receiver_.reset();
+    std::move(callback).Run(blink_mojom::LoadModelResult::kOk,
+                            receiver_.BindNewPipeAndPassRemote(),
+                            std::move(info));
+  }
+
+  // Override methods from blink_mojom::Model.
+  void Compute(const WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>& input,
+               blink_mojom::Model::ComputeCallback callback) override {
+    WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> named_output;
+    EXPECT_EQ(runtime_->Compute(input, named_output), kTfLiteOk);
+    std::move(callback).Run(blink_mojom::ComputeResult::kOk, named_output);
+  }
+
+  mojo::Receiver<blink_mojom::Model> receiver_{this};
+  std::unique_ptr<TfLiteRuntime> runtime_;
+  // The buffer of tflite model must be alive for computing.
+  mojo_base::BigBuffer buffer_;
+};
+
+ScopedMLService::ScopedMLService()
+    : loader_(std::make_unique<FakeMLModelLoader>()),
+      model_(std::make_unique<FakeWebNNModel>()),
+      ml_service_(std::make_unique<FakeMLService>()) {}
+
+ScopedMLService::~ScopedMLService() = default;
+
+void ScopedMLService::SetUpMLService(V8TestingScope& scope) {
+  ml_service_->SetCreateModelLoader(loader_->CreateFromThis());
+  loader_->SetLoad(model_->CreateFromThis());
+
+  ml_service_binder_ =
+      std::make_unique<ScopedSetMLServiceBinder>(ml_service_.get(), scope);
+}
+
+TEST_P(MLGraphTestTfLite, BuildGraphWithTfliteModel) {
+  MLGraphV8TestingScope scope;
+
+  {
+    // Test element-wise add operator for two 1-D tensors.
+    ElementWiseAddTester<float>{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2},
+                .values = {1.0, 2.0}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2},
+                .values = {3.0, 4.0}},
+        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {2},
+                     .values = {4.0, 6.0}}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise add operator for 1-D tensor broadcasting to 2-D
+    // tensor.
+    ElementWiseAddTester<float>{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2, 2},
+                .values = {1.0, 2.0, 3.0, 4.0}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2},
+                .values = {5.0, 6.0}},
+        .expected = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {2, 2},
+                     .values = {6.0, 8.0, 8.0, 10.0}}}
+        .Test(*this, scope);
+  }
+}
+
 TEST_P(MLGraphTestTfLite, EluTest) {
   MLGraphV8TestingScope scope;
   {
@@ -517,6 +554,30 @@ TEST_P(MLGraphTestTfLite, EluTest) {
         .error_message =
             "Setting a custom alpha is not supported in tflite schema."}
         .Test(*this, scope, options);
+  }
+}
+
+TEST_P(MLGraphTestTfLite, Conv2dTest) {
+  MLGraphV8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test conv2d operator for overflow padding.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
+    options->setPadding({1294967295, 1294967295, 1, 1});
+    options->setStrides({2, 2});
+    Conv2dExceptionTester<float>{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 7, 5, 1},
+                  .values = Vector<float>(35, 1.0)},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 3, 3, 1},
+                   .values = Vector<float>(9, 1.0)},
+        .error_message = "The input dimension or padding is too large."}
+        .Test(*this, scope, builder, options);
   }
 }
 
