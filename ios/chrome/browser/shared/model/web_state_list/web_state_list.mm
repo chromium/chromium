@@ -33,6 +33,21 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 
 }  // namespace
 
+WebStateList::InsertionParams
+WebStateList::InsertionParams::ForDeprecationMigration(int insertion_flags,
+                                                       int desired_index,
+                                                       WebStateOpener opener) {
+  InsertionParams params = InsertionParams::Automatic();
+  if (IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX)) {
+    params = InsertionParams::AtIndex(desired_index);
+  }
+  params.WithOpener(opener)
+      .InheritOpener(IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER))
+      .Activate(IsInsertionFlagSet(insertion_flags, INSERT_ACTIVATE))
+      .Pinned(IsInsertionFlagSet(insertion_flags, INSERT_PINNED));
+  return params;
+}
+
 WebStateList::ScopedBatchOperation::ScopedBatchOperation(
     WebStateList* web_state_list)
     : web_state_list_(web_state_list) {
@@ -336,20 +351,8 @@ int WebStateList::InsertWebState(int index,
                                  int insertion_flags,
                                  WebStateOpener opener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  InsertionParams params = InsertionParams::Automatic();
-  if (IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX)) {
-    params = InsertionParams::AtIndex(index);
-  }
-  params.WithOpener(opener);
-  if (IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER)) {
-    params.InheritOpener();
-  }
-  if (IsInsertionFlagSet(insertion_flags, INSERT_ACTIVATE)) {
-    params.Activate();
-  }
-  if (IsInsertionFlagSet(insertion_flags, INSERT_PINNED)) {
-    params.Pinned();
-  }
+  InsertionParams params =
+      InsertionParams::ForDeprecationMigration(insertion_flags, index, opener);
   return InsertWebState(std::move(web_state), params);
 }
 

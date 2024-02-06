@@ -73,6 +73,13 @@ class WebStateList {
       this->pinned = pin;
       return *this;
     }
+
+    // To simplify migrating off of the deprecated `InsertWebState` member
+    // function, convert a set of insertion parameters to real InsertionParams.
+    static InsertionParams ForDeprecationMigration(
+        int insertion_flags,
+        int desired_index = kInvalidIndex,
+        WebStateOpener opener = WebStateOpener());
   };
 
   // Deprecated. Use InsertionParams.

@@ -55,7 +55,7 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
   MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
                destination_browser);
 
-  int insertion_flags = flags;
+  WebStateList::InsertionFlags insertion_flags = flags;
   if (insertion_flags == WebStateList::InsertionFlags::INSERT_NO_FLAGS) {
     insertion_flags = WebStateList::INSERT_FORCE_INDEX;
     // TODO(crbug.com/1264451): Remove this workaround when it will not be
@@ -65,9 +65,11 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
     }
   }
 
-  destination_browser->GetWebStateList()->InsertWebState(
-      destination_tab_index, std::move(web_state), insertion_flags,
-      WebStateOpener());
+  WebStateList::InsertionParams params =
+      WebStateList::InsertionParams::ForDeprecationMigration(
+          insertion_flags, destination_tab_index);
+  destination_browser->GetWebStateList()->InsertWebState(std::move(web_state),
+                                                         params);
 }
 
 void MoveTabFromBrowserToBrowser(Browser* source_browser,
