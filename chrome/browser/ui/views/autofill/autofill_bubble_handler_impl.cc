@@ -46,12 +46,7 @@ namespace autofill {
 AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     Browser* browser,
     ToolbarButtonProvider* toolbar_button_provider)
-    : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {
-  if (toolbar_button_provider_->GetAvatarToolbarButton()) {
-    avatar_toolbar_button_observation_.Observe(
-        toolbar_button_provider_->GetAvatarToolbarButton());
-  }
-}
+    : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {}
 
 AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 
@@ -243,8 +238,9 @@ AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kVirtualCardManualFallback);
-  if (icon_view)
+  if (icon_view) {
     bubble->SetHighlightedButton(icon_view);
+  }
 
   return bubble;
 }
@@ -265,8 +261,9 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kVirtualCardEnroll);
-  if (icon_view)
+  if (icon_view) {
     bubble->SetHighlightedButton(icon_view);
+  }
 
   return bubble;
 }
@@ -322,40 +319,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       anchor_view, web_contents, std::move(callback), icon_view);
-}
-
-void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
-  if (should_show_sign_in_promo_if_applicable_) {
-    should_show_sign_in_promo_if_applicable_ = false;
-    chrome::ExecuteCommand(
-        browser_, IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE);
-  }
-
-  // Notify the virtual card enrollment manager that the avatar highlight
-  // animation has completed in case we are offering VCN enrollment.
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
-
-  autofill::ContentAutofillDriverFactory* driver =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
-  if (!driver)
-    return;
-
-  raw_ptr<autofill::VirtualCardEnrollmentManager>
-      virtual_card_enrollment_manager =
-          driver->client().GetVirtualCardEnrollmentManager();
-
-  if (virtual_card_enrollment_manager)
-    virtual_card_enrollment_manager->OnCardSavedAnimationComplete();
-}
-
-void AutofillBubbleHandlerImpl::ShowAvatarHighlightAnimation() {
-  AvatarToolbarButton* avatar =
-      toolbar_button_provider_->GetAvatarToolbarButton();
-  if (avatar)
-    avatar->ShowAvatarHighlightAnimation();
 }
 
 AutofillBubbleBase*

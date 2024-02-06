@@ -524,10 +524,6 @@ void RecordAnimatedIdentityTriggered(Profile* profile) {
                                                      base::TimeTicks::Now());
 }
 
-void RecordAvatarIconHighlighted(Profile* profile) {
-  base::RecordAction(base::UserMetricsAction("AvatarToolbarButtonHighlighted"));
-}
-
 void RecordProfileMenuViewShown(Profile* profile) {
   base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened"));
   if (profile->IsRegularProfile()) {

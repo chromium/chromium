@@ -110,12 +110,14 @@ void AvatarToolbarButton::UpdateIcon() {
   // to set colors. Defer updating until AddedToWidget(). This may get called as
   // a result of OnUserIdentityChanged() called from the constructor when the
   // button is not yet added to the ToolbarView's hierarchy.
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
 
   gfx::Image gaia_account_image = delegate_->GetGaiaAccountImage();
-  for (auto state : kButtonStates)
+  for (auto state : kButtonStates) {
     SetImageModel(state, GetAvatarIcon(state, gaia_account_image));
+  }
   // If `OnUserIdentityChanged()` has been called and the image is not empty,
   // show the animation. If the animation is shown, also resets the delegate's
   // ButtonTextState so that the animation will not be triggered again.
@@ -207,9 +209,6 @@ void AvatarToolbarButton::UpdateText() {
       break;
     }
     case State::kNormal:
-      if (delegate_->IsHighlightAnimationVisible()) {
-        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
-      }
       break;
   }
 
@@ -223,9 +222,9 @@ void AvatarToolbarButton::UpdateText() {
   if (features::IsChromeRefresh2023()) {
     UpdateInkdrop();
     // Outset focus ring should be present for the chip but not when only
-    // the icon is visible.
+    // the icon is visible, when there is no text.
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(
-        IsLabelPresentAndVisible() ? false : true);
+        !IsLabelPresentAndVisible());
   }
 
   // TODO(crbug.com/1078221): this is a hack because toolbar buttons don't
@@ -267,13 +266,8 @@ std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
             kColorAvatarButtonHighlightDefaultForeground);
         break;
       case State::kNormal:
-        if (delegate_->IsHighlightAnimationVisible()) {
-          color = color_provider->GetColor(
-              kColorAvatarButtonHighlightNormalForeground);
-        } else {
-          color = color_provider->GetColor(
-              kColorAvatarButtonHighlightDefaultForeground);
-        }
+        color = color_provider->GetColor(
+            kColorAvatarButtonHighlightDefaultForeground);
         break;
     }
 
@@ -312,11 +306,7 @@ void AvatarToolbarButton::UpdateInkdrop() {
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
       case State::kNormal:
-        if (delegate_->IsHighlightAnimationVisible()) {
-          ripple_color_id = kColorAvatarButtonNormalRipple;
-        } else {
-          ripple_color_id = kColorToolbarInkDropRipple;
-        }
+        ripple_color_id = kColorToolbarInkDropRipple;
         break;
     }
   }
@@ -329,9 +319,7 @@ bool AvatarToolbarButton::ShouldPaintBorder() const {
   return (!features::IsChromeRefresh2023()) ||
          (IsLabelPresentAndVisible() &&
           (state == State::kGuestSession ||
-           state == State::kAnimatedUserIdentity ||
-           (state == State::kNormal &&
-            !delegate_->IsHighlightAnimationVisible())));
+           state == State::kAnimatedUserIdentity || state == State::kNormal));
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
@@ -339,10 +327,6 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
       this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
   return !features::IsChromeRefresh2023() || has_custom_theme;
-}
-
-void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
-  delegate_->ShowHighlightAnimation();
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -362,19 +346,6 @@ void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
 
 bool AvatarToolbarButton::IsButtonActionDisabled() const {
   return button_action_disabled_;
-}
-
-void AvatarToolbarButton::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void AvatarToolbarButton::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void AvatarToolbarButton::NotifyHighlightAnimationFinished() {
-  for (AvatarToolbarButton::Observer& observer : observer_list_)
-    observer.OnAvatarHighlightAnimationFinished();
 }
 
 void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
@@ -441,9 +412,10 @@ void AvatarToolbarButton::ButtonPressed() {
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
-  if (key == user_education::kHasInProductHelpPromoKey)
+  if (key == user_education::kHasInProductHelpPromoKey) {
     delegate_->SetHasInProductHelpPromo(
         GetProperty(user_education::kHasInProductHelpPromoKey));
+  }
   ToolbarButton::AfterPropertyChange(key, old_value);
 }
 

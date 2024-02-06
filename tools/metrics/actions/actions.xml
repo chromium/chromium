@@ -4576,6 +4576,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AvatarToolbarButtonHighlighted">
+  <obsolete>Removed in M123</obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <description>

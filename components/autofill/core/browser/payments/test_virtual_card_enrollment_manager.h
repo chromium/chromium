@@ -24,12 +24,6 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
       const TestVirtualCardEnrollmentManager&) = delete;
   ~TestVirtualCardEnrollmentManager() override;
 
-  bool GetAvatarAnimationComplete() const { return avatar_animation_complete_; }
-
-  void SetAvatarAnimationComplete(bool avatar_animation_complete) {
-    avatar_animation_complete_ = avatar_animation_complete;
-  }
-
   bool GetEnrollResponseDetailsReceived() const {
     return enroll_response_details_received_;
   }

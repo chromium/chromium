@@ -59,7 +59,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   bool IsSyncFeatureEnabled() const;
 
-  void ShowHighlightAnimation();
   bool IsHighlightAnimationVisible() const;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -124,7 +123,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnIdentityAnimationTimeout();
   // Called after the user interacted with the button or after some timeout.
   void MaybeHideIdentityAnimation();
-  void HideHighlightAnimation();
 
   // Shows the identity pill animation. If the animation is already showing,
   // this extends the duration of the current animation.
@@ -154,11 +152,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   bool refresh_tokens_loaded_ = false;
   bool has_in_product_help_promo_ = false;
-
-  // Whether the avatar highlight animation is visible. The animation is shown
-  // when an Autofill datatype is saved. When this is true the avatar button
-  // sync paused/error state will be disabled.
-  bool highlight_animation_visible_ = false;
 
   // Caches the value of the last error so the class can detect when it
   // changes and notify |avatar_toolbar_button_|.

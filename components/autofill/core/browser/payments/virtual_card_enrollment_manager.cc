@@ -121,18 +121,6 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
-  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
-      VirtualCardEnrollmentSource::kUpstream) {
-    avatar_animation_complete_ = true;
-
-    if (enroll_response_details_received_) {
-      EnsureCardArtImageIsSetBeforeShowingUI();
-      ShowVirtualCardEnrollBubble();
-    }
-  }
-}
-
 void VirtualCardEnrollmentManager::Enroll(
     std::optional<VirtualCardEnrollmentUpdateResponseCallback>
         virtual_card_enrollment_update_response_callback) {
@@ -299,7 +287,6 @@ void VirtualCardEnrollmentManager::Reset() {
   payments_network_interface_->CancelRequest();
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
-  avatar_animation_complete_ = false;
   enroll_response_details_received_ = false;
 }
 

@@ -36,13 +36,6 @@ class AvatarToolbarButton : public ToolbarButton {
     kNormal
   };
 
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    virtual void OnAvatarHighlightAnimationFinished() = 0;
-  };
-
   explicit AvatarToolbarButton(BrowserView* browser);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
@@ -53,8 +46,6 @@ class AvatarToolbarButton : public ToolbarButton {
   std::optional<SkColor> GetHighlightBorderColor() const override;
   bool ShouldPaintBorder() const override;
   bool ShouldBlendHighlightColor() const override;
-
-  void ShowAvatarHighlightAnimation();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Expands the pill to show the intercept text.
@@ -70,11 +61,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // the button should remain in an "active" state from a UI perspective.
   void SetButtonActionDisabled(bool disabled);
   bool IsButtonActionDisabled() const;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  void NotifyHighlightAnimationFinished();
 
   // Attempts showing the In-Produce-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
@@ -92,8 +78,7 @@ class AvatarToolbarButton : public ToolbarButton {
   bool IsLabelPresentAndVisible() const;
 
   // Updates the inkdrop highlight and ripple properties depending on the state
-  // and
-  // whether the chip is expanded.
+  // and whether the chip is expanded.
   void UpdateInkdrop();
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
@@ -132,8 +117,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // Setting this to true will stop the button reaction but the button will
   // remain in active state, not affecting it's UI in any way.
   bool button_action_disabled_ = false;
-
-  base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

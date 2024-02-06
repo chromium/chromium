@@ -38,8 +38,6 @@ namespace {
 
 constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
 
-constexpr base::TimeDelta kAvatarHighlightAnimationDuration = base::Seconds(2);
-
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
 }
@@ -234,24 +232,6 @@ AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
 bool AvatarToolbarButtonDelegate::IsSyncFeatureEnabled() const {
   return IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
       signin::ConsentLevel::kSync);
-}
-
-void AvatarToolbarButtonDelegate::ShowHighlightAnimation() {
-  signin_ui_util::RecordAvatarIconHighlighted(profile_);
-  highlight_animation_visible_ = true;
-  DCHECK_NE(GetState(), AvatarToolbarButton::State::kIncognitoProfile);
-  DCHECK_NE(GetState(), AvatarToolbarButton::State::kGuestSession);
-  avatar_toolbar_button_->UpdateText();
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AvatarToolbarButtonDelegate::HideHighlightAnimation,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kAvatarHighlightAnimationDuration);
-}
-
-bool AvatarToolbarButtonDelegate::IsHighlightAnimationVisible() const {
-  return highlight_animation_visible_;
 }
 
 void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation(
@@ -462,14 +442,6 @@ void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
   // Update the text to the pre-shown state. This also makes sure that we now
   // reflect changes that happened while the identity pill was shown.
   avatar_toolbar_button_->UpdateText();
-}
-
-void AvatarToolbarButtonDelegate::HideHighlightAnimation() {
-  DCHECK_NE(GetState(), AvatarToolbarButton::State::kIncognitoProfile);
-  DCHECK_NE(GetState(), AvatarToolbarButton::State::kGuestSession);
-  highlight_animation_visible_ = false;
-  avatar_toolbar_button_->UpdateText();
-  avatar_toolbar_button_->NotifyHighlightAnimationFinished();
 }
 
 void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
