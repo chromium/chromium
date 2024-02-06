@@ -18,13 +18,11 @@ constexpr base::TimeDelta kCleanupDelay = base::Seconds(5);
 GraphiteCacheController::GraphiteCacheController(
     skgpu::graphite::Recorder* recorder,
     skgpu::graphite::Context* context)
-    : recorder_(recorder),
-      context_(context),
-      timer_(std::make_unique<base::RetainingOneShotTimer>(
-          FROM_HERE,
-          kCleanupDelay,
-          base::BindRepeating(&GraphiteCacheController::PerformCleanup,
-                              AsWeakPtr()))) {
+    : recorder_(recorder), context_(context) {
+  timer_ = std::make_unique<base::RetainingOneShotTimer>(
+      FROM_HERE, kCleanupDelay,
+      base::BindRepeating(&GraphiteCacheController::PerformCleanup,
+                          weak_ptr_factory_.GetWeakPtr()));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
