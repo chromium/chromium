@@ -127,6 +127,7 @@ FormData GetFormData(const FormDescription& d) {
     ff.origin = dd.origin.value_or(f.main_frame_origin);
     ff.should_autocomplete = dd.should_autocomplete;
     ff.properties_mask = dd.properties_mask;
+    ff.check_status = dd.check_status;
     f.fields.push_back(ff);
   }
   return f;

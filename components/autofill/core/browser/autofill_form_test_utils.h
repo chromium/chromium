@@ -59,6 +59,8 @@ struct FieldDescription {
   std::optional<url::Origin> origin;
   std::vector<SelectOption> select_options = {};
   FieldPropertiesMask properties_mask = 0;
+  FormFieldData::CheckStatus check_status =
+      FormFieldData::CheckStatus::kNotCheckable;
 };
 
 // Attributes provided to the test form.
