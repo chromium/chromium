@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
@@ -33,7 +34,7 @@ UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
   // hashing scheme is architecture dependent.
   std::string db_url = GetDatabaseUrlString(url);
   base::MD5Digest digest;
-  base::MD5Sum(db_url.data(), db_url.size(), &digest);
+  base::MD5Sum(base::as_byte_span(db_url), &digest);
   int64_t hash;
   memcpy(&hash, digest.a, sizeof(int64_t));
   return UrlId::FromUnsafeValue(hash);
