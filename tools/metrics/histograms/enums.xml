@@ -2467,6 +2467,9 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="BreakageIndicatorType">
+  <obsolete>
+    Deprecated 02/2024.
+  </obsolete>
   <int value="0" label="User Reload"/>
   <int value="1" label="HTTP Error"/>
   <int value="2" label="Uncaught JS Error"/>

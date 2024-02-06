@@ -26006,6 +26006,12 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ThirdPartyCookies.BreakageIndicator">
+  <obsolete>
+    Deprecated 02/2024. Replaced with:
+    ThirdPartyCookies.BreakageIndicator.HTTPError,
+    ThirdPartyCookies.BreakageIndicator.UncaughtJSError,
+    ThirdPartyCookies.BreakageIndicator.UserReload.
+  </obsolete>
   <owner>3pcd-core@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <owner>johannhof@chromium.org</owner>
