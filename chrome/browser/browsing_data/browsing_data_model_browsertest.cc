@@ -389,8 +389,12 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return model->size() == expected_size; }));
+  while (model->size() != expected_size) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
