@@ -169,4 +169,17 @@ if (!is_official_build) {
   # builds.
   tast_disabled_tests_from_chrome_all += [ "ui.ChromeCrashEarly.strict" ]
   tast_disabled_tests_from_lacros_all += [ "ui.ChromeCrashEarly.strict_lacros" ]
+
+  # b/317943159 public builders fail to install crostini.
+  tast_disabled_tests_from_chrome_all += [ "crostini.*" ]
+
+  # b/317733179 skylab builders lack of feature to pass runtime variables.
+  tast_disabled_tests_from_chrome_all += [
+    "login.AuthError",
+    "login.Offline",
+    "wmp.AdminTemplatesLaunch",
+    "wmp.DesksTemplatesBasic",
+    "wmp.DesksTemplatesLaunch",
+    "wmp.SavedDeskDelete",
+  ]
 }
