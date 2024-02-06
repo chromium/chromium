@@ -1566,7 +1566,7 @@ bool HttpResponseHeaders::StrictlyEquals(
                                 offsets_match(lhs.value_begin,
                                               rhs.value_begin) &&
                                 offsets_match(lhs.value_end, rhs.value_end);
-                       }) == std::make_pair(parsed_.end(), other.parsed_.end());
+                       }) == std::pair(parsed_.end(), other.parsed_.end());
 }
 
 }  // namespace net

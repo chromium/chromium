@@ -390,10 +390,10 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
     base::TimeTicks expiration_time_ticks =
         clock_->NowTicks() +
         (base::Time::FromTimeT(expiration_time_t) - base::Time::Now());
-    broken_alternative_service_list->push_back(std::make_pair(
+    broken_alternative_service_list->emplace_back(
         BrokenAlternativeService(alt_service, network_anonymization_key,
                                  use_network_anonymization_key),
-        expiration_time_ticks));
+        expiration_time_ticks);
     contains_broken_count_or_broken_until = true;
   }
 

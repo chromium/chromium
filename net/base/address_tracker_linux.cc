@@ -501,7 +501,7 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           // changed.
           auto it = address_map_.find(address);
           if (it == address_map_.end()) {
-            address_map_.insert(it, std::make_pair(address, msg_copy));
+            address_map_.insert(it, std::pair(address, msg_copy));
             *address_changed = true;
           } else if (memcmp(&it->second, &msg_copy, sizeof(msg_copy))) {
             it->second = msg_copy;

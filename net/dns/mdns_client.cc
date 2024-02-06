@@ -52,8 +52,7 @@ InterfaceIndexFamilyList GetMDnsInterfacesToBind() {
   for (const auto& network_interface : network_list) {
     AddressFamily family = GetAddressFamily(network_interface.address);
     if (family == ADDRESS_FAMILY_IPV4 || family == ADDRESS_FAMILY_IPV6) {
-      interfaces.push_back(
-          std::make_pair(network_interface.interface_index, family));
+      interfaces.emplace_back(network_interface.interface_index, family);
     }
   }
   std::sort(interfaces.begin(), interfaces.end());

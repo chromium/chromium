@@ -1131,8 +1131,8 @@ void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
       continue;
     }
     has_valid_entry = true;
-    accept_ch_entries_received_via_alps_.insert(
-        std::make_pair(std::move(scheme_host_port), entry.value));
+    accept_ch_entries_received_via_alps_.emplace(std::move(scheme_host_port),
+                                                 entry.value);
 
     net_log_.AddEvent(NetLogEventType::QUIC_ACCEPT_CH_FRAME_RECEIVED,
                       [&] { return NetLogAcceptChFrameReceivedParams(entry); });

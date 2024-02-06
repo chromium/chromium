@@ -472,11 +472,11 @@ void ListDups(CommandMarshal* command_marshal) {
       response_info.headers->GetMimeType(&entry_data.mime_type);
 
     auto iter = md5_entries.find(hash);
-    if (iter == md5_entries.end())
-      md5_entries.insert(
-          std::make_pair(hash, std::vector<EntryData>{entry_data}));
-    else
+    if (iter == md5_entries.end()) {
+      md5_entries.emplace(hash, std::vector<EntryData>{entry_data});
+    } else {
       iter->second.push_back(entry_data);
+    }
 
     entry->Close();
     entry = nullptr;

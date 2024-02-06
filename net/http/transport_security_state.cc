@@ -385,8 +385,8 @@ void TransportSecurityState::UpdatePinList(
       // entry, we will ignore that particular pin.
       continue;
     }
-    host_pins_.value()[pin.hostname_] = std::make_pair(
-        pinset_names_map[pin.pinset_name_], pin.include_subdomains_);
+    host_pins_.value()[pin.hostname_] =
+        std::pair(pinset_names_map[pin.pinset_name_], pin.include_subdomains_);
   }
 }
 

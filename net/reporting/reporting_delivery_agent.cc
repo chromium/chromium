@@ -331,8 +331,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       if (delivery_it == deliveries.end()) {
         bool inserted;
         auto new_delivery = std::make_unique<Delivery>(target);
-        std::tie(delivery_it, inserted) = deliveries.insert(
-            std::make_pair(std::move(target), std::move(new_delivery)));
+        std::tie(delivery_it, inserted) =
+            deliveries.emplace(std::move(target), std::move(new_delivery));
         DCHECK(inserted);
       }
       delivery_it->second->AddReports(endpoint, bucket_start, bucket_it);

@@ -1690,8 +1690,8 @@ QuicSessionPool::CreateCryptoConfigHandle(
     DCHECK_EQ(mru_iterator->second->num_refs(), 0);
 
     map_iterator = active_crypto_config_map_
-                       .emplace(std::make_pair(actual_network_anonymization_key,
-                                               std::move(mru_iterator->second)))
+                       .emplace(actual_network_anonymization_key,
+                                std::move(mru_iterator->second))
                        .first;
     recent_crypto_config_map_.Erase(mru_iterator);
     return std::make_unique<CryptoClientConfigHandle>(map_iterator);
@@ -1725,8 +1725,8 @@ QuicSessionPool::CreateCryptoConfigHandle(
   }
 
   map_iterator = active_crypto_config_map_
-                     .emplace(std::make_pair(actual_network_anonymization_key,
-                                             std::move(crypto_config_owner)))
+                     .emplace(actual_network_anonymization_key,
+                              std::move(crypto_config_owner))
                      .first;
   return std::make_unique<CryptoClientConfigHandle>(map_iterator);
 }

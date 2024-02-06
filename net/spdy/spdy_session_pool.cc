@@ -620,7 +620,7 @@ void SpdySessionPool::MapKeyToAvailableSession(
     std::set<std::string> dns_aliases) {
   DCHECK(base::Contains(sessions_, session.get()));
   std::pair<AvailableSessionMap::iterator, bool> result =
-      available_sessions_.insert(std::make_pair(key, session));
+      available_sessions_.emplace(key, session);
   CHECK(result.second);
 
   dns_aliases_by_session_key_[key] = std::move(dns_aliases);

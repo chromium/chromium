@@ -1614,7 +1614,7 @@ CookieMonster::InternalInsertPartitionedCookie(
         true);
   }
 
-  return std::make_pair(partition_it, cookie_it);
+  return std::pair(partition_it, cookie_it);
 }
 
 void CookieMonster::SetCanonicalCookie(
@@ -2570,8 +2570,7 @@ void CookieMonster::DoCookieCallbackForHostOrDomain(
             key, base::BindOnce(&CookieMonster::OnKeyLoaded,
                                 weak_ptr_factory_.GetWeakPtr(), key));
         it = tasks_pending_for_key_
-                 .insert(std::make_pair(
-                     key, base::circular_deque<base::OnceClosure>()))
+                 .emplace(key, base::circular_deque<base::OnceClosure>())
                  .first;
       }
       it->second.push_back(std::move(callback));

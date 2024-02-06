@@ -915,8 +915,8 @@ ComputeFirstPartySetMetadataMaybeAsync(
         std::move(callback));
   }
 
-  return std::make_pair(FirstPartySetMetadata(),
-                        FirstPartySetsCacheFilter::MatchInfo());
+  return std::pair(FirstPartySetMetadata(),
+                   FirstPartySetsCacheFilter::MatchInfo());
 }
 
 CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod

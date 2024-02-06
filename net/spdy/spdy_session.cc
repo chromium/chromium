@@ -937,8 +937,8 @@ int SpdySession::ParseAlps() {
       continue;
     }
     has_valid_entry = true;
-    accept_ch_entries_received_via_alps_.insert(
-        std::make_pair(std::move(scheme_host_port), entry.value));
+    accept_ch_entries_received_via_alps_.emplace(std::move(scheme_host_port),
+                                                 entry.value);
 
     net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_ACCEPT_CH,
                       [&] { return NetLogSpdyRecvAcceptChParams(entry); });
@@ -2145,7 +2145,7 @@ void SpdySession::SendInitialData() {
         static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1);
     // Let insertion silently fail if `settings_map` already contains
     // `greased_id`.
-    settings_map.insert(std::make_pair(greased_id, greased_value));
+    settings_map.emplace(greased_id, greased_value);
   }
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_SEND_SETTINGS, [&] {
     return NetLogSpdySendSettingsParams(&settings_map);
@@ -2487,7 +2487,7 @@ void SpdySession::InsertActivatedStream(std::unique_ptr<SpdyStream> stream) {
   spdy::SpdyStreamId stream_id = stream->stream_id();
   CHECK_NE(stream_id, 0u);
   std::pair<ActiveStreamMap::iterator, bool> result =
-      active_streams_.insert(std::make_pair(stream_id, stream.get()));
+      active_streams_.emplace(stream_id, stream.get());
   CHECK(result.second);
   std::ignore = stream.release();
 }

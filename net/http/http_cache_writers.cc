@@ -74,7 +74,7 @@ int HttpCache::Writers::Read(scoped_refptr<IOBuffer> buf,
   // with the data returned from that read.
   if (next_state_ != State::NONE) {
     WaitingForRead read_info(buf, buf_len, std::move(callback));
-    waiting_for_read_.insert(std::make_pair(transaction, std::move(read_info)));
+    waiting_for_read_.emplace(transaction, std::move(read_info));
     return ERR_IO_PENDING;
   }
 

@@ -38,7 +38,7 @@ HttpServerResponseInfo HttpServerResponseInfo::CreateFor500(
 
 void HttpServerResponseInfo::AddHeader(const std::string& name,
                                        const std::string& value) {
-  headers_.push_back(std::make_pair(name, value));
+  headers_.emplace_back(name, value);
 }
 
 void HttpServerResponseInfo::SetBody(const std::string& body,

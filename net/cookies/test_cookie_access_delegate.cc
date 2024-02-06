@@ -81,7 +81,7 @@ TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
         base::BindOnce(std::move(callback), std::move(metadata), match_info));
     return absl::nullopt;
   }
-  return std::make_pair(std::move(metadata), match_info);
+  return std::pair(std::move(metadata), match_info);
 }
 
 absl::optional<FirstPartySetEntry>

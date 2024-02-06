@@ -180,8 +180,8 @@ size_t WebSocketInflater::OutputBuffer::Size() const {
 
 std::pair<char*, size_t> WebSocketInflater::OutputBuffer::GetTail() {
   DCHECK_LT(tail_, buffer_.size());
-  return std::make_pair(&buffer_[tail_],
-                        std::min(capacity_ - Size(), buffer_.size() - tail_));
+  return std::pair(&buffer_[tail_],
+                   std::min(capacity_ - Size(), buffer_.size() - tail_));
 }
 
 void WebSocketInflater::OutputBuffer::Read(char* dest, size_t size) {
@@ -227,11 +227,11 @@ WebSocketInflater::InputQueue::~InputQueue() = default;
 std::pair<char*, size_t> WebSocketInflater::InputQueue::Top() {
   DCHECK(!IsEmpty());
   if (buffers_.size() == 1) {
-    return std::make_pair(&buffers_.front()->data()[head_of_first_buffer_],
-                          tail_of_last_buffer_ - head_of_first_buffer_);
+    return std::pair(&buffers_.front()->data()[head_of_first_buffer_],
+                     tail_of_last_buffer_ - head_of_first_buffer_);
   }
-  return std::make_pair(&buffers_.front()->data()[head_of_first_buffer_],
-                        capacity_ - head_of_first_buffer_);
+  return std::pair(&buffers_.front()->data()[head_of_first_buffer_],
+                   capacity_ - head_of_first_buffer_);
 }
 
 void WebSocketInflater::InputQueue::Push(const char* data, size_t size) {

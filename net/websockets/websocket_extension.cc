@@ -44,10 +44,10 @@ bool WebSocketExtension::Equals(const WebSocketExtension& other) const {
 
   std::multimap<std::string, std::string> this_parameters, other_parameters;
   for (const auto& p : parameters_) {
-    this_parameters.insert(std::make_pair(p.name(), p.value()));
+    this_parameters.emplace(p.name(), p.value());
   }
   for (const auto& p : other.parameters_) {
-    other_parameters.insert(std::make_pair(p.name(), p.value()));
+    other_parameters.emplace(p.name(), p.value());
   }
   return this_parameters == other_parameters;
 }

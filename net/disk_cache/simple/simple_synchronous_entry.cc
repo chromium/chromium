@@ -1984,7 +1984,7 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
     range.length = range_header.length;
     range.data_crc32 = range_header.data_crc32;
     range.file_offset = range_header_offset + sizeof(range_header);
-    sparse_ranges_.insert(std::make_pair(range.offset, range));
+    sparse_ranges_.emplace(range.offset, range);
 
     range_header_offset += sizeof(range_header) + range.length;
 
@@ -2105,7 +2105,7 @@ bool SimpleSynchronousEntry::AppendSparseRange(base::File* sparse_file,
   range.length = len;
   range.data_crc32 = data_crc32;
   range.file_offset = data_file_offset;
-  sparse_ranges_.insert(std::make_pair(offset, range));
+  sparse_ranges_.emplace(offset, range);
 
   return true;
 }

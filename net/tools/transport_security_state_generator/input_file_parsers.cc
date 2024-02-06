@@ -404,9 +404,9 @@ bool ParseJSON(base::StringPiece hsts_json,
       return false;
     }
 
-    pins_map[*maybe_hostname] = std::make_pair(
-        *maybe_pinset,
-        parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false));
+    pins_map[*maybe_hostname] =
+        std::pair(*maybe_pinset,
+                  parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false));
   }
 
   const base::Value::List* preload_entries_list =

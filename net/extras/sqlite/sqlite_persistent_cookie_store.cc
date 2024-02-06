@@ -1159,8 +1159,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     // When queueing the operation, see if it overwrites any already pending
     // ones for the same row.
     auto key = cc.StrictlyUniqueKey();
-    auto iter_and_result =
-        pending_.insert(std::make_pair(key, PendingOperationsForKey()));
+    auto iter_and_result = pending_.emplace(key, PendingOperationsForKey());
     PendingOperationsForKey& ops_for_key = iter_and_result.first->second;
     if (!iter_and_result.second) {
       // Insert failed -> already have ops.

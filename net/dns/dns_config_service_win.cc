@@ -115,10 +115,10 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
   IPAddress loopback_ipv6 = IPAddress::IPv6Localhost();
 
   // This does not override any pre-existing entries from the HOSTS file.
-  in_out_hosts.insert(std::make_pair(
-      DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4), loopback_ipv4));
-  in_out_hosts.insert(std::make_pair(
-      DnsHostsKey("localhost", ADDRESS_FAMILY_IPV6), loopback_ipv6));
+  in_out_hosts.emplace(DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4),
+                       loopback_ipv4);
+  in_out_hosts.emplace(DnsHostsKey("localhost", ADDRESS_FAMILY_IPV6),
+                       loopback_ipv6);
 
   wchar_t buffer[MAX_PATH];
   DWORD size = MAX_PATH;

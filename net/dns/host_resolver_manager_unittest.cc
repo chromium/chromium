@@ -3808,7 +3808,7 @@ class TestMdnsListenerDelegate : public HostResolver::MdnsListener::Delegate {
       MdnsListenerUpdateType update_type,
       DnsQueryType query_type,
       T result) {
-    return std::make_pair(std::make_pair(update_type, query_type), result);
+    return std::pair(std::pair(update_type, query_type), result);
   }
 
  private:
@@ -4049,8 +4049,8 @@ TEST_F(HostResolverManagerTest, MdnsListener_RootDomain) {
                                       sizeof(kMdnsResponsePtrRoot));
 
   EXPECT_THAT(delegate.unhandled_results(),
-              testing::ElementsAre(std::make_pair(
-                  MdnsListenerUpdateType::kAdded, DnsQueryType::PTR)));
+              testing::ElementsAre(std::pair(MdnsListenerUpdateType::kAdded,
+                                             DnsQueryType::PTR)));
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());

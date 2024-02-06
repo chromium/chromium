@@ -583,8 +583,7 @@ void SQLitePersistentReportingAndNelStore::Backend::AddReportingEndpoint(
       PendingOperationType::ADD, endpoint);
   if (!po)
     return;
-  ReportingEndpointKey key =
-      std::make_pair(endpoint.group_key, endpoint.info.url);
+  ReportingEndpointKey key = std::pair(endpoint.group_key, endpoint.info.url);
   BatchOperation(std::move(key), std::move(po),
                  &reporting_endpoint_pending_ops_);
 }
@@ -616,8 +615,7 @@ void SQLitePersistentReportingAndNelStore::Backend::
       PendingOperationType::UPDATE_DETAILS, endpoint);
   if (!po)
     return;
-  ReportingEndpointKey key =
-      std::make_pair(endpoint.group_key, endpoint.info.url);
+  ReportingEndpointKey key = std::pair(endpoint.group_key, endpoint.info.url);
   BatchOperation(std::move(key), std::move(po),
                  &reporting_endpoint_pending_ops_);
 }
@@ -639,8 +637,7 @@ void SQLitePersistentReportingAndNelStore::Backend::DeleteReportingEndpoint(
       PendingOperationType::DELETE, endpoint);
   if (!po)
     return;
-  ReportingEndpointKey key =
-      std::make_pair(endpoint.group_key, endpoint.info.url);
+  ReportingEndpointKey key = std::pair(endpoint.group_key, endpoint.info.url);
   BatchOperation(std::move(key), std::move(po),
                  &reporting_endpoint_pending_ops_);
 }
@@ -1178,8 +1175,8 @@ void SQLitePersistentReportingAndNelStore::Backend::BatchOperation(
     base::AutoLock locked(lock_);
 
     std::pair<typename QueueType<KeyType, DataType>::iterator, bool>
-        iter_and_result = queue->insert(std::make_pair(
-            std::move(key), PendingOperationsVector<DataType>()));
+        iter_and_result =
+            queue->emplace(std::move(key), PendingOperationsVector<DataType>());
     PendingOperationsVector<DataType>* ops_for_key =
         &iter_and_result.first->second;
     // If the insert failed, then we already have operations for this

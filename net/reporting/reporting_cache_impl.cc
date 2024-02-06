@@ -642,10 +642,9 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
         ++endpoints_it;
         continue;
       }
-      EndpointMap::iterator inserted = endpoints_.insert(
-          std::make_pair(group_key, std::move(*endpoints_it)));
-      endpoint_its_by_url_.insert(
-          std::make_pair(inserted->second.info.url, inserted));
+      EndpointMap::iterator inserted =
+          endpoints_.emplace(group_key, std::move(*endpoints_it));
+      endpoint_its_by_url_.emplace(inserted->second.info.url, inserted);
       ++cur_group_endpoints_count;
       ++endpoints_it;
     }
@@ -656,8 +655,8 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
         client->origin != group_key.origin) {
       // Store the old client and start a new one.
       if (client) {
-        ClientMap::iterator client_it = clients_.insert(
-            std::make_pair(client->origin.host(), std::move(*client)));
+        ClientMap::iterator client_it =
+            clients_.emplace(client->origin.host(), std::move(*client));
         EnforcePerClientAndGlobalEndpointLimits(client_it);
       }
       DCHECK(FindClientIt(group_key) == clients_.end());
@@ -669,7 +668,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
     client->endpoint_count += cur_group_endpoints_count;
     client->last_used = std::max(client->last_used, group.last_used);
 
-    endpoint_groups_.insert(std::make_pair(group_key, std::move(group)));
+    endpoint_groups_.emplace(group_key, std::move(group));
 
     ++endpoint_groups_it;
   }
@@ -677,8 +676,8 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
   if (client) {
     DCHECK(FindClientIt(client->network_anonymization_key, client->origin) ==
            clients_.end());
-    ClientMap::iterator client_it = clients_.insert(
-        std::make_pair(client->origin.host(), std::move(*client)));
+    ClientMap::iterator client_it =
+        clients_.emplace(client->origin.host(), std::move(*client));
     EnforcePerClientAndGlobalEndpointLimits(client_it);
   }
 
@@ -915,7 +914,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
   if (client_it == clients_.end()) {
     Client new_client(group_key.network_anonymization_key, group_key.origin);
     std::string domain = group_key.origin.host();
-    client_it = clients_.insert(std::make_pair(domain, std::move(new_client)));
+    client_it = clients_.emplace(domain, std::move(new_client));
   }
 
   base::Time now = clock().Now();
@@ -925,9 +924,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
   if (group_it == endpoint_groups_.end()) {
     CachedReportingEndpointGroup new_group(group_key, include_subdomains,
                                            expires, now);
-    group_it =
-        endpoint_groups_.insert(std::make_pair(group_key, std::move(new_group)))
-            .first;
+    group_it = endpoint_groups_.emplace(group_key, std::move(new_group)).first;
     client_it->second.endpoint_group_names.insert(group_key.group_name);
   } else {
     // Otherwise, update the existing entry
@@ -946,8 +943,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
     info.priority = priority;
     info.weight = weight;
     ReportingEndpoint new_endpoint(group_key, info);
-    endpoint_it =
-        endpoints_.insert(std::make_pair(group_key, std::move(new_endpoint)));
+    endpoint_it = endpoints_.emplace(group_key, std::move(new_endpoint));
     AddEndpointItToIndex(endpoint_it);
     ++client_it->second.endpoint_count;
   } else {
@@ -1027,8 +1023,8 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
     total_endpoint_count += client.endpoint_count;
     total_endpoint_group_count += ConsistencyCheckClient(domain, client);
 
-    auto inserted = nik_origin_pairs_in_cache.insert(
-        std::make_pair(client.network_anonymization_key, client.origin));
+    auto inserted = nik_origin_pairs_in_cache.emplace(
+        client.network_anonymization_key, client.origin);
     // We have not seen a duplicate client with the same NAK and origin.
     DCHECK(inserted.second);
   }
@@ -1191,8 +1187,7 @@ ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::AddOrUpdateClient(
   // Add a new client for this NAK and origin.
   if (client_it == clients_.end()) {
     std::string domain = new_client.origin.host();
-    client_it = clients_.insert(
-        std::make_pair(std::move(domain), std::move(new_client)));
+    client_it = clients_.emplace(std::move(domain), std::move(new_client));
   } else {
     // If an entry already existed, just update it.
     Client& old_client = client_it->second;
@@ -1217,8 +1212,7 @@ void ReportingCacheImpl::AddOrUpdateEndpointGroup(
     if (context_->IsClientDataPersisted())
       store()->AddReportingEndpointGroup(new_group);
 
-    endpoint_groups_.insert(
-        std::make_pair(new_group.group_key, std::move(new_group)));
+    endpoint_groups_.emplace(new_group.group_key, std::move(new_group));
     return;
   }
 
@@ -1244,8 +1238,8 @@ void ReportingCacheImpl::AddOrUpdateEndpoint(ReportingEndpoint new_endpoint) {
     if (context_->IsClientDataPersisted())
       store()->AddReportingEndpoint(new_endpoint);
 
-    endpoint_it = endpoints_.insert(
-        std::make_pair(new_endpoint.group_key, std::move(new_endpoint)));
+    endpoint_it =
+        endpoints_.emplace(new_endpoint.group_key, std::move(new_endpoint));
     AddEndpointItToIndex(endpoint_it);
 
     // If the client already exists, update its endpoint count.
@@ -1592,7 +1586,7 @@ bool ReportingCacheImpl::RemoveExpiredOrStaleGroups(
 void ReportingCacheImpl::AddEndpointItToIndex(
     EndpointMap::iterator endpoint_it) {
   const GURL& url = endpoint_it->second.info.url;
-  endpoint_its_by_url_.insert(std::make_pair(url, endpoint_it));
+  endpoint_its_by_url_.emplace(url, endpoint_it);
 }
 
 void ReportingCacheImpl::RemoveEndpointItFromIndex(

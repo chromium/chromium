@@ -1144,8 +1144,8 @@ void QuicTestPacketMaker::AddQuicAckFrame(uint64_t first_received,
   ack_frame->largest_acked = quic::QuicPacketNumber(largest_received);
   ack_frame->ack_delay_time = quic::QuicTime::Delta::Zero();
   for (uint64_t i = smallest_received; i <= largest_received; ++i) {
-    ack_frame->received_packet_times.push_back(
-        std::make_pair(quic::QuicPacketNumber(i), clock_->Now()));
+    ack_frame->received_packet_times.emplace_back(quic::QuicPacketNumber(i),
+                                                  clock_->Now());
   }
   if (largest_received > 0) {
     DCHECK_GE(largest_received, first_received);

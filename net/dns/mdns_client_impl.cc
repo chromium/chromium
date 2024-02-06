@@ -143,7 +143,7 @@ void MDnsConnection::SocketHandler::OnDatagramReceived(int rv) {
 void MDnsConnection::SocketHandler::Send(const scoped_refptr<IOBuffer>& buffer,
                                          unsigned size) {
   if (send_in_progress_) {
-    send_queue_.push(std::make_pair(buffer, size));
+    send_queue_.emplace(buffer, size);
     return;
   }
   int rv =
@@ -317,7 +317,7 @@ void MDnsClientImpl::Core::HandlePacket(DnsResponse* response,
     // Cleanup time may have changed.
     ScheduleCleanup(cache_.next_expiration());
 
-    update_keys.insert(std::make_pair(update_key, update));
+    update_keys.emplace(update_key, update);
   }
 
   for (const auto& update_key : update_keys) {
