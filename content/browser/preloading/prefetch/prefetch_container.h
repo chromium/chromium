@@ -43,6 +43,7 @@ class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -94,7 +95,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // When `matcher` is null (only in unit tests),
   // `PreloadingData::GetSameURLMatcher` is used.
   PrefetchContainer(
-      const GlobalRenderFrameHostId& referring_render_frame_host_id,
+      RenderFrameHostImpl& referring_render_frame_host,
       const blink::DocumentToken& referring_document_token,
       const GURL& url,
       const PrefetchType& prefetch_type,
@@ -157,6 +158,7 @@ class CONTENT_EXPORT PrefetchContainer {
   GlobalRenderFrameHostId GetReferringRenderFrameHostId() const {
     return referring_render_frame_host_id_;
   }
+  bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
 
   // The initial URL that was requested to be prefetched.
   const GURL& GetURL() const { return key_.prefetch_url(); }
@@ -184,8 +186,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
-  const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
-
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
@@ -195,8 +195,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void UpdateReferrer(
       const GURL& new_referrer_url,
       const network::mojom::ReferrerPolicy& new_referrer_policy);
-
-  const net::SchemefulSite& GetReferringSite() const { return referring_site_; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const {
     return no_vary_search_hint_;
@@ -555,6 +553,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
+  // The origin of the page that requested the prefetch.
+  const url::Origin referring_origin_;
+  // The URL of the page that requested the prefetch, stored as a hash as we
+  // just need it for equality checks for metrics.
+  const size_t referring_url_hash_;
 
   // The key used to match this PrefetchContainer, including the URL that was
   // requested to prefetch.
@@ -569,10 +572,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The referrer to use for the request.
   blink::mojom::Referrer referrer_;
-
-  // The origin and site of the page that requested the prefetched.
-  url::Origin referring_origin_;
-  net::SchemefulSite referring_site_;
 
   // Information about the current prefetch request. Updated when a redirect is
   // encountered, whether or not the direct can be processed by the same URL

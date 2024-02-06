@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -85,6 +86,8 @@ class PrefetchNetworkContextTest : public RenderViewHostTestHarness {
 
 TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
   const GURL kReferringUrl = GURL("https://test.referring.origin.com");
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                    kReferringUrl);
 
   EXPECT_CALL(
       *test_content_browser_client(),
@@ -101,16 +104,13 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
           testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
           testing::IsNull(), testing::IsNull()));
 
-  blink::mojom::Referrer referring_origin;
-  referring_origin.url = kReferringUrl;
-
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
           /*use_isolated_network_context=*/true,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          referring_origin, main_rfh()->GetGlobalId());
+          main_rfh()->GetGlobalId());
 
   prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
@@ -118,6 +118,8 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
 TEST_F(PrefetchNetworkContextTest,
        CreateURLLoaderFactoryInDefaultNetworkContext) {
   const GURL kReferringUrl = GURL("https://test.referring.origin.com");
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                    kReferringUrl);
 
   EXPECT_CALL(
       *test_content_browser_client(),
@@ -134,16 +136,13 @@ TEST_F(PrefetchNetworkContextTest,
           testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
           testing::IsNull(), testing::IsNull()));
 
-  blink::mojom::Referrer referring_origin;
-  referring_origin.url = kReferringUrl;
-
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
           /*use_isolated_network_context=*/false,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          referring_origin, main_rfh()->GetGlobalId());
+          main_rfh()->GetGlobalId());
 
   prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }

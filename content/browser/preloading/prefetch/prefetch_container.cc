@@ -29,6 +29,8 @@
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
@@ -352,8 +354,7 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
 // during serving.
 class PrefetchContainer::SinglePrefetch {
  public:
-  explicit SinglePrefetch(const GURL& url,
-                          const net::SchemefulSite& referring_site);
+  explicit SinglePrefetch(const GURL& url, const url::Origin& referring_origin);
   ~SinglePrefetch();
 
   SinglePrefetch(const SinglePrefetch&) = delete;
@@ -396,7 +397,7 @@ class PrefetchContainer::SinglePrefetch {
 };
 
 PrefetchContainer::PrefetchContainer(
-    const GlobalRenderFrameHostId& referring_render_frame_host_id,
+    RenderFrameHostImpl& referring_render_frame_host,
     const blink::DocumentToken& referring_document_token,
     const GURL& url,
     const PrefetchType& prefetch_type,
@@ -404,39 +405,39 @@ PrefetchContainer::PrefetchContainer(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     PreloadingURLMatchCallback matcher)
-    : referring_render_frame_host_id_(referring_render_frame_host_id),
+    : referring_render_frame_host_id_(
+          referring_render_frame_host.GetGlobalId()),
+      referring_origin_(referring_render_frame_host.GetLastCommittedOrigin()),
+      referring_url_hash_(base::FastHash(
+          referring_render_frame_host.GetLastCommittedURL().spec())),
       key_(referring_document_token, url),
       prefetch_type_(prefetch_type),
       referrer_(referrer),
-      referring_origin_(url::Origin::Create(referrer_.url)),
-      referring_site_(net::SchemefulSite(referrer_.url)),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       prefetch_document_manager_(prefetch_document_manager),
       ukm_source_id_(GetUkmSourceId(prefetch_document_manager_)),
-      request_id_(base::UnguessableToken::Create().ToString()) {
-  auto* rfhi = RenderFrameHostImpl::FromID(referring_render_frame_host_id);
-  // Note: |rfhi| is only nullptr in unit tests.
-  if (rfhi) {
-    auto* web_contents = WebContents::FromRenderFrameHost(rfhi);
-    auto* preloading_data =
-        PreloadingData::GetOrCreateForWebContents(web_contents);
-    if (!matcher) {
-      matcher = PreloadingData::GetSameURLMatcher(GetURL());
-    }
-    auto* attempt = static_cast<PreloadingAttemptImpl*>(
-        preloading_data->AddPreloadingAttempt(
-            GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-            PreloadingType::kPrefetch, std::move(matcher),
-            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
-    attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
-    attempt_ = attempt->GetWeakPtr();
-    initiator_devtools_navigation_token_ = rfhi->GetDevToolsNavigationToken();
+      request_id_(base::UnguessableToken::Create().ToString()),
+      initiator_devtools_navigation_token_(
+          referring_render_frame_host.GetDevToolsNavigationToken()) {
+  auto* web_contents =
+      WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host);
+  auto* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents);
+  if (!matcher) {
+    matcher = PreloadingData::GetSameURLMatcher(GetURL());
   }
+  auto* attempt =
+      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
+          GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
+          PreloadingType::kPrefetch, std::move(matcher),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+  attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
+  attempt_ = attempt->GetWeakPtr();
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 
   redirect_chain_.push_back(
-      std::make_unique<SinglePrefetch>(GetURL(), referring_site_));
+      std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -580,7 +581,7 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
             .emplace(is_isolated_network_context_required,
                      std::make_unique<PrefetchNetworkContext>(
                          is_isolated_network_context_required, prefetch_type_,
-                         referrer_, referring_render_frame_host_id_))
+                         referring_render_frame_host_id_))
             .first;
   }
 
@@ -714,8 +715,8 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   resource_request_->referrer = GURL(redirect_info.new_referrer);
   resource_request_->referrer_policy = redirect_info.new_referrer_policy;
 
-  redirect_chain_.push_back(
-      std::make_unique<SinglePrefetch>(redirect_info.new_url, referring_site_));
+  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
+      redirect_info.new_url, referring_origin_));
 }
 
 void PrefetchContainer::RegisterCookieListener(
@@ -1188,6 +1189,11 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
+bool PrefetchContainer::HasSameReferringURLForMetrics(
+    const PrefetchContainer& other) const {
+  return referring_url_hash_ == other.referring_url_hash_;
+}
+
 GURL PrefetchContainer::GetCurrentURL() const {
   return GetCurrentSinglePrefetchToPrefetch().url_;
 }
@@ -1259,9 +1265,9 @@ void PrefetchContainer::MakeResourceRequest(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->method = "GET";
-  request->referrer = GetReferrer().url;
+  request->referrer = referrer_.url;
   request->referrer_policy =
-      Referrer::ReferrerPolicyForUrlRequest(GetReferrer().policy);
+      Referrer::ReferrerPolicyForUrlRequest(referrer_.policy);
   request->enable_load_timing = true;
   // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
   // separate network context, which means responses cached before the prefetch
@@ -1373,10 +1379,10 @@ CONTENT_EXPORT std::ostream& operator<<(
 
 PrefetchContainer::SinglePrefetch::SinglePrefetch(
     const GURL& url,
-    const net::SchemefulSite& referring_site)
+    const url::Origin& referring_origin)
     : url_(url),
-      is_isolated_network_context_required_(referring_site !=
-                                            net::SchemefulSite(url_)),
+      is_isolated_network_context_required_(
+          net::SchemefulSite(referring_origin) != net::SchemefulSite(url_)),
       response_reader_(base::MakeRefCounted<PrefetchResponseReader>()) {}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() {

@@ -32,6 +32,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/render_process_host.h"
@@ -217,6 +218,9 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
 
+    NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com/referrer"));
+
     auto navigation_simulator = NavigationSimulator::CreateBrowserInitiated(
         GURL("https://test.com"), web_contents());
     navigation_simulator->Start();
@@ -245,6 +249,10 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return static_cast<TestPrefetchService*>(
         PrefetchService::GetFromFrameTreeNodeId(
             web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
+  }
+
+  RenderFrameHostImpl* main_rfhi() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh());
   }
 
   PrefetchURLLoaderInterceptor* interceptor() { return interceptor_.get(); }
@@ -453,7 +461,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -531,7 +539,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -613,15 +621,13 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   // No cookies are copied for prefetches where |use_isolated_network_context|
   // is false (i.e. same origin prefetches).
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          referrer,
+          blink::mojom::Referrer(),
           /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
@@ -714,7 +720,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   // Without a prefetched response, the navigation shouldn't be intercepted.
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -767,7 +773,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -825,7 +831,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -878,7 +884,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
-  const GURL kTestUrl("https://example.com");
+  const GURL kTestUrl("https://cross-site.example");
 
   EXPECT_CALL(
       *test_content_browser_client(),
@@ -898,7 +904,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -947,14 +953,14 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
-  const GURL kTestUrl("https://example.com");
+  const GURL kTestUrl("https://cross-site.example");
 
   EXPECT_CALL(*test_content_browser_client(), WillCreateURLLoaderFactory)
       .Times(0);
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -1037,7 +1043,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -1221,7 +1227,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
@@ -1334,16 +1340,13 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
           testing::IsNull(), testing::IsNull()))
       .Times(2);
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
-
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
-          main_rfh()->GetGlobalId(), MainDocumentToken(), kTestUrl,
+          *main_rfhi(), MainDocumentToken(), kTestUrl,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
-          referrer,
+          blink::mojom::Referrer(),
           /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);

@@ -39,6 +39,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1381,6 +1382,8 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 }
 
 TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   // Assume we have a delegate which will not grant access to the proxy for this
@@ -1395,15 +1398,11 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
 
   MakePrefetchService(std::move(mock_prefetch_service_delegate));
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
-
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -1966,6 +1965,8 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
 }
 
 TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -1973,14 +1974,11 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
 
   ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"));
@@ -2068,6 +2066,8 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
   SameOriginPrefetchIgnoresProxyRequirement
 #endif
 TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2075,14 +2075,11 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
 
   // Make a same-origin prefetch that requires the proxy. The proxy requirement
   // is only enforced for cross-origin requests.
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"));
@@ -2110,6 +2107,8 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
 #endif
 TEST_F(PrefetchServiceTest,
        MAYBE_NotEligibleSameSiteCrossOriginPrefetchRequiresProxy) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2117,14 +2116,11 @@ TEST_F(PrefetchServiceTest,
 
   // Make a same-site cross-origin prefetch that requires the proxy. These types
   // of prefetches are blocked.
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(RequestCount(), 0);
@@ -2172,6 +2168,8 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 }
 
 TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2183,14 +2181,11 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
   PrefetchService::SetNetworkContextForProxyLookupForTesting(
       &network_context_for_proxy_lookup);
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"));
@@ -3247,19 +3242,18 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_PrefetchSameOriginEligibleRedirect) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
 
   task_environment()->RunUntilIdle();
 
@@ -3311,19 +3305,18 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_IneligibleSameSiteCrossOriginRequiresProxyRedirect) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
 
   task_environment()->RunUntilIdle();
 
@@ -3375,19 +3368,18 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_RedirectDefaultToIsolatedNetworkContextTransition) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"));
@@ -3443,19 +3435,18 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_RedirectDefaultToIsolatedNetworkContextTransitionWithProxy) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   // The same-origin request should not use the proxy.
@@ -3514,19 +3505,18 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_RedirectIsolatedToDefaultNetworkContextTransition) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://other.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://other.com"),
@@ -3600,19 +3590,18 @@ class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
 #endif
 TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
        MAYBE_RedirectNetworkContextTransitionBlockUntilHead) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  blink::mojom::Referrer referrer;
-  referrer.url = GURL("https://example.com/referrer");
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/false,
-                   blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/referrer);
+                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"));
@@ -3678,6 +3667,8 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
 #endif
 TEST_F(PrefetchServiceAllowRedirectTest,
        MAYBE_RedirectInsufficientReferrerPolicy) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://referrer.com"));
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(

@@ -37,11 +37,9 @@ namespace content {
 PrefetchNetworkContext::PrefetchNetworkContext(
     bool use_isolated_network_context,
     const PrefetchType& prefetch_type,
-    const blink::mojom::Referrer& referrer_,
     const GlobalRenderFrameHostId& referring_render_frame_host_id)
     : use_isolated_network_context_(use_isolated_network_context),
       prefetch_type_(prefetch_type),
-      referrer_(referrer_),
       referring_render_frame_host_id_(referring_render_frame_host_id) {}
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
@@ -196,7 +194,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
       url_loader_factory::ContentClientParams(
           browser_context, referring_render_frame_host,
           referring_render_frame_host->GetProcess()->GetID(),
-          url::Origin::Create(referrer_.url),
+          referring_render_frame_host->GetLastCommittedOrigin(),
           ukm::SourceIdObj::FromInt64(
               referring_render_frame_host->GetPageUkmSourceId()),
           &bypass_redirect_checks));
