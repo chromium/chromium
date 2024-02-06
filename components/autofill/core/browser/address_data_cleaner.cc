@@ -48,96 +48,61 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
          should_wait(syncer::ModelType::CONTACT_INFO);
 }
 
-// Goes through all the `existing_profiles` and merges all similar profiles
-// together. All the profiles except the results of the merges will be added to
-// `profile_guids_to_delete`.
-// Comparisons are done using `comparator`.
-void DeduplicateProfiles(
-    const AutofillProfileComparator comparator,
-    std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
-    std::set<std::string>& profiles_to_delete) {
-  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(
-      existing_profiles.size());
+// - Merges local profiles occurring earlier in `profiles` with mergeable other
+//   local profiles later in `profiles`, marking the earlier one as deletable.
+// - Marks local profiles that are subsets of account profiles as deletable.
+// Mergability is determined using `comparator`.
+// The elements of `profiles` are updated and potentially reordered.
+void DeduplicateProfiles(const AutofillProfileComparator& comparator,
+                         std::vector<AutofillProfile>& profiles,
+                         std::set<std::string>& profiles_to_delete) {
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
 
-  // Sort the profiles by ranking score. That way the most relevant profiles
-  // will get merged into the less relevant profiles, which keeps the syntax of
-  // the most relevant profiles data.
-  // Since profiles earlier in the list are merged into profiles later in the
-  // list, `kLocalOrSyncable` profiles are placed before `kAccount` profiles.
-  // This is because local profiles can be merged into account profiles, but not
-  // the other way around.
-  // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
-  base::ranges::sort(
-      existing_profiles, [comparison_time = AutofillClock::Now()](
-                             const std::unique_ptr<AutofillProfile>& a,
-                             const std::unique_ptr<AutofillProfile>& b) {
-        if (a->source() != b->source()) {
-          return a->source() == AutofillProfile::Source::kLocalOrSyncable;
-        }
-        return a->HasGreaterRankingThan(b.get(), comparison_time);
+  // Partition the profiles into local and account profiles:
+  // - Local: [profiles.begin(), bgn_account_profiles[
+  // - Account: [bgn_account_profiles, profiles.end()[
+  auto bgn_account_profiles =
+      base::ranges::stable_partition(profiles, [](const AutofillProfile& p) {
+        return p.source() == AutofillProfile::Source::kLocalOrSyncable;
       });
 
-  for (auto i = existing_profiles.begin(); i != existing_profiles.end(); ++i) {
-    AutofillProfile* profile_to_merge = i->get();
-
-    // If the profile was set to be deleted, skip it. This can happen because
-    // the loop below reassigns `profile_to_merge` to (effectively) `j->get()`.
-    if (profiles_to_delete.contains(profile_to_merge->guid())) {
-      continue;
-    }
-
-    // Profiles in the account storage should not be silently deleted.
-    if (profile_to_merge->source() == AutofillProfile::Source::kAccount) {
-      continue;
-    }
-
-    // Try to merge `profile_to_merge` with a less relevant `existing_profiles`.
-    for (auto j = i + 1; j < existing_profiles.end(); ++j) {
-      AutofillProfile& existing_profile = **j;
-
-      // Don't try to merge a profile that was already set for deletion or that
-      // cannot be merged.
-      if (profiles_to_delete.contains(existing_profile.guid()) ||
-          !comparator.AreMergeable(existing_profile, *profile_to_merge)) {
-        continue;
-      }
-
-      // No new information should silently be introduced to the account
-      // storage. So for account profiles, only merge if the `kLocalOrSyncable`
-      // `profile_to_merge` is a subset.
-      if (existing_profile.source() == AutofillProfile::Source::kAccount &&
-          !profile_to_merge->IsSubsetOf(comparator, existing_profile)) {
-        continue;
-      }
-
-      // The profiles are found to be mergeable; update the existing profile.
-      existing_profile.MergeDataFrom(*profile_to_merge,
+  for (auto local_profile_it = profiles.begin();
+       local_profile_it != bgn_account_profiles; ++local_profile_it) {
+    // If possible, merge `*local_profile_it` with another local profile and
+    // remove it.
+    if (auto merge_candidate = base::ranges::find_if(
+            local_profile_it + 1, bgn_account_profiles,
+            [&](const AutofillProfile& local_profile2) {
+              return comparator.AreMergeable(*local_profile_it, local_profile2);
+            });
+        merge_candidate != bgn_account_profiles) {
+      merge_candidate->MergeDataFrom(*local_profile_it,
                                      comparator.app_locale());
-      profiles_to_delete.insert(profile_to_merge->guid());
-
+      profiles_to_delete.insert(local_profile_it->guid());
+      continue;
+    }
+    // `*local_profile_it` is not mergeable with another local profile. But it
+    // might be a subset of an account profile and can thus be removed.
+    if (auto superset_account_profile = base::ranges::find_if(
+            bgn_account_profiles, profiles.end(),
+            [&](const AutofillProfile& account_profile) {
+              return comparator.AreMergeable(*local_profile_it,
+                                             account_profile) &&
+                     local_profile_it->IsSubsetOf(comparator, account_profile);
+            });
+        superset_account_profile != profiles.end()) {
+      profiles_to_delete.insert(local_profile_it->guid());
       // Account profiles track from which service they originate. This allows
       // Autofill to distinguish between Chrome and non-Chrome account
       // profiles and measure the added utility of non-Chrome profiles. Since
-      // the `existing_profile` matched the information that was already
-      // present in Autofill (`profile_to_merge`), the account profile doesn't
+      // the `superset_account_profile` matched the information that was already
+      // present in Autofill (`*local_profile_it`), the account profile doesn't
       // provide any utility. To capture this in the metric, the merged
       // profile is treated as a Chrome account profile.
-      if (existing_profile.source() == AutofillProfile::Source::kAccount) {
-        existing_profile.set_initial_creator_id(
-            AutofillProfile::kInitialCreatorOrModifierChrome);
-        existing_profile.set_last_modifier_id(
-            AutofillProfile::kInitialCreatorOrModifierChrome);
-      }
-
-      // Now try to merge the new resulting profile with the rest of the
-      // existing profiles.
-      profile_to_merge = &existing_profile;
-      // Account profiles cannot be merged into other profiles, since that
-      // would delete them. Note that the `existing_profile` (now
-      // `profile_to_merge`) might be verified.
-      if (profile_to_merge->source() == AutofillProfile::Source::kAccount) {
-        break;
-      }
+      superset_account_profile->set_initial_creator_id(
+          AutofillProfile::kInitialCreatorOrModifierChrome);
+      superset_account_profile->set_last_modifier_id(
+          AutofillProfile::kInitialCreatorOrModifierChrome);
     }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
@@ -194,7 +159,8 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   }
 
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->GetProfiles(
+          PersonalDataManager::ProfileOrder::kHighestFrecencyDesc);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.size() < 2) {
     return;
@@ -203,21 +169,21 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   // `profiles` contains pointers to the PDM's state. Modifying them directly
   // won't update them in the database and calling `PDM:UpdateProfile()`
   // would discard them as a duplicate.
-  std::vector<std::unique_ptr<AutofillProfile>> new_profiles;
+  std::vector<AutofillProfile> deduplicated_profiles;
   for (const AutofillProfile* profile : profiles) {
-    new_profiles.push_back(std::make_unique<AutofillProfile>(*profile));
+    deduplicated_profiles.push_back(*profile);
   }
   std::set<std::string> profiles_to_delete;
   DeduplicateProfiles(
       AutofillProfileComparator(personal_data_manager_->app_locale()),
-      new_profiles, profiles_to_delete);
+      deduplicated_profiles, profiles_to_delete);
 
   // Apply the profile changes to the database.
-  for (const std::unique_ptr<AutofillProfile>& profile : new_profiles) {
-    if (profiles_to_delete.contains(profile->guid())) {
-      personal_data_manager_->RemoveByGUID(profile->guid());
+  for (const AutofillProfile& profile : deduplicated_profiles) {
+    if (profiles_to_delete.contains(profile.guid())) {
+      personal_data_manager_->RemoveByGUID(profile.guid());
     } else {
-      personal_data_manager_->UpdateProfile(*profile);
+      personal_data_manager_->UpdateProfile(profile);
     }
   }
 }
