@@ -79,6 +79,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // Returns apps::WindowInfoPtr for app launch interfaces.
   apps::WindowInfoPtr GetAppWindowInfo() const;
 
+  std::string ToString() const;
+
   bool operator==(const AppRestoreData& other) const;
 
   bool operator!=(const AppRestoreData& other) const;

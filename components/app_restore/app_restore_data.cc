@@ -355,7 +355,7 @@ base::Value AppRestoreData::ConvertToValue() const {
 
   if (!file_paths.empty()) {
     base::Value::List file_paths_list;
-    for (auto& file_path : file_paths) {
+    for (const base::FilePath& file_path : file_paths) {
       file_paths_list.Append(file_path.value());
     }
     launch_info_dict.Set(kFilePathsKey, std::move(file_paths_list));
@@ -367,7 +367,7 @@ base::Value AppRestoreData::ConvertToValue() const {
 
   if (!browser_extra_info.urls.empty()) {
     base::Value::List urls_list;
-    for (auto& url : browser_extra_info.urls) {
+    for (const GURL& url : browser_extra_info.urls) {
       urls_list.Append(url.spec());
     }
     launch_info_dict.Set(kUrlsKey, std::move(urls_list));
@@ -563,6 +563,10 @@ apps::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
     window_info->state = static_cast<int32_t>(window_state_type.value());
 
   return window_info;
+}
+
+std::string AppRestoreData::ToString() const {
+  return ConvertToValue().DebugString();
 }
 
 bool AppRestoreData::operator==(const AppRestoreData& other) const {

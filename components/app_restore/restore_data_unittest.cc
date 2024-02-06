@@ -854,46 +854,4 @@ TEST_F(RestoreDataTest, CompareAppRestoreDataIntent) {
   EXPECT_TRUE(*app_restore_data_1 == *app_restore_data_2);
 }
 
-TEST_F(RestoreDataTest, ToString) {
-  AddAppLaunchInfos();
-  ModifyWindowInfos();
-  ModifyThemeColors();
-  VerifyRestoreData(restore_data());
-  const std::string expected_string = base::StringPrintf(
-      "( (App ID: %s, Count: 2)(Window ID: %d)Activation index: %d \n"
-      "Desk: 1 \n"
-      "Desk guid: %s \n"
-      "Current bounds: %s \n"
-      "Window state: %d \n"
-      "Pre minimized show state: -1 \n"
-      "Snap percentage: -1 \n"
-      "Display id: -1 \n"
-      "App Title: %s(Window ID: %d)Activation index: %d \n"
-      "Desk: 2 \n"
-      "Desk guid: %s \n"
-      "Current bounds: %s \n"
-      "Window state: %d \n"
-      "Pre minimized show state: 3 \n"
-      "Snap percentage: -1 \n"
-      "Display id: -1 \n"
-      "App Title: %s(App ID: %s, Count: 1)(Window ID: %d)Activation index: %d "
-      "\n"
-      "Desk: -2 \nDesk guid: %s \n"
-      "Current bounds: %s \n"
-      "Window state: %d \n"
-      "Pre minimized show state: -1 \n"
-      "Snap percentage: 75 \n"
-      "Display id: -1 \nApp Title:  )",
-      kAppId1, kWindowId1, kActivationIndex1,
-      kDeskGuid1.AsLowercaseString().c_str(),
-      kCurrentBounds1.ToString().c_str(), static_cast<int>(kWindowStateType1),
-      base::UTF16ToUTF8(kTitle1).c_str(), kWindowId2, kActivationIndex2,
-      kDeskGuid2.AsLowercaseString().c_str(),
-      kCurrentBounds2.ToString().c_str(), static_cast<int>(kWindowStateType2),
-      base::UTF16ToUTF8(kTitle2).c_str(), kAppId2, kWindowId3,
-      kActivationIndex3, kDeskGuid3.AsLowercaseString().c_str(),
-      kCurrentBounds3.ToString().c_str(), static_cast<int>(kWindowStateType3));
-  EXPECT_EQ(restore_data().ToString(), expected_string);
-}
-
 }  // namespace app_restore

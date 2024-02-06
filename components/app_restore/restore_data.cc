@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/i18n/number_formatting.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -140,13 +138,11 @@ bool RestoreData::HasAppTypeBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  for (const auto& data : it->second) {
-    if (data.second->browser_extra_info.app_type_browser.has_value() &&
-        data.second->browser_extra_info.app_type_browser.value()) {
-      return true;
-    }
-  }
-  return false;
+  return base::ranges::any_of(
+      it->second,
+      [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
+        return data.second->browser_extra_info.app_type_browser.value_or(false);
+      });
 }
 
 bool RestoreData::HasBrowser() const {
@@ -154,13 +150,12 @@ bool RestoreData::HasBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  for (const auto& data : it->second) {
-    if (!data.second->browser_extra_info.app_type_browser.has_value() ||
-        !data.second->browser_extra_info.app_type_browser.value()) {
-      return true;
-    }
-  }
-  return false;
+  return base::ranges::any_of(
+      it->second,
+      [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
+        return !data.second->browser_extra_info.app_type_browser.value_or(
+            false);
+      });
 }
 
 bool RestoreData::HasAppRestoreData(const std::string& app_id,
@@ -347,33 +342,7 @@ void RestoreData::UpdateBrowserAppIdToLacros() {
 }
 
 std::string RestoreData::ToString() const {
-  if (app_id_to_launch_list_.empty() && !removing_desk_guid_.is_valid()) {
-    return "empty";
-  }
-
-  std::string result = "( ";
-  for (const auto& entry : app_id_to_launch_list_) {
-    result += base::StringPrintf(
-        "(App ID: %s, Count: %s)", entry.first.c_str(),
-        base::UTF16ToUTF8(base::FormatNumber(entry.second.size())).c_str());
-    for (const auto& windows : entry.second) {
-      result +=
-          base::StringPrintf(
-              "(Window ID: %s)",
-              base::UTF16ToUTF8(base::FormatNumber(windows.first)).c_str()) +
-          windows.second->GetWindowInfo()->ToString();
-    }
-  }
-
-  result += " )";
-
-  if (removing_desk_guid_.is_valid()) {
-    result +=
-        base::StringPrintf(" (Removing Desk GUID: %s)",
-                           removing_desk_guid_.AsLowercaseString().c_str());
-  }
-
-  return result;
+  return ConvertToValue().DebugString();
 }
 
 AppRestoreData* RestoreData::GetAppRestoreDataMutable(const std::string& app_id,
