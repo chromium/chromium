@@ -1613,6 +1613,44 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
       ff_rfh->GetSiteInstance()->GetBrowsingInstanceId());
 }
 
+// A test to confirm that a FencedFrame fails to create inside a CSP sandbox
+// frame without allow-same-origin. This test should fail regardless of the
+// state of kIsolateSandboxedIframes or kIsolateFencedFrames.
+IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
+                       NoFencedFramesInIsolatedSandboxedIframes) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+  ASSERT_TRUE(https_server()->Start());
+
+  // Load CSP sandboxed frame as mainframe.
+  const GURL main_url =
+      https_server()->GetURL("a.test", "/fenced_frames/sandbox_flags.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(primary_main_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+
+  // Try to load FencedFrame inside the CSP sandboxed frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  // Extracted from CreateFencedFrame, which doesn't expect to fail.
+  constexpr char kAddFencedFrameScript[] = R"({
+    const fenced_frame = document.createElement('fencedframe');
+    document.body.appendChild(fenced_frame);
+  })";
+  size_t previous_fenced_frame_count =
+      primary_main_frame_host()->GetFencedFrames().size();
+  EXPECT_EQ(0U, previous_fenced_frame_count);
+  // The following attempt to create a fenced frame is expected to fail since
+  // it would otherwise be contained in a sandbox that doesn't have the
+  // allow-same-origin attribute. See kFencedFrameMandatoryUnsandboxedFlags.
+  EXPECT_FALSE(ExecJs(primary_main_frame_host(), kAddFencedFrameScript,
+                      EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(previous_fenced_frame_count,
+            primary_main_frame_host()->GetFencedFrames().size());
+}
+
 class FencedFrameProcessIsolationBrowserTest
     : public FencedFrameMPArchBrowserTest {
  public:
