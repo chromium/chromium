@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
@@ -24,6 +25,7 @@
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/wayland/wayland_display_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/test/display_test_util.h"
 #endif
@@ -246,10 +248,23 @@ void WaylandInputEmulate::EmulateUpdateDisplay(const std::string& display_specs,
   VLOG(1) << "Updating display specs to: " << display_specs;
   if (zcr_ui_controls_v1_get_version(ui_controls_) >=
       ZCR_UI_CONTROLS_V1_DISPLAY_INFO_LIST_DONE_SINCE_VERSION) {
+    const std::vector<display::Display>& existing_displays =
+        display::Screen::GetScreen()->GetAllDisplays();
     auto info_list = display::CreateDisplayInfoListFromSpecs(
         display_specs, std::vector<display::Display>(), false);
 
+    // Reuse existing display IDs on the client side, and let the server side
+    // generate new IDs.
+    size_t existing_display_index = 0;
     for (const auto& pending_display : info_list) {
+      if (existing_display_index < existing_displays.size()) {
+        auto id_pair = ui::wayland::ToWaylandDisplayIdPair(
+            existing_displays[existing_display_index].id());
+        zcr_ui_controls_v1_set_display_info_id(ui_controls_, id_pair.high,
+                                               id_pair.low);
+        ++existing_display_index;
+      }
+
       zcr_ui_controls_v1_set_display_info_size(
           ui_controls_, pending_display.bounds_in_native().width(),
           pending_display.bounds_in_native().height());
