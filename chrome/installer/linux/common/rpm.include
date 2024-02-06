@@ -17,6 +17,8 @@ install_rpm_key() {
     "4EB27DB2A3B88B8B"
     # 2023 signing subkey
     "E88979FB9B30ACF2"
+    # 2024 signing subkey
+    "32EE5355A6BC6E42"
   )
 
   for SUB_KEY in "${SUB_KEY_LIST[@]}"; do
