@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/base/features.h"
@@ -365,6 +366,12 @@ void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {
 std::string PasswordStoreAndroidAccountBackend::GetAccountToRetryOperation() {
   CHECK(sync_service_);
   return GetSyncingAccount(sync_service_);
+}
+
+PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+PasswordStoreAndroidAccountBackend::GetStoreType() {
+  return PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+      kAccount;
 }
 
 void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(

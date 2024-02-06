@@ -178,4 +178,10 @@ std::string PasswordStoreAndroidLocalBackend::GetAccountToRetryOperation() {
   return std::string();
 }
 
+PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+PasswordStoreAndroidLocalBackend::GetStoreType() {
+  return PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+      kLocal;
+}
+
 }  // namespace password_manager

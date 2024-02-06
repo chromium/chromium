@@ -48,8 +48,7 @@ class PasswordStoreBackendMetricsRecorder {
   PasswordStoreBackendMetricsRecorder(
       BackendInfix backend_name,
       MethodName method_name,
-      PasswordStoreAndroidBackendType store_type =
-          PasswordStoreAndroidBackendType::kNone);
+      PasswordStoreAndroidBackendType store_type);
   PasswordStoreBackendMetricsRecorder(PasswordStoreBackendMetricsRecorder&&);
   PasswordStoreBackendMetricsRecorder& operator=(
       PasswordStoreBackendMetricsRecorder&&);

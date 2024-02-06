@@ -96,7 +96,9 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Success) {
         BackendInfix(kSomeBackend), MethodName(kSomeMethod), GetParam());
   } else {
     metrics_recorder = PasswordStoreBackendMetricsRecorder(
-        BackendInfix(kSomeBackend), MethodName(kSomeMethod));
+        BackendInfix(kSomeBackend), MethodName(kSomeMethod),
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+            kNone);
   }
 
   // Checking started requests in the overall and backend-specific histogram.
@@ -175,7 +177,9 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
         BackendInfix(kSomeBackend), MethodName(kSomeMethod), GetParam());
   } else {
     metrics_recorder = PasswordStoreBackendMetricsRecorder(
-        BackendInfix(kSomeBackend), MethodName(kSomeMethod));
+        BackendInfix(kSomeBackend), MethodName(kSomeMethod),
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+            kNone);
   }
 
   AdvanceClock(kLatencyDelta);
@@ -271,7 +275,9 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest,
         BackendInfix(kSomeBackend), MethodName(kSomeMethod), GetParam());
   } else {
     metrics_recorder = PasswordStoreBackendMetricsRecorder(
-        BackendInfix(kSomeBackend), MethodName(kSomeMethod));
+        BackendInfix(kSomeBackend), MethodName(kSomeMethod),
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+            kNone);
   }
 
   AdvanceClock(kLatencyDelta);
@@ -366,7 +372,9 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest,
         BackendInfix(kSomeBackend), MethodName(kSomeMethod), GetParam());
   } else {
     metrics_recorder = PasswordStoreBackendMetricsRecorder(
-        BackendInfix(kSomeBackend), MethodName(kSomeMethod));
+        BackendInfix(kSomeBackend), MethodName(kSomeMethod),
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+            kNone);
   }
 
   AdvanceClock(kLatencyDelta);
@@ -425,7 +433,9 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest,
         BackendInfix(kSomeBackend), MethodName(kSomeMethod), GetParam());
   } else {
     metrics_recorder = PasswordStoreBackendMetricsRecorder(
-        BackendInfix(kSomeBackend), MethodName(kSomeMethod));
+        BackendInfix(kSomeBackend), MethodName(kSomeMethod),
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+            kNone);
   }
 
   AdvanceClock(kLatencyDelta);

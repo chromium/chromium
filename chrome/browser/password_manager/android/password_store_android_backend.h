@@ -175,6 +175,10 @@ class PasswordStoreAndroidBackend
   virtual void OnCallToGMSCoreSucceeded() = 0;
   // Subclasses have to provide an account which will be used for retries.
   virtual std::string GetAccountToRetryOperation() = 0;
+  // Subclasses have to provide a store type that is used for tracking metrics
+  // that are split for local and account.
+  virtual PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+  GetStoreType() = 0;
 
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);
@@ -332,7 +336,9 @@ class PasswordStoreAndroidBackend
   // |callback|.
   static LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
       const MethodName& method_name,
-      LoginsOrErrorReply callback);
+      LoginsOrErrorReply callback,
+      PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+          store_type);
 
   // Creates a metrics recorder that records latency and success metrics for
   // store modification operation with |method_name| name prior to
@@ -340,7 +346,9 @@ class PasswordStoreAndroidBackend
   static PasswordChangesOrErrorReply
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MethodName& method_name,
-      PasswordChangesOrErrorReply callback);
+      PasswordChangesOrErrorReply callback,
+      PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+          store_type);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the

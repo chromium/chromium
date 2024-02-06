@@ -91,6 +91,8 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
       AndroidBackendAPIErrorCode error) override;
   void OnCallToGMSCoreSucceeded() override;
   std::string GetAccountToRetryOperation() override;
+  PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+  GetStoreType() override;
 
   // If |forms_or_error| contains forms, it retrieves and fills in affiliation
   // and branding information for Android credentials in the forms and invokes
