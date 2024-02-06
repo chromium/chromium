@@ -123,12 +123,14 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   /////////////////////////////////////////
   // Compose interactive UI test step helpers.
-  InteractiveTestApi::StepBuilder PressJsButton(
+  InteractiveTestApi::MultiStep PressJsButton(
       const ui::ElementIdentifier web_contents_id,
       const DeepQuery& button_query) {
     // This can close/navigate the current page, so don't wait for success.
-    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
-                       ExecuteJsMode::kFireAndForget);
+    return Steps(
+        EnsurePresent(web_contents_id, button_query),
+        ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
+                    ExecuteJsMode::kFireAndForget));
   }
 
   InteractiveTestApi::MultiStep WaitForElementToLoad(
@@ -335,8 +337,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // Flaky on all platforms: https://crbug.com/1517430
-IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest,
-                       DISABLED_OpenAndCloseCompose) {
+IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest, OpenAndCloseCompose) {
   RunTestSequence(
       MakePrimaryAccountAvailable(), InstrumentTab(kContentPageTabId),
       NavigateWebContents(
