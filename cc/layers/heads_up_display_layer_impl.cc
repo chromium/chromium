@@ -220,6 +220,14 @@ bool HeadsUpDisplayLayerImpl::WillDraw(
   return true;
 }
 
+void HeadsUpDisplayLayerImpl::DidDraw(
+    viz::ClientResourceProvider* resource_provider) {
+  LayerImpl::DidDraw(resource_provider);
+  // We always clear `placeholder_quad_` as drawing may get skipped and
+  // `UpdateHudTexture` might not get called.
+  placeholder_quad_ = nullptr;
+}
+
 void HeadsUpDisplayLayerImpl::AppendQuads(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
