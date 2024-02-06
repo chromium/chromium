@@ -18,15 +18,11 @@ namespace i18n {
 
 namespace {
 
-// Directory path to the tzdata configuration files.
-const char kTzDataDirPath[] = "/pkg/base/test/data/tzdata/icu/44/le";
+// Directory path to the tzdata configuration files, used in tests only.
+const char kTestTzDataDirPath[] = "/pkg/base/test/data/tzdata/icu/44/le";
 
 // File path to the text file containing the expected ICU library revision, for
-// example "2019c".
-// TODO(crbug.com/1360077): Remove once tzdata is fully migrated away from
-// config-data. I.e. all released Chromium versions in Fuchsia support it.
-const char kRevisionFilePath[] = "/config/data/tzdata/revision.txt";
-// Same as above, except the modern version.
+// example "2019c". This file is available in production.
 const char kTZDataRevisionFilePath[] = "/config/tzdata/icu/revision.txt";
 
 }  // namespace
@@ -67,18 +63,7 @@ class TimeZoneDataTest : public testing::Test {
 // that this test is not skipped. In Chromium build bot setup, this file may
 // not be present, in which case we skip running this test.
 TEST_F(TimeZoneDataTest, CompareSystemRevisionWithExpected) {
-  std::string revision_file_path;
-  if (base::PathExists(base::FilePath(kTZDataRevisionFilePath))) {
-    revision_file_path = kTZDataRevisionFilePath;
-  } else if (base::PathExists(base::FilePath(kRevisionFilePath))) {
-    // Legacy path.
-    revision_file_path = kRevisionFilePath;
-  }
-
-  if (revision_file_path.empty()) {
-    FAIL() << "No revision file found";
-  }
-
+  ASSERT_TRUE(base::PathExists(base::FilePath(kTZDataRevisionFilePath)));
   // ResetIcu() ensures that time zone data is loaded from the default location.
   // This is done after the GTEST_SKIP() call above, since that may output a
   // timestamp that requires ICU to be set up.
@@ -86,8 +71,9 @@ TEST_F(TimeZoneDataTest, CompareSystemRevisionWithExpected) {
 
   ASSERT_TRUE(InitializeICU());
   std::string expected;
-  EXPECT_TRUE(
-      base::ReadFileToString(base::FilePath(revision_file_path), &expected));
+  ASSERT_TRUE(base::ReadFileToString(base::FilePath(kTZDataRevisionFilePath),
+                                     &expected))
+      << "Could not read from path: " << kTZDataRevisionFilePath;
   std::string actual;
   GetActualRevision(&actual);
   EXPECT_EQ(expected, actual);
@@ -100,9 +86,9 @@ TEST_F(TimeZoneDataTest, CompareSystemRevisionWithExpected) {
 // this could be a sign that all platforms Chromium runs on need to upgrade the
 // ICU library versions.
 TEST_F(TimeZoneDataTest, TestLoadingTimeZoneDataFromKnownConfigs) {
-  ASSERT_TRUE(base::DirectoryExists(base::FilePath(kTzDataDirPath)));
+  ASSERT_TRUE(base::DirectoryExists(base::FilePath(kTestTzDataDirPath)));
   ResetIcu();
-  SetIcuTimeZoneDataDirForTesting(kTzDataDirPath);
+  SetIcuTimeZoneDataDirForTesting(kTestTzDataDirPath);
 
   ASSERT_TRUE(InitializeICU());
   std::string actual;
@@ -111,16 +97,14 @@ TEST_F(TimeZoneDataTest, TestLoadingTimeZoneDataFromKnownConfigs) {
                                 "version, tzdata version needs to be upgraded";
 }
 
-TEST_F(TimeZoneDataTest, DoesNotCrashWithInvalidPath) {
+using TimeZoneDataDeathTest = TimeZoneDataTest;
+
+TEST_F(TimeZoneDataDeathTest, CrashesWithNonexistentPath) {
   ResetIcu();
   SetIcuTimeZoneDataDirForTesting("/some/nonexistent/path");
 
-  ASSERT_TRUE(InitializeICU());
-  std::string actual;
-  GetActualRevision(&actual);
-  EXPECT_TRUE(
-      base::StartsWith(actual, "20", base::CompareCase::INSENSITIVE_ASCII))
-      << "Got version: " << actual;
+  EXPECT_DEATH(InitializeICU(),
+               "Could not open directory: '/some/nonexistent/path'");
 }
 
 }  // namespace i18n
