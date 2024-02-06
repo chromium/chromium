@@ -2916,9 +2916,11 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
       url::Origin::Create(GURL("https://b.example.com"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   // No keys should be returned before any values are set.
-  std::vector<BiddingAndAuctionServerKey> a_loaded_keys =
+  std::vector<BiddingAndAuctionServerKey> a_loaded_keys, b_loaded_keys;
+  base::Time a_expiration, b_expiration;
+  std::tie(a_expiration, a_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_a);
-  std::vector<BiddingAndAuctionServerKey> b_loaded_keys =
+  std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_TRUE(a_loaded_keys.empty());
   EXPECT_TRUE(b_loaded_keys.empty());
@@ -2927,8 +2929,10 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
   std::vector<BiddingAndAuctionServerKey> a_keys{{"1", 1}, {"2", 2}};
   base::Time expiration = base::Time::Now() + base::Seconds(5);
   storage->SetBiddingAndAuctionServerKeys(origin_a, a_keys, expiration);
-  a_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_a);
-  b_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_b);
+  std::tie(a_expiration, a_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_a);
+  std::tie(b_expiration, b_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_EQ(a_loaded_keys.size(), 2u);
   EXPECT_NE(a_loaded_keys[0].id, a_loaded_keys[1].id);
   for (const BiddingAndAuctionServerKey& key : a_loaded_keys) {
@@ -2936,13 +2940,16 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
                 (key.id == 2 && key.key == "2"));
   }
   EXPECT_TRUE(b_loaded_keys.empty());
+  EXPECT_EQ(expiration, a_expiration);
 
   // Setting values for a different origin shouldn't affect the previously
   // set values.
   std::vector<BiddingAndAuctionServerKey> b_keys{{"3", 3}};
   storage->SetBiddingAndAuctionServerKeys(origin_b, b_keys, expiration);
-  a_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_a);
-  b_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_b);
+  std::tie(a_expiration, a_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_a);
+  std::tie(b_expiration, b_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_EQ(a_loaded_keys.size(), 2u);
   EXPECT_NE(a_loaded_keys[0].id, a_loaded_keys[1].id);
   for (const BiddingAndAuctionServerKey& key : a_loaded_keys) {
@@ -2952,39 +2959,51 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
   EXPECT_EQ(b_loaded_keys.size(), 1u);
   EXPECT_EQ("3", b_loaded_keys[0].key);
   EXPECT_EQ(3, b_loaded_keys[0].id);
+  EXPECT_EQ(expiration, a_expiration);
+  EXPECT_EQ(expiration, b_expiration);
 
   // Resetting the keys should overwrite the previous keys.
   a_keys = {{"1", 1}};
   task_environment().FastForwardBy(base::Seconds(2));
   expiration = base::Time::Now() + base::Days(7);
   storage->SetBiddingAndAuctionServerKeys(origin_a, a_keys, expiration);
-  a_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_a);
-  b_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_b);
+  std::tie(a_expiration, a_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_a);
+  std::tie(b_expiration, b_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_EQ(a_loaded_keys.size(), 1u);
   EXPECT_EQ("1", a_loaded_keys[0].key);
   EXPECT_EQ(1, a_loaded_keys[0].id);
   EXPECT_EQ(b_loaded_keys.size(), 1u);
   EXPECT_EQ("3", b_loaded_keys[0].key);
   EXPECT_EQ(3, b_loaded_keys[0].id);
+  EXPECT_EQ(expiration, a_expiration);
+  EXPECT_NE(expiration, b_expiration);
 
   // Only get unexpired values.
   task_environment().FastForwardBy(base::Seconds(3));
-  a_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_a);
-  b_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_b);
+  std::tie(a_expiration, a_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_a);
+  std::tie(b_expiration, b_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_EQ(a_loaded_keys.size(), 1u);
   EXPECT_EQ("1", a_loaded_keys[0].key);
   EXPECT_EQ(1, a_loaded_keys[0].id);
   EXPECT_TRUE(b_loaded_keys.empty());
+  EXPECT_EQ(expiration, a_expiration);
 
   // DB maintenance should not delete unexpired values.
   EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
   EXPECT_NE(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
-  a_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_a);
-  b_loaded_keys = storage->GetBiddingAndAuctionServerKeys(origin_b);
+  std::tie(a_expiration, a_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_a);
+  std::tie(b_expiration, b_loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin_b);
   EXPECT_EQ(a_loaded_keys.size(), 1u);
   EXPECT_EQ("1", a_loaded_keys[0].key);
   EXPECT_EQ(1, a_loaded_keys[0].id);
+  EXPECT_EQ(expiration, a_expiration);
   EXPECT_TRUE(b_loaded_keys.empty());
 }
 

@@ -187,7 +187,8 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
-      max_reporting_round_duration_(kMaxReportingRoundDuration) {}
+      max_reporting_round_duration_(kMaxReportingRoundDuration),
+      ba_key_fetcher_(this) {}
 
 InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
 
@@ -488,6 +489,22 @@ void InterestGroupManagerImpl::UpdateInterestGroupPriorityOverrides(
         update_priority_signals_overrides) {
   caching_storage_.UpdateInterestGroupPriorityOverrides(
       group_key, std::move(update_priority_signals_overrides));
+}
+
+void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    base::Time expiration) {
+  caching_storage_.SetBiddingAndAuctionServerKeys(coordinator, keys,
+                                                  expiration);
+}
+void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    base::OnceCallback<
+        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
+        callback) {
+  caching_storage_.GetBiddingAndAuctionServerKeys(coordinator,
+                                                  std::move(callback));
 }
 
 void InterestGroupManagerImpl::ClearPermissionsCache() {

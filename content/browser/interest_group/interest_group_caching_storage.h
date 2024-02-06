@@ -243,6 +243,20 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides);
 
+  // Update B&A keys for a coordinator. This function will overwrite any
+  // existing keys for the coordinator.
+  void SetBiddingAndAuctionServerKeys(
+      const url::Origin& coordinator,
+      const std::vector<BiddingAndAuctionServerKey>& keys,
+      base::Time expiration);
+  // Load stored B&A server keys for a coordinator along with the keys'
+  // expiration.
+  void GetBiddingAndAuctionServerKeys(
+      const url::Origin& coordinator,
+      base::OnceCallback<
+          void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
+          callback);
+
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 

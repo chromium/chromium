@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -11,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +49,11 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
                                {{"FledgeBiddingAndAuctionKeyConfig",
                                  kKeyConfig}}}},
         /*disabled_features=*/{});
+    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
+    manager_ = std::make_unique<InterestGroupManagerImpl>(
+        temp_directory_.GetPath(), false,
+        InterestGroupManagerImpl::ProcessMode::kDedicated, nullptr,
+        base::NullCallback());
   }
 
   url::Origin CoordinatorOrigin() {
@@ -59,6 +67,35 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   data_decoder::test::InProcessDataDecoder decoder_;
+  base::ScopedTempDir temp_directory_;
+  std::unique_ptr<InterestGroupManagerImpl> manager_;
+
+  std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+  GetDBStoredKeysWithExpiration(const url::Origin& coordinator) {
+    std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+        expiration_and_keys;
+    base::RunLoop run_loop;
+    manager_->GetBiddingAndAuctionServerKeys(
+        coordinator,
+        base::BindLambdaForTesting(
+            [&](std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+                    stored_keys) {
+              expiration_and_keys = std::move(stored_keys);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return expiration_and_keys;
+  }
+
+  void SetDBStoredKeys(const url::Origin& coordinator,
+                       std::vector<BiddingAndAuctionServerKey> keys,
+                       base::Time expiration) {
+    manager_->SetBiddingAndAuctionServerKeys(coordinator, keys, expiration);
+  }
+
+  content::BiddingAndAuctionServerKeyFetcher CreateFetcher() {
+    return BiddingAndAuctionServerKeyFetcher(manager_.get());
+  }
 };
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
@@ -68,7 +105,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
                              {{"FledgeBiddingAndAuctionKeyConfig", ""},
                               {"FledgeBiddingAndAuctionKeyURL", ""}}}},
       /*disabled_features=*/{});
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
@@ -88,7 +125,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
                              {{"FledgeBiddingAndAuctionKeyConfig", ""},
                               {"FledgeBiddingAndAuctionKeyURL", ""}}}},
       /*disabled_features=*/{});
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
@@ -102,7 +139,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   std::vector<std::string> bad_responses = {
       "",
@@ -143,7 +180,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   content::BiddingAndAuctionServerKey key1, key2;
   int completed = 0;
   base::RunLoop run_loop;
@@ -169,7 +206,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   content::BiddingAndAuctionServerKey key1, key2;
   int completed = 0;
   base::RunLoop run_loop;
@@ -195,7 +232,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
@@ -219,7 +256,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
@@ -248,7 +285,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   {
     content::BiddingAndAuctionServerKey key;
@@ -296,12 +333,118 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   }
 }
 
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeStoreBandAKeysInDB);
+
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  std::vector<BiddingAndAuctionServerKey> keys;
+  BiddingAndAuctionServerKey key;
+  key.id = 1;
+  key.key = "a";
+  keys.push_back(key);
+  SetDBStoredKeys(CoordinatorOrigin(), keys, base::Time::Now() + base::Days(2));
+  task_environment_.RunUntilIdle();
+
+  {
+    content::BiddingAndAuctionServerKey returned_key;
+    base::RunLoop run_loop;
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                returned_key = *maybe_key;
+                                run_loop.Quit();
+                              }));
+    // Shouldn't use this response (it should have been retrieved from the
+    // database).
+    EXPECT_FALSE(
+        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
+                                                              R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
+        "id": "23456789-abcd-ef01-2345-6789abcdef01"
+        }]})"));
+    run_loop.Run();
+    EXPECT_EQ(key.id, returned_key.id);
+    EXPECT_EQ(key.key, returned_key.key);
+  }
+
+  // Fast forward past the expiration time stored in the database to make sure
+  // it was respected.
+  task_environment_.FastForwardBy(base::Days(2) + base::Seconds(1));
+
+  {
+    // This should make a new request to the network now.
+    content::BiddingAndAuctionServerKey returned_key;
+    base::RunLoop run_loop;
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                returned_key = *maybe_key;
+                                run_loop.Quit();
+                              }));
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(
+        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
+                                                              R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
+        "id": "23456789-abcd-ef01-2345-6789abcdef01"
+        }]})"));
+    run_loop.Run();
+  }
+}
+
+TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeStoreBandAKeysInDB);
+
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+
+  content::BiddingAndAuctionServerKey key;
+  {
+    base::RunLoop run_loop;
+    fetcher.GetOrFetchKey(&url_loader_factory_, CoordinatorOrigin(),
+                          base::BindLambdaForTesting(
+                              [&](base::expected<BiddingAndAuctionServerKey,
+                                                 std::string> maybe_key) {
+                                EXPECT_TRUE(maybe_key.has_value());
+                                key = *maybe_key;
+                                run_loop.Quit();
+                              }));
+    // Make sure the task environment runs past the database fetch.
+    while (!url_loader_factory_.IsPending(kDefaultGCPKeyURL)) {
+      // IsPending calls RunUntilIdle().
+    }
+    EXPECT_TRUE(
+        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
+                                                              R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})"));
+    run_loop.Run();
+    EXPECT_EQ(0x12, key.id);
+    EXPECT_EQ(std::string(32, '\0'), key.key);
+  }
+  task_environment_.RunUntilIdle();
+  std::pair<base::Time, std::vector<content::BiddingAndAuctionServerKey>>
+      expiration_and_stored_keys =
+          GetDBStoredKeysWithExpiration(CoordinatorOrigin());
+  EXPECT_EQ(base::Time::Now() + base::Days(7),
+            expiration_and_stored_keys.first);
+  ASSERT_EQ(1u, expiration_and_stored_keys.second.size());
+  EXPECT_EQ(expiration_and_stored_keys.second[0].key, key.key);
+  EXPECT_EQ(expiration_and_stored_keys.second[0].id, key.id);
+}
+
 TEST_F(BiddingAndAuctionServerKeyFetcherTest,
        MaybePrefetchKeysFailureFailsPendingGetOrFetchKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
 
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   fetcher.MaybePrefetchKeys(&url_loader_factory_);
 
@@ -351,7 +494,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
 
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   fetcher.MaybePrefetchKeys(&url_loader_factory_);
   task_environment_.RunUntilIdle();
@@ -409,7 +552,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
 
   // Get a key that we will let expire.
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
@@ -457,7 +600,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kFledgePrefetchBandAKeys);
 
-    content::BiddingAndAuctionServerKeyFetcher fetcher;
+    content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
     fetcher.MaybePrefetchKeys(&url_loader_factory_);
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
@@ -472,7 +615,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
     feature_list.InitWithFeatures(
         {features::kFledgePrefetchBandAKeys},
         {blink::features::kFledgeBiddingAndAuctionServer});
-    content::BiddingAndAuctionServerKeyFetcher fetcher;
+    content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
     fetcher.MaybePrefetchKeys(&url_loader_factory_);
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
@@ -482,7 +625,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   {
     content::BiddingAndAuctionServerKey key1, key2;
@@ -518,7 +661,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   {
     content::BiddingAndAuctionServerKey key;
@@ -577,7 +720,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, OverridesConfig) {
                               {"FledgeBiddingAndAuctionKeyURL",
                                kOtherDefaultGCPKeyURL}}}},
       /*disabled_features=*/{});
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
@@ -607,7 +750,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
                              {{"FledgeBiddingAndAuctionKeyURL",
                                kOtherDefaultGCPKeyURL}}}},
       /*disabled_features=*/{});
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
@@ -661,7 +804,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
 };
 
 TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
-  content::BiddingAndAuctionServerKeyFetcher fetcher;
+  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;

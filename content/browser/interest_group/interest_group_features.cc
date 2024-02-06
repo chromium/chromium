@@ -41,4 +41,10 @@ BASE_FEATURE(kFledgePrefetchBandAKeys,
              "FledgePrefetchBandAKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable storing a retrieving B&A keys for the interest group
+// database.
+BASE_FEATURE(kFledgeStoreBandAKeysInDB,
+             "FledgeStoreBandAKeysInDB",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

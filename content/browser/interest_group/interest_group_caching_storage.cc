@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -437,6 +438,25 @@ void InterestGroupCachingStorage::UpdateInterestGroupPriorityOverrides(
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::UpdateInterestGroupPriorityOverrides)
       .WithArgs(group_key, std::move(update_priority_signals_overrides));
+}
+
+void InterestGroupCachingStorage::SetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    base::Time expiration) {
+  interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::SetBiddingAndAuctionServerKeys)
+      .WithArgs(coordinator, keys, expiration);
+}
+void InterestGroupCachingStorage::GetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    base::OnceCallback<
+        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
+        callback) {
+  interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::GetBiddingAndAuctionServerKeys)
+      .WithArgs(coordinator)
+      .Then(std::move(callback));
 }
 
 void InterestGroupCachingStorage::GetLastMaintenanceTimeForTesting(

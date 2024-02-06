@@ -22,6 +22,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrefetchBandAKeys);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStoreBandAKeysInDB);
 
 }  // namespace features
 

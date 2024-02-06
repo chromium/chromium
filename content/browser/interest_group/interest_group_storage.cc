@@ -3967,12 +3967,12 @@ bool DoSetBiddingAndAuctionServerKeys(
   return insert_keys_statement.Run();
 }
 
-std::vector<BiddingAndAuctionServerKey> DoGetBiddingAndAuctionServerKeys(
-    sql::Database& db,
-    const url::Origin& coordinator) {
+std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+DoGetBiddingAndAuctionServerKeys(sql::Database& db,
+                                 const url::Origin& coordinator) {
   sql::Statement keys_statement(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            "SELECT keys "
+                            "SELECT expiration, keys "
                             "FROM bidding_and_auction_server_keys "
                             "WHERE coordinator = ? AND expiration>?"));
   CHECK(keys_statement.is_valid()) << db.GetErrorMessage();
@@ -3982,21 +3982,22 @@ std::vector<BiddingAndAuctionServerKey> DoGetBiddingAndAuctionServerKeys(
   keys_statement.BindTime(1, base::Time::Now());
 
   if (keys_statement.Step()) {
-    std::string key_blob = keys_statement.ColumnString(0);
-    BiddingAndAuctionServerKeyProtos keys;
-    bool success = keys.ParseFromString(key_blob);
+    base::Time expiration = keys_statement.ColumnTime(0);
+    std::string key_blob = keys_statement.ColumnString(1);
+    BiddingAndAuctionServerKeyProtos key_protos;
+    bool success = key_protos.ParseFromString(key_blob);
 
-    if (not success || keys.keys().empty()) {
-      return {};
+    if (not success || key_protos.keys().empty()) {
+      return {base::Time::Min(), {}};
     }
-    std::vector<BiddingAndAuctionServerKey> out;
-    out.reserve(keys.keys_size());
-    for (const auto& key : keys.keys()) {
-      out.emplace_back(key.key(), key.id());
+    std::vector<BiddingAndAuctionServerKey> keys;
+    keys.reserve(key_protos.keys_size());
+    for (auto& key_proto : *key_protos.mutable_keys()) {
+      keys.emplace_back(std::move(*key_proto.mutable_key()), key_proto.id());
     }
-    return out;
+    return {expiration, keys};
   }
-  return {};
+  return {base::Time::Min(), {}};
 }
 
 bool DoPerformDatabaseMaintenance(sql::Database& db,
@@ -4762,12 +4763,12 @@ void InterestGroupStorage::SetBiddingAndAuctionServerKeys(
   DoSetBiddingAndAuctionServerKeys(*db_, coordinator, keys, expiration);
 }
 
-std::vector<BiddingAndAuctionServerKey>
+std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
 InterestGroupStorage::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return {};
+    return {base::Time::Min(), {}};
   }
   return DoGetBiddingAndAuctionServerKeys(*db_, coordinator);
 }
