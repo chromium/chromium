@@ -4130,7 +4130,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
     scoped_feature_list_.Reset();
   }
 
-  void RunTests(const std::vector<const PerDeskZOrderTestCase>& tests) {
+  void RunTests(const std::vector<PerDeskZOrderTestCase>& tests) {
     auto* controller = DesksController::Get();
     auto* desk_1 = controller->GetDeskAtIndex(0);
     auto* desk_2 = controller->GetDeskAtIndex(1);
@@ -4322,7 +4322,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
 };
 
 TEST_F(DesksPerDeskZOrderTest, SingleDisplay) {
-  RunTests(std::vector<const PerDeskZOrderTestCase>{
+  RunTests(std::vector<PerDeskZOrderTestCase>{
       {.test_name = "Single adw window 1",
        .desk_1_windows = {{1}},
        .desk_2_windows = {{}},
@@ -4439,7 +4439,7 @@ TEST_F(DesksPerDeskZOrderTest, SingleDisplay) {
 }
 
 TEST_F(DesksPerDeskZOrderTest, MultiDisplaySingleADW) {
-  RunTests(std::vector<const PerDeskZOrderTestCase>{
+  RunTests(std::vector<PerDeskZOrderTestCase>{
       {.test_name = "Multiple displays single adw 1",
        .multi_display = true,
        .desk_1_windows = {{1}, {2, 3, 4}},
@@ -4573,7 +4573,7 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplaySingleADW) {
 }
 
 TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleADW) {
-  RunTests(std::vector<const PerDeskZOrderTestCase>{
+  RunTests(std::vector<PerDeskZOrderTestCase>{
       {.test_name = "Multiple displays multiple adw 1",
        .multi_display = true,
        .desk_1_windows = {{1}, {2, 3, 4}},
@@ -4747,7 +4747,7 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleADW) {
 }
 
 TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
-  RunTests(std::vector<const PerDeskZOrderTestCase>{
+  RunTests(std::vector<PerDeskZOrderTestCase>{
       {.test_name = "Multiple displays moving windows 1",
        .multi_display = true,
        .desk_1_windows = {{1}, {}},

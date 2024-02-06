@@ -434,7 +434,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
 TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
   ClearSearchTagRegistry();
   // Test search concepts.
-  std::vector<const SearchConcept> test_search_concepts = {
+  const std::vector<SearchConcept> test_search_concepts = {
       {
           .id = mojom::SearchConceptId::kChangeWallpaper,
           .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
