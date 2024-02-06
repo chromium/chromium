@@ -276,10 +276,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Helper that indicates if the dialog corresponds to a print scan.
   bool is_print_scan() const;
 
-  // Helper methods to get the admin message shown in dialog. As we are
-  // inserting it into IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE, offset here is
-  // the start index for the custom message.
-  void AddLinksToDialogMessage(size_t offset);
+  // Helper methods to get the admin message shown in dialog.
+  void AddLinksToDialogMessage();
   void UpdateDialogMessage(std::u16string new_message);
 
   void AcceptButtonCallback();

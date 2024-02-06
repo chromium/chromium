@@ -169,19 +169,18 @@ std::u16string GetCustomRuleString(
 
 std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message) {
-  int curr_index = 0;
+        custom_rule_message,
+    size_t offset) {
   std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
   for (const auto& custom_segment : custom_rule_message.message_segments()) {
     if (custom_segment.has_link()) {
       GURL url(custom_segment.link());
       if (url.is_valid()) {
         linked_ranges.emplace_back(
-            gfx::Range(curr_index, curr_index + custom_segment.text().length()),
-            url);
+            gfx::Range(offset, offset + custom_segment.text().length()), url);
       }
     }
-    curr_index += custom_segment.text().length();
+    offset += custom_segment.text().length();
   }
   return linked_ranges;
 }

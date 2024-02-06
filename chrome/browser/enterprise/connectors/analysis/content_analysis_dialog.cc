@@ -980,7 +980,7 @@ void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
   }
 }
 
-void ContentAnalysisDialog::AddLinksToDialogMessage(size_t offset) {
+void ContentAnalysisDialog::AddLinksToDialogMessage() {
   if (!has_custom_message_ranges()) {
     return;
   }
@@ -992,7 +992,7 @@ void ContentAnalysisDialog::AddLinksToDialogMessage(size_t offset) {
       continue;
     }
     message_->AddStyleRange(
-        gfx::Range(offset + range.first.start(), offset + range.first.end()),
+        gfx::Range(range.first.start(), range.first.end()),
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             [](base::WeakPtr<content::WebContents> web_contents, GURL url,
                const ui::Event& event) {
@@ -1012,13 +1012,9 @@ void ContentAnalysisDialog::AddLinksToDialogMessage(size_t offset) {
 void ContentAnalysisDialog::UpdateDialogMessage(std::u16string new_message) {
   if (IsDialogCustomRuleMessageEnabled() && (is_failure() || is_warning()) &&
       has_custom_message()) {
-    size_t offset;
-    std::u16string admin_message = l10n_util::GetStringFUTF16(
-        IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE, {new_message}, &offset);
-
-    message_->SetText(admin_message);
-    AddLinksToDialogMessage(offset);
-    message_->GetViewAccessibility().AnnounceText(std::move(admin_message));
+    message_->SetText(new_message);
+    AddLinksToDialogMessage();
+    message_->GetViewAccessibility().AnnounceText(std::move(new_message));
   } else {
     message_->SetText(new_message);
     message_->GetViewAccessibility().AnnounceText(std::move(new_message));

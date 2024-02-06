@@ -43,6 +43,9 @@ constexpr char kGoogleServiceProvider[] = R"(
   ],
   "block_large_files": 1
 })";
+// Offset to first placeholder index for
+// IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE.
+constexpr size_t kRuleMessageOffset = 26;
 
 ContentAnalysisResponse CreateContentAnalysisResponse(
     const std::vector<CustomMessageTestCase>& triggered_rules,
@@ -208,7 +211,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
-      GetCustomRuleStyles(result.custom_rule_message);
+      GetCustomRuleStyles(result.custom_rule_message, kRuleMessageOffset);
 
   EXPECT_EQ(custom_message, expected_message());
 
@@ -230,7 +233,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
-      GetCustomRuleStyles(result.custom_rule_message);
+      GetCustomRuleStyles(result.custom_rule_message, kRuleMessageOffset);
 
   EXPECT_EQ(custom_message, expected_message());
   EXPECT_TRUE(custom_ranges.empty());

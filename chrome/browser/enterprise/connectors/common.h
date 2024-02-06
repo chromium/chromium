@@ -227,10 +227,12 @@ std::u16string GetCustomRuleString(
 
 // Extracts the ranges and their corresponding links from the custom rule
 // message field in the content analysis response. Used to style the custom rule
-// message in the content analysis dialog.
+// message in the content analysis dialog. `offset` corresponds to its start
+// index as we are inserting it in another message.
 std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message);
+        custom_rule_message,
+    size_t offset);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when

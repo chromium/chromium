@@ -984,8 +984,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
   EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"Your administrator says: \"Test\"");
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomRuleMessage) {
@@ -1001,8 +1000,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomRuleMessage) {
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
   EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"Your administrator says: \"Test\"");
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
