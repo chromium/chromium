@@ -795,6 +795,8 @@ component("net") {
     "quic/quic_http_utils.h",
     "quic/quic_proxy_client_socket.cc",
     "quic/quic_proxy_client_socket.h",
+    "quic/quic_proxy_datagram_client_socket.cc",
+    "quic/quic_proxy_datagram_client_socket.h",
     "quic/quic_server_info.cc",
     "quic/quic_server_info.h",
     "quic/quic_session_key.cc",
