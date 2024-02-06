@@ -34,6 +34,12 @@ const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
 // TODO add tests for this component
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
+  // If Read Aloud is in the paused state. This is set from the parent element
+  // via one way data binding.
+  private readonly paused: boolean;
+
+  private voicePlayingWhenMenuOpened_: boolean = false;
+
   static get is() {
     return 'voice-selection-menu';
   }
@@ -47,6 +53,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       selectedVoice: Object,
       availableVoices: Array,
       previewVoicePlaying: Object,
+      paused: Boolean,
       voiceSelectionOptions_: {
         type: Object,
         computed:
@@ -71,6 +78,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private onVoiceSelectionMenuClick_(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const minY = target.getBoundingClientRect().bottom;
+
+    this.voicePlayingWhenMenuOpened_ = !this.paused;
 
     this.$.voiceSelectionMenu.showAt(target, {
       minY: minY,
@@ -104,6 +113,16 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       composed: true,
       detail: {
         previewVoice,
+      },
+    }));
+  }
+
+  private onClose_() {
+    this.dispatchEvent(new CustomEvent('voice-menu-close', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        voicePlayingWhenMenuOpened: this.voicePlayingWhenMenuOpened_,
       },
     }));
   }

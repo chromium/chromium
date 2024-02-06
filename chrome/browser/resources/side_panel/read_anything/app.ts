@@ -538,12 +538,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     event.preventDefault();
     event.stopPropagation();
 
+    this.stopSpeech();
 
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
 
     // TODO(crbug.com/1474951): Finalize the default voice preview text.
-    // TODO(crbug.com/1474951): Call this.synth.cancel() to interrupt reading
-    // and reset the play icon.
     const utterance = new SpeechSynthesisUtterance(
         loadTimeData.getString('readingModeVoicePreviewText'));
     const voice = event.detail.previewVoice;
@@ -565,15 +564,35 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.synth.speak(utterance);
   }
 
+  private onVoiceMenuClose_(
+      event: CustomEvent<{voicePlayingWhenMenuOpened: boolean}>) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // TODO(b/323912186) Handle when menu is closed mid-preview and the user
+    // presses play/pause button.
+    if (this.paused && event.detail.voicePlayingWhenMenuOpened) {
+      this.playSpeech();
+    }
+  }
+
   stopSpeech(pausedFromPlayClickButton: boolean = false) {
-    // TODO(crbug.com/1474951): When pausing, can we pause on the previous
-    // word so that speech doesn't resume in the middle of the word?
-    this.synth.pause();
+    // TODO(crbug.com/1474951): When pausing, can we pause on a word boundary
+    // and continue playing from the previous word?
     this.paused = true;
     this.pausedFromPlayClickButton = pausedFromPlayClickButton;
 
-    // Restore links if they're enabled when speech pauses.
-    if (chrome.readingMode.linksEnabled) {
+    if (pausedFromPlayClickButton) {
+      this.synth.pause();
+    } else {
+      // Canceling clears all the Utterances that are queued up via synth.play()
+      this.synth.cancel();
+    }
+
+    // Restore links if they're enabled when speech pauses. Don't restore links
+    // if it's paused from a non-pause button (e.g. voice previews) so the links
+    // don't flash off and on.
+    if (chrome.readingMode.linksEnabled && pausedFromPlayClickButton) {
       this.updateContent();
       this.highlightNodes(chrome.readingMode.getCurrentText());
     }
@@ -607,11 +626,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const container = shadowRoot.getElementById('container');
     assert(container);
     if (this.speechStarted && this.paused) {
-      this.synth.resume();
+      if (this.pausedFromPlayClickButton) {
+        this.synth.resume();
+      } else {
+        this.highlightAndPlayMessage();
+      }
+
+      const pausedFromPlayClickButton = this.pausedFromPlayClickButton;
       this.paused = false;
       this.pausedFromPlayClickButton = false;
-      // Hide links when speech resumes.
-      if (chrome.readingMode.linksEnabled) {
+
+      // Hide links when speech resumes. We only hide links when the page was
+      // paused from the play/pause button.
+      if (chrome.readingMode.linksEnabled && pausedFromPlayClickButton) {
         this.updateContent();
       }
 
@@ -899,6 +926,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private clearReadAloudState() {
     this.speechStarted = false;
     this.paused = true;
+    this.pausedFromPlayClickButton = false;
     this.previousHighlight_ = [];
   }
 

@@ -51,7 +51,7 @@
   iron-icon="read-anything:voice-selection">
 </cr-icon-button>
 
-<cr-action-menu id="voiceSelectionMenu">
+<cr-action-menu id="voiceSelectionMenu" on-close="onClose_">
   <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
     <!--  TODO(crbug.com/1474951): show a header for each locale group before
           listing the languages of the locale -->
