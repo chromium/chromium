@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,8 +31,9 @@ class DownloadBubbleNavigationHandler;
 class ParagraphsView;
 class DownloadBubblePasswordPromptView;
 
-class DownloadBubbleSecurityView : public views::View,
-                                   public download::DownloadItem::Observer {
+class DownloadBubbleSecurityView
+    : public views::View,
+      public DownloadBubbleSecurityViewInfoObserver {
   METADATA_HEADER(DownloadBubbleSecurityView, views::View)
 
  public:
@@ -78,20 +80,13 @@ class DownloadBubbleSecurityView : public views::View,
 
   DownloadBubbleSecurityView(
       Delegate* delegate,
+      const DownloadBubbleSecurityViewInfo& info,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       views::BubbleDialogDelegate* bubble_delegate);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
       delete;
   ~DownloadBubbleSecurityView() override;
-
-  // Update the security view when a subpage is opened for a particular
-  // download. Initializes this view, and associates it with `model`'s download.
-  // If it is already associated with the same download, this will update the
-  // view if the danger type has changed since the last time it was initialized.
-  // It is not an error to initialize this with a download when it is already
-  // initialized, either with the same download or a different download.
-  void InitializeForDownload(DownloadUIModel& model);
 
   // Returns this to an uninitialized state, where this is not associated with
   // a particular download. Called when navigating away from the security view.
@@ -105,10 +100,6 @@ class DownloadBubbleSecurityView : public views::View,
   // announcing accessibility text. Must be initialized when called.
   void UpdateAccessibilityTextAndFocus();
 
-  // download::DownloadItem::Observer implementation
-  void OnDownloadUpdated(download::DownloadItem* download) override;
-  void OnDownloadRemoved(download::DownloadItem* download) override;
-
   // |is_secondary_button| checks if the command/action originated from the
   // secondary button. Returns whether the dialog should close due to this
   // command.
@@ -119,13 +110,10 @@ class DownloadBubbleSecurityView : public views::View,
   // Should be called when the security view is about to be destroyed.
   void MaybeLogDismiss();
 
-  const offline_items_collection::ContentId& content_id() const {
-    return content_id_;
-  }
-
-  void SetUIInfoForTesting(const DownloadUIModel::BubbleUIInfo& ui_info);
+  const offline_items_collection::ContentId& content_id() const;
 
  private:
+  friend class DownloadBubbleSecurityViewTest;
   FRIEND_TEST_ALL_PREFIXES(DownloadBubbleSecurityViewTest,
                            VerifyLogWarningActions);
 
@@ -144,7 +132,7 @@ class DownloadBubbleSecurityView : public views::View,
   void UpdateSecondaryIconAndText();
   // Updates the subpage button. Setting initial state and color for enabled
   // state, if it is a secondary button.
-  void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
+  void UpdateButton(DownloadBubbleSecurityViewInfo::SubpageButton button,
                     bool is_secondary_button);
   void UpdateButtons();
   void UpdateProgressBar();
@@ -169,23 +157,16 @@ class DownloadBubbleSecurityView : public views::View,
   // these button presses is handled separately.
   bool ProcessLocalPasswordDecryptionClick();
 
+  // DownloadBubbleSecurityViewInfoObserver:
+  void OnInfoChanged() override;
+  void OnContentIdChanged() override;
+
   // Must outlive this.
   const raw_ptr<Delegate> delegate_;
 
-  // Following 4 fields are cached when the download/model is updated.
-
-  // ContentId of the download this refers to, if initialized.
-  // TODO: This should be std::optional<offline_items_collection::ContentId>.
-  offline_items_collection::ContentId content_id_;
-  // UI info at the last time this was created/updated.
-  DownloadUIModel::BubbleUIInfo ui_info_;
-  // The text for the title (i.e. filename) that this view was last
-  // created/updated with.
-  std::u16string title_text_;
-  // Tracks the danger type of the model when it was last created/updated. Used
-  // to determine whether a given model update has changed the danger type.
-  download::DownloadDangerType danger_type_ =
-      download::DOWNLOAD_DANGER_TYPE_MAX;
+  // A reference to the info used to populate this class. `info_` will
+  // notify `this` about changes that require updates.
+  raw_ref<const DownloadBubbleSecurityViewInfo> info_;
 
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
@@ -209,12 +190,6 @@ class DownloadBubbleSecurityView : public views::View,
   // Tracks whether metrics were logged for this impression, to avoid
   // double-logging.
   bool did_log_action_ = false;
-
-  // Observation of the download item this refers to. Only observes while this
-  // is associated with a download item.
-  base::ScopedObservation<download::DownloadItem,
-                          download::DownloadItem::Observer>
-      download_item_observation_{this};
 
   base::WeakPtrFactory<DownloadBubbleSecurityView> weak_factory_{this};
 };

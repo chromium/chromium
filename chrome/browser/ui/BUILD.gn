@@ -1165,6 +1165,8 @@ static_library("ui") {
       "download/download_bubble_row_list_view_info.h",
       "download/download_bubble_row_view_info.cc",
       "download/download_bubble_row_view_info.h",
+      "download/download_bubble_security_view_info.cc",
+      "download/download_bubble_security_view_info.h",
       "download/download_display.cc",
       "download/download_display.h",
       "download/download_item_mode.cc",
