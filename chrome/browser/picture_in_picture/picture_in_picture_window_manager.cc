@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -384,7 +385,7 @@ bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
-         net::IsLocalhost(url);
+         net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
