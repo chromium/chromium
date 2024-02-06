@@ -39,9 +39,6 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   void GetSensor(device::mojom::blink::SensorType,
                  mojom::blink::WebSensorProviderProxy::GetSensorCallback);
 
-  void set_inspector_mode(bool flag) { inspector_mode_ = flag; }
-  bool inspector_mode() const { return inspector_mode_; }
-
   void Trace(Visitor*) const override;
 
  private:
@@ -56,7 +53,6 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
 
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
   HeapMojoRemote<mojom::blink::WebSensorProvider> sensor_provider_;
-  bool inspector_mode_;
 };
 
 }  // namespace blink

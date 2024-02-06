@@ -1,0 +1,14 @@
+Tests that the DeviceOrientation and Emulationd domains cannot override the same sensor at the same time
+
+Creating virtual sensor via Emulation domain
+PASS: Attempting to create the same virtual sensor via DeviceOrientation domain fails
+
+Removing virtual sensor created via Emulation domain
+
+Creating virtual sensor via DeviceOrientation domain
+PASS: DeviceOrientation.SetDeviceOrientationOverride() works
+
+Attempting to create sensor via Emulation domain
+PASS: Virtual sensor is already overridden
+PASS: Calling Emulation.getVirtualSensorInformation fails
+

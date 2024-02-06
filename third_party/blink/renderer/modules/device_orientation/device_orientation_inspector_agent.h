@@ -13,8 +13,15 @@ namespace blink {
 
 class DeviceOrientationController;
 class InspectedFrames;
-class SensorInspectorAgent;
 
+// This is the Blink part of the implementation of the DeviceOrientation CDP
+// domain. Handling of this domain begins in DeviceOrientationHandler in
+// content and reaches this class after initial processing.
+//
+// The code here is responsible for showing DevTools messages and restarting
+// DeviceOrientationEventPump as necessary when overrides are enabled or
+// disabled so that the Mojo connections are torn down and reestablished if
+// required.
 class MODULES_EXPORT DeviceOrientationInspectorAgent final
     : public InspectorBaseAgent<protocol::DeviceOrientation::Metainfo> {
  public:
@@ -36,17 +43,12 @@ class MODULES_EXPORT DeviceOrientationInspectorAgent final
 
   protocol::Response disable() override;
   void Restore() override;
-  void DidCommitLoadForLocalFrame(LocalFrame*) override;
 
  private:
   DeviceOrientationController& Controller();
 
   Member<InspectedFrames> inspected_frames_;
-  Member<SensorInspectorAgent> sensor_agent_;
   InspectorAgentState::Boolean enabled_;
-  InspectorAgentState::Double alpha_;
-  InspectorAgentState::Double beta_;
-  InspectorAgentState::Double gamma_;
 };
 
 }  // namespace blink

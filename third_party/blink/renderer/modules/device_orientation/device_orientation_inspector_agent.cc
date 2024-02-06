@@ -5,28 +5,32 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_inspector_agent.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
-#include "third_party/blink/renderer/modules/sensor/sensor_inspector_agent.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kInspectorConsoleMessage[] =
+    "A reload is required so that the existing AbsoluteOrientationSensor "
+    "and RelativeOrientationSensor objects on this page use the overridden "
+    "values that have been provided. To return to the normal behavior, you can "
+    "either close the inspector or disable the orientation override, and then "
+    "reload.";
+
+}  // namespace
 
 DeviceOrientationInspectorAgent::~DeviceOrientationInspectorAgent() = default;
 
 DeviceOrientationInspectorAgent::DeviceOrientationInspectorAgent(
     InspectedFrames* inspected_frames)
     : inspected_frames_(inspected_frames),
-      sensor_agent_(MakeGarbageCollected<SensorInspectorAgent>(
-          inspected_frames->Root()->DomWindow())),
-      enabled_(&agent_state_, /*default_value=*/false),
-      alpha_(&agent_state_, /*default_value=*/0.0),
-      beta_(&agent_state_, /*default_value=*/0.0),
-      gamma_(&agent_state_, /*default_value=*/0.0) {}
+      enabled_(&agent_state_, /*default_value=*/false) {}
 
 void DeviceOrientationInspectorAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
-  visitor->Trace(sensor_agent_);
   InspectorBaseAgent::Trace(visitor);
 }
 
@@ -39,13 +43,19 @@ protocol::Response
 DeviceOrientationInspectorAgent::setDeviceOrientationOverride(double alpha,
                                                               double beta,
                                                               double gamma) {
+  if (!enabled_.Get()) {
+    Controller().RestartPumpIfNeeded();
+
+    // If the device orientation override is switching to being enabled, warn
+    // about the effect it has on existing AbsoluteOrientationSensor and
+    // RelativeOrientationSensor instances.
+    inspected_frames_->Root()->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kInfo,
+            kInspectorConsoleMessage));
+  }
   enabled_.Set(true);
-  alpha_.Set(alpha);
-  beta_.Set(beta);
-  gamma_.Set(gamma);
-  Controller().SetOverride(
-      DeviceOrientationData::Create(alpha, beta, gamma, false));
-  sensor_agent_->SetOrientationSensorOverride(alpha, beta, gamma);
   return protocol::Response::Success();
 }
 
@@ -56,29 +66,17 @@ DeviceOrientationInspectorAgent::clearDeviceOrientationOverride() {
 
 protocol::Response DeviceOrientationInspectorAgent::disable() {
   agent_state_.ClearAllFields();
-  if (!inspected_frames_->Root()->DomWindow()->IsContextDestroyed())
-    Controller().ClearOverride();
-  sensor_agent_->Disable();
+  if (!inspected_frames_->Root()->DomWindow()->IsContextDestroyed()) {
+    Controller().RestartPumpIfNeeded();
+  }
   return protocol::Response::Success();
 }
 
 void DeviceOrientationInspectorAgent::Restore() {
-  if (!enabled_.Get())
+  if (!enabled_.Get()) {
     return;
-  Controller().SetOverride(DeviceOrientationData::Create(
-      alpha_.Get(), beta_.Get(), gamma_.Get(), false));
-  sensor_agent_->SetOrientationSensorOverride(alpha_.Get(), beta_.Get(),
-                                              gamma_.Get());
-}
-
-void DeviceOrientationInspectorAgent::DidCommitLoadForLocalFrame(
-    LocalFrame* frame) {
-  if (frame == inspected_frames_->Root()) {
-    // New document in main frame - apply override there.
-    // No need to cleanup previous one, as it's already gone.
-    sensor_agent_->DidCommitLoadForLocalFrame(frame);
-    Restore();
   }
+  Controller().RestartPumpIfNeeded();
 }
 
 }  // namespace blink

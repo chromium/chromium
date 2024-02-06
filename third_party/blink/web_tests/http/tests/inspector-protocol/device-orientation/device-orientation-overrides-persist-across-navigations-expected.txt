@@ -1,0 +1,13 @@
+Tests that device orientation overrides persist across navigations
+PASS: Created sensor override
+
+Navigating to a different URL
+
+Adding event listener and waiting for orientation data
+[
+    [0] : 1
+    [1] : 2
+    [2] : 3
+    [3] : false
+]
+

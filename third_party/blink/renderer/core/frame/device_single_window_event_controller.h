@@ -42,6 +42,10 @@ class CORE_EXPORT DeviceSingleWindowEventController
   virtual const AtomicString& EventTypeName() const = 0;
   virtual bool IsNullEvent(Event*) const = 0;
 
+  void set_needs_checking_null_events(bool enabled) {
+    needs_checking_null_events_ = enabled;
+  }
+
  private:
   bool needs_checking_null_events_;
 };

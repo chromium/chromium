@@ -1,0 +1,11 @@
+Tests that device orientation overrides affect event listeners in iframes
+PASS: Created sensor override
+
+Adding event listener in iframe and waiting for orientation data
+[
+    [0] : 1
+    [1] : 2
+    [2] : 3
+    [3] : false
+]
+

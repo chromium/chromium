@@ -144,6 +144,20 @@ void DeviceOrientationController::ClearOverride() {
     DidUpdateData();
 }
 
+void DeviceOrientationController::RestartPumpIfNeeded() {
+  if (!orientation_event_pump_ || !has_event_listener_) {
+    return;
+  }
+  // We do this to make sure that existing connections to
+  // device::mojom::blink::Sensor instances are dropped and GetSensor() is
+  // called again, so that e.g. the virtual sensors are used when added, or the
+  // real ones are used again when the virtual sensors are removed.
+  StopUpdating();
+  set_needs_checking_null_events(/*enabled=*/true);
+  orientation_event_pump_.Clear();
+  StartUpdating();
+}
+
 void DeviceOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(override_orientation_data_);
   visitor->Trace(orientation_event_pump_);

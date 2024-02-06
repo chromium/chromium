@@ -27,6 +27,12 @@
                 "include_events": []
             },
             {
+              "domain": "DeviceOrientation",
+              "async": [
+                "setDeviceOrientationOverride"
+              ]
+            },
+            {
                 "domain": "Emulation",
                 "include": [
                   "getOverriddenSensorInformation",
