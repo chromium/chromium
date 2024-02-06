@@ -107,8 +107,7 @@ class FocusChangeObserver : public views::FocusChangeListener,
 namespace base {
 
 template <>
-struct ::base::ScopedObservationTraits<views::FocusManager,
-                                       FocusChangeObserver> {
+struct ScopedObservationTraits<views::FocusManager, FocusChangeObserver> {
   static void AddObserver(views::FocusManager* source,
                           FocusChangeObserver* observer) {
     source->AddFocusChangeListener(observer);
