@@ -8,7 +8,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/un.h>
+
 #include <memory>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -66,7 +68,7 @@ base::ScopedFD CreateServerSocket() {
   return socket_fd;
 }
 
-std::vector<std::string> ParseCategories(base::StringPiece message) {
+std::vector<std::string> ParseCategories(std::string_view message) {
   std::vector<std::string> requested_categories = base::SplitString(
       message, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   std::vector<std::string> categories;
@@ -218,12 +220,12 @@ class TraceConnection : public base::MessagePumpLibevent::FdWatcher {
       LOG(INFO) << "connection closed";
       Finish();
     } else {
-      base::StringPiece message(recv_buffer_.get(), bytes);
+      std::string_view message(recv_buffer_.get(), bytes);
       HandleClientMessage(message);
     }
   }
 
-  void HandleClientMessage(base::StringPiece message) {
+  void HandleClientMessage(std::string_view message) {
     if (state_ == State::INITIAL) {
       std::vector<std::string> categories = ParseCategories(message);
 
