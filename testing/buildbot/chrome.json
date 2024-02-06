@@ -1677,6 +1677,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
+        "dut_pool": "chrome",
         "name": "base_unittests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -1686,6 +1687,7 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "jacuzzi",
+        "dut_pool": "chrome",
         "name": "chrome_all_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 20,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -1700,6 +1702,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 3,
@@ -1715,6 +1718,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "jacuzzi",
+        "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 2,
@@ -1729,6 +1733,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
+        "dut_pool": "chrome",
         "name": "chromeos_integration_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -1753,6 +1758,7 @@
         "autotest_name": "chromium",
         "cros_board": "octopus",
         "cros_model": "casta",
+        "dut_pool": "chrome",
         "name": "base_unittests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -1763,6 +1769,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "octopus",
         "cros_model": "casta",
+        "dut_pool": "chrome",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 15,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -1871,6 +1878,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "volteer",
+        "dut_pool": "chrome",
         "name": "base_unittests VOLTEER_RELEASE_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
@@ -1880,6 +1888,7 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "volteer",
+        "dut_pool": "chrome",
         "name": "chrome_all_tast_tests VOLTEER_RELEASE_LKGM",
         "shards": 15,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
@@ -1894,6 +1903,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "volteer",
+        "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests VOLTEER_RELEASE_LKGM",
         "shards": 3,
@@ -1909,6 +1919,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
         "cros_board": "volteer",
+        "dut_pool": "chrome",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests VOLTEER_RELEASE_LKGM",
         "shards": 2,
@@ -1923,6 +1934,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "volteer",
+        "dut_pool": "chrome",
         "name": "chromeos_integration_tests VOLTEER_RELEASE_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -2474,6 +2486,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "strongbad",
+        "dut_pool": "chrome",
         "name": "chromeos_integration_tests STRONGBAD_RELEASE_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
@@ -2483,6 +2496,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
+        "dut_pool": "chrome",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
