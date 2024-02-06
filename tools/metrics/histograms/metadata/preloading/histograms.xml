@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Experimental.{ExperimentalPreloadingPrediction}.{GroundTruth}"
-    units="param" expires_after="2024-06-01">
+    units="param" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.PrerenderBackNavigationEligibility.{PreloadingPredictor}"
-    enum="PrerenderBackNavigationEligibility" expires_after="2024-06-01">
+    enum="PrerenderBackNavigationEligibility" expires_after="2024-08-04">
   <owner>mcnee@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2024-06-01">
+    enum="PredictorConfusionMatrix" expires_after="2024-08-04">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>

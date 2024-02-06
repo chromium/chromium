@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PerceivedRestoreTime" units="ms"
-    expires_after="2024-05-19">
+    expires_after="2024-08-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>gambard@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -988,7 +988,7 @@ chromium-metrics-reviews@google.com.
   <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2024-05-19">
+<histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2024-08-04">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>

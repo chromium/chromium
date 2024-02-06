@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.SingleEntryRemovalMethod"
-    enum="AutofillSingleEntryRemovalMethod" expires_after="2024-06-02">
+    enum="AutofillSingleEntryRemovalMethod" expires_after="2024-08-04">
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2605,7 +2605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LabelInference.InferredLabelSource.AtSubmission2"
-    enum="InferredLabelSource" expires_after="2024-06-02">
+    enum="InferredLabelSource" expires_after="2024-08-04">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3085,7 +3085,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OfferNotificationBubbleOffer.FreeListingCouponOffer.FromHistoryCluster"
-    enum="BooleanYesNo" expires_after="2024-06-01">
+    enum="BooleanYesNo" expires_after="2024-08-04">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -3096,7 +3096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleOffer.{BubbleType}"
-    enum="BooleanPreviouslyShown" expires_after="2024-06-02">
+    enum="BooleanPreviouslyShown" expires_after="2024-08-04">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3110,7 +3110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OfferNotificationBubblePromoCodeButtonClicked.FreeListingCouponOffer.FromHistoryCluster"
-    enum="BooleanYesNo" expires_after="2024-06-01">
+    enum="BooleanYesNo" expires_after="2024-08-04">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -3300,7 +3300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer.FromHistoryCluster"
-    enum="BooleanYesNo" expires_after="2024-06-01">
+    enum="BooleanYesNo" expires_after="2024-08-04">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -3705,7 +3705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-06-02">
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-08-04">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3715,7 +3715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.Total"
-    enum="Boolean" expires_after="2024-06-02">
+    enum="Boolean" expires_after="2024-08-04">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>

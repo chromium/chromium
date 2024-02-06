@@ -580,7 +580,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CWSInfoService.NetworkResponseCodeOrError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-08-04">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -590,7 +590,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CWSInfoService.NetworkRetriesTillSuccess"
-    units="retries" expires_after="2024-05-04">
+    units="retries" expires_after="2024-08-04">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

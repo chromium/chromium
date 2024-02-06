@@ -387,7 +387,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.DlcStatus.{DlcType}"
-    enum="CrasDlcManagerDlcStatus" expires_after="2024-05-15">
+    enum="CrasDlcManagerDlcStatus" expires_after="2024-08-04">
   <owner>hunghsienchen@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

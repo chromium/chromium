@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.{Status}.Latency" units="ms"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

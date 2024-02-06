@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp"
-    enum="Boolean" expires_after="2024-06-02">
+    enum="Boolean" expires_after="2024-08-04">
   <owner>tommasin@chromium.org</owner>
   <owner>kartoffel-core-eng@google.com</owner>
   <summary>
