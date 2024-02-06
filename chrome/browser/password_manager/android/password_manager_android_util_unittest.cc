@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
@@ -239,6 +240,8 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     ASSERT_FALSE(identity_test_env_adaptor_);
     sync_service();
     ASSERT_TRUE(identity_test_env_adaptor_);
+
+    fake_server::FakeServerHttpPostProvider::EnableNetwork();
   }
 
   void DestroyProfile() {
@@ -554,6 +557,52 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     ASSERT_TRUE(
         SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
     EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    DestroyProfile();
+  }
+}
+
+TEST_F(UsesSplitStoresAndUPMForLocalTest,
+       BumpMinimumGmsCoreVersionRevertsExperiment) {
+  {
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    CreateProfile();
+    pref_service()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+    SignInAndEnableSync();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(pref_service()));
+
+    // Add a password to the account store.
+    account_password_store()->AddLogin(MakeExampleForm());
+
+    DestroyProfile();
+  }
+  {
+    // Increasing minimum GMSCore version should move the data back to the
+    // "profile" database. To rule out that data is just being redownloaded from
+    // the fake server, disable network.
+    base::test::ScopedFeatureList enable_local_upm;
+    enable_local_upm.InitAndEnableFeatureWithParameters(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+        {{password_manager::features::kUPMLocalPasswordsMinGmsVersionCode.name,
+          base::ToString(std::numeric_limits<int>::max())}});
+    fake_server::FakeServerHttpPostProvider::DisableNetwork();
+    CreateProfile();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+
+    // Passwords in the account store must be moved to the profile store.
+    EXPECT_FALSE(account_password_store());
+    password_manager::PasswordStoreResultsObserver profile_store_observer;
+    profile_password_store()->GetAllLogins(profile_store_observer.GetWeakPtr());
+    EXPECT_EQ(profile_store_observer.WaitForResults().size(), 1u);
     DestroyProfile();
   }
 }
