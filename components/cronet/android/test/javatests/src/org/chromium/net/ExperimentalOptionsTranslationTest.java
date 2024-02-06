@@ -5,31 +5,23 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertThrows;
+
+import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.assertJsonEquals;
+import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.toTelephoneKeyboardSequence;
 
 import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 
 import org.jni_zero.JNINamespace;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import org.chromium.net.ExperimentalOptionsTranslationTestUtil.MockCronetBuilderImpl;
 
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
@@ -143,7 +135,8 @@ public class ExperimentalOptionsTranslationTest {
 
         assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(
-                "{\"QUIC\":{\"migrate_sessions_early_v2\":true}}",
+                "{\"QUIC\":{\"migrate_sessions_early_v2\":true,\"allow_port_migration\":true,"
+                        + "\"migrate_sessions_on_network_change_v2\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -285,15 +278,15 @@ public class ExperimentalOptionsTranslationTest {
                     + " \"allow_other_network\": true,    \"delay_ms\": 373740587,   "
                     + " \"use_stale_on_name_not_resolved\": false,    \"max_expired_time_ms\":"
                     + " 629397243  },  \"QUIC\": {    \"race_stale_dns_on_connection\": false,   "
-                    + " \"migrate_sessions_on_network_change_v2\": false,   "
+                    + " \"migrate_sessions_on_network_change_v2\": true,   "
                     + " \"allow_server_migration\": false,    \"migrate_idle_sessions\": true,   "
                     + " \"idle_session_migration_period_seconds\": 435370463,   "
                     + " \"retry_on_alternate_network_before_handshake\": false,   "
                     + " \"max_time_on_non_default_network_seconds\": 629840858,   "
                     + " \"max_migrations_to_non_default_network_on_path_degrading\": 223720377,   "
                     + " \"max_migrations_to_non_default_network_on_write_error\": 7483377,   "
-                    + " \"migrate_sessions_early_v2\": true,    \"host_whitelist\":"
-                    + " \"quicHost1.com,quicHost2.com\",    \"quic_version\":"
+                    + " \"migrate_sessions_early_v2\": true,  \"allow_port_migration\": true,  "
+                    + " \"host_whitelist\":\"quicHost1.com,quicHost2.com\",    \"quic_version\":"
                     + " \"quicVersion1,quicVersion2\",    \"connection_options\":"
                     + " \"connectionOption1,connectionOption2\",    \"client_connection_options\": "
                     + "        \"clientConnectionOption1,clientConnectionOption2\",   "
@@ -329,195 +322,5 @@ public class ExperimentalOptionsTranslationTest {
         assertJsonEquals(
                 "{\"QUIC\":{},\"AsyncDNS\":{},\"StaleDNS\":{}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
-    }
-
-    private static int toTelephoneKeyboardSequence(String string) {
-        int length = string.length();
-        if (length > 9) {
-            return toTelephoneKeyboardSequence(string.substring(0, 5)) * 10000
-                    + toTelephoneKeyboardSequence(string.substring(length - 3, length));
-        }
-
-        // This could be optimized a lot but little inefficiency in tests doesn't matter all that
-        // much and readability benefits are quite significant.
-        Map<String, Integer> charMap = new HashMap<>();
-        charMap.put("abc", 2);
-        charMap.put("def", 3);
-        charMap.put("ghi", 4);
-        charMap.put("jkl", 5);
-        charMap.put("mno", 6);
-        charMap.put("pqrs", 7);
-        charMap.put("tuv", 8);
-        charMap.put("xyz", 9);
-
-        int result = 0;
-        for (int i = 0; i < length; i++) {
-            result *= 10;
-            for (Map.Entry<String, Integer> mapping : charMap.entrySet()) {
-                if (mapping.getKey()
-                        .contains(string.substring(i, i + 1).toLowerCase(Locale.ROOT))) {
-                    result += mapping.getValue();
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    private static void assertJsonEquals(String expected, String actual) {
-        try {
-            JSONObject expectedJson = new JSONObject(expected);
-            JSONObject actualJson = new JSONObject(actual);
-
-            assertJsonEquals(expectedJson, actualJson, "");
-        } catch (JSONException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    private static void assertJsonEquals(JSONObject expected, JSONObject actual, String currentPath)
-            throws JSONException {
-        assertThat(jsonKeys(actual)).isEqualTo(jsonKeys(expected));
-
-        for (String key : jsonKeys(expected)) {
-            Object expectedValue = expected.get(key);
-            Object actualValue = actual.get(key);
-            if (expectedValue == actualValue) {
-                continue;
-            }
-            String fullKey = currentPath.isEmpty() ? key : currentPath + "." + key;
-            if (expectedValue instanceof JSONObject) {
-                assertWithMessage("key is '" + fullKey + "'")
-                        .that(actualValue)
-                        .isInstanceOf(JSONObject.class);
-                assertJsonEquals((JSONObject) expectedValue, (JSONObject) actualValue, fullKey);
-            } else {
-                assertWithMessage("key is '" + fullKey + "'")
-                        .that(actualValue)
-                        .isEqualTo(expectedValue);
-            }
-        }
-    }
-
-    private static Set<String> jsonKeys(JSONObject json) throws JSONException {
-        Set<String> result = new HashSet<>();
-
-        Iterator<String> keys = json.keys();
-
-        while (keys.hasNext()) {
-            String key = keys.next();
-            result.add(key);
-        }
-
-        return result;
-    }
-
-    // Mocks make life downstream miserable so use a custom mock-like class.
-    private static class MockCronetBuilderImpl extends ICronetEngineBuilder {
-        private ConnectionMigrationOptions mConnectionMigrationOptions;
-        private String mTempExperimentalOptions;
-        private String mEffectiveExperimentalOptions;
-
-        private final boolean mSupportsConnectionMigrationConfigOption;
-
-        static MockCronetBuilderImpl withNativeSetterSupport() {
-            return new MockCronetBuilderImpl(true);
-        }
-
-        static MockCronetBuilderImpl withoutNativeSetterSupport() {
-            return new MockCronetBuilderImpl(false);
-        }
-
-        private MockCronetBuilderImpl(boolean supportsConnectionMigrationConfigOption) {
-            this.mSupportsConnectionMigrationConfigOption = supportsConnectionMigrationConfigOption;
-        }
-
-        @Override
-        public ICronetEngineBuilder addPublicKeyPins(
-                String hostName,
-                Set<byte[]> pinsSha256,
-                boolean includeSubdomains,
-                Date expirationDate) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder addQuicHint(String host, int port, int alternatePort) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder enableHttp2(boolean value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder enableHttpCache(int cacheMode, long maxSize) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder enablePublicKeyPinningBypassForLocalTrustAnchors(
-                boolean value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder enableQuic(boolean value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder enableSdch(boolean value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder setExperimentalOptions(String options) {
-            mTempExperimentalOptions = options;
-            return this;
-        }
-
-        @Override
-        public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder setStoragePath(String value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder setUserAgent(String userAgent) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getDefaultUserAgent() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ICronetEngineBuilder setConnectionMigrationOptions(
-                ConnectionMigrationOptions options) {
-            mConnectionMigrationOptions = options;
-            return this;
-        }
-
-        @Override
-        public Set<Integer> getSupportedConfigOptions() {
-            if (mSupportsConnectionMigrationConfigOption) {
-                return Collections.singleton(ICronetEngineBuilder.CONNECTION_MIGRATION_OPTIONS);
-            } else {
-                return Collections.emptySet();
-            }
-        }
-
-        @Override
-        public ExperimentalCronetEngine build() {
-            mEffectiveExperimentalOptions = mTempExperimentalOptions;
-            return null;
-        }
     }
 }

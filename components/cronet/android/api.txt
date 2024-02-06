@@ -62,7 +62,7 @@ public class org.chromium.net.ConnectionMigrationOptions$Builder {
 }
 public interface org.chromium.net.ConnectionMigrationOptions$Experimental extends java.lang.annotation.Annotation {
 }
-public class org.chromium.net.ConnectionMigrationOptions {
+public final class org.chromium.net.ConnectionMigrationOptions {
   public java.lang.Boolean getEnableDefaultNetworkMigration();
   public java.lang.Boolean getEnablePathDegradationMigration();
   public java.lang.Boolean getAllowServerMigration();
@@ -73,7 +73,6 @@ public class org.chromium.net.ConnectionMigrationOptions {
   public java.lang.Long getMaxTimeOnNonDefaultNetworkSeconds();
   public java.lang.Integer getMaxWriteErrorEagerMigrationsCount();
   public java.lang.Integer getMaxPathDegradingEagerMigrationsCount();
-  public org.chromium.net.ConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
   public static org.chromium.net.ConnectionMigrationOptions$Builder builder();
 }
 public abstract class org.chromium.net.CronetEngine$Builder$LibraryLoader {
@@ -633,4 +632,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: c70494071c55da3be9bb3f922762ba95
+Stamp: fb82aaef920d5db0ac22a2df3ddd26b4

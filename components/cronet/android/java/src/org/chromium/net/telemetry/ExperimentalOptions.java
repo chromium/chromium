@@ -109,6 +109,11 @@ public final class ExperimentalOptions {
                 getOrDefault(QUIC, "enable_socket_recv_optimization", null, Boolean.class));
     }
 
+    public OptionalBoolean getAllowPortMigration() {
+        return OptionalBoolean.fromBoolean(
+                getOrDefault(QUIC, "allow_port_migration", null, Boolean.class));
+    }
+
     public OptionalBoolean getAsyncDnsEnableOption() {
         return OptionalBoolean.fromBoolean(getOrDefault(ASYNC_DNS, "enable", null, Boolean.class));
     }

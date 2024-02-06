@@ -523,6 +523,7 @@ android_library("httpengine_native_provider_java") {
 
   deps = [
     ":cronet_api_java",
+    ":cronet_impl_common_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -1237,6 +1238,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/DiskStorageTest.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
+    "test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTestUtil.java",
     "test/javatests/src/org/chromium/net/FileUtils.java",
     "test/javatests/src/org/chromium/net/GetStatusTest.java",
     "test/javatests/src/org/chromium/net/LogcatCapture.java",
@@ -1258,6 +1260,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/httpflags/BaseFeatureTest.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsLoaderTest.java",
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
+    "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
     "test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java",
@@ -1285,6 +1288,8 @@ android_library("cronet_javatests") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",

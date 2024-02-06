@@ -11,10 +11,13 @@ import android.net.http.HttpEngine;
 import android.util.Log;
 
 import androidx.annotation.RequiresExtension;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.telemetry.ExperimentalOptions;
+import org.chromium.net.telemetry.OptionalBoolean;
 
 import java.util.Date;
 import java.util.Set;
@@ -80,13 +83,6 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder setExperimentalOptions(String options) {
-        // TODO(danstahr): Hidden API. This should ideally extract values we know how to handle as a
-        // main API
-        return this;
-    }
-
-    @Override
     public ICronetEngineBuilder enableHttpCache(int cacheMode, long maxSize) {
         mBackend.setEnableHttpCache(cacheMode, maxSize);
         return this;
@@ -115,6 +111,14 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         return this;
     }
 
+    @Override
+    public ICronetEngineBuilder setExperimentalOptions(String stringOptions) {
+        // This only translates known experimental options
+        ExperimentalOptions options = new ExperimentalOptions(stringOptions);
+        mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
+        return this;
+    }
+
     /**
      * Build a {@link CronetEngine} using this builder's configuration.
      *
@@ -123,5 +127,41 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     @Override
     public ExperimentalCronetEngine build() {
         return new AndroidHttpEngineWrapper(mBackend.build());
+    }
+
+    @VisibleForTesting
+    public static android.net.http.ConnectionMigrationOptions parseConnectionMigrationOptions(
+            ExperimentalOptions options) {
+        android.net.http.ConnectionMigrationOptions.Builder cmOptionsBuilder =
+                new android.net.http.ConnectionMigrationOptions.Builder();
+
+        cmOptionsBuilder.setDefaultNetworkMigration(
+                optionalBooleanToMigrationOptionState(
+                        options.getMigrateSessionsOnNetworkChangeV2Option()));
+        cmOptionsBuilder.setPathDegradationMigration(
+                optionalBooleanToMigrationOptionState(options.getAllowPortMigration()));
+
+        OptionalBoolean migrateSessionsEarly = options.getMigrateSessionsEarlyV2();
+        cmOptionsBuilder.setAllowNonDefaultNetworkUsage(
+                optionalBooleanToMigrationOptionState(migrateSessionsEarly));
+        if (migrateSessionsEarly == OptionalBoolean.TRUE) {
+            cmOptionsBuilder.setPathDegradationMigration(
+                    optionalBooleanToMigrationOptionState(OptionalBoolean.TRUE));
+        }
+
+        return cmOptionsBuilder.build();
+    }
+
+    private static int optionalBooleanToMigrationOptionState(OptionalBoolean value) {
+        switch (value) {
+            case TRUE:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+            case FALSE:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
+            case UNSET:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
+        }
+
+        throw new AssertionError("Invalid OptionalBoolean value: " + value);
     }
 }
