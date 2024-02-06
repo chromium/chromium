@@ -56,20 +56,24 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
       params.first_party_origin, rule);
 }
 
-bool IsBeforeRequestAction(flat::ActionType action_type) {
+// For the given `action_type`, returns:
+// - true if multiple actions of this type can be matched for a request.
+// - false if an action of this type that is matched to a request will exclude
+//   all other actions from matching to that request.
+bool ActionTypeAllowsMultipleActions(flat::ActionType action_type) {
   switch (action_type) {
     case flat::ActionType_block:
     case flat::ActionType_allow:
     case flat::ActionType_redirect:
     case flat::ActionType_upgrade_scheme:
     case flat::ActionType_allow_all_requests:
-      return true;
-    case flat::ActionType_modify_headers:
       return false;
+    case flat::ActionType_modify_headers:
+      return true;
     case flat::ActionType_count:
       NOTREACHED();
   }
-  return false;
+  return true;
 }
 
 }  // namespace
@@ -83,16 +87,23 @@ RegexRuleInfo::RegexRuleInfo(const flat::RegexRule* regex_rule,
 RegexRuleInfo::RegexRuleInfo(const RegexRuleInfo& info) = default;
 RegexRuleInfo& RegexRuleInfo::operator=(const RegexRuleInfo& info) = default;
 
-RegexRulesMatcher::RegexRulesMatcher(const ExtensionId& extension_id,
-                                     RulesetID ruleset_id,
-                                     const RegexRulesList* regex_list,
-                                     const ExtensionMetadataList* metadata_list)
+RegexRulesMatcher::RegexRulesMatcher(
+    const ExtensionId& extension_id,
+    RulesetID ruleset_id,
+    const RegexRulesList* before_request_regex_list,
+    const RegexRulesList* headers_received_regex_list,
+    const ExtensionMetadataList* metadata_list)
     : RulesetMatcherBase(extension_id, ruleset_id),
-      regex_list_(regex_list),
+      before_request_matcher_(before_request_regex_list,
+                              this,
+                              RulesetMatchingStage::kOnBeforeRequest),
+      headers_received_matcher_(headers_received_regex_list,
+                                this,
+                                RulesetMatchingStage::kOnHeadersReceived),
       metadata_list_(metadata_list),
-      is_extra_headers_matcher_(IsExtraHeadersMatcherInternal(regex_list)) {
-  InitializeMatcher();
-}
+      is_extra_headers_matcher_(
+          IsExtraHeadersMatcherInternal(before_request_regex_list) ||
+          IsExtraHeadersMatcherInternal(headers_received_regex_list)) {}
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 
@@ -101,22 +112,22 @@ bool RegexRulesMatcher::IsExtraHeadersMatcher() const {
 }
 
 size_t RegexRulesMatcher::GetRulesCount() const {
-  return regex_list_->size();
+  return GetBeforeRequestRulesCount() + GetHeadersReceivedRulesCount();
 }
 
 size_t RegexRulesMatcher::GetBeforeRequestRulesCount() const {
-  return regex_list_->size();
+  return before_request_matcher_.GetRulesCount();
 }
 
 size_t RegexRulesMatcher::GetHeadersReceivedRulesCount() const {
-  return 0u;
+  return headers_received_matcher_.GetRulesCount();
 }
 
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
     std::optional<uint64_t> min_priority) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      GetPotentialMatches(params);
+      before_request_matcher_.GetPotentialMatches(params);
 
   std::vector<const flat_rule::UrlRule*> rules;
   for (const RegexRuleInfo& info : potential_matches) {
@@ -138,7 +149,7 @@ std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
 std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      GetPotentialMatches(params);
+      before_request_matcher_.GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return info.regex_rule->action_type() ==
@@ -155,51 +166,116 @@ std::optional<RequestAction>
 RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      GetPotentialMatches(params);
+      before_request_matcher_.GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
-        return IsBeforeRequestAction(info.regex_rule->action_type()) &&
+        return !ActionTypeAllowsMultipleActions(
+                   info.regex_rule->action_type()) &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
-  if (info == potential_matches.end())
-    return std::nullopt;
 
-  const flat_rule::UrlRule& rule = *info->regex_rule->url_rule();
-  switch (info->regex_rule->action_type()) {
-    case flat::ActionType_block:
-      return CreateBlockOrCollapseRequestAction(params, rule);
-    case flat::ActionType_allow:
-      return CreateAllowAction(params, rule);
-    case flat::ActionType_redirect:
-      // If this is a regex substitution rule, handle the substitution. Else
-      // create the redirect action from the information in `metadata_list_`
-      // below.
-      return info->regex_rule->regex_substitution()
-                 ? CreateRegexSubstitutionRedirectAction(params, *info)
-                 : CreateRedirectActionFromMetadata(params, rule,
-                                                    *metadata_list_);
-    case flat::ActionType_upgrade_scheme:
-      return CreateUpgradeAction(params, rule);
-    case flat::ActionType_allow_all_requests:
-      return CreateAllowAllRequestsAction(params, rule);
-    case flat::ActionType_modify_headers:
-    case flat::ActionType_count:
-      NOTREACHED();
-      break;
-  }
-
-  return std::nullopt;
+  return info == potential_matches.end() ? std::nullopt
+                                         : CreateActionFromInfo(params, *info);
 }
 
 std::optional<RequestAction>
 RegexRulesMatcher::GetHeadersReceivedActionIgnoringAncestors(
     const RequestParams& params) const {
-  // TODO(kelvinjiang): Add support for regex rules matching on response
-  // headers.
-  return std::nullopt;
+  const std::vector<RegexRuleInfo>& potential_matches =
+      headers_received_matcher_.GetPotentialMatches(params);
+  auto info = base::ranges::find_if(
+      potential_matches, [&params](const RegexRuleInfo& info) {
+        return !ActionTypeAllowsMultipleActions(
+                   info.regex_rule->action_type()) &&
+               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
+      });
+
+  return info == potential_matches.end() ? std::nullopt
+                                         : CreateActionFromInfo(params, *info);
 }
 
-void RegexRulesMatcher::InitializeMatcher() {
+RegexRulesMatcher::MatchHelper::MatchHelper(
+    const raw_ptr<const RegexRulesList> regex_list,
+    const RegexRulesMatcher* parent_matcher,
+    RulesetMatchingStage stage)
+    : regex_list_(regex_list), regex_match_key_(parent_matcher, stage) {
+  InitializeMatcher();
+}
+
+RegexRulesMatcher::MatchHelper::~MatchHelper() = default;
+
+size_t RegexRulesMatcher::MatchHelper::GetRulesCount() const {
+  return regex_list_->size();
+}
+
+const std::vector<RegexRuleInfo>&
+RegexRulesMatcher::MatchHelper::GetPotentialMatches(
+    const RequestParams& params) const {
+  auto iter = params.potential_regex_matches.find(regex_match_key_);
+  if (iter != params.potential_regex_matches.end()) {
+    return iter->second;
+  }
+
+  // Early out if this is an empty matcher.
+  if (IsEmpty()) {
+    auto result = params.potential_regex_matches.insert(
+        std::make_pair(regex_match_key_, std::vector<RegexRuleInfo>()));
+    return result.first->second;
+  }
+
+  // Compute the potential matches. FilteredRE2 requires the text to be lower
+  // cased first.
+  if (!params.lower_cased_url_spec) {
+    params.lower_cased_url_spec = base::ToLowerASCII(params.url->spec());
+  }
+
+  // To pre-filter the set of regexes to match against `params`, we first need
+  // to compute the set of candidate strings tracked by `substring_matcher_`
+  // within `params.lower_cased_url_spec`.
+  std::set<base::MatcherStringPattern::ID> candidate_ids_set;
+  DCHECK(substring_matcher_);
+  substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
+  std::vector<int> candidate_ids_list(candidate_ids_set.begin(),
+                                      candidate_ids_set.end());
+
+  // FilteredRE2 then yields the set of potential regex matches.
+  std::vector<int> potential_re2_ids;
+  filtered_re2_.AllPotentials(candidate_ids_list, &potential_re2_ids);
+
+  // We prune the set of potential matches even further by matching request
+  // metadata.
+  std::vector<RegexRuleInfo> potential_matches;
+  for (int re2_id : potential_re2_ids) {
+    auto it = re2_id_to_rules_map_.find(re2_id);
+    DCHECK(it != re2_id_to_rules_map_.end());
+
+    const flat::RegexRule* rule = it->second;
+    if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params)) {
+      continue;
+    }
+
+    const RE2& regex = filtered_re2_.GetRE2(re2_id);
+    potential_matches.emplace_back(rule, &regex);
+  }
+
+  // Sort potential matches in descending order of priority.
+  std::sort(potential_matches.begin(), potential_matches.end(),
+            [](const RegexRuleInfo& lhs, const RegexRuleInfo& rhs) {
+              return lhs.regex_rule->url_rule()->priority() >
+                     rhs.regex_rule->url_rule()->priority();
+            });
+
+  // Cache `potential_matches`.
+  auto result = params.potential_regex_matches.insert(
+      std::make_pair(regex_match_key_, std::move(potential_matches)));
+  return result.first->second;
+}
+
+bool RegexRulesMatcher::MatchHelper::IsEmpty() const {
+  return regex_list_->size() == 0;
+}
+
+void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
   if (IsEmpty())
     return;
 
@@ -261,67 +337,34 @@ void RegexRulesMatcher::InitializeMatcher() {
   CHECK(success);
 }
 
-bool RegexRulesMatcher::IsEmpty() const {
-  return regex_list_->size() == 0;
-}
-
-const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
-    const RequestParams& params) const {
-  auto iter = params.potential_regex_matches.find(this);
-  if (iter != params.potential_regex_matches.end())
-    return iter->second;
-
-  // Early out if this is an empty matcher.
-  if (IsEmpty()) {
-    auto result = params.potential_regex_matches.insert(
-        std::make_pair(this, std::vector<RegexRuleInfo>()));
-    return result.first->second;
+std::optional<RequestAction> RegexRulesMatcher::CreateActionFromInfo(
+    const RequestParams& params,
+    const RegexRuleInfo& info) const {
+  const flat_rule::UrlRule& rule = *info.regex_rule->url_rule();
+  switch (info.regex_rule->action_type()) {
+    case flat::ActionType_block:
+      return CreateBlockOrCollapseRequestAction(params, rule);
+    case flat::ActionType_allow:
+      return CreateAllowAction(params, rule);
+    case flat::ActionType_redirect:
+      // If this is a regex substitution rule, handle the substitution. Else
+      // create the redirect action from the information in `metadata_list_`
+      // below.
+      return info.regex_rule->regex_substitution()
+                 ? CreateRegexSubstitutionRedirectAction(params, info)
+                 : CreateRedirectActionFromMetadata(params, rule,
+                                                    *metadata_list_);
+    case flat::ActionType_upgrade_scheme:
+      return CreateUpgradeAction(params, rule);
+    case flat::ActionType_allow_all_requests:
+      return CreateAllowAllRequestsAction(params, rule);
+    case flat::ActionType_modify_headers:
+    case flat::ActionType_count:
+      NOTREACHED();
+      break;
   }
 
-  // Compute the potential matches. FilteredRE2 requires the text to be lower
-  // cased first.
-  if (!params.lower_cased_url_spec)
-    params.lower_cased_url_spec = base::ToLowerASCII(params.url->spec());
-
-  // To pre-filter the set of regexes to match against `params`, we first need
-  // to compute the set of candidate strings tracked by `substring_matcher_`
-  // within `params.lower_cased_url_spec`.
-  std::set<base::MatcherStringPattern::ID> candidate_ids_set;
-  DCHECK(substring_matcher_);
-  substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
-  std::vector<int> candidate_ids_list(candidate_ids_set.begin(),
-                                      candidate_ids_set.end());
-
-  // FilteredRE2 then yields the set of potential regex matches.
-  std::vector<int> potential_re2_ids;
-  filtered_re2_.AllPotentials(candidate_ids_list, &potential_re2_ids);
-
-  // We prune the set of potential matches even further by matching request
-  // metadata.
-  std::vector<RegexRuleInfo> potential_matches;
-  for (int re2_id : potential_re2_ids) {
-    auto it = re2_id_to_rules_map_.find(re2_id);
-    DCHECK(it != re2_id_to_rules_map_.end());
-
-    const flat::RegexRule* rule = it->second;
-    if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params))
-      continue;
-
-    const RE2& regex = filtered_re2_.GetRE2(re2_id);
-    potential_matches.emplace_back(rule, &regex);
-  }
-
-  // Sort potential matches in descending order of priority.
-  std::sort(potential_matches.begin(), potential_matches.end(),
-            [](const RegexRuleInfo& lhs, const RegexRuleInfo& rhs) {
-              return lhs.regex_rule->url_rule()->priority() >
-                     rhs.regex_rule->url_rule()->priority();
-            });
-
-  // Cache `potential_matches`.
-  auto result = params.potential_regex_matches.insert(
-      std::make_pair(this, std::move(potential_matches)));
-  return result.first->second;
+  return std::nullopt;
 }
 
 std::optional<RequestAction>
