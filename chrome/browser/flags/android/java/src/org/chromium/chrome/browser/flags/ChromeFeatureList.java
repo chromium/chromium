@@ -771,7 +771,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sPageInsightsResizeInSync =
             newMutableFlagWithSafeDefault(CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, false);
     public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =
-            newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, false);
+            newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidAnimation =
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sReaderModeCct =

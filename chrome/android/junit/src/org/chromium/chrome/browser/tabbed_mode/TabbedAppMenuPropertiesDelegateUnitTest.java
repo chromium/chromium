@@ -248,6 +248,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             R.id.new_incognito_tab_menu_id,
             R.id.divider_line_id,
             R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
             R.id.downloads_menu_id,
             R.id.all_bookmarks_menu_id,
             R.id.recent_tabs_menu_id,
