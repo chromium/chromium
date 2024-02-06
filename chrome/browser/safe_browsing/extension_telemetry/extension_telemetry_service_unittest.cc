@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -393,6 +394,29 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithSignal) {
   // Verify that extension store has been cleared after creating a telemetry
   // report.
   EXPECT_TRUE(IsExtensionStoreEmpty());
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       GeneratesTelemetryReportWithDeveloperMode) {
+  // Generate a telemetry report with developer mode disabled.
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+
+  // Verify developer mode is disabled.
+  EXPECT_FALSE(telemetry_report_pb->developer_mode_enabled());
+
+  // Set developer mode pref to true and generate another telemetry report.
+  profile_.GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+
+  std::unique_ptr<TelemetryReport> telemetry_report_pb_2 = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb_2, nullptr);
+
+  // Verify developer is enabled and collected.
+  EXPECT_TRUE(telemetry_report_pb_2->developer_mode_enabled());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
