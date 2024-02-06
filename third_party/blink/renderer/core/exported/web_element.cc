@@ -141,10 +141,11 @@ bool WebElement::IsContentEditable() const {
 
 bool WebElement::ContainsFrameSelection() const {
   auto& e = *ConstUnwrap<Element>();
-  auto* root = e.GetDocument()
-                   .GetFrame()
-                   ->Selection()
-                   .RootEditableElementOrDocumentElement();
+  LocalFrame* frame = e.GetDocument().GetFrame();
+  if (!frame) {
+    return false;
+  }
+  Element* root = frame->Selection().RootEditableElementOrDocumentElement();
   if (!root) {
     return false;
   }
