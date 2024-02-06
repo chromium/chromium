@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("history_embeddings") {
+  sources = [
+    "history_embeddings_features.cc",
+    "history_embeddings_features.h",
+    "history_embeddings_service.cc",
+    "history_embeddings_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "history_embeddings_service_unittest.cc" ]
+  deps = [
+    ":history_embeddings",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
