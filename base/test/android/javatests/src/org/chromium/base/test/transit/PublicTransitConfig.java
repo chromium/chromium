@@ -16,6 +16,8 @@ import org.chromium.base.ThreadUtils;
 public class PublicTransitConfig {
     private static final String TAG = "Transit";
     private static long sTransitionPause;
+    private static Runnable sOnExceptionCallback;
+    private static boolean sFreezeOnException;
 
     /**
      * Set a pause for all transitions for debugging.
@@ -25,6 +27,32 @@ public class PublicTransitConfig {
     public static void setTransitionPauseForDebugging(long millis) {
         sTransitionPause = millis;
         ResettersForTesting.register(() -> sTransitionPause = 0);
+    }
+
+    /**
+     * Set a callback to be run when a {@link TravelException} will be thrown.
+     *
+     * <p>Useful to print debug information for failures that can't be reproduced with a debugger.
+     *
+     * @param onExceptionCallback the callback to run on exception.
+     */
+    public static void setOnExceptionCallback(Runnable onExceptionCallback) {
+        sOnExceptionCallback = onExceptionCallback;
+        ResettersForTesting.register(() -> sOnExceptionCallback = null);
+    }
+
+    /**
+     * Set the test to freeze when a {@link TravelException} will be thrown.
+     *
+     * <p>Useful to watch the test behavior for some time after the Exception. In conjunction with
+     * {@link #setOnExceptionCallback(Runnable)}, the callback will be run on an exponential backoff
+     * schedule starting at 1 second and doubling from that.
+     *
+     * <p>Lasts until the test runner times out the test.
+     */
+    public static void setFreezeOnException() {
+        sFreezeOnException = true;
+        ResettersForTesting.register(() -> sFreezeOnException = false);
     }
 
     static void maybePauseAfterTransition(ConditionalState state) {
@@ -60,5 +88,32 @@ public class PublicTransitConfig {
         textToDisplay.append(state.toString());
         String textToDisplayString = textToDisplay.toString();
         return textToDisplayString;
+    }
+
+    static void onTravelException(TravelException travelException) {
+        triggerOnExceptionCallback();
+        if (sFreezeOnException) {
+            int backoffTimer = 1000;
+            int totalMsFrozen = 0;
+
+            // Will freeze until the test runner times out.
+            while (true) {
+                try {
+                    Thread.sleep(backoffTimer);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                totalMsFrozen += backoffTimer;
+                backoffTimer = 2 * backoffTimer;
+                Log.e(TAG, "Frozen for %sms on TravelException:", totalMsFrozen, travelException);
+                triggerOnExceptionCallback();
+            }
+        }
+    }
+
+    private static void triggerOnExceptionCallback() {
+        if (sOnExceptionCallback != null) {
+            sOnExceptionCallback.run();
+        }
     }
 }

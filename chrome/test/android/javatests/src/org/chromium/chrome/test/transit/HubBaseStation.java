@@ -24,8 +24,8 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -109,7 +109,7 @@ public abstract class HubBaseStation extends TransitStation {
         } catch (NoMatchingViewException e) {
             var throwable = new Throwable(
                 "Hub pane switcher is not visible to switch to " + paneId);
-            throw new TravelException(this, destinationStation, throwable);
+            throw TravelException.newTripException(this, destinationStation, throwable);
         }
 
         @StringRes int contentDescriptionId =

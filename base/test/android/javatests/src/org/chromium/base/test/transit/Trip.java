@@ -107,7 +107,7 @@ public class Trip extends Transition {
         try {
             ConditionWaiter.waitFor(waitStatuses);
         } catch (AssertionError e) {
-            throw new TravelException(mOrigin, mDestination, e);
+            throw TravelException.newTripException(mOrigin, mDestination, e);
         }
 
         if (mOrigin != null) {
