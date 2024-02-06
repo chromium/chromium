@@ -23,7 +23,7 @@ const LayoutUnit kZero{0};
 class RelativeUtilsTest : public testing::Test {
  protected:
   void SetUp() override {
-    initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
+    initial_style_ = ComputedStyle::GetInitialStyleSingleton();
   }
 
   const ComputedStyle* CreateStyle(LayoutUnit top,

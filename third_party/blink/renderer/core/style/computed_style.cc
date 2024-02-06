@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -160,8 +161,44 @@ PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
   return *cached_data_->pseudo_element_styles_;
 }
 
-const ComputedStyle* ComputedStyle::CreateInitialStyleSingleton() {
-  return MakeGarbageCollected<ComputedStyle>(PassKey());
+const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<Persistent<const ComputedStyle>>,
+      thread_specific_initial_style, ());
+  Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
+  if (UNLIKELY(!persistent)) {
+    persistent = MakeGarbageCollected<ComputedStyle>(PassKey());
+    LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
+  }
+  return persistent.Get();
+}
+
+namespace {
+
+const ComputedStyle* BuildInitialStyleForImg(
+    const ComputedStyle& initial_style) {
+  // This matches the img {} declarations in html.css to avoid copy-on-write
+  // when only UA styles apply for these properties. See crbug.com/1369454
+  // for details.
+  ComputedStyleBuilder builder(initial_style);
+  builder.SetOverflowX(EOverflow::kClip);
+  builder.SetOverflowY(EOverflow::kClip);
+  builder.SetOverflowClipMargin(StyleOverflowClipMargin::CreateContent());
+  return builder.TakeStyle();
+}
+
+}  // namespace
+
+const ComputedStyle* ComputedStyle::GetInitialStyleForImgSingleton() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<Persistent<const ComputedStyle>>,
+      thread_specific_initial_style, ());
+  Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
+  if (UNLIKELY(!persistent)) {
+    persistent = BuildInitialStyleForImg(*GetInitialStyleSingleton());
+    LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
+  }
+  return persistent.Get();
 }
 
 Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {

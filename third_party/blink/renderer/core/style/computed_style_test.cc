@@ -53,7 +53,7 @@ namespace blink {
 class ComputedStyleTest : public testing::Test {
  protected:
   void SetUp() override {
-    initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
+    initial_style_ = ComputedStyle::GetInitialStyleSingleton();
   }
 
   const ComputedStyle* InitialComputedStyle() { return initial_style_; }

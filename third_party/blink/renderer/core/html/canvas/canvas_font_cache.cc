@@ -39,7 +39,7 @@ const ComputedStyle* CreateDefaultFontStyle(const Document& document) {
   ComputedStyleBuilder builder =
       document.IsActive()
           ? document.GetStyleResolver().CreateComputedStyleBuilder()
-          : ComputedStyleBuilder(*ComputedStyle::CreateInitialStyleSingleton());
+          : ComputedStyleBuilder(*ComputedStyle::GetInitialStyleSingleton());
   builder.SetFontDescription(default_font_description);
   return builder.TakeStyle();
 }

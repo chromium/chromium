@@ -124,18 +124,6 @@ namespace blink {
 
 namespace {
 
-const ComputedStyle* BuildInitialStyleForImg(
-    const ComputedStyle& initial_style) {
-  // This matches the img {} declarations in html.css to avoid copy-on-write
-  // when only UA styles apply for these properties. See crbug.com/1369454
-  // for details.
-  ComputedStyleBuilder builder(initial_style);
-  builder.SetOverflowX(EOverflow::kClip);
-  builder.SetOverflowY(EOverflow::kClip);
-  builder.SetOverflowClipMargin(StyleOverflowClipMargin::CreateContent());
-  return builder.TakeStyle();
-}
-
 bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
                          StyleResolverState& state) {
   // Storing the old style is only relevant if we risk computing the style
@@ -487,8 +475,8 @@ static void CollectScopedResolversForHostedShadowTrees(
 }
 
 StyleResolver::StyleResolver(Document& document)
-    : initial_style_(ComputedStyle::CreateInitialStyleSingleton()),
-      initial_style_for_img_(BuildInitialStyleForImg(*initial_style_)),
+    : initial_style_(ComputedStyle::GetInitialStyleSingleton()),
+      initial_style_for_img_(ComputedStyle::GetInitialStyleForImgSingleton()),
       document_(document) {
   UpdateMediaType();
 }
