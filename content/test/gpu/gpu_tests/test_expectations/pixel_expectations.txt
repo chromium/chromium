@@ -357,6 +357,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/324003994 [ android-u android-pixel-6 ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
