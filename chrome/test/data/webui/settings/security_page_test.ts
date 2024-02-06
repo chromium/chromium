@@ -494,7 +494,7 @@ suite('SafeBrowsing', function() {
 
   test(
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnRepeatSelection',
-      function() {
+      async function() {
         page.$.safeBrowsingStandard.click();
         flush();
         assertEquals(
@@ -506,7 +506,7 @@ suite('SafeBrowsing', function() {
         // Expanding another radio button should not collapse already expanded
         // option.
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        flush();
+        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
@@ -528,7 +528,7 @@ suite('SafeBrowsing', function() {
             page.prefs.generated.safe_browsing.value);
 
         page.$.safeBrowsingEnhanced.$.expandButton.click();
-        flush();
+        await page.$.safeBrowsingEnhanced.$.expandButton.updateComplete;
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 

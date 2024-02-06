@@ -493,9 +493,11 @@ suite('TabDiscardExceptionList', function() {
     assertFalse(exceptionList.$.expandButton.hidden);
 
     exceptionList.$.expandButton.click();
+    await exceptionList.$.expandButton.updateComplete;
     assertTrue(exceptionList.$.collapse.opened);
 
     exceptionList.$.expandButton.click();
+    await exceptionList.$.expandButton.updateComplete;
     assertFalse(exceptionList.$.collapse.opened);
 
     exceptionList.$.addButton.click();

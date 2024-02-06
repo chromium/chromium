@@ -261,6 +261,7 @@ suite('CheckupDetailsSectionTest', function() {
     assertFalse(isVisible(listItemElements[0]));
 
     dismissedButton.click();
+    await dismissedButton.updateComplete;
 
     assertTrue(isVisible(listItemElements[0]));
   });

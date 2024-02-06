@@ -95,6 +95,7 @@ build_webui("build") {
     css_files = [
       "action_link.css",
       "cr_actionable_row_style.css",
+      "cr_actionable_row_style_lit.css",
       "cr_hidden_style.css",
       "cr_hidden_style_lit.css",
       "cr_icons.css",
@@ -112,6 +113,7 @@ build_webui("build") {
       "search_highlight_style.css",
       "cr_action_menu/cr_action_menu.css",
       "cr_dialog/cr_dialog.css",
+      "cr_expand_button/cr_expand_button.css",
       "cr_input/cr_input_style.css",
     ]
 

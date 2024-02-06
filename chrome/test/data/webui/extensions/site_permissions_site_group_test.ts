@@ -53,8 +53,10 @@ suite('SitePermissionsSiteGroupElement', function() {
     const sitesList =
         element.shadowRoot!.querySelector<HTMLElement>('#sites-list');
     assertFalse(isVisible(sitesList));
-    element.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')!.click();
-    flush();
+    const expandButton = element.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(isVisible(sitesList));
     const expandedSites =
@@ -96,8 +98,10 @@ suite('SitePermissionsSiteGroupElement', function() {
     assertEquals('google.ca', element.$.etldOrSite.innerText);
     assertEquals('', element.$.etldOrSiteSubtext.innerText);
 
-    element.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')!.click();
-    flush();
+    const expandButton = element.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(isVisible(
         element.shadowRoot!.querySelector<HTMLElement>('#sites-list')));

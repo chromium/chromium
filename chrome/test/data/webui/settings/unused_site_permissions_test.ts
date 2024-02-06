@@ -193,7 +193,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
 
     // User collapses the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are collapsed.
     assertFalse(expandButton.expanded);
@@ -206,7 +206,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
 
     // User expands the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are expanded.
     assertTrue(expandButton.expanded);
