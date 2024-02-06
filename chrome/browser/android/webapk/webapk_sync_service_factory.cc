@@ -8,14 +8,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/sync/base/features.h"
 
 namespace webapk {
 
 // static
 WebApkSyncService* WebApkSyncServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<WebApkSyncService*>(
-      WebApkSyncServiceFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create=*/true));
+  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    return static_cast<WebApkSyncService*>(
+        WebApkSyncServiceFactory::GetInstance()->GetServiceForBrowserContext(
+            profile, /*create=*/true));
+  }
+  return nullptr;
 }
 
 // static
