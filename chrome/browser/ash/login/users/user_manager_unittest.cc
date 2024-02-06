@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -204,7 +205,10 @@ class UserManagerTest : public testing::Test {
   void ResetUserManager() {
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
+    user_image_manager_registry_.reset();
     user_manager_.Reset(ChromeUserManagerImpl::CreateChromeUserManager());
+    user_image_manager_registry_ =
+        std::make_unique<ash::UserImageManagerRegistry>(user_manager_.Get());
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
     // Also ensure that all existing ongoing user manager tasks are completed.
@@ -283,6 +287,7 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
   user_manager::TypedScopedUserManager<ChromeUserManager> user_manager_;
+  std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
   base::ScopedTempDir temp_dir_;
 };
 

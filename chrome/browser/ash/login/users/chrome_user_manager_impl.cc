@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
@@ -292,7 +291,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
-      user_image_manager_registry_(this),
       multi_profile_user_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
@@ -434,8 +432,6 @@ void ChromeUserManagerImpl::Shutdown() {
     device_local_account_policy_service_->RemoveObserver(this);
   }
 
-  user_image_manager_registry_.Shutdown();
-
   multi_profile_user_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
@@ -444,11 +440,6 @@ void ChromeUserManagerImpl::Shutdown() {
 MultiProfileUserController*
 ChromeUserManagerImpl::GetMultiProfileUserController() {
   return &multi_profile_user_controller_;
-}
-
-UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
-    const AccountId& account_id) {
-  return user_image_manager_registry_.GetManager(account_id);
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()

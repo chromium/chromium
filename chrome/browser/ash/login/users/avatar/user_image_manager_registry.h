@@ -27,6 +27,10 @@ class UserImageManager;
 // This is effectively a singleton in production.
 class UserImageManagerRegistry : public user_manager::UserManager::Observer {
  public:
+  // Returns the global UserImageManagerRegistry instance.
+  static UserImageManagerRegistry* Get();
+
+  // Given user_manager's lifetime needs to outlive this instance.
   explicit UserImageManagerRegistry(user_manager::UserManager* user_manager);
   UserImageManagerRegistry(const UserImageManagerRegistry&) = delete;
   UserImageManagerRegistry operator=(UserImageManagerRegistry&) = delete;

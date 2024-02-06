@@ -5,8 +5,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -31,8 +31,8 @@ class UserAvatarCustomizationSelectorsEnabledPolicyTest : public PolicyTest {
     // Fetch User, which can be used to check the currently set user image
     user_ = user_manager::UserManager::Get()->GetActiveUser();
     // Fetch UserImageManager, which can be used to save a new user image
-    user_image_manager_ = ash::ChromeUserManager::Get()->GetUserImageManager(
-        user_->GetAccountId());
+    user_image_manager_ =
+        ash::UserImageManagerRegistry::Get()->GetManager(user_->GetAccountId());
 
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_));
   }

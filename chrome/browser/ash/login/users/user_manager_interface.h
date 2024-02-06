@@ -5,12 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 
-class AccountId;
-
 namespace ash {
 
 class MultiProfileUserController;
-class UserImageManager;
 
 // ChromeOS specific add-ons interface for the UserManager.
 class UserManagerInterface {
@@ -23,8 +20,6 @@ class UserManagerInterface {
   virtual ~UserManagerInterface() = default;
 
   virtual MultiProfileUserController* GetMultiProfileUserController() = 0;
-  virtual UserImageManager* GetUserImageManager(
-      const AccountId& account_id) = 0;
 };
 
 }  // namespace ash

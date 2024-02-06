@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/users/avatar/fake_user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -225,7 +226,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   ash::UserImageManagerImpl* user_image_manager() {
     return static_cast<ash::UserImageManagerImpl*>(
-        ash::ChromeUserManager::Get()->GetUserImageManager(
+        ash::UserImageManagerRegistry::Get()->GetManager(
             GetAccountId(profile_)));
   }
 
@@ -277,6 +278,8 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
+  UserImageManagerRegistry user_image_manager_registry_{
+      user_manager::UserManager::Get()};
   TestingProfileManager profile_manager_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
   content::TestWebUI web_ui_;

@@ -25,6 +25,7 @@ class InSessionPasswordChangeManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
+class UserImageManagerRegistry;
 
 namespace system {
 class AutomaticRebootManager;
@@ -167,6 +168,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       automatic_reboot_manager_;
 
   std::unique_ptr<ash::ChromeUserManager> chrome_user_manager_;
+
+  std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
 
   std::unique_ptr<ash::system::DeviceDisablingManagerDefaultDelegate>
       device_disabling_manager_delegate_;

@@ -148,7 +148,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // UserManagerInterface override.
   MultiProfileUserController* GetMultiProfileUserController() override;
-  UserImageManager* GetUserImageManager(const AccountId& account_id) override;
 
   // ChromeUserManager override.
   void SetUserAffiliation(
@@ -191,9 +190,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
-  using UserImageManagerMap =
-      std::map<AccountId, std::unique_ptr<UserImageManager>>;
-
   // Returns the active user.
   user_manager::User* GetActiveUserInternal() const;
 
@@ -214,9 +210,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // Whether the current user can lock.
   bool current_user_can_lock_ = false;
-
-  // User avatar managers.
-  UserImageManagerMap user_image_managers_;
 };
 
 }  // namespace ash

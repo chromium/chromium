@@ -112,6 +112,7 @@
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/memory_metrics.h"
@@ -1590,6 +1591,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
   // has no URLRequest pending (see http://crbug.com/276659).
+  if (auto* user_image_manager_registry =
+          ash::UserImageManagerRegistry::Get()) {
+    user_image_manager_registry->Shutdown();
+  }
   if (g_browser_process->platform_part()->user_manager()) {
     g_browser_process->platform_part()->user_manager()->Shutdown();
   }
