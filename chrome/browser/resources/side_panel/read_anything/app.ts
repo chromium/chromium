@@ -938,6 +938,25 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.selectedVoice = event.detail.selectedVoice;
     chrome.readingMode.onVoiceChange(
         this.selectedVoice.name, this.selectedVoice.lang.split('-')[0]);
+
+    this.resetSpeechPostSettingChange_();
+  }
+
+  private resetSpeechPostSettingChange_() {
+    // Don't call stopSpeech() if initAXPositionWithNode hasn't been called
+    if (!this.speechStarted) {
+      return;
+    }
+
+    const playSpeechOnChange = !this.paused;
+
+    // Cancel the queued up Utterance using the old speech settings
+    this.stopSpeech();
+
+    // If speech was playing when a setting was changed, continue playing speech
+    if (playSpeechOnChange) {
+      this.playSpeech();
+    }
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
