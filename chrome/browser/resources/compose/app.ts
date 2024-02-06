@@ -422,8 +422,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onCancelEditClick_() {
+    const fullBodyHeight = this.$.body.offsetHeight;
+    const resultContainerHeight = this.$.resultContainer.offsetHeight;
     this.isEditingSubmittedInput_ = false;
     this.$.textarea.focusEditButton();
+    this.animator_.transitionFromEditingToResult(resultContainerHeight);
+    this.$.textarea.transitionToResult(fullBodyHeight);
+    this.$.editTextarea.transitionToResult(fullBodyHeight);
   }
 
   private onClose_(e: Event) {
