@@ -8,6 +8,7 @@
 #include <bitset>
 #include <cstddef>
 #include <initializer_list>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -305,6 +306,8 @@ class EnumSet {
 
   // Returns true iff our set and the given set contain exactly the same values.
   friend bool operator==(const EnumSet&, const EnumSet&) = default;
+
+  std::string ToString() const { return enums_.to_string(); }
 
  private:
   friend constexpr EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
