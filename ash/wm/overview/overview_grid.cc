@@ -1300,10 +1300,9 @@ void OverviewGrid::CalculateWindowListAnimationStates(
         split_view_controller->GetDefaultSnappedWindow()->GetBoundsInScreen());
     occluded_region.op(snapped_window_bounds, SkRegion::kUnion_Op);
 
-    auto* divider = split_view_controller->split_view_divider();
-    if (divider) {
-      aura::Window* divider_window =
-          divider->divider_widget()->GetNativeWindow();
+    if (auto* divider_widget =
+            split_view_controller->split_view_divider()->divider_widget()) {
+      aura::Window* divider_window = divider_widget->GetNativeWindow();
       SkIRect divider_bounds =
           gfx::RectToSkIRect(divider_window->GetBoundsInScreen());
       occluded_region.op(divider_bounds, SkRegion::kUnion_Op);

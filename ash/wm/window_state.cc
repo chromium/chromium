@@ -28,6 +28,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -216,7 +217,7 @@ bool ShouldConsiderDivider(aura::Window* window) {
   SplitViewController* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
   return split_view_controller->InSplitViewMode() &&
-         split_view_controller->split_view_divider();
+         split_view_controller->split_view_divider()->divider_widget();
 }
 
 float GetCurrentSnapRatio(aura::Window* window,

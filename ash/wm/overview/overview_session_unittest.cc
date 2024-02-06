@@ -6830,7 +6830,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       return gfx::Rect();
     }
     return split_view_controller()
-        ->split_view_divider_->GetDividerBoundsInScreen(is_dragging);
+        ->split_view_divider()
+        ->GetDividerBoundsInScreen(is_dragging);
   }
 
   gfx::Rect GetWorkAreaInScreen(aura::Window* window) {
@@ -8283,7 +8284,7 @@ TEST_F(SplitViewOverviewSessionTest,
             split_view_controller()->state());
   EXPECT_TRUE(InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  ASSERT_TRUE(split_view_controller()->split_view_divider());
+  ASSERT_TRUE(split_view_controller()->split_view_divider()->divider_widget());
   const std::vector<aura::Window*> window_list =
       GetWindowsListInOverviewGrids();
   EXPECT_EQ(2u, window_list.size());
