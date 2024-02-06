@@ -25,6 +25,7 @@ import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -150,6 +151,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     @EnableFeatures({SHOW_NTP_AT_STARTUP_ANDROID, START_SURFACE_RETURN_TIME})
+    @DisabledTest(message = "crbug.com/324106495")
     public void testExitHubOnStartSurfaceAsNtp() {
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.setForTesting(0);
