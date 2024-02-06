@@ -297,6 +297,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // https://wicg.github.io/page-lifecycle/#sec-lifecycle-states
   bool Frozen() const { return frozen_; }
 
+  bool ShowPausedHudOverlay() const { return show_paused_hud_overlay_; }
+  void SetShowPausedHudOverlay(bool show_overlay);
+
   void SetPageScaleFactor(float);
   float PageScaleFactor() const;
 
@@ -580,6 +583,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // controlled from the renderer.
   bool paused_ = false;
   bool frozen_ = false;
+  bool show_paused_hud_overlay_ = false;
 
 #if DCHECK_IS_ON()
   bool is_painting_ = false;

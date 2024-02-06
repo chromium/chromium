@@ -589,6 +589,10 @@ void Page::SetPaused(bool paused) {
   }
 }
 
+void Page::SetShowPausedHudOverlay(bool show_overlay) {
+  show_paused_hud_overlay_ = show_overlay;
+}
+
 void Page::SetDefaultPageScaleLimits(float min_scale, float max_scale) {
   PageScaleConstraints new_defaults =
       GetPageScaleConstraintsSet().DefaultConstraints();

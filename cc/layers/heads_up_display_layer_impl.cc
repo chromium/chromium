@@ -606,6 +606,12 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   canvas->save();
   canvas->scale(internal_contents_scale_);
 
+  if (debug_state.debugger_paused) {
+    DrawDebuggerPaused(canvas);
+    canvas->restore();
+    return;
+  }
+
   if (debug_state.ShowDebugRects()) {
     DrawDebugRects(canvas, layer_tree_impl()->debug_rect_history());
     if (IsAnimatingHUDContents()) {
@@ -659,6 +665,40 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
         std::max<SkScalar>(metrics_area.width(), metrics_sizes.kWidth));
   }
 
+  canvas->restore();
+}
+
+void HeadsUpDisplayLayerImpl::DrawDebuggerPaused(PaintCanvas* canvas) {
+  SkColor4f background{0.0f, 0.0f, 0.0f, 0.35f};
+  canvas->clear(background);
+
+  // TODO(dtapuska): Make this string internationalized after feedback
+  // on feature has been provided.
+  std::string label_text =
+      "Debugger paused in another tab, switch to that tab to continue.";
+
+  const int kPadding = 4;
+  const int kFontHeight = 12;
+
+  PaintFlags label_flags;
+  label_flags.setColor(SkColorSetARGB(255, 255, 255, 194));
+  SkFont label_font(typeface_, kFontHeight);
+
+  const SkScalar label_text_width = label_font.measureText(
+      label_text.c_str(), label_text.length(), SkTextEncoding::kUTF8);
+
+  canvas->save();
+
+  gfx::Size space = internal_content_bounds_;
+  space.Enlarge(-(label_text_width + 2 * kPadding), 0);
+  canvas->translate(space.width() / 2, kFontHeight * 2);
+  canvas->drawRect(SkRect::MakeWH(label_text_width + 2 * kPadding,
+                                  kFontHeight + 2 * kPadding),
+                   label_flags);
+
+  label_flags.setColor(SkColorSetARGB(255, 50, 50, 50));
+  DrawText(canvas, label_flags, label_text, TextAlign::kLeft, kFontHeight,
+           kPadding, kFontHeight * 0.8f + kPadding);
   canvas->restore();
 }
 

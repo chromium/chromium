@@ -2819,6 +2819,15 @@ void LocalFrame::SetContextPaused(bool is_paused) {
     return;
   paused_ = is_paused;
 
+  if (IsLocalRoot() && (!is_paused || GetPage()->ShowPausedHudOverlay())) {
+    auto* widget = GetWidgetForLocalRoot();
+    if (widget) {
+      cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+      debug_state.debugger_paused = is_paused;
+      widget->SetLayerTreeDebugState(debug_state);
+    }
+  }
+
   GetDocument()->Fetcher()->SetDefersLoading(GetLoaderFreezeMode());
   Loader().SetDefersLoading(GetLoaderFreezeMode());
   // TODO(altimin): Move this to PageScheduler level.
