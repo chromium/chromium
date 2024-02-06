@@ -48,6 +48,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningUtil.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetProperties.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/ScrollablePasswordMigrationWarningContent.java",
   ]
 
@@ -57,7 +59,10 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediatorTest.java",
+  ]
 
   deps = [
     ":java",
