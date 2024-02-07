@@ -3251,7 +3251,6 @@ crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-my-000.
 crbug.com/1017164 [ Linux ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]
 crbug.com/1017164 [ Win ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
-crbug.com/1015331 external/wpt/css/css-text/white-space/eol-spaces-bidi-001.html [ Failure ]
 
 crbug.com/899264 external/wpt/css/css-text/letter-spacing/letter-spacing-control-chars-001.html [ Failure ]
 

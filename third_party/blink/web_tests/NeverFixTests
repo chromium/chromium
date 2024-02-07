@@ -457,9 +457,6 @@ external/wpt/css/css-text/tab-size/tab-size-integer-004.html [ Skip ]
 # Undefined behavior without any implementations.
 external/wpt/css/css-text/white-space/seg-break-transformation-019.tentative.html [ Skip ]
 
-# UAX#9 L1 is not implemented yet.
-crbug.com/316409 external/wpt/css/css-text/white-space/eol-spaces-bidi-002.html [ Skip ]
-
 # Removing trailing ogham spaces not implemented.
 external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Skip ]
 external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Skip ]

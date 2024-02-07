@@ -196,6 +196,7 @@ class CORE_EXPORT LineBreaker {
   void HandleTrailingSpaces(const InlineItem&, LineInfo*);
   void HandleTrailingSpaces(const InlineItem&, const ShapeResult*, LineInfo*);
   void RemoveTrailingCollapsibleSpace(LineInfo*);
+  void SplitTrailingBidiPreservedSpace(LineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(LineInfo*);
   void ComputeTrailingCollapsibleSpace(LineInfo*);
   void RewindTrailingOpenTags(LineInfo*);

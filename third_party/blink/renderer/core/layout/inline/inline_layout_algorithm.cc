@@ -1207,8 +1207,9 @@ std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
   }
 
   for (InlineItemResult& item_result : *line_info->MutableResults()) {
-    if (item_result.has_only_trailing_spaces)
+    if (item_result.has_only_pre_wrap_trailing_spaces) {
       break;
+    }
     if (item_result.shape_result) {
       ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
@@ -1837,7 +1838,7 @@ void InlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
     }
     DCHECK_NE(item.bidi_level, kOpaqueBidiLevel);
     // UAX#9 L1: trailing whitespaces should use paragraph direction.
-    if (item.has_only_trailing_spaces) {
+    if (item.has_only_bidi_trailing_spaces) {
       levels.push_back(base_direction_level);
       continue;
     }
