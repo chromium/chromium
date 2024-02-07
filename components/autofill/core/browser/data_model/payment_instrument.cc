@@ -25,53 +25,6 @@ PaymentInstrument& PaymentInstrument::operator=(
     const PaymentInstrument& other) = default;
 PaymentInstrument::~PaymentInstrument() = default;
 
-int PaymentInstrument::Compare(const PaymentInstrument& other) const {
-  if (instrument_id_ < other.instrument_id()) {
-    return -1;
-  }
-
-  if (instrument_id_ > other.instrument_id()) {
-    return 1;
-  }
-
-  int comparison = nickname_.compare(other.nickname());
-  if (comparison != 0) {
-    return comparison;
-  }
-
-  comparison =
-      display_icon_url_.spec().compare(other.display_icon_url().spec());
-  if (comparison != 0) {
-    return comparison;
-  }
-
-  // Find the first PaymentRail that is different between `this` and the `other`
-  // object.
-  int index = 0;
-  auto this_supported_rail_iter = supported_rails_.begin();
-  auto other_supported_rail_iter = other.supported_rails().begin();
-  for (; index < (int)supported_rails_.size() &&
-         index < (int)other.supported_rails().size();
-       index++) {
-    int diff = static_cast<int>(*this_supported_rail_iter) -
-               static_cast<int>(*other_supported_rail_iter);
-    if (diff != 0) {
-      return diff;
-    }
-    this_supported_rail_iter++;
-    other_supported_rail_iter++;
-  }
-  if (index < (int)supported_rails_.size()) {
-    // `this` object has greater supported rails than the `other` object.
-    return 1;
-  }
-  if (index < (int)other.supported_rails().size()) {
-    // `other` object has greater supported rails than `this` object.
-    return -1;
-  }
-  return 0;
-}
-
 bool PaymentInstrument::IsSupported(PaymentRail payment_rail) const {
   return supported_rails_.contains(payment_rail);
 }

@@ -42,8 +42,6 @@ class BankAccount {
 
   friend bool operator==(const BankAccount&, const BankAccount&);
 
-  int Compare(const BankAccount& other) const;
-
   const PaymentInstrument& payment_instrument() const {
     return payment_instrument_;
   }
