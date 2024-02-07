@@ -1702,8 +1702,14 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     return;
   }
 
+  const PersonalDataManager* pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
-  client().GetPersonalDataManager()->GetNonEmptyTypes(&non_empty_types);
+  for (const AutofillProfile* profile : pdm->GetProfiles()) {
+    profile->GetNonEmptyTypes(app_locale_, &non_empty_types);
+  }
+  for (const CreditCard* card : pdm->GetCreditCards()) {
+    card->GetNonEmptyTypes(app_locale_, &non_empty_types);
+  }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {

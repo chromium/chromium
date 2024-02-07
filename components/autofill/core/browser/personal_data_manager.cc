@@ -1231,14 +1231,6 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
   return nullptr;
 }
 
-void PersonalDataManager::GetNonEmptyTypes(
-    FieldTypeSet* non_empty_types) const {
-  for (AutofillProfile* profile : GetProfiles())
-    profile->GetNonEmptyTypes(app_locale_, non_empty_types);
-  for (CreditCard* card : GetCreditCards())
-    card->GetNonEmptyTypes(app_locale_, non_empty_types);
-}
-
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished_ &&
          is_payments_data_loaded_;

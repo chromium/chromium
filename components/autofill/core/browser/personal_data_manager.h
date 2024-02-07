@@ -395,9 +395,6 @@ class PersonalDataManager : public KeyedService,
   // match.
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
 
-  // Gets the field types available in the stored address and credit card data.
-  void GetNonEmptyTypes(FieldTypeSet* non_empty_types) const;
-
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
 
