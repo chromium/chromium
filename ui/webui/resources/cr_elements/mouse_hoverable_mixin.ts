@@ -8,7 +8,8 @@
  * mouse events too.
  */
 
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const HOVERED_STYLE: string = 'hovered';
 

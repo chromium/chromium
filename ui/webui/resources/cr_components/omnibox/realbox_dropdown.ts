@@ -12,10 +12,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface, RenderType, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {RenderType, SelectionLineState, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
-import {RealboxMatchElement} from './realbox_match.js';
+import type {RealboxMatchElement} from './realbox_match.js';
 import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.

@@ -27,9 +27,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CrContainerShadowMixinLit} from '../cr_container_shadow_mixin_lit.js';
 import {getCss as getHiddenCss} from '../cr_hidden_style_lit.css.js';
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 import {getCss as getIconsCss} from '../cr_icons_lit.css.js';
-import {CrInputElement} from '../cr_input/cr_input.js';
+import type {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getCss} from './cr_dialog.css.js';
 import {getHtml} from './cr_dialog.html.js';

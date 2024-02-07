@@ -9,7 +9,7 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {ClientId as PageImageServiceClientId} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './page_favicon.html.js';

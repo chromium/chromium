@@ -7,7 +7,8 @@
  * interact with the browser.
  */
 
-import {CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerFactory, CustomizeThemesHandlerInterface, CustomizeThemesHandlerRemote} from './customize_themes.mojom-webui.js';
+import type {CustomizeThemesHandlerInterface} from './customize_themes.mojom-webui.js';
+import {CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerFactory, CustomizeThemesHandlerRemote} from './customize_themes.mojom-webui.js';
 
 export interface CustomizeThemesBrowserProxy {
   handler(): CustomizeThemesHandlerInterface;

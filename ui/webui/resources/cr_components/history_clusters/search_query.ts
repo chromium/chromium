@@ -8,7 +8,7 @@ import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {SearchQuery} from './history_cluster_types.mojom-webui.js';
+import type {SearchQuery} from './history_cluster_types.mojom-webui.js';
 import {RelatedSearchAction} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl} from './metrics_proxy.js';
 import {getTemplate} from './search_query.html.js';

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS, HelpBubbleElement} from './help_bubble.js';
-import {HelpBubbleArrowPosition, HelpBubbleParams} from './help_bubble.mojom-webui.js';
+import type {HelpBubbleElement} from './help_bubble.js';
+import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS} from './help_bubble.js';
+import type {HelpBubbleParams} from './help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition} from './help_bubble.mojom-webui.js';
 
 type Root = HTMLElement|ShadowRoot&{shadowRoot?: ShadowRoot};
 

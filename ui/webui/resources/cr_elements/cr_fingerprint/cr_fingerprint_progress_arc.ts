@@ -8,10 +8,10 @@ import './cr_fingerprint_icons.html.js';
 import '../cr_lottie/cr_lottie.js';
 
 import {assert} from '//resources/js/assert.js';
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrLottieElement} from '../cr_lottie/cr_lottie.js';
+import type {CrLottieElement} from '../cr_lottie/cr_lottie.js';
 
 import {getTemplate} from './cr_fingerprint_progress_arc.html.js';
 

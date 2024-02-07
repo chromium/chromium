@@ -10,12 +10,12 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import './certificate_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CertificatesError, CertificatesImportError} from './certificates_browser_proxy.js';
+import type {CertificatesError, CertificatesImportError} from './certificates_browser_proxy.js';
 import {getTemplate} from './certificates_error_dialog.html.js';
 
 interface CertificatesErrorDialogElement {

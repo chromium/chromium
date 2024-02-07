@@ -13,10 +13,11 @@ import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss as getActionableRowCss} from '../cr_actionable_row_style_lit.css.js';
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getCss} from './cr_expand_button.css.js';
 import {getHtml} from './cr_expand_button.html.js';

@@ -34,7 +34,7 @@
  */
 
 import {assert} from '//resources/js/assert.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 export enum CrContainerShadowSide {
   TOP = 'top',

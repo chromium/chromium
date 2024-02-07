@@ -19,8 +19,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
-import {Cluster, SearchQuery, URLVisit} from './history_cluster_types.mojom-webui.js';
-import {ClusterAction, PageCallbackRouter, VisitAction} from './history_clusters.mojom-webui.js';
+import type {Cluster, SearchQuery, URLVisit} from './history_cluster_types.mojom-webui.js';
+import type {PageCallbackRouter} from './history_clusters.mojom-webui.js';
+import {ClusterAction, VisitAction} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl} from './metrics_proxy.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 

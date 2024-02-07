@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '//resources/js/assert.js';
-import {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {RenderType, SideType} from './omnibox.mojom-webui.js';
 

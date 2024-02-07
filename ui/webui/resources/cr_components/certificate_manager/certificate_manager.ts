@@ -27,7 +27,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './certificate_manager.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
-import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import type {CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl, CertificateType} from './certificates_browser_proxy.js';
 
 const CertificateManagerElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
