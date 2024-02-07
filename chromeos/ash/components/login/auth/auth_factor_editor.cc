@@ -622,10 +622,9 @@ void AuthFactorEditor::OnListAuthFactors(
     }
     auto factor = cryptohome::DeserializeAuthFactor(
         factor_with_status_proto.auth_factor(), fallback_type);
-    // Dirty hack below, as cryptohome does not send correct value as a part of
-    // PIN status, but uses indirect signal of listing no intents instead.
     if (factor.ref().type() == cryptohome::AuthFactorType::kPin) {
-      bool locked = factor_with_status_proto.available_for_intents_size() == 0;
+      bool locked =
+          factor_with_status_proto.status_info().time_available_in() > 0;
       cryptohome::PinStatus replacement_status{locked};
       cryptohome::AuthFactor replacement_factor{
           factor.ref(), factor.GetCommonMetadata(), factor.GetPinMetadata(),

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/check.h"
@@ -919,7 +920,8 @@ void FakeUserDataAuthClient::ListAuthFactors(
           user_data_auth::AUTH_INTENT_WEBAUTHN);
       if (absl::holds_alternative<PinFactor>(factor)) {
         if (absl::get<PinFactor>(factor).locked) {
-          factor_with_status->clear_available_for_intents();
+          factor_with_status->mutable_status_info()->set_time_available_in(
+              std::numeric_limits<uint64_t>::max());
         }
       }
     } else {
