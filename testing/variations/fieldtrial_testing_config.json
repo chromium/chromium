@@ -3163,21 +3163,6 @@
             ]
         }
     ],
-    "CameraMonitoringInVideoCaptureService": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CameraMonitoringInVideoCaptureService"
-                    ]
-                }
-            ]
-        }
-    ],
     "Canvas2DAutoFlushParams": [
         {
             "platforms": [
