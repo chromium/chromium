@@ -4293,16 +4293,23 @@ void CookieChangeObserver::Wait() {
 void CookieChangeObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  OnCookieAccessed();
+  OnCookieAccessed(details);
 }
 
 void CookieChangeObserver::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {
-  OnCookieAccessed();
+  OnCookieAccessed(details);
 }
 
-void CookieChangeObserver::OnCookieAccessed() {
+void CookieChangeObserver::OnCookieAccessed(
+    const content::CookieAccessDetails& details) {
+  if (details.type == CookieAccessDetails::Type::kRead) {
+    num_read_seen_++;
+  } else if (details.type == CookieAccessDetails::Type::kChange) {
+    num_write_seen_++;
+  }
+
   if (++num_seen_ == num_expected_calls_) {
     run_loop_.Quit();
   }

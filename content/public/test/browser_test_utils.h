@@ -2363,17 +2363,22 @@ class CookieChangeObserver : public content::WebContentsObserver {
 
   void Wait();
 
+  int num_read_seen() const { return num_read_seen_; }
+  int num_write_seen() const { return num_write_seen_; }
+
  private:
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation,
                          const content::CookieAccessDetails& details) override;
 
-  void OnCookieAccessed();
+  void OnCookieAccessed(const content::CookieAccessDetails& details);
 
   base::RunLoop run_loop_;
   int num_seen_ = 0;
   int num_expected_calls_;
+  int num_read_seen_ = 0;
+  int num_write_seen_ = 0;
 };
 
 [[nodiscard]] base::CallbackListSubscription

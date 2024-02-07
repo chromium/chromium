@@ -1323,3 +1323,75 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus", 0);
 }
+
+class ThirdPartyCookieDeprecationObserverTriggerBrowserTest
+    : public ThirdPartyCookieDeprecationObserverBaseBrowserTest {
+ public:
+  ThirdPartyCookieDeprecationObserverTriggerBrowserTest() = default;
+
+  ThirdPartyCookieDeprecationObserverTriggerBrowserTest(
+      const ThirdPartyCookieDeprecationObserverTriggerBrowserTest&) = delete;
+  ThirdPartyCookieDeprecationObserverTriggerBrowserTest& operator=(
+      const ThirdPartyCookieDeprecationObserverTriggerBrowserTest&) = delete;
+
+  ~ThirdPartyCookieDeprecationObserverTriggerBrowserTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {}, {content_settings::features::kTrackingProtection3pcd});
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
+                       ThirdPartyCookiesSingleWrite) {
+  // Setup tracking protection onboard to block 3PC.
+  SetUpTrackingProtectionOnboard();
+  content::CookieChangeObserver observer(web_contents(), 1);
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  observer.Wait();
+  EXPECT_EQ(0, observer.num_read_seen());
+  EXPECT_EQ(1, observer.num_write_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
+                       ThirdPartyCookiesSingleRead) {
+  // Read|Write cookie before tracking protection onboard.
+  content::CookieChangeObserver observer1(web_contents(), 2);
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  // 3p cookie read
+  NavigateFrameTo(kHostB, "/");
+  observer1.Wait();
+  EXPECT_EQ(1, observer1.num_read_seen());
+  EXPECT_EQ(1, observer1.num_write_seen());
+
+  // Setup tracking protection onboard to block 3PC.
+  SetUpTrackingProtectionOnboard();
+  content::CookieChangeObserver observer2(web_contents(), 1);
+  // 3p cookie read
+  NavigateFrameTo(kHostB, "/");
+  observer2.Wait();
+  EXPECT_EQ(1, observer2.num_read_seen());
+  EXPECT_EQ(0, observer2.num_write_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
+                       ThirdPartyCookiesBothWriteRead) {
+  // Setup tracking protection onboard to block 3PC.
+  SetUpTrackingProtectionOnboard();
+  // Only 3p cookie write is triggered because the 3p cookie write is blocked
+  // and no cookie to read.
+  content::CookieChangeObserver observer(web_contents(), 1);
+  NavigateToPageWithFrame(kHostA);
+  // 3p cookie write
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  // 3p cookie read
+  NavigateFrameTo(kHostB, "/");
+  observer.Wait();
+  EXPECT_EQ(0, observer.num_read_seen());
+  EXPECT_EQ(1, observer.num_write_seen());
+}
