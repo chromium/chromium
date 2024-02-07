@@ -208,13 +208,8 @@ class DCompPresenterTest : public testing::Test {
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
 
-    gl_surface_ = init::CreateOffscreenGLSurface(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
-
-    scoped_refptr<GLContext> context = gl::init::CreateGLContext(
-        nullptr, gl_surface_.get(), GLContextAttribs());
-    EXPECT_TRUE(context->MakeCurrent(gl_surface_.get()));
-    context_ = std::move(context);
+    std::tie(gl_surface_, context_) =
+        GLTestHelper::CreateOffscreenGLSurfaceAndContext();
 
     // These tests are assumed to run on battery.
     fake_power_monitor_source_.SetOnBatteryPower(true);
