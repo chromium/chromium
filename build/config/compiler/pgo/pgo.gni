@@ -5,6 +5,7 @@
 import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
@@ -20,7 +21,7 @@ declare_args() {
   # to think some code is hotter than it actually is, potentially causing very
   # bad compile times.
   chrome_pgo_phase = 0
-  if (!dcheck_always_on && is_official_build &&
+  if (!is_cronet_build && !dcheck_always_on && is_official_build &&
       # TODO(crbug.com/1336055): Update this now-outdated condition with regard
       # to chromecast and determine whether chromeos_is_browser_only is
       # obsolete.
