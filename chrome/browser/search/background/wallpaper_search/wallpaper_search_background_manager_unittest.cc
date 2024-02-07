@@ -604,6 +604,27 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[3])));
 }
 
+// Test that looping through history doesn't crash if the value is the wrong.
+// shape.
+// Example: The pref used to be a list of token strings and is now a list of
+//          |base::Value::Dict|. If we run into the old form, we do not want
+//          to crash.
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       NoCrashIfHistoryContainsIllformedData) {
+  // Fill and set history with a token string instead of dict.
+  base::Value::List history = base::Value::List();
+  base::Token token = base::Token::CreateRandom();
+  history.Append(token.ToString());
+  pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
+  pref_service().SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
+                           token.ToString());
+
+  // Clear wallpaper search theme resource since this is a way to make the loop
+  // through history occur.
+  WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(&profile());
+  task_environment().RunUntilIdle();
+}
+
 TEST_F(WallpaperSearchBackgroundManagerTest, NotifyAboutHistory) {
   std::unique_ptr<MockWallpaperSearchBackgroundManagerObserver> observer =
       std::make_unique<MockWallpaperSearchBackgroundManagerObserver>();
