@@ -584,6 +584,7 @@ source_set("tests") {
     "proxy_config_mojom_traits_unittest.cc",
     "request_destination_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
+    "self_deleting_url_loader_factory_unittest.cc",
     "shared_dictionary_isolation_key_mojom_traits_unittest.cc",
     "shared_dictionary_usage_info_mojom_traits_unittest.cc",
     "simple_host_resolver_unittest.cc",
