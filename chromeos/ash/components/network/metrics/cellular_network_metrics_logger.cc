@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 
+#include "chromeos/ash/components/dbus/hermes/constants.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
@@ -19,6 +20,11 @@ namespace ash {
 namespace {
 
 using ApnType = chromeos::network_config::mojom::ApnType;
+
+const base::TimeDelta kSmdsScanDurationMinimum = base::Milliseconds(1);
+const base::TimeDelta kSmdsScanDurationMaximum = base::Milliseconds(
+    ::ash::hermes_constants::kHermesNetworkOperationTimeoutMs);
+const size_t kSmdsScanDurationBuckets = 50;
 
 std::optional<CellularNetworkMetricsLogger::ApnTypes> GetApnTypes(
     std::vector<ApnType> apn_types) {
@@ -288,7 +294,9 @@ void CellularNetworkMetricsLogger::LogSmdsScanDuration(
     histogram =
         success ? kSmdsScanOtherDurationSuccess : kSmdsScanOtherDurationFailure;
   }
-  base::UmaHistogramTimes(histogram, duration);
+  base::UmaHistogramCustomTimes(histogram, duration, kSmdsScanDurationMinimum,
+                                kSmdsScanDurationMaximum,
+                                kSmdsScanDurationBuckets);
 }
 
 // static

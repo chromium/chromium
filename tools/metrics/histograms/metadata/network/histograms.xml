@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Network.Ash.Cellular.ESim.SmdsScanDuration.{SmdsType}.{DurationType}"
+    name="Network.Ash.Cellular.ESim.SmdsScanDuration2.{SmdsType}.{DurationType}"
     units="ms" expires_after="2024-09-30">
   <owner>chadduffin@google.com</owner>
   <owner>tjohnsonkanu@google.com</owner>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
     Tracks the time taken to perform a single SM-DS scan of a single SM-DS
     server. The {SmdsType} token indicates the type of SM-DS server that was
     scanned, and the {DurationType} token indicates whether this duration was
-    for a scan that ompleted with an Hermes result that indicates a non-fatal
+    for a scan that completed with a Hermes result that indicates a non-fatal
     error occurred. An error does not necessarily indicate that the scan failed,
     but does indicate that there was an issue when performing the scan, e.g.,
     there was an issue with one of the profiles discovered.
