@@ -43,16 +43,6 @@ void AddStrings(content::WebUIDataSource* source) {
   source->EnableReplaceI18nInJS();
 }
 
-void AddBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean("isSeaPenEnabled",
-                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
-  source->AddBoolean("isSeaPenTextInputEnabled",
-                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
-                         ::ash::features::IsSeaPenTextInputEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
-}
-
 void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePath(""sv, IDR_ASH_VC_BACKGROUND_INDEX_HTML);
   source->AddResourcePaths(base::make_span(kAshVcBackgroundResources,
@@ -114,6 +104,20 @@ void VcBackgroundUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
+  const bool common_sea_pen_requirements =
+      sea_pen_provider_->IsEligibleForSeaPen();
+  source->AddBoolean("isSeaPenEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
+  source->AddBoolean("isSeaPenTextInputEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         ::ash::features::IsSeaPenTextInputEnabled() &&
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)

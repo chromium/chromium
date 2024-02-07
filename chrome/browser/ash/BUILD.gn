@@ -6060,6 +6060,7 @@ source_set("unit_tests") {
     "system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl_unittest.cc",
     "system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl_unittest.cc",
     "system_web_apps/apps/personalization_app/personalization_app_user_provider_impl_unittest.cc",
+    "system_web_apps/apps/personalization_app/personalization_app_utils_unittest.cc",
     "system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl_unittest.cc",
     "system_web_apps/apps/personalization_app/wallpaper_metrics_provider_unittest.cc",
     "tether/tether_service_unittest.cc",

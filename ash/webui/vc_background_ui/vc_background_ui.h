@@ -16,6 +16,10 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
+namespace content {
+class WebUIDataSource;
+}  // namespace content
+
 namespace ui {
 class ColorChangeHandler;
 }
@@ -58,6 +62,8 @@ class VcBackgroundUI : public ui::MojoWebUIController {
           receiver);
 
  private:
+  void AddBooleans(content::WebUIDataSource* source);
+
   std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 

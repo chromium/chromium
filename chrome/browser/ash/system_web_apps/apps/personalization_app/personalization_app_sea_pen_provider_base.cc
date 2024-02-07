@@ -71,6 +71,10 @@ void PersonalizationAppSeaPenProviderBase::BindInterface(
   sea_pen_receiver_.Bind(std::move(receiver));
 }
 
+bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
+  return ::ash::personalization_app::IsEligibleForSeaPen(profile_);
+}
+
 void PersonalizationAppSeaPenProviderBase::SearchWallpaper(
     const mojom::SeaPenQueryPtr query,
     SearchWallpaperCallback callback) {

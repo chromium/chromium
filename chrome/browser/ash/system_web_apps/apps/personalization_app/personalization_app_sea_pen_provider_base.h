@@ -56,6 +56,8 @@ class PersonalizationAppSeaPenProviderBase
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
+  bool IsEligibleForSeaPen() override;
+
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void SearchWallpaper(mojom::SeaPenQueryPtr query,
                        SearchWallpaperCallback callback) override;

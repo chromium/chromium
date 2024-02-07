@@ -113,6 +113,7 @@ class MockSeaPenProvider
               (mojo::PendingReceiver<
                   ::ash::personalization_app::mojom::SeaPenProvider> receiver),
               (override));
+  bool IsEligibleForSeaPen() override { return true; }
   // ::ash::personalization_app::mojom::SeaPenProvider:
   MOCK_METHOD(void,
               SearchWallpaper,
