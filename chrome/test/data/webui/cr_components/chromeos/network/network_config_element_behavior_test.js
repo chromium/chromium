@@ -109,11 +109,9 @@ suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
       config.prefilledValue = prefilledValue;
       if (shouldBeValid) {
         assertTrue(config.readonly);
-        assertTrue(config.disabled);
         assertEquals(config.value, config.prefilledValue);
       } else {
         assertFalse(config.readonly);
-        assertFalse(config.disabled);
         assertNotEquals(config.value, config.prefilledValue);
       }
     }

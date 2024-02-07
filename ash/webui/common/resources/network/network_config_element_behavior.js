@@ -73,8 +73,16 @@ export const NetworkConfigElementBehavior = {
   },
 
   /**
+   * It can be overridden by the elements to implement their extra logic for
+   * prefilled value.
+   */
+  extraSetupForPrefilledValue() {
+    return;
+  },
+
+  /**
    * If the prefilled value is defined, always use the value and mark the input
-   * as readonly/disabled.
+   * as readonly.
    */
   maybeLockByPrefilledValue() {
     if (this.prefilledValue === undefined || this.prefilledValue === null) {
@@ -85,6 +93,6 @@ export const NetworkConfigElementBehavior = {
     }
     this.value = this.prefilledValue;
     this.readonly = true;
-    this.disabled = true;
+    this.extraSetupForPrefilledValue();
   },
 };
