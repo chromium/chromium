@@ -91,12 +91,9 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
     const mojom::SeaPenQueryPtr& query,
     base::OnceCallback<void(bool success)> callback) {
-  // TODO(b/321778818): move the query_info string construction to
-  // SeaPenWallpaperManager.
-  const std::string query_info = QueryDictToXmpString(SeaPenQueryToDict(query));
   auto* wallpaper_controller = ash::WallpaperController::Get();
   wallpaper_controller->SetSeaPenWallpaper(
-      GetAccountId(profile_), sea_pen_image, query_info, std::move(callback));
+      GetAccountId(profile_), sea_pen_image, query, std::move(callback));
 }
 
 }  // namespace ash::personalization_app

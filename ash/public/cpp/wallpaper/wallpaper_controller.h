@@ -15,6 +15,7 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -234,29 +235,15 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Sets `sea_pen_image` received from the Manta API as system wallpaper for
   // user with `account_id` and saves the image to disk with xmp metadata
-  // containing `query_info` data.
-  // `query_info` is a string constructed as XMP format (like XML standard
-  // format) which includes the query information used to generate the image and
-  // its creation time. For example:
-  //    <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
-  //      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  //        <rdf:Description rdf:about=""
-  //        xmlns:dc="http://purl.org/dc/elements/1.1/">
-  //          <dc:description>{"creation_time":"123456789",
-  //          "user_visible_query_text":"some query",
-  //          "user_visible_query_template":"some template",
-  //          "options":{"6":"48","7":"61"}, "template_id":"3"}
-  //          </dc:description>
-  //        </rdf:Description>
-  //      </rdf:RDF>
-  //    </x:xmpmeta>
+  // containing query info from SeaPenQuery `query`.
   // @see //components/manta
   // Calls `callback` with boolean success. Can fail if `account_id` is not
   // allowed to set wallpaper, or the image failed to decode.
-  virtual void SetSeaPenWallpaper(const AccountId& account_id,
-                                  const SeaPenImage& sea_pen_image,
-                                  const std::string& query_info,
-                                  SetWallpaperCallback callback) = 0;
+  virtual void SetSeaPenWallpaper(
+      const AccountId& account_id,
+      const SeaPenImage& sea_pen_image,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
+      SetWallpaperCallback callback) = 0;
 
   // Sets the recently used Sea Pen wallpaper as system wallpaper for
   // user with `account_id`.

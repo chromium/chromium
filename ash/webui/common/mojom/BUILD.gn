@@ -56,7 +56,6 @@ mojom("sea_pen") {
       traits_headers = [ "sea_pen_mojom_traits.h" ]
       traits_sources = [ "sea_pen_mojom_traits.cc" ]
       traits_public_deps = [
-        "//ash/public/cpp",
         "//ash/webui/personalization_app/proto",
         "//components/manta",
       ]

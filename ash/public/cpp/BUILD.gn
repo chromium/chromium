@@ -468,6 +468,7 @@ component("cpp") {
   public_deps = [
     "//ash/components/arc/mojom:notifications",
     "//ash/public/mojom",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
     "//ash/webui/personalization_app/proto",
     "//base",

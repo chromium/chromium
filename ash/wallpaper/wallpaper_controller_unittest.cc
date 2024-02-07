@@ -852,7 +852,8 @@ class WallpaperControllerTestBase : public AshTestBase {
     base::test::TestFuture<bool> set_wallpaper_future;
     controller_->SetSeaPenWallpaper(
         kAccountId1, {std::move(jpg_bytes), /*id=*/5},
-        /*query_info=*/"test query", set_wallpaper_future.GetCallback());
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
+        set_wallpaper_future.GetCallback());
 
     EXPECT_TRUE(set_wallpaper_future.Take());
     EXPECT_EQ(1, observer.wallpaper_changed_count());

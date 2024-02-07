@@ -1107,7 +1107,7 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
 void WallpaperControllerImpl::SetSeaPenWallpaper(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
-    const std::string& query_info,
+    const personalization_app::mojom::SeaPenQueryPtr& query,
     SetWallpaperCallback callback) {
   CHECK(features::IsSeaPenEnabled());
   DCHECK(callback);
@@ -1126,7 +1126,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
       GetUserSeaPenWallpaperDir(account_id).Append(sea_pen_file_name);
 
   sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
-      sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query_info,
+      sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                      sea_pen_wallpaper_path, std::move(callback)));

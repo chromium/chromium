@@ -139,13 +139,6 @@ base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
       nullptr, nullptr);
 }
 
-std::string DictToMetadataDescription(const base::Value::Dict& dict) {
-  std::string json;
-  bool success = base::JSONWriter::Write(dict, &json);
-  DCHECK(success);
-  return "<dc:description>" + json + "</dc:description>";
-}
-
 class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
  public:
   PersonalizationAppSeaPenProviderImplTest()
@@ -423,7 +416,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       SelectThumbnailSendsFreeTextMetadata) {
+       SelectThumbnailSendsFreeTextQuery) {
   auto time_override = CreateScopedTimeNowOverride();
 
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
@@ -440,7 +433,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
 
-  ASSERT_EQ(std::string(), test_wallpaper_controller()->sea_pen_metadata());
   // Select the first returned thumbnail.
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
@@ -448,17 +440,12 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());
-  base::Value::Dict expected_metadata;
-  // `time_override` is still in effect so `base::Time::Now()` should always
-  // return the same value.
-  expected_metadata.Set("creation_time", base::TimeToValue(base::Time::Now()));
-  expected_metadata.Set("freeform_query", user_search_query);
-  EXPECT_THAT(test_wallpaper_controller()->sea_pen_metadata(),
-              testing::HasSubstr(DictToMetadataDescription(expected_metadata)));
+  EXPECT_TRUE(test_wallpaper_controller()->sea_pen_query().Equals(
+      mojom::SeaPenQuery::NewTextQuery(user_search_query)));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       SelectThumbnailSendsTemplateMetadata) {
+       SelectThumbnailSendsTemplateQuery) {
   auto time_override = CreateScopedTimeNowOverride();
 
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
@@ -487,7 +474,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
 
-  ASSERT_EQ(std::string(), test_wallpaper_controller()->sea_pen_metadata());
   // Select the first returned thumbnail.
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
@@ -495,26 +481,12 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());
-  base::Value::Dict expected_metadata;
-  // `time_override` is still in effect so `base::Time::Now()` should always
-  // return the same value.
-  expected_metadata.Set("creation_time", base::TimeToValue(base::Time::Now()));
-  expected_metadata.Set("user_visible_query_text", "test template query");
-  expected_metadata.Set("user_visible_query_template", "test template title");
-  {
-    base::Value::Dict options;
-    for (const auto& [chip, option] : chosen_options) {
-      options.Set(base::NumberToString(static_cast<int32_t>(chip)),
-                  base::NumberToString(static_cast<int32_t>(option)));
-    }
-    expected_metadata.Set("options", std::move(options));
-  }
-  expected_metadata.Set("template_id",
-                        base::NumberToString(static_cast<int32_t>(
-                            mojom::SeaPenTemplateId::kCharacters)));
 
-  EXPECT_THAT(test_wallpaper_controller()->sea_pen_metadata(),
-              testing::HasSubstr(DictToMetadataDescription(expected_metadata)));
+  EXPECT_TRUE(test_wallpaper_controller()->sea_pen_query().Equals(
+      mojom::SeaPenQuery::NewTemplateQuery(mojom::SeaPenTemplateQuery::New(
+          mojom::SeaPenTemplateId::kCharacters, chosen_options,
+          mojom::SeaPenUserVisibleQuery::New("test template query",
+                                             "test template title")))));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,

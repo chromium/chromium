@@ -34,6 +34,7 @@
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
@@ -297,10 +298,11 @@ class ASH_EXPORT WallpaperControllerImpl
                               const std::string& file_name,
                               WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
-  void SetSeaPenWallpaper(const AccountId& account_id,
-                          const SeaPenImage& sea_pen_image,
-                          const std::string& query_info,
-                          SetWallpaperCallback callback) override;
+  void SetSeaPenWallpaper(
+      const AccountId& account_id,
+      const SeaPenImage& sea_pen_image,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
+      SetWallpaperCallback callback) override;
 
   void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                   const base::FilePath& file_path,

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -33,15 +34,16 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // Decodes Sea Pen image then save the decoded image into disk. Calls
   // `callback` with the image id and the decoded image. Responds with an empty
   // `ImageSkia` on decoding failure.
-  void DecodeAndSaveSeaPenImage(const SeaPenImage& sea_pen_image,
-                                const base::FilePath& wallpaper_dir,
-                                const std::string& query_info,
-                                DecodeAndSaveSeaPenImageCallback callback);
+  void DecodeAndSaveSeaPenImage(
+      const SeaPenImage& sea_pen_image,
+      const base::FilePath& wallpaper_dir,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
+      DecodeAndSaveSeaPenImageCallback callback);
 
  private:
   void SaveSeaPenImage(uint32_t sea_pen_image_id,
                        const base::FilePath& wallpaper_dir,
-                       const std::string& query_info,
+                       const personalization_app::mojom::SeaPenQueryPtr& query,
                        DecodeAndSaveSeaPenImageCallback callback,
                        const gfx::ImageSkia& image_skia);
 
