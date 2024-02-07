@@ -1621,15 +1621,15 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
+  // All platforms except Android (on which this code does not run) exclusively
+  // use the passthrough decoder, which supports YUV->RGB conversion.
+  CHECK(destination_gl_capabilities.supports_yuv_to_rgb_conversion);
+
   // Determine whether to use legacy mailboxes to perform the upload.
   // We use legacy mailboxes iff one of the following is true:
-  // * `destination_gl` does not support YUV-RGB conversion.
   // * The VideoFrame is holding a legacy mailbox.
-  // * The Video is not MultiplanarSI and the codepath to handle legacy
+  // * The VideoFrame is not MultiplanarSI and the codepath to handle legacy
   //   multiplanar via ConvertYUVAMailboxesToTexture() is not enabled.
-  bool yuv_rgb_conversion_not_supported =
-      !destination_gl_capabilities.supports_yuv_to_rgb_conversion;
-
   CHECK(video_frame->HasTextures());
   bool video_frame_is_legacy_mailbox =
       !video_frame->mailbox_holder(0).mailbox.IsSharedImage();
@@ -1649,7 +1649,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   DUMP_WILL_BE_CHECK(!video_frame_is_legacy_mailbox);
 
   bool use_legacy_mailboxes_for_upload =
-      yuv_rgb_conversion_not_supported || video_frame_is_legacy_mailbox ||
+      video_frame_is_legacy_mailbox ||
       (video_frame_is_not_mp_si &&
        !base::FeatureList::IsEnabled(kOneCopyLegacyMPVideoFrameUploadViaSI));
 
