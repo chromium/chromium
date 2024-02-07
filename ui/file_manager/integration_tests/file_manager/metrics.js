@@ -9,7 +9,7 @@ import {createTestFile, ENTRIES, getHistogramCount, getHistogramSum, RootPath} f
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
-import {FakeTask} from './tasks.js';
+import {FakeTask} from './test_data.js';
 
 // @ts-ignore: error TS4111: Property 'metricsRecordEnum' comes from an index
 // signature, so it must be accessed with ['metricsRecordEnum'].

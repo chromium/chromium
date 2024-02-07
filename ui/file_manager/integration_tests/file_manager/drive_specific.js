@@ -7,8 +7,7 @@ import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {FakeTask} from './tasks.js';
-import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
+import {BASIC_DRIVE_ENTRY_SET, FakeTask, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
  * Expected files shown in the search results for 'hello'

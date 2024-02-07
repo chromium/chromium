@@ -49,7 +49,7 @@ import * as openVideoMediaAppTests from './file_manager/open_video_media_app.js'
 // import * as tasksTests from './file_manager/tasks.js';
 // import * as toolbarTests from './file_manager/toolbar.js';
 // import * as transferTests from './file_manager/transfer.js';
-// import * as trashTests from './file_manager/trash.js';
+import * as trashTests from './file_manager/trash.js';
 // import * as traverseTests from './file_manager/traverse.js';
 // import * as zipFilesTests from './file_manager/zip_files.js';
 // clang-format on
@@ -107,7 +107,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...tasksTests,
   // ...toolbarTests,
   // ...transferTests,
-  // ...trashTests,
+  ...trashTests,
   // ...traverseTests,
   // ...zipFilesTests,
 };

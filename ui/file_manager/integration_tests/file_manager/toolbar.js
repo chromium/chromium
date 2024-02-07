@@ -7,8 +7,7 @@ import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
-import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, DOWNLOADS_FAKE_TASKS} from './test_data.js';
 
 /**
  * Tests that the Delete menu item is disabled if no entry is selected.
