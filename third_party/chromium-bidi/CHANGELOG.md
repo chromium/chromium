@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.9](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.8...chromium-bidi-v0.5.9) (2024-02-07)
+
+
+### Features
+
+* allow Chrome-specific params in user contexts ([#1814](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1814)) ([4b9d742](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4b9d74262efe679bf1e13fb9045b6c1e3f33c4ed))
+* generalize worker realm ([#1779](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1779)) ([a79e1a2](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a79e1a2620f65ef7821d8dcf6322dcc3d3dbe5cb))
+
+
+### Bug Fixes
+
+* enable cdp Network domain when needed ([#1785](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1785)) ([7be907d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7be907d251a6faad0da3cf0b7f5b46505f341583))
+
 ## [0.5.8](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.7...chromium-bidi-v0.5.8) (2024-01-31)
 
 
