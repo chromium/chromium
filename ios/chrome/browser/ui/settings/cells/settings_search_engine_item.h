@@ -12,10 +12,8 @@
 @class FaviconAttributes;
 @class FaviconView;
 
-// This protocol is implemented by SettingsSearchEngineItem and
-// LegacySettingsSearchEngineItem. This can be removed once
-// LegacySettingsSearchEngineItem is removed.
-@protocol SettingsSearchEngineItem <NSObject>
+// SettingsSearchEngineItem contains the model data for a TableViewURLCell.
+@interface SettingsSearchEngineItem : TableViewItem
 
 // The enabled/disabled state. If disabled, user interaction will be forbidden
 // and cell's alpha will be reduced.
@@ -24,12 +22,6 @@
 @property(nonatomic, readwrite, copy) NSString* text;
 // The text for the subtitle.
 @property(nonatomic, readwrite, copy) NSString* detailText;
-
-@end
-
-// SettingsSearchEngineItem contains the model data for a TableViewURLCell.
-@interface SettingsSearchEngineItem : TableViewItem <SettingsSearchEngineItem>
-
 // Sets the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 

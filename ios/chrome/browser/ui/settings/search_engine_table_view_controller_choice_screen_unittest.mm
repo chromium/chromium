@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -159,7 +159,6 @@ class SearchEngineTableViewControllerChoiceScreenTest
 
   void CheckItem(NSString* expected_text,
                  NSString* expected_detail_text,
-                 const GURL& expected_url,
                  bool expected_checked,
                  int section,
                  int row,
@@ -195,8 +194,7 @@ class SearchEngineTableViewControllerChoiceScreenTest
             template_url_service_->search_terms_data());
     CheckItem(base::SysUTF8ToNSString(expected_search_engine.short_name),
               base::SysUTF8ToNSString(expected_search_engine.short_name),
-              expected_search_engine.searchable_url, expected_checked, section,
-              row, enabled);
+              expected_checked, section, row, enabled);
   }
 
   // Checks a SettingsSearchEngineItem with data from a fabricated
@@ -214,7 +212,6 @@ class SearchEngineTableViewControllerChoiceScreenTest
     CheckItem(
         base::SysUTF8ToNSString(expected_search_engine.short_name),
         base::SysUTF8ToNSString(expected_search_engine.short_name),
-        TemplateURL::GenerateFaviconURL(expected_search_engine.searchable_url),
         expected_checked, section, row, enabled);
   }
 
@@ -231,9 +228,6 @@ class SearchEngineTableViewControllerChoiceScreenTest
                      bool enabled = true) {
     CheckItem(base::SysUTF16ToNSString(turl->short_name()),
               base::SysUTF16ToNSString(turl->keyword()),
-              GURL(turl->url_ref().ReplaceSearchTerms(
-                  TemplateURLRef::SearchTermsArgs(std::u16string()),
-                  template_url_service_->search_terms_data())),
               expected_checked, section, row, enabled);
   }
 
@@ -385,6 +379,8 @@ TEST_F(SearchEngineTableViewControllerChoiceScreenTest, EditingMode) {
 
   SearchEngineTableViewController* searchEngineController =
       static_cast<SearchEngineTableViewController*>(controller());
+  // TODO(b/324052311): Need to add a test when there is only custom search
+  // engine and it is selected, the edit button should be disabled.
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
 
   // Set the first prepopulated engine as default engine using
@@ -483,6 +479,7 @@ TEST_F(SearchEngineTableViewControllerChoiceScreenTest, DeleteItems) {
       ^{
         return NumberOfSections() == 1;
       }));
+  // TODO(b/324052311): Need to add a check that the edit button is disabled.
   ASSERT_TRUE(NumberOfItemsInSection(0) == number_of_prepopulated_items);
 }
 

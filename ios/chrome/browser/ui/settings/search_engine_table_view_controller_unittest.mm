@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -138,17 +138,15 @@ class SearchEngineTableViewControllerTest
 
   void CheckItem(NSString* expected_text,
                  NSString* expected_detail_text,
-                 const GURL& expected_url,
                  bool expected_checked,
                  int section,
                  int row,
                  bool enabled) {
-    LegacySettingsSearchEngineItem* item =
-        base::apple::ObjCCastStrict<LegacySettingsSearchEngineItem>(
+    SettingsSearchEngineItem* item =
+        base::apple::ObjCCastStrict<SettingsSearchEngineItem>(
             GetTableViewItem(section, row));
     EXPECT_NSEQ(expected_text, item.text);
     EXPECT_NSEQ(expected_detail_text, item.detailText);
-    EXPECT_EQ(expected_url, item.URL);
     EXPECT_EQ(expected_checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone,
               item.accessoryType);
@@ -175,8 +173,8 @@ class SearchEngineTableViewControllerTest
             TemplateURLRef::SearchTermsArgs(std::u16string()),
             template_url_service_->search_terms_data());
     CheckItem(base::SysUTF8ToNSString(expected_text),
-              base::SysUTF8ToNSString(expected_text), GURL(expected_url),
-              expected_checked, section, row, enabled);
+              base::SysUTF8ToNSString(expected_text), expected_checked, section,
+              row, enabled);
   }
 
   // Checks a LegacySettingsSearchEngineItem with data from a fabricated
@@ -194,7 +192,6 @@ class SearchEngineTableViewControllerTest
                        bool enabled = true) {
     CheckItem(base::SysUTF8ToNSString(expected_text),
               base::SysUTF8ToNSString(expected_text),
-              TemplateURL::GenerateFaviconURL(expected_searchable_url),
               expected_checked, section, row, enabled);
   }
 
@@ -211,9 +208,6 @@ class SearchEngineTableViewControllerTest
                      bool enabled = true) {
     CheckItem(base::SysUTF16ToNSString(turl->short_name()),
               base::SysUTF16ToNSString(turl->keyword()),
-              GURL(turl->url_ref().ReplaceSearchTerms(
-                  TemplateURLRef::SearchTermsArgs(std::u16string()),
-                  template_url_service_->search_terms_data())),
               expected_checked, section, row, enabled);
   }
 
