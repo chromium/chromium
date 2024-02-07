@@ -873,12 +873,14 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
-  if (AXObject* obj = Get(node)) {
-    if (!obj->IsUsedForLabelOrDescription()) {
-      // Nothing to do, because this node is not part of a label or description.
-      return;
-    }
-  }
+  // TODO(accessibility) Restore this optimization, which is currently failing
+  // on All/DumpAccessibilityTreeTest.AccessibilityDisabledWithSubtree/blink.
+  // if (AXObject* obj = Get(node)) {
+  //   if (!obj->IsUsedForLabelOrDescription()) {
+  //     // Nothing to do, as this node is not part of a label or description.
+  //     return;
+  //   }
+  // }
 
   // Walk up ancestor chain from node and refresh text of any related content.
   // TODO(crbug.com/1109265): It's very likely this loop should only walk the
