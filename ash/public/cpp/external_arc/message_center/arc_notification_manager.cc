@@ -636,10 +636,9 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
     return true;
   }
 
-  // Media Notifications may be ignored if we have the native views based media
-  // session notifications enabled.
-  if (data->is_media_notification &&
-      features::IsHideArcMediaNotificationsEnabled()) {
+  // Media Notifications are ignored because we show native views-based media
+  // session notifications instead.
+  if (data->is_media_notification) {
     return true;
   }
 

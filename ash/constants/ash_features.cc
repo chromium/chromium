@@ -1416,14 +1416,6 @@ BASE_FEATURE(kHiddenNetworkWarning,
              "HiddenNetworkWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables hiding of ARC media notifications. If this is enabled, all ARC
-// notifications that are of the media type will not be shown. This
-// is because they will be replaced by native media session notifications.
-// TODO(beccahughes): Remove after launch. (https://crbug.com/897836)
-BASE_FEATURE(kHideArcMediaNotifications,
-             "HideArcMediaNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, shelf navigation controls and the overview tray item will be
 // removed from the shelf in tablet mode (unless otherwise specified by user
 // preferences, or policy). This feature also enables "contextual nudges" for
@@ -3565,10 +3557,6 @@ bool AreAnyGlanceablesTimeManagementViewsEnabled() {
 
 bool IsHibernateEnabled() {
   return base::FeatureList::IsEnabled(kHibernate);
-}
-
-bool IsHideArcMediaNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kHideArcMediaNotifications);
 }
 
 bool IsHideShelfControlsInTabletModeEnabled() {
