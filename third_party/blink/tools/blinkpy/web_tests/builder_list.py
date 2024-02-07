@@ -279,6 +279,13 @@ class BuilderList:
         the version specifier for the first builder that matches, even
         if it's a try bot builder.
         """
+        # TODO(crbug.com/41484800): Remove this special logic by either:
+        #  1. Implement better way of defining port as per-suite, not
+        #     per-builder, property in `BuilderList`
+        #  2. Replace the `chrome` port with regular platform ports with
+        #     chrome-specific logic (detected via the `driver_name` option).
+        if target_port_name == 'chrome':
+            return 'Chrome'
         for _, builder_info in sorted(self._builders.items()):
             if builder_info['port_name'] == target_port_name:
                 return builder_info['specifiers'][0]
