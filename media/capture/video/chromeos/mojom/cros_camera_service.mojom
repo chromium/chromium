@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 14
+// Next min version: 15
 
 module cros.mojom;
 
@@ -85,7 +85,7 @@ interface CameraHalDispatcher {
 // observers for any changes on the server side, for example when a
 // CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 3
+// Next method ID: 4
 interface CrosCameraServiceObserver {
   // Fired when a CameraHalClient opens or closes a camera device. When a
   // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
@@ -101,6 +101,9 @@ interface CrosCameraServiceObserver {
 
   // Fired when the camera software privacy switch status is changed.
   CameraSWPrivacySwitchStateChange@2(CameraPrivacySwitchState state);
+
+  // Fired when the camera effect is changed.
+  [MinVersion=14] CameraEffectChange@3(EffectsConfig config);
 };
 
 // A client can request the CrosCameraService service from Mojo Service Manager

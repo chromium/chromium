@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -216,7 +216,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       const base::UnguessableToken& auth_token,
       RegisterClientWithTokenCallback callback) final;
 
-  // CameraHalServerCallbacks implementations.
+  // CrosCameraServiceObserver implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
@@ -225,6 +225,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       int32_t camera_id) final;
   void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) final;
+
+  void CameraEffectChange(cros::mojom::EffectsConfigPtr config) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
