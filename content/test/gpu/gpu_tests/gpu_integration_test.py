@@ -540,13 +540,15 @@ class GpuIntegrationTest(
     if os_name == 'android':
       cls.browser.platform.android_action_runner.TurnScreenOn()
 
-  # pylint: disable=no-self-use
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
     # TODO(crbug.com/323927831): Remove this once the flaky crashes on certain
     # Mac machines go away.
-    retry_on_ventura = 'ventura' in self.GetPlatformTags(self.browser)
+    try:
+      retry_on_ventura = 'ventura' in self.GetPlatformTags(self.browser)
+    except Exception:  # pylint: disable=broad-except
+      logging.warning('Failed to determine if running on Ventura, assuming no')
+      retry_on_ventura = False
     return retry_on_ventura
-  # pylint: enable=no-self-use
 
   def _DetermineFirstTestRetryWorkaround(self, test_name: str) -> bool:
     """Potentially allows retries for the first test run on a shard.
@@ -561,16 +563,14 @@ class GpuIntegrationTest(
     Returns:
       A boolean indicating whether a retry on failure should be forced.
     """
-    if self._ShouldForceRetryOnFailureFirstTest():
-      if GpuIntegrationTest._first_run_test is None:
-        GpuIntegrationTest._first_run_test = test_name
-      if GpuIntegrationTest._first_run_test == test_name:
-        logging.warning('Forcing RetryOnFailure in test %s', test_name)
-        # Notify typ that it should retry this test if necessary.
-        # pylint: disable=attribute-defined-outside-init
-        self.retryOnFailure = True
-        # pylint: enable=attribute-defined-outside-init
-        return True
+    if (GpuIntegrationTest._first_run_test == test_name
+        and self._ShouldForceRetryOnFailureFirstTest()):
+      logging.warning('Forcing RetryOnFailure in test %s', test_name)
+      # Notify typ that it should retry this test if necessary.
+      # pylint: disable=attribute-defined-outside-init
+      self.retryOnFailure = True
+      # pylint: enable=attribute-defined-outside-init
+      return True
     return False
 
   # pylint: disable=no-self-use
@@ -599,6 +599,9 @@ class GpuIntegrationTest(
           should_retry_on_failure
           or self._DetermineFirstTestRetryWorkaround(test_name))
       return expected_results, should_retry_on_failure
+
+    if GpuIntegrationTest._first_run_test is None:
+      GpuIntegrationTest._first_run_test = test_name
 
     expected_crashes = {}
     try:
