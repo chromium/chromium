@@ -18,7 +18,10 @@ namespace autofill {
 TestPersonalDataManager::TestPersonalDataManager()
     : PersonalDataManager("en-US", "US") {
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      /*webdata_service=*/nullptr, app_locale());
+      /*webdata_service=*/nullptr,
+      base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
+                          base::Unretained(this)),
+      app_locale());
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

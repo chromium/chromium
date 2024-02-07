@@ -181,7 +181,7 @@ class PersonalDataManager : public KeyedService,
   // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
   // called.
   bool IsAwaitingPendingAddressChanges() const {
-    return ProfileChangesAreOngoing() ||
+    return address_data_manager_->ProfileChangesAreOngoing() ||
            address_data_manager_->HasPendingQueries();
   }
 
@@ -267,7 +267,6 @@ class PersonalDataManager : public KeyedService,
 
   // Removes the profile, credit card or IBAN identified by `guid`.
   virtual void RemoveByGUID(const std::string& guid);
-  void RemoveProfile(const std::string& guid);
 
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
@@ -864,12 +863,6 @@ class PersonalDataManager : public KeyedService,
       alternative_state_name_map_updater_;
 
  private:
-  // A profile change with a boolean representing if the change is ongoing or
-  // not. "Ongoing" means that the change is taking place asynchronously on the
-  // DB sequence at the moment. Ongoing changes are still part of
-  // `ongoing_profile_changes_` to prevent other changes from being scheduled.
-  using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
-
   // Sets (or resets) the Sync service, which may not have started yet
   // but its preferences can already be queried. Can also be a nullptr
   // if it is disabled by CLI.
@@ -888,29 +881,10 @@ class PersonalDataManager : public KeyedService,
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
 
-  // Update a profile in AutofillTable asynchronously. The change only surfaces
-  // in the PDM after the task on the DB sequence has finished.
-  void UpdateProfileInDB(const AutofillProfile& profile);
-
-  // Triggered when a profile is added/updated/removed on db.
-  void OnAutofillProfileChanged(const AutofillProfileChange& change);
-
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(
       const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
-
-  // Look at the next profile change for profile with guid = |guid|, and handle
-  // it.
-  void HandleNextProfileChange(const std::string& guid);
-  // returns true if there is any profile change that's still ongoing.
-  bool ProfileChangesAreOngoing() const;
-  // returns true if there is any ongoing change for profile with guid = |guid|
-  // that's still ongoing.
-  bool ProfileChangesAreOngoing(const std::string& guid) const;
-  // Remove the change from the |ongoing_profile_changes_|, handle next task or
-  // Refresh.
-  void OnProfileChangeDone(const std::string& guid);
 
   // Returns if there are any pending queries to the web database.
   bool HasPendingPaymentQueries() const;
@@ -964,10 +938,6 @@ class PersonalDataManager : public KeyedService,
   // when the sync starts.
   std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
   std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
-
-  // A timely ordered list of ongoing changes for each profile.
-  std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
-      ongoing_profile_changes_;
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

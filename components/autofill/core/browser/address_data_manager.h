@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_H_
 
+#include <deque>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -39,6 +43,7 @@ class AddressDataManager : public WebDataServiceConsumer {
   };
 
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
+                     base::RepeatingClosure notify_pdm_observers,
                      const std::string& app_locale);
 
   ~AddressDataManager() override;
@@ -71,6 +76,15 @@ class AddressDataManager : public WebDataServiceConsumer {
   // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
   AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
+  // Adds |profile| to the web database.
+  void AddProfile(const AutofillProfile& profile);
+
+  // Updates |profile| which already exists in the web database.
+  void UpdateProfile(const AutofillProfile& profile);
+
+  // Removes the profile by `guid`.
+  void RemoveProfile(const std::string& guid);
+
   // Asynchronously loads all `AutofillProfile`s (from all sources) into the
   // class's state. See `synced_local_profiles_` and `account_profiles_`.
   void LoadProfiles();
@@ -91,6 +105,12 @@ class AddressDataManager : public WebDataServiceConsumer {
   friend class PersonalDataManager;
   friend class TestPersonalDataManager;
 
+  // A profile change with a boolean representing if the change is ongoing or
+  // not. "Ongoing" means that the change is taking place asynchronously on the
+  // DB sequence at the moment. Ongoing changes are still part of
+  // `ongoing_profile_changes_` to prevent other changes from being scheduled.
+  using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
+
   void CancelPendingQuery(WebDataServiceBase::Handle& handle);
 
   // Profiles of different sources are stored in different vectors.
@@ -104,6 +124,25 @@ class AddressDataManager : public WebDataServiceConsumer {
     return const_cast<std::vector<std::unique_ptr<AutofillProfile>>&>(
         const_cast<const AddressDataManager*>(this)->GetProfileStorage(source));
   }
+
+  // Triggered when a profile is added/updated/removed on db.
+  void OnAutofillProfileChanged(const AutofillProfileChange& change);
+
+  // Update a profile in AutofillTable asynchronously. The change only surfaces
+  // in the PDM after the task on the DB sequence has finished.
+  void UpdateProfileInDB(const AutofillProfile& profile);
+
+  // Look at the next profile change for profile with guid = |guid|, and handle
+  // it.
+  void HandleNextProfileChange(const std::string& guid);
+  // returns true if there is any profile change that's still ongoing.
+  bool ProfileChangesAreOngoing() const;
+  // returns true if there is any ongoing change for profile with guid = |guid|
+  // that's still ongoing.
+  bool ProfileChangesAreOngoing(const std::string& guid) const;
+  // Remove the change from the |ongoing_profile_changes_|, handle next task or
+  // Refresh.
+  void OnProfileChangeDone(const std::string& guid);
 
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
@@ -124,10 +163,19 @@ class AddressDataManager : public WebDataServiceConsumer {
   // The WebDataService used to schedule tasks on the `AddressAutofillTable`.
   scoped_refptr<AutofillWebDataService> webdata_service_;
 
+  // TODO(b/322170538): Remove once the PDM observer is split.
+  base::RepeatingClosure notify_pdm_observers_;
+
+  // A timely ordered list of ongoing changes for each profile.
+  std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
+      ongoing_profile_changes_;
+
   // Tracks whether the first `LoadProfiles()` call has already finished.
   bool has_initial_load_finished_ = false;
 
   const std::string app_locale_;
+
+  base::WeakPtrFactory<AddressDataManager> weak_factory_{this};
 };
 
 }  // namespace autofill
