@@ -131,6 +131,19 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
 
+      isCookieSettingsUiAlignmentEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled'),
+      },
+
+      isCookiesUiV2_: {
+        type: Boolean,
+        value: () =>
+            (loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled') ||
+             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')),
+      },
+
       showTrackingProtectionRollbackNotice_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -152,6 +165,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
   private is3pcdRedesignEnabled_: boolean;
+  private isCookieSettingsUiAlignmentEnabled_: boolean;
+  private isCookiesUiV2_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
