@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -72,29 +73,55 @@ void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
 
 void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
     const GURL& url) {
-  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
-  DCHECK(permissions_manager_->HasGrantedHostPermission(*extension_, url));
+  CHECK(permissions_manager_->CanAffectExtension(*extension_));
+  CHECK(permissions_manager_->HasGrantedHostPermission(*extension_, url));
 
   std::unique_ptr<const PermissionSet> runtime_permissions =
       permissions_manager_->GetRuntimePermissionsFromPrefs(*extension_);
 
   URLPatternSet explicit_hosts;
   for (const auto& pattern : runtime_permissions->explicit_hosts()) {
-    if (pattern.MatchesSecurityOrigin(url))
+    if (pattern.MatchesSecurityOrigin(url)) {
       explicit_hosts.AddPattern(pattern);
+    }
   }
   URLPatternSet scriptable_hosts;
   for (const auto& pattern : runtime_permissions->scriptable_hosts()) {
-    if (pattern.MatchesSecurityOrigin(url))
+    if (pattern.MatchesSecurityOrigin(url)) {
       scriptable_hosts.AddPattern(pattern);
+    }
   }
 
-  PermissionsUpdater(browser_context_)
-      .RevokeRuntimePermissions(
-          *extension_,
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        std::move(explicit_hosts), std::move(scriptable_hosts)),
-          base::DoNothing());
+  WithholdHostPermissions(std::move(explicit_hosts),
+                          std::move(scriptable_hosts), base::DoNothing());
+}
+
+void ScriptingPermissionsModifier::RemoveHostPermissions(
+    const URLPattern& pattern,
+    base::OnceClosure done_callback) {
+  CHECK(permissions_manager_->CanAffectExtension(*extension_));
+
+  // Revoke all sites which have some intersection with `pattern` from the
+  // extension's set of runtime granted host permissions.
+  std::unique_ptr<const PermissionSet> runtime_permissions =
+      permissions_manager_->GetRuntimePermissionsFromPrefs(*extension_);
+
+  URLPatternSet explicit_hosts;
+  for (const auto& runtime_pattern : runtime_permissions->explicit_hosts()) {
+    if (pattern.OverlapsWith(runtime_pattern)) {
+      explicit_hosts.AddPattern(runtime_pattern);
+    }
+  }
+  URLPatternSet scriptable_hosts;
+  for (const auto& runtime_pattern : runtime_permissions->scriptable_hosts()) {
+    if (pattern.OverlapsWith(runtime_pattern)) {
+      scriptable_hosts.AddPattern(runtime_pattern);
+    }
+  }
+
+  WithholdHostPermissions(std::move(explicit_hosts),
+                          std::move(scriptable_hosts),
+                          std::move(done_callback));
 }
 
 void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
@@ -147,6 +174,26 @@ void ScriptingPermissionsModifier::WithholdHostPermissions() {
   PermissionsUpdater(browser_context_)
       .RevokeRuntimePermissions(*extension_, *revokable_permissions,
                                 base::DoNothing());
+}
+
+void ScriptingPermissionsModifier::WithholdHostPermissions(
+    URLPatternSet explicit_hosts,
+    URLPatternSet scriptable_hosts,
+    base::OnceClosure done_callback) {
+  std::unique_ptr<const PermissionSet> permissions_to_remove =
+      PermissionSet::CreateIntersection(
+          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
+                        std::move(explicit_hosts), std::move(scriptable_hosts)),
+          *permissions_manager_->GetRevokablePermissions(*extension_),
+          URLPatternSet::IntersectionBehavior::kDetailed);
+  if (permissions_to_remove->IsEmpty()) {
+    std::move(done_callback).Run();
+    return;
+  }
+
+  PermissionsUpdater(browser_context_)
+      .RevokeRuntimePermissions(*extension_, *permissions_to_remove,
+                                std::move(done_callback));
 }
 
 }  // namespace extensions

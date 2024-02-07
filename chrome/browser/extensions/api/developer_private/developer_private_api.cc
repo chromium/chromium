@@ -423,45 +423,6 @@ void GrantPermissionsForSite(content::BrowserContext* context,
       std::move(done_callback));
 }
 
-// Revokes the extension's access to `site` in its host permissions.
-void RevokePermissionsForSite(content::BrowserContext* context,
-                              const Extension& extension,
-                              const URLPattern& site,
-                              base::OnceClosure done_callback) {
-  // Revoke all sites which have some intersection with `site` from the
-  // extension's set of runtime granted host permissions.
-  auto* permissions_manager = PermissionsManager::Get(context);
-  std::unique_ptr<const PermissionSet> runtime_granted_permissions =
-      permissions_manager->GetRuntimePermissionsFromPrefs(extension);
-
-  URLPatternSet explicit_hosts;
-  for (const auto& pattern : runtime_granted_permissions->explicit_hosts()) {
-    if (site.OverlapsWith(pattern)) {
-      explicit_hosts.AddPattern(pattern);
-    }
-  }
-  URLPatternSet scriptable_hosts;
-  for (const auto& pattern : runtime_granted_permissions->scriptable_hosts()) {
-    if (site.OverlapsWith(pattern)) {
-      scriptable_hosts.AddPattern(pattern);
-    }
-  }
-
-  std::unique_ptr<const PermissionSet> permissions_to_remove =
-      PermissionSet::CreateIntersection(
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        std::move(explicit_hosts), std::move(scriptable_hosts)),
-          *permissions_manager->GetRevokablePermissions(extension),
-          URLPatternSet::IntersectionBehavior::kDetailed);
-  if (permissions_to_remove->IsEmpty()) {
-    std::move(done_callback).Run();
-    return;
-  }
-
-  PermissionsUpdater(context).RevokeRuntimePermissions(
-      extension, *permissions_to_remove, std::move(done_callback));
-}
-
 }  // namespace
 
 namespace ChoosePath = api::developer_private::ChoosePath;
@@ -2649,8 +2610,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.RemoveAllGrantedHostPermissions();
           done_callback.Run();
         } else {
-          RevokePermissionsForSite(browser_context(), extension, parsed_site,
-                                   done_callback);
+          modifier.RemoveHostPermissions(parsed_site, done_callback);
         }
         break;
       case developer::HostAccess::kOnSpecificSites:
