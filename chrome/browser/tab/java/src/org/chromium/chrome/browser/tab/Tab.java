@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
@@ -49,7 +50,8 @@ public interface Tab extends TabLifecycle {
         /** NavigationHandle for the loaded url. */
         public final @Nullable NavigationHandle navigationHandle;
 
-        LoadUrlResult(
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+        public LoadUrlResult(
                 @TabLoadStatus int tabLoadStatus, @Nullable NavigationHandle navigationHandle) {
             this.tabLoadStatus = tabLoadStatus;
             this.navigationHandle = navigationHandle;
