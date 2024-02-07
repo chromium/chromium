@@ -123,7 +123,7 @@ NativeWidgetMac::NativeWidgetMac(internal::NativeWidgetDelegate* delegate)
 
 NativeWidgetMac::~NativeWidgetMac() {
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-    delete delegate_;
+    delegate_.ClearAndDelete();
   else
     CloseNow();
 }
