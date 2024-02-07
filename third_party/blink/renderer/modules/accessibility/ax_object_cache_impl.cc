@@ -1850,10 +1850,10 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
   // If a DOM node is present, it will have been used to back the AXObject, in
   // which case we need to call Remove(node) instead.
   if (Node* node = layout_object->GetNode()) {
-    // Pseudo elements are a special case. The entire subtree needs to be marked
-    // dirty so that it is recomputed (it is disappearing or changing).
+    // Pseudo elements are a special case. They need to be marked dirty so that
+    // their entire subtree is recomputed (it is disappearing or changing).
     if (node->IsPseudoElement()) {
-      MarkSubtreeDirty(node);
+      DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromRemove, node);
     }
 
     if (IsA<HTMLImageElement>(node)) {
@@ -2598,7 +2598,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
                layout_parent->Parent()->IsLayoutInline()) {
           layout_parent = layout_parent->Parent();
         }
-        MarkSubtreeDirty(layout_parent->GetNode());
+        MarkAXSubtreeDirty(Get(layout_parent));
       }
     }
     return;
@@ -3227,18 +3227,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     return;
   }
 
-  // We need an embedding token to serialize.
-  if (!has_embedding_token_) {
-    if (GetDocument().GetFrame()) {
-      const absl::optional<base::UnguessableToken>& embedding_token =
-          GetDocument().GetFrame()->GetEmbeddingToken();
-      has_embedding_token_ = embedding_token && !embedding_token->is_empty();
-    }
-    if (!has_embedding_token_) {
-      return;
-    }
-  }
-
   // Something occurred which requires an immediate serialization.
   if (serialize_immediately_) {
     force = true;
@@ -3295,12 +3283,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
         }
       }
     }
-    // If serialization did not occur, then we may are in a code path that is
-    // using accessibility but not serializing, in which case we can throw
-    // away the dirty objects.
-    if (!ax_tree_serializer_) {
-      dirty_objects_.clear();
-    }
 
     // ***** Update Inspector Views *****
     // Accessibility is now clean for both documents: AXObjects can be safely
@@ -3315,10 +3297,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       }
     }
 
-    DUMP_WILL_BE_CHECK(!IsDirty());
+    CHECK(!IsDirty());
     // TODO(accessibility): in the future, we may break up serialization into
     // pieces to reduce jank, in which case this assertion will not hold.
-    DUMP_WILL_BE_CHECK(!HasDirtyObjects() || !did_serialize)
+    CHECK(!HasDirtyObjects() || !did_serialize)
         << "A serialization occurred but dirty objects remained.";
   }
 }
@@ -3640,6 +3622,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       case TreeUpdateReason::kMarkAXObjectDirty:
         MarkAXObjectDirtyWithCleanLayout(ax_object);
         break;
+      case TreeUpdateReason::kMarkAXSubtreeDirty:
+        MarkAXSubtreeDirtyWithCleanLayout(ax_object);
+        break;
       case TreeUpdateReason::kTextChangedOnLayoutObject:
         TextChangedWithCleanLayout(ax_object->GetNode(), ax_object);
         break;
@@ -3688,6 +3673,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       break;
     case TreeUpdateReason::kMarkDirtyFromHandleLayout:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
+    case TreeUpdateReason::kMarkDirtyFromRemove:
       MarkAXObjectDirtyWithCleanLayout(Get(node));
       break;
     case TreeUpdateReason::kNodeGainedFocus:
@@ -4663,8 +4649,9 @@ void AXObjectCacheImpl::AddEventToSerializationQueue(
 
   pending_events_.push_back(event);
 
-  AddDirtyObjectToSerializationQueue(
-      obj, event.event_from, event.event_from_action, event.event_intents);
+  AddDirtyObjectToSerializationQueue(obj, false, event.event_from,
+                                     event.event_from_action,
+                                     event.event_intents);
 
   if (immediate_serialization) {
     ScheduleImmediateSerialization();
@@ -4749,6 +4736,7 @@ void AXObjectCacheImpl::PostPlatformNotification(
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
     AXObject* obj,
+    bool subtree,
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action) {
   CHECK(!IsFrozen());
@@ -4786,18 +4774,22 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   }
 
   std::vector<ui::AXEventIntent> event_intents;
-  AddDirtyObjectToSerializationQueue(obj, event_from, event_from_action,
-                                     event_intents);
+  AddDirtyObjectToSerializationQueue(obj, subtree, event_from,
+                                     event_from_action, event_intents);
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
+  for (auto agent : agents_)
+    agent->AXObjectModified(obj, subtree);
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
-  MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false, active_event_from_,
                                          active_event_from_action_);
-  for (auto agent : agents_) {
-    agent->AXObjectModified(obj, /*subtree*/ false);
-  }
+}
+
+void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, true, active_event_from_,
+                                         active_event_from_action_);
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
@@ -4810,40 +4802,11 @@ void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
   DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
 }
 
-void AXObjectCacheImpl::NotifySubtreeDirty(AXObject* obj) {
-  // Note: if there is no serializer yet, then there is nothing to mark dirty
-  // for serialization purposes yet -- effectively everything starts out dirty
-  // in a new serializer.
-  // TODO remove EnsureSerializer() line.
-  if (ax_tree_serializer_) {
-    ax_tree_serializer_->MarkSubtreeDirty(obj->AXObjectID());
-  }
-  for (auto agent : agents_) {
-    agent->AXObjectModified(obj, /*subtree*/ true);
-  }
-}
-
-void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
-  MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
-                                         active_event_from_action_);
-  NotifySubtreeDirty(obj);
-}
-
 void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
   if (!obj)
     return;
 
-  DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
-  NotifySubtreeDirty(obj);
-}
-
-void AXObjectCacheImpl::MarkSubtreeDirty(Node* node) {
-  if (AXObject* obj = Get(node)) {
-    MarkAXSubtreeDirty(obj);
-  } else {
-    // There is no AXObject, so there is no subtree to mark dirty.
-    MarkElementDirty(node);
-  }
+  DeferTreeUpdate(TreeUpdateReason::kMarkAXSubtreeDirty, obj);
 }
 
 void AXObjectCacheImpl::MarkDocumentDirty() {
@@ -5134,14 +5097,21 @@ bool AXObjectCacheImpl::SerializeEntireTree(
 
 void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
     AXObject* obj,
+    bool subtree,
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const std::vector<ui::AXEventIntent>& event_intents) {
   CHECK(!IsFrozen());
-  // Add to object to a queue that will be sent to the serializer in
-  // SerializeDirtyObjectsAndEvents().
   dirty_objects_.push_back(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
+
+  // Note: if there is no serializer yet, then there is no need to create one
+  // just to mark a subtree dirty -- descendant nodes will automatically be
+  // serialized in a new serializer anyway, because those nodes hadn't
+  // previously been serialized.
+  if (ax_tree_serializer_ && subtree) {
+    MarkSerializerSubtreeDirty(*obj);
+  }
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(

@@ -286,7 +286,7 @@ std::string AXImageAnnotator::GenerateImageSourceId(
 }
 
 void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
-  render_accessibility_->MarkWebAXObjectDirty(image);
+  render_accessibility_->MarkWebAXObjectDirty(image, false /* subtree */);
 
   // Check two unignored parents. If either of them is a link or root web area,
   // mark it dirty too, because we want a link or document containing exactly
@@ -300,7 +300,8 @@ void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
     if (!parent.AccessibilityIsIgnored()) {
       ++ancestor_count;
       if (ui::IsLink(parent.Role()) || ui::IsPlatformDocument(parent.Role())) {
-        render_accessibility_->MarkWebAXObjectDirty(parent);
+        render_accessibility_->MarkWebAXObjectDirty(parent,
+                                                    false /* subtree */);
         return;
       }
     }

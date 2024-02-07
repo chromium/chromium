@@ -301,6 +301,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ProcessDeferredAccessibilityEvents(Document&, bool force) override;
   // Remove AXObject subtrees (once flat tree traversal is safe).
   void ProcessSubtreeRemovals() override;
+  // Is there work to be done when layout becomes clean?
+  bool IsDirty() override;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
@@ -386,8 +388,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
 
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
-  void MarkSubtreeDirty(Node*);
-  void NotifySubtreeDirty(AXObject* obj);
 
   // Set the parent of |child|. If no parent is possible, this means the child
   // can no longer be in the AXTree, so remove the child.
@@ -519,6 +519,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Marks an object as dirty to be serialized in the next serialization.
   void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
+      bool subtree = false,
       ax::mojom::blink::EventFrom event_from =
           ax::mojom::blink::EventFrom::kNone,
       ax::mojom::blink::Action event_from_action =
@@ -537,18 +538,21 @@ class MODULES_EXPORT AXObjectCacheImpl
                            std::vector<ui::AXNodeData*>& nodes) override;
 
   // The difference between this and IsDirty():
-  // - IsDirty() means there are updates to be processed when layout becomes
-  // clean, in order to have a complete representation in the tree structure.
+  // - IsDirty() means there are updates to be processed to have a complete
+  // representation in the tree structure.
   // - HasDirtyOirtyObjects() means there are updates ready to be sent
   // to the serializer.
   // TODO(accessibility) Differentiate naming -- there are too many kinds of
   // "dirty", which leads to confusion.
   bool HasDirtyObjects() const override { return !dirty_objects_.empty(); }
-  bool IsDirty() override;
+  bool IsDirty(AXObject& obj) { return ax_tree_serializer_->IsDirty(&obj); }
 
   bool AddPendingEvent(const ui::AXEvent& event,
                        bool insert_at_beginning) override;
 
+  void MarkSerializerSubtreeDirty(AXObject& obj) {
+    ax_tree_serializer_->MarkSubtreeDirty(&obj);
+  }
   void SetImageAsDataNodeId(int id, const gfx::Size& max_size) {
     ax_tree_source_->set_image_data_node_id(id, max_size);
   }
@@ -766,35 +770,37 @@ class MODULES_EXPORT AXObjectCacheImpl
     kIdChanged = 10,
     kMarkDirtyFromHandleLayout = 11,
     kMarkDirtyFromHandleScroll = 12,
-    kNodeGainedFocus = 13,
-    kNodeLostFocus = 14,
-    kPostNotificationFromHandleLoadComplete = 15,
-    kPostNotificationFromHandleLoadStart = 16,
-    kPostNotificationFromHandleScrolledToAnchor = 17,
-    kRemoveValidationMessageObjectFromFocusedUIElement = 18,
-    kRemoveValidationMessageObjectFromValidationMessageObject = 19,
-    kRoleChangeFromAriaHasPopup = 20,
-    kRoleChangeFromImageMapName = 21,
-    kRoleChangeFromRoleOrType = 22,
-    kRoleMaybeChangedFromEventListener = 23,
-    kRoleMaybeChangedFromHref = 24,
-    kSectionOrRegionRoleMaybeChangedFromLabel = 25,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 26,
-    kSectionOrRegionRoleMaybeChangedFromTitle = 27,
-    kTextChangedOnNode = 28,
-    kTextChangedOnClosestNodeForLayoutObject = 29,
-    kTextMarkerDataAdded = 30,
-    kUpdateActiveMenuOption = 31,
-    kNodeIsAttached = 32,
-    kUpdateAriaOwns = 33,
-    kUpdateTableRole = 34,
-    kUseMapAttributeChanged = 35,
-    kValidationMessageVisibilityChanged = 36,
+    kMarkDirtyFromRemove = 13,
+    kNodeGainedFocus = 14,
+    kNodeLostFocus = 15,
+    kPostNotificationFromHandleLoadComplete = 16,
+    kPostNotificationFromHandleLoadStart = 17,
+    kPostNotificationFromHandleScrolledToAnchor = 18,
+    kRemoveValidationMessageObjectFromFocusedUIElement = 19,
+    kRemoveValidationMessageObjectFromValidationMessageObject = 20,
+    kRoleChangeFromAriaHasPopup = 21,
+    kRoleChangeFromImageMapName = 22,
+    kRoleChangeFromRoleOrType = 23,
+    kRoleMaybeChangedFromEventListener = 24,
+    kRoleMaybeChangedFromHref = 25,
+    kSectionOrRegionRoleMaybeChangedFromLabel = 26,
+    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
+    kSectionOrRegionRoleMaybeChangedFromTitle = 28,
+    kTextChangedOnNode = 29,
+    kTextChangedOnClosestNodeForLayoutObject = 30,
+    kTextMarkerDataAdded = 31,
+    kUpdateActiveMenuOption = 32,
+    kNodeIsAttached = 33,
+    kUpdateAriaOwns = 34,
+    kUpdateTableRole = 35,
+    kUseMapAttributeChanged = 36,
+    kValidationMessageVisibilityChanged = 37,
 
     // These updates are associated with an AXID:
     kChildrenChanged = 100,
     kMarkAXObjectDirty = 101,
-    kTextChangedOnLayoutObject = 102
+    kMarkAXSubtreeDirty = 102,
+    kTextChangedOnLayoutObject = 103
   };
 
   struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
@@ -840,6 +846,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void MarkAXObjectDirtyWithCleanLayoutHelper(
       AXObject* obj,
+      bool subtree,
       ax::mojom::blink::EventFrom event_from,
       ax::mojom::blink::Action event_from_action);
   void MarkAXSubtreeDirty(AXObject*);
@@ -898,9 +905,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
   // Tree and cache are being destroyed.
   bool has_been_disposed_ = false;
-
-  // We need an embedding token for the serialization process.
-  bool has_embedding_token_ = false;
 
 #if DCHECK_IS_ON()
   bool updating_layout_and_ax_ = false;

@@ -291,7 +291,7 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
   }
 
   for (const int32_t update_id : update_ids) {
-    current_tree_serializer_->MarkSubtreeDirty(update_id);
+    current_tree_serializer_->MarkSubtreeDirty(GetFromId(update_id));
   }
 
   std::vector<ui::AXTreeUpdate> updates;
