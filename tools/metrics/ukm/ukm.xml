@@ -18952,7 +18952,9 @@ be describing additional metrics about the same event.
   <metric name="PaintTiming.LargestContentfulPaintImageDiscoveryTime">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
-      start to the time when the image LCP element is requested. This metric is
+      start to the time when the image LCP element is requested. If the image
+      LCP element is from a subframe, the difference in the navigation start of
+      the main frame and that of the subframe is accounted for. This metric is
       not recorded when the LCP element is text or video.
     </summary>
   </metric>
@@ -18962,7 +18964,9 @@ be describing additional metrics about the same event.
       start to the time when the LCP element(image) finishes loading. For
       animated images, this is when the image resource finishes loading
       completely, not the first frame time. See web.dev/optimize-lcp for more
-      details. This metric is not recorded when the LCP element is text or
+      details. If the image LCP element is from a subframe, the difference in
+      the navaigation start of the main frame and that of the subframe is
+      accounted for. This metric is not recorded when the LCP element is text or
       video.
     </summary>
   </metric>
@@ -18970,7 +18974,9 @@ be describing additional metrics about the same event.
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the LCP element(image) starts loading. See
-      web.dev/optimize-lcp for more details. This metric is not recorded when
+      web.dev/optimize-lcp for more details. If the image LCP element is from a
+      subframe, the difference in the navaigation start of the main frame and
+      that of the subframe is accounted for. This metric is not recorded when
       the LCP element is text or video.
     </summary>
   </metric>

@@ -1,0 +1,28 @@
+<head>
+  <script src="resources/util.js"></script>
+</head>
+
+<img src="/images/lcp-16x16.png">
+
+<script>
+  const addSubframe = async (subframe_urls) => {
+    for (let i = 0; i < subframe_urls.length; i++) {
+      await new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.addEventListener('load', resolve);
+        iframe.src = subframe_urls[i];
+        document.body.appendChild(iframe);
+      });
+    }
+  }
+
+  const addSameSiteSubframe = async () => {
+    await addSubframe(["lcp_breakdown_timings_subframe_page1.html",
+      "lcp_breakdown_timings_subframe_page2.html"]);
+  }
+
+  const addCrossSiteSubframe = async () => {
+    await addSubframe([origin.replace("example.com", "b.com") + "/lcp_breakdown_timings_subframe_page1.html",
+      "lcp_breakdown_timings_subframe_page2.html"]);
+  }
+</script>
