@@ -6741,5 +6741,8 @@ crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/con
 crbug.com/323752584 [ Win11-arm64 ] external/wpt/webnn/* [ Failure Pass ]
 crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Failure Pass ]
 
+# Flaky test in virtual suite.
+crbug.com/324113086 virtual/stable/external/wpt/performance-timeline/tentative/with-filter-options-originA.html [ Failure Pass ]
+
 # Gardener: 2024-02-06
 crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
