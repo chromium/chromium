@@ -86,6 +86,20 @@ class MediaSessionTest : public PageTestBase {
     media_session_->setPositionState(position_state, exception_state);
   }
 
+  void SetPositionStateThrowsException(double duration,
+                                       double position,
+                                       double playback_rate) {
+    auto* position_state = MediaPositionState::Create();
+    position_state->setDuration(duration);
+    position_state->setPosition(position);
+    position_state->setPlaybackRate(playback_rate);
+
+    DummyExceptionStateForTesting exception_state;
+    media_session_->setPositionState(position_state, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
+  }
+
   void ClearPositionState() {
     NonThrowableExceptionState exception_state;
     media_session_->setPositionState(MediaPositionState::Create(),
@@ -157,6 +171,28 @@ TEST_F(MediaSessionTest, PlaybackPositionState_Playing) {
   SetPlaybackState("playing");
   SetPositionState(10, 5, 1.0);
   loop.Run();
+}
+
+TEST_F(MediaSessionTest, PlaybackPositionState_InfiniteDuration) {
+  base::RunLoop loop;
+  EXPECT_CALL(service(), SetPositionState(_))
+      .WillOnce(testing::Invoke([&](auto position_state) {
+        EXPECT_EQ(base::TimeDelta::Max(), position_state->duration);
+        EXPECT_EQ(base::Seconds(5), position_state->position);
+        EXPECT_EQ(1.0, position_state->playback_rate);
+        EXPECT_EQ(clock().NowTicks(), position_state->last_updated_time);
+
+        loop.Quit();
+      }));
+
+  SetPlaybackState("none");
+  SetPositionState(std::numeric_limits<double>::infinity(), 5, 1.0);
+  loop.Run();
+}
+
+TEST_F(MediaSessionTest, PlaybackPositionState_NaNDuration) {
+  SetPlaybackState("none");
+  SetPositionStateThrowsException(std::nan("10"), 5, 1.0);
 }
 
 TEST_F(MediaSessionTest, PlaybackPositionState_Paused_Clear) {

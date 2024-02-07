@@ -45,7 +45,9 @@ media_session::mojom::blink::MediaPositionPtr TypeConverter<
                                              position) {
   return media_session::mojom::blink::MediaPosition::New(
       position->hasPlaybackRate() ? position->playbackRate() : 1.0,
-      base::Seconds(position->duration()),
+      position->duration() == std::numeric_limits<double>::infinity()
+          ? base::TimeDelta::Max()
+          : base::Seconds(position->duration()),
       position->hasPosition() ? base::Seconds(position->position())
                               : base::TimeDelta(),
       base::TimeTicks::Now());

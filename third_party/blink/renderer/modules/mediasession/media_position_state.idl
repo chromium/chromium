@@ -5,7 +5,7 @@
 // https://w3c.github.io/mediasession/#the-mediapositionstate-dictionary
 
 dictionary MediaPositionState {
-  double duration;
+  unrestricted double duration;
   double playbackRate;
   double position;
 };
