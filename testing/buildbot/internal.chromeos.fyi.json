@@ -1373,20 +1373,6 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64",
-          "--gtest_filter=-PythonUtils.PythonRunTime"
-        ],
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "dut_pool": "chrome",
-        "name": "net_unittests BRYA_RELEASE_LKGM",
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/",
-        "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
-      },
-      {
-        "args": [
           "--stop-ui"
         ],
         "autotest_name": "chromium",
