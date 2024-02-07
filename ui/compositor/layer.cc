@@ -213,7 +213,6 @@ Layer::Layer(LayerType type)
       layer_mask_back_link_(nullptr),
       zoom_(1),
       zoom_inset_(0),
-      delegate_(nullptr),
       owner_(nullptr),
       cc_layer_(nullptr),
       device_scale_factor_(1.0f),

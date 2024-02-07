@@ -988,15 +988,13 @@ void HomeButton::OnLabelFadeOutAnimationEnded() {
 }
 
 void HomeButton::RemoveNudgeLabel() {
-  RemoveChildViewT(expandable_container_.get());
-  expandable_container_ = nullptr;
   nudge_label_ = nullptr;
+  RemoveChildViewT(expandable_container_.ExtractAsDangling());
 }
 
 void HomeButton::RemoveQuickAppButton() {
-  RemoveChildViewT(expandable_container_.get());
-  expandable_container_ = nullptr;
   quick_app_button_ = nullptr;
+  RemoveChildViewT(expandable_container_.ExtractAsDangling());
 }
 
 bool HomeButton::DoesIntersectRect(const views::View* target,
