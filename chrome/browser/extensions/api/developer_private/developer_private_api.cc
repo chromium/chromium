@@ -410,19 +410,6 @@ void UpdateSiteGroupCountsForExtensionHosts(
   }
 }
 
-// Adds `site` to the extension's set of runtime granted host permissions.
-void GrantPermissionsForSite(content::BrowserContext* context,
-                             const Extension& extension,
-                             const URLPattern& site,
-                             base::OnceClosure done_callback) {
-  URLPatternSet new_host_permissions({site});
-  PermissionsUpdater(context).GrantRuntimePermissions(
-      extension,
-      PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                    new_host_permissions.Clone(), new_host_permissions.Clone()),
-      std::move(done_callback));
-}
-
 }  // namespace
 
 namespace ChoosePath = api::developer_private::ChoosePath;
@@ -2621,8 +2608,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.SetWithholdHostPermissions(true);
           modifier.RemoveAllGrantedHostPermissions();
         }
-        GrantPermissionsForSite(browser_context(), extension, parsed_site,
-                                done_callback);
+        modifier.GrantHostPermission(parsed_site, done_callback);
         break;
       case developer::HostAccess::kOnAllSites:
         modifier.SetWithholdHostPermissions(false);

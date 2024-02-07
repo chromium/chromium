@@ -47,8 +47,14 @@ class ScriptingPermissionsModifier {
 
   // Grants the extension permission to run on the origin of |url|.
   // This may only be called for extensions that can be affected (i.e., for
-  // which CanAffectExtension() returns true). Anything else will DCHECK.
+  // which CanAffectExtension() returns true). Anything else will CHECK.
   void GrantHostPermission(const GURL& url);
+
+  // Grants the extension permission to run on `pattern`.
+  // This may only be called for extensions that can be affected (i.e., for
+  // which CanAffectExtension() returns true). Anything else will CHECK.
+  void GrantHostPermission(const URLPattern& site,
+                           base::OnceClosure done_callback);
 
   // Revokes permission to run on the origin of |url|, including any permissions
   // that match or overlap with the origin. For instance, removing access to
@@ -86,6 +92,12 @@ class ScriptingPermissionsModifier {
       const PermissionSet& permissions);
 
  private:
+  // Grants `explicit_hosts` and `scriptable_hosts` permissions. Calls
+  // `done_callback` on completion.
+  void GrantHostPermission(URLPatternSet explicit_hosts,
+                           URLPatternSet scriptable_hosts,
+                           base::OnceClosure done_callback);
+
   // Grants any withheld host permissions.
   void GrantWithheldHostPermissions();
 

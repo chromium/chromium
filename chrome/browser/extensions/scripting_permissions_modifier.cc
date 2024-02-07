@@ -53,9 +53,9 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
 }
 
 void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
-  DCHECK(permissions_manager_->CanAffectExtension(*extension_));
+  CHECK(permissions_manager_->CanAffectExtension(*extension_));
   // Check that we don't grant host permission to a restricted URL.
-  DCHECK(
+  CHECK(
       !extension_->permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr))
       << "Cannot grant access to a restricted URL.";
 
@@ -64,12 +64,19 @@ void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
   URLPatternSet scriptable_hosts;
   scriptable_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(), url);
 
-  PermissionsUpdater(browser_context_)
-      .GrantRuntimePermissions(
-          *extension_,
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        std::move(explicit_hosts), std::move(scriptable_hosts)),
-          base::DoNothing());
+  GrantHostPermission(std::move(explicit_hosts), std::move(scriptable_hosts),
+                      base::DoNothing());
+}
+
+// Adds `site` to the extension's set of runtime granted host permissions.
+void ScriptingPermissionsModifier::GrantHostPermission(
+    const URLPattern& site,
+    base::OnceClosure done_callback) {
+  CHECK(permissions_manager_->CanAffectExtension(*extension_));
+
+  URLPatternSet new_host_permissions({site});
+  GrantHostPermission(new_host_permissions.Clone(),
+                      new_host_permissions.Clone(), std::move(done_callback));
 }
 
 void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
@@ -161,6 +168,18 @@ void ScriptingPermissionsModifier::RemoveAllGrantedHostPermissions() {
   PermissionsUpdater(browser_context_)
       .RevokeRuntimePermissions(*extension_, *revokable_permissions,
                                 base::DoNothing());
+}
+
+void ScriptingPermissionsModifier::GrantHostPermission(
+    URLPatternSet explicit_hosts,
+    URLPatternSet scriptable_hosts,
+    base::OnceClosure done_callback) {
+  PermissionsUpdater(browser_context_)
+      .GrantRuntimePermissions(
+          *extension_,
+          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
+                        std::move(explicit_hosts), std::move(scriptable_hosts)),
+          std::move(done_callback));
 }
 
 void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
