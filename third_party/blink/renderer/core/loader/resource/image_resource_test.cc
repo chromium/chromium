@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -128,6 +129,9 @@ class ImageResourceTest : public testing::Test,
     ThreadState::Current()->CollectAllGarbageForTesting(
         ThreadState::StackState::kNoHeapPointers);
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 // Ensure that the image decoder can determine the dimensions of kJpegImage from
@@ -1149,6 +1153,8 @@ class ImageResourceCounterTest : public testing::Test {
     return InstanceCounters::CounterValue(
         InstanceCounters::kUACSSResourceCounter);
   }
+
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ImageResourceCounterTest, InstanceCounters) {

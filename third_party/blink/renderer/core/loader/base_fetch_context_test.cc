@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -157,6 +158,7 @@ class BaseFetchContextTest : public testing::Test {
     return GetFetchClientSettingsObject().GetSecurityOrigin();
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> execution_context_;
   Persistent<MockBaseFetchContext> fetch_context_;
   Persistent<ResourceFetcher> resource_fetcher_;

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -15,6 +16,7 @@ namespace blink {
 namespace {
 
 TEST(ScriptResourceTest, SuccessfulRevalidation) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL url("https://www.example.com/script.js");
   ScriptResource* resource =
@@ -40,6 +42,7 @@ TEST(ScriptResourceTest, SuccessfulRevalidation) {
 }
 
 TEST(ScriptResourceTest, FailedRevalidation) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL url("https://www.example.com/script.js");
   ScriptResource* resource =
@@ -67,6 +70,7 @@ TEST(ScriptResourceTest, FailedRevalidation) {
 }
 
 TEST(ScriptResourceTest, RedirectDuringRevalidation) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL url("https://www.example.com/script.js");
   ScriptResource* resource =
@@ -96,6 +100,7 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
 }
 
 TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
+  test::TaskEnvironment task_environment;
 #if DCHECK_IS_ON()
   WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
@@ -126,6 +131,7 @@ TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
 }
 
 TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL url("nocodecachewithhashing://www.example.com/script.js");
   ScriptResource* resource =
@@ -143,6 +149,7 @@ TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
 }
 
 TEST(ScriptResourceTest, CodeCacheEnabledByResponseFlag) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL url("https://www.example.com/script.js");
   ScriptResource* resource =

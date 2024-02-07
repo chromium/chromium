@@ -164,6 +164,7 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
 
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

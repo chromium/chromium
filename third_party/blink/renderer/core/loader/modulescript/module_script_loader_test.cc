@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -120,6 +121,7 @@ class ModuleScriptLoaderTest : public PageTestBase {
   ModuleScriptLoaderTest(const ModuleScriptLoaderTest&) = delete;
   ModuleScriptLoaderTest& operator=(const ModuleScriptLoaderTest&) = delete;
   void SetUp() override;
+  void TearDown() override;
 
   void InitializeForDocument();
   void InitializeForWorklet();
@@ -144,9 +146,11 @@ class ModuleScriptLoaderTest : public PageTestBase {
         ->RunUntilIdle();
   }
 
- private:
   const base::TickClock* GetTickClock() override {
-    return platform_->test_task_runner()->GetMockTickClock();
+    if (test_task_runner_) {
+      return test_task_runner_->GetMockTickClock();
+    }
+    return PageTestBase::GetTickClock();
   }
 
  protected:
@@ -155,6 +159,7 @@ class ModuleScriptLoaderTest : public PageTestBase {
 
   Persistent<ResourceFetcher> fetcher_;
 
+  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
   std::unique_ptr<MockWorkerReportingProxy> reporting_proxy_;
   Persistent<ModuleScriptLoaderTestModulator> modulator_;
@@ -165,10 +170,25 @@ void ModuleScriptLoaderTest::SetUp() {
   PageTestBase::SetUp(gfx::Size(500, 500));
 }
 
+void ModuleScriptLoaderTest::TearDown() {
+  if (global_scope_) {
+    global_scope_->Dispose();
+    global_scope_->NotifyContextDestroyed();
+  }
+}
+
 ModuleScriptLoaderTest::ModuleScriptLoaderTest()
-    : url_("https://example.test"),
+    : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      url_("https://example.test"),
       security_origin_(SecurityOrigin::Create(url_)) {
-  platform_->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
+  if (!task_environment()) {
+    // TODO(crbug.com/1315595): Remove once TaskEnvironment becomes the default
+    // in blink_unittests_v2
+    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        base::TestMockTimeTaskRunner::Type::kStandalone);
+    test_task_runner_->AdvanceMockTickClock(
+        base::Seconds(1));  // For non-zero DocumentParserTimings
+  }
 }
 
 void ModuleScriptLoaderTest::InitializeForDocument() {
