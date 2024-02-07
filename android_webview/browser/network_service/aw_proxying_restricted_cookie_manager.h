@@ -17,8 +17,15 @@ class GURL;
 
 namespace android_webview {
 
-// A RestrictedCookieManager which conditionally proxies to an underlying
-// RestrictedCookieManager, first consulting WebView's cookie settings.
+// A RestrictedCookieManager conditionally returns cookies from an underlying
+// RestrictedCookieManager, after consulting WebView's cookie settings.
+// We need to do this because Chromium typically configures this per
+// BrowserContext but Android developers can set cookie permissions per WebView.
+// To work around this, we need to intercept cookies while they are being
+// retrieved in the renderer. We have to optimistically retrieve cookies because
+// partitioned cookies should always be allowed regardless of if third party
+// cookies are allowed or not, and there is no way for us to communicate this to
+// the restricted cookie manager when we proxy calls to it.
 class AwProxyingRestrictedCookieManager
     : public network::mojom::RestrictedCookieManager {
  public:
@@ -88,9 +95,9 @@ class AwProxyingRestrictedCookieManager
                          CookiesEnabledForCallback callback) override;
 
   // This one is internal.
-  bool AllowCookies(const GURL& url,
-                    const net::SiteForCookies& site_for_cookies,
-                    bool has_storage_access) const;
+  bool AllowFullCookies(const GURL& url,
+                        const net::SiteForCookies& site_for_cookies,
+                        bool has_storage_access) const;
 
  private:
   AwProxyingRestrictedCookieManager(
