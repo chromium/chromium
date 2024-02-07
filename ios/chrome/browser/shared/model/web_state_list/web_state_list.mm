@@ -620,9 +620,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   OrderController order_controller(source);
   active_index_ =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
-  if (is_active_web_state_detached) {
-    OnActiveWebStateChanged();
-  }
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
@@ -631,6 +628,10 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   if (index < pinned_tabs_count_) {
     CHECK_GT(pinned_tabs_count_, 0);
     --pinned_tabs_count_;
+  }
+
+  if (is_active_web_state_detached) {
+    OnActiveWebStateChanged();
   }
 
   // Check that the active element (if there is one) is valid.
