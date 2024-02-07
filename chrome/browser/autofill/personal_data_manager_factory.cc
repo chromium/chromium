@@ -13,12 +13,14 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
+#include "components/autofill/content/browser/content_autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace autofill {
 
@@ -101,9 +103,18 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
 
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
 
+  auto* shared_storage_manager =
+      profile->GetDefaultStoragePartition()->GetSharedStorageManager();
+  auto shared_storage_handler =
+      shared_storage_manager
+          ? std::make_unique<ContentAutofillSharedStorageHandler>(
+                *shared_storage_manager)
+          : nullptr;
+
   service->Init(local_storage, account_storage, profile->GetPrefs(),
                 g_browser_process->local_state(), identity_manager,
-                history_service, sync_service, strike_database, image_fetcher);
+                history_service, sync_service, strike_database, image_fetcher,
+                std::move(shared_storage_handler));
 
   return service;
 }

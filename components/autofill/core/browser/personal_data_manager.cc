@@ -362,7 +362,8 @@ void PersonalDataManager::Init(
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
     StrikeDatabaseBase* strike_database,
-    AutofillImageFetcherBase* image_fetcher) {
+    AutofillImageFetcherBase* image_fetcher,
+    std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database,
       base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
@@ -391,6 +392,8 @@ void PersonalDataManager::Init(
   SetSyncService(sync_service);
 
   image_fetcher_ = image_fetcher;
+
+  shared_storage_handler_ = std::move(shared_storage_handler);
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
   AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
@@ -2383,6 +2386,9 @@ scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
 
 void PersonalDataManager::OnServerCreditCardsRefreshed() {
   ProcessCardArtUrlChanges();
+  if (shared_storage_handler_) {
+    shared_storage_handler_->OnServerCardDataRefreshed(server_credit_cards_);
+  }
 }
 
 void PersonalDataManager::ProcessCardArtUrlChanges() {

@@ -58,7 +58,8 @@ TEST_F(CvcStorageMetricsTest, LogCvcStorageIsEnabledAtStartup) {
                        /*history_service=*/nullptr,
                        /*sync_service=*/nullptr,
                        /*strike_database=*/nullptr,
-                       /*image_fetcher=*/nullptr);
+                       /*image_fetcher=*/nullptr,
+                       /*shared_storage_handler=*/nullptr);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.CvcStorageIsEnabled.Startup", true, 1);
@@ -79,7 +80,8 @@ TEST_F(CvcStorageMetricsTest, LogCvcStorageIsDisabledAtStartup) {
                        /*history_service=*/nullptr,
                        /*sync_service=*/nullptr,
                        /*strike_database=*/nullptr,
-                       /*image_fetcher=*/nullptr);
+                       /*image_fetcher=*/nullptr,
+                       /*shared_storage_handler=*/nullptr);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentMethods.CvcStorageIsEnabled.Startup", false, 1);

@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("features") {
+  output_name = "autofill_content_common_features"
+  defines = [ "IS_AUTOFILL_IMPL" ]
+  sources = [
+    "content_autofill_features.cc",
+    "content_autofill_features.h",
+  ]
+
+  deps = [ "//base" ]
+}

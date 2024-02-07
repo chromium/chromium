@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -162,15 +163,17 @@ class PersonalDataManager : public KeyedService,
   // (sync disabled by CLI) or outlives this object, it may not have started yet
   // but its preferences can already be queried. |image_fetcher| is to fetch the
   // customized images for autofill data.
-  void Init(scoped_refptr<AutofillWebDataService> profile_database,
-            scoped_refptr<AutofillWebDataService> account_database,
-            PrefService* pref_service,
-            PrefService* local_state,
-            signin::IdentityManager* identity_manager,
-            history::HistoryService* history_service,
-            syncer::SyncService* sync_service,
-            StrikeDatabaseBase* strike_database,
-            AutofillImageFetcherBase* image_fetcher);
+  void Init(
+      scoped_refptr<AutofillWebDataService> profile_database,
+      scoped_refptr<AutofillWebDataService> account_database,
+      PrefService* pref_service,
+      PrefService* local_state,
+      signin::IdentityManager* identity_manager,
+      history::HistoryService* history_service,
+      syncer::SyncService* sync_service,
+      StrikeDatabaseBase* strike_database,
+      AutofillImageFetcherBase* image_fetcher,
+      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler);
 
   // KeyedService:
   void Shutdown() override;
@@ -918,6 +921,9 @@ class PersonalDataManager : public KeyedService,
   // |variations_country_code_| if it exists but falls back to other methods if
   // necessary to ensure it always has a value.
   mutable std::string experiment_country_code_;
+
+  // The shared storage handler this instance uses.
+  std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
 
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;

@@ -167,7 +167,8 @@ class CreditCardAccessManagerTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/&sync_service_,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr);
+                         /*image_fetcher=*/nullptr,
+                         /*shared_storage_handler=*/nullptr);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
 
     accessor_ = std::make_unique<TestAccessor>();

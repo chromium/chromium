@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/version_info",
   "+components/profile_metrics",
+  "+components/services/storage",
   "+components/webauthn",
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",

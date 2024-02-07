@@ -89,7 +89,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr);
+        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
     personal_data_manager_->AddServerCreditCard(card);
   }
 

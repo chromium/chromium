@@ -53,7 +53,8 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
                                 /*history_service=*/nullptr,
                                 /*sync_service=*/nullptr,
                                 /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr);
+                                /*image_fetcher=*/nullptr,
+                                /*shared_storage_handler=*/nullptr);
     alternative_state_name_map_updater_ =
         std::make_unique<AlternativeStateNameMapUpdater>(
             autofill_client_.GetPrefs(), &personal_data_manager_);

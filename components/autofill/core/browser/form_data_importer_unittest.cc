@@ -554,7 +554,7 @@ class FormDataImporterTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr);
+        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
 
     // Init the `form_data_importer()` with `personal_data_manager_`.
     autofill_client_->set_test_form_data_importer(

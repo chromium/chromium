@@ -48,7 +48,8 @@ class IbanAccessManagerTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr);
+                         /*image_fetcher=*/nullptr,
+                         /*shared_storage_handler=*/nullptr);
     iban_access_manager_ =
         std::make_unique<IbanAccessManager>(&autofill_client_);
   }

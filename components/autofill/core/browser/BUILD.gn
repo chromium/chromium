@@ -107,6 +107,7 @@ static_library("browser") {
     "autofill_plus_address_delegate.h",
     "autofill_profile_import_process.cc",
     "autofill_profile_import_process.h",
+    "autofill_shared_storage_handler.h",
     "autofill_suggestion_generator.cc",
     "autofill_suggestion_generator.h",
     "autofill_trigger_details.h",

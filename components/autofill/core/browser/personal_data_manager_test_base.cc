@@ -100,7 +100,7 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
-      /*image_fetcher=*/nullptr);
+      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
   personal_data->AddObserver(&personal_data_observer_);
   personal_data->OnStateChanged(&sync_service_);
   std::move(waiter).Wait();
