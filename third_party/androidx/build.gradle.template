@@ -12,29 +12,18 @@ repositories {
     mavenCentral()
 }
 
-dependencies.constraints {
-    // This exists to resolve an ambiguous dependency onto 2 versions of this library. "androidJvm"
-    // seemed like the more correct one to use. See crbug.com/1511597.
-    compile("androidx.sqlite:sqlite") {
-        attributes {
-            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
-        }
-    }
-    compile("androidx.room:room-runtime") {
-        attributes {
-            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
-        }
-    }
-    compile("androidx.lifecycle:lifecycle-runtime") {
-        attributes {
-            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
-        }
-    }
-    androidTestCompile("androidx.lifecycle:lifecycle-runtime") {
-        attributes {
-            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
-        }
-    }
+// We aren't entirely sure how this fixed our problems, but we were seeing
+// gradle errors where it couldn't determine which variants we wanted. The
+// seemingly obvious choice, setting "org.jetbrains.kotlin.platform.type" to
+// "androidJvm" globally did not work (although it did on a per-library basis).
+// See crbug.com/41497313 and crbug.com/1511597 for other prior issues.
+configurations.androidTestCompile {
+    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
+    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
+}
+configurations.compile {
+    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
+    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
 }
 
 dependencies {
