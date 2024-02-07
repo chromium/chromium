@@ -63,8 +63,6 @@ std::unique_ptr<ash::AshWebView> PickerClientImpl::CreateWebView(
 void PickerClientImpl::DownloadGifToString(
     const ash::ValidGifUrl& url,
     DownloadGifToStringCallback callback) {
-  DCHECK(profile_);
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url.ToGURL();
   resource_request->method = "GET";
@@ -105,6 +103,7 @@ void PickerClientImpl::DownloadGifToString(
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   auto* loader_ptr = loader.get();
+  CHECK(profile_);
   loader_ptr->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&OnGifDownloaded, std::move(callback), std::move(loader)),
