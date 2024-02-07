@@ -3108,10 +3108,22 @@
           Delete
         </message>
         <message name="IDS_SEA_PEN_CREATE_MORE" desc="Menu item that, when clicked, will allow users to create more wallpapers like the selected wallpaper.">
-          Create more in this style
+          Create more
         </message>
         <message name="IDS_SEA_PEN_ABOUT" desc="Menu item that, when clicked, will show users more about the selected wallpaper.">
           About
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_TITLE" desc="Title for dialog that shows more information about the selected wallpaper.">
+          About wallpaper
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_PROMPT" desc="About dialog's description of the prompt that created the selected wallpaper.">
+          This wallpaper was created with AI using the following text: "<ph name="PROMPT">$1<ex>A radiant pink garden rose in bloom</ex></ph>."
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_DATE" desc="About dialog's description of the date that the selected wallpaper was created.">
+          Created on <ph name="DATE">$1<ex>Aug 25, 2023</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT_DIALOG_CLOSE" desc="Button that closes the about dialog.">
+          Close
         </message>
         <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
           Experiment
