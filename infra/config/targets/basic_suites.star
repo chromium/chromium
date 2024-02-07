@@ -779,7 +779,18 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_dev_desktop_gtests",
+    name = "chromium_dev_mac_gtests",
+    tests = {
+        "base_unittests": targets.legacy_test_config(),
+        "content_unittests": targets.legacy_test_config(),
+        "net_unittests": targets.legacy_test_config(),
+        "rust_gtest_interop_unittests": targets.legacy_test_config(),
+        "unit_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromium_dev_win_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
         "content_browsertests": targets.legacy_test_config(
@@ -788,7 +799,11 @@ targets.legacy_basic_suite(
             ),
         ),
         "content_unittests": targets.legacy_test_config(),
-        "interactive_ui_tests": targets.legacy_test_config(),
+        "interactive_ui_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
         "net_unittests": targets.legacy_test_config(),
         "rust_gtest_interop_unittests": targets.legacy_test_config(),
         "unit_tests": targets.legacy_test_config(),

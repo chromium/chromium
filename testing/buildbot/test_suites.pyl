@@ -758,20 +758,6 @@
       'chrome_public_smoke_test': {},
     },
 
-    'chromium_dev_desktop_gtests': {
-      'base_unittests': {},
-      'content_browsertests': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'content_unittests': {},
-      'interactive_ui_tests': {},
-      'net_unittests': {},
-      'rust_gtest_interop_unittests': {},
-      'unit_tests': {},
-    },
-
     'chromium_dev_linux_gtests': {
       'base_unittests': {
         'swarming': {
@@ -826,6 +812,32 @@
           },
         },
       },
+    },
+
+    'chromium_dev_mac_gtests': {
+      'base_unittests': {},
+      'content_unittests': {},
+      'net_unittests': {},
+      'rust_gtest_interop_unittests': {},
+      'unit_tests': {},
+    },
+
+    'chromium_dev_win_gtests': {
+      'base_unittests': {},
+      'content_browsertests': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'content_unittests': {},
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+      'net_unittests': {},
+      'rust_gtest_interop_unittests': {},
+      'unit_tests': {},
     },
 
     'chromium_gtests': {

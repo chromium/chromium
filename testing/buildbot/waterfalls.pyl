@@ -2802,7 +2802,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_mac_gtests',
         },
       },
       'mac-rel-dev': {
@@ -2810,7 +2810,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_mac_gtests',
         },
       },
       'win-rel-dev': {
@@ -2818,7 +2818,7 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_win_gtests',
         },
       },
       'win11-rel-dev': {
@@ -2826,7 +2826,7 @@
           'win11',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_win_gtests',
         },
       },
     },
