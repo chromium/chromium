@@ -466,6 +466,8 @@ class CC_EXPORT LayerImpl {
 
   virtual viz::ViewTransitionElementResourceId ViewTransitionResourceId() const;
 
+  virtual void SetInInvisibleLayerTree() {}
+
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set
   // its SetNeedsPushProperties() state, as it expects to be always pushed to

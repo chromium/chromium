@@ -3545,6 +3545,8 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     PrepareTiles();
     tile_manager_.decoded_image_tracker().UnlockAllImages();
   }
+
+  active_tree_->SetVisible(visible);
   resource_provider_->SetVisible(visible);
 }
 

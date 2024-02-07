@@ -181,4 +181,8 @@ BASE_FEATURE(kAdjustFastMainThreadThreshold,
              "AdjustFastMainThreadThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearCanvasResourcesInBackground,
+             "ClearCanvasResourcesInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

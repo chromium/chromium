@@ -142,6 +142,11 @@ void TextureLayer::SetTransferableResource(
                                   requires_commit);
 }
 
+void TextureLayer::SetNeedsSetTransferableResource() {
+  needs_set_resource_.Write(*this) = true;
+  SetNeedsPushProperties();
+}
+
 void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   if (layer_tree_host() == host) {
     Layer::SetLayerTreeHost(host);

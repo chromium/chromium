@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "cc/layers/texture_layer.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -324,6 +325,30 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
         FROM_HERE,
         WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // The impl tree may have dropped the transferable resource for this canvas
+  // while it wasn't visible. Make sure that it gets pushed there again, now
+  // that we've visible. See TextureLayerImpl::SetInInvisibleLayerTree() for
+  // details.
+  //
+  // This is done all the time, but it is especially important when canvas
+  // hibernation is disabled. In this case, when the impl-side active tree
+  // releases the TextureLayer's transferable resource, it will not be freed
+  // since the texture has not been cleared above (there is a remaining
+  // reference held from the TextureLayer). Then the next time the page becomes
+  // visible, the TextureLayer will note the resource hasn't changed (in
+  // Update()), and will not add the layer to the list of those that need to
+  // push properties. But since the impl-side tree no longer holds the resource,
+  // we need TreeSynchronizer to always consider this layer.
+  //
+  // This makes sure that we do push properties. It is a not needed when canvas
+  // hibernation is enabled (since the resource will have changed, it will be
+  // pushed), but we do it anyway, since these interactions are subtle.
+  if (page_is_visible && base::FeatureList::IsEnabled(
+                             ::features::kClearCanvasResourcesInBackground)) {
+    resource_host_->SetNeedsPushProperties();
+  }
+
   if (page_is_visible && (IsHibernating() || lose_context_in_background_)) {
     GetOrCreateResourceProvider();  // Rude awakening
   }

@@ -19088,4 +19088,39 @@ TEST_F(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
             target_offset);
 }
 
+namespace {
+
+class FakeLayerImpl : public LayerImpl {
+ public:
+  static std::unique_ptr<FakeLayerImpl> Create(LayerTreeImpl* tree_impl,
+                                               int id) {
+    return base::WrapUnique(new FakeLayerImpl(tree_impl, id));
+  }
+
+  ~FakeLayerImpl() override = default;
+  void SetInInvisibleLayerTree() override {
+    has_been_in_invisible_layer_tree_ = true;
+  }
+  bool has_been_in_invisible_layer_tree() const {
+    return has_been_in_invisible_layer_tree_;
+  }
+
+ protected:
+  FakeLayerImpl(LayerTreeImpl* tree_impl, int id) : LayerImpl(tree_impl, id) {}
+
+  bool has_been_in_invisible_layer_tree_ = false;
+};
+
+}  // namespace
+
+TEST_F(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+
+  auto* layer = AddLayer<FakeLayerImpl>(active_tree);
+  EXPECT_FALSE(layer->has_been_in_invisible_layer_tree());
+
+  host_impl_->SetVisible(false);
+  EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
+}
+
 }  // namespace cc

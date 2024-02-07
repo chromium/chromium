@@ -13,7 +13,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -326,6 +328,27 @@ void TextureLayerImpl::OnResourceEvicted() {
     resource_provider->RemoveImportedResource(resource_id_);
   }
   resource_id_ = viz::kInvalidResourceId;
+}
+
+void TextureLayerImpl::SetInInvisibleLayerTree() {
+  // With canvas hibernation, main will release the resource, which will be
+  // recreated once visibility changes. Don't hold onto it.
+  //
+  // Only do it when the resource has not been imported, meaning that it's not
+  // visible.
+  //
+  // In this case, main is responsible for giving us the transferable resource
+  // (and making sure that the layer properties are pushed) next time the tree
+  // becomes visible. See Canvas2DLayerBridge::PageVisibilityChanged().
+  if (base::FeatureList::IsEnabled(
+          features::kClearCanvasResourcesInBackground) &&
+      transferable_resource_.resource_source ==
+          viz::TransferableResource::ResourceSource::kCanvas &&
+      own_resource_) {
+    if (!transferable_resource_.is_software) {
+      FreeTransferableResource();
+    }
+  }
 }
 
 }  // namespace cc

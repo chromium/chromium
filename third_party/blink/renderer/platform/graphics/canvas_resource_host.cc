@@ -145,6 +145,12 @@ void CanvasResourceHost::ClearLayerTexture() {
   }
 }
 
+void CanvasResourceHost::SetNeedsPushProperties() {
+  if (cc_layer_) {
+    cc_layer_->SetNeedsSetTransferableResource();
+  }
+}
+
 void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
   if (cc_layer_) {

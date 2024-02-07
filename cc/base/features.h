@@ -159,6 +159,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseRecordedBoundsForTiling);
 // the existing threshold. I.e., |new_threshold| = |scalar| * |old_threshold|.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAdjustFastMainThreadThreshold);
 
+// When a LayerTreeHostImpl is not visible, clear its transferable resources
+// that haven't been imported into viz.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
