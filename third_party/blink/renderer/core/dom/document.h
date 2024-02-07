@@ -375,9 +375,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   static Range* CreateRangeAdjustedToTreeScope(const TreeScope&,
                                                const Position&);
-  static CaretPosition* CreateCaretPositionAdjustedToTreeScope(
-      const TreeScope& tree_scope,
-      const Position& position);
+  static CaretPosition* CreateCaretPosition(const Position& position);
 
   static const Position PositionAdjustedToTreeScope(const TreeScope&,
                                                     const Position&);

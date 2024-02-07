@@ -981,14 +981,9 @@ Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,
                                      adjusted_position, adjusted_position);
 }
 
-CaretPosition* Document::CreateCaretPositionAdjustedToTreeScope(
-    const TreeScope& tree_scope,
-    const Position& position) {
-  const Position& adjusted_position =
-      PositionAdjustedToTreeScope(tree_scope, position);
+CaretPosition* Document::CreateCaretPosition(const Position& position) {
   return MakeGarbageCollected<CaretPosition>(
-      adjusted_position.ComputeContainerNode(),
-      adjusted_position.ComputeOffsetInContainerNode());
+      position.AnchorNode(), position.ComputeOffsetInContainerNode());
 }
 
 const Position Document::PositionAdjustedToTreeScope(
@@ -1728,8 +1723,8 @@ CaretPosition* Document::caretPositionFromPoint(float x, float y) {
     return nullptr;
   }
 
-  return CreateCaretPositionAdjustedToTreeScope(
-      *this, position_with_affinity.GetPosition().ParentAnchoredEquivalent());
+  return CreateCaretPosition(
+      position_with_affinity.GetPosition().ParentAnchoredEquivalent());
 }
 
 Element* Document::scrollingElement() {
