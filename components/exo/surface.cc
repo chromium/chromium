@@ -647,10 +647,6 @@ void Surface::SetClipRect(const std::optional<gfx::RectF>& clip_rect) {
   pending_state_.clip_rect_is_parent_coordinates = false;
 }
 
-void Surface::SetFrameTraceId(int64_t frame_trace_id) {
-  pending_state_.frame_trace_id = frame_trace_id;
-}
-
 void Surface::SetClipRectOnParentSurface(
     const std::optional<gfx::RectF>& clip_rect) {
   TRACE_EVENT1("exo", "Surface::SetClipRectOnParentSurface", "clip_rect",
@@ -951,9 +947,6 @@ void Surface::Commit() {
       cached_state_.presentation_callbacks.end(),
       pending_state_.presentation_callbacks);
 
-  cached_state_.frame_trace_id = pending_state_.frame_trace_id;
-  pending_state_.frame_trace_id = -1;
-
   if (delegate_)
     delegate_->OnSurfaceCommit();
   else
@@ -1173,9 +1166,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       state_.damage.Intersect(output_rect);
     }
     cached_state_.damage.Clear();
-
-    state_.frame_trace_id = cached_state_.frame_trace_id;
-    cached_state_.frame_trace_id = -1;
   }
 
   surface_hierarchy_content_bounds_ =

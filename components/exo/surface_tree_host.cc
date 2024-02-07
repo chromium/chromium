@@ -335,21 +335,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
         << ", StartupId=" << (startup_id ? *startup_id : "''");
   }
 
-  const int64_t frame_trace_id = root_surface_->GetFrameTraceId();
-  if (frame_trace_id != -1) {
-    frame.metadata.begin_frame_ack.trace_id = frame_trace_id;
-    TRACE_EVENT_INSTANT(
-        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-        perfetto::Flow::Global(frame_trace_id),
-        [frame_trace_id](perfetto::EventContext ctx) {
-          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-          auto* data = event->set_chrome_graphics_pipeline();
-          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                             StepName::STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME);
-          data->set_display_trace_id(frame_trace_id);
-        });
-  }
-
   std::list<Surface::FrameCallback> current_frame_callbacks;
   PresentationCallbacks presentation_callbacks;
   root_surface_->AppendSurfaceHierarchyCallbacks(&current_frame_callbacks,

@@ -95,10 +95,6 @@ class AugmentedSurface : public SurfaceObserver {
     surface_->SetClipRect(clip_rect);
   }
 
-  void SetFrameTraceId(int64_t frame_trace_id) {
-    surface_->SetFrameTraceId(frame_trace_id);
-  }
-
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override {
     surface->RemoveSurfaceObserver(this);
@@ -214,25 +210,6 @@ void augmented_surface_set_clip_rect(wl_client* client,
       wl_fixed_to_double(height));
 }
 
-void augmented_surface_set_frame_trace_id(wl_client* client,
-                                          wl_resource* resource,
-                                          uint32_t id_hi,
-                                          uint32_t id_lo) {
-  base::CheckedNumeric<int64_t> id(id_hi);
-  id <<= 32;
-  id += id_lo;
-
-  if (!id.IsValid()) {
-    wl_resource_post_error(
-        resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
-        "The frame trace ID cannot be converted to a valid int64_t (%u, %u)",
-        id_hi, id_lo);
-    return;
-  }
-
-  GetUserDataAs<AugmentedSurface>(resource)->SetFrameTraceId(id.ValueOrDie());
-}
-
 const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_destroy,
     augmented_surface_set_corners_DEPRECATED,
@@ -242,7 +219,6 @@ const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_set_trusted_damage,
     augmented_surface_set_rounded_corners_clip_bounds,
     augmented_surface_set_clip_rect,
-    augmented_surface_set_frame_trace_id,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

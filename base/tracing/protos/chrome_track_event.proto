@@ -1386,14 +1386,6 @@ message ChromeGraphicsPipeline {
     STEP_BUFFER_SWAP_POST_SUBMIT = 12;
     STEP_FINISH_BUFFER_SWAP = 13;
     STEP_SWAP_BUFFERS_ACK = 14;
-
-    // Frame submission stages when Exo (Wayland server implementation in Ash
-    // browser process) is involved. Wayland clients (such as Lacros or ARC++)
-    // submit visual contents via Wayland surface commits, with which Exo
-    // constructs compositor frames and forwards to Ash Viz.
-    STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
-    STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
-    STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
