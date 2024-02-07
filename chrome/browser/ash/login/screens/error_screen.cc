@@ -386,7 +386,9 @@ void ErrorScreen::OnConfigureCerts() {
 }
 
 void ErrorScreen::OnDiagnoseButtonClicked() {
-  ConnectivityDiagnosticsDialog::ShowDialog();
+  gfx::NativeWindow native_window =
+      LoginDisplayHost::default_host()->GetNativeWindow();
+  ConnectivityDiagnosticsDialog::ShowDialog(native_window);
 }
 
 void ErrorScreen::OnLaunchOobeGuestSession() {
