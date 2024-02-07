@@ -167,17 +167,6 @@ bool IsKeyboardLayoutExtension(const std::string& input_method_id) {
   return false;
 }
 
-bool IsExperimentalMultilingual(const std::string& input_method_id) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const std::string prefix = base::StrCat(
-      {kComponentExtensionIMEPrefix, kXkbExtensionId, "experimental_"});
-  return base::StartsWith(input_method_id, prefix,
-                          base::CompareCase::SENSITIVE);
-#else
-  return false;
-#endif
-}
-
 bool IsCros1pKorean(const std::string& input_method_id) {
   // TODO(crbug.com/1162211): Input method IDs are tuples of extension type,
   // extension ID, and extension-local input method ID. However, currently

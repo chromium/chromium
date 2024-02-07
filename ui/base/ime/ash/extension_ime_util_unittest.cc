@@ -84,32 +84,6 @@ TEST(ExtensionIMEUtilTest, IsArcIMETest) {
   EXPECT_FALSE(extension_ime_util::IsArcIME("mozc"));
 }
 
-TEST(ExtensionIMEUtilTest, IsExperimentalMultilingualTest) {
-  // TODO(crbug.com/1162211): Input method IDs are tuples of extension type,
-  // extension ID, and extension-local input method ID. However, currently
-  // they're just concats of the three constituent pieces of info, hence StrCat
-  // here. Replace StrCat once they're no longer unstructured string concats.
-
-  EXPECT_FALSE(extension_ime_util::IsExperimentalMultilingual(
-      base::StrCat({"some_extension_type", "some_extension_id",
-                    "experimental_hello_world"})));
-
-  EXPECT_FALSE(extension_ime_util::IsExperimentalMultilingual(base::StrCat(
-      {"_comp_ime_", "some_extension_id", "experimental_hello_world"})));
-
-  EXPECT_FALSE(extension_ime_util::IsExperimentalMultilingual(base::StrCat(
-      {"_comp_ime_", "jkghodnilhceideoidjikpgommlajknk", "hello_world"})));
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(
-#else
-  EXPECT_FALSE(
-#endif
-      extension_ime_util::IsExperimentalMultilingual(
-          base::StrCat({"_comp_ime_", "jkghodnilhceideoidjikpgommlajknk",
-                        "experimental_hello_world"})));
-}
-
 TEST(ExtensionIMEUtilTest, IsCros1pKoreanTest) {
   // TODO(crbug.com/1162211): Input method IDs are tuples of extension type,
   // extension ID, and extension-local input method ID. However, currently
