@@ -29,7 +29,7 @@ enum class TriggerOutcome {
   kMaxValue = kTimedOut,
 };
 
-constexpr char kTriggerOutcomeName[] = "TabOrganization.Trigger.Outcome";
+constexpr char kTriggerOutcomeName[] = "Tab.Organization.Trigger.Outcome";
 
 Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
   const bool is_rtl = base::i18n::IsRTL();
