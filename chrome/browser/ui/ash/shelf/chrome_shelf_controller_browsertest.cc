@@ -2694,7 +2694,7 @@ class HotseatShelfAppBrowserTest : public ShelfAppBrowserTest {
     // Disable contextual nudges to prevent in-app to home nudge from being
     // announced in the ChromeVox test.
     scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kContextualNudges);
+        ash::features::kHideShelfControlsInTabletMode);
     ShelfAppBrowserTest::SetUp();
   }
 

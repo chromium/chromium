@@ -3430,9 +3430,6 @@ extern const char kCloudGamingDeviceDescription[];
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];
 
-extern const char kContextualNudgesName[];
-extern const char kContextualNudgesDescription[];
-
 extern const char kCroshSWAName[];
 extern const char kCroshSWADescription[];
 

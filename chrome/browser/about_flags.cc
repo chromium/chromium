@@ -7891,10 +7891,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseClientGmbInterface)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"contextual-nudges", flag_descriptions::kContextualNudgesName,
-     flag_descriptions::kContextualNudgesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kContextualNudges)},
-
     {"scalable-iph-debug", flag_descriptions::kScalableIphDebugName,
      flag_descriptions::kScalableIphDebugDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kScalableIphDebug)},

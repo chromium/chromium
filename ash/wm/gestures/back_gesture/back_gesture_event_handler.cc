@@ -180,7 +180,7 @@ void ActivateUnderneathWindowInSplitViewMode(
 }  // namespace
 
 BackGestureEventHandler::BackGestureEventHandler() {
-  if (features::AreContextualNudgesEnabled()) {
+  if (features::IsHideShelfControlsInTabletModeEnabled()) {
     nudge_controller_ =
         std::make_unique<BackGestureContextualNudgeControllerImpl>();
   }
@@ -320,7 +320,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
         break;
       back_gesture_affordance_ = std::make_unique<BackGestureAffordance>(
           screen_location, dragged_from_splitview_divider_);
-      if (features::AreContextualNudgesEnabled()) {
+      if (features::IsHideShelfControlsInTabletModeEnabled()) {
         // Cancel the in-waiting or in-progress back nudge animation.
         nudge_controller_->OnBackGestureStarted();
         contextual_tooltip::HandleGesturePerformed(

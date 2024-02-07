@@ -506,11 +506,6 @@ BASE_FEATURE(kCryptauthAttestationSyncing,
              "CryptauthAttestationSyncing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables contextual nudges for gesture education.
-BASE_FEATURE(kContextualNudges,
-             "ContextualNudges",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Crostini GPU support.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE virtio_gpu flag.
@@ -1431,7 +1426,8 @@ BASE_FEATURE(kHideArcMediaNotifications,
 
 // When enabled, shelf navigation controls and the overview tray item will be
 // removed from the shelf in tablet mode (unless otherwise specified by user
-// preferences, or policy).
+// preferences, or policy). This feature also enables "contextual nudges" for
+// gesture education.
 BASE_FEATURE(kHideShelfControlsInTabletMode,
              "HideShelfControlsInTabletMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3031,13 +3027,6 @@ BASE_FEATURE(kEnableMappableSIForFastInkHost,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
-
-bool AreContextualNudgesEnabled() {
-  if (!IsHideShelfControlsInTabletModeEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kContextualNudges);
-}
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);

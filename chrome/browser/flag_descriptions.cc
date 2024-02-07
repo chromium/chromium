@@ -5954,12 +5954,6 @@ const char kComponentUpdaterTestRequestDescription[] =
     " Overrides any other component updater check request parameters that may "
     "have been specified.";
 
-const char kContextualNudgesName[] =
-    "Contextual nudges for user gesture education";
-const char kContextualNudgesDescription[] =
-    "Enables contextual nudges, periodically showing the user a label "
-    "explaining how to interact with a particular UI element using gestures.";
-
 const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";

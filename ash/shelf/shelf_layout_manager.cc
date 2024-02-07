@@ -786,8 +786,9 @@ void ShelfLayoutManager::UpdateAutoHideForMouseEvent(ui::MouseEvent* event,
 }
 
 void ShelfLayoutManager::UpdateContextualNudges() {
-  if (!ash::features::AreContextualNudgesEnabled())
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     return;
+  }
 
   // Do not allow nudges outside of an active session.
   if (Shell::Get()->session_controller()->GetSessionState() !=
@@ -832,8 +833,9 @@ void ShelfLayoutManager::UpdateContextualNudges() {
 }
 
 void ShelfLayoutManager::HideContextualNudges() {
-  if (!ash::features::AreContextualNudgesEnabled())
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     return;
+  }
 
   shelf_widget_->HideDragHandleNudge(
       contextual_tooltip::DismissNudgeReason::kOther);
