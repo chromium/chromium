@@ -153,6 +153,11 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // controlled fullscreen NSWindow.
     browser_view_->overlay_widget()->Show();
 
+    // Set revealed to be true when entering immersive fullscreen so the toolbar
+    // and bookmarks bar heights are accounted for during the fullscreen
+    // transition.
+    OnImmersiveModeToolbarRevealChanged(true);
+
     // Move top chrome to the overlay view.
     browser_view_->OnImmersiveRevealStarted();
     browser_view_->InvalidateLayout();
