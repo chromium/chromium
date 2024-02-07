@@ -219,26 +219,7 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
 
   decoder_->Reset();
 
-  // Drop all of the queued, but unprocessed frames on the floor. In a reset
-  // the expectation is all frames that are currently queued are disposed of
-  // without completing the decode process.
-
-  // First clear the request that is being processed.
-  if (current_decode_request_) {
-    std::move(current_decode_request_->decode_cb)
-        .Run(DecoderStatus::Codes::kAborted);
-    current_decode_request_ = std::nullopt;
-  }
-
-  // Then clear out all of the ones that are queued up.
-  while (!decode_request_queue_.empty()) {
-    auto& request = decode_request_queue_.front();
-    std::move(request.decode_cb).Run(DecoderStatus::Codes::kAborted);
-    decode_request_queue_.pop();
-  }
-
-  // Remove all outstanding buffers waiting to be sent to the display.
-  display_queue_ = {};
+  ClearPendingRequests(DecoderStatus::Codes::kAborted);
 
   // If the reset happened in the middle of a flush the flush will not be
   // completed.
@@ -642,6 +623,30 @@ void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
   }
 }
 
+void V4L2StatelessVideoDecoder::ClearPendingRequests(DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(4);
+  // Drop all of the queued, but unprocessed frames on the floor. In a reset
+  // the expectation is all frames that are currently queued are disposed of
+  // without completing the decode process.
+
+  // First clear the request that is being processed.
+  if (current_decode_request_) {
+    std::move(current_decode_request_->decode_cb).Run(status);
+    current_decode_request_ = std::nullopt;
+  }
+
+  // Then clear out all of the ones that are queued up.
+  while (!decode_request_queue_.empty()) {
+    auto& request = decode_request_queue_.front();
+    std::move(request.decode_cb).Run(status);
+    decode_request_queue_.pop();
+  }
+
+  // Remove all outstanding buffers waiting to be sent to the display.
+  display_queue_ = {};
+}
+
 void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
@@ -732,8 +737,8 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
         return;
       case AcceleratedVideoDecoder::kDecodeError:
         VLOGF(1) << "AcceleratedVideoDecoder::kDecodeError.";
-        done = true;
-        break;
+        ClearPendingRequests(DecoderStatus::Codes::kPlatformDecodeFailure);
+        return;
       case AcceleratedVideoDecoder::kTryAgain:
         // Will be needed for h.264 CENCv1
         NOTIMPLEMENTED() << "AcceleratedVideoDecoder::kTryAgain";
@@ -742,13 +747,9 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   } while (!done);
 
   if (current_decode_request_) {
-    const DecoderStatus::Codes decode_status =
-        (decode_result == AcceleratedVideoDecoder::kDecodeError)
-            ? DecoderStatus::Codes::kPlatformDecodeFailure
-            : DecoderStatus::Codes::kOk;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(current_decode_request_->decode_cb),
-                                  decode_status));
+                                  DecoderStatus::Codes::kOk));
     current_decode_request_ = std::nullopt;
   }
 }

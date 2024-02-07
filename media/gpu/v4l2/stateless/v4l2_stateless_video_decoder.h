@@ -127,6 +127,9 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // buffer after it is done being used.
   void EnqueueDecodedOutputBufferByFrameID(uint64_t frame_id);
 
+  // Empty out the |decode_request_queue_| and |display_queue_|.
+  void ClearPendingRequests(DecoderStatus status);
+
   // Match up frames that have been decoded and are sitting in the
   // |output_queue_| with |display_queue_| which holds the frames in display
   // order.
