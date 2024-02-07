@@ -459,8 +459,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Not owned. Guaranteed to outlive |this|, since the logger
   // and |this| are owned by the optimization guide keyed service.
-  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
-      optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // The information of the latest component delivered by
   // |optimization_guide_service_|.

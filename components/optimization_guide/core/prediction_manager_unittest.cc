@@ -480,12 +480,12 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  StoreEntryMap db_store_;
-  std::unique_ptr<TestPredictionManager> prediction_manager_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  StoreEntryMap db_store_;
+  std::unique_ptr<TestPredictionManager> prediction_manager_;
   bool component_updates_enabled_ = true;
 };
 

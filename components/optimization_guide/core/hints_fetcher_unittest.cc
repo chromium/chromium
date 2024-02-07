@@ -161,11 +161,11 @@ class HintsFetcherTest : public testing::Test,
   bool hints_fetched_ = false;
   base::test::ScopedFeatureList scoped_list_;
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   std::unique_ptr<base::SimpleTestClock> alternative_clock_;
   std::unique_ptr<HintsFetcher> hints_fetcher_;
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
