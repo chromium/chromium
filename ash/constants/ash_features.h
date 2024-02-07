@@ -138,8 +138,6 @@ BASE_DECLARE_FEATURE(kClipboardHistoryLongpress);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryUrlTitles);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kClipboardHistoryWebContentsPaste);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kConsumerAutoUpdateToggleAllowed);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kContextualNudges);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -946,8 +944,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryUrlTitlesEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsClipboardHistoryWebContentsPasteEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsContinuousOverviewScrollAnimationEnabled();

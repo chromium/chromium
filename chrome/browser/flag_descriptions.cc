@@ -5943,12 +5943,6 @@ const char kClipboardHistoryUrlTitlesDescription[] =
     "annotation for copied URLs in the clipboard history menu: If the URL has "
     "been visited, its page title will appear as part of the URL's menu item.";
 
-const char kClipboardHistoryWebContentsPasteName[] =
-    "Explicitly paste into web contents from clipboard history";
-const char kClipboardHistoryWebContentsPasteDescription[] =
-    "Enables an experimental behavior where clipboard history explicitly "
-    "pastes into web contents instead of using synthetic key events.";
-
 const char kCloudGamingDeviceName[] = "Enable cloud game search";
 const char kCloudGamingDeviceDescription[] =
     "Enables cloud game search results in the launcher.";

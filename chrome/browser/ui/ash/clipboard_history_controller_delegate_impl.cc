@@ -76,9 +76,6 @@ ClipboardHistoryControllerDelegateImpl::CreateImageModelFactory() const {
 }
 
 bool ClipboardHistoryControllerDelegateImpl::Paste() const {
-  if (!ash::features::IsClipboardHistoryWebContentsPasteEnabled()) {
-    return false;
-  }
   for (auto* const web_contents : GetAllWebContents()) {
     auto* const focused_web_contents = GetFocusedWebContents(web_contents);
     if (!focused_web_contents) {
