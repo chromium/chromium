@@ -53,7 +53,6 @@ copy("copy_src") {
 
 dts_files = [
   "image_loader_private.d.ts",
-  "//tools/typescript/definitions/metrics_private.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
 ]
 

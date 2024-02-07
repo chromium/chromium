@@ -7,17 +7,6 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 import {ImageLoaderClient} from './image_loader_client.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
-export function setUp() {
-  chrome.metricsPrivate = {
-    MetricTypeType: {
-      HISTOGRAM_LOG: 'histogram-log',
-      HISTOGRAM_LINEAR: 'histogram-linear',
-    },
-    recordPercentage: function() {},
-    recordValue: function() {},
-  } as any;
-}
-
 /**
  * Lets the client to load URL and returns the local cache (not caches in the
  * image loader extension) is used or not.
