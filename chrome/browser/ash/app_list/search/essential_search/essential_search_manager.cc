@@ -18,6 +18,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -96,26 +97,26 @@ void EssentialSearchManager::MaybeFetchSocsCookie() {
   PrefService* prefs = primary_profile_->GetPrefs();
   if (prefs->GetBoolean(prefs::kEssentialSearchEnabled)) {
     // If the policy is enabled, cancel all active requests then fetch SOCS
-    // cookie and Update value of kLastEssentialSearchValue prefs.
+    // cookie.
     CancelPendingRequests();
     socs_cookie_fetcher_ = std::make_unique<SocsCookieFetcher>(
         primary_profile_->GetURLLoaderFactory(), this);
     socs_cookie_fetcher_->StartFetching();
-    prefs->SetBoolean(prefs::kLastEssentialSearchValue, true);
     return;
   }
 
   if (prefs->GetBoolean(prefs::kLastEssentialSearchValue)) {
-    // If the policy was disabled, cancel all active request then remove SOCS
-    // cookie from the user's profile.
-    CancelPendingRequests();
-    socs_cookie_fetcher_.reset();
+    // If the policy was disabled, remove SOCS cookie from the user's profile.
     RemoveSocsCookie();
     return;
   }
 }
 
 void EssentialSearchManager::RemoveSocsCookie() {
+  // Before removing the cookie, cancel all active request
+  CancelPendingRequests();
+  socs_cookie_fetcher_.reset();
+
   network::mojom::CookieDeletionFilterPtr filter =
       network::mojom::CookieDeletionFilter::New();
 
@@ -153,15 +154,40 @@ void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
     return;
   }
 
-  retry_backoff_.InformOfRequest(true);
-  RefetchAfter(kOneDay);
   const net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
   primary_profile_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->SetCanonicalCookie(
           *cc, google_url, options,
-          network::mojom::CookieManager::SetCanonicalCookieCallback());
+          base::BindOnce(&EssentialSearchManager::OnCookieAddedToUserProfile,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EssentialSearchManager::OnCookieAddedToUserProfile(
+    net::CookieAccessResult result) {
+  if (!result.status.IsInclude()) {
+    // Handle SOCS cookie insertion failure.
+    LOG(WARNING) << "Failed to add SOCS cookie to user profile. Retrying.";
+    LOG(WARNING) << "Status=" << result.status;
+    OnApiCallFailed(SocsCookieFetcher::Status::kCookieInsertionFailure);
+    return;
+  }
+
+  // After the SOCS cookie is added to the user profile, Schedule a SOCS cookie
+  // refresh to ensure a valid SOCS cookie is maintained.
+  RefetchAfter(kOneDay);
+  retry_backoff_.InformOfRequest(true);
+  PrefService* prefs = primary_profile_->GetPrefs();
+  if (prefs->GetBoolean(prefs::kEssentialSearchEnabled)) {
+    // If the kEssentialSearchEnabled policy is still enabled, mark
+    // kLastEssentialSearchValue as enabled.
+    prefs->SetBoolean(prefs::kLastEssentialSearchValue, true);
+  } else {
+    // This would be triggered in case the policy got disabled while storing the
+    // cookie.
+    RemoveSocsCookie();
+  }
 }
 
 void EssentialSearchManager::RefetchAfter(base::TimeDelta delay) {
@@ -178,7 +204,6 @@ void EssentialSearchManager::RefetchAfter(base::TimeDelta delay) {
 void EssentialSearchManager::CancelPendingRequests() {
   fetch_requests_weak_factory_.InvalidateWeakPtrs();
 }
-
 
 void EssentialSearchManager::OnApiCallFailed(SocsCookieFetcher::Status status) {
   // TODO(b/312542928): collect UMA with the error type.

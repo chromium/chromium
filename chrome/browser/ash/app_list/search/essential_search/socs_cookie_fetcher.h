@@ -23,15 +23,18 @@ namespace app_list {
 // SocsCookieFetcher is still WIP.
 class SocsCookieFetcher final {
  public:
+  // TODO(b/312542928): use this enum to collect UMA.
   enum class Status {
-    kOk,
-    kRequestBodyNotSerialized,
-    kServerError,
-    kEmptyResponse,
-    kJsonParseFailure,
-    kNotJsonDict,
-    kFetchNoCookie,
-    kInvalidCookie
+    kOk = 0,
+    kRequestBodyNotSerialized = 1,
+    kServerError = 2,
+    kEmptyResponse = 3,
+    kJsonParseFailure = 4,
+    kNotJsonDict = 5,
+    kFetchNoCookie = 6,
+    kInvalidCookie = 7,
+    kCookieInsertionFailure = 8,
+    kMaxValue = kCookieInsertionFailure
   };
 
   class Consumer {

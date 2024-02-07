@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
+#include "net/cookies/cookie_access_result.h"
 
 class Profile;
 
@@ -54,6 +55,10 @@ class EssentialSearchManager : public ash::SessionObserver,
  private:
   void MaybeFetchSocsCookie();
 
+  // Callback function to be called after when a SOCS cookie is added to a
+  // user's profile.
+  void OnCookieAddedToUserProfile(net::CookieAccessResult result);
+
   void RemoveSocsCookie();
 
   void OnCookieDeleted(uint32_t number_of_cookies_deleted);
@@ -79,7 +84,8 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   base::WeakPtrFactory<EssentialSearchManager> weak_ptr_factory_{this};
 
-  base::WeakPtrFactory<EssentialSearchManager> fetch_requests_weak_factory_{this};
+  base::WeakPtrFactory<EssentialSearchManager> fetch_requests_weak_factory_{
+      this};
 };
 
 }  // namespace app_list
