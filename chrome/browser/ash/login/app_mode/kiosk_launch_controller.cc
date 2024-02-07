@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -235,6 +237,26 @@ class DefaultNetworkMonitor : public NetworkUiController::NetworkMonitor {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 };
 
+class DefaultAcceleratorController
+    : public KioskLaunchController::AcceleratorController {
+ public:
+  DefaultAcceleratorController() = default;
+  DefaultAcceleratorController(const DefaultAcceleratorController&) = delete;
+  DefaultAcceleratorController& operator=(const AcceleratorController&) =
+      delete;
+  ~DefaultAcceleratorController() override = default;
+
+  void DisableAccelerators() override {
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        true);
+  }
+
+  void EnableAccelerators() override {
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        false);
+  }
+};
+
 std::string ToString(app_mode::ForceInstallObserver::Result result) {
   switch (result) {
     case app_mode::ForceInstallObserver::Result::kSuccess:
@@ -274,17 +296,35 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
   crash_key.Set(KioskLaunchStateToString(state));
 }
 
+class KioskLaunchController::ScopedAcceleratorDisabler {
+ public:
+  explicit ScopedAcceleratorDisabler(AcceleratorController& controller)
+      : controller_(controller) {
+    controller_->DisableAccelerators();
+  }
+
+  ScopedAcceleratorDisabler(const ScopedAcceleratorDisabler&) = delete;
+  ScopedAcceleratorDisabler& operator=(const ScopedAcceleratorDisabler&) =
+      delete;
+  ~ScopedAcceleratorDisabler() { controller_->EnableAccelerators(); }
+
+ private:
+  raw_ref<AcceleratorController> controller_;
+};
+
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : KioskLaunchController(LoginDisplayHost::default_host(),
                             oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
                             base::BindRepeating(&BuildKioskAppLauncher),
-                            std::make_unique<DefaultNetworkMonitor>()) {}
+                            std::make_unique<DefaultNetworkMonitor>(),
+                            std::make_unique<DefaultAcceleratorController>()) {}
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen,
     KioskAppLauncherFactory app_launcher_factory,
-    std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor)
+    std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
+    std::unique_ptr<AcceleratorController> accelerator_controller)
     : host_(host),
       splash_screen_view_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
@@ -292,7 +332,8 @@ KioskLaunchController::KioskLaunchController(
           *this,
           host_,
           CHECK_DEREF(splash_screen_view_.get()),
-          std::move(network_monitor))) {
+          std::move(network_monitor))),
+      accelerator_controller_(std::move(accelerator_controller)) {
   if (!host_) {
     CHECK_IS_TEST();
   }
@@ -309,6 +350,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   RecordKioskLaunchUMA(auto_launch);
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
+  accelerator_disabler_ =
+      std::make_unique<ScopedAcceleratorDisabler>(*accelerator_controller_);
 
   if (host_ && host_->GetWebUILoginView()) {
     host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
@@ -485,6 +528,7 @@ void KioskLaunchController::CleanUp() {
 
   app_launcher_.reset();
   network_ui_controller_.reset();
+  accelerator_disabler_.reset();
 
   if (host_) {
     host_->Finalize(base::OnceClosure());
