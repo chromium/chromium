@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsBluetoothPageOsBluetoothSummary) {
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsBluetoothPageOsBluetoothTrueWirelessImages) {
   RunSettingsTest(
-      "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js");
+      "os_bluetooth_page/os_bluetooth_true_wireless_images_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
