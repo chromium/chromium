@@ -67,7 +67,6 @@ import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.function.BooleanSupplier;
-import java.util.function.Function;
 
 /**
  * PageInsights mediator component listening to various external events to update UI, internal
@@ -120,7 +119,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private View mSheetContainer;
 
     private final BooleanSupplier mIsPageInsightsEnabledSupplier;
-    private final Function<NavigationHandle, PageInsightsConfig> mPageInsightsConfigProvider;
+    private final PageInsightsCoordinator.ConfigProvider mPageInsightsConfigProvider;
     private final Handler mHandler;
     private final Runnable mAutoTriggerTimerRunnable = this::onAutoTriggerTimerFinished;
     private final Callback<Boolean> mInMotionCallback = inMotion -> maybeAutoTrigger();
@@ -243,7 +242,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             ApplicationViewportInsetSupplier appViewportInsetSupplier,
             PageInsightsIntentParams intentParams,
             BooleanSupplier isPageInsightsEnabledSupplier,
-            Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
+            PageInsightsCoordinator.ConfigProvider pageInsightsConfigProvider) {
         mContext = context;
         mTabObservable = tabObservable;
         mProfileSupplier = profileSupplier;
@@ -470,14 +469,17 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mAutoTriggerStage = AutoTriggerStage.AWAITING_NAV_HANDLE;
             return;
         }
-        PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
 
-        if (!shouldFetchDataForAutoTrigger(config)) {
+        Tab tab = mTabObservable.get();
+        if (tab == null) {
+            Log.e(TAG, "Cancelling auto-trigger because Tab is unexpectedly null.");
             mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
             return;
         }
-        if (mTabObservable.get() == null) {
-            Log.e(TAG, "Cancelling auto-trigger because Tab is unexpectedly null.");
+        PageInsightsConfig config =
+                mPageInsightsConfigProvider.get(
+                        mCurrentNavigationHandle, getLastCommittedNavigationEntry(tab));
+        if (!shouldFetchDataForAutoTrigger(config)) {
             mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
             return;
         }
@@ -485,9 +487,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mAutoTriggerStage = AutoTriggerStage.FETCHING_DATA;
         Log.v(TAG, "Fetching data for auto-trigger");
         mPageInsightsDataLoader.loadInsightsData(
-                mTabObservable.get().getUrl(),
+                tab.getUrl(),
                 /* isUserInitiated= */ false,
-                getNavigationTimestampMs(mTabObservable.get()),
                 config,
                 metadata -> {
                     if (mAutoTriggerStage != AutoTriggerStage.FETCHING_DATA) {
@@ -576,18 +577,20 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     void launch() {
-        if (mTabObservable.get() == null) {
+        Tab tab = mTabObservable.get();
+        if (tab == null) {
             Log.e(TAG, "Can't launch Page Insights because Tab is null.");
             return;
         }
         cancelAutoTrigger();
         mSheetContent.showLoadingIndicator();
         mSheetController.requestShowContent(mSheetContent, true);
-        PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
+        PageInsightsConfig config =
+                mPageInsightsConfigProvider.get(
+                        mCurrentNavigationHandle, getLastCommittedNavigationEntry(tab));
         mPageInsightsDataLoader.loadInsightsData(
-                mTabObservable.get().getUrl(),
+                tab.getUrl(),
                 /* isUserInitiated= */ true,
-                getNavigationTimestampMs(mTabObservable.get()),
                 config,
                 metadata -> {
                     mCurrentMetadata = metadata;
@@ -848,7 +851,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     @Nullable
-    private static Long getNavigationTimestampMs(Tab tab) {
+    private static NavigationEntry getLastCommittedNavigationEntry(Tab tab) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null) {
             return null;
@@ -857,13 +860,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (navigationController == null) {
             return null;
         }
-        NavigationEntry lastCommittedEntry =
-                navigationController.getEntryAtIndex(
-                        navigationController.getLastCommittedEntryIndex());
-        if (lastCommittedEntry == null) {
-            return null;
-        }
-        // TODO(b/319407873): Update the below method's name to specify its unit.
-        return lastCommittedEntry.getTimestamp();
+        return navigationController.getEntryAtIndex(
+                navigationController.getLastCommittedEntryIndex());
     }
 }

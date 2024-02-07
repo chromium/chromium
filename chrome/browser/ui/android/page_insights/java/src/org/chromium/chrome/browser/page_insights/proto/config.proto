@@ -15,9 +15,6 @@ message PageInsightsConfig {
   optional bool should_auto_trigger = 1;
   // True if XSurface logging should be done.
   optional bool should_xsurface_log = 2;
-  // DEPRECATED. Was: true if Gaia should be attached to the Page Insights
-  // request.
-  optional bool should_attach_gaia_to_request = 3 [deprecated = true];
   // True if logging of URL by server, and personalisation of response, is
   // forbidden.
   optional bool server_should_not_log_or_personalize = 4;
@@ -26,4 +23,6 @@ message PageInsightsConfig {
   optional bool is_initial_page = 5;
   // Timestamp for the navigation that reached the URL, in milliseconds.
   optional int64 navigation_timestamp_ms = 6;
+
+  reserved 3;
 }

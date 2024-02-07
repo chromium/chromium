@@ -246,11 +246,13 @@ public class PageInsightsCoordinatorTest {
                                         mAppInsetSupplier,
                                         PageInsightsIntentParams.getDefaultInstance(),
                                         mIsPageInsightsHubEnabled,
-                                        (navigationHandle) ->
+                                        (navigationHandle, navigationEntry) ->
                                                 PageInsightsConfig.newBuilder()
+                                                        .setIsInitialPage(true)
                                                         .setShouldAutoTrigger(true)
                                                         .setShouldXsurfaceLog(true)
-                                                        .setShouldAttachGaiaToRequest(true)
+                                                        .setServerShouldNotLogOrPersonalize(false)
+                                                        .setNavigationTimestampMs(1234L)
                                                         .build()));
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor

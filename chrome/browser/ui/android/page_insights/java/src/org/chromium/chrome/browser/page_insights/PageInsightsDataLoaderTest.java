@@ -96,7 +96,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {
                     assertEquals(data, mPageInsightsMetadata);
@@ -115,7 +114,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {
                     fail("Callback should not have been called after cancelled.");
@@ -137,7 +135,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {
                     assertNull(data);
@@ -150,7 +147,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 null,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {
                     assertNull(data);
@@ -169,7 +165,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(false).build(),
                 (data) -> {});
 
@@ -196,7 +191,6 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(true).build(),
                 (data) -> {});
 
@@ -229,10 +223,10 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ 1234L,
                 PageInsightsConfig.newBuilder()
                         .setIsInitialPage(true)
                         .setServerShouldNotLogOrPersonalize(true)
+                        .setNavigationTimestampMs(1234L)
                         .build(),
                 (data) -> {});
 
@@ -272,10 +266,10 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ 1234L,
                 PageInsightsConfig.newBuilder()
                         .setIsInitialPage(true)
                         .setServerShouldNotLogOrPersonalize(true)
+                        .setNavigationTimestampMs(1234L)
                         .build(),
                 (data) -> {});
 
@@ -303,14 +297,12 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 
@@ -330,14 +322,12 @@ public class PageInsightsDataLoaderTest {
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl2,
                 /* isUserInitiated= */ true,
-                /* navigationTimestampMs= */ null,
                 PageInsightsConfig.getDefaultInstance(),
                 (data) -> {});
 

@@ -23,17 +23,23 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.Function;
 
 /**
  * Coordinator for PageInsights bottom sheet module. Provides API, and initializes
  * various components lazily.
  */
 public class PageInsightsCoordinator {
+
+    public static interface ConfigProvider {
+        PageInsightsConfig get(
+                @Nullable NavigationHandle navigationHandle,
+                @Nullable NavigationEntry navigationEntry);
+    }
 
     private final Context mContext;
 
@@ -68,8 +74,8 @@ public class PageInsightsCoordinator {
      * @param inMotionSupplier Supplier for whether the compositor is in motion.
      * @param appViewportInsetSupplier App-wide viewport inset supplier.
      * @param intentParams params specified in the custom tabs intent
-     * @param isPageInsightsHubEnabled Supplier of the feature flag.
-     * @param firstLoadTimeMs Timestamp for the first page load completion.
+     * @param isPageInsightsEnabledSupplier Supplier of the feature enablement status.
+     * @param pageInsightsConfigProvider provider of {@link PageInsightsConfig}.
      */
     public PageInsightsCoordinator(
             Context context,
@@ -87,7 +93,7 @@ public class PageInsightsCoordinator {
             ApplicationViewportInsetSupplier appViewportInsetSupplier,
             PageInsightsIntentParams intentParams,
             BooleanSupplier isPageInsightsEnabledSupplier,
-            Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
+            ConfigProvider pageInsightsConfigProvider) {
         mContext = context;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
