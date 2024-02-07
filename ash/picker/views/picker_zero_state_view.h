@@ -29,7 +29,8 @@ class ASH_EXPORT PickerZeroStateView : public views::View {
   using SelectCategoryCallback =
       base::RepeatingCallback<void(PickerCategory category)>;
 
-  explicit PickerZeroStateView(SelectCategoryCallback select_category_callback);
+  explicit PickerZeroStateView(int picker_view_width,
+                               SelectCategoryCallback select_category_callback);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
@@ -42,6 +43,9 @@ class ASH_EXPORT PickerZeroStateView : public views::View {
  private:
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
+
+  // Width of the containing PickerView.
+  int picker_view_width_ = 0;
 
   // The views for each section of categories.
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>> section_views_;

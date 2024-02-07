@@ -31,13 +31,11 @@ class ASH_EXPORT PickerSectionView : public views::View {
   METADATA_HEADER(PickerSectionView, views::View)
 
  public:
-  explicit PickerSectionView(const std::u16string& title_text);
+  explicit PickerSectionView(int section_width,
+                             const std::u16string& title_text);
   PickerSectionView(const PickerSectionView&) = delete;
   PickerSectionView& operator=(const PickerSectionView&) = delete;
   ~PickerSectionView() override;
-
-  // Sets the maximum width available for laying out section items.
-  void SetMaximumWidth(int maximum_width);
 
   // Adds a list item. These are displayed in a vertical list, each item
   // spanning the width of the section.
@@ -66,15 +64,12 @@ class ASH_EXPORT PickerSectionView : public views::View {
   }
 
  private:
-  // Adds a small grid item. These are displayed in rows. If there may be more
-  // than one row, `maximum_width_` should be set before adding small grid items
-  // to ensure the rows are laid out correctly.
+  // Adds a small grid item. These are displayed in rows.
   void AddSmallGridItem(std::unique_ptr<views::View> small_grid_item);
 
-  // Maximum width available for laying out section items. If not set, we assume
-  // the available width is unbounded during layout, so small grid items will be
-  // laid out in a single row.
-  std::optional<int> maximum_width_;
+  // Width available for laying out section items. This is needed to determine
+  // row and column widths for grid items in the section.
+  int section_width_ = 0;
 
   raw_ptr<views::Label> title_ = nullptr;
 

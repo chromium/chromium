@@ -26,10 +26,12 @@ using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Not;
 
+constexpr int kPickerWidth = 320;
+
 using PickerZeroStateViewTest = AshTestBase;
 
 TEST_F(PickerZeroStateViewTest, CreatesExpressionsSection) {
-  PickerZeroStateView view(base::DoNothing());
+  PickerZeroStateView view(kPickerWidth, base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
               Contains(Key(PickerCategoryType::kExpressions)));
@@ -39,8 +41,8 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
-  auto* view = widget->SetContentsView(
-      std::make_unique<PickerZeroStateView>(future.GetRepeatingCallback()));
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      kPickerWidth, future.GetRepeatingCallback()));
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kExpressions)));
   ASSERT_THAT(view->section_views_for_testing()

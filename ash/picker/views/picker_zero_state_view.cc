@@ -29,7 +29,9 @@
 namespace ash {
 
 PickerZeroStateView::PickerZeroStateView(
-    SelectCategoryCallback select_category_callback) {
+    int picker_view_width,
+    SelectCategoryCallback select_category_callback)
+    : picker_view_width_(picker_view_width) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -55,7 +57,7 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
   }
 
   auto* section_view = AddChildView(std::make_unique<PickerSectionView>(
-      GetSectionTitleForPickerCategoryType(category_type)));
+      picker_view_width_, GetSectionTitleForPickerCategoryType(category_type)));
   section_views_.insert({category_type, section_view});
   return section_view;
 }

@@ -29,6 +29,7 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
 
   // `asset_fetcher` must remain valid for the lifetime of this class.
   explicit PickerSearchResultsView(
+      int picker_view_width,
       SelectSearchResultCallback select_search_result_callback,
       PickerAssetFetcher* asset_fetcher);
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
@@ -52,6 +53,9 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   // Adds a result item view to `section_view` based on what type `result` is.
   void AddResultToSection(const PickerSearchResult& result,
                           PickerSectionView* section_view);
+
+  // Width of the containing PickerView.
+  int picker_view_width_ = 0;
 
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;

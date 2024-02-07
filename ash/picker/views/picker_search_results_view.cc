@@ -32,9 +32,11 @@
 namespace ash {
 
 PickerSearchResultsView::PickerSearchResultsView(
+    int picker_view_width,
     SelectSearchResultCallback select_search_result_callback,
     PickerAssetFetcher* asset_fetcher)
-    : select_search_result_callback_(std::move(select_search_result_callback)),
+    : picker_view_width_(picker_view_width),
+      select_search_result_callback_(std::move(select_search_result_callback)),
       asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -49,8 +51,8 @@ void PickerSearchResultsView::SetSearchResults(
   section_views_.clear();
   RemoveAllChildViews();
   for (const auto& section : search_results_.sections()) {
-    auto* section_view =
-        AddChildView(std::make_unique<PickerSectionView>(section.heading()));
+    auto* section_view = AddChildView(std::make_unique<PickerSectionView>(
+        picker_view_width_, section.heading()));
     for (const auto& result : section.results()) {
       AddResultToSection(result, section_view);
     }

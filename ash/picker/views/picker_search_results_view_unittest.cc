@@ -30,6 +30,8 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 
+constexpr int kPickerWidth = 320;
+
 using PickerSearchResultsViewTest = AshTestBase;
 
 auto MatchesResultSection(const PickerSearchResults::Section& section) {
@@ -42,7 +44,7 @@ auto MatchesResultSection(const PickerSearchResults::Section& section) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{
       PickerSearchResults::Section(u"Section 1",
                                    {{PickerSearchResult::Text(u"Result A")}}),
@@ -61,7 +63,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
       u"Gif Section", {{PickerSearchResult::Gif(GURL(), gfx::Size())}})}});
   view.SetSearchResults(kSearchResults);
@@ -74,7 +76,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
 
 TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kInitialSearchResults({{
       PickerSearchResults::Section(u"Section",
                                    {{PickerSearchResult::Text(u"Result")}}),
@@ -110,7 +112,7 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), &asset_fetcher));
   view->SetSearchResults(PickerSearchResults({{
       PickerSearchResults::Section(u"section", {{test_case.result}}),
   }}));

@@ -17,6 +17,7 @@
 namespace ash {
 
 PickerCategoryView::PickerCategoryView(
+    int picker_view_width,
     PickerSearchResultsView::SelectSearchResultCallback
         select_search_result_callback,
     PickerAssetFetcher* asset_fetcher) {
@@ -24,7 +25,8 @@ PickerCategoryView::PickerCategoryView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   search_results_view_ = AddChildView(std::make_unique<PickerSearchResultsView>(
-      std::move(select_search_result_callback), asset_fetcher));
+      picker_view_width, std::move(select_search_result_callback),
+      asset_fetcher));
 }
 
 PickerCategoryView::~PickerCategoryView() = default;

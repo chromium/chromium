@@ -317,14 +317,17 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
 
   // `base::Unretained` is safe here because this class owns
   // `zero_state_view_`, `category_view_` and `search_results_view`_.
-  zero_state_view_ = contents_view_->AddPage(
-      std::make_unique<PickerZeroStateView>(base::BindRepeating(
-          &PickerView::SelectCategory, base::Unretained(this))));
+  zero_state_view_ =
+      contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
+          kPickerSize.width(), base::BindRepeating(&PickerView::SelectCategory,
+                                                   base::Unretained(this))));
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
+      kPickerSize.width(),
       base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),
       delegate_->GetAssetFetcher()));
   search_results_view_ =
       contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
+          kPickerSize.width(),
           base::BindOnce(&PickerView::SelectSearchResult,
                          base::Unretained(this)),
           delegate_->GetAssetFetcher()));
