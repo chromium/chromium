@@ -120,9 +120,8 @@ void RequestManager::SetTimeoutForTesting(const base::TimeDelta& timeout) {
 std::vector<int> RequestManager::GetActiveRequestIds() const {
   std::vector<int> result;
 
-  for (auto request_it = requests_.begin(); request_it != requests_.end();
-       ++request_it) {
-    result.push_back(request_it->first);
+  for (const auto& request : requests_) {
+    result.push_back(request.first);
   }
 
   return result;

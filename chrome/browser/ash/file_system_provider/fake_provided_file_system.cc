@@ -588,8 +588,8 @@ void FakeProvidedFileSystem::Abort(int task_id) {
 }
 
 void FakeProvidedFileSystem::AbortMany(const std::vector<int>& task_ids) {
-  for (size_t i = 0; i < task_ids.size(); ++i) {
-    tracker_.TryCancel(task_ids[i]);
+  for (int task_id : task_ids) {
+    tracker_.TryCancel(task_id);
   }
 }
 

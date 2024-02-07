@@ -290,8 +290,8 @@ std::vector<ProvidedFileSystemInfo> Service::GetProvidedFileSystemInfoList() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::vector<ProvidedFileSystemInfo> result;
-  for (auto it = file_system_map_.begin(); it != file_system_map_.end(); ++it) {
-    result.push_back(it->second->GetFileSystemInfo());
+  for (auto& it : file_system_map_) {
+    result.push_back(it.second->GetFileSystemInfo());
   }
   return result;
 }
