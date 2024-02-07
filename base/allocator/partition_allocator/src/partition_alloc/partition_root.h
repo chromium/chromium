@@ -911,6 +911,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
+  PA_ALWAYS_INLINE size_t ref_count_size() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    return settings.ref_count_size;
+#else
+    return 0;
+#endif
+  }
+
   static void SetBrpRefCountInSameSlot(bool ref_count_in_same_slot) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     ref_count_in_same_slot_ = ref_count_in_same_slot;
@@ -1234,7 +1242,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   // TODO(crbug.com/1511221): Memset entire slot in the "same slot" mode.
   // Ref-count isn't used once the slot is freed.
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
-              slot_span->GetUtilizedSlotSize() - kInSlotRefCountBufferSize);
+              slot_span->GetUtilizedSlotSize() - root->ref_count_size());
 #endif  // BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
 
   root->total_size_of_brp_quarantined_bytes.fetch_sub(
@@ -1626,9 +1634,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
   // TODO(crbug.com/1511221): Memset entire slot in the "same slot" mode.
   // Ref-count isn't used once the slot is freed.
-  internal::DebugMemset(
-      internal::SlotStartAddr2Ptr(slot_start), internal::kFreedByte,
-      slot_span->GetUtilizedSlotSize() - internal::kInSlotRefCountBufferSize);
+  internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
+                        internal::kFreedByte,
+                        slot_span->GetUtilizedSlotSize() - ref_count_size());
 #elif PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
@@ -1636,9 +1644,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
       !IsDirectMappedBucket(slot_span->bucket)) {
     // TODO(crbug.com/1511221): Memset entire slot in the "same slot" mode.
     // Ref-count isn't used once the slot is freed.
-    internal::SecureMemset(
-        internal::SlotStartAddr2Ptr(slot_start), 0,
-        slot_span->GetUtilizedSlotSize() - internal::kInSlotRefCountBufferSize);
+    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start), 0,
+                           slot_span->GetUtilizedSlotSize() - ref_count_size());
   }
 #endif  // PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
 
