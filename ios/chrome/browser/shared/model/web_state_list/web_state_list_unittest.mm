@@ -591,7 +591,7 @@ TEST_F(WebStateListTest, ReplaceActiveWebStateAt) {
 }
 
 // Tests detaching webstates at index 0.
-TEST_F(WebStateListTest, DetachWebStateAtIndexBegining) {
+TEST_F(WebStateListTest, DetachWebStateAtIndexBeginning) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
   AppendNewWebState(kURL2);
@@ -986,7 +986,7 @@ TEST_F(WebStateListTest, StartBatchOperation_IsBatchInProgress) {
 
 // Tests WebStates are pinned correctly while their order in the WebStateList
 // doesn't change.
-TEST_F(WebStateListTest, SetWebStatePinned_KeepingExisitingOrder) {
+TEST_F(WebStateListTest, SetWebStatePinned_KeepingExistingOrder) {
   EXPECT_TRUE(web_state_list_.empty());
 
   AppendNewWebState(kURL0);
