@@ -298,7 +298,9 @@ source_set("unit_tests") {
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
     "import_data_table_view_controller_unittest.mm",
-    "search_engine_table_view_controller_choice_screen_unittest.mm",
+    "search_engine_table_view_controller_eea_unittest.mm",
+    "search_engine_table_view_controller_non_eea_unittest.mm",
+    "search_engine_table_view_controller_unittest.h",
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",
     "settings_root_table_view_controller_unittest.mm",
