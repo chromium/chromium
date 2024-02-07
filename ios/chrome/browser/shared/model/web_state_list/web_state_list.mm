@@ -330,7 +330,7 @@ int WebStateList::SetWebStatePinnedAt(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
   auto lock = LockForMutation();
-  return SetWebStatePinnedImpl(index, pinned);
+  return SetWebStatePinnedAtImpl(index, pinned);
 }
 
 bool WebStateList::IsWebStatePinnedAt(int index) const {
@@ -729,34 +729,9 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   }
 }
 
-void WebStateList::AddObserver(WebStateListObserver* observer) {
+int WebStateList::SetWebStatePinnedAtImpl(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.AddObserver(observer);
-}
-
-void WebStateList::RemoveObserver(WebStateListObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.RemoveObserver(observer);
-}
-
-WebStateList::ScopedBatchOperation WebStateList::StartBatchOperation() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!batch_operation_in_progress_);
-  return ScopedBatchOperation(this);
-}
-
-void WebStateList::ClearOpenersReferencing(int index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web::WebState* old_web_state = web_state_wrappers_[index]->web_state();
-  for (auto& web_state_wrapper : web_state_wrappers_) {
-    if (web_state_wrapper->opener().opener == old_web_state) {
-      web_state_wrapper->SetOpener(WebStateOpener());
-    }
-  }
-}
-
-int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
   if (pinned == IsWebStatePinnedAt(index)) {
     // The pinned state is not changed, nothing to do.
     return index;
@@ -781,6 +756,32 @@ int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   MoveWebStateAtImpl(index, new_index, /*pinned_state_change=*/true);
 
   return new_index;
+}
+
+void WebStateList::AddObserver(WebStateListObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void WebStateList::RemoveObserver(WebStateListObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+WebStateList::ScopedBatchOperation WebStateList::StartBatchOperation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!batch_operation_in_progress_);
+  return ScopedBatchOperation(this);
+}
+
+void WebStateList::ClearOpenersReferencing(int index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  web::WebState* old_web_state = web_state_wrappers_[index]->web_state();
+  for (auto& web_state_wrapper : web_state_wrappers_) {
+    if (web_state_wrapper->opener().opener == old_web_state) {
+      web_state_wrapper->SetOpener(WebStateOpener());
+    }
+  }
 }
 
 int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {

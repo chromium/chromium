@@ -376,14 +376,16 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   void ActivateWebStateAtImpl(int index);
 
+  // Changes the pinned state of the WebState at `index`. Returns the index the
+  // WebState is now at (it may have been moved to maintain contiguity of pinned
+  // WebStates at the beginning of the list).
+  //
+  // Assumes that the WebStateList is locked.
+  int SetWebStatePinnedAtImpl(int index, bool pinned);
+
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
   void ClearOpenersReferencing(int index);
-
-  // Changes the pinned state of the WebState at `index`, moving the tab to the
-  // end of the pinned/unpinned section in the process if necessary. Returns
-  // the new index of the WebState.
-  int SetWebStatePinnedImpl(int index, bool pinned);
 
   // Verifies that WebState's insertion `index` is within the proper index
   // range. `pinned` WebStates `index` should be within the pinned WebStates
