@@ -27,21 +27,12 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/absl_check.h"
+#include "absl/status/status.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/formats/tensor/internal.h"
 #include "mediapipe/framework/memory_manager.h"
+// Exports MEDIAPIPE_TENSOR_USE_AHWB macro.
 #include "mediapipe/framework/port.h"
-
-// Supported use cases for tensor_ahwb:
-// 1. Native code running in Android apps.
-// 2. Android vendor processes linked against nativewindow.
-#if !defined(MEDIAPIPE_NO_JNI) || defined(MEDIAPIPE_ANDROID_LINK_NATIVE_WINDOW)
-#if __ANDROID_API__ >= 26 || defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
-#define MEDIAPIPE_TENSOR_USE_AHWB 1
-#endif  // __ANDROID_API__ >= 26 ||
-        // defined(__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__)
-#endif  // !defined(MEDIAPIPE_NO_JNI) ||
-        // defined(MEDIAPIPE_ANDROID_LINK_NATIVE_WINDOW)
 
 #ifdef MEDIAPIPE_TENSOR_USE_AHWB
 #include <EGL/egl.h>
@@ -416,7 +407,7 @@ class Tensor {
   // If the input parameter is 'true' then wait for the writing to be finished.
   mutable FinishingFunc ahwb_written_;
   mutable std::function<void()> release_callback_;
-  bool AllocateAHardwareBuffer(int size_alignment = 0) const;
+  absl::Status AllocateAHardwareBuffer(int size_alignment = 0) const;
   void CreateEglSyncAndFd() const;
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
   // Use Ahwb for other views: OpenGL / CPU buffer.
