@@ -30,6 +30,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
 #include "media/gpu/gles2_decoder_helper.h"
 #endif
 
@@ -331,8 +332,8 @@ class CommandBufferHelperImpl
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(sandersd): Merge GLES2DecoderHelper implementation into this class.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;
-#endif
   std::map<GLuint, std::unique_ptr<gpu::gles2::AbstractTexture>> textures_;
+#endif
 
   std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;
 
