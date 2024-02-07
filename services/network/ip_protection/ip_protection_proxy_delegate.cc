@@ -55,7 +55,11 @@ IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     NetworkServiceProxyAllowList* network_service_proxy_allow_list,
     std::unique_ptr<IpProtectionConfigCache> ipp_config_cache)
     : network_service_proxy_allow_list_(network_service_proxy_allow_list),
-      ipp_config_cache_(std::move(ipp_config_cache)) {}
+      ipp_config_cache_(std::move(ipp_config_cache)) {
+  CHECK(network_service_proxy_allow_list_);
+  CHECK(network_service_proxy_allow_list_->IsEnabled());
+  CHECK(ipp_config_cache_);
+}
 
 IpProtectionProxyDelegate::~IpProtectionProxyDelegate() = default;
 
@@ -158,16 +162,6 @@ IpProtectionProxyDelegate::CheckEligibility(
                                             : net::SchemefulSite())
              << ") - " << message;
   };
-  if (!network_service_proxy_allow_list_) {
-    // TODO(crbug.com/1523336): Replace with a CHECK
-    dvlog("no proxy allow list");
-    return ProtectionEligibility::kUnknown;
-  }
-  if (!network_service_proxy_allow_list_->IsEnabled()) {
-    // TODO(crbug.com/1523336): Remove or replace with a CHECK
-    dvlog("proxy allow list not enabled");
-    return ProtectionEligibility::kUnknown;
-  }
   if (!network_service_proxy_allow_list_->IsPopulated()) {
     dvlog("proxy allow list not populated");
     return ProtectionEligibility::kUnknown;
@@ -192,11 +186,6 @@ bool IpProtectionProxyDelegate::CheckAvailability(
                                             : net::SchemefulSite())
              << ") - " << message;
   };
-  if (!ipp_config_cache_) {
-    // TODO(crbug.com/1523336): Maybe replace with a CHECK
-    dvlog("no cache");
-    return false;
-  }
   const bool auth_tokens_are_available =
       ipp_config_cache_->AreAuthTokensAvailable();
   base::UmaHistogramBoolean(
@@ -229,7 +218,6 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
     base::UmaHistogramEnumeration(
         "NetworkService.IpProtection.ProxyChainFallback",
         ChainIdToEnum(bad_chain.ip_protection_chain_id()));
-    CHECK(ipp_config_cache_);
     ipp_config_cache_->RequestRefreshProxyList();
   }
 }
@@ -251,7 +239,6 @@ void IpProtectionProxyDelegate::OnBeforeTunnelRequest(
                                  base::StrCat({"Preshared ", proxy_b_psk}));
       }
     }
-    CHECK(ipp_config_cache_);
     std::optional<network::mojom::BlindSignedAuthTokenPtr> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {
@@ -280,7 +267,6 @@ void IpProtectionProxyDelegate::SetProxyResolutionService(
 
 void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  CHECK(ipp_config_cache_);
   auto* ipp_token_cache_manager_impl =
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache_
@@ -361,9 +347,6 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
 
 void IpProtectionProxyDelegate::
     InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
-  if (!ipp_config_cache_) {
-    return;
-  }
   ipp_config_cache_->InvalidateTryAgainAfterTime();
 }
 

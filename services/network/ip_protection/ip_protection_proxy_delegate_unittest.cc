@@ -189,18 +189,6 @@ class IpProtectionProxyDelegateTest : public testing::Test {
         network_service_proxy_allow_list, std::move(ipp_config_cache));
   }
 
-  std::unique_ptr<IpProtectionProxyDelegate> CreateDelegate(
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
-    return CreateDelegate(/*network_service_proxy_allow_list=*/nullptr,
-                          std::move(ipp_config_cache));
-  }
-
-  std::unique_ptr<IpProtectionProxyDelegate> CreateDelegate(
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list) {
-    return CreateDelegate(network_service_proxy_allow_list,
-                          /*ipp_config_cache=*/nullptr);
-  }
-
   std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
     return context_->CreateRequest(url, net::DEFAULT_PRIORITY, nullptr,
                                    TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -235,10 +223,13 @@ class IpProtectionProxyDelegateTest : public testing::Test {
 };
 
 TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
-  auto delegate = CreateDelegate(std::move(ipp_config_cache));
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
@@ -259,9 +250,12 @@ TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy, std::move(parameters));
 
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
-  auto delegate = CreateDelegate(std::move(ipp_config_cache));
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
@@ -488,33 +482,6 @@ TEST_F(
   histogram_tester_.ExpectTotalCount(kAvailabilityHistogram, 0);
 }
 
-// TODO(crbug.com/1523336): It doesn't make sense for there to be no config
-// cache unless the EnableIpPrivacyProxy feature is disabled. Update this test
-// to be more consistent with real world conditions.
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoConfigCache) {
-  std::map<std::string, std::set<std::string>> first_party_map;
-  first_party_map["example.com"] = {};
-  auto network_service_proxy_allow_list =
-      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
-  auto delegate = CreateDelegate(&network_service_proxy_allow_list);
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl),
-                           net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("https://top.com"))),
-                           "GET", net::ProxyRetryInfoMap(), &result);
-
-  EXPECT_TRUE(result.is_direct());
-  EXPECT_FALSE(result.is_for_ip_protection());
-  histogram_tester_.ExpectUniqueSample(
-      kEligibilityHistogram,
-      IpProtectionProxyDelegate::ProtectionEligibility::kEligible, 1);
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kIsProxyListAvailableHistogram, 0);
-  histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, false, 1);
-}
-
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken) {
   std::map<std::string, std::set<std::string>> first_party_map;
   first_party_map["example.com"] = {};
@@ -572,42 +539,6 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoProxyList) {
   histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, false,
                                        1);
   histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, false, 1);
-}
-
-// TODO(crbug.com/1523336): It doesn't make sense for a
-// IpProtectionProxyDelegate to be instantiated with a disabled allowlist
-// (kMaskedDomainList feature disabled) since the migration out of
-// NetworkServiceDelegate. Update or remove this test.
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_AllowListDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {net::features::kEnableIpProtectionProxy,
-                                        network::features::kMaskedDomainList});
-  std::map<std::string, std::set<std::string>> first_party_map;
-  first_party_map["example.com"] = {};
-  auto network_service_proxy_allow_list =
-      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxy"})});
-  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
-                                 std::move(ipp_config_cache));
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl),
-                           net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("https://top.com"))),
-                           "GET", net::ProxyRetryInfoMap(), &result);
-
-  EXPECT_TRUE(result.is_direct());
-  EXPECT_FALSE(result.is_for_ip_protection());
-  histogram_tester_.ExpectUniqueSample(
-      kEligibilityHistogram,
-      IpProtectionProxyDelegate::ProtectionEligibility::kUnknown, 1);
-  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kIsProxyListAvailableHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kAvailabilityHistogram, 0);
 }
 
 // When URLs do not match the allow list, the result is direct and not flagged
@@ -778,10 +709,13 @@ TEST_F(IpProtectionProxyDelegateTest, OnFallback) {
       kChainId);
   bool force_refresh_called = false;
 
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { force_refresh_called = true; }));
-  auto delegate = CreateDelegate(std::move(ipp_config_cache));
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
 
   delegate->OnFallback(ip_protection_proxy_chain, net::ERR_FAILED);
   EXPECT_TRUE(force_refresh_called);
@@ -833,10 +767,13 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
 TEST_F(IpProtectionProxyDelegateTest, InvalidateTryAgainAfterTime) {
   bool invalidated = false;
 
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetOnInvalidateTryAgainAfterTime(
       base::BindLambdaForTesting([&]() { invalidated = true; }));
-  auto delegate = CreateDelegate(std::move(ipp_config_cache));
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
   delegate->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
   EXPECT_TRUE(invalidated);
 }
