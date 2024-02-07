@@ -179,7 +179,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<views::View> live_translate_container_ = nullptr;
   raw_ptr<views::View> live_translate_label_wrapper_ = nullptr;
   raw_ptr<views::Label> live_translate_title_ = nullptr;
-  raw_ptr<views::Label> live_translate_subtitle_ = nullptr;
   raw_ptr<views::ToggleButton> live_translate_button_ = nullptr;
   raw_ptr<views::View> live_translate_settings_container_ = nullptr;
 

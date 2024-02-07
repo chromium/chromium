@@ -275,8 +275,6 @@ void MediaDialogView::UpdateBubbleSize() {
     live_translate_container_->SetPreferredSize(
         gfx::Size(width, live_translate_height));
 
-    live_translate_subtitle_->SetTextStyle(views::style::STYLE_SECONDARY);
-
     live_translate_label_wrapper_->SetPreferredSize(gfx::Size(
         width, live_translate_label_wrapper_->GetPreferredSize().height()));
 
@@ -584,14 +582,6 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   live_translate_title->SetMultiLine(true);
   live_translate_title_ = live_translate_label_wrapper->AddChildView(
       std::move(live_translate_title));
-
-  auto live_translate_subtitle =
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_SUBTITLE));
-  live_translate_subtitle->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  live_translate_subtitle_ = live_translate_label_wrapper->AddChildView(
-      std::move(live_translate_subtitle));
 
   live_translate_label_wrapper_ = live_translate_container->AddChildView(
       std::move(live_translate_label_wrapper));
