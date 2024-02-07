@@ -1688,6 +1688,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.GridTabSwitcher.TimeToTabStateInitializedFromShown"
+    units="ms" expires_after="2024-06-30">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the elapsed realtime in milliseconds between the tab switcher being
+    shown and the tab state being initialized. This is not recorded if the tab
+    state was already initialized. Recorded at most once per session once the
+    tab state is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Android.HistoryPage.ClearBrowsingData.PerProfileType"
     enum="BrowserProfileType" expires_after="2024-06-30">
   <owner>roagarwal@chromium.org</owner>

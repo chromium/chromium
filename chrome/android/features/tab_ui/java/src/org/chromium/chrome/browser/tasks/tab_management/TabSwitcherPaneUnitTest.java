@@ -45,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -118,6 +119,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabModel = new MockTabModel(mProfile, null);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
 
         Supplier<Boolean> gridDialogVisibilitySupplier = () -> false;
         when(mTabSwitcherPaneCoordinator.getTabSwitcherCustomViewManagerDelegate())
@@ -254,6 +256,33 @@ public class TabSwitcherPaneUnitTest {
         assertNotNull(coordinator);
         verify(coordinator).softCleanup();
         verify(coordinator, never()).hardCleanup();
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadHintColdHot_TabStateNotInitialized() {
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(false);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).resetWithTabList(mTabModelFilter);
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown");
+        mTabSwitcherPane.showAllTabs();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        watcher.assertExpected();
     }
 
     @Test

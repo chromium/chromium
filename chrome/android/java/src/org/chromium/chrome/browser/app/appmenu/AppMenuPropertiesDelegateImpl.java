@@ -614,6 +614,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         boolean isMenuSelectTabsEnabled =
                 !isIncognitoReauthShowing
                         && isMenuSelectTabsVisible
+                        && mTabModelSelector.isTabStateInitialized()
                         && mTabModelSelector
                                         .getTabModelFilterProvider()
                                         .getCurrentTabModelFilter()

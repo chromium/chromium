@@ -44,6 +44,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -105,6 +106,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         anyBoolean());
 
         when(mTabModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
 
         mIncognitoTabSwitcherPane =
                 new IncognitoTabSwitcherPane(
@@ -291,6 +293,34 @@ public class IncognitoTabSwitcherPaneUnitTest {
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         mIncognitoTabSwitcherPane.showAllTabs();
         verify(coordinator).resetWithTabList(mTabModelFilter);
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadHintColdHot_TabStateNotInitialized() {
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(false);
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).resetWithTabList(mTabModelFilter);
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown");
+        mIncognitoTabSwitcherPane.showAllTabs();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        watcher.assertExpected();
     }
 
     @Test
