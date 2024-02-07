@@ -4888,7 +4888,7 @@ message DeviceManagementResponse {
   // Response to a Chrome Profile report request.
   optional ChromeProfileReportResponse chrome_profile_report_response = 38;
 
-// Response to a token-based register request.
+  // Response to a token-based register request.
   optional TokenBasedDeviceRegisterResponse
       token_based_device_register_response = 40;
 
