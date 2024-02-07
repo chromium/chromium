@@ -1600,6 +1600,11 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
+    content::RenderFrameHost* render_frame_host) {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
   return false;

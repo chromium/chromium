@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -592,12 +593,14 @@ void LocalFrameClientImpl::BeginNavigation(
       base::OptionalFromPtr(initiator_frame_token);
   navigation_info->initiator_policy_container_keep_alive_handle =
       std::move(initiator_policy_container_keep_alive_handle);
-  if (origin_window && origin_window->GetFrame()) {
+  LocalFrame* origin_frame =
+      origin_window ? origin_window->GetFrame() : nullptr;
+  if (origin_frame) {
     // Many navigation paths do not pass an |initiator_frame_token|, so we need
     // to compute it here.
     if (!navigation_info->initiator_frame_token) {
       navigation_info->initiator_frame_token =
-          origin_window->GetFrame()->GetLocalFrameToken();
+          origin_frame->GetLocalFrameToken();
     }
     // Similarly, many navigation paths do not pass an
     // |initiator_policy_container_keep_alive_handle|.
@@ -614,6 +617,14 @@ void LocalFrameClientImpl::BeginNavigation(
 
   navigation_info->impression = impression;
   navigation_info->is_fullscreen_requested = is_fullscreen_requested;
+  // TODO(crbug.com/1142516): Enforce requirements here, before IPC to browser?
+  if (is_fullscreen_requested && !request.HasUserGesture() && origin_frame &&
+      origin_frame->GetSettings() &&
+      !origin_frame->GetSettings()
+           ->GetRequireTransientActivationForHtmlFullscreen()) {
+    UseCounter::Count(origin_frame->GetDocument(),
+                      WebFeature::kFullscreenAllowedByContentSetting);
+  }
 
   // Allow cookie access via Storage Access API during the navigation, if the
   // initiator has obtained storage access. Note that the network service still
@@ -646,15 +657,14 @@ void LocalFrameClientImpl::BeginNavigation(
   if (form)
     navigation_info->form = WebFormElement(form);
 
-  LocalFrame* frame = origin_window ? origin_window->GetFrame() : nullptr;
-  if (frame) {
+  if (origin_frame) {
     navigation_info->is_opener_navigation =
-        frame->Opener() == ToCoreFrame(web_frame_);
+        origin_frame->Opener() == ToCoreFrame(web_frame_);
     navigation_info->initiator_frame_has_download_sandbox_flag =
         origin_window->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::kDownloads);
-    navigation_info->initiator_frame_is_ad = frame->IsAdFrame();
-    navigation_info->is_ad_script_in_stack = frame->IsAdScriptInStack();
+    navigation_info->initiator_frame_is_ad = origin_frame->IsAdFrame();
+    navigation_info->is_ad_script_in_stack = origin_frame->IsAdScriptInStack();
   }
 
   // The frame has navigated either by itself or by the action of the

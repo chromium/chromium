@@ -953,6 +953,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       content::WebContents* web_contents) override;
 
+  bool IsTransientActivationRequiredForHtmlFullscreen(
+      content::RenderFrameHost* render_frame_host) override;
+
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
 
   std::unique_ptr<content::ResponsivenessCalculatorDelegate>

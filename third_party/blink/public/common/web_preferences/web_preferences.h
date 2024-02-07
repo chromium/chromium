@@ -296,12 +296,16 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // `getDisplayMedia()`'s transient activation requirement can be bypassed via
   // `ScreenCaptureWithoutGestureAllowedForOrigins` policy.
-  bool require_transient_activation_for_get_display_media;
+  bool require_transient_activation_for_get_display_media = true;
 
   // `show{OpenFile|SaveFile|Directory}Picker()`'s transient activation
   // requirement can be bypassed via
   // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
-  bool require_transient_activation_for_show_file_or_directory_picker;
+  bool require_transient_activation_for_show_file_or_directory_picker = true;
+
+  // HTML Fullscreen (e.g. `Element.requestFullscreen()`) transient activation
+  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
+  bool require_transient_activation_for_html_fullscreen = true;
 
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme

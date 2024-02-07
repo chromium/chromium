@@ -9276,11 +9276,13 @@ void RenderFrameHostImpl::BeginNavigation(
                   initiator_process_id,
                   begin_params->initiator_frame_token.value())
             : nullptr;
-    // The initiator must have window-management permission, permission
-    // policy and `fullscreen` permission policy granted and the navigation must
-    // be from a user gesture, otherwise the fullscreen bit is dropped.
+    // The initiator needs window-management permission, window-management and
+    // fullscreen permission policies, and a user gesture or other allowance,
+    // otherwise the fullscreen bit is dropped.
     if (!initiator_render_frame_host ||
-        !validated_common_params->has_user_gesture ||
+        !(validated_common_params->has_user_gesture ||
+          !initiator_render_frame_host->delegate_
+               ->IsTransientActivationRequiredForHtmlFullscreen()) ||
         !IsWindowManagementGranted(initiator_render_frame_host) ||
         !initiator_render_frame_host->permissions_policy()->IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kFullscreen) ||

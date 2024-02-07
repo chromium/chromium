@@ -137,6 +137,7 @@ ContentSettingsType kPermissionType[] = {
 #if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
 #endif  // !BUILDFLAG(IS_ANDROID)
+    ContentSettingsType::AUTOMATIC_FULLSCREEN,
 };
 
 // The list of setting types which request permission for a pair of requesting
@@ -1252,6 +1253,12 @@ bool PageInfo::ShouldShowPermission(
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (info.type == ContentSettingsType::AUTOMATIC_FULLSCREEN &&
+      !base::FeatureList::IsEnabled(
+          features::kAutomaticFullscreenContentSetting)) {
+    return false;
+  }
 
   const bool is_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();

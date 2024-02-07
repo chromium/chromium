@@ -22,6 +22,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS_MID_SENTENCE" desc="The label used for the automatic downloads site settings controls when used mid-sentence.">
     automatic downloads
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN" desc="The label used for the automatic fullscreen site settings controls.">
+    Automatic fullscreen
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN_MID_SENTENCE" desc="The label used for the automatic fullscreen site settings controls when used mid-sentence.">
+    automatic fullscreen
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE" desc="The label used for the auto-picture-in-picture site settings controls.">
     Automatic picture-in-picture
   </message>

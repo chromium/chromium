@@ -387,6 +387,10 @@ enum ContentSettingsType {
   // Content settings for access to printers for the Web Printing API.
   WEB_PRINTING,
 
+  // Content setting used to indicate whether entering HTML Fullscreen
+  // automatically (i.e. without transient activation) should be enabled.
+  AUTOMATIC_FULLSCREEN,
+
   NUM_TYPES,
 };
 

@@ -505,6 +505,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
       icon = &vector_icons::kPictureInPictureIcon;
       break;
+    case ContentSettingsType::AUTOMATIC_FULLSCREEN:
+      icon = &kFullscreenIcon;
+      break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.

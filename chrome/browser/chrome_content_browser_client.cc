@@ -208,6 +208,7 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/private_network_settings.h"
@@ -4139,6 +4140,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
+  web_prefs->require_transient_activation_for_html_fullscreen =
+      IsTransientActivationRequiredForHtmlFullscreen(
+          web_contents->GetPrimaryMainFrame());
 
   switch (GetWebTheme()->GetPreferredContrast()) {
     case ui::NativeTheme::PreferredContrast::kNoPreference:
@@ -4243,6 +4247,14 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
+  const bool require_transient_activation_for_html_fullscreen =
+      IsTransientActivationRequiredForHtmlFullscreen(
+          web_contents->GetPrimaryMainFrame());
+  prefs_changed |=
+      (web_prefs->require_transient_activation_for_html_fullscreen !=
+       require_transient_activation_for_html_fullscreen);
+  web_prefs->require_transient_activation_for_html_fullscreen =
+      require_transient_activation_for_html_fullscreen;
 
   for (auto& parts : extra_parts_) {
     prefs_changed |=
@@ -7935,6 +7947,24 @@ bool ChromeContentBrowserClient::
 #else   // !BUILDFLAG(IS_ANDROID)
   return true;
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+bool ChromeContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
+    content::RenderFrameHost* render_frame_host) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutomaticFullscreenContentSetting)) {
+    const GURL& url = render_frame_host->GetLastCommittedURL();
+    const HostContentSettingsMap* const content_settings =
+        HostContentSettingsMapFactory::GetForProfile(
+            render_frame_host->GetBrowserContext());
+    if (content_settings->GetContentSetting(
+            url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) ==
+        CONTENT_SETTING_ALLOW) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 #if BUILDFLAG(IS_MAC)

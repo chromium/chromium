@@ -208,6 +208,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::STORAGE_ACCESS,
        IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS,
        IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
+      {ContentSettingsType::AUTOMATIC_FULLSCREEN,
+       IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN,
+       IDS_SITE_SETTINGS_TYPE_AUTOMATIC_FULLSCREEN_MID_SENTENCE},
 #if !BUILDFLAG(IS_ANDROID)
       // Page Info Permissions that are not defined in Android.
       {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,

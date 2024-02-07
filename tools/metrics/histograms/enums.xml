@@ -3587,6 +3587,7 @@ Called by update_net_error_codes.py.-->
   <int value="113" label="Smart Card data"/>
   <int value="114" label="Web Printing"/>
   <int value="115" label="Top-level 3PCD Trial"/>
+  <int value="116" label="Automatic Fullscreen"/>
 </enum>
 
 <enum name="ContextMenuOptionAndroid">
@@ -11277,6 +11278,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4831" label="SpeculationRulesBrowserPrefetchRule"/>
   <int value="4832" label="SpeculationRulesBrowserPrerenderRule"/>
   <int value="4833" label="FirstPartySharedWorkerSameSiteCookiesNone"/>
+  <int value="4834" label="CSSCustomStateDeprecatedSyntax"/>
+  <int value="4835" label="FullscreenAllowedByContentSetting"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

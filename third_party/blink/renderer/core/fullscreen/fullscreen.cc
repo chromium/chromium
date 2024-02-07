@@ -389,6 +389,14 @@ bool AllowedToRequestFullscreen(Document& document) {
     return true;
   }
 
+  // The document is configured to allow "Automatic Fullscreen" requests,
+  // waiving the user gesture requirement.
+  if (!document.GetSettings()
+           ->GetRequireTransientActivationForHtmlFullscreen()) {
+    UseCounter::Count(document, WebFeature::kFullscreenAllowedByContentSetting);
+    return true;
+  }
+
   String message = ExceptionMessages::FailedToExecute(
       "requestFullscreen", "Element",
       "API can only be initiated by a user gesture.");

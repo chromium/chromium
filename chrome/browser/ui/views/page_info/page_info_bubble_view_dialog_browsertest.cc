@@ -467,8 +467,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_AllowAllPermissions) {
-  // Last updated in crrev.com/c/5238182.
-  set_baseline("5238182");
+  // Last updated in crrev.com/c/5053508.
+  set_baseline("5053508");
   ShowAndVerifyUi();
 }
 
@@ -476,8 +476,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
-  // Last updated in crrev.com/c/5238182.
-  set_baseline("5238182");
+  // Last updated in crrev.com/c/5053508.
+  set_baseline("5053508");
   ShowAndVerifyUi();
 }
 
