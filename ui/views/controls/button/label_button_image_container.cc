@@ -12,21 +12,23 @@ namespace views {
 std::unique_ptr<View> SingleImageContainer::CreateView() {
   std::unique_ptr<ImageView> view = std::make_unique<ImageView>();
   view->SetCanProcessEventsWithinSubtree(false);
-  image_ = view.get();
+  image_view_tracker_.SetView(view.get());
   return view;
 }
 
 View* SingleImageContainer::GetView() {
-  return image_;
+  return image_view_tracker_.view();
 }
 
 const View* SingleImageContainer::GetView() const {
-  return image_;
+  return image_view_tracker_.view();
 }
 
 void SingleImageContainer::UpdateImage(const LabelButton* button) {
-  image_->SetImage(ui::ImageModel::FromImageSkia(
-      button->GetImage(button->GetVisualState())));
+  if (auto* view = image_view_tracker_.view(); view) {
+    static_cast<ImageView*>(view)->SetImage(ui::ImageModel::FromImageSkia(
+        button->GetImage(button->GetVisualState())));
+  }
 }
 
 }  // namespace views

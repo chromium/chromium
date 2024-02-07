@@ -23,7 +23,7 @@ std::unique_ptr<views::View> MultiImageContainer::CreateView() {
   image->SetCanProcessEventsWithinSubtree(false);
   images_.push_back(image);
 
-  view_ = view_container.get();
+  view_tracker_.SetView(view_container.get());
   return view_container;
 }
 
@@ -41,46 +41,43 @@ void MultiImageContainer::SetImages(
 }
 
 void MultiImageContainer::AddExtraImages(const size_t number_of_images) {
-  if (!view_) {
-    return;
-  }
-
-  for (size_t i = images_.size(); i < number_of_images; i++) {
-    auto* image = view_->AddChildView(std::make_unique<views::ImageView>());
-    image->SetCanProcessEventsWithinSubtree(false);
-    images_.push_back(image);
+  if (auto* view = view_tracker_.view(); view) {
+    for (size_t i = images_.size(); i < number_of_images; i++) {
+      auto* image = view->AddChildView(std::make_unique<views::ImageView>());
+      image->SetCanProcessEventsWithinSubtree(false);
+      images_.push_back(image);
+    }
   }
 }
 
 void MultiImageContainer::RemoveExtraImages(const size_t number_of_images) {
-  if (!view_) {
-    return;
+  if (auto* view = view_tracker_.view(); view) {
+    for (size_t i = images_.size() - 1; i >= number_of_images; i--) {
+      view->RemoveChildViewT(std::exchange(images_[i], nullptr));
+    }
+    images_.resize(number_of_images);
   }
-
-  for (size_t i = images_.size() - 1; i >= number_of_images; i--) {
-    view_->RemoveChildViewT(std::exchange(images_[i], nullptr));
-  }
-  images_.resize(number_of_images);
 }
 
 void MultiImageContainer::SetImage(size_t index,
                                    const ui::ImageModel& image_model) {
-  SetImage(index, image_model.Rasterize(view_->GetColorProvider()));
+  if (auto* view = view_tracker_.view(); view) {
+    SetImage(index, image_model.Rasterize(view->GetColorProvider()));
+  }
 }
 
-void MultiImageContainer::SetImage(size_t index,
-                                   const gfx::ImageSkia& image_skia) {
+void MultiImageContainer::SetImage(size_t index, const gfx::ImageSkia& image) {
   if (index < images_.size()) {
-    images_[index]->SetImage(ui::ImageModel::FromImageSkia(image_skia));
+    images_[index]->SetImage(ui::ImageModel::FromImageSkia(image));
   }
 }
 
 views::View* MultiImageContainer::GetView() {
-  return view_;
+  return view_tracker_.view();
 }
 
 const views::View* MultiImageContainer::GetView() const {
-  return view_;
+  return view_tracker_.view();
 }
 
 void MultiImageContainer::UpdateImage(const views::LabelButton* button) {
