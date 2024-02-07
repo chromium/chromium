@@ -387,7 +387,9 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
       tracing_session_host_->DisableTracing();
   }
 
-  void Flush(uint32_t timeout_ms, FlushCallback callback) override {
+  void Flush(uint32_t timeout_ms,
+             FlushCallback callback,
+             perfetto::FlushFlags) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement flushing.
     NOTREACHED();
