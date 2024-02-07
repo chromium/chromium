@@ -275,8 +275,6 @@
     "Win x64 Builder (reclient)": "ci/Win x64 Builder (reclient)/gn-args.json",
     "android-fieldtrial-rel": "ci/android-fieldtrial-rel/gn-args.json",
     "android-perfetto-rel": "ci/android-perfetto-rel/gn-args.json",
-    "chromeos-amd64-generic-rel (reclient compare)": "ci/chromeos-amd64-generic-rel (reclient compare)/gn-args.json",
-    "chromeos-amd64-generic-rel (reclient)": "ci/chromeos-amd64-generic-rel (reclient)/gn-args.json",
     "chromeos-jacuzzi-rel-skylab-fyi": "ci/chromeos-jacuzzi-rel-skylab-fyi/gn-args.json",
     "chromeos-octopus-rel-skylab-fyi": "ci/chromeos-octopus-rel-skylab-fyi/gn-args.json",
     "ios-blink-dbg-fyi": "ci/ios-blink-dbg-fyi/gn-args.json",

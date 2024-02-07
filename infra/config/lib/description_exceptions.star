@@ -339,7 +339,6 @@ exempted_from_description_builders = {
         "chromeos-amd64-generic-cfi-thin-lto-rel",
         "chromeos-amd64-generic-dbg",
         "chromeos-amd64-generic-lacros-dbg",
-        "chromeos-amd64-generic-rel (reclient)",
         "chromeos-amd64-generic-rel",
         "chromeos-arm-generic-dbg",
         "chromeos-arm-generic-rel",
