@@ -197,25 +197,6 @@ void ScrollingContentsToBorderBoxSpace(const LayoutBox* box, gfx::RectF& rect) {
   rect.Offset(-scrollable_area->ScrollPosition().OffsetFromOrigin());
 }
 
-bool ClipsSelf(const LayoutObject& object) {
-  return object.HasClip() || object.HasClipPath() || object.HasMask() ||
-         // For simplicity, assume all SVG children clip self (with e.g.
-         // SVG mask).
-         object.IsSVGChild();
-}
-
-bool ClipsContents(const LayoutObject& object, bool has_target_margin) {
-  // An objects that clips itself also clips contents.
-  if (ClipsSelf(object)) {
-    return true;
-  }
-  if (object.ShouldClipOverflowAlongEitherAxis()) {
-    // Clippers that don't actually clip anything are ignored.
-    return has_target_margin || To<LayoutBox>(object).HasScrollableOverflow();
-  }
-  return false;
-}
-
 static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldReportRootBounds |
     IntersectionGeometry::kShouldComputeVisibility |
@@ -433,9 +414,6 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   const LayoutObject* previous_container = nullptr;
   const LayoutObject* container = target;
   bool have_crossed_frame_boundary = false;
-  if (ClipsSelf(*target)) {
-    has_intermediate_clippers = true;
-  }
   while (container != root) {
     has_filter |=
         !have_crossed_frame_boundary && container->HasFilterInducingProperty();
@@ -481,8 +459,11 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
       continue;
     }
 
-    if (!has_intermediate_clippers && !have_crossed_frame_boundary &&
-        container != root && ClipsContents(*container, has_target_margin)) {
+    if (container != root && container->ShouldClipOverflowAlongEitherAxis() &&
+        // Clippers that don't actually clip anything are ignored.
+        (To<LayoutBox>(container)->HasScrollableOverflow() ||
+         has_target_margin) &&
+        !have_crossed_frame_boundary) {
       has_intermediate_clippers = true;
     }
 
@@ -502,9 +483,7 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     root_scrolls_target = root->IsScrollContainer();
   }
 
-  if (have_crossed_frame_boundary) {
-    DCHECK_EQ(relationship, kTargetInSubFrame);
-  } else if (has_intermediate_clippers) {
+  if (has_intermediate_clippers) {
     relationship = kHasIntermediateClippers;
   } else if (root_scrolls_target) {
     relationship = kScrollableByRootOnly;
