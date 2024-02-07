@@ -407,7 +407,7 @@ bool StatisticsProviderImpl::WaitForStatisticsLoaded() {
   // Block if the statistics are not loaded yet. Normally this shouldn't
   // happen except during OOBE.
   base::Time start_time = base::Time::Now();
-  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   statistics_loaded_.TimedWait(kLoadTimeout);
 
   base::TimeDelta dtime = base::Time::Now() - start_time;

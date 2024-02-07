@@ -788,8 +788,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   // Usage that should be fixed:
   // Sorted by class name (with namespace).
   friend class ::NativeBackendKWallet;  // http://crbug.com/125331
-  friend class ::ash::system::
-      StatisticsProviderImpl;                      // http://crbug.com/125385
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
 
   ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
@@ -867,6 +865,7 @@ class BASE_EXPORT
   friend class vr::VrShell;
 
   // Usage that should be fixed:
+  friend class ::ash::system::StatisticsProviderImpl;  // http://b/261818124
   friend class ::chromeos::BlockingMethodCaller;  // http://crbug.com/125360
   friend class base::Thread;                      // http://crbug.com/918039
   friend class cc::CompletionEvent;               // http://crbug.com/902653
