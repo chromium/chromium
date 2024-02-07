@@ -20,6 +20,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/translate/content/android/translate_message.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
@@ -135,6 +136,12 @@ TEST_F(TranslateManagerRenderViewHostAndroidTest,
   if (TranslateService::IsTranslateBubbleEnabled())
     return;
 
+  // TODO: https://crbug.com/40213244 - update this test to work with
+  // Translate Message UI when removing this feature flag.
+  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
+    return;
+  }
+
   GURL url("http://www.google.com");
   // We should not have a translate infobar.
   ASSERT_TRUE(GetTranslateInfoBar() == NULL);
@@ -154,6 +161,12 @@ TEST_F(TranslateManagerRenderViewHostAndroidTest,
   // languages moved out of the Infobar into the TranslateManager.
   if (TranslateService::IsTranslateBubbleEnabled())
     return;
+
+  // TODO: https://crbug.com/40213244 - update this test to work with
+  // Translate Message UI when removing this feature flag.
+  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
+    return;
+  }
 
   GURL url("http://www.google.com");
   // We should not have a translate infobar.

@@ -19070,22 +19070,6 @@
             ]
         }
     ],
-    "TranslateMessageUI": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentLanguagesInLanguagePicker",
-                        "TranslateMessageUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [

@@ -124,7 +124,7 @@ base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
 // Features
 BASE_FEATURE(kTranslateMessageUI,
              "TranslateMessageUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Params
 const char kTranslateMessageUISnackbarParam[] = "use_snackbar";
 
