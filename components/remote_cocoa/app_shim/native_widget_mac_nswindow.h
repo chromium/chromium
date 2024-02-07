@@ -70,6 +70,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // screen bounds.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
 
+// Is the window a part of a browser window tree that is currently in an
+// immersive fullscreen session.
+- (BOOL)immersiveFullscreen;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.

@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -410,6 +411,18 @@ void SelectFileDialogBridge::Show(
   // Ensure that |callback| (rather than |this|) be retained by the block.
   auto ended_callback = base::BindRepeating(
       &SelectFileDialogBridge::OnPanelEnded, weak_factory_.GetWeakPtr());
+
+  // If the owning_window_ widget is currently in an immersive fullscreen
+  // session, add then remove the panel as a child. Otherwise the following
+  // -beginSheetModalForWindow:completionHandler: call will place the panel
+  // z-order behind the owning widget. See http://crbug/40282144.
+  NativeWidgetMacNSWindow* owning_window_widget =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(owning_window_);
+  if (owning_window_widget && [owning_window_widget immersiveFullscreen]) {
+    [owning_window_ addChildWindow:panel_ ordered:NSWindowAbove];
+    [owning_window_ removeChildWindow:panel_];
+  }
+
   [panel_ beginSheetModalForWindow:owning_window_
                  completionHandler:^(NSInteger result) {
                    ended_callback.Run(result != NSModalResponseOK);
