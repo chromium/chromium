@@ -85,16 +85,12 @@ namespace policy {
 class POLICY_EXPORT EncryptedReportingJobConfiguration
     : public ReportingJobConfigurationBase {
  public:
-  using UploadResponseCallback =
-      base::OnceCallback<void(int /*net_error*/, int /*response_code*/)>;
-
   EncryptedReportingJobConfiguration(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       DMAuth auth_data,
       const std::string& server_url,
       base::Value::Dict merging_payload,
       CloudPolicyClient* cloud_policy_client,
-      UploadResponseCallback response_cb,
       UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;
 
@@ -105,11 +101,25 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   // fields (check reporting::GetContext for specifics).
   void UpdateContext(base::Value::Dict context);
 
+  // Checks the new job against the history, determines how soon the upload will
+  // be allowed. Returns positive value if not allowed, and 0 or negative
+  // otherwise.
+  base::TimeDelta WhenIsAllowedToProceed() const;
+
+  // Account for the job, that was allowed to proceed.
+  void AccountForAllowedJob();
+
+  // Cancels the job, that was not allowed to proceed.
+  void CancelNotAllowedJob();
+
   // Callback to process error codes and, in case of success, response body.
   void OnURLLoadComplete(DeviceManagementService::Job* job,
                          int net_error,
                          int response_code,
                          const std::string& response_body) override;
+
+  // Test-only method that resets collected uploads state.
+  static void ResetUploadsStateForTest();
 
  protected:
   void UpdatePayloadBeforeGetInternal() override;
@@ -125,7 +135,11 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   static const base::flat_set<std::string>& GetTopLevelKeyAllowList();
   const bool is_device_managed_;
 
-  UploadResponseCallback response_cb_;
+  // Parameters populated from the payload_.
+  ::reporting::Priority priority_;
+  int64_t generation_id_{-1};
+  int64_t sequence_id_{-1};
+  size_t record_count_{0u};
 };
 
 }  // namespace policy

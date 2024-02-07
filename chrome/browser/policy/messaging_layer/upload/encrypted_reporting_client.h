@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -117,20 +116,7 @@ class EncryptedReportingClient {
                     policy::CloudPolicyClient* cloud_policy_client,
                     ResponseCallback callback);
 
-  // Test-only method that resets collected uploads state.
-  static void ResetUploadsStateForTest();
-
  private:
-  friend class EncryptedReportingClientTest;
-  FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
-                           IdenticalUploadRetriesThrottled);
-  FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
-                           UploadsSequenceThrottled);
-  FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
-                           SecurityUploadsSequenceNotThrottled);
-  FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
-                           FailedUploadsSequenceThrottled);
-
   using JobSet =
       base::flat_set<std::unique_ptr<policy::DeviceManagementService::Job>,
                      base::UniquePtrComparator>;
@@ -143,14 +129,11 @@ class EncryptedReportingClient {
   // `payload_result` (`nullopt` if there was an error). Calls `callback` once
   // the job has been responded or if an error has been detected, and releases
   // `scoped_reservation`.
-  void CreateUploadJob(
-      std::optional<base::Value::Dict> context,
-      policy::CloudPolicyClient* cloud_policy_client,
-      policy::EncryptedReportingJobConfiguration::UploadResponseCallback
-          response_cb,
-      ResponseCallback callback,
-      std::optional<base::Value::Dict> payload_result,
-      ScopedReservation scoped_reservation);
+  void CreateUploadJob(std::optional<base::Value::Dict> context,
+                       policy::CloudPolicyClient* cloud_policy_client,
+                       ResponseCallback callback,
+                       std::optional<base::Value::Dict> payload_result,
+                       ScopedReservation scoped_reservation);
 
   // Callback for encrypted report upload requests.
   void OnReportUploadCompleted(ScopedReservation scoped_reservation,
@@ -162,22 +145,6 @@ class EncryptedReportingClient {
                                policy::DeviceManagementStatus status,
                                int response_code,
                                std::optional<base::Value::Dict> response);
-
-  // Checks the new job against the history, determines how soon the upload will
-  // be allowed. Returns positive value if not allowed, and 0 or negative
-  // otherwise.
-  static base::TimeDelta WhenIsAllowedToProceed(
-      const std::vector<EncryptedRecord>& records);
-
-  // Account for the job, that was allowed to proceed.
-  static void AccountForAllowedJob(const std::vector<EncryptedRecord>& records);
-
-  // Accounts for net error and response code of the upload.
-  static void AccountForUploadResponse(Priority priority,
-                                       int64_t generation_id,
-                                       int64_t sequence_id,
-                                       int net_error,
-                                       int response_code);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
