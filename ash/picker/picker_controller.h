@@ -25,6 +25,7 @@ namespace ash {
 class PickerAssetFetcher;
 class PickerClient;
 class PickerInsertMediaRequest;
+class PickerSearchResult;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController

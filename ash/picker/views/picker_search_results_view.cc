@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"

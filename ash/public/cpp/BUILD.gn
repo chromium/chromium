@@ -257,6 +257,8 @@ component("cpp") {
     "personalization_app/user_display_info.h",
     "picker/picker_client.cc",
     "picker/picker_client.h",
+    "picker/picker_search_result.cc",
+    "picker/picker_search_result.h",
     "power_utils.cc",
     "power_utils.h",
     "presentation_time_recorder.cc",

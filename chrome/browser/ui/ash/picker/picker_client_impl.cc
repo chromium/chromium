@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/picker/picker_controller.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

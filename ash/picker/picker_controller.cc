@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
