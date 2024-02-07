@@ -13,11 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/common/features.h"
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/feature_constants.h"
-#import "components/feature_engagement/public/feature_list.h"
-#import "components/feature_engagement/public/tracker.h"
-#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -29,7 +24,6 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -37,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -49,7 +42,6 @@
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using ::testing::Return;
@@ -63,11 +55,6 @@ BOOL DeviceSupportsAuthentication() {
   LAContext* context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
                               error:nil];
-}
-
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
 struct PrivacyTableViewControllerTestConfig {
@@ -88,9 +75,6 @@ class PrivacyTableViewControllerTest
     test_cbs_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    test_cbs_builder.AddTestingFactory(
-        feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     chrome_browser_state_ = test_cbs_builder.Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -107,12 +91,6 @@ class PrivacyTableViewControllerTest
             static_cast<int>(GetParam().incognitoModeAvailability)));
 
     feature_list_.InitAndEnableFeature(kPrivacyGuideIos);
-
-    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
-    EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::_))
-        .WillRepeatedly(testing::Return(false));
   }
 
   void TearDown() override {
@@ -160,7 +138,6 @@ class PrivacyTableViewControllerTest
   std::unique_ptr<Browser> browser_;
   NSString* initialValueForSpdyProxyEnabled_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 // Tests PrivacyTableViewController is set up with all appropriate items
@@ -323,95 +300,6 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   CheckSectionFooter(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
       /* section= */ expectedNumberOfSections - 1);
-}
-
-// Tests PrivacyTableViewController sets the correct privacy footer for a
-// signed-in non-syncing user.
-TEST_P(PrivacyTableViewControllerTest, TestModelFooterForSignedInNotSyncing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kLinkAccountSettingsToPrivacyFooter);
-
-  ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(false));
-  CoreAccountInfo account_info;
-  account_info.email = base::SysNSStringToUTF8(@"foo1@gmail.com");
-  ON_CALL(*mock_sync_service(), GetAccountInfo())
-      .WillByDefault(Return(account_info));
-
-  CreateController();
-  CheckController();
-
-  int expectedNumberOfSections = 6;
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
-
-  // IncognitoInterstitial section.
-  expectedNumberOfSections++;
-  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
-
-  // Testing section index and text of the privacy footer.
-  CheckSectionFooter(
-      l10n_util::GetNSString(
-          IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER),
-      /* section= */ expectedNumberOfSections - 1);
-}
-
-// Tests PrivacyTableViewController does not display the Blue-dot promotion
-// for a user who has not engaged in an event that triggers the Enhanced Safe
-// Browsing blue-dot promo.
-TEST_P(PrivacyTableViewControllerTest,
-       TestSafeBrowsingBluedotPromoIsNotDisplayed) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features*/ {kPrivacyGuideIos,
-                            feature_engagement::
-                                kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature},
-      /*disabled_features*/ {});
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::_))
-      .WillOnce(testing::Return(false));
-
-  CreateController();
-  NSArray* safeBrowsingItems =
-      [controller().tableViewModel itemsInSectionWithIdentifier:11];
-  TableViewDetailIconItem* iconItem =
-      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
-          safeBrowsingItems[0]);
-
-  EXPECT_EQ(1u, safeBrowsingItems.count);
-  ASSERT_TRUE(iconItem.badgeType == BadgeType::kNone);
-}
-
-// Tests PrivacyTableViewController correctly displays the Blue-dot promotion
-// for a user is has Standard Safe Browsing set and who has engaged in an event
-// that triggers the Enhanced Safe Browsing blue-dot promo.
-TEST_P(PrivacyTableViewControllerTest,
-       TestSafeBrowsingBluedotPromoIsDisplayed) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features*/ {kPrivacyGuideIos,
-                            feature_engagement::
-                                kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature},
-      /*disabled_features*/ {});
-  EXPECT_CALL(
-      *mock_tracker_,
-      NotifyEvent(
-          feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet));
-  mock_tracker_->NotifyEvent(
-      feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(testing::_))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(*mock_tracker_, Dismissed(testing::_)).Times(testing::AtLeast(1));
-
-  CreateController();
-  NSArray* safeBrowsingItems =
-      [controller().tableViewModel itemsInSectionWithIdentifier:11];
-  TableViewDetailIconItem* iconItem =
-      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
-          safeBrowsingItems[0]);
-
-  EXPECT_EQ(1u, safeBrowsingItems.count);
-  ASSERT_TRUE(iconItem.badgeType == BadgeType::kNotificationDot);
 }
 
 INSTANTIATE_TEST_SUITE_P(
