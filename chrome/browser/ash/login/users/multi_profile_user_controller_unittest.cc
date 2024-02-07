@@ -52,7 +52,7 @@ using user_manager::ParseMultiUserSignInPolicyPref;
 
 namespace {
 
-const char* const kUsers[] = {"a@gmail.com", "b@gmail.com"};
+constexpr const char* kUsers[] = {"a@gmail.com", "b@gmail.com"};
 
 struct BehaviorTestCase {
   MultiUserSignInPolicy primary;
@@ -175,6 +175,9 @@ class MultiProfileUserControllerTest : public testing::Test {
     // freeing the network::CertVerifierWithTrustAnchors (see
     // PolicyCertService::OnTrustAnchorsChanged() which is called from
     // PolicyCertService::Shutdown()).
+    for (const auto& account_id : test_users_) {
+      fake_user_manager_->OnUserProfileWillBeDestroyed(account_id);
+    }
     controller_.reset();
     profile_manager_.reset();
     base::RunLoop().RunUntilIdle();
@@ -182,8 +185,11 @@ class MultiProfileUserControllerTest : public testing::Test {
 
   void LoginUser(size_t user_index) {
     ASSERT_LT(user_index, test_users_.size());
-    fake_user_manager_->LoginUser(test_users_[user_index]);
-    controller_->StartObserving(user_profiles_[user_index]);
+    fake_user_manager_->LoginUser(test_users_[user_index], false);
+    auto* user = fake_user_manager_->FindUserAndModify(test_users_[user_index]);
+    fake_user_manager_->OnUserProfileCreated(
+        test_users_[user_index], user_profiles_[user_index]->GetPrefs());
+    controller_->StartObserving(user);
   }
 
   void SetOwner(size_t user_index) {

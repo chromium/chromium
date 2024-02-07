@@ -578,7 +578,10 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
             AuthErrorObserverFactory::GetInstance()->GetForProfile(profile);
         sync_observer->StartObserving();
       }
-      multi_profile_user_controller_.StartObserving(profile);
+      auto* user =
+          user_manager::UserManager::Get()->FindUserAndModify(account_id);
+      CHECK(user);
+      multi_profile_user_controller_.StartObserving(user);
     }
   }
   system::UpdateSystemTimezone(profile);

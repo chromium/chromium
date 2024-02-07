@@ -16,9 +16,9 @@
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
-class Profile;
 
 namespace user_manager {
+class User;
 class UserManager;
 }
 
@@ -77,8 +77,8 @@ class MultiProfileUserController {
   bool IsUserAllowedInSession(const std::string& user_email,
                               UserAllowedInSessionReason* reason) const;
 
-  // Starts to observe the multiprofile user behavior pref of the given profile.
-  void StartObserving(Profile* user_profile);
+  // Starts to observe the multiprofile user behavior pref of the given user.
+  void StartObserving(user_manager::User* user);
 
   // Removes the cached values for the given user.
   void RemoveCachedValues(std::string_view user_email);
@@ -94,7 +94,7 @@ class MultiProfileUserController {
   void CheckSessionUsers();
 
   // Invoked when user behavior pref value changes.
-  void OnUserPrefChanged(Profile* profile);
+  void OnUserPrefChanged(user_manager::User* user);
 
   raw_ptr<PrefService, DanglingUntriaged> local_state_;
   raw_ptr<user_manager::UserManager> user_manager_;
