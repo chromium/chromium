@@ -567,11 +567,10 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
             : 0;
     show_footer =
         show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
-    footer_view_->SetAlertData({alert_state_});
+    footer_view_->SetAlertData({alert_state_, show_discard_status,
+                                tab_data.discarded_memory_savings_in_bytes});
 
-    footer_view_->SetPerformanceData(
-        {show_discard_status, tab_data.discarded_memory_savings_in_bytes,
-         tab_memory_usage_in_bytes});
+    footer_view_->SetPerformanceData({tab_memory_usage_in_bytes});
 
   } else {
     if (alert_state_ != old_alert_state) {

@@ -558,11 +558,11 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   tab_strip->SetTabData(1, tab_renderer_data);
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
-  FadePerformanceFooterRow* performance_row =
-      hover_card->footer_view_->GetPerformanceRowForTesting()->primary_view_;
+  FadeAlertFooterRow* alert_row =
+      hover_card->footer_view_->GetAlertRowForTesting()->primary_view_;
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB),
-            performance_row->footer_label_->GetText());
-  EXPECT_FALSE(performance_row->icon_->GetImageModel().IsEmpty());
+            alert_row->footer_label_->GetText());
+  EXPECT_FALSE(alert_row->icon_->GetImageModel().IsEmpty());
 
   // Clear the memory usage data from tab 0 if it was set, otherwise the
   // performance row won't be empty.
@@ -573,8 +573,8 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   // Hover card footer should update when we hover over another tab that is
   // not discarded
   SimulateHoverTab(browser(), 0);
-  EXPECT_TRUE(performance_row->footer_label_->GetText().empty());
-  EXPECT_TRUE(performance_row->icon_->GetImageModel().IsEmpty());
+  EXPECT_TRUE(alert_row->footer_label_->GetText().empty());
+  EXPECT_TRUE(alert_row->icon_->GetImageModel().IsEmpty());
 
   // Show discard status with memory savings
   tab_renderer_data.discarded_memory_savings_in_bytes = 1000;
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
           {ui::FormatBytes(
               tab_renderer_data.discarded_memory_savings_in_bytes)},
           nullptr),
-      performance_row->footer_label_->GetText());
+      alert_row->footer_label_->GetText());
 }
 
 // Mocks a tab has normal memory usage and verifies that the string for normal

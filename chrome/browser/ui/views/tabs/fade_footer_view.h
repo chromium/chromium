@@ -17,11 +17,11 @@
 
 struct AlertFooterRowData {
   std::optional<TabAlertState> alert_state;
+  bool should_show_discard_status = false;
+  uint64_t memory_savings_in_bytes = 0;
 };
 
 struct PerformanceRowData {
-  bool should_show_discard_status = false;
-  uint64_t memory_savings_in_bytes = 0;
   uint64_t memory_usage_in_bytes = 0;
 };
 
