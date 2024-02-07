@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module emoji_search.mojom;
+
+struct SearchResults {
+  array<string> results;
+};
+
+// Interface to allow users to search for emoji whose metadata match a query
+// string
+interface EmojiSearch {
+  // Lookup metadata to find emoji/symbol/emoticon matches for a given query.
+  SearchEmoji(string query) => (
+    SearchResults emoji_results,
+    SearchResults symbol_results,
+    SearchResults emoticon_results
+  );
+};

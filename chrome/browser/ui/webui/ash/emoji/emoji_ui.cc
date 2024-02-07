@@ -180,6 +180,11 @@ void EmojiUI::BindInterface(
 }
 
 void EmojiUI::BindInterface(
+    mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver) {
+  emoji_search_ = std::make_unique<EmojiSearchProxy>(std::move(receiver));
+}
+
+void EmojiUI::BindInterface(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));

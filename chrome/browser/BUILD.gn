@@ -5318,6 +5318,7 @@ static_library("browser") {
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+      "//chromeos/ash/components/emoji:mojo_bindings",
       "//chromeos/ash/components/feature_usage",
       "//chromeos/ash/components/geolocation",
       "//chromeos/ash/components/install_attributes",

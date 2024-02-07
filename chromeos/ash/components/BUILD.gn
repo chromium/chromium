@@ -19,6 +19,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/disks:unit_tests",
     "//chromeos/ash/components/drivefs:unit_tests",
+    "//chromeos/ash/components/emoji:unit_tests",
     "//chromeos/ash/components/feature_usage:unit_tests",
     "//chromeos/ash/components/file_manager:unit_tests",
     "//chromeos/ash/components/fwupd:unit_tests",
