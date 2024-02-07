@@ -41,6 +41,12 @@
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED" desc="Short label for the avatar button when sync is paused for the current profile." meaning="Sync is paused">
     Paused
   </message>
+  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a work profile." meaning="Using a work profile">
+    Work
+  </message>
+  <message name="IDS_AVATAR_BUTTON_SCHOOL" desc="Short label for the avatar button when the profile is a school profile." meaning="Using a school profile">
+    School
+  </message>
 
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">

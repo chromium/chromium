@@ -230,7 +230,7 @@ void AvatarToolbarButton::ShowInterceptText(
 }
 
 void AvatarToolbarButton::HideText() {
-  delegate_->HideText();
+  delegate_->ShowDefaultText();
 }
 #endif
 

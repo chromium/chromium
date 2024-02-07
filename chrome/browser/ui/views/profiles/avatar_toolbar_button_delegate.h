@@ -66,8 +66,10 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void ShowInterceptText(
       WebSigninInterceptor::SigninInterceptionType interception_type);
-  void HideText();
+
+  void MaybeShowEnterpriseText();
 #endif
+  void ShowDefaultText();
 
   // Should be called when the icon is updated. This may trigger the identity
   // pill animation if the delegate is waiting for the image.
@@ -87,7 +89,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
     kNotShowing,
     kWaitingForImage,
     kShowingName,
-    kShowingInterceptText
+    kShowingInterceptText,
+    kShowingEnterpriseText,
   };
 
   // States of the button ordered in priority of getting displayed.
@@ -99,6 +102,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
     kSyncPaused,
     // An error in sync-the-feature or sync-the-transport.
     kSyncError,
+    kWork,
+    kSchool,
     kNormal
   };
 
@@ -114,6 +119,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
       const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
+  void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) override;
 
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.
@@ -141,6 +148,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // Shows the identity pill animation. If the animation is already showing,
   // this extends the duration of the current animation.
   void ShowIdentityAnimation();
+
+  TextState GetDefaultTextState() const;
 
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
@@ -173,6 +182,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // a quick sequence (before the first timeout passes). The identity pill tries
   // to close when this reaches 0.
   int identity_animation_timeout_count_ = 0;
+
+  bool enterprise_text_hide_scheduled_ = false;
 
   bool refresh_tokens_loaded_ = false;
   bool has_in_product_help_promo_ = false;

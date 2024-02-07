@@ -13,12 +13,16 @@
 #include "net/base/host_port_pair.h"
 #include "net/ssl/client_cert_identity.h"
 
+struct AccountInfo;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
 
 namespace chrome {
 namespace enterprise_util {
+
+// Represents which type of managed environment we have.
+enum class ManagementEnvironment { kNone, kSchool, kWork };
 
 // Determines whether the browser with `profile` as its primary profile is
 // managed. This is determined by looking it there are any policies applied or
@@ -63,6 +67,9 @@ bool UserAcceptedAccountManagement(Profile* profile);
 // Returns true if the user has consented to sync or has accepted account
 // management through the enterprise account confirmation dialog.
 bool ProfileCanBeManaged(Profile* profile);
+
+ManagementEnvironment GetManagementEnvironment(Profile* profile,
+                                               const AccountInfo& account_info);
 
 // Checks `email_domain` against the list of pre-defined known consumer domains.
 // Use this for optimization purposes when you want to skip some code paths for

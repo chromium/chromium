@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -28,10 +30,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,6 +45,10 @@
 namespace {
 
 constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
+#endif
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -204,6 +213,27 @@ AvatarToolbarButtonDelegate::ComputeState() const {
     return ButtonState::kInterceptTextShowing;
   }
 
+  if (!last_avatar_error_ &&
+      button_text_state_ == TextState::kShowingEnterpriseText) {
+    CHECK(base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging));
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+    auto management_environment =
+        chrome::enterprise_util::GetManagementEnvironment(
+            profile_, identity_manager->FindExtendedAccountInfoByAccountId(
+                          identity_manager->GetPrimaryAccountId(
+                              signin::ConsentLevel::kSignin)));
+    CHECK_NE(management_environment,
+             chrome::enterprise_util::ManagementEnvironment::kNone);
+    if (management_environment ==
+        chrome::enterprise_util::ManagementEnvironment::kWork) {
+      return ButtonState::kWork;
+    }
+    if (management_environment ==
+        chrome::enterprise_util::ManagementEnvironment::kSchool) {
+      return ButtonState::kSchool;
+    }
+  }
+
   // Web app has limited toolbar space, thus always show kNormal state.
   if (web_app::AppBrowserController::IsWebApp(browser_) ||
       !SyncServiceFactory::IsSyncAllowed(profile_)) {
@@ -240,7 +270,7 @@ void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation() {
   // Check that the user is still signed in. See https://crbug.com/1025674
   if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
           signin::ConsentLevel::kSignin)) {
-    button_text_state_ = TextState::kNotShowing;
+    ShowDefaultText();
     return;
   }
 
@@ -294,6 +324,11 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
   } else {
     entry->SetProfileThemeColors(std::nullopt);
   }
+  // This is required so that the enterprise text is shown when a profile is
+  // opened.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  MaybeShowEnterpriseText();
+#endif
 }
 
 void AvatarToolbarButtonDelegate::OnBrowserAdded(Browser* browser) {
@@ -320,6 +355,13 @@ void AvatarToolbarButtonDelegate::OnProfileNameChanged(
     const base::FilePath& profile_path,
     const std::u16string& old_profile_name) {
   avatar_toolbar_button_->UpdateText();
+}
+
+void AvatarToolbarButtonDelegate::OnProfileUserManagementAcceptanceChanged(
+    const base::FilePath& profile_path) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  MaybeShowEnterpriseText();
+#endif
 }
 
 void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
@@ -407,7 +449,8 @@ void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout() {
   // OnIdentityAnimationTimeout() that will hide it after the proper delay.
   // Also return if the button is showing the signin text rather than the name.
   if (identity_animation_timeout_count_ > 0 ||
-      button_text_state_ == TextState::kShowingInterceptText) {
+      button_text_state_ == TextState::kShowingInterceptText ||
+      button_text_state_ == TextState::kShowingEnterpriseText) {
     return;
   }
 
@@ -430,10 +473,9 @@ void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
     return;
   }
 
-  button_text_state_ = TextState::kNotShowing;
   // Update the text to the pre-shown state. This also makes sure that we now
   // reflect changes that happened while the identity pill was shown.
-  avatar_toolbar_button_->UpdateText();
+  ShowDefaultText();
 }
 
 void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
@@ -457,13 +499,44 @@ void AvatarToolbarButtonDelegate::ShowInterceptText(
   avatar_toolbar_button_->UpdateText();
 }
 
-void AvatarToolbarButtonDelegate::HideText() {
-  button_text_state_ = TextState::kNotShowing;
-  Reset();
-
+void AvatarToolbarButtonDelegate::MaybeShowEnterpriseText() {
+  if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) ||
+      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    return;
+  }
+  bool transient = g_browser_process->local_state()->GetInteger(
+                       prefs::kToolbarAvatarLabelSettings) == 1;
+  button_text_state_ = TextState::kShowingEnterpriseText;
   avatar_toolbar_button_->UpdateText();
+  if (transient && !enterprise_text_hide_scheduled_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButtonDelegate::ShowDefaultText,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kEnterpriseTextTransientDuration);
+    enterprise_text_hide_scheduled_ = true;
+  }
 }
 #endif
+
+void AvatarToolbarButtonDelegate::ShowDefaultText() {
+  button_text_state_ = GetDefaultTextState();
+  Reset();
+  avatar_toolbar_button_->UpdateText();
+}
+
+AvatarToolbarButtonDelegate::TextState
+AvatarToolbarButtonDelegate::GetDefaultTextState() const {
+  bool transient_enterprise_text = g_browser_process->local_state()->GetInteger(
+                                       prefs::kToolbarAvatarLabelSettings) == 1;
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+      !transient_enterprise_text) {
+    return TextState::kShowingEnterpriseText;
+  }
+
+  return TextState::kNotShowing;
+}
 
 void AvatarToolbarButtonDelegate::Reset() {
   current_interception_type_.reset();
@@ -532,6 +605,16 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
                                               guest_window_count);
       break;
     }
+    case ButtonState::kWork: {
+      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      break;
+    }
+    case ButtonState::kSchool: {
+      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
+      break;
+    }
     case ButtonState::kNormal:
       break;
   }
@@ -560,6 +643,11 @@ std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
     case ButtonState::kAnimatedUserIdentity:
       color = color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
+      break;
+    case ButtonState::kWork:
+    case ButtonState::kSchool:
+      color =
+          color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
       break;
     case ButtonState::kNormal:
       color = color_provider->GetColor(
@@ -590,6 +678,8 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
                           ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
     }
     case ButtonState::kInterceptTextShowing:
+    case ButtonState::kWork:
+    case ButtonState::kSchool:
     case ButtonState::kNormal:
       return GetProfileName();
   }
@@ -613,6 +703,10 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
       case ButtonState::kAnimatedUserIdentity:
         break;
       case ButtonState::kSyncPaused:
+        ripple_color_id = kColorAvatarButtonNormalRipple;
+        break;
+      case ButtonState::kSchool:
+      case ButtonState::kWork:
         ripple_color_id = kColorAvatarButtonNormalRipple;
         break;
       case ButtonState::kNormal:
@@ -641,6 +735,8 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
     // should be different.
     case ButtonState::kSyncPaused:
+    case ButtonState::kSchool:
+    case ButtonState::kWork:
     case ButtonState::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           GetProfileAvatarImage(icon_size), icon_size, icon_size,
@@ -656,6 +752,8 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
       return true;
     case ButtonState::kIncognitoProfile:
     case ButtonState::kInterceptTextShowing:
+    case ButtonState::kWork:
+    case ButtonState::kSchool:
     case ButtonState::kSyncPaused:
     case ButtonState::kSyncError:
       return false;

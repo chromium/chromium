@@ -5,7 +5,9 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -287,3 +290,46 @@ INSTANTIATE_TEST_SUITE_P(,
                                return "UserColor";
                            }
                          });
+
+// Test suite for testing `AvatarToolbarButton`'s responsibility of updating
+// color information in `ProfileAttributesStorage`.
+class AvatarToolbarButtonEnterpriseBadgingBrowserTest
+    : public AvatarToolbarButtonBrowserTest,
+      public base::test::WithFeatureOverride {
+ public:
+  AvatarToolbarButtonEnterpriseBadgingBrowserTest()
+      : base::test::WithFeatureOverride(features::kEnterpriseProfileBadging) {}
+};
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkProfileTextBadging) {
+  AvatarToolbarButton* toolbar_button = GetAvatarToolbarButton(browser());
+  EXPECT_TRUE(toolbar_button->GetText().empty());
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  std::u16string work_label = u"Work";
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    EXPECT_EQ(toolbar_button->GetText(), work_label);
+    toolbar_button->ShowInterceptText(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    EXPECT_NE(toolbar_button->GetText(), work_label);
+    toolbar_button->HideText();
+    EXPECT_EQ(toolbar_button->GetText(), work_label);
+#else
+    EXPECT_NE(toolbar_button->GetText(), work_label);
+#endif
+  } else {
+    EXPECT_NE(toolbar_button->GetText(), work_label);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    toolbar_button->ShowInterceptText(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    EXPECT_NE(toolbar_button->GetText(), work_label);
+    toolbar_button->HideText();
+    EXPECT_NE(toolbar_button->GetText(), work_label);
+#endif
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AvatarToolbarButtonEnterpriseBadgingBrowserTest);
