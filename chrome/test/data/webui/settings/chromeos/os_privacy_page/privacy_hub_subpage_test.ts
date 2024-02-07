@@ -441,8 +441,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(
 
   test('Toggle camera button', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
     flush();
 
     mediaDevices.addDevice('videoinput', 'Fake Camera');
@@ -496,8 +495,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(
 
   test('Toggle microphone button', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
     flush();
 
     mediaDevices.addDevice('audioinput', 'Fake Mic');
