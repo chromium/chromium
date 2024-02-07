@@ -169,6 +169,52 @@ TEST(BMPImageDecoderTest, VerifyBMPSuite) {
       // any detailed documentation of them" so a slight deviation seems fine.
       // {"good", "pal8v4", "pal8"},
 
+      // Questionable images have a reference; however, the standard is not
+      // clear on the expected output, so it may be reasonable for our results
+      // to change if the implementation is updated.
+      {"questionable", "pal1p1", "pal1p1"},
+      {"questionable", "pal2", "pal2"},
+      {"questionable", "pal2color", "pal2color"},
+      {"questionable", "pal4rletrns", "pal4rletrns"},
+      {"questionable", "pal4rlecut", "pal4rlecut"},
+      {"questionable", "pal8rletrns", "pal8rletrns"},
+      {"questionable", "pal8rlecut", "pal8rlecut"},
+      {"questionable", "pal8offs", "pal8"},
+      {"questionable", "pal8oversizepal", "pal8"},
+      {"questionable", "pal8os2-sz", "pal8"},
+      {"questionable", "pal8os2-hs", "pal8"},
+      {"questionable", "pal8os2sp", "pal8"},
+      {"questionable", "pal8os2v2", "pal8"},
+      {"questionable", "pal8os2v2-16", "pal8"},
+      {"questionable", "pal8os2v2-sz", "pal8"},
+      {"questionable", "pal8os2v2-40sz", "pal8"},
+      {"questionable", "rgb24rle24", "pal8"},
+      {"questionable", "pal1huffmsb", nullptr},  // We reject this encoding.
+      {"questionable", "rgb16faketrns", "rgb16"},
+      {"questionable", "rgb16-231", "rgb16-231"},
+      {"questionable", "rgb16-3103", nullptr},  // We have a low-bit difference.
+      {"questionable", "rgba16-4444", "rgba16-4444"},
+      {"questionable", "rgba16-5551", "rgba16-5551"},
+      {"questionable", "rgba16-1924", "rgba16-1924"},
+      {"questionable", "rgb24largepal", "rgb24"},
+      // {"questionable", "rgb24prof", "rgb24"},  // Omitted--not public domain.
+      // {"questionable", "rgb24prof2", "rgb24"},  //  "       "    "      "
+      // {"questionable", "rgb24lprof", "rgb24"},  //  "       "    "      "
+      {"questionable", "rgb24jpeg", nullptr},  // Reference isn't PNG-encoded.
+      {"questionable", "rgb24png", "rgb24"},
+      {"questionable", "rgb32h52", "rgb24"},
+      {"questionable", "rgb32-xbgr", "rgb24"},
+      {"questionable", "rgb32fakealpha", "rgb24"},
+      {"questionable", "rgb32-111110", nullptr},  // We have a low-bit diff.
+      {"questionable", "rgb32-7187", nullptr},    //  "  "   "     "     "
+      {"questionable", "rgba32-1", "rgba32"},
+      {"questionable", "rgba32-1010102", nullptr},  // We have a low-bit diff.
+      {"questionable", "rgba32-81284", "rgba32-81284"},
+      {"questionable", "rgba32-61754", nullptr},  // We have a low-bit diff.
+      {"questionable", "rgba32abf", "rgba32"},
+      {"questionable", "rgba32h56", "rgba32"},
+      // {"questionable", "rgba64", "rgba32"},  // We don't support HDR BMPs.
+
       // Bad images do not have a reference; we just need to verify that we can
       // parse them without crashing.
       {"bad", "badbitcount", nullptr},
@@ -211,8 +257,8 @@ TEST(BMPImageDecoderTest, VerifyBMPSuite) {
     }
 
     // Verify that the BMP decoded successfully.
-    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-    ASSERT_FALSE(decoder->Failed());
+    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus()) << bmp_path;
+    ASSERT_FALSE(decoder->Failed()) << bmp_path;
 
     // Load the PNG reference for this file.
     std::string png_path =
@@ -242,6 +288,14 @@ TEST(BMPImageDecoderTest, VerifyBMPSuite) {
       for (int x = frame->Bitmap().width() - 1; x >= 0; --x) {
         ImageFrame::PixelData* pixel_rgba = frame->GetAddr(x, y);
         ImageFrame::PixelData* reference_rgba = reference_frame->GetAddr(x, y);
+        // If the alpha channel is zero on both sides, the RGB channels don't
+        // matter. (Some of the reference images contain colors in zero-alpha
+        // positions, but our BMP decoder emits zero across all channels.)
+        if (SkGetPackedA32(*pixel_rgba) == 0 &&
+            SkGetPackedA32(*reference_rgba) == 0) {
+          continue;
+        }
+        // If the alpha channels are non-zero, the RGB colors must match.
         if (*pixel_rgba != *reference_rgba) {
           ADD_FAILURE() << base::StringPrintf(
               "%s: pixel mismatch at %d, %d - RGBA in reference "
