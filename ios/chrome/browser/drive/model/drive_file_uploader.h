@@ -119,10 +119,8 @@ class DriveFileUploader {
 
   // Fetches the Drive storage quota, to check if there is enough storage for
   // uploads.
-  // TODO(crbug.com/1495354): Remove this implementation once all subclasses
-  // provide their own.
   virtual void FetchStorageQuota(
-      DriveStorageQuotaCompletionCallback completion_callback);
+      DriveStorageQuotaCompletionCallback completion_callback) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_FILE_UPLOADER_H_
