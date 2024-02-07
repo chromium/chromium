@@ -1485,10 +1485,10 @@
       base_feature: "none",
     },
     // Controls whether DOMParser.parseFromString() attempts to use the
-    // html fast path parser. This is a kill switch.
+    // html fast path parser.
     {
       name: "DOMParserUsesHTMLFastPathParser",
-      status: "stable"
+      status: "test"
     },
     {
       name: "DOMPartsAPI",
