@@ -1827,11 +1827,15 @@ DOMNodeId InputMethodController::NodeIdOfFocusedElement() const {
 }
 
 WebTextInputType InputMethodController::TextInputType() const {
+  Element* element = GetDocument().FocusedElement();
+  if (!element) {
+    return kWebTextInputTypeNone;
+  }
+
   // Since selection can never go inside a <canvas> element, if the user is
   // editing inside a <canvas> with EditContext we need to handle that case
   // directly before looking at the selection position.
   if (GetActiveEditContext()) {
-    Element* element = GetDocument().FocusedElement();
     if (IsA<HTMLCanvasElement>(*element)) {
       return kWebTextInputTypeContentEditable;
     }
@@ -1849,10 +1853,6 @@ WebTextInputType InputMethodController::TextInputType() const {
     return kWebTextInputTypeNone;
 
   if (!IsAvailable())
-    return kWebTextInputTypeNone;
-
-  Element* element = GetDocument().FocusedElement();
-  if (!element)
     return kWebTextInputTypeNone;
 
   if (auto* input = DynamicTo<HTMLInputElement>(*element)) {
