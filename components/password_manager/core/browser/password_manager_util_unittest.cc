@@ -33,7 +33,7 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -85,6 +85,15 @@ class MockPasswordManagerClient
               GetDeviceAuthenticator,
               (),
               (override));
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetAccountPasswordStore,
+              (),
+              (const, override));
+  MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (const, override));
 };
 
 PasswordForm GetTestAndroidCredential() {
@@ -140,6 +149,8 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
         false);
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
@@ -148,10 +159,11 @@ class PasswordManagerUtilTest : public testing::Test {
         password_manager::prefs::kHadBiometricsAvailable, false);
     ON_CALL(mock_client_, GetLocalStatePrefs())
         .WillByDefault(Return(&pref_service_));
-    ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
     ON_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillByDefault(Return(true));
 #endif
+    ON_CALL(mock_client_, GetPrefs).WillByDefault(Return(&pref_service_));
+    ON_CALL(mock_client_, GetSyncService).WillByDefault(Return(&sync_service_));
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -161,6 +173,21 @@ class PasswordManagerUtilTest : public testing::Test {
         available);
   }
 #endif
+
+  void EnableSyncForTestAccount() {
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
+    AccountInfo account_info;
+    account_info.email = "test@gmail.com";
+    sync_service_.SetAccountInfo(account_info);
+  }
+
+  void DisableSyncFeature() {
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, /*types=*/{});
+  }
+
+  PrefService* pref_service() { return &pref_service_; }
 
  protected:
   MockPasswordManagerClient mock_client_;
@@ -735,5 +762,60 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuthAndroidAutomotive) {
 }
 
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswordsAfterStoreSplit_Syncing) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+  EnableSyncForTestAccount();
+
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(testing::Return(store.get()));
+
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
+
+  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest,
+       IsAbleToSavePasswordsAfterStoreSplit_NotSyncing) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
+  DisableSyncFeature();
+
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
+      .WillRepeatedly(testing::Return(store.get()));
+
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
+
+  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
+}
+#endif
+
+TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords) {
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
+      .WillRepeatedly(testing::Return(store.get()));
+
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
+
+  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, IsNotAbleToSavePasswords) {
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
+  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
+      .WillRepeatedly(testing::Return(store.get()));
+
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(false));
+
+  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
+}
 
 }  // namespace password_manager_util

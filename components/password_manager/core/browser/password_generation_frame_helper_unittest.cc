@@ -185,6 +185,10 @@ class PasswordGenerationFrameHelperTest : public testing::Test {
         new TestingPrefServiceSimple());
     prefs->registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            true);
+#if BUILDFLAG(IS_ANDROID)
+    prefs->registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
+#endif
     client_ = std::make_unique<MockPasswordManagerClient>(std::move(prefs));
   }
 

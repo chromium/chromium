@@ -108,9 +108,7 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   if (url.DomainIs("google.com"))
     return false;
 
-  // TODO(b/322936165): Consider checking AccountPasswordStore too.
-  if (!client_->GetProfilePasswordStore() ||
-      !client_->GetProfilePasswordStore()->IsAbleToSavePasswords()) {
+  if (!password_manager_util::IsAbleToSavePasswords(client_)) {
     if (logger) {
       logger->LogMessage(
           Logger::STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS);
