@@ -2146,7 +2146,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
   if (photo.is_null()) {
     // The photo doesn't exist, or has been deleted. If this photo is the
     // current wallpaper, we need to reset to the default.
-    if (current_wallpaper_->wallpaper_info().location == params.id) {
+    if (current_wallpaper_ &&
+        current_wallpaper_->wallpaper_info().location == params.id) {
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
