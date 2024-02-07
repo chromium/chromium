@@ -635,7 +635,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //  previous granularity.
   playPreviousGranularity() {
     this.synth.cancel();
-    this.resetPreviousHighlight();
+    this.resetPreviousHighlightAndRemoveCurrentHighlight();
     chrome.readingMode.movePositionToPreviousGranularity();
 
     if (!this.highlightAndPlayMessage()) {
@@ -1018,6 +1018,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       default:
         return defaultSelectionColor;
     }
+  }
+
+  private resetPreviousHighlightAndRemoveCurrentHighlight() {
+    const lastElement = this.previousHighlight_.pop();
+    if (lastElement) {
+      lastElement.className = '';
+    }
+
+    this.resetPreviousHighlight();
   }
 
   private resetPreviousHighlight() {
