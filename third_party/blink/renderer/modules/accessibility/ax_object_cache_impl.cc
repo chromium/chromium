@@ -3104,6 +3104,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   }
 
   DCHECK_EQ(document, GetDocument());
+  if (!GetDocument().IsActive()) {
+    return;
+  }
+
   CheckStyleIsComplete(document);
 
   CHECK(!processing_deferred_events_);
@@ -3191,10 +3195,32 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
 
     mark_all_dirty_ = false;
 
+    // All tree updates have been processed.
+    DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
+    DUMP_WILL_BE_CHECK(!IsPopupDocumentDirty());
+
+    // Clean up any remaining unprocessed aria-owns relations, which can result
+    // from processing deferred tree updates. For example, if an object is
+    // created without a parent, RepairChildrenOfIncludedParent() may be called,
+    // which in some cases can queue multiple aria-owns relations that point to
+    // the same node to be added to the processing queue.
+    // TODO(accessibility) As this is the second call to this method from
+    // the same calling function, it would be nice to find a way to remove it.
+    // One potential fix is to try to only process one valid aria-owns during
+    // the repair, but we need to be careful about infinite loops if we do that.
+    // Another possibility is to continue trying to remove parent repair
+    // scenarios entirely, in which case this should not occur.
+    relation_cache_->ProcessUpdatesWithCleanLayout();
+
     // Build out tree, such that each node has computed its children.
     UpdateTreeIfNeeded();
+
+    // Updating the tree did not add dirty objects.
+    DUMP_WILL_BE_CHECK(!IsDirty());
   }
 
+  // Serialize the current tree changes unless not enough time has passed, or
+  // another serialization is already in flight.
   if (IsSerializationInFlight()) {
     // Another serialization is in flight. When it's finished, a new
     // serialization will be triggered if necessary.
@@ -3242,9 +3268,19 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // TODO(accessibility) It's a bit confusing that this can be true when the
     // IsDirty() is false, but this is the case for objects marked dirty from
     // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
+    bool did_serialize = false;
     if (HasDirtyObjects()) {
-      if (auto* client = GetWebLocalFrameClient()) {
-        client->AXReadyCallback();
+      // Dirty objects are present, but we cannot serialize until there is an
+      // embedding token, which may not be present when the cache is first
+      // initialized.
+      if (GetDocument().GetFrame()) {
+        const absl::optional<base::UnguessableToken>& embedding_token =
+            GetDocument().GetFrame()->GetEmbeddingToken();
+        if (embedding_token && !embedding_token->is_empty()) {
+          if (auto* client = GetWebLocalFrameClient()) {
+            did_serialize = client->AXReadyCallback();
+          }
+        }
       }
     }
 
@@ -3260,6 +3296,12 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
         agent->AXReadyCallback(*GetPopupDocumentIfShowing());
       }
     }
+
+    CHECK(!IsDirty());
+    // TODO(accessibility): in the future, we may break up serialization into
+    // pieces to reduce jank, in which case this assertion will not hold.
+    CHECK(!HasDirtyObjects() || !did_serialize)
+        << "A serialization occurred but dirty objects remained.";
   }
 }
 
@@ -3309,6 +3351,13 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
 }
 
 bool AXObjectCacheImpl::IsDirty() {
+  if (!GetDocument().IsActive()) {
+    return false;
+  }
+
+  if (mark_all_dirty_) {
+    return true;
+  }
   if (IsMainDocumentDirty() || IsPopupDocumentDirty() || !relation_cache_ ||
       relation_cache_->IsDirty()) {
     return true;
@@ -4968,6 +5017,7 @@ Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
 }
 
 void AXObjectCacheImpl::SerializeLocationChanges(uint32_t reset_token) {
+  CHECK(GetDocument().IsActive());
   if (changed_bounds_ids_.empty())
     return;
   Vector<mojom::blink::LocationChangesPtr> changes;
@@ -5008,6 +5058,7 @@ bool AXObjectCacheImpl::SerializeEntireTree(
   CHECK(!IsDirty());
   CHECK(Root());
   CHECK(!Root()->IsDetached());
+  CHECK(GetDocument().IsActive());
 
   // Pass true for truncate_inline_textboxes, as they are just extra noise for
   // consumers of the entire tree (e.g. AXTreeSnapshotter). This avoids passing
@@ -5050,8 +5101,7 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const std::vector<ui::AXEventIntent>& event_intents) {
-  // Add to object to a queue that will be sent to the serializer in
-  // SerializeDirtyObjectsAndEvents().
+  CHECK(!IsFrozen());
   dirty_objects_.push_back(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
 
@@ -5084,6 +5134,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
             DocumentLifecycle::kLayoutClean);
   DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
                                  DocumentLifecycle::kLayoutClean);
+  DUMP_WILL_BE_CHECK(HasDirtyObjects());
 
   EnsureSerializer();
 
@@ -5219,7 +5270,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   }
 
   CHECK(!HasDirtyObjects());
-
 #if DCHECK_IS_ON()
   CheckTreeConsistency(*this, *ax_tree_serializer_);
 

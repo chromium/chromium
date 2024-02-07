@@ -462,32 +462,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   // immediate serialization!
 }
 
-void RenderAccessibilityImpl::AXReadyCallback() {
-  DCHECK(ax_context_);
-  DCHECK(ax_context_->HasDirtyObjects())
-      << "Should not call AXReadyCallback() unless there is something to "
-         "serialize.";
-  DCHECK(render_frame_);
-  DCHECK(render_frame_->in_frame_tree());
-  DCHECK(!ax_context_->IsSerializationInFlight());
-
-  // Don't send accessibility events for frames that don't yet have an tree id
-  // as doing so will cause the browser to discard that message and all
-  // subsequent ones.
-  // TODO(1231184): There are some cases where no content is currently rendered,
-  // due to an iframe returning 204 or window.stop() being called. In these
-  // cases there will never be an AXTreeID as there is no commit, which will
-  // prevent accessibility updates from ever being sent even if the rendering is
-  // fixed. See also other TODOs related to 1231184 in this file.
-  if (!render_frame_->GetWebFrame()->GetAXTreeID().token()) {
-    // This <frame> doesn't have a token yet, which would make it impossible
-    // to connect to its parent "child tree owner" node.
-    return;
-  }
-
-  SendPendingAccessibilityEvents();
-}
-
 // TODO(accessibility): When legacy mode is deleted, calls to this function may
 // be replaced with ax_context_->ScheduleImmediateSerialization()
 void RenderAccessibilityImpl::ScheduleImmediateAXUpdate() {
@@ -847,30 +821,48 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   return need_to_send_location_changes;
 }
 
-void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
+bool RenderAccessibilityImpl::AXReadyCallback() {
   // TODO(accessibility) Do we want to get rid of this trace event now that it's
   // part of the same callstack as the ProcessDeferredAccessibilityEvents trace?
   TRACE_EVENT0("accessibility",
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;
 
+  CHECK(ax_context_);
+  CHECK(ax_context_->HasDirtyObjects())
+      << "Should not call AXReadyCallback() unless there is something to "
+         "serialize.";
+  CHECK(render_frame_);
+  CHECK(render_frame_->in_frame_tree());
+
+  // Don't send accessibility events for frames that don't yet have an tree id
+  // as doing so will cause the browser to discard that message and all
+  // subsequent ones.
+  // TODO(1231184): There are some cases where no content is currently rendered,
+  // due to an iframe returning 204 or window.stop() being called. In these
+  // cases there will never be an AXTreeID as there is no commit, which will
+  // prevent accessibility updates from ever being sent even if the rendering is
+  // fixed. See also other TODOs related to 1231184 in this file.
+  DCHECK(render_frame_->GetWebFrame()->GetAXTreeID().token());
+
+  CHECK(ax_context_);
+
   // This method should never be called if there's a previous serialization
   // still in flight.
-  DCHECK(!ax_context_->IsSerializationInFlight());
+  CHECK(!ax_context_->IsSerializationInFlight());
+
+  CHECK(ax_context_->HasActiveDocument());
 
   WebDocument document = GetMainDocument();
-  if (document.IsNull()) {
-    return;
-  }
+  CHECK(!document.IsNull());
 
   // Don't serialize child trees without an embedding token. These are
   // unrendered child frames. This prevents a situation where child trees can't
   // be linked to their parent, leading to a dangerous situation for some
   // platforms, where events are fired on objects not connected to the root. For
   // example, on Mac, this can lead to a lockup in AppKit.
-  CHECK(document.GetFrame()->GetEmbeddingToken());
+  DCHECK(document.GetFrame()->GetEmbeddingToken());
 
-  DCHECK(ax_context_);
   ax_context_->OnSerializationStartSend();
 
   WebAXObject root = ComputeRoot();
@@ -913,12 +905,14 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       document, root, updates_and_events->events, updates_and_events->updates,
       mark_plugin_subtree_dirty);
   if (updates_and_events->updates.empty()) {
+    // This method should never be called unless there are updates to be made.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     // Do not send a serialization if there are no updates.
     DCHECK(updates_and_events->events.empty())
         << "If there are no updates, there also shouldn't be any events, "
            "because events always mark an object dirty.";
     ax_context_->OnSerializationCancelled();
-    return;
+    return false;
   }
 
   if (image_annotation_debugging_) {
@@ -970,6 +964,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   if (ukm_timer_->Elapsed() >= kMinUKMDelay) {
     MaybeSendUKM();
   }
+
+  return true;
 }
 
 void RenderAccessibilityImpl::SendLocationChanges() {

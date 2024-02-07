@@ -4681,11 +4681,12 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
       event);
 }
 
-void RenderFrameImpl::AXReadyCallback() {
-  if (!IsAccessibilityEnabled())
-    return;
+bool RenderFrameImpl::AXReadyCallback() {
+  if (!IsAccessibilityEnabled()) {
+    return false;
+  }
 
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
+  return render_accessibility_manager_->GetRenderAccessibilityImpl()
       ->AXReadyCallback();
 }
 

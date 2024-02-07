@@ -93,9 +93,7 @@ void WebAXContext::SerializeDirtyObjectsAndEvents(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
-  if (!HasActiveDocument()) {
-    return;
-  }
+  CHECK(HasActiveDocument());
 
   ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
   private_->GetAXObjectCache().SerializeDirtyObjectsAndEvents(
@@ -110,7 +108,7 @@ void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,
 
 bool WebAXContext::HasDirtyObjects() {
   if (!HasActiveDocument()) {
-    return true;
+    return false;
   }
   return private_->GetAXObjectCache().HasDirtyObjects();
 }

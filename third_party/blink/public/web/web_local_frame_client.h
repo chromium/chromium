@@ -678,7 +678,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void PostAccessibilityEvent(const ui::AXEvent& event) {}
 
   // Called when accessibility is ready to serialize.
-  virtual void AXReadyCallback() {}
+  // Returns true if a serialization occurs.
+  virtual bool AXReadyCallback() { return false; }
 
   // Audio Output Devices API --------------------------------------------
 

@@ -135,7 +135,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& obj,
     ax::mojom::Event event_type = ax::mojom::Event::kNone);
   // Called when it is safe to begin a serialization.
-  void AXReadyCallback();
+  // Returns true if a serialization occurs.
+  bool AXReadyCallback();
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -154,9 +155,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void ConnectionClosed();
 
  protected:
-  // Send queued events from the renderer to the browser.
-  void SendPendingAccessibilityEvents();
-
   // Check the entire accessibility tree to see if any nodes have
   // changed location, by comparing their locations to the cached
   // versions. If any have moved, send an IPC with the new locations.
