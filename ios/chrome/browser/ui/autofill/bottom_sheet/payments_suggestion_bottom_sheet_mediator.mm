@@ -194,13 +194,13 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
           autofill::CreditCard::CreateVirtualCard(*creditCard);
       [creditCardData
           addObject:[[CreditCardData alloc]
-                        initWithCreditCard:&virtualCard
+                        initWithCreditCard:virtualCard
                                       icon:[self
                                                iconForCreditCard:creditCard]]];
     }
     [creditCardData
         addObject:[[CreditCardData alloc]
-                      initWithCreditCard:creditCard
+                      initWithCreditCard:*creditCard
                                     icon:[self iconForCreditCard:creditCard]]];
     hasNonLocalCard |= !autofill::IsCreditCardLocal(*creditCard);
   }

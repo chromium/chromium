@@ -13,23 +13,23 @@
 
 @implementation CreditCardData
 
-- (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
+- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
                               icon:(UIImage*)icon {
   if (self = [super init]) {
     _cardNameAndLastFourDigits =
-        base::SysUTF16ToNSString(creditCard->CardNameAndLastFourDigits());
+        base::SysUTF16ToNSString(creditCard.CardNameAndLastFourDigits());
     _cardDetails = base::SysUTF16ToNSString(
-        (creditCard->record_type() ==
+        (creditCard.record_type() ==
          autofill::CreditCard::RecordType::kVirtualCard)
             ? l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
-            : creditCard->AbbreviatedExpirationDateForDisplay(
+            : creditCard.AbbreviatedExpirationDateForDisplay(
                   /* with_prefix=*/false));
     _accessibleCardName = [self accessibleCardName:creditCard];
-    _backendIdentifier = base::SysUTF8ToNSString(creditCard->guid());
+    _backendIdentifier = base::SysUTF8ToNSString(creditCard.guid());
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillEnableVirtualCards)) {
-      _recordType = creditCard->record_type();
+      _recordType = creditCard.record_type();
     }
 
     if (icon.size.width > 0.0 && icon.size.width < 40.0 && icon.scale > 1.0) {
@@ -48,13 +48,13 @@
 
 #pragma mark - Private
 
-- (NSString*)accessibleCardName:(const autofill::CreditCard*)creditCard {
+- (NSString*)accessibleCardName:(const autofill::CreditCard&)creditCard {
   // Get the card name. Prepend the card type if the card name doesn't already
   // start with the card type.
   NSString* cardType = base::SysUTF16ToNSString(
-      creditCard->GetRawInfo(autofill::CREDIT_CARD_TYPE));
+      creditCard.GetRawInfo(autofill::CREDIT_CARD_TYPE));
   NSString* cardAccessibleName =
-      base::SysUTF16ToNSString(creditCard->CardNameForAutofillDisplay());
+      base::SysUTF16ToNSString(creditCard.CardNameForAutofillDisplay());
   if (![cardAccessibleName hasPrefix:cardType]) {
     // If the card name doesn't already start with the card type, add the card
     // type at the beginning of the card name.
@@ -66,7 +66,7 @@
   // example, "1215" will become "1 2 1 5" and will read "one two one five"
   // instead of "one thousand two hundred and fifteen".
   NSString* cardLastDigits =
-      base::SysUTF16ToNSString(creditCard->LastFourDigits());
+      base::SysUTF16ToNSString(creditCard.LastFourDigits());
   NSMutableArray* digits = [[NSMutableArray alloc] init];
   if (cardLastDigits.length > 0) {
     for (NSUInteger i = 0; i < cardLastDigits.length; i++) {
@@ -83,7 +83,7 @@
 
   // Either prepend that the card is a virtual card OR append the expiration
   // date.
-  if (creditCard->record_type() ==
+  if (creditCard.record_type() ==
       autofill::CreditCard::RecordType::kVirtualCard) {
     cardAccessibleName = [@[ self.cardDetails, cardAccessibleName ]
         componentsJoinedByString:@" "];
