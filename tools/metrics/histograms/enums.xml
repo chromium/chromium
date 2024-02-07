@@ -31047,6 +31047,7 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Missing choice version"/>
   <int value="2" label="Invalid choice version"/>
   <int value="3" label="Force reprompt"/>
+  <int value="4" label="Command line flag"/>
 </enum>
 
 <enum name="SearchEntryPoint">

@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -95,6 +96,13 @@ bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
              prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
 }
 
+void MarkSearchEngineChoiceCompleted(PrefService& prefs) {
+  prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+                 base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  prefs.SetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+                  version_info::GetVersionNumber());
+}
+
 // Returns true if the version is valid and can be compared to the current
 // Chrome version.
 bool IsValidVersionFormat(const base::Version& version) {
@@ -134,7 +142,9 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
-      variations_country_id_(variations_country_id) {}
+      variations_country_id_(variations_country_id) {
+  PreprocessPrefsForReprompt();
+}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
@@ -180,11 +190,6 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   // testing and automation environments.
   if (command_line->HasSwitch(switches::kDisableSearchEngineChoiceScreen)) {
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
-  }
-
-  // Force triggering the choice screen for testing the screen itself.
-  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    return SearchEngineChoiceScreenConditions::kEligible;
   }
 
   if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
@@ -240,16 +245,6 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
   }
 
-  // Force triggering the choice screen for testing the screen itself.
-  // Deliberately checked after the conditions overriding the default search
-  // engine with some custom one because they would put the choice screens in
-  // some unstable state and they are rather easy to change if we want to
-  // re-enable the triggering.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceSearchEngineChoiceScreen)) {
-    return SearchEngineChoiceScreenConditions::kEligible;
-  }
-
   if (IsSearchEngineChoiceCompleted(*profile_prefs_)) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
@@ -301,12 +296,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
 
   RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)));
-  profile_prefs_->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  profile_prefs_->SetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      version_info::GetVersionNumber());
+  MarkSearchEngineChoiceCompleted(*profile_prefs_);
 
   if (profile_prefs_->HasPrefPath(prefs::kDefaultSearchProviderChoicePending)) {
     DVLOG(1) << "Choice made, removing profile tag.";
@@ -316,6 +306,19 @@ void SearchEngineChoiceService::RecordChoiceMade(
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    return;
+  }
+
+  // Allow re-triggering the choice screen for testing the screen itself.
+  // This flag is deliberately only clearing the prefs instead of more
+  // forcefully triggering the screen because this allows to more easily test
+  // the flows without risking to put the choice screens in some unstable state.
+  // The other conditions (e.g. country, policies, etc) are rather easy to
+  // change if we want to re-enable the triggering.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
+    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
+                                WipeSearchEngineChoiceReason::kCommandLineFlag);
     return;
   }
 
@@ -451,6 +454,12 @@ void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(
   profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall, country_id);
 }
 #endif
+
+// static
+void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs) {
+  CHECK_IS_TEST();
+  MarkSearchEngineChoiceCompleted(prefs);
+}
 
 }  // namespace search_engines
 

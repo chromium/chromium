@@ -23,6 +23,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,11 +99,13 @@ class DefaultSearchManagerTest : public testing::Test {
   void SetUp() override {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
+    TemplateURLService::RegisterProfilePrefs(pref_service_->registry());
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
+
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
             *pref_service_);
-    DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
-    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
 
     // Override the country checks to simulate being in the US.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

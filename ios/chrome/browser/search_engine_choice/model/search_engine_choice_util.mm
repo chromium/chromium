@@ -52,7 +52,6 @@ bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
       *policy_connector->GetPolicyService();
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state);
-  search_engine_choice_service->PreprocessPrefsForReprompt();
 
   // Checking whether the user is eligible for the screen.
   auto condition =

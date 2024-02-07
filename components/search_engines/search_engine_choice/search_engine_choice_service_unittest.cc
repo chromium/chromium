@@ -91,15 +91,9 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
 
-    search_engine_choice_service_ =
-        std::make_unique<SearchEngineChoiceService>(pref_service_);
-
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
-
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        &pref_service_, search_engine_choice_service_.get());
 
     InitMockPolicyService();
     CheckPoliciesInitialState();
@@ -112,9 +106,19 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
   PrefService* pref_service() { return &pref_service_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   TemplateURLService& template_url_service() {
+    if (!template_url_service_) {
+      template_url_service_ = std::make_unique<TemplateURLService>(
+          &pref_service_, &search_engine_choice_service());
+    }
+
     return CHECK_DEREF(template_url_service_.get());
   }
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
+    if (!search_engine_choice_service_) {
+      search_engine_choice_service_ =
+          std::make_unique<SearchEngineChoiceService>(pref_service_);
+    }
+
     return CHECK_DEREF(search_engine_choice_service_.get());
   }
   base::HistogramTester histogram_tester_;
@@ -345,9 +349,7 @@ TEST_F(SearchEngineChoiceServiceTest,
        ShowChoiceScreenWithForceCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceSearchEngineChoiceScreen);
-  search_engine_choice_service().RecordChoiceMade(
-      search_engines::ChoiceMadeLocation::kChoiceScreen,
-      &template_url_service());
+  search_engines::MarkSearchEngineChoiceCompletedForTesting(*pref_service());
 
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
@@ -364,6 +366,27 @@ TEST_F(SearchEngineChoiceServiceTest,
   EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
             SearchEngineChoiceScreenConditions::kEligible);
+#endif
+}
+TEST_F(SearchEngineChoiceServiceTest,
+       ShowChoiceScreenWithForceCommandLineFlag_Counterfactual) {
+  search_engines::MarkSearchEngineChoiceCompletedForTesting(*pref_service());
+
+  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
+#else
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kAlreadyCompleted);
+  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
+                template_url_service()),
+            SearchEngineChoiceScreenConditions::kAlreadyCompleted);
 #endif
 }
 
@@ -732,9 +755,10 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
       choice_version.GetString());
 
-  // The user should not be reprompted.
-  search_engine_choice_service().PreprocessPrefsForReprompt();
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
 
+  // The user should not be reprompted.
   EXPECT_EQ(kPreviousTimestamp,
             pref_service()->GetInt64(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -763,9 +787,10 @@ TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       kPreviousTimestamp);
 
-  // The user should be reprompted.
-  search_engine_choice_service().PreprocessPrefsForReprompt();
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
 
+  // The user should be reprompted.
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
   EXPECT_FALSE(pref_service()->HasPrefPath(
@@ -831,8 +856,8 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
       GetParam().choice_version);
 
-  // Check whether the user is reprompted.
-  search_engine_choice_service().PreprocessPrefsForReprompt();
+  // Trigger the creation of the service, which should check for the reprompt.
+  search_engine_choice_service();
 
   if (GetParam().wipe_reason) {
     // User is reprompted, prefs were wiped.
@@ -1042,6 +1067,7 @@ class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
         {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
           "false"}});
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
   }
 
   PrefService& pref_service() { return pref_service_; }

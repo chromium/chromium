@@ -101,8 +101,9 @@ enum class WipeSearchEngineChoiceReason {
   kMissingChoiceVersion = 1,
   kInvalidChoiceVersion = 2,
   kReprompt = 3,
+  kCommandLineFlag = 4,
 
-  kMaxValue = kReprompt,
+  kMaxValue = kCommandLineFlag,
 };
 
 // Exposed for testing.
