@@ -1194,6 +1194,16 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/\bstd::execution::(par|seq)\b',
+      (
+           'std::execution::(par|seq) is banned; they do not fit into '
+           ' Chrome\'s threading model, and libc++ doesn\'t have full '
+           'support.'
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
       r'/\bstd::bit_cast\b',
       (
         'std::bit_cast is banned; use base::bit_cast instead for values and '
