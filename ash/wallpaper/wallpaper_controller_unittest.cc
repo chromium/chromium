@@ -5479,6 +5479,33 @@ TEST_P(WallpaperControllerTest, ResetToDefaultForDeletedPhotoOnStalenessCheck) {
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
+TEST_P(WallpaperControllerTest, HandleSyncDeletedGooglePhotosPhoto) {
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
+  local_info.date -= base::Days(2);
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info);
+
+  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnceGooglePhotos);
+  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
+
+  // Just started and still loading wallpaper.
+  ASSERT_FALSE(controller_->HasShownAnyWallpaper());
+  ASSERT_THAT(client_.fetch_google_photos_photo_id(), testing::IsEmpty());
+  client_.set_google_photo_has_been_deleted(true);
+
+  SimulateUserLogin(kAccountId1);
+  EXPECT_EQ(synced_info.location, client_.fetch_google_photos_photo_id());
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo final_local_info;
+  ASSERT_TRUE(
+      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &final_local_info));
+
+  EXPECT_TRUE(final_local_info.MatchesAsset(local_info));
+  histogram_tester().ExpectUniqueSample(
+      "Ash.Wallpaper.OnceGooglePhotos.Result2",
+      SetWallpaperResult::kFileNotFound, 1);
+}
+
 TEST_P(WallpaperControllerTest, GooglePhotosAreCachedOnDisk) {
   SimulateUserLogin(kAccountId1);
 

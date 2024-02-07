@@ -89,6 +89,7 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
     const AccountId& account_id,
     const std::string& id,
     FetchGooglePhotosPhotoCallback callback) {
+  fetch_google_photos_photo_id_ = id;
   auto iter = wallpaper_google_photos_integration_enabled_.find(account_id);
   if (iter != wallpaper_google_photos_integration_enabled_.end() &&
       !iter->second) {
