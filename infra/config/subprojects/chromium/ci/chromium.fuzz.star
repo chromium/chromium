@@ -1143,6 +1143,6 @@ ci.builder(
     contact_team_email = "chrome-deet-core@google.com",
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 8 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
