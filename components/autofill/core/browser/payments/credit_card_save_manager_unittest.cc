@@ -1890,6 +1890,44 @@ TEST_F(CreditCardSaveManagerTest,
       /*enabled_features=*/
       {features::kAutofillEnableCvcStorageAndFilling,
        features::kAutofillEnableNewSaveCardBubbleUi},
+#if BUILDFLAG(IS_ANDROID)
+      /*disabled_features=*/
+      {  features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail }
+#else
+      /*disabled_features=*/{}
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  credit_card_form.fields[0].value = u"Jane Doe";
+  credit_card_form.fields[1].value = u"4111111111111111";
+  credit_card_form.fields[2].value = ASCIIToUTF16(test::NextMonth());
+  credit_card_form.fields[3].value = ASCIIToUTF16(test::NextYear());
+  credit_card_form.fields[4].value = u"123";
+  FormSubmitted(credit_card_form);
+
+  // Confirm that client_behavior_signals vector does contain the
+  // OfferingToSaveCvc signal.
+  std::vector<ClientBehaviorConstants> client_behavior_signals_in_request =
+      payments_network_interface().client_behavior_signals_in_request();
+  EXPECT_THAT(client_behavior_signals_in_request,
+              testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(
+    CreditCardSaveManagerTest,
+    AttemptToOfferCardUploadSave_SendSaveCvcSignalWhenEnabledAccountEmailInLegalMessage) {
+  // Set up the flags to enable the Tos for Save Card CVC UI.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail},
       /*disabled_features=*/{});
 
   // Set up our credit card form data.
@@ -1911,6 +1949,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_THAT(client_behavior_signals_in_request,
               testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCardUploadSave_DoNotSendSaveCvcSignalIfCvcEmpty) {
@@ -1980,7 +2019,12 @@ TEST_F(
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillEnableNewSaveCardBubbleUi});
+      /*disabled_features=*/{
+          features::kAutofillEnableNewSaveCardBubbleUi,
+#if BUILDFLAG(IS_ANDROID)
+          features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail,
+#endif
+      });
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
