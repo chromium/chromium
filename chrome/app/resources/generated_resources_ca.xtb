@@ -341,7 +341,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1251578593170406502">S'estan cercant xarxes de dades mòbils...</translation>
 <translation id="125220115284141797">Predeterminats</translation>
 <translation id="1252219782845132919">Amaga el grup</translation>
-<translation id="1252714168533640068">Fes clic al nom del grup per tornar a obrir-lo</translation>
 <translation id="1252987234827889034">S'ha produït un error amb el perfil</translation>
 <translation id="1253664522045778676">Fes clic en un resultat i la pàgina s'obrirà a la pestanya actual</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
@@ -3412,6 +3411,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3602894439067790744">Llegeix els números com a</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilitza la mateixa contrasenya}other{{COUNT} comptes utilitzen la mateixa contrasenya}}</translation>
+<translation id="3605515937536882518">Els valors del formulari s'han actualitzat</translation>
 <translation id="3605780360466892872">Executiu</translation>
 <translation id="3607671391978830431">Per a un nen o nena</translation>
 <translation id="3608460311600621471">Introdueix un motiu per imprimir aquestes dades:</translation>
@@ -4480,6 +4480,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4410545552906060960">Per desbloquejar el dispositiu, utilitza un número (PIN) en lloc d'una contrasenya. Per definir el PIN més endavant, ves a Configuració.</translation>
 <translation id="4411578466613447185">Signant del codi</translation>
 <translation id="4411719918614785832">Aquestes claus d'accés es desen a Windows Hello en aquest ordinador, i no al teu Compte de Google.</translation>
+<translation id="4412544493002546580">Torna-ho a provar o selecciona una de les inspiracions més avall.</translation>
 <translation id="4412547955014928315">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" /> i tots els llocs web que conté?</translation>
 <translation id="4412632005703201014">Les aplicacions de Chrome s'estan migrant a aplicacions web progressives. La teva organització ha instal·lat aquesta aplicació de Chrome al navegador. Per obrir l'aplicació web progressiva a la llista d'aplicacions, primer contacta amb l'administrador i demana-li que desinstal·li l'aplicació Chrome. Mentrestant, pots visitar <ph name="EXTENSION_LAUNCH_URL" /> per obrir <ph name="EXTENSION_NAME" /> al web.</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
@@ -5982,6 +5983,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="560834977503641186">Sincronització Wi‑Fi, més informació</translation>
 <translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea per retallar</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
+<translation id="5610867721023328944">Torna-ho a provar o selecciona un dels temes disponibles més avall.</translation>
 <translation id="5611398002774823980">Desa al compte</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
@@ -9716,6 +9718,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8514746246728959655">Prova una altra clau de seguretat</translation>
 <translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>
 <translation id="8515580632187889788">En continuar, permets que els tercers verifiquin la informació que identifica aquest dispositiu a la xarxa. Si no vols permetre que els tercers accedeixin a la informació del dispositiu, pots configurar un perfil d'eSIM <ph name="BEGIN_LINK" />manualment<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Fes clic amb el botó dret al grup</translation>
 <translation id="8517759303731677493">Edita…</translation>
 <translation id="8518942514525208851">Amaga el llenguatge obscè</translation>
 <translation id="8519895319663397036">No es poden importar les contrasenyes. La mida del fitxer ha de ser inferior a 150 kB.</translation>
@@ -9897,7 +9900,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8662978096466608964">Chrome no pot establir un fons de pantalla.</translation>
 <translation id="8663051876219324457">Permet que les aplicacions, els llocs web i els serveis del sistema utilitzin la teva ubicació. La ubicació pot utilitzar fonts com ara la Wi‑Fi, les xarxes mòbils i els sensors per calcular la ubicació del dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Bloqueja sempre les baixades automàtiques múltiples a l'amfitrió <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Fes clic amb el botó dret al nom del grup</translation>
 <translation id="8664389313780386848">&amp;Visualitza l'origen de la pàgina</translation>
 <translation id="8665110742939124773">Has introduït un codi d'accés incorrecte. Torna-ho a provar.</translation>
 <translation id="8665180165765946056">Còpia de seguretat completada</translation>
@@ -10375,6 +10377,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9016827136585652292">commutador de la pantalla de privadesa</translation>
 <translation id="90181708067259747">Data de caducitat: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
+<translation id="901876615920222131">Fes clic al grup per tornar a obrir-lo</translation>
 <translation id="9019062154811256702">Llegir i canviar la configuració d'Emplenament automàtic</translation>
 <translation id="9019894137004772119">Utilitza la ubicació. Permet que les aplicacions i els serveis amb permís d'ubicació utilitzin la ubicació del dispositiu. És possible que Google reculli dades d'ubicació periòdicament i les faci servir de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
 <translation id="9019956081903586892">No s'ha pogut baixar el diccionari del corrector ortogràfic</translation>

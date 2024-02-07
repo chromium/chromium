@@ -347,7 +347,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1251578593170406502">Wrthi'n sganio am rwydweithiau data symudol…</translation>
 <translation id="125220115284141797">Diofyn</translation>
 <translation id="1252219782845132919">Cuddio grŵp</translation>
-<translation id="1252714168533640068">I ailagor y grŵp, cliciwch ar enw'r grŵp</translation>
 <translation id="1252987234827889034">Bu gwall proffil</translation>
 <translation id="1253664522045778676">Cliciwch ar ganlyniad a bydd y dudalen yn agor yn eich tab presennol</translation>
 <translation id="1254593899333212300">Cysylltiad Rhyngrwyd uniongyrchol</translation>
@@ -3430,6 +3429,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3602894439067790744">Darllen rhifau fel</translation>
 <translation id="3603622770190368340">Cael tystysgrif rhwydwaith</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{Mae {COUNT} cyfrif yn defnyddio'r un cyfrinair}zero{Mae {COUNT} cyfrif yn defnyddio'r un cyfrinair}two{Mae {COUNT} gyfrif yn defnyddio'r un cyfrinair}few{Mae {COUNT} chyfrif yn defnyddio'r un cyfrinair}many{Mae {COUNT} chyfrif yn defnyddio'r un cyfrinair}other{Mae {COUNT} cyfrif yn defnyddio'r un cyfrinair}}</translation>
+<translation id="3605515937536882518">Gwerthoedd y ffurflen wedi'u diweddaru</translation>
 <translation id="3605780360466892872">Botymog</translation>
 <translation id="3607671391978830431">Ar gyfer plentyn</translation>
 <translation id="3608460311600621471">Rhowch reswm dros argraffu'r data hyn:</translation>
@@ -4499,6 +4499,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4410545552906060960">Defnyddiwch rif (PIN) yn hytrach na chyfrinair i ddatgloi eich dyfais. Ewch i'r gosodiadau i osod eich PIN yn nes ymlaen.</translation>
 <translation id="4411578466613447185">Llofnodwr Cod</translation>
 <translation id="4411719918614785832">Mae'r codau pas hyn yn cael eu cadw i Windows Hello ar y cyfrifiadur hwn. Nid ydynt yn cael eu cadw i'ch Cyfrif Google.</translation>
+<translation id="4412544493002546580">Rhowch gynnig arall arni neu dewiswch un o'r ysbrydoliaethau isod.</translation>
 <translation id="4412547955014928315">Dileu data a chaniatadau ar gyfer <ph name="SITE_NAME" /> a'r holl wefannau oddi tani?</translation>
 <translation id="4412632005703201014">Mae apiau Chrome yn mudo i Apiau Gwe Blaengar. Gosodwyd yr ap Chrome hwn ar eich porwr gan eich sefydliad. I agor yr Ap Gwe Blaengar o'r rhestr apiau, cysylltwch â'ch gweinyddwr yn gyntaf a gofynnwch iddynt ddadosod yr ap Chrome. Yn y cyfamser, gallwch ymweld â <ph name="EXTENSION_LAUNCH_URL" /> i agor <ph name="EXTENSION_NAME" /> ar y we.</translation>
 <translation id="4412698727486357573">Canolfan gymorth</translation>
@@ -6001,6 +6002,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="560834977503641186">Cysoni Wi-Fi, Dysgu Rhagor</translation>
 <translation id="5608580678041221894">Tapiwch y bysellau canlynol i addasu neu symud yr ardal docio</translation>
 <translation id="5609231933459083978">Mae'n ymddangos bod y cais yn annilys.</translation>
+<translation id="5610867721023328944">Rhowch gynnig arall arni neu dewiswch o un o'r themâu sydd ar gael isod.</translation>
 <translation id="5611398002774823980">Cadw yn y cyfrif</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Hysbysiad i'r Defnyddiwr</translation>
@@ -9742,6 +9744,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8514746246728959655">Rhowch gynnig ar allwedd ddiogelwch wahanol</translation>
 <translation id="8514955299594277296">Peidio â chaniatáu i wefannau gadw data ar eich dyfais (nid argymhellir)</translation>
 <translation id="8515580632187889788">Drwy barhau, rydych yn caniatáu i drydydd partïon wirio gwybodaeth sy'n adnabod y ddyfais hon ar y rhwydwaith. Os nad ydych am ganiatáu i drydydd partïon gael mynediad at wybodaeth dyfais, gallwch osod proffil eSIM <ph name="BEGIN_LINK" />yn bwrpasol<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">De-gliciwch ar y grŵp</translation>
 <translation id="8517759303731677493">Golygu…</translation>
 <translation id="8518942514525208851">Cuddio cabledd</translation>
 <translation id="8519895319663397036">Methu â mewnforio cyfrineiriau. Dylai maint y ffeil fod yn llai na 150 KB.</translation>
@@ -9923,7 +9926,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8662978096466608964">Ni all Chrome osod papur wal.</translation>
 <translation id="8663051876219324457">Caniatáu i apiau, gwefannau a gwasanaethau system ddefnyddio'ch lleoliad. Gall lleoliad ddefnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol, a synwyryddion i helpu i amcangyfrif lleoliad eich dyfais. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Rhwystro mwy nag un lawrlwythiad awtomatig bob tro ar <ph name="HOST" /></translation>
-<translation id="8664249499245357248">De-gliciwch ar enw'r grŵp</translation>
 <translation id="8664389313780386848">&amp;Gweld ffynhonnell y dudalen</translation>
 <translation id="8665110742939124773">Rydych wedi rhoi cod mynediad anghywir. Rhowch gynnig arall arni.</translation>
 <translation id="8665180165765946056">Mae gwneud copïau wrth gefn wedi'i gwblhau</translation>
@@ -10405,6 +10407,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9016827136585652292">togl sgrîn preifatrwydd</translation>
 <translation id="90181708067259747">Dyddiad darfod: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Wedi gorffen gosod</translation>
+<translation id="901876615920222131">I ailagor y grŵp, cliciwch ar y grŵp</translation>
 <translation id="9019062154811256702">Darllen a newid gosodiadau llenwi'n awtomatig</translation>
 <translation id="9019894137004772119">Defnyddio lleoliad. Caniatáu i apiau a gwasanaethau sydd â'r caniatâd Lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad.</translation>
 <translation id="9019956081903586892">Methu â lawrlwytho geiriadur gwirio sillafu</translation>

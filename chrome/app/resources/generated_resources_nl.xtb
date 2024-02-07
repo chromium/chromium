@@ -341,7 +341,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1251578593170406502">Scannen naar mobiele gegevensnetwerken...</translation>
 <translation id="125220115284141797">Standaard</translation>
 <translation id="1252219782845132919">Groep verbergen</translation>
-<translation id="1252714168533640068">Klik op de groepsnaam om de groep opnieuw te openen</translation>
 <translation id="1252987234827889034">Er is een profielfout opgetreden</translation>
 <translation id="1253664522045778676">Klik op een resultaat en de pagina wordt geopend in je actieve tabblad</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
@@ -3412,6 +3411,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3602894439067790744">Nummers lezen als</translation>
 <translation id="3603622770190368340">Netwerkcertificaat verkrijgen</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account gebruikt hetzelfde wachtwoord}other{{COUNT} accounts gebruiken hetzelfde wachtwoord}}</translation>
+<translation id="3605515937536882518">Formulierwaarden geüpdatet</translation>
 <translation id="3605780360466892872">Zakenman</translation>
 <translation id="3607671391978830431">Voor een kind</translation>
 <translation id="3608460311600621471">Voer een reden in waarom je deze gegevens afdrukt:</translation>
@@ -4480,6 +4480,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4410545552906060960">Gebruik een nummer (pincode) in plaats van een wachtwoord om je apparaat te ontgrendelen. Als je later een pincode wilt instellen, ga je naar Instellingen.</translation>
 <translation id="4411578466613447185">Ondertekening van code</translation>
 <translation id="4411719918614785832">Deze toegangssleutels worden opgeslagen in Windows Hello op deze computer. Ze worden niet opgeslagen in je Google-account.</translation>
+<translation id="4412544493002546580">Probeer het opnieuw of selecteer een van de inspiraties hieronder.</translation>
 <translation id="4412547955014928315">Sitegegevens en rechten verwijderen voor <ph name="SITE_NAME" /> en alle onderliggende sites?</translation>
 <translation id="4412632005703201014">Chrome-apps worden overgezet naar progressive web-apps. Je organisatie heeft deze Chrome-app in je browser geïnstalleerd. Als je de progressive web-app wilt openen vanuit de lijst met apps, neem je eerst contact op met je beheerder en vraag je deze de Chrome-app te verwijderen. In de tussentijd kun je naar <ph name="EXTENSION_LAUNCH_URL" /> gaan om <ph name="EXTENSION_NAME" /> op het web te openen.</translation>
 <translation id="4412698727486357573">Helpcentrum</translation>
@@ -5980,6 +5981,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="560834977503641186">Wifi-synchronisatie, meer informatie</translation>
 <translation id="5608580678041221894">Tik op de volgende toetsen om het bijsnijdgebied aan te passen of te verplaatsen</translation>
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
+<translation id="5610867721023328944">Probeer het opnieuw of selecteer een van de beschikbare thema's hieronder.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
@@ -9707,6 +9709,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8514746246728959655">Probeer een andere beveiligingssleutel</translation>
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>
 <translation id="8515580632187889788">Als je doorgaat, geef je derden toestemming om informatie te verifiëren waarmee dit apparaat in het netwerk wordt geïdentificeerd. Wil je niet dat derden toegang hebben tot apparaatgegevens, dan kun je <ph name="BEGIN_LINK" />handmatig<ph name="END_LINK" /> een e-simkaartprofiel instellen.</translation>
+<translation id="8516472100141530292">Klik met de rechtermuisknop op de groep</translation>
 <translation id="8517759303731677493">Bewerken…</translation>
 <translation id="8518942514525208851">Grof taalgebruik verbergen</translation>
 <translation id="8519895319663397036">Kan wachtwoorden niet importeren. Het bestand moet kleiner zijn dan 150 KB.</translation>
@@ -9888,7 +9891,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8662978096466608964">Chrome kan de achtergrond niet instellen.</translation>
 <translation id="8663051876219324457">Sta toe dat apps, websites en systeemservices je locatie gebruiken. Voor de schatting van je apparaatlocatie kunnen bronnen zoals wifi, mobiele netwerken en sensoren worden gebruikt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Meerdere automatische downloads altijd blokkeren op <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Klik met de rechtermuisknop op de groepsnaam</translation>
 <translation id="8664389313780386848">Paginabron &amp;weergeven</translation>
 <translation id="8665110742939124773">Je hebt een onjuiste toegangscode opgegeven. Probeer het opnieuw.</translation>
 <translation id="8665180165765946056">Back-up voltooid</translation>
@@ -10367,6 +10369,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9016827136585652292">privacyscherm schakelen</translation>
 <translation id="90181708067259747">Vervaldatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">De installatie is voltooid</translation>
+<translation id="901876615920222131">Klik op de groep om de groep opnieuw te openen</translation>
 <translation id="9019062154811256702">Instellingen voor 'Automatisch invullen' lezen en wijzigen</translation>
 <translation id="9019894137004772119">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van je apparaat gebruiken. Google kan periodiek locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.</translation>
 <translation id="9019956081903586892">Kan het woordenboek voor de spellingcontrole niet downloaden</translation>

@@ -344,7 +344,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1251578593170406502">Skannar eftir farsímagagnanetum...</translation>
 <translation id="125220115284141797">Sjálfgefið</translation>
 <translation id="1252219782845132919">Fela hóp</translation>
-<translation id="1252714168533640068">Smelltu á heiti hóps til að opna hann aftur</translation>
 <translation id="1252987234827889034">Villa í prófíl kom upp</translation>
 <translation id="1253664522045778676">Smelltu á niðurstöðu og síðan mun opnast á núverandi flipa</translation>
 <translation id="1254593899333212300">Beintenging við internetið</translation>
@@ -3428,6 +3427,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3602894439067790744">Lesa tölur sem</translation>
 <translation id="3603622770190368340">Fá netvottorð</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} reikningur notar sama aðgangsorð}one{{COUNT} reikningur notar sama aðgangsorð}other{{COUNT} reikningar nota sama aðgangsorð}}</translation>
+<translation id="3605515937536882518">Gildi eyðublaðs uppfærð</translation>
 <translation id="3605780360466892872">Hvítflibbi</translation>
 <translation id="3607671391978830431">Fyrir barn</translation>
 <translation id="3608460311600621471">Tilgreindu ástæðu þess að þú ert að prenta þessi gögn:</translation>
@@ -4497,6 +4497,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4410545552906060960">Notaðu PIN-númer í stað aðgangsorðs til að opna tækið. Til að stilla PIN-númer síðar ferðu í „Stillingar“.</translation>
 <translation id="4411578466613447185">Kóðaundirritun</translation>
 <translation id="4411719918614785832">Þessir aðgangslyklar eru vistaðir í Windows Hello í þessari tölvu. Þeir eru ekki vistaðir á Google-reikningnum þínum.</translation>
+<translation id="4412544493002546580">Reyndu aftur eða veldu úr tiltækum innblæstri hér fyrir neðan.</translation>
 <translation id="4412547955014928315">Eyða vefsvæðagögnum og heimildum fyrir <ph name="SITE_NAME" /> og öll undirvefsvæði?</translation>
 <translation id="4412632005703201014">Flutningur Chrome-forrita yfir í framsækin vefforrit stendur yfir. Fyrirtækið þitt setti Chrome-forritið upp á vafranum þínum. Til opna framsækna vefforritið af forritalistanum skaltu fyrst hafa samband við kerfisstjórann og biðja um að Chrome-forritið verði fjarlægt. Í millitíðinni geturðu farið á <ph name="EXTENSION_LAUNCH_URL" /> til að opna <ph name="EXTENSION_NAME" /> á vefnum.</translation>
 <translation id="4412698727486357573">Hjálparmiðstöð</translation>
@@ -5999,6 +6000,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="560834977503641186">Wi-Fi-samstilling, Frekari upplýsingar</translation>
 <translation id="5608580678041221894">Ýttu á eftirfarandi lykla til að breyta eða færa skurðarsvæðið</translation>
 <translation id="5609231933459083978">Forritið virðist vera ógilt.</translation>
+<translation id="5610867721023328944">Reyndu aftur eða veldu úr tiltækum þemum hér fyrir neðan.</translation>
 <translation id="5611398002774823980">Vista á reikningi</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notandatilkynning</translation>
@@ -9734,6 +9736,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8514746246728959655">Prófaðu annan öryggislykil</translation>
 <translation id="8514955299594277296">Ekki leyfa vefsvæðum að vista gögn í tækinu (ekki er mælt með þessu)</translation>
 <translation id="8515580632187889788">Ef þú heldur áfram heimilar þú þriðju aðilum að staðfesta upplýsingar sem auðkenna þetta tæki á netkerfinu. Ef þú vilt ekki veita þriðju aðilum aðgang að tækjaupplýsingum geturðu sett upp eSIM-prófíl <ph name="BEGIN_LINK" />handvirkt<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Hægrismelltu á hópinn</translation>
 <translation id="8517759303731677493">Breyta…</translation>
 <translation id="8518942514525208851">Fela blótsyrði</translation>
 <translation id="8519895319663397036">Ekki er hægt að flytja inn aðgangsorð. Skráin má ekki vera stærri en 150 KB.</translation>
@@ -9915,7 +9918,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8662978096466608964">Chrome getur ekki valið veggfóður.</translation>
 <translation id="8663051876219324457">Leyfa forritum, vefsvæðum og kerfisþjónustum að nota staðsetninguna þína. Staðsetning kann að nota tækni á borð við Wi-Fi, farsímakerfi og skynjara til að áætla staðsetningu tækisins. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Alltaf loka á sjálfvirkt niðurhal margra skráa á <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Hægrismelltu á heiti hóps</translation>
 <translation id="8664389313780386848">Skoða frumkóða síðu</translation>
 <translation id="8665110742939124773">Þú slóst inn rangan aðgangskóða. Reyndu aftur.</translation>
 <translation id="8665180165765946056">Afritun lokið</translation>
@@ -10394,6 +10396,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9016827136585652292">rofalykill persónuverndarskjás</translation>
 <translation id="90181708067259747">Lokadagsetning: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Uppsetningu lokið</translation>
+<translation id="901876615920222131">Smelltu á hóp til að opna hann aftur</translation>
 <translation id="9019062154811256702">Lesa og breyta stillingum sjálfvirkrar útfyllingar</translation>
 <translation id="9019894137004772119">Nota staðsetningu. Leyfa forritum og þjónustum sem hafa staðsetningarheimild að nota staðsetningu tækisins. Google gæti safnað staðsetningargögnum við og við og notað þau nafnlaust til að auka nákvæmni staðsetningar og bæta þjónustur sem styðjast við staðsetningu.</translation>
 <translation id="9019956081903586892">Ekki var hægt að sækja orðabók villuleitar</translation>

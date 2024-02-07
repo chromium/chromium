@@ -343,7 +343,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1251578593170406502">Soek tans mobieledatanetwerke …</translation>
 <translation id="125220115284141797">Verstek</translation>
 <translation id="1252219782845132919">Versteek groep</translation>
-<translation id="1252714168533640068">Klik op die groepnaam om die groep weer oop te maak</translation>
 <translation id="1252987234827889034">Profielfout het voorgekom</translation>
 <translation id="1253664522045778676">Klik ’n resultaat en die bladsy sal in jou huidige oortjie oopmaak</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
@@ -3427,6 +3426,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3602894439067790744">Lees getalle as</translation>
 <translation id="3603622770190368340">Kry netwerksertifikaat</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} rekening gebruik dieselfde wagwoord}other{{COUNT} rekeninge gebruik dieselfde wagwoord}}</translation>
+<translation id="3605515937536882518">Vormwaardes is opgedateer</translation>
 <translation id="3605780360466892872">Toegeknoop</translation>
 <translation id="3607671391978830431">Vir ’n kind</translation>
 <translation id="3608460311600621471">Voer asseblief ’n rede in hoekom jy hierdie data druk:</translation>
@@ -4496,6 +4496,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4410545552906060960">Gebruik 'n nommer (PIN) pleks van 'n wagwoord om jou toestel te ontsluit. Om jou PIN later te stel, gaan na Instellings toe.</translation>
 <translation id="4411578466613447185">Kode-vingertolk</translation>
 <translation id="4411719918614785832">Hierdie toegangsleutels word in Windows Hello op hierdie rekenaar gestoor. Hulle word nie in jou Google-rekening gestoor nie.</translation>
+<translation id="4412544493002546580">Probeer weer of kies uit een van die inspirasies hieronder.</translation>
 <translation id="4412547955014928315">Vee werfdata en toestemmings vir <ph name="SITE_NAME" /> en alle werwe onder dit uit?</translation>
 <translation id="4412632005703201014">Chrome-apps migreer tans na progressiewe webapps. Jou organisasie het hierdie Chrome-app op jou blaaier geïnstalleer. As jy die progressiewe webapp van die applysinskrywing af wil oopmaak, moet jy eers jou administrateur kontak en hulle vra om die Chrome-app te deïnstalleer. Jy kan intussen na <ph name="EXTENSION_LAUNCH_URL" /> gaan om <ph name="EXTENSION_NAME" /> op die web oop te maak.</translation>
 <translation id="4412698727486357573">Hulpsentrum</translation>
@@ -5998,6 +5999,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="560834977503641186">Wi-fi-sinkronisering, kom meer te wete</translation>
 <translation id="5608580678041221894">Tik op die volgende sleutels om die snoei-area te verstel of te skuif</translation>
 <translation id="5609231933459083978">Dit lyk of die program ongeldig is.</translation>
+<translation id="5610867721023328944">Probeer weer of kies uit een van die beskikbare temas hieronder.</translation>
 <translation id="5611398002774823980">Stoor in rekening</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerkennisgewing</translation>
@@ -9732,6 +9734,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8514746246728959655">Probeer 'n ander sekuriteitsleutel</translation>
 <translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>
 <translation id="8515580632187889788">As jy voortgaan, laat jy derde partye toe om inligting te verifieer wat hierdie toestel op die netwerk identifiseer. As jy nie derde partye toegang tot toestelinligting wil gee nie, kan jy ’n e-SIM-profiel <ph name="BEGIN_LINK" />handmatig <ph name="END_LINK" /> opstel.</translation>
+<translation id="8516472100141530292">Regsklik op die groep</translation>
 <translation id="8517759303731677493">Wysig …</translation>
 <translation id="8518942514525208851">Versteek vloektaal</translation>
 <translation id="8519895319663397036">Kan nie wagwoorde invoer nie. Die lêer moet minder as 150 KB groot wees.</translation>
@@ -9913,7 +9916,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8662978096466608964">Chrome kan nie muurpapier stel nie.</translation>
 <translation id="8663051876219324457">Laat apps, webwerwe en stelseldienste toe om jou ligging te gebruik. Ligging kan bronne soos wi-fi, selnetwerke en sensors gebruik om te help om jou toestel se ligging te skat. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blokkeer altyd veelvuldige outomatiese aflaaie op <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Regsklik op die groepnaam</translation>
 <translation id="8664389313780386848">Bekyk bladsybron</translation>
 <translation id="8665110742939124773">Jy het 'n verkeerde toegangskode ingevoer. Probeer weer.</translation>
 <translation id="8665180165765946056">Rugsteun is voltooi</translation>
@@ -10391,6 +10393,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9016827136585652292">privaatheidskermwisselaar</translation>
 <translation id="90181708067259747">Vervaldatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installering is voltooi</translation>
+<translation id="901876615920222131">Klik op die groep om die groep weer oop te maak</translation>
 <translation id="9019062154811256702">Lees en verander outovulinstellings</translation>
 <translation id="9019894137004772119">Gebruik ligging. Laat programme en dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op 'n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter.</translation>
 <translation id="9019956081903586892">Kon nie speltoetswoordeboek aflaai nie</translation>

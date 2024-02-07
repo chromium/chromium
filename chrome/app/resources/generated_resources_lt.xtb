@@ -346,7 +346,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1251578593170406502">Ieškoma mobiliojo ryšio duomenų tinklų...</translation>
 <translation id="125220115284141797">Numatytoji</translation>
 <translation id="1252219782845132919">Slėpti grupę</translation>
-<translation id="1252714168533640068">Jei norite iš naujo atidaryti grupę, spustelėkite grupės pavadinimą</translation>
 <translation id="1252987234827889034">Įvyko profilio klaida</translation>
 <translation id="1253664522045778676">Spustelėkite rezultatą ir puslapis bus atidarytas dabartiniame skirtuke</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
@@ -3430,6 +3429,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3602894439067790744">Skaityti skaičius kaip</translation>
 <translation id="3603622770190368340">Gauti tinklo sertifikatą</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} paskyroje naudojamas toks pat slaptažodis}one{{COUNT} paskyroje naudojamas toks pat slaptažodis}few{{COUNT} paskyrose naudojamas toks pat slaptažodis}many{{COUNT} paskyros naudojamas toks pat slaptažodis}other{{COUNT} paskyrų naudojamas toks pat slaptažodis}}</translation>
+<translation id="3605515937536882518">Formos vertės atnaujintos</translation>
 <translation id="3605780360466892872">Konservatyvusis</translation>
 <translation id="3607671391978830431">Vaikui</translation>
 <translation id="3608460311600621471">Įveskite šių duomenų spausdinimo priežastį.</translation>
@@ -4499,6 +4499,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4410545552906060960">Naudokite skaičių (PIN kodą) vietoje slaptažodžio įrenginiui atrakinti. Jei norite PIN kodą nustatyti vėliau, eikite į skiltį „Nustatymai“.</translation>
 <translation id="4411578466613447185">Kodą pasirašanti šalis</translation>
 <translation id="4411719918614785832">Šie slaptažodžiai išsaugomi „Windows Hello“ šiame kompiuteryje. Jie neišsaugomi „Google“ paskyroje.</translation>
+<translation id="4412544493002546580">Bandykite dar kartą arba pasirinkite vieną iš toliau pateiktų idėjų.</translation>
 <translation id="4412547955014928315">Ištrinti svetainės <ph name="SITE_NAME" /> ir visų jos antrinių svetainių duomenis bei leidimus?</translation>
 <translation id="4412632005703201014">„Chrome“ programos perkeliamos į laipsniškąsias žiniatinklio programas. Šią „Chrome“ programą naršyklėje įdiegė jūsų organizacija. Jei norite atidaryti laipsniškąją žiniatinklio programą iš programų sąrašo, pirmiausia susisiekite su administratoriumi ir paprašykite pašalinti „Chrome“ programą. Kol kas galite apsilankyti adresu <ph name="EXTENSION_LAUNCH_URL" /> ir atidaryti „<ph name="EXTENSION_NAME" />“ žiniatinklyje.</translation>
 <translation id="4412698727486357573">Pagalbos centras</translation>
@@ -6001,6 +6002,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="560834977503641186">„Wi-Fi“ sinchronizavimas, sužinokite daugiau</translation>
 <translation id="5608580678041221894">Palieskite toliau nurodytus klavišus, kad koreguotumėte ar perkeltumėte apkarpomą sritį</translation>
 <translation id="5609231933459083978">Panašu, kad ši programa yra netinkama.</translation>
+<translation id="5610867721023328944">Bandykite dar kartą arba pasirinkite vieną iš toliau pateiktų pasiekiamų temų.</translation>
 <translation id="5611398002774823980">Išsaugoti paskyroje</translation>
 <translation id="561236229031062396">„<ph name="SHORTCUT_NAME" />“, „<ph name="APP_FULL_NAME" />“</translation>
 <translation id="5614190747811328134">Naudotojo pastaba</translation>
@@ -9743,6 +9745,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8514746246728959655">Pabandykite naudoti kitą saugos raktą</translation>
 <translation id="8514955299594277296">Neleisti svetainėms išsaugoti duomenų įrenginyje (nerekomenduojama)</translation>
 <translation id="8515580632187889788">Tęsdami leidžiate trečiosioms šalims patvirtinti informaciją, kuri identifikuoja šį įrenginį tinkle. Jei nenorite leisti trečiosioms šalims pasiekti įrenginio informacijos, „eSIM“ kortelės profilį galite nustatyti <ph name="BEGIN_LINK" />neautomatiškai<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Spustelėkite grupę dešiniuoju klavišu</translation>
 <translation id="8517759303731677493">Redaguoti…</translation>
 <translation id="8518942514525208851">Slėpti nešvankybes</translation>
 <translation id="8519895319663397036">Nepavyko importuoti slaptažodžių. Failas turi būti mažesnis nei 150 KB.</translation>
@@ -9924,7 +9927,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8662978096466608964">„Chrome“ negali nustatyti darbalaukio fono.</translation>
 <translation id="8663051876219324457">Leiskite programoms, svetainėms ir sistemos paslaugoms naudoti jūsų vietovės informaciją. Vietovės paslauga gali naudoti įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad nustatytų jūsų įrenginio vietovę. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Visada blokuoti kelis automatinius atsisiuntimus <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Dešiniuoju pelės klavišu spustelėkite grupės pavadinimą</translation>
 <translation id="8664389313780386848">&amp;Rodyti puslapio šaltinį</translation>
 <translation id="8665110742939124773">Įvedėte netinkamą prieigos kodą. Bandykite dar kartą.</translation>
 <translation id="8665180165765946056">Atsarginė kopija sukurta</translation>
@@ -10405,6 +10407,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9016827136585652292">privatumo ekrano perjungimas</translation>
 <translation id="90181708067259747">Galiojimo pabaigos data: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Diegimas baigtas</translation>
+<translation id="901876615920222131">Jei norite iš naujo atidaryti grupę, spustelėkite grupę</translation>
 <translation id="9019062154811256702">Skaityti ir pakeisti automatinio pildymo nustatymus</translation>
 <translation id="9019894137004772119">Naudokite vietovės nustatymą. Leiskite programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovių duomenis ir anonimiškai naudoti šią informaciją vietovės tikslumui ir vietove pagrįstoms paslaugoms tobulinti.</translation>
 <translation id="9019956081903586892">Nepavyko atsisiųsti rašybos tikrinimo žodyno</translation>

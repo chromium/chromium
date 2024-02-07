@@ -343,7 +343,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1251578593170406502">Inatafuta mitandao ya data ya simu...</translation>
 <translation id="125220115284141797">Chaguomsingi</translation>
 <translation id="1252219782845132919">Ficha kikundi</translation>
-<translation id="1252714168533640068">Ili ufungue tena kikundi, bofya jina la kikundi</translation>
 <translation id="1252987234827889034">Hitilafu ya wasifu imetokea</translation>
 <translation id="1253664522045778676">Bofya kwenye tokeo na ukurasa utafunguka kwenye kichupo chako cha sasa</translation>
 <translation id="1254593899333212300">Muunganisho wa Mtandao wa moja kwa moja</translation>
@@ -3424,6 +3423,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3602894439067790744">Soma namba katika muundo wa</translation>
 <translation id="3603622770190368340">Pata cheti cha mtandao</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{Akaunti {COUNT} inatumia nenosiri moja}other{Akaunti {COUNT} zinatumia nenosiri moja}}</translation>
+<translation id="3605515937536882518">Thamani ya fomu imesasishwa</translation>
 <translation id="3605780360466892872">Kitufechini</translation>
 <translation id="3607671391978830431">Kwa mtoto</translation>
 <translation id="3608460311600621471">Tafadhali weka sababu ya kuchapisha data hii:</translation>
@@ -4491,6 +4491,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4410545552906060960">Tumia namba (PIN) badala ya nenosiri ili kufungua kifaa chako. Ili kuweka PIN yako baadaye, nenda kwenye Mipangilio.</translation>
 <translation id="4411578466613447185">Kitia Misimbo sahihi</translation>
 <translation id="4411719918614785832">Funguo hizi za siri zimehifadhiwa kwenye kipengele cha Windows Hello katika kompyuta hii. Hazijahifadhiwa kwenye Akaunti yako ya Google.</translation>
+<translation id="4412544493002546580">Jaribu tena au uchague kwenye mojawapo ya hamasisho hapo chini.</translation>
 <translation id="4412547955014928315">Je, ungependa kufuta data na ruhusa za tovuti ya <ph name="SITE_NAME" /> na tovuti zote zilizomo?</translation>
 <translation id="4412632005703201014">Programu za Chrome zinahamia kwenye Programu ya Wavuti ya kisasa. Programu hii ya Chrome ilisanikishwa kwenye kivinjari chako na shirika lako. Ili ufungue Programu ya Wavuti ya Kisasa kwenye Orodha ya programu, kwanza wasiliana na msimamizi wako kisha umwombe aiondoe Programu ya Chrome. Kwa sasa bado unaweza kutembelea <ph name="EXTENSION_LAUNCH_URL" /> ili kufungua <ph name="EXTENSION_NAME" /> kwenye wavuti.</translation>
 <translation id="4412698727486357573">Kituo cha usaidizi</translation>
@@ -5993,6 +5994,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="560834977503641186">Usawazishaji Wi-Fi, Pata Maelezo Zaidi</translation>
 <translation id="5608580678041221894">Gusa vitufe vinavyofuata ili urekebishe au usogeze eneo la kupunguzia</translation>
 <translation id="5609231933459083978">Programu inaonekana kuwa batili.</translation>
+<translation id="5610867721023328944">Jaribu tena au uchague kwenye mojawapo ya mandhari yanayopatikana hapo chini.</translation>
 <translation id="5611398002774823980">Hifadhi kwenye akaunti</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
@@ -9729,6 +9731,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8514746246728959655">Jaribu ufunguo tofauti wa usalama</translation>
 <translation id="8514955299594277296">Usiruhusu tovuti zihifadhi data kwenye kifaa chako (haipendekezwi)</translation>
 <translation id="8515580632187889788">Kwa kuendelea, unaruhusu wahusika wengine wathibitishe maelezo yanayotambulisha kifaa hiki kwenye mtandao. Iwapo hungependa kuruhusu wahusika wengine wafikie maelezo ya kifaa, unaweza kuweka mipangilio ya wasifu wa eSIM <ph name="BEGIN_LINK" />mwenyewe<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Bofya kulia kwenye kikundi</translation>
 <translation id="8517759303731677493">Badilisha…</translation>
 <translation id="8518942514525208851">Ficha lugha chafu</translation>
 <translation id="8519895319663397036">Imeshindwa kupakia manenosiri. Ukubwa wa faili unapaswa kuwa chini ya KB 150.</translation>
@@ -9910,7 +9913,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8662978096466608964">Chrome haiwezi kuweka mandhari.</translation>
 <translation id="8663051876219324457">Ruhusu programu, tovuti na huduma za mfumo zitumie data ya mahali ulipo. Huduma za mahali zinaweza kutumia vyanzo kama vile Wi‑Fi, mitandao ya simu na vitambuzi ili kusaidia kukadiria mahali kifaa chako kilipo. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Zuia upakuaji otomatiki kwa wingi kwenye <ph name="HOST" /> wakati wote</translation>
-<translation id="8664249499245357248">Bofya kulia kwenye jina la kikundi</translation>
 <translation id="8664389313780386848">&amp;Tazama asili ya ukurasa</translation>
 <translation id="8665110742939124773">Umeingiza msimbo wa kufikia usio sahihi. Jaribu tena.</translation>
 <translation id="8665180165765946056">Imemaliza kuhifadhi nakala</translation>
@@ -10388,6 +10390,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9016827136585652292">kugeuza skrini ya faragha</translation>
 <translation id="90181708067259747">Tarehe ya mwisho wa matumizi: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Imemaliza kusakinisha</translation>
+<translation id="901876615920222131">Ili ufungue tena kikundi, bofya kwenye kikundi</translation>
 <translation id="9019062154811256702">Soma na ubadilishe mipangilio ya kujaza otomatiki</translation>
 <translation id="9019894137004772119">Tumia data ya mahali. Ruhusu programu na huduma zilizo na ruhusa ya mahali zitumie data ya mahali kilipo kifaa chako. Google inaweza kukusanya data ya mahali mara kwa mara na kuitumia kwa njia isiyoweza kukutambulisha ili kuboresha usahihi wa kutambua mahali na huduma za mahali.</translation>
 <translation id="9019956081903586892">Imeshindwa kupakua kamusi ya kukagua maendelezo</translation>

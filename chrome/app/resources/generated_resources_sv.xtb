@@ -343,7 +343,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1251578593170406502">Söker efter mobildatanätverk …</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Dölj grupp</translation>
-<translation id="1252714168533640068">Klicka på gruppnamnet för att öppna gruppen igen</translation>
 <translation id="1252987234827889034">Ett profilfel har uppstått</translation>
 <translation id="1253664522045778676">Klicka på ett resultat så öppnas sidan på den aktuella fliken.</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
@@ -3427,6 +3426,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3602894439067790744">Läs upp nummer som</translation>
 <translation id="3603622770190368340">Skaffa nätverkscertifikat</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{Samma lösenord används för {COUNT} konto}other{Samma lösenord används för {COUNT} konton}}</translation>
+<translation id="3605515937536882518">Formulärvärden har uppdaterats</translation>
 <translation id="3605780360466892872">Proper</translation>
 <translation id="3607671391978830431">För ett barn</translation>
 <translation id="3608460311600621471">Ange en anledning till att du skriver ut datan:</translation>
@@ -4496,6 +4496,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4410545552906060960">Lås upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
 <translation id="4411578466613447185">Kodsigneringscertifikat</translation>
 <translation id="4411719918614785832">De här nycklarna sparas i Windows Hello på den här datorn. De sparas inte i Google-kontot.</translation>
+<translation id="4412544493002546580">Försök igen eller välj bland förslagen nedan.</translation>
 <translation id="4412547955014928315">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" /> och alla underordnade webbplatser?</translation>
 <translation id="4412632005703201014">Chrome-appar migreras till progressiva webbappar. Den här Chrome-appen har installerats i webbläsaren av din organisation. Om du vill öppna den progressiva webbappen från applistan måste du först kontakta administratören och be hen avinstallera Chrome-appen. Under tiden kan du besöka <ph name="EXTENSION_LAUNCH_URL" /> för att öppna <ph name="EXTENSION_NAME" /> på webben.</translation>
 <translation id="4412698727486357573">Hjälpcenter</translation>
@@ -5998,6 +5999,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
 <translation id="5608580678041221894">Tryck på följande knappar för att justera eller flytta beskärningsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
+<translation id="5610867721023328944">Försök igen eller välj något av de tillgängliga temana nedan.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
@@ -9733,6 +9735,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8514746246728959655">Testa med en annan säkerhetsnyckel</translation>
 <translation id="8514955299594277296">Tillåt inte att webbplatser sparar data på din enhet (rekommenderas inte)</translation>
 <translation id="8515580632187889788">Genom att fortsätta tillåter du att tredje part verifierar uppgifter som identifierar den här enheten i nätverket. Om du inte vill ge tredje part åtkomst till enhetsinformation kan du konfigurera en eSIM-profil <ph name="BEGIN_LINK" />manuellt<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Högerklicka på gruppen</translation>
 <translation id="8517759303731677493">Redigera …</translation>
 <translation id="8518942514525208851">Dölj svordomar</translation>
 <translation id="8519895319663397036">Det gick inte att importera lösenorden. Filstorleken får högst vara 150 kB.</translation>
@@ -9914,7 +9917,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8662978096466608964">Bakgrundsbilden kan inte anges i Chrome.</translation>
 <translation id="8663051876219324457">Tillåt att din plats används av appar, webbplatser och systemtjänster. Enhetens plats beräknas utifrån källor som wifi, mobilnätverk och sensorer. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blockera alltid flera automatiska nedladdningar på <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Högerklicka på gruppnamnet</translation>
 <translation id="8664389313780386848">Visa &amp;sidkälla</translation>
 <translation id="8665110742939124773">Du har angett fel åtkomstkod. Försök igen.</translation>
 <translation id="8665180165765946056">Säkerhetskopieringen är klar</translation>
@@ -10392,6 +10394,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9016827136585652292">tangenten som aktiverar och inaktiverar integritetsskärmen</translation>
 <translation id="90181708067259747">Sista giltighetsdatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installationen har slutförts</translation>
+<translation id="901876615920222131">Klicka på gruppen för att öppna den igen</translation>
 <translation id="9019062154811256702">Läsa och ändra inställningarna för Autofyll</translation>
 <translation id="9019894137004772119">Använd plats. Tillåt att appar och tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
 <translation id="9019956081903586892">Det gick inte att ladda ned ordlistan för stavningskontroll</translation>

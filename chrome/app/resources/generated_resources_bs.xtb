@@ -345,7 +345,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1251578593170406502">Skeniranje mreža za prijenos podataka...</translation>
 <translation id="125220115284141797">Zadano</translation>
 <translation id="1252219782845132919">Sakrij grupu</translation>
-<translation id="1252714168533640068">Da ponovo otvorite grupu, kliknite na naziv grupe</translation>
 <translation id="1252987234827889034">Došlo je do greške na profilu</translation>
 <translation id="1253664522045778676">Kliknite na rezultat i stranica će se otvoriti u trenutnoj kartici</translation>
 <translation id="1254593899333212300">Direktna internetska veza</translation>
@@ -3426,6 +3425,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3602894439067790744">Čitaj brojeve kao</translation>
 <translation id="3603622770190368340">Nabavite novu potvrdu</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} račun koristi istu lozinku}one{{COUNT} račun koristi istu lozinku}few{{COUNT} računa koriste istu lozinku}other{{COUNT} računa koristi istu lozinku}}</translation>
+<translation id="3605515937536882518">Ažurirane su vrijednosti obrasca</translation>
 <translation id="3605780360466892872">Biznismen</translation>
 <translation id="3607671391978830431">Za dijete</translation>
 <translation id="3608460311600621471">Unesite razlog štampanja ovih podataka:</translation>
@@ -4495,6 +4495,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4410545552906060960">Koristite broj (PIN) umjesto lozinke da otključate uređaj. Idite u Postavke da postavite PIN kasnije.</translation>
 <translation id="4411578466613447185">Potpisnik koda</translation>
 <translation id="4411719918614785832">Ovi pristupni ključevi su sačuvani u Windows Hellou na ovom računaru. Nisu sačuvani na vašem Google računu.</translation>
+<translation id="4412544493002546580">Pokušajte ponovo ili odaberite jednu od inspiracija u nastavku.</translation>
 <translation id="4412547955014928315">Izbrisati podatke web lokacije i odobrenja za <ph name="SITE_NAME" /> i sve web lokacije povezane s njom?</translation>
 <translation id="4412632005703201014">Chromeove aplikacije se premještaju u progresivne web aplikacije. Vaša organizacija je instalirala ovu Chromeovu aplikaciju u vašem pregledniku. Da otvorite progresivnu web aplikaciju s liste aplikacija, prvo kontaktirajte administratora i zatražite da deinstalira Chromeovu aplikaciju. U međuvremenu, možete posjetiti <ph name="EXTENSION_LAUNCH_URL" /> da otvorite ekstenziju <ph name="EXTENSION_NAME" /> na webu.</translation>
 <translation id="4412698727486357573">Centar za pomoć</translation>
@@ -5997,6 +5998,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="560834977503641186">WiFi sinhronizacija, saznajte više</translation>
 <translation id="5608580678041221894">Dodirnite sljedeće tipke da podesite ili pomjerite područje za rezanje</translation>
 <translation id="5609231933459083978">Čini se da je aplikacija nevažeća.</translation>
+<translation id="5610867721023328944">Pokušajte ponovo ili odaberite jednu od dostupnih tema u nastavku.</translation>
 <translation id="5611398002774823980">Sačuvaj na račun</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Korisničko obavještenja</translation>
@@ -9736,6 +9738,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8514746246728959655">Probajte drugi sigurnosni ključ</translation>
 <translation id="8514955299594277296">Nemojte dozvoliti web lokacijama da pohranjuju podatke na vašem uređaju (ne preporučuje se)</translation>
 <translation id="8515580632187889788">Ako nastavite, dozvoljavate trećim stranama da potvrđuju informacije koje identificiraju ovaj uređaj na mreži. Ako ne želite dozvoliti trećim stranama pristup informacijama s uređaja, možete <ph name="BEGIN_LINK" />ručno<ph name="END_LINK" /> postaviti eSIM profil.</translation>
+<translation id="8516472100141530292">Izvršite desni klik na grupu</translation>
 <translation id="8517759303731677493">Uredite…</translation>
 <translation id="8518942514525208851">Sakrij vulgarnost</translation>
 <translation id="8519895319663397036">Nije moguće uvesti lozinke. Fajl treba biti manji od 150 kB.</translation>
@@ -9917,7 +9920,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8662978096466608964">Chrome ne može postaviti pozadinsku sliku.</translation>
 <translation id="8663051876219324457">Dozvolite aplikacijama, web lokacijama i uslugama sistema da koriste vašu lokaciju. Lokacija može koristiti izvore kao što su WiFi, mobilne mreže i senzori da lakše procijeni lokaciju uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Uvijek blokiraj više automatskih preuzimanja na host računaru <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Desnim klikom kliknite na naziv grupe</translation>
 <translation id="8664389313780386848">&amp;Prikaz izvora stranice</translation>
 <translation id="8665110742939124773">Unijeli se neispravan pristupni kôd. Pokušajte ponovo.</translation>
 <translation id="8665180165765946056">Izrada sigurnosne kopije je završena</translation>
@@ -10397,6 +10399,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="9016827136585652292">prekidač za ekran privatnosti</translation>
 <translation id="90181708067259747">Datum isteka: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalacija je završena</translation>
+<translation id="901876615920222131">Da ponovo otvorite grupu, kliknite na nju</translation>
 <translation id="9019062154811256702">Čitanje i mijenjanje postavki automatskog popunjavanja</translation>
 <translation id="9019894137004772119">Koristite lokaciju. Dozvolite aplikacijama i uslugama koje imaju odobrenje za lokaciju da koriste lokaciju vašeg uređaja. Google može povremeno prikupljati podatke o lokaciji i anonimno koristiti te podatke radi poboljšavanja preciznosti lokacije i usluga koje se zasnivaju na lokaciji.</translation>
 <translation id="9019956081903586892">Preuzimanje rječnika za provjeru pravopisa nije uspjelo</translation>

@@ -343,7 +343,6 @@
 <translation id="1251578593170406502">正在掃瞄流動數據網絡…</translation>
 <translation id="125220115284141797">預設</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
-<translation id="1252714168533640068">如要重新開啟群組，請按一下群組名稱</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1253664522045778676">按一下結果，頁面便會在目前的分頁中開啟</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
@@ -3427,6 +3426,7 @@
 <translation id="3602894439067790744">朗讀數字方式</translation>
 <translation id="3603622770190368340">取得網絡憑證</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶正在使用同一個密碼}other{{COUNT} 個帳戶正在使用同一個密碼}}</translation>
+<translation id="3605515937536882518">更新咗表格數值</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3607671391978830431">供子女使用</translation>
 <translation id="3608460311600621471">請提供列印這些資料的原因：</translation>
@@ -4492,6 +4492,7 @@
 <translation id="4410545552906060960">您可以使用數字 (PIN) 來解鎖裝置。如要稍後才設定 PIN，請前往「設定」。</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4411719918614785832">這些密鑰會儲存在此電腦的 Windows Hello 上，並不會儲存至您的 Google 帳戶。</translation>
+<translation id="4412544493002546580">請再試一次，或選取下方其中一個靈感。</translation>
 <translation id="4412547955014928315">要刪除 <ph name="SITE_NAME" /> 和當中所有網站的網站資料和權限嗎？</translation>
 <translation id="4412632005703201014">Chrome 應用程式正在轉移至漸進式網頁應用程式。此 Chrome 應用程式是由機構安裝在您的瀏覽器上。如要從「應用程式清單」開啟「漸進式網頁應用程式」，首先請聯絡管理員，並要求他們解除安裝 Chrome 應用程式。同時，您可前往 <ph name="EXTENSION_LAUNCH_URL" /> 以便在網絡上開啟 <ph name="EXTENSION_NAME" />。</translation>
 <translation id="4412698727486357573">說明中心</translation>
@@ -5994,6 +5995,7 @@
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
+<translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存在帳戶中</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />，<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">使用者通知</translation>
@@ -9726,6 +9728,7 @@
 <translation id="8514746246728959655">請改用其他安全密鑰</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="8515580632187889788">繼續即表示你允許第三方在此網絡上驗證可識別此裝置的資料。如果不想讓第三方存取裝置資訊，可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 設定檔。</translation>
+<translation id="8516472100141530292">在群組上按一下右鍵</translation>
 <translation id="8517759303731677493">編輯…</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
 <translation id="8519895319663397036">無法匯入密碼，檔案大小不得超過 150 KB。</translation>
@@ -9907,7 +9910,6 @@
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
 <translation id="8663051876219324457">允許應用程式、網站和系統服務使用你的位置。定位服務可能會使用 Wi-Fi、流動網絡和感應器等來源去偵測裝置的所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">永遠禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
-<translation id="8664249499245357248">在群組名稱上按一下右鍵</translation>
 <translation id="8664389313780386848">檢視網頁原始碼(&amp;V)</translation>
 <translation id="8665110742939124773">您輸入不正確的存取碼。請再試一次。</translation>
 <translation id="8665180165765946056">備份完成</translation>
@@ -10385,6 +10387,7 @@
 <translation id="9016827136585652292">私隱保護畫面切換</translation>
 <translation id="90181708067259747">到期日：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安裝完成</translation>
+<translation id="901876615920222131">如要重新開啟群組，請按一下群組</translation>
 <translation id="9019062154811256702">讀取及變更自動填入設定</translation>
 <translation id="9019894137004772119">使用定位服務。允許具備位置資訊存取權的應用程式和服務使用您的裝置位置。Google 可能會定期收集位置資料，並以匿名方式使用這些資料，以提升位置精確度和適地性服務。</translation>
 <translation id="9019956081903586892">無法下載拼字檢查字典</translation>

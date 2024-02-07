@@ -342,7 +342,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1251578593170406502">Recherche de réseaux de données mobiles…</translation>
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252219782845132919">Masquer le groupe</translation>
-<translation id="1252714168533640068">Pour rouvrir le groupe, cliquez sur son nom</translation>
 <translation id="1252987234827889034">Erreur au niveau du profil</translation>
 <translation id="1253664522045778676">Cliquez sur un résultat (la page s'ouvrira dans l'onglet actif)</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -3413,6 +3412,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3602894439067790744">Lire les nombres comme</translation>
 <translation id="3603622770190368340">Obtenir un certificat réseau</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilise le même mot de passe}one{{COUNT} compte utilise le même mot de passe}other{{COUNT} comptes utilisent le même mot de passe}}</translation>
+<translation id="3605515937536882518">Valeurs du formulaire mises à jour</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3607671391978830431">Pour un enfant</translation>
 <translation id="3608460311600621471">Veuillez indiquer la raison pour laquelle vous imprimez ces données :</translation>
@@ -4482,6 +4482,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4410545552906060960">Utilisez un numéro (code) au lieu d'un mot de passe pour déverrouiller votre appareil. Pour définir votre code ultérieurement, accédez aux paramètres.</translation>
 <translation id="4411578466613447185">Signataire de code</translation>
 <translation id="4411719918614785832">Ces clés d'accès sont enregistrées dans Windows Hello sur cet ordinateur. Elles ne sont pas enregistrées dans votre compte Google.</translation>
+<translation id="4412544493002546580">Réessayez ou sélectionnez l'une des sources d'inspiration ci-dessous.</translation>
 <translation id="4412547955014928315">Supprimer les données et autorisations de <ph name="SITE_NAME" /> et de tous les sites qui en dépendent ?</translation>
 <translation id="4412632005703201014">Les applis Chrome deviennent des progressive web apps. Cette appli Chrome a été installée sur votre navigateur par votre organisation. Pour ouvrir la progressive web app à partir de la liste des applis, contactez d'abord votre administrateur et demandez-lui de désinstaller l'appli Chrome. En attendant, vous pouvez accéder à <ph name="EXTENSION_LAUNCH_URL" /> pour ouvrir <ph name="EXTENSION_NAME" /> sur le Web.</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
@@ -5983,6 +5984,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="560834977503641186">Sync Wi-Fi (en savoir plus)</translation>
 <translation id="5608580678041221894">Appuyez sur les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
+<translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes disponibles ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
@@ -9721,6 +9723,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8514746246728959655">Essayer une autre clé de sécurité</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (déconseillé)</translation>
 <translation id="8515580632187889788">En continuant, vous autorisez des tiers à vérifier les informations permettant d'identifier cet appareil sur le réseau. Si vous ne souhaitez pas autoriser des tiers à accéder aux informations provenant de l'appareil, vous pouvez configurer un profil eSIM <ph name="BEGIN_LINK" />manuellement<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Effectuez un clic droit sur le groupe</translation>
 <translation id="8517759303731677493">Modifier…</translation>
 <translation id="8518942514525208851">Masquer le langage vulgaire</translation>
 <translation id="8519895319663397036">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 150 Ko.</translation>
@@ -9902,7 +9905,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8662978096466608964">Impossible d'utiliser ce fond d'écran avec Chrome.</translation>
 <translation id="8663051876219324457">Autoriser les applis, sites Web et services système à utiliser votre position. Les services de localisation peuvent utiliser des sources telles que le Wi-Fi, les réseaux mobiles et les capteurs pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Toujours bloquer les téléchargements automatiques de plusieurs fichiers sur <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Effectuez un clic droit sur le nom du groupe</translation>
 <translation id="8664389313780386848">&amp;Afficher le code source de la page</translation>
 <translation id="8665110742939124773">Vous avez saisi un code d'accès incorrect. Réessayez.</translation>
 <translation id="8665180165765946056">Sauvegarde terminée</translation>
@@ -10381,6 +10383,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9016827136585652292">activer/désactiver l'écran Confidentialité</translation>
 <translation id="90181708067259747">Date d'expiration : <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation terminée</translation>
+<translation id="901876615920222131">Pour rouvrir le groupe, cliquez dessus</translation>
 <translation id="9019062154811256702">Consulter et modifier les paramètres de saisie automatique</translation>
 <translation id="9019894137004772119">Utiliser la localisation. Permettre aux services et applications d'utiliser la position de votre appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter des données de localisation régulièrement et s'en servir de manière anonyme pour améliorer la précision de la localisation et les services géolocalisés.</translation>
 <translation id="9019956081903586892">Impossible de télécharger le dictionnaire du correcteur orthographique</translation>

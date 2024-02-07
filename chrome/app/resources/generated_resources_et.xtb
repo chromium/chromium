@@ -343,7 +343,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1251578593170406502">Mobiilse andmeside võrkude skannimine …</translation>
 <translation id="125220115284141797">Vaikeseade</translation>
 <translation id="1252219782845132919">Peida grupp</translation>
-<translation id="1252714168533640068">Grupi uuesti avamiseks klõpsake grupi nimel</translation>
 <translation id="1252987234827889034">Ilmnes profiili viga</translation>
 <translation id="1253664522045778676">Klõpsake tulemusel ja leht avaneb teie praegusel vahelehel</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
@@ -3418,6 +3417,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3602894439067790744">Loe numbreid järgmiselt:</translation>
 <translation id="3603622770190368340">Võrgusertifikaadi hankimine</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto kasutab sama parooli}other{{COUNT} kontot kasutavad sama parooli}}</translation>
+<translation id="3605515937536882518">Vormi väärtust värskendati</translation>
 <translation id="3605780360466892872">Triiksärk</translation>
 <translation id="3607671391978830431">Lapsele</translation>
 <translation id="3608460311600621471">Sisestage nende andmete printimise põhjus.</translation>
@@ -4487,6 +4487,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4410545552906060960">Kasutage seadme avamiseks parooli asemel numbrit (PIN-kood). Hiljem PIN-koodi seadistamiseks avage jaotis Seaded.</translation>
 <translation id="4411578466613447185">Koodi allkirjastaja</translation>
 <translation id="4411719918614785832">Need pääsukoodid salvestatakse selles arvutis rakendusse Windows Hello. Neid ei salvestata teie Google'i kontole.</translation>
+<translation id="4412544493002546580">Proovige uuesti või tehke valik allolevate inspireerivate taustapiltide hulgast.</translation>
 <translation id="4412547955014928315">Kas kustutada saidi <ph name="SITE_NAME" /> ja kõigi selle alamsaitide andmed ja load?</translation>
 <translation id="4412632005703201014">Chrome'i rakendustest saavad progressiivsed veebirakendused. Selle Chrome'i rakenduse installis teie brauserisse teie organisatsioon. Rakenduste loendist progressiivse veebirakenduse avamiseks võtke esmalt ühendust administraatoriga ja paluge tal Chrome'i rakendus desinstallida. Seni võite külastada saiti <ph name="EXTENSION_LAUNCH_URL" />, et laiendus <ph name="EXTENSION_NAME" /> veebis avada.</translation>
 <translation id="4412698727486357573">Abikeskus</translation>
@@ -5988,6 +5989,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="560834977503641186">WiFi sünkroonimine, lisateave</translation>
 <translation id="5608580678041221894">Kärpimisala kohandamiseks või teisaldamiseks puudutage järgmiseid klahve</translation>
 <translation id="5609231933459083978">Rakendus näib olevat sobimatu.</translation>
+<translation id="5610867721023328944">Proovige uuesti või valige mõni allolevatest saadaolevatest teemadest.</translation>
 <translation id="5611398002774823980">Salvesta kontole</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Teatis kasutajale</translation>
@@ -9723,6 +9725,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8514746246728959655">Proovige muud turvavõtit</translation>
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>
 <translation id="8515580632187889788">Jätkamisel lubate kolmandatel osapooltel kontrollida teavet, mis tuvastab võrgus selle seadme. Kui te ei soovi lubada kolmandatele osapooltele juurdepääsu seadme teabele, saate eSIM-i profiili <ph name="BEGIN_LINK" />käsitsi<ph name="END_LINK" /> seadistada.</translation>
+<translation id="8516472100141530292">Paremklõpsake grupil.</translation>
 <translation id="8517759303731677493">Muuda …</translation>
 <translation id="8518942514525208851">Peida roppused</translation>
 <translation id="8519895319663397036">Ei saa paroole importida. Faili suurus peab olema alla 150 kB.</translation>
@@ -9904,7 +9907,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8662978096466608964">Chrome ei saa taustapilti määrata.</translation>
 <translation id="8663051876219324457">Rakendustel, veebisaitidel ja süsteemiteenustel teie asukohta kasutamise lubamine. Funktsioon Asukoht võib teie seadme asukoha tuvastamiseks kasutada selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blokeeri alati mitu automaatset allalaadimist hosti <ph name="HOST" /> korral</translation>
-<translation id="8664249499245357248">Paremklõpsake grupi nimel</translation>
 <translation id="8664389313780386848">Vaata lehekülje lähtekoodi</translation>
 <translation id="8665110742939124773">Sisestasite vale pääsukoodi. Proovige uuesti.</translation>
 <translation id="8665180165765946056">Varundamine jõudis lõpule</translation>
@@ -10382,6 +10384,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9016827136585652292">privaatse kuva lüliti</translation>
 <translation id="90181708067259747">Aegumiskuupäev: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installimine lõpetati</translation>
+<translation id="901876615920222131">Grupi uuesti avamiseks klõpsake grupil</translation>
 <translation id="9019062154811256702">Automaattäite seadete lugemine ja muutmine</translation>
 <translation id="9019894137004772119">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga rakendustel ja teenustel kasutada teie seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt, et parandada asukoha täpsust ja asukohapõhiseid teenuseid.</translation>
 <translation id="9019956081903586892">Õigekirjakontrolli sõnastikku ei õnnestunud alla laadida</translation>

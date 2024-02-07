@@ -343,7 +343,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1251578593170406502">Szukam sieci komórkowych…</translation>
 <translation id="125220115284141797">Domyślne</translation>
 <translation id="1252219782845132919">Ukryj grupę</translation>
-<translation id="1252714168533640068">Aby ponownie otworzyć grupę, kliknij jej nazwę</translation>
 <translation id="1252987234827889034">Wystąpił błąd profilu</translation>
 <translation id="1253664522045778676">Kliknij wynik, a strona otworzy się w bieżącej karcie</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
@@ -3394,6 +3393,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3602894439067790744">Odczytuj numery jako</translation>
 <translation id="3603622770190368340">Pobierz certyfikat sieci</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto używa tego samego hasła}few{{COUNT} konta używają tego samego hasła}many{{COUNT} kont używa tego samego hasła}other{{COUNT} konta używa tego samego hasła}}</translation>
+<translation id="3605515937536882518">Wartości w formularzu zostały zaktualizowane</translation>
 <translation id="3605780360466892872">Garnitur</translation>
 <translation id="3607671391978830431">Dla dziecka</translation>
 <translation id="3608460311600621471">Wpisz uzasadnienie wydrukowania tych danych:</translation>
@@ -4463,6 +4463,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4410545552906060960">Do odblokowywania urządzenia możesz używać numeru PIN zamiast hasła. Możesz podać PIN później w Ustawieniach.</translation>
 <translation id="4411578466613447185">Certyfikat do podpisywania kodu</translation>
 <translation id="4411719918614785832">Te klucze dostępu są zapisywane w systemie Windows Hello na tym komputerze. Nie są one zapisywane na Twoim koncie Google.</translation>
+<translation id="4412544493002546580">Spróbuj ponownie lub wybierz jedną z poniższych inspiracji.</translation>
 <translation id="4412547955014928315">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych?</translation>
 <translation id="4412632005703201014">Aplikacje Chrome zmieniamy w progresywne aplikacje internetowe. Tę aplikację Chrome zainstalowała w przeglądarce Twoja organizacja. Aby otworzyć progresywną aplikację internetową z listy aplikacji, najpierw skontaktuj się z administratorem i poproś o odinstalowanie aplikacji Chrome. Tymczasem możesz wejść na <ph name="EXTENSION_LAUNCH_URL" />, aby otworzyć rozszerzenie <ph name="EXTENSION_NAME" /> w przeglądarce.</translation>
 <translation id="4412698727486357573">Centrum pomocy</translation>
@@ -5963,6 +5964,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="560834977503641186">Synchronizacja Wi-Fi, więcej informacji</translation>
 <translation id="5608580678041221894">Kliknij te przyciski, by zmienić lub przesunąć obszar przycinania</translation>
 <translation id="5609231933459083978">Wygląda na to, że aplikacja jest nieprawidłowa.</translation>
+<translation id="5610867721023328944">Spróbuj ponownie lub wybierz jeden z dostępnych motywów poniżej.</translation>
 <translation id="5611398002774823980">Zapisz na koncie</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Informacje dla użytkownika</translation>
@@ -9699,6 +9701,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8514746246728959655">Użyj innego klucza bezpieczeństwa</translation>
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>
 <translation id="8515580632187889788">Przechodząc dalej, zezwalasz osobom trzecim na weryfikowanie informacji identyfikujących to urządzenie w sieci. Jeśli nie chcesz, aby osoby trzecie miały dostęp do informacji o urządzeniu, możesz skonfigurować profil eSIM <ph name="BEGIN_LINK" />ręcznie<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Kliknij grupę prawym przyciskiem myszy</translation>
 <translation id="8517759303731677493">Edytuj…</translation>
 <translation id="8518942514525208851">Ukrywaj wulgaryzmy</translation>
 <translation id="8519895319663397036">Nie udało się zaimportować haseł. Rozmiar pliku powinien być mniejszy niż 150 KB.</translation>
@@ -9880,7 +9883,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8662978096466608964">Chrome nie może ustawić tapety.</translation>
 <translation id="8663051876219324457">Zezwalaj aplikacjom, stronom internetowym i usługom systemowym na używanie Twojej lokalizacji. Lokalizacja może używać takich źródeł jak Wi-Fi i sieci komórkowe oraz czujniki, aby łatwiej określać lokalizację urządzenia. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Zawsze blokuj wiele pobierań automatycznych na <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Kliknij prawym przyciskiem myszy nazwę grupy</translation>
 <translation id="8664389313780386848">&amp;Wyświetl źródło strony</translation>
 <translation id="8665110742939124773">Nieprawidłowy kod dostępu. Spróbuj jeszcze raz.</translation>
 <translation id="8665180165765946056">Kopia zapasowa utworzona</translation>
@@ -10358,6 +10360,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9016827136585652292">przełącznik filtra prywatności</translation>
 <translation id="90181708067259747">Data ważności: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalacja ukończona</translation>
+<translation id="901876615920222131">Aby ponownie otworzyć grupę, kliknij ją</translation>
 <translation id="9019062154811256702">Odczytywanie i zmienianie ustawień autouzupełniania</translation>
 <translation id="9019894137004772119">Używaj lokalizacji. Zezwól na używanie lokalizacji Twojego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług.</translation>
 <translation id="9019956081903586892">Nie udało się pobrać słownika do sprawdzania pisowni</translation>

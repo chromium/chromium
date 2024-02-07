@@ -343,7 +343,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1251578593170406502">Mengimbas untuk mengesan rangkaian data mudah alih...</translation>
 <translation id="125220115284141797">Lalai</translation>
 <translation id="1252219782845132919">Sembunyikan kumpulan</translation>
-<translation id="1252714168533640068">Untuk membuka semula kumpulan, klik nama kumpulan</translation>
 <translation id="1252987234827889034">Ralat profil berlaku</translation>
 <translation id="1253664522045778676">Klik hasil carian dan halaman akan dibuka dalam tab semasa anda</translation>
 <translation id="1254593899333212300">Sambungan Internet Langsung</translation>
@@ -3427,6 +3426,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3602894439067790744">Baca nombor sebagai</translation>
 <translation id="3603622770190368340">Dapatkan sijil rangkaian</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} akaun menggunakan kata laluan yang sama}other{{COUNT} akaun menggunakan kata laluan yang sama}}</translation>
+<translation id="3605515937536882518">Nilai borang dikemaskinikan</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3607671391978830431">Untuk anak</translation>
 <translation id="3608460311600621471">Sila masukkan sebab untuk mencetak data ini:</translation>
@@ -4496,6 +4496,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4410545552906060960">Gunakan nombor (PIN) dan bukannya kata laluan untuk membuka kunci peranti anda. Pergi ke Tetapan untuk menetapkan PIN anda kemudian.</translation>
 <translation id="4411578466613447185">Penandatangan Kod</translation>
 <translation id="4411719918614785832">Kunci laluan ini disimpan dalam Windows Hello pada komputer ini. Kunci laluan ini tidak disimpan pada Google Account anda.</translation>
+<translation id="4412544493002546580">Cuba lagi atau pilih salah satu daripada inspirasi di bawah.</translation>
 <translation id="4412547955014928315">Padamkan data dan kebenaran laman untuk <ph name="SITE_NAME" /> dan semua laman di bawah laman tersebut?</translation>
 <translation id="4412632005703201014">Apl Chrome berhijrah kepada Apl Web Progresif. Apl Chrome ini telah dipasang pada penyemak imbas anda oleh organisasi anda. Untuk membuka Apl Web Progresif daripada senarai Apl, hubungi pentadbir anda dahulu dan minta beliau menyahpasang Apl Chrome. Sementara itu, anda boleh melawati<ph name="EXTENSION_LAUNCH_URL" /> untuk membuka <ph name="EXTENSION_NAME" /> di web.</translation>
 <translation id="4412698727486357573">Pusat bantuan</translation>
@@ -5998,6 +5999,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="560834977503641186">Penyegerakan Wi-Fi, Ketahui Lebih Lanjut</translation>
 <translation id="5608580678041221894">Ketik kekunci berikut untuk melaras atau mengalihkan kawasan pemangkasan</translation>
 <translation id="5609231933459083978">Apl kelihatan tidak sah.</translation>
+<translation id="5610867721023328944">Cuba lagi atau pilih salah satu daripada tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
@@ -9734,6 +9736,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8514746246728959655">Cuba kunci keselamatan lain</translation>
 <translation id="8514955299594277296">Jangan benarkan laman menyimpan data pada peranti anda (tidak disyorkan)</translation>
 <translation id="8515580632187889788">Dengan meneruskan proses, anda membenarkan pihak ketiga mengesahkan maklumat yang mengenal pasti peranti ini pada rangkaian. Jika anda tidak mahu membenarkan pihak ketiga mengakses maklumat peranti, anda boleh menetapkan profil eSIM <ph name="BEGIN_LINK" />secara manual<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Klik kanan pada kumpulan</translation>
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518942514525208851">Sembunyikan kata-kata cabul</translation>
 <translation id="8519895319663397036">Tidak dapat mengimport kata laluan. Saiz fail hendaklah kurang daripada 150 KB.</translation>
@@ -9915,7 +9918,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8662978096466608964">Chrome tidak boleh menetapkan kertas dinding.</translation>
 <translation id="8663051876219324457">Benarkan apl, laman web dan perkhidmatan sistem menggunakan lokasi anda. Lokasi mungkin menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Sentiasa halang muat turun automatik berbilang pada <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Klik kanan pada nama kumpulan</translation>
 <translation id="8664389313780386848">&amp;Lihat sumber halaman</translation>
 <translation id="8665110742939124773">Anda telah memasukkan kod akses yang salah. Cuba lagi.</translation>
 <translation id="8665180165765946056">Sandaran selesai</translation>
@@ -10393,6 +10395,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9016827136585652292">togol skrin privasi</translation>
 <translation id="90181708067259747">Tarikh tamat tempoh: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Pemasangan selesai</translation>
+<translation id="901876615920222131">Untuk membuka semula kumpulan, klik kumpulan</translation>
 <translation id="9019062154811256702">Baca dan tukar tetapan autolengkap</translation>
 <translation id="9019894137004772119">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
 <translation id="9019956081903586892">Tidak dapat memuat turun kamus semak ejaan</translation>

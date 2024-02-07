@@ -343,7 +343,6 @@
 <translation id="1251578593170406502">모바일 데이터 네트워크를 스캔하는 중...</translation>
 <translation id="125220115284141797">기본</translation>
 <translation id="1252219782845132919">그룹 숨기기</translation>
-<translation id="1252714168533640068">그룹을 다시 열려면 그룹 이름을 클릭합니다.</translation>
 <translation id="1252987234827889034">프로필 오류가 발생했습니다.</translation>
 <translation id="1253664522045778676">검색결과를 클릭하면 페이지가 현재 탭에서 열립니다.</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -933,7 +932,7 @@
 <translation id="1692713444215319269">색상 반전, 돋보기, 디스플레이 설정</translation>
 <translation id="1695487653372841667">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다</translation>
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
-<translation id="1696555181932908973">다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697150536837697295">예술</translation>
@@ -1095,7 +1094,7 @@
 <translation id="1810070166657251157">휴대전화에서 저장된 비밀번호를 사용하려면 QR 코드를 따라가 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="1810366086647840386">이미지 서버</translation>
 <translation id="1811908311154949291">시크릿 모드 펜스된 프레임: <ph name="FENCEDFRAME_SITE" /></translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> 전송 중</translation>
 <translation id="1813278315230285598">서비스</translation>
 <translation id="18139523105317219">EDI측 이름</translation>
@@ -1592,7 +1591,7 @@
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />이 기기(일련번호: <ph name="SERIAL_NUMBER" />)는 잠긴 상태입니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" />에서 Chrome 기기 관리는 더 이상 지원되지 않습니다. 로그인하려면 다른 기기를 사용하거나 기기 관리자에게 문의하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">로그인</translation>
-<translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
+<translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
@@ -3429,6 +3428,7 @@
 <translation id="3602894439067790744">숫자 읽는 방식</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{계정 {COUNT}개에서 동일한 비밀번호 사용 중}other{계정 {COUNT}개에서 동일한 비밀번호 사용 중}}</translation>
+<translation id="3605515937536882518">양식 값 업데이트됨</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3607671391978830431">자녀용</translation>
 <translation id="3608460311600621471">이 데이터를 다운로드하는 이유를 입력하세요.</translation>
@@ -4496,6 +4496,7 @@
 <translation id="4410545552906060960">기기를 잠금 해제하려면 비밀번호 대신 번호(PIN)를 사용하세요. 나중에 PIN을 설정하려면 설정으로 이동하세요.</translation>
 <translation id="4411578466613447185">코드 서명자</translation>
 <translation id="4411719918614785832">이 패스키는 이 컴퓨터의 Windows Hello에 저장됩니다. Google 계정에는 저장되지 않습니다.</translation>
+<translation id="4412544493002546580">다시 시도하거나 아래 아이디어 중 하나를 선택하세요.</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> 및 모든 하위 사이트의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="4412632005703201014">Chrome 앱이 프로그레시브 웹 앱으로 이전 중입니다. 조직에서 이 Chrome 앱을 브라우저에 설치했습니다. 앱 목록에서 프로그레시브 웹 앱을 열려면 먼저 관리자에게 문의하여 Chrome 앱을 제거해 달라고 요청하세요. 그동안 <ph name="EXTENSION_LAUNCH_URL" /> 페이지를 방문하여 웹에서 <ph name="EXTENSION_NAME" /> 페이지를 열 수 있습니다.</translation>
 <translation id="4412698727486357573">고객센터</translation>
@@ -5998,6 +5999,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
+<translation id="5610867721023328944">다시 시도하거나 아래에서 사용 가능한 테마 중 하나를 선택하세요.</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">사용자 알림</translation>
@@ -8106,7 +8108,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
 <translation id="7288761372977133974"><ph name="SUBJECT" />의 최근 AI 테마 <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
-<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
 <translation id="7292067737327289208">조직에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
@@ -8178,7 +8180,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
 <translation id="7349010927677336670">동영상 화질</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}other{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}}</translation>
-<translation id="7352651011704765696">문제가 발생한 경우</translation>
+<translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7352664183151911163">여러 앱 및 Chrome 브라우저</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
@@ -9733,6 +9735,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8514746246728959655">다른 보안 키를 사용해 보세요</translation>
 <translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>
 <translation id="8515580632187889788">계속하면 서드 파티가 네트워크에서 이 기기를 식별하는 정보를 확인하도록 허용하는 것으로 간주됩니다. 서드 파티에서 기기 정보에 액세스하는 것을 원하지 않는 경우 eSIM 프로필을 <ph name="BEGIN_LINK" />수동<ph name="END_LINK" />으로 설정할 수 있습니다.</translation>
+<translation id="8516472100141530292">그룹을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="8517759303731677493">수정…</translation>
 <translation id="8518942514525208851">욕설 숨기기</translation>
 <translation id="8519895319663397036">비밀번호를 가져올 수 없습니다. 파일 크기가 150KB 미만이어야 합니다.</translation>
@@ -9914,7 +9917,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8662978096466608964">Chrome에서 배경화면을 설정할 수 없습니다.</translation>
 <translation id="8663051876219324457">앱, 웹사이트, 시스템 서비스에서 내 위치를 사용하도록 허용합니다. 기기의 위치를 추정하는 데 Wi-Fi, 모바일 네트워크, 센서 등의 데이터가 사용될 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" />에서 여러 항목을 자동으로 다운로드하지 않도록 항상 차단</translation>
-<translation id="8664249499245357248">그룹 이름을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="8664389313780386848">페이지 소스 보기(&amp;V)</translation>
 <translation id="8665110742939124773">잘못된 액세스 코드를 입력했습니다. 다시 시도해 주세요.</translation>
 <translation id="8665180165765946056">백업 완료</translation>
@@ -10392,6 +10394,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9016827136585652292">개인 정보 보호 화면 전환 버튼</translation>
 <translation id="90181708067259747">만료일: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">설치 완료</translation>
+<translation id="901876615920222131">그룹을 다시 열려면 그룹을 클릭합니다.</translation>
 <translation id="9019062154811256702">자동 완성 설정을 읽고 변경하기</translation>
 <translation id="9019894137004772119">위치를 사용합니다. 위치 정보 액세스 권한이 있는 앱 및 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서 주기적으로 위치 데이터를 수집하고 데이터를 익명으로 사용하여 위치 정확성과 위치 기반 서비스를 개선할 수 있습니다.</translation>
 <translation id="9019956081903586892">맞춤법 검사 사전을 다운로드할 수 없습니다.</translation>

@@ -343,7 +343,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251578593170406502">Skanner etter mobildatanettverk …</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
-<translation id="1252714168533640068">For å gjenåpne gruppen, klikk på gruppenavnet.</translation>
 <translation id="1252987234827889034">Det oppsto en profilfeil</translation>
 <translation id="1253664522045778676">Klikk på et resultat, så åpnes siden i den gjeldende fanen</translation>
 <translation id="1254593899333212300">Direkte internettilkobling</translation>
@@ -3422,6 +3421,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3602894439067790744">Les tall som</translation>
 <translation id="3603622770190368340">Hent nettverkssertifikat</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto bruker det samme passordet}other{{COUNT} kontoer bruker det samme passordet}}</translation>
+<translation id="3605515937536882518">Skjemaverdiene er oppdatert</translation>
 <translation id="3605780360466892872">Businessmann</translation>
 <translation id="3607671391978830431">For et barn</translation>
 <translation id="3608460311600621471">Oppgi en årsak til at du skriver ut disse dataene:</translation>
@@ -4489,6 +4489,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4410545552906060960">Bruk et tall (en PIN-kode) i stedet for et passord for å låse opp enheten din. For å angi PIN-kode senere, gå til Innstillinger.</translation>
 <translation id="4411578466613447185">Kodesignatar</translation>
 <translation id="4411719918614785832">Disse tilgangsnøklene lagres i Windows Hello på denne datamaskinen. De lagres ikke i Google-kontoen din.</translation>
+<translation id="4412544493002546580">Prøv på nytt, eller velg en av inspirasjonene nedenfor.</translation>
 <translation id="4412547955014928315">Vil du slette nettstedsdata og tillatelser for <ph name="SITE_NAME" /> og alle undernettsteder?</translation>
 <translation id="4412632005703201014">Chrome-apper overføres til progressive nettprogrammer. Organisasjonen din har installert denne Chrome-appen i nettleseren din. For å åpne det progressive nettprogrammet fra listen over apper må du først kontakte og be administratoren om å avinstallere Chrome-appen. I mellomtiden kan du gå til <ph name="EXTENSION_LAUNCH_URL" /> for å åpne <ph name="EXTENSION_NAME" /> på nettet.</translation>
 <translation id="4412698727486357573">Brukerstøtte</translation>
@@ -5989,6 +5990,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="560834977503641186">Wifi-synkronisering – finn ut mer</translation>
 <translation id="5608580678041221894">Trykk på de følgende tastene for å justere eller flytte beskjæringsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
+<translation id="5610867721023328944">Prøv på nytt, eller velg et av de tilgjengelige temaene nedenfor.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" /> – <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Brukerinformasjon</translation>
@@ -9724,6 +9726,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8514746246728959655">Prøv en annen sikkerhetsnøkkel</translation>
 <translation id="8514955299594277296">Ikke la nettsteder lagre data på enheten din (anbefales ikke)</translation>
 <translation id="8515580632187889788">Ved å fortsette gir du tredjeparter tillatelse til å bekrefte informasjon som identifiserer denne enheten på nettverket. Hvis du ikke vil gi tredjeparter tilgang til enhetsinformasjon, kan du konfigurere en eSIM-kortprofil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Høyreklikk på gruppen</translation>
 <translation id="8517759303731677493">Endre …</translation>
 <translation id="8518942514525208851">Skjul stygt språk</translation>
 <translation id="8519895319663397036">Kan ikke importere passordene. Filstørrelsen må være under 150 kB.</translation>
@@ -9905,7 +9908,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8662978096466608964">Chrome kan ikke angi bakgrunnsbilde.</translation>
 <translation id="8663051876219324457">La apper, nettsteder og systemtjenester bruke posisjonen din. Posisjonstjenestene kan bruke kilder som wifi, mobilnettverk og sensorer for å anslå enhetens posisjon. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blokker alltid automatisk nedlasting av flere filer på <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Høyreklikk på gruppenavnet</translation>
 <translation id="8664389313780386848">&amp;Vis sidekilde</translation>
 <translation id="8665110742939124773">Du har oppgitt feil tilgangskode. Prøv på nytt.</translation>
 <translation id="8665180165765946056">Sikkerhetskopieringen er fullført</translation>
@@ -10383,6 +10385,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9016827136585652292">slå av/på personvernskjerm</translation>
 <translation id="90181708067259747">Utløpsdato: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>
+<translation id="901876615920222131">For å gjenåpne gruppen, klikk på gruppen</translation>
 <translation id="9019062154811256702">Les og endre autofyll-innstillingene</translation>
 <translation id="9019894137004772119">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene på en anonym måte til å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre.</translation>
 <translation id="9019956081903586892">Kunne ikke laste ned ordliste for stavekontroll</translation>

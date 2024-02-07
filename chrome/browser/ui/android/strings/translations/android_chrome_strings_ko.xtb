@@ -128,7 +128,7 @@
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">곧 팔로우 중에서 <ph name="SITE_NAME" /> 관련 콘텐츠를 볼 수 있습니다. 팔로우하는 사이트 및 검색은 Google 계정에 저장됩니다. 언제든지 설정에서 팔로우 항목을 관리할 수 있습니다.</translation>
-<translation id="1696555181932908973">다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="1702543251015153180">어두운 테마 설정을 변경하시겠습니까?</translation>
 <translation id="1702907158640575240">관리 브라우저</translation>
 <translation id="1710099199314114079">탭 전환 또는 닫기</translation>
@@ -149,7 +149,7 @@
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1807709131360304325">새 창 열기</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="185383612275551373">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
@@ -209,7 +209,7 @@
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
-<translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
+<translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2194856509914051091">고려사항</translation>
@@ -1186,7 +1186,7 @@
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7276100255011548441">Chrome은 4주 이상 된 주제를 자동 삭제합니다. 인터넷 사용에 따라 특정 주제가 목록에 다시 표시될 수 있습니다. 또는 사용자가 Chrome에서 사이트와 공유하지 않았으면 하는 주제를 차단할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에서 광고 개인 정보 보호 관리<ph name="END_LINK" />에 대해 자세히 알아보세요.</translation>
 <translation id="7284878711178835966">사용자가 입력하면 Chrome은 주소 표시줄 또는 검색창의 내용을 사용자의 기본 검색엔진으로 전송합니다.</translation>
-<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>
 <translation id="7293429513719260019">언어 선택</translation>
@@ -1200,7 +1200,7 @@
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
-<translation id="7352651011704765696">문제가 발생한 경우</translation>
+<translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7352939065658542140">동영상</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{선택한 1개 항목 공유}other{선택한 #개 항목 공유}}</translation>
 <translation id="7359002509206457351">결제 수단 액세스</translation>

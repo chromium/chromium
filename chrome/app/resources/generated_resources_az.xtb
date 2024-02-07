@@ -339,7 +339,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1251578593170406502">Mobil data şəbəkələri üçün skan edilir...</translation>
 <translation id="125220115284141797">Defolt</translation>
 <translation id="1252219782845132919">Qrupu gizlədin</translation>
-<translation id="1252714168533640068">Qrupu yenidən açmaq üçün qrup adı üzərinə klikləyin</translation>
 <translation id="1252987234827889034">Profil xətası baş verdi</translation>
 <translation id="1253664522045778676">Nəticəyə klikləyin, səhifə cari tabda açılacaq</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
@@ -3411,6 +3410,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3602894439067790744">Rəqəmləri belə oxuyun</translation>
 <translation id="3603622770190368340">Şəbəkə sertifikatını əldə edin</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} hesab eyni paroldan istifadə edir}other{{COUNT} hesab eyni paroldan istifadə edir}}</translation>
+<translation id="3605515937536882518">Forma dəyərləri yeniləndi</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3607671391978830431">Uşaq üçün</translation>
 <translation id="3608460311600621471">Bu datanı çap etmə səbəbini daxil edin:</translation>
@@ -4478,6 +4478,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4410545552906060960">Cihazı kilidləmək üçün parol əvəzinə rəqəmdən (PIN) istifadə edin. Sonra PIN ayarlamaq üçün Ayarlara keçin.</translation>
 <translation id="4411578466613447185">Kod İmzalayıcısı</translation>
 <translation id="4411719918614785832">Bu giriş açarları bu kompüterdə Windows Hello'da saxlanılır. Onlar Google Hesabınızda saxlanmır.</translation>
+<translation id="4412544493002546580">Yenidən cəhd edin, yaxud aşağıdakı ideyalardan birini seçin.</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" />, habelə əlaqədar saytlar üçün sayt datası və icazələr silinsin?</translation>
 <translation id="4412632005703201014">Chrome Tətbiqləri Davam Edən Veb Tətbiqlərinə köçürülür. Bu Chrome Tətbiqi təşkilatınız tərəfindən brauzerinizdə quraşdırılıb. Davam Edən Veb Tətbiqini Tətbiq siyahısından açmaq üçün əvvəlcə administratorunuzla əlaqə saxlayın və ondan Chrome Tətbiqini silməsini istəyin. Bu arada, vebdə <ph name="EXTENSION_NAME" /> açmaq üçün <ph name="EXTENSION_LAUNCH_URL" /> ünvanına baş çəkə bilərsiniz.</translation>
 <translation id="4412698727486357573">Yardım mərkəzi</translation>
@@ -5979,6 +5980,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="560834977503641186">Wi-Fi Sinxronlaşdırması, Ətraflı Məlumat</translation>
 <translation id="5608580678041221894">Kəsilmiş hissəni tənzimləmək və ya köçürmək üçün aşağıdakı düymələrə toxunun</translation>
 <translation id="5609231933459083978">Görünür tətbiq yanlışdır.</translation>
+<translation id="5610867721023328944">Yenidən cəhd edin, yaxud aşağıdakı temalardan birini seçin.</translation>
 <translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">İstifadəçi bildirişi</translation>
@@ -9710,6 +9712,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8514746246728959655">Başqa təhlükəsizlik açarından istifadə edin</translation>
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
 <translation id="8515580632187889788">Davam edərək üçüncü tərəflərə şəbəkədə bu cihazı müəyyən edən məlumatları doğrulamaq imkanı verirsiniz. Üçüncü tərəflərə cihaz məlumatına giriş icazəsi vermək istəmirsinizsə, <ph name="BEGIN_LINK" />manual qaydada<ph name="END_LINK" /> eSIM profili ayarlaya bilərsiniz.</translation>
+<translation id="8516472100141530292">Qrupa sağ düymə ilə toxunun</translation>
 <translation id="8517759303731677493">Redaktə edin…</translation>
 <translation id="8518942514525208851">Söyüşü gizlədin</translation>
 <translation id="8519895319663397036">Parolları import etmək mümkün deyil. Faylın ölçüsü 150 KB-dan kiçik olmalıdır.</translation>
@@ -9891,7 +9894,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8662978096466608964">Chrome divar kağızını ayarlaya bilmir.</translation>
 <translation id="8663051876219324457">Tətbiq, veb-sayt və sistem xidmətlərinə məkandan istifadə icazəsi verin. Məkan icazəsi cihaz məkanını təxmin etmək üçün Wi‑Fi, mobil şəbəkə və sensor kimi mənbələrdən istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> hostunda çoxsaylı avtomatik endirmələri bloklayın</translation>
-<translation id="8664249499245357248">Qrup adına sağ düymə ilə toxunun</translation>
 <translation id="8664389313780386848">Səhifə mənbəsinə baxın</translation>
 <translation id="8665110742939124773">Yanlış giriş kodu daxil etmisiniz. Yenə cəhd edin.</translation>
 <translation id="8665180165765946056">Yedəkləmə tamamlandı</translation>
@@ -10367,6 +10369,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9016827136585652292">məxfilik ekranı keçiricisi</translation>
 <translation id="90181708067259747">Bitmə tarixi: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Quraşdırma tamamlandı</translation>
+<translation id="901876615920222131">Yenidən açmaq üçün qrupa klikləyin</translation>
 <translation id="9019062154811256702">Avtomatik doldurma ayarlarını oxuyun və dəyişin</translation>
 <translation id="9019894137004772119">Məkandan istifadə edin. Məkan icazəsi olan tətbiq və xidmətlərə cihazınızın məkanından istifadə etmək icazəsi verin. Google məkan dəqiqliyini və məkan ilə əlaqəli xidmətləri təkmilləşdirmək üçün periodik olaraq məkan verilənlərinizi toplaya və bu verilənlərdən anonim qaydada istifadə edə bilər.</translation>
 <translation id="9019956081903586892">Orfoqrafiya yoxlayan lüğət endirilə bilmədi</translation>

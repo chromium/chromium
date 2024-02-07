@@ -841,7 +841,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2573834589046842510">Inprenta eta argitalpenak</translation>
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2586657967955657006">Arbela</translation>
-<translation id="2587841377698384444">Direktorioko APIaren IDa:</translation>
+<translation id="2587841377698384444">Direktorioko APIarenidentifikatzailea:</translation>
 <translation id="2594318783181750337">Web-ikuspegi bizkorra:</translation>
 <translation id="2595719060046994702">Ez dago gailua eta kontua kudeatzen dituen enpresa edo erakunderik.</translation>
 <translation id="2596415276201385844">Konexio segurua ezartzeko, erlojuak behar bezala ezarrita egon behar du, webguneek beren burua identifikatzeko erabiltzen dituzten ziurtagiriek denboraldi jakinetarako bakarrik balio dutelako. Gailuaren erlojua oker ezarrita dagoenez, Chrome-k ezin ditu ziurtagiri horiek egiaztatu.</translation>
@@ -2371,7 +2371,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5649053991847567735">Deskarga automatikoak</translation>
 <translation id="5651323159439184939">Aitzinamendu traktorea</translation>
 <translation id="5653432653077411130">Ur-hornikuntza eta -tratamendua</translation>
-<translation id="5654927323611874862">Kargatutako hutsegite-txostenaren IDa:</translation>
+<translation id="5654927323611874862">Kargatutako hutsegite-txostenarenidentifikatzailea:</translation>
 <translation id="5654965123204121933">URLak ez dauka beharrezko ordezko <ph name="SEARCH_TERMS_REPLACEMENT" /> katea: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5660122698869360728">Erosketa-orri guztiak toki berean gordetzea, prezioen jarraipena automatikoki egitea, prezioaren informazio xehatua lortzea eta beste gauza asko egitea ahalbidetzen dizun karpeta adimendun berria.</translation>
@@ -3129,7 +3129,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Fitxategia <ph name="FEATURE_NAME" /> bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak <ph name="FEATURE_NAME" /> bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
 <translation id="7160999678034985039">Gorde lana eta hasi eguneratzen prest zaudenean.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Isilpeko fitxategia kopiatu nahi duzu?}other{Isilpeko fitxategia kopiatu nahi dituzu?}}</translation>
-<translation id="717330890047184534">GAIA IDa:</translation>
+<translation id="717330890047184534">GAIAidentifikatzailea:</translation>
 <translation id="7174545416324379297">Bateratuta</translation>
 <translation id="7175097078723125014">Helbidea editatzeko aukera hautatu da</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>

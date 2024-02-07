@@ -341,7 +341,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1251578593170406502">Po skanon për rrjete të dhënash celulare...</translation>
 <translation id="125220115284141797">Parazgjedhja</translation>
 <translation id="1252219782845132919">Fshih grupin</translation>
-<translation id="1252714168533640068">Për ta rihapur grupin, kliko tek emri i tij</translation>
 <translation id="1252987234827889034">Ndodhi një gabim i profilit</translation>
 <translation id="1253664522045778676">Kliko te një rezultat dhe faqja do të hapet në skedën tënde aktuale</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
@@ -3410,6 +3409,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3602894439067790744">Lexo numrat si</translation>
 <translation id="3603622770190368340">Merr certifikatën e rrjetit</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} llogari po përdor të njëjtin fjalëkalim}other{{COUNT} llogari po përdorin të njëjtin fjalëkalim}}</translation>
+<translation id="3605515937536882518">Vlerat e formularit u përditësuan</translation>
 <translation id="3605780360466892872">I kollarisur</translation>
 <translation id="3607671391978830431">Për një fëmijë</translation>
 <translation id="3608460311600621471">Jep një arsye për printimin e këtyre të dhënave:</translation>
@@ -4479,6 +4479,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4410545552906060960">Përdor një numër (PIN) në vend të një fjalëkalimi për të shkyçur pajisjen tënde. Për ta caktuar kodin PIN më vonë, shko te "Cilësimet".</translation>
 <translation id="4411578466613447185">Nënshkruesi i kodit</translation>
 <translation id="4411719918614785832">Këta çelësa kalimi ruhen në Windows Hello në këtë kompjuter. Ata nuk ruhen në "Llogarinë tënde të Google".</translation>
+<translation id="4412544493002546580">Provo përsëri ose zgjidh nga një prej frymëzimeve më poshtë.</translation>
 <translation id="4412547955014928315">Të fshihen të gjitha të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" /> dhe çdo sajt në të?</translation>
 <translation id="4412632005703201014">Aplikacionet e Chrome po migrohen tek aplikacionet progresive të uebit. Ky aplikacion i Chrome është instaluar në shfletuesin tënd nga organizata jote. Për të hapur aplikacionin progresiv të uebit nga lista e aplikacioneve, në fillim kontakto me administratorin tënd dhe kërkoji të çinstalojë aplikacionin e Chrome. Ndërkohë, mund të vizitosh <ph name="EXTENSION_LAUNCH_URL" /> për të hapur "<ph name="EXTENSION_NAME" />" në ueb.</translation>
 <translation id="4412698727486357573">Qendra e ndihmës</translation>
@@ -5980,6 +5981,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="560834977503641186">"Sinkronizimi i Wi-Fi", Mëso më shumë</translation>
 <translation id="5608580678041221894">Trokit te tastet e mëposhtme për të rregulluar ose zhvendosur zonën e prerjes</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
+<translation id="5610867721023328944">Provo përsëri ose zgjidh nga një prej temave që ofrohen më poshtë.</translation>
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
@@ -9712,6 +9714,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8514746246728959655">Provo një çelës tjetër sigurie</translation>
 <translation id="8514955299594277296">Mos lejo që sajtet të ruajnë të dhëna në pajisjen tënde (nuk rekomandohet)</translation>
 <translation id="8515580632187889788">Duke vazhduar, ti lejon palët e treta të verifikojnë informacionet që e identifikojnë këtë pajisje në rrjet. Nëse nuk dëshiron të lejosh qasjen e palëve të treta në informacionet e pajisjes, mund të konfigurosh një profil të kartën eSIM <ph name="BEGIN_LINK" />në mënyrë manuale<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Kliko me butonin djathtas te grupi</translation>
 <translation id="8517759303731677493">Modifiko…</translation>
 <translation id="8518942514525208851">Fshih fjalët blasfemuese</translation>
 <translation id="8519895319663397036">Fjalëkalimet nuk mund të importohen. Madhësia e skedarit duhet të jetë më e vogël se 150 KB.</translation>
@@ -9893,7 +9896,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8662978096466608964">Chrome nuk mund të vendosë imazhin e sfondit.</translation>
 <translation id="8663051876219324457">Lejo që aplikacionet, uebsajtet dhe shërbimet e sistemit të përdorin vendndodhjen tënde. Vendndodhja mund të përdorë burime si Wi-Fi, rrjetet celulare dhe sensorët për të përllogaritur vendndodhjen e pajisjes sate. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blloko gjithmonë shkarkimet e shumta automatike në <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Kliko me butonin djathtas në emrin e grupit</translation>
 <translation id="8664389313780386848">&amp;Shiko burimin e faqes</translation>
 <translation id="8665110742939124773">Ke futur një kod qasjeje të gabuar. Provo përsëri.</translation>
 <translation id="8665180165765946056">Rezervimi përfundoi</translation>
@@ -10371,6 +10373,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9016827136585652292">aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="90181708067259747">Data e skadimit: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalimi përfundoi</translation>
+<translation id="901876615920222131">Për ta rihapur grupin, kliko te grupi</translation>
 <translation id="9019062154811256702">Lexo dhe ndrysho cilësimet e plotësimit automatik</translation>
 <translation id="9019894137004772119">Përdor vendndodhjen. Lejo që aplikacionet dhe shërbimet me autorizim për vendndodhje të përdorin vendndodhjen e pajisjes sate. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja.</translation>
 <translation id="9019956081903586892">Fjalori i kontrollit drejtshkrimor nuk mund të shkarkohej</translation>

@@ -344,7 +344,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1251578593170406502">Søger efter mobildatanetværk...</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
-<translation id="1252714168533640068">Hvis du vil åbne gruppen igen, skal du klikke på gruppenavnet</translation>
 <translation id="1252987234827889034">Der opstod en fejl i forbindelse med profilen</translation>
 <translation id="1253664522045778676">Klik på et resultat, hvorefter siden åbnes på din aktuelle fane</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
@@ -3428,6 +3427,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3602894439067790744">Læs tal som</translation>
 <translation id="3603622770190368340">Få fat i et netværkscertifikat</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto bruger den samme adgangskode}one{{COUNT} konto bruger den samme adgangskode}other{{COUNT} konti bruger den samme adgangskode}}</translation>
+<translation id="3605515937536882518">Formularværdierne er opdateret</translation>
 <translation id="3605780360466892872">Asger</translation>
 <translation id="3607671391978830431">Til et barn</translation>
 <translation id="3608460311600621471">Angiv en årsag til, at du vil udskrive disse data:</translation>
@@ -4497,6 +4497,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4410545552906060960">Brug et tal (pinkode) i stedet for en adgangskode til at låse din enhed op. Gå til Indstillinger for at konfigurere din pinkode senere.</translation>
 <translation id="4411578466613447185">Kodeunderskriver</translation>
 <translation id="4411719918614785832">Disse adgangskoder gemmes i Windows Hello på denne computer. De gemmes ikke på din Google-konto.</translation>
+<translation id="4412544493002546580">Prøv igen, eller vælg ét af forslagene nedenfor.</translation>
 <translation id="4412547955014928315">Vil du slette websitedata og tilladelser for <ph name="SITE_NAME" /> samt alle websites under det?</translation>
 <translation id="4412632005703201014">Chrome-apps migreres til progressive webapps. Denne Chrome-app blev installeret i din browser af din organisation. Hvis du vil åbne den progressive webapp via applisten, skal du først kontakte din administrator og bede vedkommende om at afinstallere Chrome-appen. I mellemtiden kan du gå til <ph name="EXTENSION_LAUNCH_URL" /> for at åbne <ph name="EXTENSION_NAME" /> på nettet.</translation>
 <translation id="4412698727486357573">Hjælp</translation>
@@ -5999,6 +6000,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="560834977503641186">Wi-Fi-synkronisering, Få flere oplysninger</translation>
 <translation id="5608580678041221894">Tryk på følgende taster for at tilpasse eller flytte beskæringsområdet</translation>
 <translation id="5609231933459083978">Applikationen ser ud til at være ugyldig.</translation>
+<translation id="5610867721023328944">Prøv igen, eller vælg ét af de tilgængelige temaer nedenfor.</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Brugerbesked</translation>
@@ -9735,6 +9737,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8514746246728959655">Prøv med en anden sikkerhedsnøgle</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="8515580632187889788">Ved at fortsætte giver du tredjeparter tilladelse til at verificere oplysninger, der identificerer denne enhed på netværket. Hvis du ikke vil give tredjeparter adgang til enhedsoplysninger, kan du konfigurere en eSIM-profil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Højreklik på gruppen</translation>
 <translation id="8517759303731677493">Rediger…</translation>
 <translation id="8518942514525208851">Skjul ukvemsord</translation>
 <translation id="8519895319663397036">Adgangskoderne kan ikke importeres. Filen må maks. være på 150 kB.</translation>
@@ -9916,7 +9919,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8662978096466608964">Chrome kan ikke indstille baggrunden.</translation>
 <translation id="8663051876219324457">Tillad, at apps, websites og systemtjenester kan bruge din lokation. Lokation kan anvende kilder som f.eks. Wi‑Fi, mobilnetværk og sensorer til at anslå, hvor din enhed er. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Bloker altid flere automatiske downloads på <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Højreklik på gruppenavnet</translation>
 <translation id="8664389313780386848">&amp;Vis kildetekst</translation>
 <translation id="8665110742939124773">Du har angivet en forkert adgangskode. Prøv igen.</translation>
 <translation id="8665180165765946056">Sikkerhedskopieringen blev fuldført</translation>
@@ -10396,6 +10398,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9016827136585652292">slå Privatlivsskærm til/fra</translation>
 <translation id="90181708067259747">Udløbsdato: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>
+<translation id="901876615920222131">Hvis du vil åbne gruppen igen, skal du klikke på gruppen</translation>
 <translation id="9019062154811256702">Læse og redigere indstillinger for autofyld</translation>
 <translation id="9019894137004772119">Brug lokation. Tillad, at apps og tjenester med lokationstilladelse kan bruge din enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="9019956081903586892">Ordbogen til stavekontrollen kunne ikke downloades</translation>

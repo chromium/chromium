@@ -341,7 +341,6 @@
 <translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
 <translation id="125220115284141797">默认</translation>
 <translation id="1252219782845132919">隐藏组</translation>
-<translation id="1252714168533640068">要重新打开该组，请点击该组的名称</translation>
 <translation id="1252987234827889034">发生个人资料错误</translation>
 <translation id="1253664522045778676">只要您点击某条结果，系统便会在当前标签页中打开相应网页</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -3404,6 +3403,7 @@
 <translation id="3602894439067790744">将数值读为</translation>
 <translation id="3603622770190368340">获取网络证书</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个账号在使用同一密码}other{{COUNT} 个账号在使用同一密码}}</translation>
+<translation id="3605515937536882518">表单值已更新</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3607671391978830431">适合儿童</translation>
 <translation id="3608460311600621471">请输入打印此数据的原因：</translation>
@@ -4472,6 +4472,7 @@
 <translation id="4410545552906060960">使用数字（PIN 码）代替密码来解锁设备。若想在晚些时候设置 PIN 码，请前往“设置”。</translation>
 <translation id="4411578466613447185">代码签名人</translation>
 <translation id="4411719918614785832">这些通行密钥会保存在此计算机上的 Windows Hello 中，不会保存到您的 Google 账号中。</translation>
+<translation id="4412544493002546580">请重试或从以下壁纸中选择一个。</translation>
 <translation id="4412547955014928315">为 <ph name="SITE_NAME" /> 及其下属所有网站删除网站数据和权限？</translation>
 <translation id="4412632005703201014">Chrome 应用即将迁移到渐进式 Web 应用。此 Chrome 应用由贵组织安装在您的浏览器上。若要从应用列表中打开渐进式 Web 应用，请先与您的管理员联系，请他们卸载 Chrome 应用。在此期间，您可以访问 <ph name="EXTENSION_LAUNCH_URL" /> 在网络上打开 <ph name="EXTENSION_NAME" />。</translation>
 <translation id="4412698727486357573">帮助中心</translation>
@@ -5973,6 +5974,7 @@
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
+<translation id="5610867721023328944">请重试或从以下可用主题中选择一个。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">用户须知</translation>
@@ -9705,6 +9707,7 @@
 <translation id="8514746246728959655">尝试改用一个不同的安全密钥</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="8515580632187889788">继续即表示您允许第三方验证相应网络中这部设备的标识信息。如果不想让第三方访问设备信息，您可<ph name="BEGIN_LINK" />手动<ph name="END_LINK" />设置 eSIM 卡配置文件。</translation>
+<translation id="8516472100141530292">右键点击该组</translation>
 <translation id="8517759303731677493">修改…</translation>
 <translation id="8518942514525208851">隐藏脏话</translation>
 <translation id="8519895319663397036">无法导入密码。文件大小应小于 150 KB。</translation>
@@ -9886,7 +9889,6 @@
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
 <translation id="8663051876219324457">允许应用、网站和系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">始终禁止在 <ph name="HOST" /> 上自动下载多个文件</translation>
-<translation id="8664249499245357248">右键点击组名称</translation>
 <translation id="8664389313780386848">查看网页源代码(&amp;V)</translation>
 <translation id="8665110742939124773">您输入的访问代码不正确。请重试。</translation>
 <translation id="8665180165765946056">备份完成</translation>
@@ -10364,6 +10366,7 @@
 <translation id="9016827136585652292">隐私保护屏幕切换开关</translation>
 <translation id="90181708067259747">失效日期：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安装完成</translation>
+<translation id="901876615920222131">要重新打开该组，请点击该组</translation>
 <translation id="9019062154811256702">读取和更改自动填充设置</translation>
 <translation id="9019894137004772119">使用位置信息。允许具有位置权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="9019956081903586892">无法下载拼写检查字典</translation>

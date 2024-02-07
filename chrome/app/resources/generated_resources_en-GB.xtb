@@ -343,7 +343,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1251578593170406502">Scanning for mobile data networks…</translation>
 <translation id="125220115284141797">Default</translation>
 <translation id="1252219782845132919">Hide group</translation>
-<translation id="1252714168533640068">To reopen the group, click on the group name</translation>
 <translation id="1252987234827889034">Profile error occurred</translation>
 <translation id="1253664522045778676">Click on a result and the page will open in your current tab</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
@@ -3427,6 +3426,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3602894439067790744">Read numbers as</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account using same password}other{{COUNT} accounts using same password}}</translation>
+<translation id="3605515937536882518">Form values updated</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3607671391978830431">For a child</translation>
 <translation id="3608460311600621471">Please enter a reason for printing this data:</translation>
@@ -4496,6 +4496,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4410545552906060960">Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.</translation>
 <translation id="4411578466613447185">Code Signer</translation>
 <translation id="4411719918614785832">These passkeys are saved to Windows Hello on this computer. They aren't saved to your Google Account.</translation>
+<translation id="4412544493002546580">Try again or select from one of the inspirations below.</translation>
 <translation id="4412547955014928315">Delete site data and permissions for <ph name="SITE_NAME" /> and all sites under it?</translation>
 <translation id="4412632005703201014">Chrome apps are migrating to progressive web apps. This Chrome app was installed on your browser by your organisation. To open the progressive web app from the Apps list, first contact your administrator and ask them to uninstall the Chrome app. In the meantime, you can visit <ph name="EXTENSION_LAUNCH_URL" /> to open <ph name="EXTENSION_NAME" /> on the web.</translation>
 <translation id="4412698727486357573">Help Centre</translation>
@@ -5998,6 +5999,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
+<translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">User Notice</translation>
@@ -9733,6 +9735,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8514746246728959655">Try a different security key</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="8515580632187889788">By continuing, you allow third parties to verify information that identifies this device on the network If you do not wish to allow third parties access to device information, you can set up an eSIM profile <ph name="BEGIN_LINK" />manually<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Right-click on the group</translation>
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518942514525208851">Hide profanity</translation>
 <translation id="8519895319663397036">Can't import passwords. The file size should be less than 150 KB.</translation>
@@ -9914,7 +9917,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8662978096466608964">Chrome cannot set wallpaper.</translation>
 <translation id="8663051876219324457">Allow apps, websites and system services to use your location. Location may use sources like Wi-Fi, mobile networks and sensors to help estimate your device’s location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Always block multiple automatic downloads on <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Right-click on the group name</translation>
 <translation id="8664389313780386848">&amp;View page source</translation>
 <translation id="8665110742939124773">You've entered an incorrect access code. Try again.</translation>
 <translation id="8665180165765946056">Backup complete</translation>
@@ -10392,6 +10394,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9016827136585652292">Privacy screen toggle</translation>
 <translation id="90181708067259747">Expiry date: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation complete</translation>
+<translation id="901876615920222131">To reopen the group, click on the group</translation>
 <translation id="9019062154811256702">Read and change auto-fill settings</translation>
 <translation id="9019894137004772119">Use location. Allow apps and services with location permission to use your device’s location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services.</translation>
 <translation id="9019956081903586892">Couldn’t download spell check dictionary</translation>

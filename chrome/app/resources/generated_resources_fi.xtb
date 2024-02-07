@@ -343,7 +343,6 @@
 <translation id="1251578593170406502">Haetaan mobiilidataverkkoja…</translation>
 <translation id="125220115284141797">Oletus</translation>
 <translation id="1252219782845132919">Piilota ryhmä</translation>
-<translation id="1252714168533640068">Avaa ryhmä uudelleen klikkaamalla ryhmän nimeä</translation>
 <translation id="1252987234827889034">Profiilivirhe</translation>
 <translation id="1253664522045778676">Klikkaa tulosta, niin sivu avautuu nykyiselle välilehdelle</translation>
 <translation id="1254593899333212300">Suora internet-yhteys</translation>
@@ -3426,6 +3425,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3602894439067790744">Numeroiden lukemismuoto</translation>
 <translation id="3603622770190368340">Hanki verkkovarmenne</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} tilillä käytetään samaa salasanaa}other{{COUNT} tilillä käytetään samaa salasanaa}}</translation>
+<translation id="3605515937536882518">Lomakkeen arvot päivitetty</translation>
 <translation id="3605780360466892872">Dave</translation>
 <translation id="3607671391978830431">Lapselle</translation>
 <translation id="3608460311600621471">Kerro, miksi tulostat tätä dataa:</translation>
@@ -4492,6 +4492,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4410545552906060960">Avaa laitteen lukitus PIN-koodilla salasanan sijaan. Voit määrittää PIN-koodin myöhemmin siirtymällä asetuksiin.</translation>
 <translation id="4411578466613447185">Koodin allekirjoittaja</translation>
 <translation id="4411719918614785832">Nämä avainkoodit tallennetaan Windows Helloon tällä tietokoneella. Niitä ei tallenneta Google-tilillesi.</translation>
+<translation id="4412544493002546580">Yritä uudelleen tai valitse jokin alla olevista inspiraatioista.</translation>
 <translation id="4412547955014928315">Poistetaanko sivuston <ph name="SITE_NAME" /> ja kaikkien sen alla olevien sivustojen sivustodata ja luvat?</translation>
 <translation id="4412632005703201014">Chrome-sovellukset siirretään progressiivisiin web-sovelluksiin. Organisaatiosi on asentanut tämän Chrome-sovelluksen selaimeesi. Jos haluat avata progressiivisen web-sovelluksen sovellusluettelosta, ota ensin yhteyttä järjestelmänvalvojaan ja pyydä häntä poistamaan Chrome-sovellus. Avaa sillä välin <ph name="EXTENSION_NAME" /> verkossa osoitteesta <ph name="EXTENSION_LAUNCH_URL" />.</translation>
 <translation id="4412698727486357573">Ohjekeskus</translation>
@@ -5994,6 +5995,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="560834977503641186">Wi-Fin synkronointi, lue lisää</translation>
 <translation id="5608580678041221894">Muokkaa tai siirrä rajattua aluetta seuraavilla näppäimillä.</translation>
 <translation id="5609231933459083978">Sovellus vaikuttaa virheelliseltä.</translation>
+<translation id="5610867721023328944">Yritä uudelleen tai valitse alta jokin käytettävissä olevista teemoista.</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Käyttäjäilmoitus</translation>
@@ -9728,6 +9730,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8514746246728959655">Kokeile toista suojausavainta</translation>
 <translation id="8514955299594277296">Älä salli sivustojen tallentaa dataa laitteellesi (ei suositella)</translation>
 <translation id="8515580632187889788">Jatkamalla annat kolmansille osapuolille luvan vahvistaa tietoja, joiden perusteella laite tunnistetaan verkossa. Jos et halua antaa kolmansille osapuolille pääsyä laitteen tietoihin, voit luoda eSIM-profiilin <ph name="BEGIN_LINK" />manuaalisesti<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Klikkaa ryhmää kakkospainikkeella</translation>
 <translation id="8517759303731677493">Muokkaa…</translation>
 <translation id="8518942514525208851">Piilota hävyttömyys</translation>
 <translation id="8519895319663397036">Salasanojen siirto ei onnistu. Tiedostokoon täytyy olla alle 150 kt.</translation>
@@ -9909,7 +9912,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8662978096466608964">Chrome ei voi asettaa tätä taustakuvaa.</translation>
 <translation id="8663051876219324457">Salli sovellusten, verkkosivustojen ja järjestelmäpalveluiden käyttää sijaintiasi. Sijainti voi käyttää esimerkiksi Wi‑Fi- ja mobiiliverkkoja sekä antureita laitteesi sijainnin arvioimiseen. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Estä aina sivustoa <ph name="HOST" /> lataamasta useita tiedostoja automaattisesti</translation>
-<translation id="8664249499245357248">Klikkaa ryhmän nimeä kakkospainikkeella</translation>
 <translation id="8664389313780386848">&amp;Näytä sivun lähdekoodi</translation>
 <translation id="8665110742939124773">Lisäämäsi käyttökoodi on virheellinen. Yritä uudelleen.</translation>
 <translation id="8665180165765946056">Varmuuskopiointi valmis</translation>
@@ -10387,6 +10389,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9016827136585652292">yksityinen näkyvyys päälle/pois</translation>
 <translation id="90181708067259747">Viimeinen voimassaolopäivä: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Asennus valmis</translation>
+<translation id="901876615920222131">Avaa ryhmä uudelleen klikkaamalla sitä</translation>
 <translation id="9019062154811256702">Lukea ja muokata automaattisen täytön asetuksia.</translation>
 <translation id="9019894137004772119">Käytä sijaintia. Salli laitteesi sijainnin käyttäminen sovelluksille ja palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="9019956081903586892">Oikeinkirjoitussanakirjan lataaminen epäonnistui</translation>

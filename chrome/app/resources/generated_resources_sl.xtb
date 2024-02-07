@@ -346,7 +346,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1251578593170406502">Iskanje mobilnih podatkovnih omrežij …</translation>
 <translation id="125220115284141797">Privzeto</translation>
 <translation id="1252219782845132919">Skrij skupino</translation>
-<translation id="1252714168533640068">Če želite znova odpreti skupino, kliknite ime skupine</translation>
 <translation id="1252987234827889034">Prišlo je do napake profila</translation>
 <translation id="1253664522045778676">Kliknite rezultat in stran se bo odprla na trenutnem zavihku.</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
@@ -3430,6 +3429,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3602894439067790744">Branje številk kot</translation>
 <translation id="3603622770190368340">Prejemanje omrežnega potrdila</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} račun uporablja isto geslo}one{{COUNT} račun uporablja isto geslo}two{{COUNT} računa uporabljata isto geslo}few{{COUNT} računi uporabljajo isto geslo}other{{COUNT} računov uporablja isto geslo}}</translation>
+<translation id="3605515937536882518">Vrednosti obrazca so posodobljene</translation>
 <translation id="3605780360466892872">Srajca</translation>
 <translation id="3607671391978830431">Za otroka</translation>
 <translation id="3608460311600621471">Navedite razlog za tiskanje teh podatkov:</translation>
@@ -4499,6 +4499,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4410545552906060960">Za odklepanje naprave namesto gesla uporabite številko (kodo PIN). Kodo PIN lahko nastavite pozneje v nastavitvah.</translation>
 <translation id="4411578466613447185">Podpisnik kode</translation>
 <translation id="4411719918614785832">Ti ključi za dostop so v tem računalniku shranjeni v funkciji Windows Hello. Niso shranjeni v vašem računu Google.</translation>
+<translation id="4412544493002546580">Poskusite znova ali izberite enega od spodnjih navdihov.</translation>
 <translation id="4412547955014928315">Želite izbrisati podatke spletnega mesta in dovoljenja za <ph name="SITE_NAME" /> in vsa njegova podrejena spletna mesta?</translation>
 <translation id="4412632005703201014">Aplikacije za Chrome se selijo v moderne spletne aplikacije. To aplikacijo za Chrome je v brskalnik namestila organizacija. Če želite odpreti moderno spletno aplikacijo na seznamu aplikacij, se najprej obrnite na skrbnika in ga prosite, naj odstrani aplikacijo za Chrome. V tem času lahko obiščete spletno mesto <ph name="EXTENSION_LAUNCH_URL" /> in odprete razširitev <ph name="EXTENSION_NAME" /> v spletu.</translation>
 <translation id="4412698727486357573">Center za pomoč</translation>
@@ -6002,6 +6003,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="560834977503641186">Sinhronizacija poverilnic za Wi-Fi, več o tem</translation>
 <translation id="5608580678041221894">Dotaknite se teh tipk, če želite prilagoditi ali premakniti območje za obrezovanje</translation>
 <translation id="5609231933459083978">Videti je, da je aplikacija neveljavna.</translation>
+<translation id="5610867721023328944">Poskusite znova ali izberite eno od spodnjih tem.</translation>
 <translation id="5611398002774823980">Shrani v račun</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Uporabniško obvestilo</translation>
@@ -9744,6 +9746,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8514746246728959655">Poskusite z drugim varnostnim ključem</translation>
 <translation id="8514955299594277296">Spletnim mestom ni dovoljeno shranjevanje podatkov v napravi (ni priporočljivo)</translation>
 <translation id="8515580632187889788">Z nadaljevanjem tretjim osebam omogočite preverjanje podatkov za prepoznavo te naprave v omrežju. Če tretjim osebam ne želite omogočiti dostopa do podatkov o napravi, lahko <ph name="BEGIN_LINK" />ročno<ph name="END_LINK" /> nastavite profil za e-SIM.</translation>
+<translation id="8516472100141530292">Z desnim gumbom kliknite skupino</translation>
 <translation id="8517759303731677493">Uredi …</translation>
 <translation id="8518942514525208851">Skrij psovke</translation>
 <translation id="8519895319663397036">Gesel ni mogoče uvoziti. Velikost datoteke mora biti manjša od 150 KB.</translation>
@@ -9925,7 +9928,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8662978096466608964">Chrome ne more nastaviti slike ozadja.</translation>
 <translation id="8663051876219324457">Aplikacijam, spletnim mestom in sistemskim storitvam dovolite uporabo lokacije. Lokacijska storitev si pri zaznavanju lokacije naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Vedno blokiraj samodejne prenose več datotek na <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Z desnim gumbom kliknite ime skupine</translation>
 <translation id="8664389313780386848">&amp;Ogled vira strani</translation>
 <translation id="8665110742939124773">Vnesli ste napačno kodo za dostop. Poskusite znova.</translation>
 <translation id="8665180165765946056">Varnostno kopiranje je končano</translation>
@@ -10406,6 +10408,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9016827136585652292">preklop zaslona za zasebnost</translation>
 <translation id="90181708067259747">Datum poteka veljavnosti: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Namestitev je dokončana</translation>
+<translation id="901876615920222131">Če želite znova odpreti skupino, kliknite ime skupine</translation>
 <translation id="9019062154811256702">Branje in spreminjanje nastavitev samodejnega izpolnjevanja</translation>
 <translation id="9019894137004772119">Uporaba lokacije. Aplikacijam in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije vaše naprave. Google morda redno pridobiva podatke o lokaciji in te podatke anonimno uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije.</translation>
 <translation id="9019956081903586892">Slovarja za preverjanje črkovanja ni bilo mogoče prenesti</translation>

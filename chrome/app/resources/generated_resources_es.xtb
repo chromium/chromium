@@ -341,7 +341,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1251578593170406502">Buscando redes de datos móviles…</translation>
 <translation id="125220115284141797">Predeterminados</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
-<translation id="1252714168533640068">Para volver a abrir el grupo, haz clic en el nombre del grupo</translation>
 <translation id="1252987234827889034">Se ha producido un error del perfil</translation>
 <translation id="1253664522045778676">Haz clic en un resultado y la página se abrirá en la pestaña actual</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -3413,6 +3412,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3602894439067790744">Leer números como</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} cuenta usa la misma contraseña}other{{COUNT} cuentas usan la misma contraseña}}</translation>
+<translation id="3605515937536882518">Valores del formulario actualizados</translation>
 <translation id="3605780360466892872">Amancio</translation>
 <translation id="3607671391978830431">Para un menor</translation>
 <translation id="3608460311600621471">Introduce un motivo para imprimir estos datos:</translation>
@@ -4481,6 +4481,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4410545552906060960">Usa un número PIN en lugar de una contraseña para desbloquear el dispositivo. Para crear el PIN más tarde, ve a Configuración.</translation>
 <translation id="4411578466613447185">Firmante del código</translation>
 <translation id="4411719918614785832">Estas llaves de acceso se guardan en Windows Hello en este ordenador. No se guardan en tu cuenta de Google.</translation>
+<translation id="4412544493002546580">Vuelve a intentarlo o selecciona una de las fuentes de inspiración que aparecen abajo.</translation>
 <translation id="4412547955014928315">¿Eliminar datos del sitio y permisos de <ph name="SITE_NAME" /> y de todos los sitios que incluya?</translation>
 <translation id="4412632005703201014">Las aplicaciones de Chrome se están migrando a aplicaciones web progresivas. Tu organización ha instalado esta aplicación de Chrome en tu navegador. Para abrir la aplicación web progresiva desde la lista de aplicaciones, primero debes ponerte en contacto con tu administrador y pedirle que desinstale la aplicación de Chrome. Mientras tanto, puedes visitar <ph name="EXTENSION_LAUNCH_URL" /> para abrir <ph name="EXTENSION_NAME" /> en la Web.</translation>
 <translation id="4412698727486357573">Centro de Ayuda</translation>
@@ -5982,6 +5983,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="560834977503641186">Más información sobre Sincronización Wi‑Fi</translation>
 <translation id="5608580678041221894">Toca las siguientes teclas para ajustar o mover la zona para recortar</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
+<translation id="5610867721023328944">Vuelve a intentarlo o selecciona uno de los temas disponibles que aparecen abajo.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso al usuario</translation>
@@ -9717,6 +9719,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8514746246728959655">Prueba con una llave de seguridad diferente</translation>
 <translation id="8514955299594277296">No permitir que los sitios guarden datos en tu dispositivo (no recomendado)</translation>
 <translation id="8515580632187889788">Si continúas, permitirás que terceros verifiquen la información que identifica a este dispositivo en la red. Si no quieres que terceros puedan acceder a la información del dispositivo, puedes configurar un perfil de eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Haz clic con el botón derecho en el grupo</translation>
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518942514525208851">Ocultar palabras malsonantes</translation>
 <translation id="8519895319663397036">No se pueden importar las contraseñas. El tamaño del archivo debe ser inferior a 150 kB.</translation>
@@ -9898,7 +9901,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8662978096466608964">Chrome no puede establecer el fondo de pantalla.</translation>
 <translation id="8663051876219324457">Permite que las aplicaciones, los sitios web y los servicios del sistema usen tu ubicación. Se pueden usar distintas fuentes (como redes Wi‑Fi, redes móviles o sensores) para estimar la ubicación de tu dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Bloquear siempre varias descargas automáticas en <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Haz clic con el botón derecho en el nombre del grupo</translation>
 <translation id="8664389313780386848">&amp;Ver código fuente de la página</translation>
 <translation id="8665110742939124773">Has introducido un código de acceso incorrecto. Inténtalo de nuevo.</translation>
 <translation id="8665180165765946056">Copia de seguridad completada</translation>
@@ -10376,6 +10378,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9016827136585652292">activar o desactivar pantalla de privacidad</translation>
 <translation id="90181708067259747">Fecha de vencimiento: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalación completada</translation>
+<translation id="901876615920222131">Para volver a abrir el grupo, haz clic en él</translation>
 <translation id="9019062154811256702">Leer y cambiar la configuración de Autocompletar</translation>
 <translation id="9019894137004772119">Usa la ubicación. Permite que las aplicaciones y los servicios que tienen permiso de ubicación utilicen la ubicación de tu dispositivo. Es posible que Google recoja datos de ubicación de forma periódica y los utilice de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="9019956081903586892">No se ha podido descargar el diccionario de revisión ortográfica</translation>

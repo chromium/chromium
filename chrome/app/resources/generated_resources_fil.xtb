@@ -344,7 +344,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1251578593170406502">Nagsa-scan para sa mga mobile data network...</translation>
 <translation id="125220115284141797">Default</translation>
 <translation id="1252219782845132919">I-hide ang grupo</translation>
-<translation id="1252714168533640068">Para buksan ulit ang grupo, mag-click sa pangalan ng grupo</translation>
 <translation id="1252987234827889034">Nagkaroon ng error sa profile</translation>
 <translation id="1253664522045778676">Mag-click sa isang resulta at bubukas ang page sa iyong kasalukuyang tab</translation>
 <translation id="1254593899333212300">Direktang koneksyon ng Internet</translation>
@@ -3428,6 +3427,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3602894439067790744">Basahin ang mga numero bilang</translation>
 <translation id="3603622770190368340">Kunin ang certificate ng network</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account ang gumagamit ng parehong password}one{{COUNT} account ang gumagamit ng parehong password}other{{COUNT} na account ang gumagamit ng parehong password}}</translation>
+<translation id="3605515937536882518">Na-update ang mga value sa form</translation>
 <translation id="3605780360466892872">Bossing</translation>
 <translation id="3607671391978830431">Para sa bata</translation>
 <translation id="3608460311600621471">Maglagay ng dahilan sa pag-print ng data na ito:</translation>
@@ -4497,6 +4497,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4410545552906060960">Gumamit ng numero (PIN) sa halip na password para i-unlock ang iyong device. Para maitakda ang PIN mo sa ibang pagkakataon, pumunta sa Mga Setting.</translation>
 <translation id="4411578466613447185">Code Signer</translation>
 <translation id="4411719918614785832">Naka-save ang mga passkey na ito sa Windows Hello sa computer na ito. Hindi naka-save ang mga ito sa iyong Google Account.</translation>
+<translation id="4412544493002546580">Subukan ulit o pumili mula sa isa sa mga inspirasyon sa ibaba.</translation>
 <translation id="4412547955014928315">I-delete ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" /> at lahat ng site sa ilalim nito?</translation>
 <translation id="4412632005703201014">Nagma-migrate ang Mga Chrome App sa Mga Progressive Web App. Na-install ng iyong organisasyon ang Chrome App na ito sa browser mo. Para buksan ang Progressive Web App mula sa listahan ng Mga App, makipag-ugnayan muna sa iyong administrator at hilingin sa kanyang i-uninstall ang Chrome App. Sa ngayon, puwede mong bisitahin ang <ph name="EXTENSION_LAUNCH_URL" /> para buksan ang <ph name="EXTENSION_NAME" /> sa web.</translation>
 <translation id="4412698727486357573">Help center</translation>
@@ -5999,6 +6000,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="560834977503641186">Wi-Fi Sync, Matuto Pa</translation>
 <translation id="5608580678041221894">I-tap ang mga sumusunod na key upang isaayos o ilipat ang lugar ng pag-crop</translation>
 <translation id="5609231933459083978">Mukhang di-wasto ang application.</translation>
+<translation id="5610867721023328944">Subukan ulit o pumili mula sa isa sa mga available na tema sa ibaba.</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notice sa User</translation>
@@ -9737,6 +9739,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8514746246728959655">Sumubok ng ibang security key</translation>
 <translation id="8514955299594277296">Huwag payagan ang mga site na mag-save ng data sa iyong device (hindi inirerekomenda)</translation>
 <translation id="8515580632187889788">Sa pamamagitan ng pagpapatuloy, papayagan mo ang mga third party na mag-verify ng impormasyong tumutukoy sa device na ito sa network. Kung ayaw mong bigyan ng access ang mga third party sa impormasyon ng device, puwede kang <ph name="BEGIN_LINK" />manual<ph name="END_LINK" /> na mag-set up ng profile ng eSIM.</translation>
+<translation id="8516472100141530292">Mag-right click sa grupo</translation>
 <translation id="8517759303731677493">I-edit…</translation>
 <translation id="8518942514525208851">I-hide ang pagmumura</translation>
 <translation id="8519895319663397036">Hindi ma-import ang mga password. Wala pa dapat 150 KB ang laki ng file.</translation>
@@ -9918,7 +9921,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8662978096466608964">Hindi maitakda ng Chrome ang wallpaper.</translation>
 <translation id="8663051876219324457">Payagan ang mga app, website, at serbisyo ng system na gamitin ang iyong lokasyon. Posibleng gumamit ang lokasyon ng mga source tulad ng Wi‑Fi, mga mobile network, at sensor para tumulong sa pagtantya ng lokasyon ng iyong device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Palaging i-block ang maraming awtomatikong pagda-download sa <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Mag-right click sa pangalan ng grupo</translation>
 <translation id="8664389313780386848">&amp;Tingnan ang page source</translation>
 <translation id="8665110742939124773">Naglagay ka ng maling access code. Subukan ulit.</translation>
 <translation id="8665180165765946056">Kumpleto na ang pag-back up</translation>
@@ -10398,6 +10400,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9016827136585652292">toggle ng privacy screen</translation>
 <translation id="90181708067259747">Expiration date: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Tapos na ang pag-install</translation>
+<translation id="901876615920222131">Para buksan ulit ang grupo, mag-click sa grupo</translation>
 <translation id="9019062154811256702">Basahin at baguhin ang mga setting ng autofill</translation>
 <translation id="9019894137004772119">Gumamit ng lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng iyong device. Posibleng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin nito ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon.</translation>
 <translation id="9019956081903586892">Hindi ma-download ang diksyunaryo ng pang-check ng pagbabaybay</translation>

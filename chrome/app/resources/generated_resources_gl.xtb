@@ -341,7 +341,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251578593170406502">Buscando redes de datos móbiles...</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
-<translation id="1252714168533640068">Para volver abrir o grupo, fai clic no seu nome</translation>
 <translation id="1252987234827889034">Produciuse un erro no perfil</translation>
 <translation id="1253664522045778676">Fai clic nun resultado e a páxina abrirase na pestana actual</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -3411,6 +3410,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3602894439067790744">Ler números como</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{Hai {COUNT} conta na que se usa o mesmo contrasinal}other{Hai {COUNT} contas nas que se usa o mesmo contrasinal}}</translation>
+<translation id="3605515937536882518">Valores do formulario actualizados</translation>
 <translation id="3605780360466892872">Home de negocios</translation>
 <translation id="3607671391978830431">Para un fillo ou filla</translation>
 <translation id="3608460311600621471">Indica un motivo para imprimir estes datos:</translation>
@@ -4421,7 +4421,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
 <translation id="4369233657762989723">Activar ou desactivar ditado</translation>
 <translation id="436926121798828366">Podes cambiar esta opción cando queiras na <ph name="SETTINGS_LINK" /></translation>
-<translation id="4369735607080757018">Compártense tipos de datos limitados entre os sitios para medir o rendemento dos seus anuncios (por exemplo, a hora do día na que se che mostrou un anuncio)</translation>
+<translation id="4369735607080757018">Certo tipo de datos (como, por exemplo, a hora do día na que se che mostrou un anuncio) compártense entre os sitios para medir o rendemento dos seus anuncios</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4373418556073552953">Inicia sesión co teu teléfono Android</translation>
 <translation id="4374805630006466253">Usar un teléfono ou unha tableta diferente</translation>
@@ -4483,6 +4483,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4410545552906060960">Utiliza un número (PIN) en lugar dun contrasinal para desbloquear o dispositivo. Para definir o PIN máis tarde, vai a Configuración.</translation>
 <translation id="4411578466613447185">Asinante de código</translation>
 <translation id="4411719918614785832">Estas claves de acceso só se gardan en Windows Hello neste ordenador. Non se gardan na túa Conta de Google.</translation>
+<translation id="4412544493002546580">Téntao de novo ou selecciona máis abaixo unha das inspiracións.</translation>
 <translation id="4412547955014928315">Queres eliminar os datos do sitio e os permisos de <ph name="SITE_NAME" />, así como os de todos os sitios que inclúa?</translation>
 <translation id="4412632005703201014">As aplicacións de Chrome pasarán a ser aplicacións web progresivas. A túa organización instalou esta aplicación de Chrome no teu navegador. Para abrir a aplicación web progresiva desde a lista de aplicacións, primeiro ponte en contacto co teu administrador e pídelle que desinstale a aplicación de Chrome. Mentres, podes acceder a <ph name="EXTENSION_LAUNCH_URL" /> para abrir <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Centro de Axuda</translation>
@@ -5984,6 +5985,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="560834977503641186">Sincronización wifi; máis información</translation>
 <translation id="5608580678041221894">Toca as seguintes teclas para axustar ou mover a zona que se recortará</translation>
 <translation id="5609231933459083978">Parece que a aplicación non é válida.</translation>
+<translation id="5610867721023328944">Téntao de novo ou selecciona máis abaixo un dos temas dispoñibles.</translation>
 <translation id="5611398002774823980">Gardar na conta</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso do usuario</translation>
@@ -9714,6 +9716,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8514746246728959655">Proba a utilizar unha chave de seguranza distinta</translation>
 <translation id="8514955299594277296">Non permitir que os sitios garden datos no teu dispositivo (non recomendado)</translation>
 <translation id="8515580632187889788">Ao continuar, permites que terceiros verifiquen a información que identifica este dispositivo na rede. Se non queres que poidan acceder a eses datos, configura un perfil de eSIM <ph name="BEGIN_LINK" />de forma manual<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Fai clic co botón dereito no grupo</translation>
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518942514525208851">Ocultar palabras malsoantes</translation>
 <translation id="8519895319663397036">Non se puideron importar os contrasinais. O ficheiro debe ocupar menos de 150 kB.</translation>
@@ -9895,7 +9898,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8662978096466608964">Chrome non pode establecer o fondo de pantalla.</translation>
 <translation id="8663051876219324457">Permite que as aplicacións, sitios web e servizos do sistema usen a túa localización. Os servizos de localización poden usar fontes como a wifi, as redes de telefonía móbil e os sensores para determinar onde está o teu dispositivo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Bloquear sempre descargas automáticas múltiples en <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Fai clic co botón dereito no nome do grupo</translation>
 <translation id="8664389313780386848">&amp;Ver fonte da páxina</translation>
 <translation id="8665110742939124773">Metiches un código de acceso incorrecto. Téntao de novo.</translation>
 <translation id="8665180165765946056">A copia de seguranza rematou</translation>
@@ -10373,6 +10375,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9016827136585652292">activar ou desactivar a pantalla de privacidade</translation>
 <translation id="90181708067259747">Data de vencemento: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Completouse a instalación</translation>
+<translation id="901876615920222131">Para volver abrir o grupo, fai clic nel</translation>
 <translation id="9019062154811256702">Ler e cambiar a configuración de autocompletar</translation>
 <translation id="9019894137004772119">Usar a localización. Permite que as aplicacións e servizos con permiso de localización utilicen a localización do dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar os servizos baseados na localización e a precisión da localización.</translation>
 <translation id="9019956081903586892">Non se puido descargar o dicionario do corrector ortográfico</translation>

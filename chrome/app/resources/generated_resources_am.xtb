@@ -342,7 +342,6 @@
 <translation id="1251578593170406502">የውሂብ ውሂብ አውታረ መረቦችን በመቃኘት ላይ...</translation>
 <translation id="125220115284141797">ነባሪ</translation>
 <translation id="1252219782845132919">ቡድንን ደብቅ</translation>
-<translation id="1252714168533640068">ቡድኑን እንደገና ለመክፈት የቡድን ስም ጠቅ ያድርጉ</translation>
 <translation id="1252987234827889034">የመገለጫ ስህተት ተከስቷል</translation>
 <translation id="1253664522045778676">አንድ ውጤት ላይ ጠቅ ያድርጉ እና ገጹ በአሁኑ ትርዎ ውስጥ ይከፈታል</translation>
 <translation id="1254593899333212300">ቀጥተኛ የበይነመረብ ግንኙነት</translation>
@@ -3421,6 +3420,7 @@
 <translation id="3602894439067790744">ቁጥሮችን እንደዚህ አንብባቸው</translation>
 <translation id="3603622770190368340">የአውታረ መረብ እውቅና ማረጋገጫ ያግኙ</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} መለያ ተመሳሳይ የይለፍ ቃል ይጠቀማል}one{{COUNT} መለያ ተመሳሳይ የይለፍ ቃል ይጠቀማል}other{{COUNT} መለያዎች ተመሳሳይ የይለፍ ቃል ይጠቀማሉ}}</translation>
+<translation id="3605515937536882518">የቅጽ እሴቶች ተዘምነዋል</translation>
 <translation id="3605780360466892872">የኮሌታ ቁልፍ</translation>
 <translation id="3607671391978830431">ለልጅ</translation>
 <translation id="3608460311600621471">እባክዎ ይህን ውሂብ የሚያወርዱበትን ምክንያት ያስገቡ፦</translation>
@@ -4488,6 +4488,7 @@
 <translation id="4410545552906060960">መሣሪያዎን ለመክፈት ከይለፍ ቃል ይልቅ ቁጥር (ፒን) ይጠቀሙ። የእርስዎን ፒን በኋላ ለማቀናበር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="4411578466613447185">የኮድ ፈራሚ</translation>
 <translation id="4411719918614785832">እነዚህ የይለፍ ቁልፎች በዚህ ኮምፒውተር ላይ የሚቀመጡት በWindows Hello ላይ ነው። በእርስዎ የGoogle መለያ ላይ አይቀመጡም</translation>
+<translation id="4412544493002546580">እንደገና ይሞክሩ ወይም ከታች ካሉት አነሳሾች ውስጥ አንዱን ይምረጡ።</translation>
 <translation id="4412547955014928315">ለ<ph name="SITE_NAME" /> እና በእሱ ስር ላሉት ሁሉም ጣቢያዎች የጣቢያ ውሂብ እና ፈቃዶች ይሰረዙ?</translation>
 <translation id="4412632005703201014">የChrome መተግበሪያዎች ወደ በሂደት ላይ ያሉ የድር መተግበሪያዎች በመሰደድ ላይ ናቸው። ይህ የChrome መተግበሪያ በድርጅትዎ ወደ የእርስዎ አሳሽ ታክሏል። ከመተግበሪያዎች ዝርዝር በሂደት ላይ ያለ የድር መተግበሪያን ለመክፈት መጀመሪያ አስተዳዳሪዎን ያነጋግሩ እና የChrome መተግበሪያን እንዲያራግፉ ይጠይቋቸው። እስከዚያ ድረስ ድር ላይ <ph name="EXTENSION_NAME" />ን ለመክፈት <ph name="EXTENSION_LAUNCH_URL" />ን መጎብኘት ይችላሉ።</translation>
 <translation id="4412698727486357573">የእገዛ ማዕከል</translation>
@@ -5989,6 +5990,7 @@
 <translation id="560834977503641186">የWi-Fi ስምረት፣ የበለጠ ለመረዳት</translation>
 <translation id="5608580678041221894">የመከርከሚያ አካባቢውን ለማስተካከል ወይም ለመውሰድ የሚከተሉትን ቁልፎች መታ ያድርጉ</translation>
 <translation id="5609231933459083978">መተግበሪያው ልክ ያልሆነ ይመስላል።</translation>
+<translation id="5610867721023328944">እንደገና ይሞክሩ ወይም ከታች ካሉት ገጽታዎች ውስጥ አንዱን ይምረጡ።</translation>
 <translation id="5611398002774823980">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />፣ <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">የተጠቃሚ ማሳወቂያ</translation>
@@ -9731,6 +9733,7 @@ nil</translation>
 <translation id="8514746246728959655">የተለየ የደህንነት ቁልፍ ይሞክሩ</translation>
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>
 <translation id="8515580632187889788">በመቀጠልዎ ሦስተኛ ወገኖች ይህን መሣሪያ በአውታረ መረቡ ላይ የሚለይ መረጃን እንዲያረጋግጡ ይፈቅዳሉ። ሦስተኛ ወገኖች የመሣሪያ መረጃን እንዲደርሱ ካልፈለጉ የኢሲም መገለጫን <ph name="BEGIN_LINK" />በእጅ<ph name="END_LINK" /> ማዋቀር ይችላሉ።</translation>
+<translation id="8516472100141530292">በቡድኑ ላይ የቀኝ ጠቅታ ያድርጉ</translation>
 <translation id="8517759303731677493">አርትዕ…</translation>
 <translation id="8518942514525208851">ጸያፍ ይዘትን ደብቅ</translation>
 <translation id="8519895319663397036">የይለፍ ቃላትን ማምጣት አልተቻለም። የፋይሉ መጠን ከ150 ኪባ በታች መሆን አለበት።</translation>
@@ -9912,7 +9915,6 @@ nil</translation>
 <translation id="8662978096466608964">Chrome የግድግዳ ወረቀቱን ሊያዘጋጅ አይችልም።</translation>
 <translation id="8663051876219324457">መተግበሪያዎች፣ ድር ጣቢያዎች እና የሥርዓት አገልግሎቶች አካባቢን እንዲጠቀሙ ይፍቀዱ። አካባቢ የመሣሪያዎን አካባቢ ለመገመት ለማገዝ እንደ Wi‑Fi፣ የተንቀሳቃሽ ስልክ አውታረ መረቦች እና ዳሳሾች ያሉ ምንጮችን ሊጠቀም ይችላል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">ሁልጊዜም ከ<ph name="HOST" /> ላይ በርካታ የራስ ሰር ማውረዶችን አግድ</translation>
-<translation id="8664249499245357248">በቡድኑ ስም ላይ በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="8664389313780386848">የፍሬም መነሻ  &amp;አሳይ</translation>
 <translation id="8665110742939124773">የተሳሳተ የመዳረሻ ኮድ አስገብተዋል። እንደገና ይሞክሩ።</translation>
 <translation id="8665180165765946056">ምትኬ ማስቀመጥ ተጠናቋል</translation>
@@ -10391,6 +10393,7 @@ nil</translation>
 <translation id="9016827136585652292">የግላዊነት ማያ ገፅ መቀያየሪያ</translation>
 <translation id="90181708067259747">የሚያበቃበት ቀን፦ <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ጭነት ተጠናቅቋል</translation>
+<translation id="901876615920222131">ቡድኑን እንደገና ለመክፈት፣ ቡድኑን ጠቅ ያድርጉ</translation>
 <translation id="9019062154811256702">የራስ-ሰር ሙላ ቅንብሮችን ያንብቡ እና ይለውጡ</translation>
 <translation id="9019894137004772119">አካባቢን ተጠቀም። የአካባቢ ፈቃድ ያላቸው መተግበሪያዎች እና አገልግሎቶች የመሣሪያዎን አካባቢ እንዲጠቀሙ ይፍቀዱላቸው። Google በየጊዜው የአካባቢ ውሂብን ሊሰበስብ እና ይህን ውሂብ ስም-አልባ በሆነ መልኩ ተጠቅሞ የአካባቢን ትክክለኛነት እና በአካባቢ ላይ የተመሠረቱ አገልግሎቶችን ለማሻሻል ሊጠቀምበት ይችላል።</translation>
 <translation id="9019956081903586892">የፊደል አራሚ መዝገበ-ቃላትን ማውረድ አልተቻለም</translation>

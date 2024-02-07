@@ -341,7 +341,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1251578593170406502">Mobile Datennetzwerke werden gesucht…</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Gruppe ausblenden</translation>
-<translation id="1252714168533640068">Klicke auf den Gruppennamen, um die Gruppe wieder zu öffnen</translation>
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
 <translation id="1253664522045778676">Klicke auf ein Suchergebnis, um die Seite im aktuellen Tab zu öffnen</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
@@ -3409,6 +3408,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3602894439067790744">Nummern vorlesen als</translation>
 <translation id="3603622770190368340">Netzwerkzertifikat anfordern</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} Konto mit demselben Passwort}other{{COUNT} Konten mit demselben Passwort}}</translation>
+<translation id="3605515937536882518">Formularwerte aktualisiert</translation>
 <translation id="3605780360466892872">Hemdträger</translation>
 <translation id="3607671391978830431">Für ein Kind</translation>
 <translation id="3608460311600621471">Bitte gib einen Grund für das Drucken dieser Daten an:</translation>
@@ -4478,6 +4478,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4410545552906060960">Anstelle eines Passworts kannst du eine Nummer (PIN) zum Entsperren deines Geräts verwenden. Die PIN kann später unter "Einstellungen" festgelegt werden.</translation>
 <translation id="4411578466613447185">Code-Signaturgeber</translation>
 <translation id="4411719918614785832">Diese Passkeys sind in Windows Hello auf diesem Computer gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
+<translation id="4412544493002546580">Versuch es noch einmal oder wähle unten einen der Vorschläge aus.</translation>
 <translation id="4412547955014928315">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> und alle ihr untergeordneten Websites löschen?</translation>
 <translation id="4412632005703201014">Chrome-Apps werden zu progressiven Web-Apps migriert. Diese Chrome-App wurde von deiner Organisation in deinem Browser installiert. Wenn du die progressive Web-App über die App-Liste öffnen möchtest, wende dich zuerst an deinen Administrator und bitte ihn, die Chrome-App zu deinstallieren. In der Zwischenzeit kannst du <ph name="EXTENSION_LAUNCH_URL" /> aufrufen, um <ph name="EXTENSION_NAME" /> im Web zu öffnen.</translation>
 <translation id="4412698727486357573">Hilfe</translation>
@@ -5979,6 +5980,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
 <translation id="5608580678041221894">Tippe auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
+<translation id="5610867721023328944">Versuch es noch einmal oder wähle unten eines der verfügbaren Designs aus.</translation>
 <translation id="5611398002774823980">In Konto speichern</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Nutzerhinweis</translation>
@@ -9711,6 +9713,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8514746246728959655">Versuche es mit einem anderen Sicherheitsschlüssel</translation>
 <translation id="8514955299594277296">Websites nicht erlauben, Daten auf deinem Gerät zu speichern (nicht empfohlen)</translation>
 <translation id="8515580632187889788">Wenn du fortfährst, können Dritte Informationen zur Identifizierung dieses Geräts im Netzwerk prüfen. Wenn du nicht möchtest, dass Dritte auf Geräteinformationen zugreifen können, kannst du <ph name="BEGIN_LINK" />manuell<ph name="END_LINK" /> ein eSIM-Profil einrichten.</translation>
+<translation id="8516472100141530292">Klicke mit der rechten Maustaste auf die Gruppe</translation>
 <translation id="8517759303731677493">Bearbeiten…</translation>
 <translation id="8518942514525208851">Vulgäre Sprache ausblenden</translation>
 <translation id="8519895319663397036">Import der Passwörter nicht möglich. Die Dateigröße sollte kleiner als 150 KB sein.</translation>
@@ -9892,7 +9895,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8662978096466608964">Chrome kann dieses Hintergrundbild nicht festlegen.</translation>
 <translation id="8663051876219324457">Apps, Websites und Systemdiensten erlauben, deinen Standort zu verwenden. Dazu kann der Standortdienst Quellen wie WLANs, Mobilfunknetze und Sensoren nutzen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Mehrere automatische Downloads auf <ph name="HOST" /> immer blockieren</translation>
-<translation id="8664249499245357248">Klicke mit der rechten Maustaste auf den Gruppennamen</translation>
 <translation id="8664389313780386848">Seitenquelltext &amp;anzeigen</translation>
 <translation id="8665110742939124773">Du hast einen falschen Zugriffscode eingegeben. Versuche es noch einmal.</translation>
 <translation id="8665180165765946056">Sicherung abgeschlossen</translation>
@@ -10370,6 +10372,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9016827136585652292">Taste für Privatsphärefunktion</translation>
 <translation id="90181708067259747">Ablaufdatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation abgeschlossen</translation>
+<translation id="901876615920222131">Klicke auf die Gruppe, um sie wieder zu öffnen</translation>
 <translation id="9019062154811256702">Autofill-Einstellungen lesen und ändern</translation>
 <translation id="9019894137004772119">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erfassen und diese Daten auf anonyme Weise verwenden, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern.</translation>
 <translation id="9019956081903586892">Das Wörterbuch für die Rechtschreibprüfung konnte nicht heruntergeladen werden</translation>

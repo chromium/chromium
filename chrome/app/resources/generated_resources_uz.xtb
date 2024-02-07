@@ -341,7 +341,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1251578593170406502">Mobil internet tarmoqlari tekshirilmoqda...</translation>
 <translation id="125220115284141797">Asosiy</translation>
 <translation id="1252219782845132919">Guruhni yashirish</translation>
-<translation id="1252714168533640068">Guruhni qayta ochish uchun gurun nomini bosing</translation>
 <translation id="1252987234827889034">Profil xatoligi yuz berdi</translation>
 <translation id="1253664522045778676">Kerakli natijani bosing va sahifa joriy varaqda ochiladi</translation>
 <translation id="1254593899333212300">Internetga to‘g‘ridan-to‘g‘ri ulanish</translation>
@@ -3414,6 +3413,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3602894439067790744">Raqamlarni oʻqish</translation>
 <translation id="3603622770190368340">Tarmoq sertifikatini qabul qilish</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} ta hisob bir xil parolga ega}other{{COUNT} ta hisob bir xil parolga ega}}</translation>
+<translation id="3605515937536882518">Shakl qiymatlari yangilandi</translation>
 <translation id="3605780360466892872">Ishbilarmon</translation>
 <translation id="3607671391978830431">Bola uchun</translation>
 <translation id="3608460311600621471">Bu axborot chop etilishi sababini yozing:</translation>
@@ -4483,6 +4483,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4410545552906060960">Qurilma qulfini parol emas raqamli kod bilan ochish (PIN). PIN kodni Sozlamalar orqali keyinroq sozlash mumkin.</translation>
 <translation id="4411578466613447185">Sertifikat kodi</translation>
 <translation id="4411719918614785832">Kalitlar shu kompyuterdagi Windows Hello xizmatiga saqlanadi. Ular Google hisobiga saqlanmaydi.</translation>
+<translation id="4412544493002546580">Qayta urining yoki quyidagi asarlardan birini tanlang.</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> maʼlumotlari, ruxsatlari va barcha quyi saytlari oʻchirilsinmi?</translation>
 <translation id="4412632005703201014">Chrome ilovalari progressiv veb ilovalarga koʻchirilmoqda. Bu Chrome ilovasi tashkilotingiz tomonidan brauzeringizga oʻrnatilgan. Ilovalar roʻyxatidan progressiv veb ilovasini ochish uchun avval administratoringizga murojaat qiling va undan Chrome ilovasini oʻchirib tashlashni talab qiling. Bu vaqtda vebda <ph name="EXTENSION_NAME" /> kengaytmasini ochish uchun <ph name="EXTENSION_LAUNCH_URL" /> sahifasiga kiring.</translation>
 <translation id="4412698727486357573">Yordam markazi</translation>
@@ -5985,6 +5986,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="560834977503641186">Wi-Fi Sync, Batafsil</translation>
 <translation id="5608580678041221894">Qirqilayotgan maydonni surish yoki moslash uchun quyidagi tugmalar ustiga bosing</translation>
 <translation id="5609231933459083978">Ilova nomi noto‘g‘ri kiritilganga o‘xshaydi.</translation>
+<translation id="5610867721023328944">Qayta urining yoki quyidagi mavzulardan birini tanlang.</translation>
 <translation id="5611398002774823980">Hisobda saqlash</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Foydalanuvchiga eslatma</translation>
@@ -9717,6 +9719,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8514746246728959655">Boshqa elektron kalit bilan urining</translation>
 <translation id="8514955299594277296">Saytlarga maʼlumotlarni qurilmangizga saqlashga ruxsat bermang (tavsiya etilmaydi)</translation>
 <translation id="8515580632187889788">Davom etish orqali siz uchinchi shaxslarga ushbu qurilmani tarmoqdagi identifikatsiya qiluvchi maʼlumotlarni tekshirishga ruxsat berasiz. Tashqi xizmatlar qurilma axborotini olishini istamasangiz, eSIM profilini <ph name="BEGIN_LINK" />mustaqil<ph name="END_LINK" /> sozlang.</translation>
+<translation id="8516472100141530292">Guruh ustiga oʻng klik bosing</translation>
 <translation id="8517759303731677493">Tahrirlash…</translation>
 <translation id="8518942514525208851">Uyatli iboralarni berkitish</translation>
 <translation id="8519895319663397036">Parollar import qilinmadi. Fayl hajmi 150 KB dan oshmasligi kerak.</translation>
@@ -9898,7 +9901,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8662978096466608964">Chrome bu rasmni orqa fonga o‘rnata olmadi.</translation>
 <translation id="8663051876219324457">Ilova, sayt va tizim xizmatlari joylashuvingizni koʻrishiga ruxsat bering Joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> saytida bir nechta fayl avtomatik yuklab olinishi doim taqiqlansin</translation>
-<translation id="8664249499245357248">Guruh nomiga oʻng klik bosing</translation>
 <translation id="8664389313780386848">&amp;Sahifa kodini ko‘rish</translation>
 <translation id="8665110742939124773">Ruxsat kodi xato kiritildi. Qayta urining.</translation>
 <translation id="8665180165765946056">Zaxiralandi</translation>
@@ -10376,6 +10378,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9016827136585652292">maxfiylik ekrani tugmasi</translation>
 <translation id="90181708067259747">Amal qilish muddati: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">O‘rnatildi.</translation>
+<translation id="901876615920222131">Guruhni qayta ochish uchun guruh ustiga bosing</translation>
 <translation id="9019062154811256702">Avtomatik to‘ldirish sozlamalarini o‘qish va o‘zgartirish</translation>
 <translation id="9019894137004772119">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="9019956081903586892">Imloni tekshirish lugʻati yuklab olinmadi</translation>

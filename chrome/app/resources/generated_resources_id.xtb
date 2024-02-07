@@ -343,7 +343,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1251578593170406502">Memindai jaringan data seluler ...</translation>
 <translation id="125220115284141797">Default</translation>
 <translation id="1252219782845132919">Sembunyikan grup</translation>
-<translation id="1252714168533640068">Untuk membuka kembali grup, klik nama grup</translation>
 <translation id="1252987234827889034">Terjadi error profil</translation>
 <translation id="1253664522045778676">Klik hasil lalu halaman akan dibuka di tab yang Anda buka saat ini</translation>
 <translation id="1254593899333212300">Koneksi internet langsung</translation>
@@ -3427,6 +3426,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3602894439067790744">Baca angka sebagai</translation>
 <translation id="3603622770190368340">Mendapatkan sertifikat jaringan</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} akun menggunakan sandi yang sama}other{{COUNT} akun menggunakan sandi yang sama}}</translation>
+<translation id="3605515937536882518">Nilai formulir diperbarui</translation>
 <translation id="3605780360466892872">Pria Berdasi</translation>
 <translation id="3607671391978830431">Untuk anak-anak</translation>
 <translation id="3608460311600621471">Masukkan alasan untuk mencetak data ini:</translation>
@@ -4496,6 +4496,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4410545552906060960">Gunakan nomor (PIN), bukan sandi, untuk membuka kunci perangkat Anda. Untuk menyetel PIN di lain waktu, buka Setelan.</translation>
 <translation id="4411578466613447185">Penandatangan Kode</translation>
 <translation id="4411719918614785832">Kunci sandi ini disimpan ke Windows Hello di komputer ini. Kunci sandi tidak disimpan ke Akun Google Anda.</translation>
+<translation id="4412544493002546580">Coba lagi atau pilih salah satu inspirasi di bawah.</translation>
 <translation id="4412547955014928315">Hapus data situs dan izin untuk <ph name="SITE_NAME" /> serta semua situs di bawahnya?</translation>
 <translation id="4412632005703201014">Aplikasi Chrome dimigrasikan ke Progressive Web App. Aplikasi Chrome ini diinstal di browser oleh organisasi Anda. Untuk membuka Progressive Web App dari Daftar aplikasi, hubungi administrator terlebih dahulu dan minta mereka untuk meng-uninstal Aplikasi Chrome. Sementara itu, Anda dapat mengunjungi <ph name="EXTENSION_LAUNCH_URL" /> untuk membuka <ph name="EXTENSION_NAME" /> di web.</translation>
 <translation id="4412698727486357573">Pusat bantuan</translation>
@@ -5998,6 +5999,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="560834977503641186">Wi-Fi Sync, Pelajari Lebih Lanjut</translation>
 <translation id="5608580678041221894">Ketuk tombol berikut untuk menyesuaikan atau memindahkan area pemangkasan</translation>
 <translation id="5609231933459083978">Tampaknya aplikasi ini tidak valid.</translation>
+<translation id="5610867721023328944">Coba lagi atau pilih salah satu tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan di akun</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notifikasi Pengguna</translation>
@@ -9732,6 +9734,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8514746246728959655">Coba kunci keamanan lain</translation>
 <translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>
 <translation id="8515580632187889788">Dengan melanjutkan, Anda mengizinkan pihak ketiga memverifikasi informasi yang mengidentifikasi perangkat ini di jaringan. Jika tidak ingin mengizinkan pihak ketiga mengakses informasi perangkat, Anda dapat menyiapkan profil eSIM <ph name="BEGIN_LINK" />secara manual<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Klik kanan grup</translation>
 <translation id="8517759303731677493">Edit…</translation>
 <translation id="8518942514525208851">Sembunyikan kata-kata tidak sopan</translation>
 <translation id="8519895319663397036">Tidak dapat mengimpor sandi. Ukuran file tidak boleh lebih dari 150 KB.</translation>
@@ -9913,7 +9916,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8662978096466608964">Chrome tidak dapat menyetel wallpaper.</translation>
 <translation id="8663051876219324457">Izinkan aplikasi, situs, dan layanan sistem menggunakan lokasi Anda. Lokasi dapat menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Selalu blokir download otomatis beberapa file di <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Klik kanan nama grup</translation>
 <translation id="8664389313780386848">&amp;Lihat sumber halaman</translation>
 <translation id="8665110742939124773">Anda memasukkan kode akses yang salah. Coba lagi.</translation>
 <translation id="8665180165765946056">Pencadangan selesai</translation>
@@ -10391,6 +10393,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9016827136585652292">beralih layar privasi</translation>
 <translation id="90181708067259747">Tanggal habis masa berlaku: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Penginstalan selesai</translation>
+<translation id="901876615920222131">Untuk membuka kembali grup, klik grup tersebut</translation>
 <translation id="9019062154811256702">Membaca dan mengubah setelan IsiOtomatis</translation>
 <translation id="9019894137004772119">Gunakan lokasi. Izinkan aplikasi dan layanan yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi dan layanan berdasarkan lokasi.</translation>
 <translation id="9019956081903586892">Tidak dapat mendownload kamus periksa ejaan</translation>

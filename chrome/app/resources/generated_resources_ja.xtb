@@ -341,7 +341,6 @@
 <translation id="1251578593170406502">モバイルデータ ネットワークをスキャンしています...</translation>
 <translation id="125220115284141797">デフォルト</translation>
 <translation id="1252219782845132919">グループを非表示</translation>
-<translation id="1252714168533640068">グループをもう一度開くには、グループ名をクリックします。</translation>
 <translation id="1252987234827889034">プロフィール エラーが発生しました</translation>
 <translation id="1253664522045778676">検索結果をクリックすると、そのページが現在のタブで開きます</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
@@ -3405,6 +3404,7 @@
 <translation id="3602894439067790744">数字の読み上げ</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個のアカウントで同じパスワードを使用しています}other{{COUNT} 個のアカウントで同じパスワードを使用しています}}</translation>
+<translation id="3605515937536882518">フォームの値を更新しました</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
 <translation id="3607671391978830431">お子様が使用</translation>
 <translation id="3608460311600621471">このデータを印刷する理由を入力してください。</translation>
@@ -4474,6 +4474,7 @@
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4411719918614785832">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
+<translation id="4412544493002546580">もう一度お試しいただくか、以下のインスピレーションから選択してください。</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限を削除しますか？</translation>
 <translation id="4412632005703201014">Chrome アプリはプログレッシブ ウェブアプリに移行しています。この Chrome アプリは組織によりブラウザにインストールされたものです。アプリのリストからプログレッシブ ウェブアプリを開くには、まず Chrome アプリをアンインストールするよう管理者に依頼します。その間は、<ph name="EXTENSION_LAUNCH_URL" /> にアクセスして、ウェブで <ph name="EXTENSION_NAME" /> を開いてください。</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
@@ -5972,6 +5973,7 @@
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
+<translation id="5610867721023328944">もう一度お試しいただくか、以下の使用可能なテーマから選択してください。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">ユーザー通知</translation>
@@ -9703,6 +9705,7 @@
 <translation id="8514746246728959655">別のセキュリティ キーを試す</translation>
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
 <translation id="8515580632187889788">続行すると、ネットワーク上でこのデバイスを識別する情報を第三者が確認できるようになります。第三者がデバイス情報にアクセスできないようにするには、eSIM プロファイルを<ph name="BEGIN_LINK" />手動で<ph name="END_LINK" />設定してください。</translation>
+<translation id="8516472100141530292">グループを右クリックします</translation>
 <translation id="8517759303731677493">編集…</translation>
 <translation id="8518942514525208851">不適切な表現を隠す</translation>
 <translation id="8519895319663397036">パスワードをインポートできません。ファイルサイズを 150 KB より小さくしてください。</translation>
@@ -9884,7 +9887,6 @@
 <translation id="8662978096466608964">壁紙は設定できません。</translation>
 <translation id="8663051876219324457">アプリ、ウェブサイト、システム サービスに位置情報の使用を許可します。デバイスの位置情報の特定に、Wi-Fi、モバイル ネットワーク、センサーなどのソースを使用する場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> 上での複数ファイルの自動ダウンロードを常にブロックする</translation>
-<translation id="8664249499245357248">グループ名を右クリックします</translation>
 <translation id="8664389313780386848">ページのソースを表示(&amp;V)</translation>
 <translation id="8665110742939124773">間違ったアクセスコードが入力されました。もう一度お試しください。</translation>
 <translation id="8665180165765946056">バックアップが完了しました</translation>
@@ -10362,6 +10364,7 @@
 <translation id="9016827136585652292">プライバシー画面の切り替え</translation>
 <translation id="90181708067259747">有効期限: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
+<translation id="901876615920222131">グループをもう一度開くには、グループをクリックします</translation>
 <translation id="9019062154811256702">自動入力設定の読み取りと変更</translation>
 <translation id="9019894137004772119">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="9019956081903586892">スペルチェック辞書をダウンロードできませんでした</translation>

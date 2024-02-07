@@ -344,7 +344,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1251578593170406502">Procurando redes de dados móveis…</translation>
 <translation id="125220115284141797">Padrão</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
-<translation id="1252714168533640068">Para abrir o grupo de novo, clique no nome dele</translation>
 <translation id="1252987234827889034">Ocorreu um erro de perfil</translation>
 <translation id="1253664522045778676">Clique em um resultado para abrir a página na guia atual</translation>
 <translation id="1254593899333212300">Conexão direta à Internet</translation>
@@ -3428,6 +3427,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3602894439067790744">Ler números como</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta usando a mesma senha}one{{COUNT} conta usando a mesma senha}other{{COUNT} contas usando a mesma senha}}</translation>
+<translation id="3605515937536882518">Valores do formulário atualizados</translation>
 <translation id="3605780360466892872">Esporte fino</translation>
 <translation id="3607671391978830431">Para uma criança</translation>
 <translation id="3608460311600621471">Informe um motivo para imprimir esses dados:</translation>
@@ -4497,6 +4497,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4410545552906060960">Use um número (PIN) em vez de uma senha para desbloquear o dispositivo. Para definir seu PIN mais tarde, acesse as configurações.</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Essas chaves de acesso são salvas no Windows Hello neste computador, não na sua Conta do Google.</translation>
+<translation id="4412544493002546580">Tente de novo ou selecione uma das inspirações abaixo.</translation>
 <translation id="4412547955014928315">Excluir dados e permissões do site <ph name="SITE_NAME" /> e de todos os sites relacionados?</translation>
 <translation id="4412632005703201014">Os apps do Chrome estão migrando para App Web Progressivos. Este app do Chrome foi instalado no navegador pela sua organização. Para abrir o App Web Progressivo na página "Detalhes do app", primeiro entre em contato com o administrador e peça para desinstalar o app do Chrome. Enquanto isso, você pode acessar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Central de Ajuda</translation>
@@ -5999,6 +6000,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="560834977503641186">Saiba mais sobre o Sincronizar Wi-Fi</translation>
 <translation id="5608580678041221894">Toque nas teclas a seguir para ajustar ou mover a área de corte</translation>
 <translation id="5609231933459083978">Este aplicativo parece ser inválido.</translation>
+<translation id="5610867721023328944">Tente de novo ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso para o usuário</translation>
@@ -9737,6 +9739,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8514746246728959655">Tente usar uma chave de segurança diferente</translation>
 <translation id="8514955299594277296">Não permitir que os sites salvem dados no seu dispositivo (não recomendado)</translation>
 <translation id="8515580632187889788">Ao continuar, você permite que terceiros verifiquem informações que identificam este dispositivo na rede. Se você não quiser permitir que terceiros acessem as informações do dispositivo, configure um perfil de eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Clique com o botão direito do mouse no grupo</translation>
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518942514525208851">Ocultar linguagem obscena</translation>
 <translation id="8519895319663397036">Não é possível importar as senhas. O arquivo precisa ter menos de 150 KB.</translation>
@@ -9918,7 +9921,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8662978096466608964">O Google Chrome não pode definir o plano de fundo.</translation>
 <translation id="8663051876219324457">Permitir que apps, sites e serviços do sistema usem seu local. A localização pode usar fontes como Wi-Fi, redes móveis e sensores para ajudar a estimar o local do dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Sempre bloquear vários downloads automáticos em <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Clique com o botão direito do mouse no nome do grupo</translation>
 <translation id="8664389313780386848">&amp;Exibir código fonte da página</translation>
 <translation id="8665110742939124773">Você inseriu um código de acesso incorreto. Tente novamente.</translation>
 <translation id="8665180165765946056">Backup concluído</translation>
@@ -10397,6 +10399,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9016827136585652292">alternar Tela de privacidade</translation>
 <translation id="90181708067259747">Data de validade: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
+<translation id="901876615920222131">Para abrir o grupo de novo, clique nele</translation>
 <translation id="9019062154811256702">Ler e alterar as configurações de preenchimento automático</translation>
 <translation id="9019894137004772119">Usar local. Autorizar apps e serviços com permissão de localização a usar o local do seu dispositivo. O Google pode coletar dados de local periodicamente e usá-los de forma anônima para melhorar a precisão do local e os serviços com base na localização.</translation>
 <translation id="9019956081903586892">Não foi possível fazer o download do dicionário de verificação ortográfica</translation>

@@ -343,7 +343,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1251578593170406502">Notiek mobilo datu tīklu meklēšana...</translation>
 <translation id="125220115284141797">Noklusējums</translation>
 <translation id="1252219782845132919">Paslēpt grupu</translation>
-<translation id="1252714168533640068">Lai atkārtoti atvērtu grupu, noklikšķiniet uz grupas nosaukuma</translation>
 <translation id="1252987234827889034">Radās profila kļūda</translation>
 <translation id="1253664522045778676">Noklikšķiniet uz rezultāta, un lapa tiks atvērta pašreizējā cilnē.</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
@@ -3414,6 +3413,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3602894439067790744">Lasīt skaitļus kā</translation>
 <translation id="3603622770190368340">Tīkla sertifikāta iegūšana</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{Vēl {COUNT} kontā tiek izmantota tā pati parole.}zero{Vēl {COUNT} kontos tiek izmantota tā pati parole.}one{Vēl {COUNT} kontā tiek izmantota tā pati parole.}other{Vēl {COUNT} kontos tiek izmantota tā pati parole.}}</translation>
+<translation id="3605515937536882518">Veidlapas vērtības ir atjauninātas</translation>
 <translation id="3605780360466892872">Biznesmenis</translation>
 <translation id="3607671391978830431">Bērnam</translation>
 <translation id="3608460311600621471">Lūdzu, norādiet iemeslu šo datu drukāšanai:</translation>
@@ -4483,6 +4483,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4410545552906060960">Savas ierīces atbloķēšanai izmantojiet numuru (PIN), nevis paroli. Lai iestatītu PIN kodu vēlāk, atveriet iestatījumus.</translation>
 <translation id="4411578466613447185">Koda parakstītājs</translation>
 <translation id="4411719918614785832">Šīs piekļuves atslēgas ir saglabātas funkcijā Windows Hello šajā datorā. Tās nav saglabātas jūsu Google kontā.</translation>
+<translation id="4412544493002546580">Mēģiniet vēlreiz vai atlasiet kādu no tālāk pieejamajiem ieteikumiem.</translation>
 <translation id="4412547955014928315">Vai dzēst vietnes <ph name="SITE_NAME" /> un visu tās apakšvietņu datus un atļaujas?</translation>
 <translation id="4412632005703201014">Chrome lietotnes tiek migrētas uz progresīvajām tīmekļa lietotnēm. Šo Chrome lietotni jūsu pārlūkā instalēja jūsu organizācija. Lai lietotņu sarakstā atvērtu progresīvo tīmekļa lietotni, vispirms sazinieties ar administratoru un lūdziet atinstalēt Chrome lietotni. Tikmēr varat apmeklēt vietni <ph name="EXTENSION_LAUNCH_URL" />, lai paplašinājumu <ph name="EXTENSION_NAME" /> atvērtu tīmeklī.</translation>
 <translation id="4412698727486357573">Palīdzības centrs</translation>
@@ -5984,6 +5985,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="560834977503641186">Wi-Fi sinhronizācija, uzzināt vairāk</translation>
 <translation id="5608580678041221894">Pieskarieties tālāk norādītajiem taustiņiem, lai pielāgotu vai pārvietotu apgriešanas apgabalu.</translation>
 <translation id="5609231933459083978">Šķiet, ka lietojumprogramma nav derīga.</translation>
+<translation id="5610867721023328944">Mēģiniet vēlreiz vai atlasiet kādu no tālāk pieejamajiem motīviem.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Paziņojums lietotājam</translation>
@@ -9719,6 +9721,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8514746246728959655">Pamēģiniet citu drošības atslēgu</translation>
 <translation id="8514955299594277296">Neatļaut vietnēm saglabāt datus jūsu ierīcē (nav ieteicams)</translation>
 <translation id="8515580632187889788">Turpinot jūs atļaujat trešajām pusēm verificēt informāciju, kas identificē šo ierīci tīklā. Lai neļautu trešajām pusēm piekļūt ierīces informācijai, varat <ph name="BEGIN_LINK" />manuāli iestatīt<ph name="END_LINK" /> eSIM profilu.</translation>
+<translation id="8516472100141530292">Noklikšķiniet ar peles labo pogu uz grupas.</translation>
 <translation id="8517759303731677493">Rediģēt…</translation>
 <translation id="8518942514525208851">Paslēpt rupjības</translation>
 <translation id="8519895319663397036">Nevar importēt paroles. Faila lielums nedrīkst pārsniegt 150 KB.</translation>
@@ -9900,7 +9903,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8662978096466608964">Chrome nevar iestatīt fona tapeti.</translation>
 <translation id="8663051876219324457">Ļaut lietotnēm, tīmekļa vietnēm un sistēmas pakalpojumiem izmantot jūsu atrašanās vietas datus. Lai noteiktu jūsu ierīces atrašanās vietu, var tikt izmantoti tādi avoti kā Wi-Fi, mobilie tīkli un sensori. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8663099077749055505">Vienmēr bloķēt vairākas automātiskas lejupielādes vietnē <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Ar peles labo pogu noklikšķiniet uz grupas nosaukuma</translation>
 <translation id="8664389313780386848">Skatīt lapas avotu</translation>
 <translation id="8665110742939124773">Ievadījāt nepareizu piekļuves kodu. Mēģiniet vēlreiz.</translation>
 <translation id="8665180165765946056">Dublēšana ir pabeigta</translation>
@@ -10380,6 +10382,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9016827136585652292">konfidencialitātes ekrāna slēdzis</translation>
 <translation id="90181708067259747">Derīguma termiņš: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalēšana pabeigta</translation>
+<translation id="901876615920222131">Lai atkārtoti atvērtu grupu, noklikšķiniet uz grupas nosaukuma.</translation>
 <translation id="9019062154811256702">Lasīt un mainīt automātiskās aizpildes iestatījumus</translation>
 <translation id="9019894137004772119">Atrašanās vietas datu izmantošana. Ļauj lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google periodiski var vākt atrašanās vietas datus un izmantot šos datus anonīmā veidā, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="9019956081903586892">Nevarēja lejupielādēt pareizrakstības pārbaudes vārdnīcu</translation>

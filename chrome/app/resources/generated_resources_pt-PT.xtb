@@ -341,7 +341,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1251578593170406502">A procurar redes de dados móveis…</translation>
 <translation id="125220115284141797">Predefinidas</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
-<translation id="1252714168533640068">Para reabrir o grupo, clique no nome do grupo</translation>
 <translation id="1252987234827889034">Ocorreu um erro do perfil</translation>
 <translation id="1253664522045778676">Clique num resultado e a página é aberta no separador atual</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
@@ -3413,6 +3412,7 @@ Quer pará-lo?</translation>
 <translation id="3602894439067790744">Ler números como</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta está a usar a mesma palavra-passe}other{{COUNT} contas estão a usar a mesma palavra-passe}}</translation>
+<translation id="3605515937536882518">Valores do formulário atualizados</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3607671391978830431">Para uma criança</translation>
 <translation id="3608460311600621471">Introduza um motivo para a impressão destes dados:</translation>
@@ -4482,6 +4482,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4410545552906060960">Utilize um número (PIN) em vez de uma palavra-passe para desbloquear o dispositivo. Para definir o PIN mais tarde, aceda a Definições.</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Estas chaves de acesso são guardadas no Windows Hello neste computador. Não são guardadas na sua Conta Google.</translation>
+<translation id="4412544493002546580">Tente novamente ou selecione uma das inspirações abaixo.</translation>
 <translation id="4412547955014928315">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" /> e de todos os sites associados ao mesmo?</translation>
 <translation id="4412632005703201014">As Apps do Chrome estão a ser migradas para apps Web progressivas. Esta App do Chrome foi instalada no seu navegador pela sua organização. Para abrir a app Web progressiva a partir da lista Apps, contacte primeiro o seu administrador e peça-lhe para desinstalar a App do Chrome. Entretanto, pode visitar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Centro de Ajuda</translation>
@@ -5983,6 +5984,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="560834977503641186">Sync Wi-Fi, saiba mais</translation>
 <translation id="5608580678041221894">Toque nas teclas seguintes para ajustar ou mover a área de recorte</translation>
 <translation id="5609231933459083978">A aplicação parece ser inválida.</translation>
+<translation id="5610867721023328944">Tente novamente ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Guardar na conta</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso ao utilizador</translation>
@@ -9719,6 +9721,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8514746246728959655">Experimente uma chave de segurança diferente</translation>
 <translation id="8514955299594277296">Não permitir que os sites guardem dados no seu dispositivo (não recomendado)</translation>
 <translation id="8515580632187889788">Ao continuar, permite que terceiros validem informações que identifiquem este dispositivo na rede. Se não quiser permitir que terceiros acedam às informações do dispositivo, pode configurar um perfil do eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Clique com o botão direito do rato no grupo</translation>
 <translation id="8517759303731677493">Editar…</translation>
 <translation id="8518942514525208851">Ocultar linguagem obscena</translation>
 <translation id="8519895319663397036">Não é possível importar palavras-passe. O tamanho do ficheiro deve ser inferior a 150 KB.</translation>
@@ -9900,7 +9903,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8662978096466608964">O Chrome não consegue definir a imagem de fundo.</translation>
 <translation id="8663051876219324457">Permita que as apps, os Websites e os serviços do sistema usem a sua localização. A localização pode usar fontes como o Wi‑Fi, as redes móveis e os sensores para ajudar a calcular a localização do seu dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Bloquear sempre as transferências automáticas múltiplas no <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Clique com o botão direito do rato no nome do grupo</translation>
 <translation id="8664389313780386848">&amp;Ver fonte da página</translation>
 <translation id="8665110742939124773">Introduziu um código de acesso incorreto. Tente novamente.</translation>
 <translation id="8665180165765946056">Cópia de segurança concluída</translation>
@@ -10378,6 +10380,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9016827136585652292">botão do ecrã de privacidade</translation>
 <translation id="90181708067259747">Data de validade: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
+<translation id="901876615920222131">Para reabrir o grupo, clique neste</translation>
 <translation id="9019062154811256702">Ler e alterar as definições de preenchimento automático</translation>
 <translation id="9019894137004772119">Utilize a localização. Permita que as apps e os serviços com a autorização de acesso à localização utilizem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e utilizá-los de forma anónima para melhorar a exatidão da localização e os serviços baseados na localização.</translation>
 <translation id="9019956081903586892">Não foi possível transferir o dicionário de verificação ortográfica.</translation>

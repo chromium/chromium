@@ -345,7 +345,6 @@
 <translation id="1251578593170406502">מתבצעת סריקה של רשתות נתונים סלולריות…</translation>
 <translation id="125220115284141797">ברירת מחדל</translation>
 <translation id="1252219782845132919">הסתרת הקבוצה</translation>
-<translation id="1252714168533640068">כדי לפתוח מחדש את הקבוצה, לוחצים על שם הקבוצה</translation>
 <translation id="1252987234827889034">אירעה שגיאה בפרופיל</translation>
 <translation id="1253664522045778676">לוחצים על תוצאה והדף נפתח בכרטיסייה הנוכחית</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
@@ -3427,6 +3426,7 @@
 <translation id="3602894439067790744">הקראת מספרים בתור</translation>
 <translation id="3603622770190368340">השגת אישור רשת</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{חשבון אחד ({COUNT}) משתמש באותה סיסמה}one{{COUNT} חשבונות משתמשים באותה סיסמה}two{{COUNT} חשבונות משתמשים באותה סיסמה}other{{COUNT} חשבונות משתמשים באותה סיסמה}}</translation>
+<translation id="3605515937536882518">הערכים בטופס עודכנו</translation>
 <translation id="3605780360466892872">מר מכופתר</translation>
 <translation id="3607671391978830431">לילד או לילדה</translation>
 <translation id="3608460311600621471">עליך להזין סיבה להדפסת הנתונים האלה:</translation>
@@ -4496,6 +4496,7 @@
 <translation id="4410545552906060960">אפשר להשתמש במספר (קוד) במקום בסיסמה כדי לבטל את נעילת המכשיר. ניתן להגדיר את הקוד מאוחר יותר ב'הגדרות'.</translation>
 <translation id="4411578466613447185">חותם קוד</translation>
 <translation id="4411719918614785832">‏מפתחות הגישה האלה נשמרים ב-Windows Hello במחשב הזה. הם לא נשמרים בחשבון Google.</translation>
+<translation id="4412544493002546580">אפשר לנסות שוב או לבחור מתוך הרעיונות להשראה שמוצגים למטה.</translation>
 <translation id="4412547955014928315">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" /> ולכל האתרים שתחתיו?</translation>
 <translation id="4412632005703201014">‏אפליקציות Chrome עוברות לאפליקציות מסוג Progressive Web App. אפליקציית Chrome הזו הותקנה בדפדפן על ידי הארגון שלך. כדי לפתוח Progressive Web App מרשימת האפליקציות, קודם צריך לפנות לאדמין ולבקש להסיר את אפליקציית Chrome. בינתיים אפשר להיכנס אל <ph name="EXTENSION_LAUNCH_URL" /> כדי לפתוח את <ph name="EXTENSION_NAME" /> באינטרנט.</translation>
 <translation id="4412698727486357573">מרכז העזרה</translation>
@@ -5999,6 +6000,7 @@
 <translation id="560834977503641186">‏מידע נוסף על סנכרון Wi-Fi</translation>
 <translation id="5608580678041221894">יש להקיש על המקשים הבאים כדי לשנות או להזיז את אזור החיתוך</translation>
 <translation id="5609231933459083978">נראה שהיישום אינו חוקי.</translation>
+<translation id="5610867721023328944">אפשר לנסות שוב או לבחור מתוך העיצובים שמוצגים למטה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />,‏ <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">הודעת משתמש</translation>
@@ -9739,6 +9741,7 @@
 <translation id="8514746246728959655">יש לנסות מפתח אבטחה שונה</translation>
 <translation id="8514955299594277296">אין הרשאה לאתרים לשמור נתונים במכשיר (לא מומלץ)</translation>
 <translation id="8515580632187889788">‏המשך הפעולה מבטא את אישורך לאימות מידע שמזהה את המכשיר הזה ברשת על ידי צדדים שלישיים. לא רוצה לאשר לצדדים שלישיים לגשת לפרטי המכשיר? אפשר להגדיר פרופיל eSIM <ph name="BEGIN_LINK" />באופן ידני<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">לחיצה ימנית על הקבוצה</translation>
 <translation id="8517759303731677493">עריכה…</translation>
 <translation id="8518942514525208851">הסתרה של שפה גסה</translation>
 <translation id="8519895319663397036">‏לא ניתן לייבא את הסיסמאות. גודל הקובץ צריך להיות פחות מ-150KB.</translation>
@@ -9920,7 +9923,6 @@
 <translation id="8662978096466608964">‏Chrome אינו יכול להגדיר טפט.</translation>
 <translation id="8663051876219324457">‏מתן הרשאה לאפליקציות, לאתרים ולשירותי המערכת להשתמש במיקום שלך. שירות המיקום עשוי להשתמש במקורות כמו Wi‑Fi, רשתות סלולריות וחיישנים כדי לעזור בהערכת המיקום של המכשיר שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">יש לחסום תמיד הורדות מרובות אוטומטיות ב-<ph name="HOST" /></translation>
-<translation id="8664249499245357248">לוחצים לחיצה ימנית על שם הקבוצה</translation>
 <translation id="8664389313780386848">&amp;הצגת מקור הדף</translation>
 <translation id="8665110742939124773">הזנת קוד גישה שגוי. עליך לנסות שוב.</translation>
 <translation id="8665180165765946056">הגיבוי הושלם</translation>
@@ -10400,6 +10402,7 @@
 <translation id="9016827136585652292">מתג מסך הפרטיות</translation>
 <translation id="90181708067259747">תאריך התפוגה: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
+<translation id="901876615920222131">כדי לפתוח מחדש את הקבוצה, לוחצים על הקבוצה</translation>
 <translation id="9019062154811256702">קריאה ושינוי של הגדרות מילוי אוטומטי</translation>
 <translation id="9019894137004772119">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="9019956081903586892">לא ניתן היה להוריד מילון לבדיקת איות</translation>

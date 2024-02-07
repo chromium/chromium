@@ -342,7 +342,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1251578593170406502">Se caută rețele de date mobile...</translation>
 <translation id="125220115284141797">Prestabilită</translation>
 <translation id="1252219782845132919">Ascunde grupul</translation>
-<translation id="1252714168533640068">Pentru a redeschide grupul, dă clic pe numele acestuia</translation>
 <translation id="1252987234827889034">A apărut o eroare privind profilul</translation>
 <translation id="1253664522045778676">Dă clic pe un rezultat și pagina se va deschide în fila actuală</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
@@ -3413,6 +3412,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3602894439067790744">Citește numerele ca</translation>
 <translation id="3603622770190368340">Obțineți certificatul de rețea</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} cont folosește aceeași parolă}few{{COUNT} conturi folosesc aceeași parolă}other{{COUNT} de conturi folosesc aceeași parolă}}</translation>
+<translation id="3605515937536882518">Valorile din formular au fost actualizate</translation>
 <translation id="3605780360466892872">Om de afaceri</translation>
 <translation id="3607671391978830431">Pentru un copil</translation>
 <translation id="3608460311600621471">Introdu un motiv pentru printarea acestor date:</translation>
@@ -4482,6 +4482,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4410545552906060960">Folosește un număr (PIN) în locul unei parole pentru a debloca dispozitivul. Pentru a-ți seta codul PIN mai târziu, accesează Setări.</translation>
 <translation id="4411578466613447185">Semnatar de coduri</translation>
 <translation id="4411719918614785832">Cheile de acces sunt salvate în Windows Hello pe computer. Ele nu se salvează în Contul Google.</translation>
+<translation id="4412544493002546580">Încearcă din nou sau selectează una dintre sugestiile de mai jos.</translation>
 <translation id="4412547955014928315">Ștergi datele privind site-ul și permisiunile pentru <ph name="SITE_NAME" /> și toate site-urile asociate?</translation>
 <translation id="4412632005703201014">Aplicațiile Chrome migrează la aplicații web progresive. Această aplicație Chrome a fost instalată în browser de organizația ta. Pentru a deschide aplicația web progresivă din lista de aplicații, contactează mai întâi administratorul și solicită-i să dezinstaleze aplicația Chrome. Între timp, poți accesa <ph name="EXTENSION_LAUNCH_URL" /> pentru a deschide <ph name="EXTENSION_NAME" /> pe web.</translation>
 <translation id="4412698727486357573">Centrul de ajutor</translation>
@@ -5983,6 +5984,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="560834977503641186">Sincronizare Wi-Fi, află mai multe</translation>
 <translation id="5608580678041221894">Atinge următoarele taste ca să ajustezi sau să muți zona de decupare</translation>
 <translation id="5609231933459083978">Aplicația pare să nu fie validă.</translation>
+<translation id="5610867721023328944">Încearcă din nou sau selectează una dintre temele disponibile de mai jos.</translation>
 <translation id="5611398002774823980">Salvează în cont</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notificare pentru utilizator</translation>
@@ -9720,6 +9722,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8514746246728959655">Încearcă altă cheie de securitate</translation>
 <translation id="8514955299594277296">Nu permite site-urilor să salveze date pe dispozitiv (nu se recomandă)</translation>
 <translation id="8515580632187889788">Dacă alegi să continui, le permiți terților să verifice informațiile de identificare a acestui dispozitiv în rețea Dacă nu dorești să permiți accesul terțelor părți la informațiile despre dispozitiv, poți configura un profil eSIM <ph name="BEGIN_LINK" />manual<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Dă clic dreapta pe grup</translation>
 <translation id="8517759303731677493">Editează…</translation>
 <translation id="8518942514525208851">Ascunde cuvintele vulgare</translation>
 <translation id="8519895319663397036">Nu se pot importa parolele. Dimensiunea fișierelor trebuie să fie de maximum 150 KB.</translation>
@@ -9901,7 +9904,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8662978096466608964">Chrome nu poate seta imaginea de fundal.</translation>
 <translation id="8663051876219324457">Permite aplicațiilor, site-urilor și serviciilor de sistem să folosească locația. Locația poate folosi surse precum Wi-Fi, rețele mobile și senzori pentru a ajuta la estimarea locației dispozitivului. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blocați întotdeauna descărcarea automată a mai multor fișiere pentru <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Dă clic dreapta pe numele grupului</translation>
 <translation id="8664389313780386848">&amp;Afișează sursa paginii</translation>
 <translation id="8665110742939124773">Ai introdus un cod de acces incorect. Încearcă din nou.</translation>
 <translation id="8665180165765946056">Backupul a fost finalizat</translation>
@@ -10380,6 +10382,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9016827136585652292">activarea sau dezactivarea ecranului de confidențialitate</translation>
 <translation id="90181708067259747">Data expirării: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
+<translation id="901876615920222131">Pentru a redeschide grupul, dă clic pe numele acestuia</translation>
 <translation id="9019062154811256702">Citește și modifică setările pentru completarea automată</translation>
 <translation id="9019894137004772119">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația dispozitivului tău. Google poate colecta periodic date despre locație și le poate folosi în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="9019956081903586892">Nu s-a putut descărca dicționarul pentru verificarea ortografiei</translation>

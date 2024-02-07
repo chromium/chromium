@@ -341,7 +341,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1251578593170406502">Ricerca di reti di dati mobili in corso…</translation>
 <translation id="125220115284141797">Predefiniti</translation>
 <translation id="1252219782845132919">Nascondi gruppo</translation>
-<translation id="1252714168533640068">Per riaprire il gruppo, fai clic sul suo nome</translation>
 <translation id="1252987234827889034">Errore con il profilo</translation>
 <translation id="1253664522045778676">Fai clic su un risultato e la pagina si aprirà nella scheda corrente</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
@@ -3412,6 +3411,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3602894439067790744">Leggi i numeri come</translation>
 <translation id="3603622770190368340">Ottieni certificato di rete</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account utilizza la stessa password}other{{COUNT} account utilizzano la stessa password}}</translation>
+<translation id="3605515937536882518">Valori del modulo aggiornati</translation>
 <translation id="3605780360466892872">Ventiquattrore</translation>
 <translation id="3607671391978830431">Per un bambino</translation>
 <translation id="3608460311600621471">Inserisci un motivo per voler stampare questi dati:</translation>
@@ -4481,6 +4481,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4410545552906060960">Usa un numero (PIN) anziché una password per sbloccare il dispositivo. Per impostare il PIN in un secondo momento, vai alle Impostazioni.</translation>
 <translation id="4411578466613447185">Certificato di firma del codice</translation>
 <translation id="4411719918614785832">Queste passkey sono salvate in Windows Hello su questo computer e non nel tuo Account Google.</translation>
+<translation id="4412544493002546580">Riprova o seleziona uno dei suggerimenti di seguito.</translation>
 <translation id="4412547955014928315">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" /> e di tutti i relativi siti secondari?</translation>
 <translation id="4412632005703201014">È in corso la migrazione delle app di Chrome alle app web progressive. Questa app di Chrome è stata installata sul tuo browser dalla tua organizzazione. Per aprire l'app web progressiva dall'elenco App, contatta innanzitutto l'amministratore e chiedigli di disinstallare l'app Chrome. Nel frattempo, puoi visitare <ph name="EXTENSION_LAUNCH_URL" /> per aprire <ph name="EXTENSION_NAME" /> sul Web.</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
@@ -5982,6 +5983,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="560834977503641186">Sync Wi-Fi, Ulteriori informazioni</translation>
 <translation id="5608580678041221894">Tocca i seguenti tasti per regolare o spostare l'area di ritaglio</translation>
 <translation id="5609231933459083978">L'applicazione non sembra essere valida.</translation>
+<translation id="5610867721023328944">Riprova o seleziona uno dei temi disponibili di seguito.</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notifica all'utente</translation>
@@ -9714,6 +9716,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8514746246728959655">Prova a usare un altro token di sicurezza</translation>
 <translation id="8514955299594277296">Non consentire ai siti di salvare dati sul dispositivo (opzione non consigliata)</translation>
 <translation id="8515580632187889788">Se continui, consenti a terze parti di verificare le informazioni che identificano questo dispositivo sulla rete. Se non vuoi consentire a terze parti di accedere alle informazioni del dispositivo, puoi configurare un profilo eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
+<translation id="8516472100141530292">Fai clic con il tasto destro del mouse sul gruppo</translation>
 <translation id="8517759303731677493">Modifica…</translation>
 <translation id="8518942514525208851">Nascondi linguaggio volgare</translation>
 <translation id="8519895319663397036">Impossibile importare le password. Le dimensioni file devono essere minori di 150 kB.</translation>
@@ -9895,7 +9898,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8662978096466608964">Chrome non può impostare lo sfondo.</translation>
 <translation id="8663051876219324457">Consenti ad app, siti web e servizi di sistema di utilizzare la tua posizione. Il servizio di geolocalizzazione potrebbe usare fonti quali Wi-Fi, reti mobili e sensori per stabilire la posizione approssimativa del dispositivo. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blocca sempre più download automatici su <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Fai clic con il tasto destro del mouse sul nome del gruppo</translation>
 <translation id="8664389313780386848">&amp;Visualizza sorgente pagina</translation>
 <translation id="8665110742939124773">Hai inserito un codice di accesso errato. Riprova.</translation>
 <translation id="8665180165765946056">Backup completato</translation>
@@ -10373,6 +10375,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9016827136585652292">pulsante di attivazione/disattivazione della Schermata privata</translation>
 <translation id="90181708067259747">Data di scadenza: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installazione completata</translation>
+<translation id="901876615920222131">Per riaprire il gruppo, fai clic sullo stesso</translation>
 <translation id="9019062154811256702">Lettura e modifica delle impostazioni di Compilazione automatica</translation>
 <translation id="9019894137004772119">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
 <translation id="9019956081903586892">Impossibile scaricare il dizionario per il controllo ortografico</translation>

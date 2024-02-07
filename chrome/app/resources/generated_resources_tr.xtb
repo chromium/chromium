@@ -341,7 +341,6 @@
 <translation id="1251578593170406502">Mobil veri ağları taranıyor...</translation>
 <translation id="125220115284141797">Varsayılan</translation>
 <translation id="1252219782845132919">Grubu gizle</translation>
-<translation id="1252714168533640068">Grubu yeniden açmak için grup adını tıklayın</translation>
 <translation id="1252987234827889034">Profil hatası oluştu</translation>
 <translation id="1253664522045778676">Bir sonucu tıkladığınızda sayfa mevcut sekmenizde açılır</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
@@ -3410,6 +3409,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3602894439067790744">Numaraları şu şekilde oku:</translation>
 <translation id="3603622770190368340">Ağ sertifikası edinme</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} hesapta aynı şifre kullanılıyor}other{{COUNT} hesapta aynı şifre kullanılıyor}}</translation>
+<translation id="3605515937536882518">Form değerleri güncellendi</translation>
 <translation id="3605780360466892872">İş adamı</translation>
 <translation id="3607671391978830431">Çocuk için</translation>
 <translation id="3608460311600621471">Lütfen bu verileri yazdırma nedeninizi girin:</translation>
@@ -4479,6 +4479,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4410545552906060960">Cihazınızın kilidini açmak için şifre yerine bir sayı (PIN) kullanın. PIN'inizi daha sonra ayarlamak için Ayarlar'a gidin.</translation>
 <translation id="4411578466613447185">Kod İmza Sahibi</translation>
 <translation id="4411719918614785832">Bu geçiş anahtarları bu bilgisayarda Windows Hello'ya kaydedilir. Google Hesabınıza kaydedilmezler.</translation>
+<translation id="4412544493002546580">Tekrar deneyin veya aşağıdaki ilham verici fikirlerden birini seçin.</translation>
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> sitesi ve buna bağlı tüm sitelerdeki site verileri ile izinler silinsin mi?</translation>
 <translation id="4412632005703201014">Chrome uygulamaları, progresif web uygulamalarına (pwa) taşınıyor. Bu Chrome uygulaması, kuruluşunuz tarafından tarayıcınıza yüklenmiş. Uygulamalar listesinden progresif web uygulamasını (pwa) açmak için öncelikle yöneticinizle iletişime geçip Chrome uygulamasını kaldırmasını isteyin. Dilerseniz <ph name="EXTENSION_NAME" /> uzantısını web'de açmak için <ph name="EXTENSION_LAUNCH_URL" /> adresini ziyaret edebilirsiniz.</translation>
 <translation id="4412698727486357573">Yardım merkezi</translation>
@@ -5980,6 +5981,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="560834977503641186">Wi-Fi Senkronizasyonu, Daha Fazla Bilgi</translation>
 <translation id="5608580678041221894">Kırpma alanını ayarlamak veya taşımak için aşağıdaki tuşlara dokunun</translation>
 <translation id="5609231933459083978">Uygulamanın geçersiz olduğu görülüyor.</translation>
+<translation id="5610867721023328944">Tekrar deneyin veya aşağıdaki mevcut temalardan birini seçin.</translation>
 <translation id="5611398002774823980">Hesaba kaydet</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Kullanıcı Bildirimi</translation>
@@ -9715,6 +9717,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8514746246728959655">Başka bir güvenlik anahtarı deneyin</translation>
 <translation id="8514955299594277296">Sitelerin cihazıma veri kaydetmesine izin verme (önerilmez)</translation>
 <translation id="8515580632187889788">Devam ederek üçüncü tarafların bu cihazı ağda tanımlayan bilgileri doğrulamasına izin vermiş olursunuz. Üçüncü taraflarca cihaz bilgilerine erişilmesine izin vermek istemiyorsanız <ph name="BEGIN_LINK" />manuel olarak<ph name="END_LINK" /> eSIM profili oluşturabilirsiniz.</translation>
+<translation id="8516472100141530292">Grubu sağ tıklayın</translation>
 <translation id="8517759303731677493">Düzenle…</translation>
 <translation id="8518942514525208851">Küfürlü içeriği gizle</translation>
 <translation id="8519895319663397036">Şifreler içe aktarılamıyor. Dosya boyutu 150 KB'tan az olmalıdır.</translation>
@@ -9896,7 +9899,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8662978096466608964">Chrome duvar kağıdını ayarlayamıyor.</translation>
 <translation id="8663051876219324457">Uygulamaların, web sitelerinin ve sistem hizmetlerinin konumunuzu kullanmasına izin verin. Konum hizmeti, cihazınızın konumunun tahmin edilmesine yardımcı olması için kablosuz ağ, mobil ağ ve sensörler gibi kaynakları kullanabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> ana makinesinde otomatik olarak birden fazla dosya indirmeyi her zaman engelle</translation>
-<translation id="8664249499245357248">Grup adını sağ tıklayın</translation>
 <translation id="8664389313780386848">&amp;Sayfa kaynağını görüntüle</translation>
 <translation id="8665110742939124773">Girdiğiniz erişim kodu yanlış. Tekrar deneyin.</translation>
 <translation id="8665180165765946056">Yedekleme tamamlandı</translation>
@@ -10374,6 +10376,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="9016827136585652292">gizlilik ekranını aç/kapat</translation>
 <translation id="90181708067259747">Son kullanım tarihi: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Yükleme tamamlandı</translation>
+<translation id="901876615920222131">Grubu yeniden açmak için grubu tıklayın</translation>
 <translation id="9019062154811256702">Otomatik doldur ayarlarını okuma ve değiştirme</translation>
 <translation id="9019894137004772119">Konumu kullan. Konum izni olan uygulama ve hizmetlerin cihazınızın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
 <translation id="9019956081903586892">Yazım denetimi sözlüğü indirilemedi</translation>

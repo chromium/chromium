@@ -343,7 +343,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1251578593170406502">Vyhledávání mobilních datových sítí…</translation>
 <translation id="125220115284141797">Výchozí</translation>
 <translation id="1252219782845132919">Skrýt skupinu</translation>
-<translation id="1252714168533640068">Pokud skupinu chcete znovu otevřít, klikněte na její název</translation>
 <translation id="1252987234827889034">Došlo k chybě profilu</translation>
 <translation id="1253664522045778676">Kliknutím na výsledek příslušnou stránku otevřete na aktuální kartě</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
@@ -3414,6 +3413,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3602894439067790744">Čísla číst jako</translation>
 <translation id="3603622770190368340">Získání certifikátu sítě</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} účet používá stejné heslo}few{{COUNT} účty používají stejné heslo}many{{COUNT} účtu používá stejné heslo}other{{COUNT} účtů používá stejné heslo}}</translation>
+<translation id="3605515937536882518">Hodnoty formuláře byly aktualizovány</translation>
 <translation id="3605780360466892872">Manažer</translation>
 <translation id="3607671391978830431">Pro dítě</translation>
 <translation id="3608460311600621471">Zadejte důvod tisku těchto dat:</translation>
@@ -4482,6 +4482,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4410545552906060960">Zařízení budete místo heslem odemykat pomocí kódu PIN. PIN můžete nastavit později v Nastavení.</translation>
 <translation id="4411578466613447185">Slouží k podepsání kódu</translation>
 <translation id="4411719918614785832">Tyto přístupové klíče jsou uloženy ve službě Windows Hello na tomto počítači. Neukládají se do vašeho účtu Google.</translation>
+<translation id="4412544493002546580">Zkuste to znovu nebo si vyberte z jedné z níže uvedených inspirací.</translation>
 <translation id="4412547955014928315">Vymazat data a oprávnění webu <ph name="SITE_NAME" /> a všech jeho podřízených webů?</translation>
 <translation id="4412632005703201014">Aplikace pro Chrome přecházejí na progresivní webové aplikace. Tuto aplikaci pro Chrome do prohlížeče nainstalovala vaše organizace. Pokud ze seznamu aplikací chcete otevírat příslušnou progresivní webovou aplikaci, nejdříve kontaktujte administrátora a požádejte ho, aby aplikaci pro Chrome odinstaloval. Mezitím můžete navštívit web <ph name="EXTENSION_LAUNCH_URL" /> a otevřít aplikaci <ph name="EXTENSION_NAME" /> na webu.</translation>
 <translation id="4412698727486357573">Centrum nápovědy</translation>
@@ -5983,6 +5984,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
+<translation id="5610867721023328944">Zkuste to znovu nebo vyberte některý z níže uvedených dostupných motivů.</translation>
 <translation id="5611398002774823980">Uložit do účtu</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
@@ -9718,6 +9720,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8514746246728959655">Zkuste jiný bezpečnostní klíč</translation>
 <translation id="8514955299594277296">Nepovolovat webům ukládat data do zařízení (nedoporučeno)</translation>
 <translation id="8515580632187889788">Pokud budete pokračovat, umožníte tím třetím stranám ověřit informace, které toto zařízení identifikují v síti. Pokud přístup k informacím ze zařízení třetím stranám povolovat nechcete, můžete <ph name="BEGIN_LINK" />ručně<ph name="END_LINK" /> nastavit profil eSIM.</translation>
+<translation id="8516472100141530292">Pravým tlačítkem klikněte na skupinu</translation>
 <translation id="8517759303731677493">Upravit…</translation>
 <translation id="8518942514525208851">Skrýt vulgární výrazy</translation>
 <translation id="8519895319663397036">Hesla se nepodařilo importovat. Soubor musí být menší než 150 kB.</translation>
@@ -9899,7 +9902,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8662978096466608964">Chrome nemůže nastavit tapetu.</translation>
 <translation id="8663051876219324457">Povolit aplikacím, webům a systémovým službám používat vaši polohu. Poloha zařízení se určuje pomocí zdrojů, jako jsou sítě Wi-Fi, mobilní sítě a senzory. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Vždy blokovat automatické stahování několika souborů u hostitele <ph name="HOST" /></translation>
-<translation id="8664249499245357248">Klepněte pravým tlačítkem na název skupiny</translation>
 <translation id="8664389313780386848">&amp;Zobrazit zdrojový kód stránky</translation>
 <translation id="8665110742939124773">Zadali jste nesprávný přístupový kód. Zkuste to znovu.</translation>
 <translation id="8665180165765946056">Zálohování bylo dokončeno</translation>
@@ -10378,6 +10380,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="9016827136585652292">přepínač obrazovky s ochranou soukromí</translation>
 <translation id="90181708067259747">Datum vypršení platnosti: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalace byla dokončena</translation>
+<translation id="901876615920222131">Pokud skupinu chcete znovu otevřít, klikněte na ni</translation>
 <translation id="9019062154811256702">Čtení a změna nastavení automatického vyplňování</translation>
 <translation id="9019894137004772119">Používat polohu. Povolte aplikacím a službám s oprávněním pro přístup k poloze využívat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
 <translation id="9019956081903586892">Slovník kontroly pravopisu se nepodařilo stáhnout</translation>
