@@ -691,10 +691,6 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
 
     transition_names.push_back(name);
     elements.push_back(element);
-
-    if (name.LowerASCII() == "auto") {
-      UseCounter::Count(document_, WebFeature::kViewTransitionNameAuto);
-    }
   }
   return true;
 }

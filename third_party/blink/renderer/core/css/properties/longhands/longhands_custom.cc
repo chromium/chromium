@@ -6601,6 +6601,9 @@ const CSSValue* ViewTransitionName::ParseSingleValue(
   if (range.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
   }
+  if (range.Peek().Id() == CSSValueID::kAuto) {
+    return nullptr;
+  }
   return css_parsing_utils::ConsumeCustomIdent(range, context);
 }
 
