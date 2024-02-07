@@ -232,7 +232,8 @@ import org.chromium.url.Origin;
                                     inputStart,
                                     params.getNavigationUIDataSupplier() == null
                                             ? 0
-                                            : params.getNavigationUIDataSupplier().get());
+                                            : params.getNavigationUIDataSupplier().get(),
+                                    params.getIsPdf());
             // Use the navigation handle object to store user data passed in.
             if (navigationHandle != null) {
                 navigationHandle.setUserDataHost(params.takeNavigationHandleUserData());
@@ -508,7 +509,8 @@ import org.chromium.url.Origin;
                 boolean shouldClearHistoryList,
                 AdditionalNavigationParams additionalNavigationParams,
                 long inputStart,
-                long navigationUIDataPtr);
+                long navigationUIDataPtr,
+                boolean isPdf);
 
         void clearHistory(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
 

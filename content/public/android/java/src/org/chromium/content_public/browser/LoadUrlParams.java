@@ -55,6 +55,7 @@ public class LoadUrlParams {
     private boolean mShouldClearHistoryList;
     @Nullable private AdditionalNavigationParams mAdditionalNavigationParams;
     private Supplier<Long> mNavigationUIDataSupplier;
+    private boolean mIsPdf;
 
     /**
      * Creates an instance with default page transition type.
@@ -630,6 +631,18 @@ public class LoadUrlParams {
     /** Returns the supplier for {@link NavigationUIData} or null. */
     public Supplier<Long> getNavigationUIDataSupplier() {
         return mNavigationUIDataSupplier;
+    }
+
+    /**
+     * @return Whether the URL is a pdf file.
+     */
+    public boolean getIsPdf() {
+        return mIsPdf;
+    }
+
+    /** Sets whether the URL is a pdf file. */
+    public void setIsPdf(boolean isPdf) {
+        mIsPdf = isPdf;
     }
 
     @NativeMethods
