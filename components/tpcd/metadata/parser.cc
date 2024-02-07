@@ -95,6 +95,7 @@ MetadataEntries GenerateLargeMetadataEntries() {
     entry.set_primary_pattern_spec(
         base::StrCat({"http://", hostname, ".test"}));
     entry.set_secondary_pattern_spec("*");
+    entry.set_source(Parser::kSourceTest);
     entries.emplace_back(entry);
   }
   return entries;

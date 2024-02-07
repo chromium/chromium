@@ -51,6 +51,9 @@ class Parser {
   MetadataEntries GetMetadata();
 
   static constexpr char const* kMetadataFeatureParamName = "Metadata";
+  static constexpr char const* kSourceTest = "SOURCE_TEST";
+  static constexpr char const* kSource1pDt = "SOURCE_1P_DT";
+  static constexpr char const* kSource3pDt = "SOURCE_3P_DT";
 
   // Start Parser testing methods:
   MetadataEntries GetInstalledMetadataForTesting();

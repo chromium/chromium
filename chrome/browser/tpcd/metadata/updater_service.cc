@@ -57,7 +57,8 @@ void UpdaterService::OnMetadataReady() {
     base::Value value(ContentSetting::CONTENT_SETTING_ALLOW);
 
     tpcd_metadata_grants.emplace_back(primary_pattern, secondary_pattern,
-                                      std::move(value), std::string(), false);
+                                      std::move(value), metadata_entry.source(),
+                                      false);
   }
 
   cookie_settings_->SetContentSettingsFor3pcdMetadataGrants(

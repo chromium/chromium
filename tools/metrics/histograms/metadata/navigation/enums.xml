@@ -1724,6 +1724,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kReadingMetadataFileFailed"/>
   <int value="3" label="kParsingToProtoFailed"/>
   <int value="4" label="kErroneousSpec"/>
+  <int value="5" label="kErroneousSource"/>
 </enum>
 
 <enum name="UserAgentStringType">

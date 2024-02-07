@@ -147,6 +147,11 @@ bool TpcdMetadataComponentInstallerPolicy::VerifyInstallation(
       WriteMetrics(TpcdMetadataInstallationResult::kErroneousSpec);
       return false;
     }
+
+    if (!me.has_source()) {
+      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSource);
+      return false;
+    }
   }
 
   WriteMetrics(TpcdMetadataInstallationResult::kSuccessful);
