@@ -27,6 +27,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test_shell_delegate.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -36,6 +38,9 @@
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-shared.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
@@ -193,7 +198,14 @@ class NetworkListViewControllerTest : public AshTestBase,
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    AshTestBase::SetUp();
+    fake_multidevice_setup_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetup>();
+    auto delegate = std::make_unique<TestShellDelegate>();
+    delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
+        &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
+        base::Unretained(fake_multidevice_setup_.get())));
+
+    AshTestBase::SetUp(std::move(delegate));
 
     cros_network_ = std::make_unique<FakeCrosNetworkConfig>();
     Shell::Get()
@@ -450,6 +462,9 @@ class NetworkListViewControllerTest : public AshTestBase,
   }
 
   FakeCrosNetworkConfig* cros_network() { return cros_network_.get(); }
+
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
+      fake_multidevice_setup_;
 
   base::HistogramTester histogram_tester;
 
@@ -837,6 +852,39 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
                            /*tether_network_count*/ 0);
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u,
                        /*guid=*/kCellularName);
+}
+
+TEST_P(NetworkListViewControllerTest,
+       WillShowTetherHostsNetworkListWhenHostIsAvailable) {
+  for (const auto& host_status :
+       {multidevice_setup::mojom::HostStatus::kNoEligibleHosts,
+        multidevice_setup::mojom::HostStatus::kHostVerified,
+        multidevice_setup::mojom::HostStatus::
+            kHostSetLocallyButWaitingForBackendConfirmation,
+        multidevice_setup::mojom::HostStatus::kHostSetButNotYetVerified}) {
+    fake_multidevice_setup_->NotifyHostStatusChanged(host_status, std::nullopt);
+    fake_multidevice_setup_->FlushForTesting();
+    base::RunLoop().RunUntilIdle();
+
+    // Since we didn't send a notification that the host is ready and not set,
+    // the Tether section shouldn't be shown regardless of the value of the
+    // feature flag.
+    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+  }
+
+  fake_multidevice_setup_->NotifyHostStatusChanged(
+      multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+      std::nullopt);
+  fake_multidevice_setup_->FlushForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  // If the rebrand is enabled, the tether section should be shown. If not, it
+  // shouldn't be
+  if (IsInstantHotspotRebrandEnabled()) {
+    EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+  } else {
+    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+  }
 }
 
 TEST_P(NetworkListViewControllerTest, HasCorrectTetherHostsNetworkList) {

@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
@@ -27,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -151,6 +153,18 @@ NetworkListViewControllerImpl::NetworkListViewControllerImpl(
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    Shell::Get()->shell_delegate()->BindMultiDeviceSetup(
+        multidevice_setup_remote_.BindNewPipeAndPassReceiver());
+
+    multidevice_setup_remote_->AddHostStatusObserver(
+        host_status_observer_receiver_.BindNewPipeAndPassRemote());
+
+    multidevice_setup_remote_->GetHostStatus(
+        base::BindOnce(&NetworkListViewControllerImpl::OnHostStatusChanged,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   GetNetworkStateList();
 }
 
@@ -192,6 +206,15 @@ void NetworkListViewControllerImpl::GetNetworkStateList() {
                          chromeos::network_config::mojom::kNoLimit),
       base::BindOnce(&NetworkListViewControllerImpl::OnGetNetworkStateList,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NetworkListViewControllerImpl::OnHostStatusChanged(
+    multidevice_setup::mojom::HostStatus host_status,
+    const std::optional<multidevice::RemoteDevice>& host_device) {
+  has_phone_eligible_for_setup_ =
+      (host_status ==
+       multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet);
+  GetNetworkStateList();
 }
 
 void NetworkListViewControllerImpl::OnGetNetworkStateList(
@@ -439,7 +462,6 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
 
 void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
     bool using_proxy) {
-
   // If the proxy is set, check if it's a managed setting.
   const NetworkStateProperties* default_network = model()->default_network();
   if (using_proxy && default_network) {
@@ -580,7 +602,16 @@ bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
 
 bool NetworkListViewControllerImpl::ShouldTetherHostsSectionBeShown() {
   // The section should never be shown if the feature flag is disabled.
-  DCHECK(features::IsInstantHotspotRebrandEnabled());
+  if (!features::IsInstantHotspotRebrandEnabled()) {
+    return false;
+  }
+
+  // The Tether Hosts section should always be shown if there is an eligible
+  // device which has not been set up yet.
+  if (has_phone_eligible_for_setup_) {
+    return true;
+  }
+
   const DeviceStateType tether_state =
       model()->GetDeviceState(NetworkType::kTether);
 
