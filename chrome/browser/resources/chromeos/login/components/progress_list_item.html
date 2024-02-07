@@ -85,21 +85,21 @@ Attributes and properties:
 <div class="flex layout horizontal center" id="container" role="listitem">
   <div id="icon">
     <div id="icon-pending" class="dot"
-        hidden="[[hidePending_(active, completed)]]"></div>
+        hidden="[[hidePending(active, completed)]]"></div>
     <paper-spinner-lite id="icon-active" hidden="[[!active]]" active>
     </paper-spinner-lite>
     <iron-icon id="icon-completed" icon="cr:check"
-          hidden="[[hideCompleted_(active, completed)]]"></iron-icon>
+          hidden="[[hideCompleted(active, completed)]]"></iron-icon>
   </div>
   <div id="text" class="content">
-    <div id="text-pending" hidden="[[hidePending_(active, completed)]]">
+    <div id="text-pending" hidden="[[hidePending(active, completed)]]">
       [[i18nDynamic(locale, textKey)]]
     </div>
     <div id="text-active" hidden="[[!active]]">
       [[fallbackText(locale, activeKey, textKey)]]
     </div>
     <div id="text-completed"
-          hidden="[[hideCompleted_(active, completed)]]">
+          hidden="[[hideCompleted(active, completed)]]">
       [[fallbackText(locale, completedKey, textKey)]]
     </div>
   </div>

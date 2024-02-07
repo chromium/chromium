@@ -53,7 +53,6 @@ group("closure_compile") {
     ":oobe_select",
     ":oobe_slide",
     ":oobe_types",
-    ":progress_list_item",
   ]
 }
 
@@ -162,15 +161,6 @@ js_library("oobe_types") {
   extra_deps = [ ":copy_js" ]
 }
 
-js_library("progress_list_item") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/progress_list_item.js" ]
-  deps = [
-    "./behaviors:oobe_i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 # Copy existing files to output directory for closure compilation.
 copy("copy_js") {
   sources = [
@@ -200,6 +190,5 @@ html_to_js("web_components_local") {
     "oobe_i18n_dropdown.js",
     "oobe_screens_list.js",
     "oobe_slide.js",
-    "progress_list_item.js",
   ]
 }

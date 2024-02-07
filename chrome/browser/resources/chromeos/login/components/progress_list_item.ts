@@ -7,31 +7,26 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {getTemplate} from './progress_list_item.html.js';
 
+const ProgressListItemBase =
+    mixinBehaviors([OobeI18nBehavior], PolymerElement) as
+    {new (): PolymerElement & OobeI18nBehaviorInterface};
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- */
-const ProgressListItemBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
-
-/**
- * @polymer
- */
-class ProgressListItem extends ProgressListItemBase {
+export class ProgressListItem extends ProgressListItemBase {
   static get is() {
-    return 'progress-list-item';
+    return 'progress-list-item' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /* The ID of the localized string to be used as button text.
        */
@@ -73,26 +68,32 @@ class ProgressListItem extends ProgressListItemBase {
     };
   }
 
-  constructor() {
-    super();
-  }
+  textKey: string;
+  activeKey: string;
+  completedKey: string;
+  active: boolean;
+  completed: boolean;
 
-  /** @private */
-  hidePending_(active, completed) {
+  private hidePending(active: boolean, completed: boolean): boolean {
     return active || completed;
   }
 
-  /** @private */
-  hideCompleted_(active, completed) {
+  private hideCompleted(active: boolean, completed: boolean): boolean {
     return active || !completed;
   }
 
-  /** @private */
-  fallbackText(locale, key, fallbackKey) {
+  private fallbackText(locale: string, key: string, fallbackKey: string):
+      string {
     if (key === null || key === '') {
-      return this.i18n(fallbackKey);
+      return this.i18nDynamic(locale, fallbackKey);
     }
-    return this.i18n(key);
+    return this.i18nDynamic(locale, key);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ProgressListItem.is]: ProgressListItem;
   }
 }
 
