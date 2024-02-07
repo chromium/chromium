@@ -139,7 +139,7 @@ public class WebsiteParentApprovalNativesTest {
         verify(mParentAuthDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
 
-        histograms.assertExpected();
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test
@@ -161,7 +161,7 @@ public class WebsiteParentApprovalNativesTest {
         verify(mParentAuthDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
 
-        histograms.assertExpected();
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test
@@ -179,7 +179,7 @@ public class WebsiteParentApprovalNativesTest {
         verify(mParentAuthDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
 
-        histograms.assertExpected();
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test
@@ -204,6 +204,6 @@ public class WebsiteParentApprovalNativesTest {
         verify(mParentAuthDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
 
-        histograms.assertExpected();
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 }
