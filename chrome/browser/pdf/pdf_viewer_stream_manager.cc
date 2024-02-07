@@ -30,6 +30,9 @@ namespace pdf {
 
 namespace {
 
+// Static factory instance (always nullptr for non-test).
+PdfViewerStreamManager::Factory* g_factory = nullptr;
+
 // Creates a claimed `EmbedderHostInfo` from the `embedder_host`.
 PdfViewerStreamManager::EmbedderHostInfo GetEmbedderHostInfo(
     content::RenderFrameHost* embedder_host) {
@@ -109,11 +112,13 @@ void PdfViewerStreamManager::Create(content::WebContents* contents) {
     return;
   }
 
-  // TODO(crbug.com/1445746): Use a factory to create
-  // `TestPdfViewerStreamManager` instances for testing.
-  // Using `new` to access a non-public constructor.
-  contents->SetUserData(UserDataKey(),
-                        base::WrapUnique(new PdfViewerStreamManager(contents)));
+  if (g_factory) {
+    g_factory->CreatePdfViewerStreamManager(contents);
+  } else {
+    // Using `new` to access a non-public constructor.
+    contents->SetUserData(
+        UserDataKey(), base::WrapUnique(new PdfViewerStreamManager(contents)));
+  }
 }
 
 // static
@@ -121,6 +126,14 @@ PdfViewerStreamManager* PdfViewerStreamManager::FromRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
   return FromWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host));
+}
+
+// static
+void PdfViewerStreamManager::SetFactoryForTesting(Factory* factory) {
+  if (factory) {
+    CHECK(!g_factory);
+  }
+  g_factory = factory;
 }
 
 void PdfViewerStreamManager::AddStreamContainer(

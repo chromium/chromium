@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PDF_TEST_PDF_VIEWER_STREAM_MANAGER_H_
 #define CHROME_BROWSER_PDF_TEST_PDF_VIEWER_STREAM_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -45,6 +46,40 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
 
  private:
   base::OnceClosure on_pdf_loaded_;
+};
+
+// While a `TestPdfViewerStreamManagerFactory` instance exists, it will
+// automatically set itself as the global factory override. All PDF navigations
+// will automatically use a `TestPdfViewerStreamManager` instance created from
+// this factory.
+class TestPdfViewerStreamManagerFactory
+    : public PdfViewerStreamManager::Factory {
+ public:
+  TestPdfViewerStreamManagerFactory();
+
+  TestPdfViewerStreamManagerFactory(const TestPdfViewerStreamManagerFactory&) =
+      delete;
+  TestPdfViewerStreamManagerFactory& operator=(
+      const TestPdfViewerStreamManagerFactory&) = delete;
+
+  ~TestPdfViewerStreamManagerFactory() override;
+
+  // Return value is always non-nullptr. A `TestPdfViewerStreamManager` for
+  // `contents` must have been created by `this`, or else a crash occurs.
+  TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+      content::WebContents* contents);
+
+  // PdfViewerStreamManager::Factory overrides.
+  // Use `CreatePdfViewerStreamManager()` directly to create a test PDF stream
+  // manager if the test does not block during navigation. If the test does
+  // block during navigation, then the test PDF stream manager instance should
+  // already be created automatically on navigation.
+  void CreatePdfViewerStreamManager(content::WebContents* contents) override;
+
+ private:
+  // Tracks managers this factory has created. It's safe to track raw pointers,
+  // since the pointers are only for comparison and aren't dereferenced.
+  base::flat_set<PdfViewerStreamManager*> managers_;
 };
 
 }  // namespace pdf

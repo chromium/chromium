@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -1480,17 +1482,20 @@ class SitePerProcessInteractivePDFTest
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();
     if (UseOopif()) {
-      manager_ = pdf::TestPdfViewerStreamManager::CreateForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
     } else {
-      manager_ = factory_.GetOrCreateTestGuestViewManager(
+      auto factory =
+          std::make_unique<guest_view::TestGuestViewManagerFactory>();
+      test_guest_view_manager_ = factory->GetOrCreateTestGuestViewManager(
           browser()->profile(), extensions::ExtensionsAPIClient::Get()
                                     ->CreateGuestViewManagerDelegate());
+      factory_ = std::move(factory);
     }
   }
 
   void TearDownOnMainThread() override {
-    manager_ = absl::monostate();
+    test_guest_view_manager_ = nullptr;
+    factory_ = absl::monostate();
     SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
   }
 
@@ -1498,11 +1503,20 @@ class SitePerProcessInteractivePDFTest
 
  protected:
   guest_view::TestGuestViewManager* GetTestGuestViewManager() const {
-    return absl::get<raw_ptr<guest_view::TestGuestViewManager>>(manager_);
+    return test_guest_view_manager_;
   }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
-    return absl::get<raw_ptr<pdf::TestPdfViewerStreamManager>>(manager_);
+    return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+               factory_)
+        ->GetTestPdfViewerStreamManager(
+            browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  void CreateTestPdfViewerStreamManager() const {
+    absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+        ->CreatePdfViewerStreamManager(
+            browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host) {
@@ -1523,11 +1537,11 @@ class SitePerProcessInteractivePDFTest
   }
 
  private:
-  guest_view::TestGuestViewManagerFactory factory_;
   absl::variant<absl::monostate,
-                raw_ptr<guest_view::TestGuestViewManager>,
-                raw_ptr<pdf::TestPdfViewerStreamManager>>
-      manager_;
+                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+      factory_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
@@ -1658,6 +1672,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
                << ", iframe_pdf = " << iframe_pdf;
   }
   ASSERT_TRUE(starts_focused);
+
+  if (UseOopif()) {
+    // Create the manager first, since the following script doesn't block until
+    // navigation is complete.
+    CreateTestPdfViewerStreamManager();
+  }
 
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(content::ExecJs(

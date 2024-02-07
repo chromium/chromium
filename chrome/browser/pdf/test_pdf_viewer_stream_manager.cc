@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -71,6 +72,35 @@ void TestPdfViewerStreamManager::WaitUntilPdfLoadedInFirstChild() {
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   CHECK(embedder_host);
   WaitUntilPdfLoaded(embedder_host);
+}
+
+TestPdfViewerStreamManagerFactory::TestPdfViewerStreamManagerFactory() {
+  PdfViewerStreamManager::SetFactoryForTesting(this);
+}
+
+TestPdfViewerStreamManagerFactory::~TestPdfViewerStreamManagerFactory() {
+  PdfViewerStreamManager::SetFactoryForTesting(nullptr);
+}
+
+TestPdfViewerStreamManager*
+TestPdfViewerStreamManagerFactory::GetTestPdfViewerStreamManager(
+    content::WebContents* contents) {
+  PdfViewerStreamManager* manager =
+      PdfViewerStreamManager::FromWebContents(contents);
+  CHECK(manager);
+
+  // Check if `manager` was created by `this`. If so, the `manager` is safe to
+  // downcast into a `TestPdfViewerStreamManager`.
+  CHECK(managers_.contains(manager));
+
+  return static_cast<TestPdfViewerStreamManager*>(manager);
+}
+
+void TestPdfViewerStreamManagerFactory::CreatePdfViewerStreamManager(
+    content::WebContents* contents) {
+  PdfViewerStreamManager* manager =
+      TestPdfViewerStreamManager::CreateForWebContents(contents);
+  CHECK(managers_.insert(manager).second);
 }
 
 }  // namespace pdf

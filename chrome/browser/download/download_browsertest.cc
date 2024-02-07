@@ -2212,6 +2212,11 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
 
   bool UseOopif() const { return GetParam(); }
 
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
+    return factory_.GetTestPdfViewerStreamManager(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     std::vector<base::test::FeatureRef> enabled =
         DownloadTestSplitCacheEnabled::GetEnabledFeatures();
@@ -2229,6 +2234,9 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
     }
     return disabled;
   }
+
+ private:
+  pdf::TestPdfViewerStreamManagerFactory factory_;
 };
 
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
@@ -2330,12 +2338,9 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   // `pdf::PDFDocumentHelper`.
   content::RenderFrameHost* document_frame;
   if (UseOopif()) {
-    auto* test_pdf_viewer_stream_manager =
-        pdf::TestPdfViewerStreamManager::CreateForWebContents(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
+    content::NavigateIframeToURL(web_contents,
+                                 /*iframe_id=*/"test", subframe_url);
+    GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild();
 
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
@@ -2518,12 +2523,9 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   // viewer, this will be the PDF extension `RenderFrameHost`.
   content::RenderFrameHost* target_frame;
   if (UseOopif()) {
-    auto* test_pdf_viewer_stream_manager =
-        pdf::TestPdfViewerStreamManager::CreateForWebContents(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
+    content::NavigateIframeToURL(web_contents,
+                                 /*iframe_id=*/"test", subframe_url);
+    GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild();
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);
