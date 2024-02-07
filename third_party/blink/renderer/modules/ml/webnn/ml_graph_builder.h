@@ -40,6 +40,7 @@ class MLInstanceNormalizationOptions;
 class MLLayerNormalizationOptions;
 class MLLeakyReluOptions;
 class MLLinearOptions;
+class MLLstmOptions;
 class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
@@ -226,6 +227,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     ExceptionState& exception_state);
   MLActivation* linear(const MLLinearOptions* options,
                        ExceptionState& exception_state);
+
+  HeapVector<Member<const MLOperand>> lstm(const MLOperand* input,
+                                           const MLOperand* weight,
+                                           const MLOperand* recurrent_weight,
+                                           const uint32_t steps,
+                                           const uint32_t hidden_size,
+                                           const MLLstmOptions* options,
+                                           ExceptionState& exception_state);
 
   MLOperand* matmul(const MLOperand* a,
                     const MLOperand* b,

@@ -59,6 +59,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kLayerNormalization,
     kLeakyRelu,
     kLinear,
+    kLstm,
     kElu,
     kExpand,
     kGather,
@@ -162,6 +163,26 @@ class MODULES_EXPORT MLConcatOperator : public MLOperator {
 
  private:
   uint32_t axis_;
+};
+
+class MODULES_EXPORT MLLstmOperator : public MLOperator {
+ public:
+  MLLstmOperator(MLGraphBuilder* builder,
+                 const uint32_t steps,
+                 const uint32_t hidden_size,
+                 const bindings::DictionaryBase* options = nullptr);
+
+  MLLstmOperator(const MLLstmOperator&) = delete;
+  MLLstmOperator& operator=(const MLLstmOperator&) = delete;
+
+  ~MLLstmOperator() override;
+
+  uint32_t steps() const;
+  uint32_t hidden_size() const;
+
+ private:
+  uint32_t steps_;
+  uint32_t hidden_size_;
 };
 
 class MODULES_EXPORT MLPadOperator : public MLOperator {

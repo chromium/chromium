@@ -1206,6 +1206,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateTransposeOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kWhere:
       return CreateWhereOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kLstm:
+      break;
   }
   return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                           " is not implemented.");

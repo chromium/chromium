@@ -5745,6 +5745,529 @@ TEST_F(MLGraphBuilderTest, LinearTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, LstmTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building lstm with default option.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    ASSERT_EQ(outputs.size(), 2u);
+    for (const auto& output : outputs) {
+      ASSERT_THAT(output, testing::NotNull());
+      EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
+      EXPECT_EQ(output->Dimensions(),
+                Vector<uint32_t>({direction_count, batch_size, hidden_size}));
+    }
+  }
+  {
+    // Test building lstm with given option.
+    uint32_t steps = 2;
+    uint32_t batch_size = 3;
+    uint32_t input_size = 4;
+    uint32_t hidden_size = 3;
+    uint32_t direction_count = 2;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* bias = BuildInput(builder, "bias", {direction_count, 4 * hidden_size},
+                            V8MLOperandDataType::Enum::kFloat32,
+                            scope.GetExceptionState());
+    options->setBias(bias);
+    auto* recurrent_bias = BuildInput(
+        builder, "recurrentBias", {direction_count, 4 * hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setRecurrentBias(recurrent_bias);
+    auto* peephole_weight = BuildInput(
+        builder, "peepholeWeight", {direction_count, 3 * hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setPeepholeWeight(peephole_weight);
+    auto* initial_hidden_state = BuildInput(
+        builder, "initialHiddenState",
+        {direction_count, batch_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setInitialHiddenState(initial_hidden_state);
+    auto* initial_cell_state = BuildInput(
+        builder, "initialCellState", {direction_count, batch_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setInitialCellState(initial_cell_state);
+    options->setReturnSequence(true);
+    options->setDirection("both");
+    options->setLayout("ifgo");
+    options->setActivations({builder->sigmoid(scope.GetExceptionState()),
+                             builder->relu(scope.GetExceptionState()),
+                             builder->hardSwish(scope.GetExceptionState())});
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    ASSERT_EQ(outputs.size(), 3u);
+    for (const auto& output : outputs) {
+      ASSERT_THAT(output, testing::NotNull());
+      EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+      EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kFloat32);
+    }
+    EXPECT_EQ(outputs[0]->Dimensions(),
+              Vector<uint32_t>({direction_count, batch_size, hidden_size}));
+    EXPECT_EQ(outputs[1]->Dimensions(),
+              Vector<uint32_t>({direction_count, batch_size, hidden_size}));
+    EXPECT_EQ(
+        outputs[2]->Dimensions(),
+        Vector<uint32_t>({steps, direction_count, batch_size, hidden_size}));
+  }
+  {
+    // Test throwing error when the input is not a 3-D tensor.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should be a 3-D tensor.");
+  }
+  {
+    // Test throwing error when the input dimensions[0] doesn't equal to the
+    // steps.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {2, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input dimensions[0] must be equal to the steps.");
+  }
+  {
+    // Test throwing error when the input has int32 data type.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kInt32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kInt32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The data type of input must be one of the floating point types.");
+  }
+  {
+    // Test throwing error when the steps is zero.
+    uint32_t steps = 0;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {1, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The steps must be greater than 0.");
+  }
+  {
+    // Test throwing error when the hidden size is zero.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 0;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight", {direction_count, 4, 1},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The hidden size must be greater than 0.");
+  }
+  {
+    // Test throwing error when the hidden size is too large.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = std::numeric_limits<uint32_t>::max();
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight", {direction_count, 4, 1},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The hidden size is too large.");
+  }
+  {
+    // Test throwing error when the weight shape is incorrect.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, 1},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The weight operand shape is invalid.");
+  }
+  {
+    // Test throwing error when the recurrentWeight is not a 3-D tensor.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight", {direction_count, 4 * hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The recurrent weight operand should be a 3-D tensor.");
+  }
+  {
+    // Test throwing error when the bias is not a 3-D tensor.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* bias = BuildInput(builder, "bias", {2, 4 * hidden_size, 1},
+                            V8MLOperandDataType::Enum::kFloat32,
+                            scope.GetExceptionState());
+    options->setBias(bias);
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias operand should be a 2-D tensor.");
+  }
+  {
+    // Test throwing error when the recurrentBias shape is incorrect.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* recurrent_bias = BuildInput(
+        builder, "recurrentBias", {2, 4 * hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setRecurrentBias(recurrent_bias);
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The recurrent bias operand shape is invalid.");
+  }
+  {
+    // Test throwing error when the peepholeWeight is a 3-D tensor.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* peephole_weight = BuildInput(
+        builder, "peepholeWeight", {direction_count, 3 * hidden_size, 1},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setPeepholeWeight(peephole_weight);
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The peephole weight operand should be a 2-D tensor.");
+  }
+  {
+    // Test throwing error when the initialHiddenState shape is incorrect.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* initial_hidden_state = BuildInput(
+        builder, "initialiddenState", {direction_count, batch_size, 1},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    options->setInitialHiddenState(initial_hidden_state);
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The initial hidden state operand shape is invalid.");
+  }
+  {
+    // Test throwing error when the initialCellState data type doesn't match
+    // input data type.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    auto* initial_cell_state = BuildInput(
+        builder, "initialCellState", {direction_count, batch_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat16, scope.GetExceptionState());
+    options->setInitialCellState(initial_cell_state);
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The initial cell state operand data type doesn't match the "
+              "input data type.");
+  }
+  {
+    // Test throwing error when the activations size is 2.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 2;
+    uint32_t direction_count = 1;
+    auto* input = BuildInput(builder, "input", {steps, batch_size, input_size},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* weight = BuildInput(
+        builder, "weight", {direction_count, 4 * hidden_size, input_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+    auto* recurrent_weight = BuildInput(
+        builder, "recurrentWeight",
+        {direction_count, 4 * hidden_size, hidden_size},
+        V8MLOperandDataType::Enum::kFloat32, scope.GetExceptionState());
+
+    auto* options = MLLstmOptions::Create();
+    options->setActivations({builder->sigmoid(scope.GetExceptionState()),
+                             builder->relu(scope.GetExceptionState())});
+
+    auto outputs =
+        builder->lstm(input, weight, recurrent_weight, steps, hidden_size,
+                      options, scope.GetExceptionState());
+    EXPECT_EQ(outputs.size(), 0u);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The activations should be a sequence of length 3.");
+  }
+}
+
 MLOperand* BuildPad(V8TestingScope& scope,
                     MLGraphBuilder* builder,
                     const MLOperand* input,

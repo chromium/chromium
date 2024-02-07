@@ -14,6 +14,10 @@ enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
+enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
+
+enum MLLstmWeightLayout { "iofg", "ifgo" };
+
 dictionary MLArgMinMaxOptions {
   sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
@@ -89,6 +93,18 @@ dictionary MLLeakyReluOptions {
 dictionary MLLinearOptions {
   float alpha = 1.0;
   float beta = 0;
+};
+
+dictionary MLLstmOptions {
+  MLOperand bias;
+  MLOperand recurrentBias;
+  MLOperand peepholeWeight;
+  MLOperand initialHiddenState;
+  MLOperand initialCellState;
+  boolean returnSequence = false;
+  MLRecurrentNetworkDirection direction = "forward";
+  MLLstmWeightLayout layout = "iofg";
+  sequence<MLActivation> activations;
 };
 
 enum MLPaddingMode {
@@ -242,6 +258,10 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
   [RaisesException] MLActivation linear(optional MLLinearOptions options = {});
+
+  [RaisesException] sequence<MLOperand> lstm(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
+                                             [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
+                                             optional MLLstmOptions options = {});
 
   [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
                 sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});

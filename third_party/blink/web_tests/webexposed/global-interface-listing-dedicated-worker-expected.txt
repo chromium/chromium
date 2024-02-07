@@ -1220,6 +1220,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method linear
 [Worker]     method log
 [Worker]     method logicalNot
+[Worker]     method lstm
 [Worker]     method matmul
 [Worker]     method max
 [Worker]     method maxPool2d

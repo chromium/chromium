@@ -88,6 +88,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "leakyRelu";
     case MLOperator::OperatorKind::kLinear:
       return "linear";
+    case MLOperator::OperatorKind::kLstm:
+      return "lstm";
     case MLOperator::OperatorKind::kElu:
       return "elu";
     case MLOperator::OperatorKind::kExpand:
@@ -212,6 +214,24 @@ MLConcatOperator::~MLConcatOperator() = default;
 
 uint32_t MLConcatOperator::Axis() const {
   return axis_;
+}
+
+MLLstmOperator::MLLstmOperator(MLGraphBuilder* builder,
+                               const uint32_t steps,
+                               const uint32_t hidden_size,
+                               const bindings::DictionaryBase* options)
+    : MLOperator(builder, MLOperator::OperatorKind::kLstm, options),
+      steps_(steps),
+      hidden_size_(hidden_size) {}
+
+MLLstmOperator::~MLLstmOperator() = default;
+
+uint32_t MLLstmOperator::steps() const {
+  return steps_;
+}
+
+uint32_t MLLstmOperator::hidden_size() const {
+  return hidden_size_;
 }
 
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
