@@ -321,6 +321,12 @@ chromium-metrics-reviews@google.com.
     On-device was used, but the output was rejected because the completed
     response did not have safety scores.
   </int>
+  <int value="13"
+      label="Used on-device and got output, but the detected output language
+             is not supported by the safety model">
+    Used on-device and got output, but the detected output language is not
+    supported by the safety model
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">
@@ -350,6 +356,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Safety config not available for feature">
     The on-device safety model was available but did not contain a config for
     the feature.
+  </int>
+  <int value="10" label="Language detection model not available for feature">
+    The on-device safety model is available, but it requires specific output
+    languages and the language detection model is unavailable.
   </int>
 </enum>
 

@@ -53,15 +53,6 @@ function getPerformanceClassText(performanceClass: PerformanceClass): string {
   }
 }
 
-function shouldRetractResponse(scores: number[]|undefined): boolean {
-  if (!scores) {
-    return false;
-  }
-
-  // As a proof-of-concept retract anything scoring highly on drugs or politics.
-  return scores[11] >= 0.5 || scores[13] >= 0.5;
-}
-
 class OnDeviceInternalsAppElement extends PolymerElement {
   static get is() {
     return 'on-device-internals-app';
@@ -241,15 +232,9 @@ class OnDeviceInternalsAppElement extends PolymerElement {
           this.set(
               'currentResponse_.response',
               (this.currentResponse_?.response + chunk.text).trimStart());
-          if (shouldRetractResponse(chunk.tsScores)) {
-            this.set('currentResponse_.responseClass', 'response retracted');
-          }
         });
-    const onCompleteId = this.responseRouter_.onComplete.addListener(
-        (summary: ResponseSummary) => {
-          if (shouldRetractResponse(summary.tsScores)) {
-            this.set('currentResponse_.responseClass', 'response retracted');
-          }
+    const onCompleteId =
+        this.responseRouter_.onComplete.addListener((_: ResponseSummary) => {
           this.addResponse_();
           this.responseRouter_.removeListener(onResponseId);
           this.responseRouter_.removeListener(onCompleteId);

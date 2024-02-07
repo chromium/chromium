@@ -83,11 +83,14 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // On-device was used and the output was complete but the output was
     // rejected since it did not have the required safety scores.
     kResponseCompleteButNoRequiredSafetyScores = 12,
+    // On-device was used and completed successfully, but the output was not in
+    // a language that could be reliably evaluated for safety.
+    kUsedOnDeviceOutputUnsupportedLanguage = 13,
 
     // Please update OptimizationGuideOnDeviceExecuteModelResult in
     // optimization/enums.xml.
 
-    kMaxValue = kResponseCompleteButNoRequiredSafetyScores,
+    kMaxValue = kUsedOnDeviceOutputUnsupportedLanguage,
   };
 
   SessionImpl(
@@ -171,7 +174,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     std::unique_ptr<ContextProcessor> context_processor;
     mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver;
     std::string current_response;
-    std::vector<float> current_text_safety_scores;
+    on_device_model::mojom::SafetyInfoPtr current_safety_info;
     OptimizationGuideModelExecutionResultStreamingCallback callback;
     // If true, the context is added before execution. This is set to true if
     // a disconnect happens.
@@ -219,8 +222,15 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   std::unique_ptr<google::protobuf::MessageLite> MergeContext(
       const google::protobuf::MessageLite& request);
 
+  // Whether the text is in a language not supported by the safety classifier,
+  // or the language could not be detected despite the classifier requiring one
+  // or more specific languages.
+  bool IsTextInUnsupportedOrUndeterminedLanguage(
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
   // Whether the text is unsafe.
-  bool IsUnsafeText(const std::vector<float>& scores) const;
+  bool IsUnsafeText(
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
   base::WeakPtr<OnDeviceModelServiceController> controller_;
   const proto::ModelExecutionFeature feature_;

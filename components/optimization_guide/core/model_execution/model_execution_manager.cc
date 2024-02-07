@@ -111,18 +111,24 @@ ModelExecutionManager::ModelExecutionManager(
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {
   if (model_provider_ && on_device_model_service_controller_ &&
-      features::ShouldDownloadTextSafetyClassifierModel()) {
+      features::ShouldUseTextSafetyClassifierModel()) {
     model_provider_->AddObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+        /*model_metadata=*/absl::nullopt, this);
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
         /*model_metadata=*/absl::nullopt, this);
   }
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
   if (model_provider_ && on_device_model_service_controller_ &&
-      features::ShouldDownloadTextSafetyClassifierModel()) {
+      features::ShouldUseTextSafetyClassifierModel()) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+        this);
   }
 }
 
@@ -351,16 +357,23 @@ void ModelExecutionManager::OnModelExecuteResponse(
 void ModelExecutionManager::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
-  if (optimization_target != proto::OPTIMIZATION_TARGET_TEXT_SAFETY) {
-    return;
-  }
+  switch (optimization_target) {
+    case proto::OPTIMIZATION_TARGET_TEXT_SAFETY:
+      if (on_device_model_service_controller_) {
+        on_device_model_service_controller_->MaybeUpdateSafetyModel(model_info);
+      }
+      break;
 
-  if (!on_device_model_service_controller_) {
-    return;
-  }
+    case proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
+      if (on_device_model_service_controller_) {
+        on_device_model_service_controller_->SetLanguageDetectionModel(
+            model_info);
+      }
+      break;
 
-  // Pass model file to on-device service controller.
-  on_device_model_service_controller_->MaybeUpdateSafetyModel(model_info);
+    default:
+      break;
+  }
 }
 
 }  // namespace optimization_guide

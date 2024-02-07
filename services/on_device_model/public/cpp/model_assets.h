@@ -27,6 +27,7 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssetPaths {
   base::FilePath weights;
   base::FilePath ts_data;
   base::FilePath ts_sp_model;
+  base::FilePath language_detection_model;
 };
 
 // A bundle of opened file assets comprising model description to use for
@@ -42,6 +43,7 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssets {
   base::File weights;
   base::File ts_data;
   base::File ts_sp_model;
+  base::File language_detection_model;
 };
 
 // Helper to open files for ModelAssets given their containing paths.
