@@ -234,6 +234,7 @@ void DocumentScanAPIHandler::OnScannerListReceived(
   state.active_scanner_ids.clear();
   state.scanner_handles.clear();
   state.active_job_handles.clear();
+  state.approved_scanner_handles.clear();
   for (auto& scanner : api_response.scanners) {
     state.active_scanner_ids[scanner.scanner_id] = {.name = scanner.name};
   }
@@ -294,6 +295,7 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
       std::erase_if(state.active_job_handles, [&it](const auto& item) {
         return item.second == it->first;
       });
+      state.approved_scanner_handles.erase(it->first);
       it = state.scanner_handles.erase(it);
     } else {
       ++it;
@@ -371,6 +373,7 @@ void DocumentScanAPIHandler::OnCloseScannerResponse(
     return item.second == scanner_handle;
   });
   state.scanner_handles.erase(scanner_handle);
+  state.approved_scanner_handles.erase(scanner_handle);
 
   std::move(callback).Run(
       response.To<api::document_scan::CloseScannerResponse>());
@@ -492,6 +495,7 @@ void DocumentScanAPIHandler::OnSetOptionsResponse(
 void DocumentScanAPIHandler::StartScan(
     gfx::NativeWindow native_window,
     scoped_refptr<const Extension> extension,
+    bool user_gesture,
     const std::string& scanner_handle,
     api::document_scan::StartScanOptions options,
     StartScanCallback callback) {
@@ -511,11 +515,13 @@ void DocumentScanAPIHandler::StartScan(
   auto start_runner = std::make_unique<StartScanRunner>(
       native_window, browser_context_, std::move(extension), document_scan_);
 
+  bool approved = state.approved_scanner_handles.contains(scanner_handle) ||
+                  (user_gesture && state.approved_scanner_ids.contains(
+                                       state.scanner_handles[scanner_handle]));
   StartScanRunner* raw_runner = start_runner.get();
   raw_runner->Start(
-      state.approved_scanners.contains(scanner_handle),
-      state.active_scanner_ids[handle_it->second].name, scanner_handle,
-      crosapi::mojom::StartScanOptions::From(options),
+      approved, state.active_scanner_ids[handle_it->second].name,
+      scanner_handle, crosapi::mojom::StartScanOptions::From(options),
       base::BindOnce(&DocumentScanAPIHandler::OnStartScanResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(start_runner),
                      std::move(callback)));
@@ -534,7 +540,9 @@ void DocumentScanAPIHandler::OnStartScanResponse(
     // If this scanner was approved by the user, keep track so it is not
     // prompted for again.
     if (runner->approved()) {
-      state.approved_scanners.insert(api_response.scanner_handle);
+      const std::string& handle = api_response.scanner_handle;
+      state.approved_scanner_handles.insert(handle);
+      state.approved_scanner_ids.insert(state.scanner_handles[handle]);
     }
 
     // Keep track of active job handles for this extension.
