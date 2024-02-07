@@ -42,8 +42,18 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     }
 
     @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
     public float getFullHeightRatio() {
-        return BottomSheetContent.HeightMode.WRAP_CONTENT;
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override
