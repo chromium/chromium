@@ -1995,10 +1995,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     }
 
 #if BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(
-            features::kCVDisplayLinkBeginFrameSource)) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
-    }
 #endif
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
