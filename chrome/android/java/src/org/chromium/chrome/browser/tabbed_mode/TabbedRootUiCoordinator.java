@@ -948,6 +948,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new AddToHomescreenIPHController(
                         mActivity,
                         mWindowAndroid,
+                        profile,
                         mModalDialogManagerSupplier.get(),
                         MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController =
