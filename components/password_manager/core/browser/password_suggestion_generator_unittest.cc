@@ -44,9 +44,8 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 // Test that no suggestions are generated from an empty `PasswordFormFillData`.
 TEST_F(PasswordSuggestionGeneratorTest, NoPasswordFormFillData) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      {}, favicon(), /*username_filter=*/u"", ForPasswordField(false),
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      {}, favicon(), /*username_filter=*/u"", OffersGeneration(false),
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
 
   EXPECT_TRUE(suggestions.empty());
 }

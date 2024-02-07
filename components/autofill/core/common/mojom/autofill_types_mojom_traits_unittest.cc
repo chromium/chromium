@@ -97,7 +97,7 @@ void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
-  data->options = IS_PASSWORD_FIELD | ACCEPTS_WEBAUTHN_CREDENTIALS;
+  data->show_webauthn_credentials = true;
   data->form_data = test::CreateTestAddressFormData();
 }
 
@@ -137,7 +137,8 @@ void CheckEqualPasswordSuggestionRequest(
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
   EXPECT_EQ(expected.typed_username, actual.typed_username);
-  EXPECT_EQ(expected.options, actual.options);
+  EXPECT_EQ(expected.show_webauthn_credentials,
+            actual.show_webauthn_credentials);
   EXPECT_EQ(expected.bounds, actual.bounds);
 }
 

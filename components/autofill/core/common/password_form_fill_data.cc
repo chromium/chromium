@@ -29,7 +29,7 @@ PasswordSuggestionRequest::PasswordSuggestionRequest(
     uint64_t password_field_index,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
-    int options,
+    bool show_webauthn_credentials,
     const gfx::RectF& bounds)
     : element_id(element_id),
       form_data(form_data),
@@ -38,7 +38,7 @@ PasswordSuggestionRequest::PasswordSuggestionRequest(
       password_field_index(password_field_index),
       text_direction(text_direction),
       typed_username(typed_username),
-      options(options),
+      show_webauthn_credentials(show_webauthn_credentials),
       bounds(bounds) {}
 
 PasswordSuggestionRequest::PasswordSuggestionRequest() = default;

@@ -45,7 +45,7 @@ struct PasswordSuggestionRequest {
                             uint64_t password_field_index,
                             base::i18n::TextDirection text_direction,
                             const std::u16string& typed_username,
-                            int options,
+                            bool show_webauthn_credentials,
                             const gfx::RectF& bounds);
 
   PasswordSuggestionRequest();
@@ -74,9 +74,8 @@ struct PasswordSuggestionRequest {
   // The value of the username field. This will be empty if the suggestion
   // generation is triggered on a password field.
   std::u16string typed_username;
-  // Options for password suggestion generation, see
-  // `ShowPasswordSuggestionsOptions` for more details.
-  int options;
+  // Specifies whether the field is suitable to show webauthn credentials.
+  bool show_webauthn_credentials;
   // Location at which to display the popup.
   gfx::RectF bounds;
 };

@@ -1631,8 +1631,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
       }
       username_prefix = element.Value().Utf16();
     }
-    ShowSuggestionPopup(username_prefix, element, trigger_source,
-                        OnPasswordField(false));
+    ShowSuggestionPopup(username_prefix, element, trigger_source);
     return true;
   }
 
@@ -1649,8 +1648,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     return false;
   }
 
-  ShowSuggestionPopup(std::u16string(), element, trigger_source,
-                      OnPasswordField(true));
+  ShowSuggestionPopup(std::u16string(), element, trigger_source);
   return true;
 }
 
@@ -1676,27 +1674,20 @@ bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
   }
 
   ShowSuggestionPopup(std::u16string(), element,
-                      AutofillSuggestionTriggerSource::kManualFallbackPasswords,
-                      OnPasswordField(element.IsPasswordFieldForAutofill()));
+                      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
   return true;
 }
 
 void PasswordAutofillAgent::ShowSuggestionPopup(
     const std::u16string& typed_username,
     const WebInputElement& user_input,
-    AutofillSuggestionTriggerSource trigger_source,
-    OnPasswordField show_on_password_field) {
+    AutofillSuggestionTriggerSource trigger_source) {
   username_query_prefix_ = typed_username;
   auto [form, field] =
       form_util::FindFormAndFieldForFormControlElement(
           user_input, field_data_manager(), /*extract_options=*/{})
           .value_or(std::make_pair(FormData(), FormFieldData()));
 
-  int options = 0;
-  if (show_on_password_field)
-    options |= IS_PASSWORD_FIELD;
-  if (field.parsed_autocomplete && field.parsed_autocomplete->webauthn)
-    options |= ACCEPTS_WEBAUTHN_CREDENTIALS;
 
   WebInputElement username_element;
   WebInputElement password_element;
@@ -1705,11 +1696,13 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                              &username_element, &password_element,
                              &password_info);
 
+  const bool show_webauthn_credentials =
+      field.parsed_autocomplete && field.parsed_autocomplete->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
       field.renderer_id, form, trigger_source,
       GetIndexOfElement(form, username_element),
       GetIndexOfElement(form, password_element), field.text_direction,
-      typed_username, options,
+      typed_username, show_webauthn_credentials,
       render_frame()->ElementBoundsInWindow(user_input)));
 }
 

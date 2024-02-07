@@ -167,7 +167,6 @@ void AppendSuggestionIfMatching(
     const std::u16string& field_contents,
     const gfx::Image& custom_icon,
     const std::string& signon_realm,
-    bool is_password_field,
     bool from_account_store,
     size_t password_length,
     std::vector<autofill::Suggestion>* suggestions) {
@@ -215,21 +214,19 @@ void AppendSuggestionIfMatching(
 void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     const std::u16string& current_username,
                     const gfx::Image& custom_icon,
-                    bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
   AppendSuggestionIfMatching(
       fill_data.preferred_login.username_value, current_username, custom_icon,
-      fill_data.preferred_login.realm, is_password_field,
+      fill_data.preferred_login.realm,
       fill_data.preferred_login.uses_account_store,
       fill_data.preferred_login.password_value.size(), suggestions);
 
   int prefered_match = suggestions->size();
 
   for (const auto& login : fill_data.additional_logins) {
-    AppendSuggestionIfMatching(login.username_value, current_username,
-                               custom_icon, login.realm, is_password_field,
-                               login.uses_account_store,
-                               login.password_value.size(), suggestions);
+    AppendSuggestionIfMatching(
+        login.username_value, current_username, custom_icon, login.realm,
+        login.uses_account_store, login.password_value.size(), suggestions);
   }
 
   std::sort(suggestions->begin() + prefered_match, suggestions->end(),
@@ -251,7 +248,6 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
     base::optional_ref<const autofill::PasswordFormFillData> fill_data,
     const gfx::Image& page_favicon,
     const std::u16string& username_filter,
-    ForPasswordField for_password_field,
     OffersGeneration offers_generation,
     ShowPasswordSuggestions show_password_suggestions,
     ShowWebAuthnCredentials show_webauthn_credentials) const {
@@ -300,8 +296,7 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   // Add password suggestions if they exist and were requested.
   if (show_password_suggestions && fill_data.has_value()) {
-    GetSuggestions(*fill_data, username_filter, page_favicon,
-                   for_password_field.value(), &suggestions);
+    GetSuggestions(*fill_data, username_filter, page_favicon, &suggestions);
   }
 
 #if !BUILDFLAG(IS_ANDROID)

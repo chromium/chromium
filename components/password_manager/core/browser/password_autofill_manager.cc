@@ -79,13 +79,6 @@ bool ContainsOtherThanManagePasswords(
   });
 }
 
-bool AreSuggestionForPasswordField(
-    base::span<const autofill::Suggestion> suggestions) {
-  return base::ranges::any_of(suggestions, [](const auto& suggestion) {
-    return suggestion.popup_item_id == autofill::PopupItemId::kPasswordEntry;
-  });
-}
-
 bool HasLoadingSuggestion(base::span<const autofill::Suggestion> suggestions,
                           autofill::PopupItemId item_id) {
   return base::ranges::any_of(suggestions, [&item_id](const auto& suggestion) {
@@ -368,8 +361,6 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   }
   UpdatePopup(suggestion_generator_.GetSuggestionsForDomain(
       fill_data, page_favicon_, std::u16string(),
-      ForPasswordField(AreSuggestionForPasswordField(
-          autofill_client_->GetPopupSuggestions())),
       OffersGeneration(false), ShowPasswordSuggestions(true),
       ShowWebAuthnCredentials(false)));
 }
@@ -400,7 +391,7 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
     autofill::AutofillSuggestionTriggerSource trigger_source,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
-    int options,
+    ShowWebAuthnCredentials show_webauthn_credentials,
     const gfx::RectF& bounds) {
   if (autofill::IsAutofillManuallyTriggered(trigger_source)) {
     // TODO(b/321678448): Implement manual fallback suggestion generation.
@@ -410,10 +401,8 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
       ShowPopup(bounds, text_direction,
                 suggestion_generator_.GetSuggestionsForDomain(
                     fill_data_.get(), page_favicon_, typed_username,
-                    ForPasswordField(options & autofill::IS_PASSWORD_FIELD),
                     OffersGeneration(false), ShowPasswordSuggestions(true),
-                    ShowWebAuthnCredentials(
-                        options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)));
+                    show_webauthn_credentials));
 
   password_manager_driver_->SetSuggestionAvailability(
       element_id,
@@ -425,12 +414,11 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
-  return ShowPopup(
-      bounds, text_direction,
-      suggestion_generator_.GetSuggestionsForDomain(
-          fill_data_.get(), page_favicon_, std::u16string(),
-          ForPasswordField(true), OffersGeneration(false),
-          ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false)));
+  return ShowPopup(bounds, text_direction,
+                   suggestion_generator_.GetSuggestionsForDomain(
+                       fill_data_.get(), page_favicon_, std::u16string(),
+                       OffersGeneration(false), ShowPasswordSuggestions(true),
+                       ShowWebAuthnCredentials(false)));
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
@@ -440,7 +428,7 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
   return ShowPopup(bounds, text_direction,
                    suggestion_generator_.GetSuggestionsForDomain(
                        fill_data_.get(), page_favicon_, std::u16string(),
-                       ForPasswordField(true), OffersGeneration(true),
+                       OffersGeneration(true),
                        ShowPasswordSuggestions(show_password_suggestions),
                        ShowWebAuthnCredentials(false)));
 }

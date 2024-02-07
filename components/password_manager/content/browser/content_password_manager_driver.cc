@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -487,7 +488,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
                 request.form_data, request.username_field_index,
                 request.password_field_index,
                 autofill::mojom::SubmissionReadinessState::kNoInformation),
-            request.options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)) {
+            request.show_webauthn_credentials)) {
       return;
     }
   }
@@ -495,7 +496,8 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
       request.element_id, request.trigger_source, request.text_direction,
-      request.typed_username, request.options,
+      request.typed_username,
+      ShowWebAuthnCredentials(request.show_webauthn_credentials),
       TransformToRootCoordinates(render_frame_host_, request.bounds));
 }
 

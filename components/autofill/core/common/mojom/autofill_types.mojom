@@ -510,7 +510,7 @@ struct PasswordSuggestionRequest {
   uint64 password_field_index;
   mojo_base.mojom.TextDirection text_direction;
   mojo_base.mojom.String16 typed_username;
-  int32 options;
+  bool show_webauthn_credentials;
   gfx.mojom.RectF bounds;
 };
 

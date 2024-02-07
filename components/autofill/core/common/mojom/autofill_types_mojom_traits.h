@@ -733,8 +733,9 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
     return r.typed_username;
   }
 
-  static int options(const autofill::PasswordSuggestionRequest& r) {
-    return r.options;
+  static int show_webauthn_credentials(
+      const autofill::PasswordSuggestionRequest& r) {
+    return r.show_webauthn_credentials;
   }
 
   static const gfx::RectF& bounds(

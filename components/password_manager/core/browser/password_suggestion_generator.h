@@ -16,7 +16,6 @@ namespace password_manager {
 class PasswordManagerClient;
 class PasswordManagerDriver;
 
-using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
 using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
 using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
 using ShowPasswordSuggestions =
@@ -35,17 +34,15 @@ class PasswordSuggestionGenerator {
   // credential suggestions will be generated. `page_favicon` represents the
   // favicon for the credentials offered on the current page. `username_filter`
   // specifies the value typed into the username form field. This value is empty
-  // if the suggestions are triggered on a password field. `for_password_field`
-  // specifies whether suggestions were triggered on a password field.
-  // `offers_generation` specifies whether password generation suggestion should
-  // be added. `show_password_suggestions` specifies whether suggestions should
-  // be specified from the `fill_data`. `show_webauthn_credentials` specifies
+  // if the suggestions are triggered on a password field. `offers_generation`
+  // specifies whether password generation suggestion should be added.
+  // `show_password_suggestions` specifies whether suggestions should be
+  // specified from the `fill_data`. `show_webauthn_credentials` specifies
   // whether web auth credential suggestion should be added.
   std::vector<autofill::Suggestion> GetSuggestionsForDomain(
       base::optional_ref<const autofill::PasswordFormFillData> fill_data,
       const gfx::Image& page_favicon,
       const std::u16string& username_filter,
-      ForPasswordField for_password_field,
       OffersGeneration offers_generation,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials) const;

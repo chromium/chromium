@@ -251,8 +251,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
 
  private:
-  using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
-
   class DeferringPasswordManagerDriver;
 
   // Enumeration representing possible keyboard replacing surface states. A
@@ -355,15 +353,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   bool ShowManualFallbackSuggestions(const blink::WebInputElement& element);
 
   // Instructs the browser to show a pop-up suggesting which credentials could
-  // be filled. `show_on_password_field` should indicate whether the pop-up is
-  // to be shown on the password field instead of on the username field. If the
-  // username exists, it should be passed as `user_input`. If there is no
-  // username, pass the password field in `user_input`. In the latter case, no
-  // username value will be shown in the pop-up.
+  // be filled. If the username exists, it should be passed as `user_input`. If
+  // there is no username, pass the password field in `user_input`. In the
+  // latter case, no username value will be shown in the pop-up.
   void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
-                           AutofillSuggestionTriggerSource trigger_source,
-                           OnPasswordField show_on_password_field);
+                           AutofillSuggestionTriggerSource trigger_source);
 
   // Finds the PasswordInfo, username and password fields corresponding to the
   // passed in `element`, which can refer to either a username or a password

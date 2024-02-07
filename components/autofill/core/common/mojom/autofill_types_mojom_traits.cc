@@ -465,7 +465,7 @@ bool StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
          autofill::PasswordSuggestionRequest* out) {
   out->username_field_index = data.username_field_index();
   out->password_field_index = data.password_field_index();
-  out->options = data.options();
+  out->show_webauthn_credentials = data.show_webauthn_credentials();
 
   return data.ReadElementId(&out->element_id) &&
          data.ReadFormData(&out->form_data) &&
