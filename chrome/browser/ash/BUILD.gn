@@ -1499,6 +1499,8 @@ source_set("ash") {
     "input_method/component_extension_ime_manager_delegate_impl.h",
     "input_method/diacritics_insensitive_string_comparator.cc",
     "input_method/diacritics_insensitive_string_comparator.h",
+    "input_method/editor_announcer.cc",
+    "input_method/editor_announcer.h",
     "input_method/editor_client_connector.cc",
     "input_method/editor_client_connector.h",
     "input_method/editor_consent_enums.cc",
