@@ -428,10 +428,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // first text node.
     this.firstTextNodeSetForReadAloud = -1;
 
-    this.updateContentInternal();
+    this.refreshContent();
   }
 
-  private updateContentInternal() {
+  // Refreshes the content. This should only be called from the UI to avoid
+  // clearing state, such as the first text node.
+  private refreshContent() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
@@ -616,7 +618,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // if it's paused from a non-pause button (e.g. voice previews) so the links
     // don't flash off and on.
     if (chrome.readingMode.linksEnabled && pausedFromPlayClickButton) {
-      this.updateContent();
+      this.refreshContent();
       this.highlightNodes(chrome.readingMode.getCurrentText());
     }
   }
@@ -662,7 +664,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
       if (chrome.readingMode.linksEnabled && pausedFromPlayClickButton) {
-        this.updateContent();
+        this.refreshContent();
       }
 
       // If the current read highlight has been cleared from a call to
@@ -682,7 +684,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.pausedFromPlayClickButton = false;
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
-        this.updateContent();
+        this.refreshContent();
       }
 
       // TODO(crbug.com/1474951): There should be a way to use AXPosition so
@@ -929,7 +931,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // Hide links when speech finishes playing.
     if (chrome.readingMode.linksEnabled) {
-      this.updateContent();
+      this.refreshContent();
     }
   }
 
