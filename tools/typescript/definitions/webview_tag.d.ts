@@ -268,6 +268,8 @@ declare global {
         removeContentScripts(scriptNameList?: string[]): void;
         executeScript(
             details: InjectDetails, callback?: (results: any[]) => void): void;
+        insertCSS(details: InjectDetails,
+            callback?: (results: any[]) => void): void;
         terminate(): void;
       }
 

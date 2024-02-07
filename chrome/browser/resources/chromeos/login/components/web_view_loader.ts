@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-
-import {loadTimeData} from '../i18n_setup.js';
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 /**
  * @fileoverview web view loader.
@@ -56,13 +55,11 @@ const WEB_VIEW_FONTS_CSS = GENERATE_FONTS_CSS();
 
 /**
  * Timeout between consequent loads of online webview.
- * @type {number}
  */
 const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
 
 /**
  * Histogram name for the first load result UMA metric.
- * @type {string}
  */
 const FIRST_LOAD_RESULT_HISTOGRAM = 'OOBE.WebViewLoader.FirstLoadResult';
 
@@ -72,29 +69,67 @@ const FIRST_LOAD_RESULT_HISTOGRAM = 'OOBE.WebViewLoader.FirstLoadResult';
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-const OobeWebViewLoadResult = {
-  SUCCESS: 0,
-  LOAD_TIMEOUT: 1,
-  LOAD_ERROR: 2,
-  HTTP_ERROR: 3,
-  MAX: 4,
-};
+enum OobeWebViewLoadResult {
+  SUCCESS = 0,
+  LOAD_TIMEOUT = 1,
+  LOAD_ERROR = 2,
+  HTTP_ERROR = 3,
+  MAX = 4,
+}
+
+interface WebviewCallback {
+  (): void;
+}
+
+interface ErrorDetailsListener {
+  (details: ErrorDetails): void;
+}
+
+interface OnCompletedDetailsListener {
+  (details: OnCompletedDetails): void;
+}
+
+interface ErrorDetails {
+  url?: string;
+  error?: string;
+}
+
+interface OnCompletedDetails {
+  statusCode?: number;
+}
+
+interface WebRequestObserver {
+  onCompleted:
+      chrome.webRequest.WebRequestBaseEvent<OnCompletedDetailsListener>;
+  onErrorOccurred: chrome.webRequest.WebRequestBaseEvent<ErrorDetailsListener>;
+}
+
 
 
 // WebViewLoader assists on the process of loading an URL into a webview.
 // It listens for events from the webRequest API for the given URL and
-// calls load_failure_callback case of failure.
+// calls loadFailureCallback case of failure.
 // When using WebViewLoader to load a new webview, add the webview id with the
 // first character capitalized to the variants of
 // `OOBE.WebViewLoader.FirstLoadResult` histogram.
 export class WebViewLoader {
-  /**
-   * @suppress {missingProperties} as WebView type has no addContentScripts
-   */
+  static instances: {[key: string]: WebViewLoader} = {};
+
+  private webview: chrome.webviewTag.WebView;
+  private timeout: number;
+  private loadFailureCallback: WebviewCallback;
+  private isPerformingRequests: boolean;
+  private reloadRequested: boolean;
+  private loadTimer: number;
+  private backOffTimer: number;
+  private url: string;
+  private loadResultRecorded: boolean;
+
   constructor(
-      webview, timeout, load_failure_callback, clear_anchors, inject_css) {
+      webview: chrome.webviewTag.WebView, timeout: number,
+      loadFailureCallback: WebviewCallback, clearAnchors: boolean,
+      injectCss: boolean) {
     assert(webview.tagName === 'WEBVIEW');
 
     // Do not create multiple loaders.
@@ -102,17 +137,17 @@ export class WebViewLoader {
       return WebViewLoader.instances[webview.id];
     }
 
-    this.webview_ = webview;
-    this.timeout_ = timeout;
-    this.isPerformingRequests_ = false;
-    this.reloadRequested_ = false;
-    this.loadTimer_ = 0;
-    this.backOffTimer_ = 0;
-    this.loadFailureCallback_ = load_failure_callback;
-    this.url_ = '';
-    this.loadResultRecorded_ = false;
+    this.webview = webview;
+    this.timeout = timeout;
+    this.isPerformingRequests = false;
+    this.reloadRequested = false;
+    this.loadTimer = 0;
+    this.backOffTimer = 0;
+    this.loadFailureCallback = loadFailureCallback;
+    this.url = '';
+    this.loadResultRecorded = false;
 
-    if (clear_anchors) {
+    if (clearAnchors) {
       // Add the CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
       // (anchors) in order to prevent any navigation in the webview itself.
       webview.addEventListener('contentload', () => {
@@ -125,7 +160,7 @@ export class WebViewLoader {
         });
       });
     }
-    if (inject_css) {
+    if (injectCss) {
       webview.addEventListener('contentload', () => {
         webview.insertCSS(WEB_VIEW_FONTS_CSS, () => {
           if (chrome.runtime.lastError) {
@@ -136,43 +171,55 @@ export class WebViewLoader {
       });
     }
 
+    const request = this.webview.request;
     // Monitor webRequests API events
-    this.webview_.request.onCompleted.addListener(
-        this.onCompleted_.bind(this),
-        {urls: ['<all_urls>'], types: ['main_frame']});
-    this.webview_.request.onErrorOccurred.addListener(
-        this.onErrorOccurred_.bind(this),
-        {urls: ['<all_urls>'], types: ['main_frame']});
+    assert(this.isWebRequestObserver(request));
+
+    (request as WebRequestObserver)
+        .onCompleted.addListener(this.onCompleted.bind(this), {
+          urls: ['<all_urls>'],
+          types: ['main_frame' as chrome.webRequest.ResourceType],
+        });
+
+    (request as WebRequestObserver)
+        .onErrorOccurred.addListener(this.onErrorOccurred.bind(this), {
+          urls: ['<all_urls>'],
+          types: ['main_frame' as chrome.webRequest.ResourceType],
+        });
 
     // The only instance of the WebViewLoader.
     WebViewLoader.instances[webview.id] = this;
   }
 
+  private isWebRequestObserver(obj: any): obj is WebRequestObserver {
+    return 'onCompleted' in obj && 'onErrorOccurred' in obj;
+  }
+
   // Clears the internal state of the EULA loader. Stops the timeout timer
   // and prevents events from being handled.
   clearInternalState() {
-    window.clearTimeout(this.loadTimer_);
-    window.clearTimeout(this.backOffTimer_);
-    this.isPerformingRequests_ = false;
-    this.reloadRequested_ = false;
+    window.clearTimeout(this.loadTimer);
+    window.clearTimeout(this.backOffTimer);
+    this.isPerformingRequests = false;
+    this.reloadRequested = false;
   }
 
   // Sets an URL to be loaded in the webview. If the URL is different from the
   // previous one, it will be immediately loaded. If the URL is the same as
   // the previous one, it will be reloaded. If requests are under way, the
   // reload will be performed once the current requests are finished.
-  setUrl(url) {
+  setUrl(url: string) {
     assert(/^https?:\/\//.test(url));
 
-    if (url != this.url_) {
+    if (url != this.url) {
       // Clear the internal state and start with a new URL.
       this.clearInternalState();
-      this.url_ = url;
+      this.url = url;
       this.loadWithFallbackTimer();
     } else {
       // Same URL was requested again. Reload later if a request is under way.
-      if (this.isPerformingRequests_) {
-        this.reloadRequested_ = true;
+      if (this.isPerformingRequests) {
+        this.reloadRequested = true;
       } else {
         this.loadWithFallbackTimer();
       }
@@ -182,36 +229,35 @@ export class WebViewLoader {
   // This method only gets invoked if the webview webRequest API does not
   // fire either 'onErrorOccurred' or 'onCompleted' before the timer runs out.
   // See: https://developer.chrome.com/extensions/webRequest
-  onTimeoutError_() {
-    console.warn('Loading ' + this.url_ + ' timed out');
+  onTimeoutError() {
+    console.warn('Loading ' + this.url + ' timed out');
 
     // Return if we are no longer monitoring requests. Confidence check.
-    if (!this.isPerformingRequests_) {
+    if (!this.isPerformingRequests) {
       return;
     }
 
-    if (!this.loadResultRecorded_) {
-      this.loadResultRecorded_ = true;
-      this.RecordUMAHistogramForFirstLoadResult_(
+    if (!this.loadResultRecorded) {
+      this.loadResultRecorded = true;
+      this.recordUmaHistogramForFirstLoadResult(
           OobeWebViewLoadResult.LOAD_TIMEOUT);
     }
 
-    if (this.reloadRequested_) {
+    if (this.reloadRequested) {
       this.loadWithFallbackTimer();
     } else {
       this.clearInternalState();
-      this.loadFailureCallback_();
+      this.loadFailureCallback();
     }
   }
 
   /**
    * webRequest API Event Handler for 'onErrorOccurred'.
-   * @param {!Object} details
    */
-  onErrorOccurred_(details) {
+  onErrorOccurred(details: ErrorDetails) {
     console.warn(
         'Failed to load ' + details.url + ' with error ' + details.error);
-    if (!this.isPerformingRequests_) {
+    if (!this.isPerformingRequests) {
       return;
     }
 
@@ -221,13 +267,13 @@ export class WebViewLoader {
       return;
     }
 
-    if (!this.loadResultRecorded_) {
-      this.loadResultRecorded_ = true;
-      this.RecordUMAHistogramForFirstLoadResult_(
+    if (!this.loadResultRecorded) {
+      this.loadResultRecorded = true;
+      this.recordUmaHistogramForFirstLoadResult(
           OobeWebViewLoadResult.LOAD_ERROR);
     }
 
-    if (this.reloadRequested_) {
+    if (this.reloadRequested) {
       this.loadWithFallbackTimer();
     } else {
       this.loadAfterBackoff();
@@ -237,34 +283,33 @@ export class WebViewLoader {
   /**
    * webRequest API Event Handler for 'onCompleted'
    * @suppress {missingProperties} no statusCode for details
-   * @param {!Object} details
    */
-  onCompleted_(details) {
-    if (!this.isPerformingRequests_) {
+  onCompleted(details: OnCompletedDetails) {
+    if (!this.isPerformingRequests) {
       return;
     }
 
     // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
     if (details.statusCode != 200) {
       // Not a successful request. Perform a reload if requested.
-      console.info('Loading ' + this.url_ + ' has completed with HTTP error.');
-      if (!this.loadResultRecorded_) {
-        this.loadResultRecorded_ = true;
-        this.RecordUMAHistogramForFirstLoadResult_(
+      console.info('Loading ' + this.url + ' has completed with HTTP error.');
+      if (!this.loadResultRecorded) {
+        this.loadResultRecorded = true;
+        this.recordUmaHistogramForFirstLoadResult(
             OobeWebViewLoadResult.HTTP_ERROR);
       }
 
-      if (this.reloadRequested_) {
+      if (this.reloadRequested) {
         this.loadWithFallbackTimer();
       } else {
         this.loadAfterBackoff();
       }
     } else {
       // Success!
-      console.info('Loading ' + this.url_ + ' has completed successfully.');
-      if (!this.loadResultRecorded_) {
-        this.loadResultRecorded_ = true;
-        this.RecordUMAHistogramForFirstLoadResult_(
+      console.info('Loading ' + this.url + ' has completed successfully.');
+      if (!this.loadResultRecorded) {
+        this.loadResultRecorded = true;
+        this.recordUmaHistogramForFirstLoadResult(
             OobeWebViewLoadResult.SUCCESS);
       }
 
@@ -274,40 +319,38 @@ export class WebViewLoader {
 
   // Loads the URL into the webview and starts a timer.
   loadWithFallbackTimer() {
-    console.info('Trying to load ' + this.url_);
+    console.info('Trying to load ' + this.url);
     // Clear previous timer and perform a load.
-    window.clearTimeout(this.loadTimer_);
-    this.loadTimer_ =
-        window.setTimeout(this.onTimeoutError_.bind(this), this.timeout_);
+    window.clearTimeout(this.loadTimer);
+    this.loadTimer =
+        window.setTimeout(this.onTimeoutError.bind(this), this.timeout);
     this.tryLoadOnline();
   }
 
   loadAfterBackoff() {
-    console.info('Trying to reload ' + this.url_);
-    window.clearTimeout(this.backOffTimer_);
-    this.backOffTimer_ = window.setTimeout(
+    console.info('Trying to reload ' + this.url);
+    window.clearTimeout(this.backOffTimer);
+    this.backOffTimer = window.setTimeout(
         this.tryLoadOnline.bind(this), ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS);
   }
 
   tryLoadOnline() {
-    this.reloadRequested_ = false;
+    this.reloadRequested = false;
 
     // A request is being made
-    this.isPerformingRequests_ = true;
-    if (this.webview_.src === this.url_) {
-      this.webview_.reload();
+    this.isPerformingRequests = true;
+    if (this.webview.src === this.url) {
+      this.webview.reload();
     } else {
-      this.webview_.src = this.url_;
+      this.webview.src = this.url;
     }
   }
 
-  RecordUMAHistogramForFirstLoadResult_(result) {
-    const id = this.webview_.id[0].toUpperCase() + this.webview_.id.slice(1);
+  recordUmaHistogramForFirstLoadResult(result: number) {
+    const id = this.webview.id[0].toUpperCase() + this.webview.id.slice(1);
     const histogramName = FIRST_LOAD_RESULT_HISTOGRAM + '.' + id;
     chrome.send(
         'metricsHandler:recordInHistogram',
         [histogramName, result, OobeWebViewLoadResult.MAX]);
   }
 }
-
-WebViewLoader.instances = {};

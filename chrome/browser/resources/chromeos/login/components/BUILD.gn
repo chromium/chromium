@@ -55,7 +55,6 @@ group("closure_compile") {
     ":oobe_slide",
     ":oobe_types",
     ":progress_list_item",
-    ":web_view_loader",
   ]
 }
 
@@ -185,19 +184,12 @@ js_library("progress_list_item") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("web_view_loader") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_loader.js" ]
-  deps = []
-  extra_deps = [ ":copy_js" ]
-}
-
 # Copy existing files to output directory for closure compilation.
 copy("copy_js") {
   sources = [
     "display_manager_types.js",
     "oobe_select.js",
     "oobe_types.js",
-    "web_view_loader.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
