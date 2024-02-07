@@ -237,6 +237,7 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/domains/bit_flag_combination_of_impl.h",
     "src/fuzztest/internal/domains/container_mutation_helpers.h",
     "src/fuzztest/internal/domains/container_of_impl.h",
+    "src/fuzztest/internal/domains/domain_base.cc",
     "src/fuzztest/internal/domains/domain_base.h",
     "src/fuzztest/internal/domains/element_of_impl.h",
     "src/fuzztest/internal/domains/filter_impl.h",
