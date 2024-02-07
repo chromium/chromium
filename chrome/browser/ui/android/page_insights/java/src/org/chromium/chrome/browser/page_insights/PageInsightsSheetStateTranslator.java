@@ -11,10 +11,13 @@ import java.lang.annotation.RetentionPolicy;
  * Class that translates Page Insights Hub terminology into {@link SheetState} terminology to ensure
  * that there is no confusion when interpreting the codebase.
  *
- * TODO - add COLLAPSE state once it is supported.
+ * <p>TODO - add COLLAPSE state once it is supported.
  * Page Insights Hub        Bottom Sheet
+ * NONE                     NONE
+ * HIDDEN                   HIDEEN
  * PEEK                     PEEK
  * EXPANDED                 FULL
+ * SCROLLING                SCROLLING
  */
 public class PageInsightsSheetStateTranslator {
 
@@ -25,6 +28,7 @@ public class PageInsightsSheetStateTranslator {
         PageInsightsSheetState.COLLAPSED,
         PageInsightsSheetState.PEEK,
         PageInsightsSheetState.EXPANDED,
+        PageInsightsSheetState.SCROLLING,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface PageInsightsSheetState {
@@ -33,27 +37,32 @@ public class PageInsightsSheetStateTranslator {
         int COLLAPSED = 1; // The state where just the bottom bar is visible
         int PEEK = 2; // Page Insights Hub is in this state when auto-peek is triggered
         int EXPANDED = 3; // Page Insights Hub is fully expanded
+        int SCROLLING = 4; // Page Insights Hub is in scrolling mode
     }
 
     @SheetState
     static int convertToBottomSheetState(@PageInsightsSheetState int sheet) {
         return switch (sheet) {
+            case PageInsightsSheetState.NONE -> SheetState.NONE;
             case PageInsightsSheetState.HIDDEN -> SheetState.HIDDEN;
-                // TODO - support COLLAPSED once we migrate BottomSheet PEEK state to HALF state
             case PageInsightsSheetState.PEEK -> SheetState.PEEK;
             case PageInsightsSheetState.EXPANDED -> SheetState.FULL;
-            default -> SheetState.NONE;
+            case PageInsightsSheetState.SCROLLING -> SheetState.SCROLLING;
+                // TODO - support COLLAPSED once we migrate BottomSheet PEEK state to HALF state
+            default -> throw new UnsupportedOperationException("COLLAPSED not supported");
         };
     }
 
     @PageInsightsSheetState
     static int convertToPageInsightsSheetState(@SheetState int sheet) {
         return switch (sheet) {
+            case SheetState.NONE -> PageInsightsSheetState.NONE;
             case SheetState.HIDDEN -> PageInsightsSheetState.HIDDEN;
-                // TODO - support COLLAPSED once we migrate BottomSheet PEEK state to HALF state
             case SheetState.PEEK -> PageInsightsSheetState.PEEK;
             case SheetState.FULL -> PageInsightsSheetState.EXPANDED;
-            default -> PageInsightsSheetState.NONE;
+            case SheetState.SCROLLING -> PageInsightsSheetState.SCROLLING;
+                // TODO - support HALF once we migrate BottomSheet PEEK state to HALF state
+            default -> throw new UnsupportedOperationException("HALF state not supported");
         };
     }
 }
