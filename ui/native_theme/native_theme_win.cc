@@ -340,8 +340,7 @@ NativeThemeWin::NativeThemeWin(bool should_only_use_dark_colors,
 
   memset(theme_handles_, 0, sizeof(theme_handles_));
 
-  if (theme_to_update && !IsForcedDarkMode() && !IsForcedHighContrast() &&
-      base::SequencedTaskRunner::HasCurrentDefault()) {
+  if (theme_to_update) {
     theme_to_update->set_use_dark_colors(ShouldUseDarkColors());
     theme_to_update->set_forced_colors(InForcedColorsMode());
     theme_to_update->set_preferred_color_scheme(GetPreferredColorScheme());
