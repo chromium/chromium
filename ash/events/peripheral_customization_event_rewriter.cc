@@ -598,9 +598,12 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
   auto remapping_action = remapping_action_result->remapping_action;
 
-  metrics_manager_->RecordRemappingActionWhenButtonPressed(
-      *remapping_action,
-      ToMetricsString(remapping_action_result->peripheral_kind).data());
+  if (event.type() == ui::ET_KEY_PRESSED ||
+      event.type() == ui::ET_MOUSE_PRESSED) {
+    metrics_manager_->RecordRemappingActionWhenButtonPressed(
+        *remapping_action,
+        ToMetricsString(remapping_action_result->peripheral_kind).data());
+  }
 
   if (remapping_action->is_accelerator_action()) {
     if (event.type() == ui::ET_KEY_PRESSED ||
