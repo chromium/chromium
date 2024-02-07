@@ -77,6 +77,8 @@ class RenderViewHostTestHarnessAdapter : public RenderViewHostTestHarness {
   void SetUp() override;
   void TearDown() override;
 
+  BrowserTaskEnvironment* task_environment();
+
  private:
   void TestBody() override {}
 };

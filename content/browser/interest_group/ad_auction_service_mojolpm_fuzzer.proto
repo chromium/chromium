@@ -27,11 +27,18 @@ message RunThreadAction {
   required ThreadId id = 1;
 }
 
+// Runs RunUntilIdle() on the test adapter task environment. This is often
+// necessary to wait for completion of AdAuctionService API implementation
+// threads, like the database thread, so that result callbacks from the database
+// can run on the UI thread.
+message RunUntilIdle {}
+
 // Actions that can be performed by the fuzzer.
 message Action {
   oneof action {
     NewAdAuctionServiceAction new_ad_auction_service = 1;
     RunThreadAction run_thread = 2;
+    RunUntilIdle run_until_idle = 4;
     mojolpm.blink.mojom.AdAuctionService.RemoteAction
         ad_auction_service_remote_action = 3;
   }

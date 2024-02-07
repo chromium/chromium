@@ -436,11 +436,15 @@ mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
     "//content/browser:browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
+    "//services/data_decoder/public/cpp:test_support",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 
-  seed_corpus_sources = [ "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_join.textproto" ]
+  seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_join.textproto",
+    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_update.textproto",
+  ]
 }
 
 if (enable_mojom_fuzzer) {

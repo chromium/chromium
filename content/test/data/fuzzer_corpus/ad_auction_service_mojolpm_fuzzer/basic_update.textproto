@@ -1,0 +1,70 @@
+actions {
+  new_ad_auction_service {
+    id: 1
+  }
+}
+actions {
+  ad_auction_service_remote_action {
+    id: 1
+    m_join_interest_group {
+      m_group {
+        new {
+          id: 1
+          m_name: "shoes"
+          m_owner: {
+            new {
+              id: 1
+              m_scheme: "https"
+              m_host: "owner.test"
+              m_port: 443
+            }
+          }
+          m_expiry {
+            new {
+              id: 1
+              # Set a large time that's far in the future (int64 max) -- the
+              # browser will clamp this to the max expiration.
+              m_internal_value: 0x7FFFFFFFFFFFFFFF
+            }
+          }
+          m_update_url {
+            new {
+              id: 1
+              m_url: "https://owner.test:443/update"
+            }
+          }
+
+          # The default values of required fields need to be explicitly set to
+          # avoid build warnings.
+          m_priority: 0.0
+          m_enable_bidding_signals_prioritization: false
+          m_all_sellers_capabilities {
+          }
+          m_execution_mode: InterestGroup_ExecutionMode_kCompatibilityMode
+          m_trusted_bidding_signals_slot_size_mode: InterestGroup_TrustedBiddingSignalsSlotSizeMode_kNone
+          m_auction_server_request_flags {
+          }
+          m_max_trusted_bidding_signals_url_length: 0
+        }
+      }
+    }
+  }
+}
+actions {
+  ad_auction_service_remote_action {
+    id: 1
+    m_update_ad_interest_groups {
+    }
+  }
+}
+actions {
+  run_until_idle {
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 2
+  action_indexes: 3
+}
+sequence_indexes: 0

@@ -36,6 +36,7 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -77,15 +78,27 @@ class AllowInterestGroupContentBrowserClient
   }
 };
 
+constexpr char kFledgeUpdateHeaders[] =
+    "HTTP/1.1 200 OK\n"
+    "Content-type: Application/JSON\n"
+    "Ad-Auction-Allowed: true\n";
+
+constexpr char kInterestGroupUpdate[] = R"({
+"ads": [{"renderURL": "https://example.com/new_render"
+        }]
+})";
+
 // For handling network requests made by the Protected Audience API -- also
 // prevents those requests from being made to real servers.
 class NetworkResponder {
  private:
   bool RequestHandler(content::URLLoaderInterceptor::RequestParams* params) {
+    content::URLLoaderInterceptor::WriteResponse(
+        kFledgeUpdateHeaders, kInterestGroupUpdate, params->client.get());
     return true;
   }
 
-  // Handles network requests.
+  // Handles network requests for interest group updates.
   content::URLLoaderInterceptor network_interceptor_{
       base::BindRepeating(&NetworkResponder::RequestHandler,
                           base::Unretained(this))};
@@ -152,6 +165,11 @@ class AdAuctionServiceTestcase
   void CreateAdAuctionServiceImplOnUIThread(
       mojo::PendingReceiver<blink::mojom::AdAuctionService>&& receiver);
 
+  // This is run every time we run the RunUntilIdle action -- this ensures that,
+  // for instance, completion callbacks posted from the AdAuctionService
+  // implementation's database thread are run on the UI thread.
+  void RunUntilIdleOnUIThread();
+
   // All the below fields must be accessed on the UI thread.
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList fenced_frame_feature_list_;
@@ -163,6 +181,8 @@ class AdAuctionServiceTestcase
 
   // Must be destroyed before test_adapter_::TearDown().
   std::optional<NetworkResponder> network_responder_;
+
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 AdAuctionServiceTestcase::AdAuctionServiceTestcase(
@@ -219,6 +239,18 @@ void AdAuctionServiceTestcase::RunAction(const ProtoAction& action,
       // remote with MojoLPM.
       AddAdAuctionService(action.new_ad_auction_service().id(),
                           std::move(run_closure));
+      return;
+    case ProtoAction::kRunUntilIdle:
+      // On the UI thread, call RunUntilIdle() -- this is often needed to wait
+      // for other threads, like the AdAuctionService API implementation's
+      // database thread -- that thread posts results to the UI thread, the UI
+      // thread needs to be able to run the completion callbacks that receive
+      // the database results.
+      content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&AdAuctionServiceTestcase::RunUntilIdleOnUIThread,
+                         base::Unretained(this)),
+          std::move(run_closure));
       return;
     case ProtoAction::kAdAuctionServiceRemoteAction:
       // Invoke one of the service methods on AdAuctionService, with parameters
@@ -287,6 +319,10 @@ void AdAuctionServiceTestcase::CreateAdAuctionServiceImplOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::AdAuctionServiceImpl::CreateMojoService(render_frame_host_,
                                                    std::move(receiver));
+}
+
+void AdAuctionServiceTestcase::RunUntilIdleOnUIThread() {
+  test_adapter_.task_environment()->RunUntilIdle();
 }
 
 DEFINE_BINARY_PROTO_FUZZER(
