@@ -563,7 +563,8 @@ class MapFileParserLld:
 
               is_partial = False
               cur_obj = None
-            elif cur_obj == 'lto.tmp' or 'thinlto-cache' in cur_obj:
+            elif (cur_obj == 'lto.tmp' or 'thinlto-cache' in cur_obj
+                  or '.lto.' in cur_obj):
               thin_map[address] = os.path.basename(cur_obj)
               cur_obj = None
 
