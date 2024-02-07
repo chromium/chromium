@@ -235,8 +235,6 @@ TEST_F(PeripheralBatteryNotifierTest, StylusNotification) {
       "???hxxxxid-AAAA:BBBB:CCCC.DDDD-battery";
   const std::string kTestStylusName = "test_stylus";
   const std::u16string kTestStylusName16 = u"test_stylus";
-  base::test::ScopedFeatureList flags;
-  flags.InitAndEnableFeature(features::kStylusBatteryStatus);
 
   // Add an external stylus to our test device manager.
   ui::TouchscreenDevice stylus(
@@ -262,53 +260,6 @@ TEST_F(PeripheralBatteryNotifierTest, StylusNotification) {
                      /*battery_report_eligible=*/true,
                      BI::PeripheralType::kStylusViaScreen, "");
   EXPECT_TRUE(message_center_->FindVisibleNotificationById(
-      PeripheralBatteryNotifier::kStylusNotificationId));
-  EXPECT_FALSE(
-      message_center_->FindVisibleNotificationById(kTestBatteryAddress));
-
-  // Verify that when the battery level is -1, the previous stylus low battery
-  // notification is cancelled.
-  UpdateBatteryLevel(false, kTestStylusBatteryId, kTestStylusName16,
-                     std::nullopt, /*battery_report_eligible=*/true,
-                     BI::PeripheralType::kStylusViaScreen, "");
-  EXPECT_FALSE(message_center_->FindVisibleNotificationById(
-      PeripheralBatteryNotifier::kStylusNotificationId));
-}
-
-TEST_F(PeripheralBatteryNotifierTest, StylusNotificationDisabled) {
-  const std::string kTestStylusBatteryPath =
-      "/sys/class/power_supply/hid-AAAA:BBBB:CCCC.DDDD-battery";
-  const std::string kTestStylusBatteryId =
-      "???hxxxxid-AAAA:BBBB:CCCC.DDDD-battery";
-  const std::string kTestStylusName = "test_stylus";
-  const std::u16string kTestStylusName16 = u"test_stylus";
-  base::test::ScopedFeatureList flags;
-  flags.InitAndDisableFeature(features::kStylusBatteryStatus);
-
-  // Add an external stylus to our test device manager.
-  ui::TouchscreenDevice stylus(
-      /*id=*/0, ui::INPUT_DEVICE_USB, kTestStylusName, gfx::Size(),
-      /*touch_points=*/1,
-      /*has_stylus=*/true);
-  stylus.sys_path = base::FilePath(kTestStylusBatteryPath);
-
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({stylus});
-
-  // Verify that when the battery level is 50, no stylus low battery
-  // notification is shown.
-  UpdateBatteryLevel(true, kTestStylusBatteryId, kTestStylusName16, 50,
-                     /*battery_report_eligible=*/true,
-                     BI::PeripheralType::kStylusViaScreen, "");
-  EXPECT_FALSE(message_center_->FindVisibleNotificationById(
-      PeripheralBatteryNotifier::kStylusNotificationId));
-
-  // Verify that when the battery level is 5, a stylus low battery notification
-  // is shown. Also check that a non stylus device low battery notification will
-  // not show up.
-  UpdateBatteryLevel(false, kTestStylusBatteryId, kTestStylusName16, 5,
-                     /*battery_report_eligible=*/true,
-                     BI::PeripheralType::kStylusViaScreen, "");
-  EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
       message_center_->FindVisibleNotificationById(kTestBatteryAddress));

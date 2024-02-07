@@ -1899,9 +1899,6 @@ extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 
-extern const char kStylusBatteryStatusName[];
-extern const char kStylusBatteryStatusDescription[];
-
 extern const char kSupportTool[];
 extern const char kSupportToolDescription[];
 
