@@ -44,7 +44,7 @@ struct RegistrationRequest;
 
 // Inserts an enum value as the underlying type.
 template <typename T>
-  requires std::is_enum_v<T>
+  requires(std::is_enum_v<T>)
 inline std::ostream& operator<<(std::ostream& os, const T& e) {
   return os << base::to_underlying(e);
 }
@@ -220,7 +220,7 @@ bool MigrateLegacyUpdaters(
 
 // Returns the quotient of dividing two integer numbers (m/n) rounded up.
 template <typename T>
-  requires std::integral<T>
+  requires(std::integral<T>)
 [[nodiscard]] constexpr T CeilingDivide(T m, T n) {
   return std::ceil(static_cast<double>(m) / n);
 }

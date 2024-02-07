@@ -5,19 +5,22 @@
 #ifndef CHROME_UPDATER_ENUM_TRAITS_H_
 #define CHROME_UPDATER_ENUM_TRAITS_H_
 
+#include <concepts>
 #include <optional>
 #include <ostream>
 #include <type_traits>
 
+#include "base/types/cxx23_to_underlying.h"
+
 namespace updater {
 
-// Provides a way to safely convert numeric types to enumerated values.
-// To use this facility, the enum definition must be annotated with traits to
-// specify the range of the enum values. Due to how specialization of class
-// templates works in C++14, the |EnumTraits| specialization of the primary
-// template must be defined inside the |updater| namespace, where the
-// primary template is defined. Traits for enum types defined inside
-// other scopes, such as nested classes or other namespaces, may not work.
+// Provides a way to safely convert numeric types to enumerated values. To use
+// this facility, the enum definition must be annotated with traits to specify
+// the range of the enum values. Due to how specialization of class templates
+// works in C++14, the `EnumTraits` specialization of the primary template must
+// be defined inside the `updater` namespace, where the primary template is
+// defined. Traits for enum types defined inside other scopes, such as nested
+// classes or other namespaces, may not work.
 //
 // enum class MyEnum {
 //   kVal1 = -1,
@@ -34,19 +37,18 @@ namespace updater {
 // MyEnum val = *CheckedCastToEnum<MyEnum>(-1);
 
 template <typename T>
+  requires(std::is_enum_v<T>)
 struct EnumTraits {};
 
 // Returns an optional value of an enum type T if the conversion from an
-// integral type V is safe, meaning that |v| is within the bounds of the enum.
+// integer value `v` is safe, meaning that `v` is within the bounds of the enum.
 // The enum type must be annotated with traits to specify the lower and upper
 // bounds of the enum values.
-template <typename T, typename V>
-std::optional<T> CheckedCastToEnum(V v) {
-  static_assert(std::is_enum<T>::value, "T must be an enum type.");
-  static_assert(std::is_integral<V>::value, "V must be an integral type.");
-  using Traits = EnumTraits<T>;
-  return (static_cast<V>(Traits::first_elem) <= v &&
-          v <= static_cast<V>(Traits::last_elem))
+template <typename T>
+  requires(std::is_enum_v<T>)
+constexpr std::optional<T> CheckedCastToEnum(std::underlying_type_t<T> v) {
+  return (base::to_underlying(EnumTraits<T>::first_elem) <= v &&
+          v <= base::to_underlying(EnumTraits<T>::last_elem))
              ? std::make_optional(static_cast<T>(v))
              : std::nullopt;
 }
