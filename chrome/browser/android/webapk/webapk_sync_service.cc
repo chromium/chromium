@@ -34,4 +34,9 @@ void WebApkSyncService::MergeSyncDataForTesting(
       std::move(app_vector), std::move(last_used_days_vector));  // IN-TEST
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+WebApkSyncService::GetModelTypeControllerDelegate() {
+  return sync_bridge_->GetModelTypeControllerDelegate();
+}
+
 }  // namespace webapk

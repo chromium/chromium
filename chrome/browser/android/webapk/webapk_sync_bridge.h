@@ -92,6 +92,9 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   const Registry& GetRegistryForTesting() const;
 
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetModelTypeControllerDelegate();
+
  private:
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
   void OnDatabaseOpened(base::OnceClosure callback,

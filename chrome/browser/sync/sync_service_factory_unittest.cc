@@ -187,6 +187,11 @@ class SyncServiceFactoryTest : public testing::Test {
             data_sharing::features::kDataSharingFeature)) {
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+      datatypes.Put(syncer::WEB_APKS);
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     return datatypes;
   }
 

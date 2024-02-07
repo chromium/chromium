@@ -27,6 +27,9 @@ class WebApkSyncService : public KeyedService {
   void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
                                std::vector<int> last_used_days_vector);
 
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetModelTypeControllerDelegate();
+
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;

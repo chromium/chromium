@@ -141,6 +141,10 @@
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/webapk/webapk_sync_service.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using content::BrowserThread;
 
 namespace browser_sync {
@@ -419,6 +423,21 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+      syncer::ModelTypeControllerDelegate* delegate =
+          GetControllerDelegateForModelType(syncer::WEB_APKS).get();
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::WEB_APKS,
+          /*delegate_for_full_sync_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              delegate),
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              delegate)));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     // Theme sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
@@ -659,6 +678,14 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+    case syncer::WEB_APKS: {
+      webapk::WebApkSyncService* service =
+          webapk::WebApkSyncService::GetForProfile(profile_);
+      CHECK(service);
+      return service->GetModelTypeControllerDelegate();
+    }
+#endif  //  BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
     case syncer::WEBAUTHN_CREDENTIAL: {
       DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
