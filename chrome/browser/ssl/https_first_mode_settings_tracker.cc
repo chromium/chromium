@@ -324,6 +324,7 @@ void HttpsFirstModeService::
   }
   // The prefs must be set in this order, as setting kHttpsOnlyModeEnabled
   // will cause kHttpsOnlyModeAutoEnabled to be reset to false.
+  keep_http_allowlist_on_next_pref_change_ = true;
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
 }
@@ -348,14 +349,17 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
         GetSyntheticFieldTrialGroupName(setting));
   }
 
-  // Reset the allowlist when the pref changes. A user going from HTTPS-Upgrades
-  // to HTTPS-First Mode shouldn't inherit the set of allowlisted sites (or
-  // vice versa).
-  StatefulSSLHostStateDelegate* state =
-      static_cast<StatefulSSLHostStateDelegate*>(
-          profile_->GetSSLHostStateDelegate());
-  state->ClearHttpsOnlyModeAllowlist();
-  state->ClearHttpsEnforcelist();
+  // Reset the HTTP allowlist and HTTPS enforcelist when the pref changes.
+  // A user going from HTTPS-Upgrades to HTTPS-First Mode shouldn't inherit the
+  // set of allowlisted sites (or vice versa).
+  if (!keep_http_allowlist_on_next_pref_change_) {
+    StatefulSSLHostStateDelegate* state =
+        static_cast<StatefulSSLHostStateDelegate*>(
+            profile_->GetSSLHostStateDelegate());
+    state->ClearHttpsOnlyModeAllowlist();
+    state->ClearHttpsEnforcelist();
+  }
+  keep_http_allowlist_on_next_pref_change_ = false;
 
   // Since the user modified the UI pref, explicitly disable any automatic
   // HTTPS-First Mode heuristic.
