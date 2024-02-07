@@ -6927,6 +6927,11 @@
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
         ],
       },
+      'chromeos_device_only_gtests': {
+        'variants': [
+          'CROS_JACUZZI_CQ_PUBLIC_LKGM',
+        ],
+      },
     },
 
     'chromeos_jacuzzi_skylab_tests': {
@@ -6962,6 +6967,11 @@
 
     'chromeos_octopus_rel_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
+      'chromeos_device_only_gtests': {
         'variants': [
           'CROS_OCTOPUS_PUBLIC_LKGM',
         ],

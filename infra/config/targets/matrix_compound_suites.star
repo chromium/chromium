@@ -190,6 +190,13 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_jacuzzi_rel_skylab_tests",
     basic_suites = {
+        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
+        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_JACUZZI_CQ_PUBLIC_LKGM",
+            ],
+        ),
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 "chromeos-jacuzzi-skylab-chrome-all-tast-tests",
@@ -248,6 +255,13 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_octopus_rel_skylab_tests",
     basic_suites = {
+        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
+        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_OCTOPUS_PUBLIC_LKGM",
+            ],
+        ),
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_OCTOPUS_PUBLIC_LKGM",

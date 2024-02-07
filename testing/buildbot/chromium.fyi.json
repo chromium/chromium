@@ -4649,6 +4649,18 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "chromium",
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "name": "base_unittests JACUZZI_CQ_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "use_lkgm": true,
+        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
+      },
+      {
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
@@ -4707,6 +4719,16 @@
       "chrome"
     ],
     "skylab_tests": [
+      {
+        "autotest_name": "chromium",
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "octopus",
+        "name": "base_unittests OCTOPUS_PUBLIC_LKGM",
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "use_lkgm": true,
+        "variant_id": "OCTOPUS_PUBLIC_LKGM"
+      },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
