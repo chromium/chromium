@@ -5513,14 +5513,12 @@ interface MessageEvent : Event
     method initMessageEvent
 interface MessagePort : EventTarget
     attribute @@toStringTag
-    getter onclose
     getter onmessage
     getter onmessageerror
     method close
     method constructor
     method postMessage
     method start
-    setter onclose
     setter onmessage
     setter onmessageerror
 interface MimeType

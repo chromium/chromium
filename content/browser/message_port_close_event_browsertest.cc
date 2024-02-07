@@ -34,6 +34,12 @@ class MessagePortCloseEventBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "MessagePortCloseEvent");
+    ContentBrowserTest::SetUpCommandLine(command_line);
+  }
+
   RenderFrameHost* GetPrimaryMainFrame() {
     return shell()->web_contents()->GetPrimaryMainFrame();
   }

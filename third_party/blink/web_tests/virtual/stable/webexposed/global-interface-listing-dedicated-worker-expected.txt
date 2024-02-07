@@ -1175,14 +1175,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method initMessageEvent
 [Worker] interface MessagePort : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter onclose
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method postMessage
 [Worker]     method start
-[Worker]     setter onclose
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
 [Worker] interface NavigationPreloadManager
