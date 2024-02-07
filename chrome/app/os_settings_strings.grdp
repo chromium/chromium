@@ -2449,8 +2449,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
     Linux development environment
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP" desc="Crostini Set up button label.">
-    Set Up
+  <message name="IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP" desc="The label for the button that, when clicked, opens the Crostini setup flow.">
+    Set up
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Crostini.">
     Shared folders are available in Linux at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
