@@ -307,7 +307,7 @@ suite('AppsPageTests', () => {
         assertTrue(!!rowLink);
         assertTrue(isVisible(rowLink));
         assertEquals(
-            'Manage app notifications, Do not disturb, and app badging',
+            'Manage app notifications, Do Not Disturb, and app badging',
             rowLink.subLabel);
       });
     } else {

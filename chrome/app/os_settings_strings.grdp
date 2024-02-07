@@ -6057,19 +6057,19 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
-    Manage app notifications, Do not disturb, and app badging
+    Manage app notifications, Do Not Disturb, and app badging
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of ChromeOS apps installed.">
     <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do not disturb is on.">
-    Do not disturb enabled
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
+    Do Not Disturb enabled
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
-    Do not disturb
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications Do Not Disturb toggle that lets the user silence all app notifications.">
+    Do Not Disturb
   </message>
-   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
-    Notifications won't pop up on the screen. You can still see notifications by clicking the Do not disturb icon on the bottom right of your screen.
+   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the Do Not Disturb toggle within help icon tooltip.">
+    Notifications won't pop up on the screen. You can still see notifications by clicking the Do Not Disturb icon on the bottom right of your screen.
   </message>
    <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
     When turned on, all notifications will be silenced
