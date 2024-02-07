@@ -86,6 +86,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // be handled when there is a foreground scene.
   std::optional<TipsNotificationType> interacted_type_;
 
+  // Used to assert that asynchronous callback are invoked on the correct
+  // sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<TipsNotificationClient> weak_ptr_factory_{this};
 };
 

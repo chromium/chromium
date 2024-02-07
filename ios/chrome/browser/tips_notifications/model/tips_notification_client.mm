@@ -67,6 +67,7 @@ TipsNotificationClient::~TipsNotificationClient() = default;
 
 void TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsTipsNotification(response.notification.request)) {
     return;
   }
@@ -87,6 +88,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
 
 void TipsNotificationClient::HandleNotificationInteraction(
     TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
       ShowDefaultBrowserPromo();
@@ -102,6 +104,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
 
 UIBackgroundFetchResult TipsNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return UIBackgroundFetchResultNoData;
 }
 
@@ -111,11 +114,13 @@ TipsNotificationClient::RegisterActionableNotifications() {
 }
 
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnSceneActiveForegroundBrowserReady(base::DoNothing());
 }
 
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (interacted_type_.has_value()) {
     HandleNotificationInteraction(interacted_type_.value());
     interacted_type_ = std::nullopt;
@@ -134,6 +139,7 @@ void TipsNotificationClient::RegisterLocalStatePrefs(
 
 void TipsNotificationClient::GetPendingRequest(
     GetPendingRequestCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto completion = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&NotificationWithIdentifier, kTipsNotificationId)
@@ -144,6 +150,7 @@ void TipsNotificationClient::GetPendingRequest(
 }
 
 void TipsNotificationClient::ClearNotification(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GetPendingRequest(
       base::BindOnce(&TipsNotificationClient::OnNotificationCleared,
                      weak_ptr_factory_.GetWeakPtr())
@@ -152,6 +159,7 @@ void TipsNotificationClient::ClearNotification(base::OnceClosure callback) {
 
 void TipsNotificationClient::OnNotificationCleared(
     UNNotificationRequest* request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request) {
     return;
   }
@@ -167,6 +175,7 @@ void TipsNotificationClient::OnNotificationCleared(
 }
 
 void TipsNotificationClient::MaybeRequestNotification() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsFirstRunRecent(base::Days(14))) {
     return;
   }
@@ -195,6 +204,7 @@ void TipsNotificationClient::MaybeRequestNotification() {
 }
 
 void TipsNotificationClient::RequestNotification(TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UNNotificationRequest* request = TipsNotificationRequest(type);
 
   auto completion = base::CallbackToBlock(base::BindPostTask(
@@ -209,6 +219,7 @@ void TipsNotificationClient::RequestNotification(TipsNotificationType type) {
 
 void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
                                                      NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!error) {
     MarkNotificationTypeSent(type);
   }
@@ -217,6 +228,7 @@ void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
 }
 
 bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
       return !IsChromeLikelyDefaultBrowser();
@@ -228,6 +240,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
 }
 
 bool TipsNotificationClient::ShouldSendWhatsNew() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
@@ -237,6 +250,7 @@ bool TipsNotificationClient::ShouldSendWhatsNew() {
 }
 
 bool TipsNotificationClient::ShouldSendSignin() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   ChromeBrowserState* browser_state = browser->GetBrowserState();
   AuthenticationService* auth_service =
@@ -247,22 +261,26 @@ bool TipsNotificationClient::ShouldSendSignin() {
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSceneLevelForegroundActiveBrowser() != nullptr;
 }
 
 void TipsNotificationClient::ShowDefaultBrowserPromo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   [HandlerForProtocol(browser->GetCommandDispatcher(), PromosManagerCommands)
       maybeDisplayDefaultBrowserPromo];
 }
 
 void TipsNotificationClient::ShowWhatsNew() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   raw_ptr<Browser> browser = GetSceneLevelForegroundActiveBrowser();
   [HandlerForProtocol(browser->GetCommandDispatcher(),
                       BrowserCoordinatorCommands) showWhatsNew];
 }
 
 void TipsNotificationClient::ShowSignin() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   AuthenticationOperation operation = AuthenticationOperation::kSigninAndSync;
   if (base::FeatureList::IsEnabled(
@@ -290,6 +308,7 @@ void TipsNotificationClient::ShowSignin() {
 
 void TipsNotificationClient::MarkNotificationTypeSent(
     TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield |= 1 << int(type);
@@ -298,6 +317,7 @@ void TipsNotificationClient::MarkNotificationTypeSent(
 
 void TipsNotificationClient::MarkNotificationTypeNotSent(
     TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield &= ~(1 << int(type));
