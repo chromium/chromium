@@ -314,6 +314,10 @@ export class SettingsSecurityPageElement extends
    */
   override currentRouteChanged(route: Route) {
     if (route !== routes.SECURITY) {
+      // If the user navigates to other settings page from security page, call
+      // onBeforeUnload_ method to check if the security page survey should be
+      // shown.
+      this.onBeforeUnload_();
       this.isRouteSecurity_ = false;
       this.eventTracker_.removeAll();
       return;

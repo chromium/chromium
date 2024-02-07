@@ -181,6 +181,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
     page = document.createElement('settings-security-page');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
+    testHatsBrowserProxy.reset();
     Router.getInstance().navigateTo(routes.SECURITY);
     return flushTasks();
   });
@@ -188,6 +189,27 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
   teardown(function() {
     page.remove();
     Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('SecurityPageSwitchRouteCallsHatsProxy', async function() {
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    // Switch tabs within the settings page.
+    Router.getInstance().navigateTo(routes.PRIVACY);
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify that the method securityPageHatsRequest was called and the time
+    // the user spent on the security page was logged correctly.
+    const expectedTotalTimeInFocus = t2 - t1;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
   });
 
   test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
@@ -213,6 +235,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
 
     // Fire the beforeunload event to simulate closing the page.
     window.dispatchEvent(new Event('beforeunload'));
+
     const args =
         await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
 
