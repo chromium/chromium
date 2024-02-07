@@ -146,6 +146,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.stroke_color = Color::kBlack;
     text_style.emphasis_mark_color = Color::kBlack;
     text_style.shadow = nullptr;
+    text_style.paint_order = kPaintOrderNormal;
   } else {
     text_style.current_color =
         style.VisitedDependentColorFast(GetCSSPropertyColor());
