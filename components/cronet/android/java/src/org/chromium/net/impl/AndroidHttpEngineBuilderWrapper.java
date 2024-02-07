@@ -19,6 +19,7 @@ import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.telemetry.ExperimentalOptions;
 import org.chromium.net.telemetry.OptionalBoolean;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Set;
 
@@ -116,6 +117,7 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         // This only translates known experimental options
         ExperimentalOptions options = new ExperimentalOptions(stringOptions);
         mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
+        mBackend.setDnsOptions(parseDnsOptions(options));
         return this;
     }
 
@@ -152,6 +154,55 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         return cmOptionsBuilder.build();
     }
 
+    @VisibleForTesting
+    public static android.net.http.DnsOptions parseDnsOptions(ExperimentalOptions options) {
+        android.net.http.DnsOptions.StaleDnsOptions.Builder staleDnsOptionBuilder =
+                new android.net.http.DnsOptions.StaleDnsOptions.Builder();
+        int staleDnsDelay = options.getStaleDnsDelayMillisOption();
+        if (staleDnsDelay != ExperimentalOptions.UNSET_INT_VALUE) {
+            staleDnsOptionBuilder.setFreshLookupTimeout(Duration.ofMillis(staleDnsDelay));
+        }
+
+        int expiredDelay = options.getStaleDnsMaxExpiredTimeMillisOption();
+        if (expiredDelay != ExperimentalOptions.UNSET_INT_VALUE) {
+            staleDnsOptionBuilder.setMaxExpiredDelay(Duration.ofMillis(expiredDelay));
+        }
+
+        staleDnsOptionBuilder
+                .setAllowCrossNetworkUsage(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsAllowOtherNetworkOption()))
+                .setUseStaleOnNameNotResolved(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsUseStaleOnNameNotResolvedOption()));
+
+        android.net.http.DnsOptions.Builder dnsOptionsBuilder =
+                new android.net.http.DnsOptions.Builder();
+        dnsOptionsBuilder
+                .setUseHttpStackDnsResolver(
+                        optionalBooleanToMigrationOptionState(options.getAsyncDnsEnableOption()))
+                .setStaleDns(
+                        optionalBooleanToMigrationOptionState(options.getStaleDnsEnableOption()))
+                .setStaleDnsOptions(staleDnsOptionBuilder.build())
+                .setPreestablishConnectionsToStaleDnsResults(
+                        optionalBooleanToMigrationOptionState(
+                                options.getRaceStaleDnsOnConnection()))
+                .setPersistHostCache(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsPersistToDiskOption()));
+        int persistHostCachePeriod = options.getStaleDnsPersistDelayMillisOption();
+        if (persistHostCachePeriod != ExperimentalOptions.UNSET_INT_VALUE) {
+            dnsOptionsBuilder.setPersistHostCachePeriod(Duration.ofMillis(persistHostCachePeriod));
+        }
+
+        return dnsOptionsBuilder.build();
+    }
+
+    /**
+     * HttpEngine XOptions exposes X_OPTION_* IntDefs that map to the same integer values. To
+     * simplify the code, we are reusing ConnectionMigrationOptions.MIGRATION_OPTION_* for
+     * DnsOptions and QuicOptions.
+     */
     private static int optionalBooleanToMigrationOptionState(OptionalBoolean value) {
         switch (value) {
             case TRUE:

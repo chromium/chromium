@@ -9,6 +9,7 @@ import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.assertJsonEquals;
 import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseConnectionMigrationOptions;
+import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseDnsOptions;
 
 import android.content.Context;
 import android.net.http.HttpEngine;
@@ -27,6 +28,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalOptionsTranslationTestUtil.MockCronetBuilderImpl;
 import org.chromium.net.telemetry.ExperimentalOptions;
+
+import java.time.Duration;
 
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
@@ -174,6 +177,83 @@ public class AndroidHttpEngineBuilderWrapperTest {
     }
 
     // ------------ End migrate_sessions_early_v2 specific tests -------------------
+
+    @Test
+    @SmallTest
+    public void testParseDnsOptions_allSet_returnsCorrectValues() {
+        long delay_ms = 373740587;
+        long persist_delay_ms = 737740529;
+        long max_expired_time_ms = 629397243;
+        ExperimentalOptions options =
+                new ExperimentalOptions(
+                        "{  \"AsyncDNS\": { \"enable\": true },  \"StaleDNS\": {    \"enable\":"
+                                + " true,  \"persist_to_disk\": false,    \"persist_delay_ms\": "
+                                + persist_delay_ms
+                                + ",\"allow_other_network\": true,    \"delay_ms\": "
+                                + delay_ms
+                                + ",\"use_stale_on_name_not_resolved\": true,"
+                                + " \"max_expired_time_ms\":"
+                                + max_expired_time_ms
+                                + "  },  \"QUIC\": {    \"race_stale_dns_on_connection\": true }}");
+
+        android.net.http.DnsOptions dnsOptions = parseDnsOptions(options);
+        // AsyncDNS
+        assertThat(dnsOptions.getUseHttpStackDnsResolver())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_ENABLED);
+        // persist_to_disk
+        assertThat(dnsOptions.getPersistHostCache())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_DISABLED);
+        assertThat(dnsOptions.getPersistHostCachePeriod())
+                .isEqualTo(Duration.ofMillis(persist_delay_ms));
+        assertThat(dnsOptions.getStaleDns())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_ENABLED);
+        // race_stale_dns_on_connection
+        assertThat(dnsOptions.getPreestablishConnectionsToStaleDnsResults())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_ENABLED);
+
+        android.net.http.DnsOptions.StaleDnsOptions staleDnsOptions =
+                dnsOptions.getStaleDnsOptions();
+        assertThat(staleDnsOptions.getFreshLookupTimeout()).isEqualTo(Duration.ofMillis(delay_ms));
+        assertThat(staleDnsOptions.getMaxExpiredDelay())
+                .isEqualTo(Duration.ofMillis(max_expired_time_ms));
+        // allow_other_network
+        assertThat(staleDnsOptions.getAllowCrossNetworkUsage())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_ENABLED);
+        assertThat(staleDnsOptions.getUseStaleOnNameNotResolved())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_ENABLED);
+    }
+
+    @Test
+    @SmallTest
+    public void testParseDnsOptions_noneSet_returnsCorrectValues() {
+        ExperimentalOptions options =
+                new ExperimentalOptions(
+                        "{  \"AsyncDNS\": { },  \"StaleDNS\": { },  \"QUIC\": { }}");
+
+        android.net.http.DnsOptions dnsOptions = parseDnsOptions(options);
+        // AsyncDNS
+        assertThat(dnsOptions.getUseHttpStackDnsResolver())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+        // persist_to_disk
+        assertThat(dnsOptions.getPersistHostCache())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+        assertThat(dnsOptions.getPersistHostCachePeriod()).isNull();
+        assertThat(dnsOptions.getStaleDns())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+        // race_stale_dns_on_connection
+        assertThat(dnsOptions.getPreestablishConnectionsToStaleDnsResults())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+
+        android.net.http.DnsOptions.StaleDnsOptions staleDnsOptions =
+                dnsOptions.getStaleDnsOptions();
+        assertThat(staleDnsOptions.getFreshLookupTimeout()).isNull();
+        assertThat(staleDnsOptions.getMaxExpiredDelay()).isNull();
+        // allow_other_network
+        assertThat(staleDnsOptions.getAllowCrossNetworkUsage())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+        assertThat(staleDnsOptions.getUseStaleOnNameNotResolved())
+                .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+    }
 
     /**
      * JUnit uses reflection to fetch the TestClass's annotation and parameter types. Hence fails

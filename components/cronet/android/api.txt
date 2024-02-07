@@ -177,7 +177,7 @@ public final class org.chromium.net.DnsOptions$StaleDnsOptions$Builder {
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeoutMillis(long);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeout(java.time.Duration);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(long);
-  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(java.time.Duration);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelay(java.time.Duration);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder allowCrossNetworkUsage(boolean);
   public org.chromium.net.DnsOptions$StaleDnsOptions$Builder useStaleOnNameNotResolved(boolean);
   public org.chromium.net.DnsOptions$StaleDnsOptions build();
@@ -632,4 +632,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: fb82aaef920d5db0ac22a2df3ddd26b4
+Stamp: 223c6ca6e88c91ae2e6328a018805d64

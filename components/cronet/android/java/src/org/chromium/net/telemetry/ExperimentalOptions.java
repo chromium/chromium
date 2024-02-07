@@ -114,6 +114,11 @@ public final class ExperimentalOptions {
                 getOrDefault(QUIC, "allow_port_migration", null, Boolean.class));
     }
 
+    public OptionalBoolean getRaceStaleDnsOnConnection() {
+        return OptionalBoolean.fromBoolean(
+                getOrDefault(QUIC, "race_stale_dns_on_connection", null, Boolean.class));
+    }
+
     public OptionalBoolean getAsyncDnsEnableOption() {
         return OptionalBoolean.fromBoolean(getOrDefault(ASYNC_DNS, "enable", null, Boolean.class));
     }
