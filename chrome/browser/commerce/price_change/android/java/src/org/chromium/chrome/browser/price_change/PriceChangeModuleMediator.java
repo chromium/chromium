@@ -106,6 +106,14 @@ public class PriceChangeModuleMediator {
                         return;
                     }
                     Tab tab = res.get(0).getTab();
+                    // Check if tab is in the current tab model for multi-window case.
+                    if (tab == null
+                            || TabModelUtils.getTabById(
+                                            mTabModelSelector.getModel(false), tab.getId())
+                                    == null) {
+                        mModuleDelegate.onDataFetchFailed(mModuleType);
+                        return;
+                    }
                     ShoppingPersistedTabData data = res.get(0).getData();
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_TITLE,

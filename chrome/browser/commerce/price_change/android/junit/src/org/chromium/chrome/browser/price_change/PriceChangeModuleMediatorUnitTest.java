@@ -119,11 +119,13 @@ public class PriceChangeModuleMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mTab = new MockTab(123, mProfile);
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
+        doReturn(1).when(mTabModel).getCount();
+        doReturn(mTab).when(mTabModel).getTabAt(0);
         ShoppingPersistedTabDataService.setServiceForTesting(mService);
 
         mContext = RuntimeEnvironment.application;
-        mTab = new MockTab(123, mProfile);
         mModel = new PropertyModel(PriceChangeModuleProperties.ALL_KEYS);
         mMediator =
                 new PriceChangeModuleMediator(
@@ -301,6 +303,42 @@ public class PriceChangeModuleMediatorUnitTest {
 
         mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, false);
         verify(mModuleDelegate, never()).removeModule(mMediator.getModuleType());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowModule_NullTab() {
+        doReturn(true).when(mService).isInitialized();
+
+        mMediator.showModule();
+
+        ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);
+        PriceChangeItem item = new PriceChangeItem(null, data);
+        ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
+        dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
+        verify(mService, times(0)).initialize(any(Set.class));
+        verify(mModuleDelegate).onDataFetchFailed(eq(ModuleType.PRICE_CHANGE));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowModule_TabFromOtherModel() {
+        doReturn(true).when(mService).isInitialized();
+
+        mMediator.showModule();
+
+        ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);
+        PriceChangeItem item = new PriceChangeItem(mTab, data);
+        // Mock that tab is not in the current tab model.
+        doReturn(0).when(mTabModel).getCount();
+        ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
+        dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
+        verify(mService, times(0)).initialize(any(Set.class));
+        verify(mModuleDelegate).onDataFetchFailed(eq(ModuleType.PRICE_CHANGE));
     }
 
     public void showModuleWithInitializedService() {
