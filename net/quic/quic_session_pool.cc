@@ -67,6 +67,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -167,6 +168,7 @@ int QuicSessionRequest::Request(
     url::SchemeHostPort destination,
     quic::ParsedQuicVersion quic_version,
     const ProxyChain& proxy_chain,
+    const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
     SessionUsage session_usage,
     PrivacyMode privacy_mode,
     RequestPriority priority,
@@ -197,8 +199,9 @@ int QuicSessionRequest::Request(
   bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
 
   int rv = pool_->RequestSession(session_key_, std::move(destination),
-                                 quic_version, priority, use_dns_aliases,
-                                 cert_verify_flags, url, net_log, this);
+                                 quic_version, std::move(proxy_annotation_tag),
+                                 priority, use_dns_aliases, cert_verify_flags,
+                                 url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -497,15 +500,17 @@ bool QuicSessionPool::CanUseExistingSession(
   return false;
 }
 
-int QuicSessionPool::RequestSession(const QuicSessionKey& session_key,
-                                    url::SchemeHostPort destination,
-                                    quic::ParsedQuicVersion quic_version,
-                                    RequestPriority priority,
-                                    bool use_dns_aliases,
-                                    int cert_verify_flags,
-                                    const GURL& url,
-                                    const NetLogWithSource& net_log,
-                                    QuicSessionRequest* request) {
+int QuicSessionPool::RequestSession(
+    const QuicSessionKey& session_key,
+    url::SchemeHostPort destination,
+    quic::ParsedQuicVersion quic_version,
+    const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    RequestPriority priority,
+    bool use_dns_aliases,
+    int cert_verify_flags,
+    const GURL& url,
+    const NetLogWithSource& net_log,
+    QuicSessionRequest* request) {
   if (clock_skew_detector_.ClockSkewDetected(base::TimeTicks::Now(),
                                              base::Time::Now())) {
     MarkAllActiveSessionsGoingAway(kClockSkewDetected);
@@ -556,6 +561,11 @@ int QuicSessionPool::RequestSession(const QuicSessionKey& session_key,
 
   if (!tick_clock_) {
     tick_clock_ = base::DefaultTickClock::GetInstance();
+  }
+
+  // If a proxy is in use, then a traffic annotation is required.
+  if (!session_key.proxy_chain().is_direct()) {
+    DCHECK(proxy_annotation_tag);
   }
 
   QuicSessionAliasKey key(destination, session_key);

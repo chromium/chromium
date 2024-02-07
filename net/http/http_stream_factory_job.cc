@@ -911,12 +911,18 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   // supported, but when it is we can remove this CHECK.
   CHECK(proxy_info_.proxy_chain().is_direct());
 
+  absl::optional<NetworkTrafficAnnotationTag> traffic_annotation =
+      proxy_info_.traffic_annotation().is_valid()
+          ? absl::make_optional<NetworkTrafficAnnotationTag>(
+                proxy_info_.traffic_annotation())
+          : absl::nullopt;
   int rv = quic_request_.Request(
       destination_, quic_version_, proxy_info_.proxy_chain(),
-      SessionUsage::kDestination, request_info_.privacy_mode, priority_,
-      request_info_.socket_tag, request_info_.network_anonymization_key,
-      request_info_.secure_dns_policy, require_dns_https_alpn,
-      server_cert_verifier_flags, url, net_log_, &net_error_details_,
+      std::move(traffic_annotation), SessionUsage::kDestination,
+      request_info_.privacy_mode, priority_, request_info_.socket_tag,
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
+      require_dns_https_alpn, server_cert_verifier_flags, url, net_log_,
+      &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

@@ -79,6 +79,7 @@ struct HostResolverEndpointResult;
 class HttpServerProperties;
 class NetLog;
 class NetworkAnonymizationKey;
+struct NetworkTrafficAnnotationTag;
 class QuicChromiumConnectionHelper;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
@@ -146,22 +147,24 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // HostPortPair::FromURL(url).
   // When `session_usage` is `kDestination`, any DNS aliases found in host
   // resolution are stored in the `dns_aliases_by_session_key_` map.
-  int Request(url::SchemeHostPort destination,
-              quic::ParsedQuicVersion quic_version,
-              const ProxyChain& proxy_chain,
-              SessionUsage session_usage,
-              PrivacyMode privacy_mode,
-              RequestPriority priority,
-              const SocketTag& socket_tag,
-              const NetworkAnonymizationKey& network_anonymization_key,
-              SecureDnsPolicy secure_dns_policy,
-              bool require_dns_https_alpn,
-              int cert_verify_flags,
-              const GURL& url,
-              const NetLogWithSource& net_log,
-              NetErrorDetails* net_error_details,
-              CompletionOnceCallback failed_on_default_network_callback,
-              CompletionOnceCallback callback);
+  int Request(
+      url::SchemeHostPort destination,
+      quic::ParsedQuicVersion quic_version,
+      const ProxyChain& proxy_chain,
+      const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+      SessionUsage session_usage,
+      PrivacyMode privacy_mode,
+      RequestPriority priority,
+      const SocketTag& socket_tag,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      SecureDnsPolicy secure_dns_policy,
+      bool require_dns_https_alpn,
+      int cert_verify_flags,
+      const GURL& url,
+      const NetLogWithSource& net_log,
+      NetErrorDetails* net_error_details,
+      CompletionOnceCallback failed_on_default_network_callback,
+      CompletionOnceCallback callback);
 
   // This function must be called after Request() returns ERR_IO_PENDING.
   // Returns true if Request() requires host resolution and it hasn't completed
@@ -334,15 +337,19 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // When |use_dns_aliases| is true, any DNS aliases found in host resolution
   // are stored in the |dns_aliases_by_session_key_| map. |use_dns_aliases|
   // should be false in the case of a proxy.
-  int RequestSession(const QuicSessionKey& session_key,
-                     url::SchemeHostPort destination,
-                     quic::ParsedQuicVersion quic_version,
-                     RequestPriority priority,
-                     bool use_dns_aliases,
-                     int cert_verify_flags,
-                     const GURL& url,
-                     const NetLogWithSource& net_log,
-                     QuicSessionRequest* request);
+  // When the `proxy_chain` in the session key is not direct,
+  // `proxy_annotation_tag` must be set.
+  int RequestSession(
+      const QuicSessionKey& session_key,
+      url::SchemeHostPort destination,
+      quic::ParsedQuicVersion quic_version,
+      const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+      RequestPriority priority,
+      bool use_dns_aliases,
+      int cert_verify_flags,
+      const GURL& url,
+      const NetLogWithSource& net_log,
+      QuicSessionRequest* request);
 
   // Called by a session when it is going away and no more streams should be
   // created on it.
