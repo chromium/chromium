@@ -261,6 +261,11 @@ class GPU_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
       const SyncToken& sync_token,
       const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage) = 0;
 
   struct GPU_EXPORT SwapChainSharedImages {
@@ -360,6 +365,11 @@ class GPU_EXPORT SharedImageInterface
   // DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;

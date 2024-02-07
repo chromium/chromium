@@ -77,16 +77,21 @@ void ClientSharedImage::ScopedMapping::OnMemoryDump(
 
 ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
+    const Metadata& metadata,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder)
-    : mailbox_(mailbox), sii_holder_(std::move(sii_holder)) {
+    : mailbox_(mailbox),
+      metadata_(metadata),
+      sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
 }
 
 ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
+    const Metadata& metadata,
     GpuMemoryBufferHandleInfo handle_info,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder)
     : mailbox_(mailbox),
+      metadata_(metadata),
       gpu_memory_buffer_(
           GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
               std::move(handle_info.handle),

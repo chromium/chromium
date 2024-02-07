@@ -39,7 +39,11 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   NOTREACHED();
-  return nullptr;
+  return base::MakeRefCounted<ClientSharedImage>(
+      Mailbox(),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
+      holder_);
 }
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
@@ -48,6 +52,11 @@ uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
     const Mailbox& /*mailbox*/,
+    viz::SharedImageFormat /*format*/,
+    const gfx::Size& /*size*/,
+    const gfx::ColorSpace& /*color_space*/,
+    GrSurfaceOrigin /*surface_origin*/,
+    SkAlphaType /*alpha_type*/,
     uint32_t /*usage*/) {
   return nullptr;
 }

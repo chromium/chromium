@@ -124,6 +124,11 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   scoped_refptr<gpu::ClientSharedImage> AddReferenceToSharedImage(
       const gpu::SyncToken& sync_token,
       const gpu::Mailbox& mailbox,
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage) override;
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,

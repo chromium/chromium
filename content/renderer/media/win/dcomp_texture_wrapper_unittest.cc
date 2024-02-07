@@ -41,7 +41,10 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(), holder_);
+        gpu::Mailbox::GenerateForSharedImage(),
+        gpu::ClientSharedImage::Metadata(format, size, color_space,
+                                         surface_origin, alpha_type, usage),
+        holder_);
   }
 
  protected:

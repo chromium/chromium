@@ -98,9 +98,22 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!sii) {
     return nullptr;
   }
+  // TODO(crbug.com/1494911): Obtain metadata from the original
+  // ClientSharedImage instead once we add the code that allows
+  // ClientSharedImage data to be sent over Mojo.
+  gfx::ColorSpace color_space =
+      sk_image_info.colorSpace()
+          ? gfx::ColorSpace(*(sk_image_info.colorSpace()))
+          : gfx::ColorSpace::CreateSRGB();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->AddReferenceToSharedImage(mailbox_holder.sync_token,
-                                     mailbox_holder.mailbox, usage);
+      sii->AddReferenceToSharedImage(
+          mailbox_holder.sync_token, mailbox_holder.mailbox,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(
+              sk_image_info.colorType()),
+          gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
+          (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
+                               : kBottomLeft_GrSurfaceOrigin,
+          sk_image_info.alphaType(), usage);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.

@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
@@ -70,10 +71,21 @@ class GPU_EXPORT ClientSharedImage
     raw_ptr<gfx::GpuMemoryBuffer> buffer_;
   };
 
+  struct Metadata {
+    viz::SharedImageFormat format;
+    gfx::Size size;
+    gfx::ColorSpace color_space;
+    GrSurfaceOrigin surface_origin;
+    SkAlphaType alpha_type;
+    uint32_t usage;
+  };
+
   explicit ClientSharedImage(
       const Mailbox& mailbox,
+      const Metadata& metadata,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder);
   ClientSharedImage(const Mailbox& mailbox,
+                    const Metadata& metadata,
                     GpuMemoryBufferHandleInfo handle_info,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
@@ -106,15 +118,16 @@ class GPU_EXPORT ClientSharedImage
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
     return base::MakeRefCounted<ClientSharedImage>(
-        Mailbox::GenerateForSharedImage(), nullptr);
+        Mailbox::GenerateForSharedImage(), Metadata(), nullptr);
   }
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,
+      const Metadata& metadata,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
     auto client_si =
-        base::MakeRefCounted<ClientSharedImage>(mailbox, sii_holder);
+        base::MakeRefCounted<ClientSharedImage>(mailbox, metadata, sii_holder);
     client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
     return client_si;
   }
@@ -124,6 +137,7 @@ class GPU_EXPORT ClientSharedImage
   ~ClientSharedImage();
 
   const Mailbox mailbox_;
+  const Metadata metadata_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 };
