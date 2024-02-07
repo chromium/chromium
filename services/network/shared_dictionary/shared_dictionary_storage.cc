@@ -177,6 +177,12 @@ bool SharedDictionaryStorage::NeedToUseUrlPatternMatcher() {
          features::CompressionDictionaryTransportBackendVersion::kV1;
 }
 
+// static
+bool SharedDictionaryStorage::NeedToRemoveMatchDestAndId() {
+  return features::kCompressionDictionaryTransportBackendVersion.Get() ==
+         features::CompressionDictionaryTransportBackendVersion::kV1;
+}
+
 SharedDictionaryStorage::SharedDictionaryStorage() = default;
 
 SharedDictionaryStorage::~SharedDictionaryStorage() = default;

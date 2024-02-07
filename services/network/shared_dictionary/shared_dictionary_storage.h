@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // Returns true when V2 backend is used.
   // TODO(crbug.com/1413922): Remove this when we remove V1 backend support.
   static bool NeedToUseUrlPatternMatcher();
+  // Returns true when V1 backend is used.
+  static bool NeedToRemoveMatchDestAndId();
 
   SharedDictionaryStorage();
   virtual ~SharedDictionaryStorage();

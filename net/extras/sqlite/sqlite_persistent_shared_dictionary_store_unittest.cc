@@ -22,6 +22,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,10 +37,101 @@ namespace net {
 
 namespace {
 
-const int kCurrentVersionNumber = 1;
-
 const base::FilePath::CharType kSharedDictionaryStoreFilename[] =
     FILE_PATH_LITERAL("SharedDictionary");
+
+const int kCurrentVersionNumber = 2;
+
+int GetDBCurrentVersionNumber(sql::Database* db) {
+  static constexpr char kGetDBCurrentVersionQuery[] =
+      "SELECT value FROM meta WHERE key='version'";
+  sql::Statement statement(db->GetUniqueStatement(kGetDBCurrentVersionQuery));
+  statement.Step();
+  return statement.ColumnInt(0);
+}
+
+bool CreateV1Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  CHECK(meta_table.Init(db, 1, 1));
+  constexpr char kTotalDictSizeKey[] = "total_dict_size";
+  static constexpr char kCreateTableQuery[] =
+      // clang-format off
+      "CREATE TABLE dictionaries("
+          "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+          "frame_origin TEXT NOT NULL,"
+          "top_frame_site TEXT NOT NULL,"
+          "host TEXT NOT NULL,"
+          "match TEXT NOT NULL,"
+          "url TEXT NOT NULL,"
+          "res_time INTEGER NOT NULL,"
+          "exp_time INTEGER NOT NULL,"
+          "last_used_time INTEGER NOT NULL,"
+          "size INTEGER NOT NULL,"
+          "sha256 BLOB NOT NULL,"
+          "token_high INTEGER NOT NULL,"
+          "token_low INTEGER NOT NULL)";
+  // clang-format on
+
+  static constexpr char kCreateUniqueIndexQuery[] =
+      // clang-format off
+      "CREATE UNIQUE INDEX unique_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site,"
+          "host,"
+          "match)";
+  // clang-format on
+
+  // This index is used for the size and count limitation per top_frame_site.
+  static constexpr char kCreateTopFrameSiteIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX top_frame_site_index ON dictionaries("
+          "top_frame_site)";
+  // clang-format on
+
+  // This index is used for GetDictionaries().
+  static constexpr char kCreateIsolationIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX isolation_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site)";
+  // clang-format on
+
+  // This index will be used when implementing garbage collection logic of
+  // SharedDictionaryDiskCache.
+  static constexpr char kCreateTokenIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX token_index ON dictionaries("
+          "token_high, token_low)";
+  // clang-format on
+
+  // This index will be used when implementing clearing expired dictionary
+  // logic.
+  static constexpr char kCreateExpirationTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX exp_time_index ON dictionaries("
+          "exp_time)";
+  // clang-format on
+
+  // This index will be used when implementing clearing dictionary logic which
+  // will be called from BrowsingDataRemover.
+  static constexpr char kCreateLastUsedTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX last_used_time_index ON dictionaries("
+          "last_used_time)";
+  // clang-format on
+
+  if (!db->Execute(kCreateTableQuery) ||
+      !db->Execute(kCreateUniqueIndexQuery) ||
+      !db->Execute(kCreateTopFrameSiteIndexQuery) ||
+      !db->Execute(kCreateIsolationIndexQuery) ||
+      !db->Execute(kCreateTokenIndexQuery) ||
+      !db->Execute(kCreateExpirationTimeIndexQuery) ||
+      !db->Execute(kCreateLastUsedTimeIndexQuery) ||
+      !meta_table.SetValue(kTotalDictSizeKey, 0)) {
+    return false;
+  }
+  return true;
+}
 
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
 RegisterDictionaryImpl(SQLitePersistentSharedDictionaryStore* store,
@@ -167,7 +259,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
             /*expiration*/ base::Seconds(100),
             "/pattern*",
             /*match_dest_string=*/"",
-            /*id=*/"",
+            /*id=*/"dictionary_id",
             /*last_used_time*/ base::Time::Now(),
             /*size=*/1000,
             SHA256HashValue({{0x00, 0x01}}),
@@ -670,13 +762,13 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
-       MultipleDictionariesDifferentHostAndPathPattern) {
+       MultipleDictionariesDifferentHostDifferentMatch) {
   RunMultipleDictionariesTest(
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin1.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
-          /*expiration*/ base::Seconds(100), "/pattern1*",
+          /*expiration*/ base::Seconds(100), /*match=*/"/pattern1*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
@@ -686,7 +778,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SharedDictionaryInfo(
           GURL("https://origin2.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
-          /*expiration*/ base::Seconds(200), "/pattern2*",
+          /*expiration*/ base::Seconds(200), /*match=*/"/pattern2*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
@@ -696,13 +788,13 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
-       SameIsolationKeySameHostDifferentPathPattern) {
+       SameIsolationKeySameHostDifferentMatchSameMatchDest) {
   RunMultipleDictionariesTest(
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
-          /*expiration*/ base::Seconds(100), "/pattern1*",
+          /*expiration*/ base::Seconds(100), /*match=*/"/pattern1*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
@@ -712,7 +804,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
-          /*expiration*/ base::Seconds(200), "/pattern2*",
+          /*expiration*/ base::Seconds(200), /*match=*/"/pattern2*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
@@ -722,13 +814,13 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
-       SameIsolationKeySameHostSamePathPattern) {
+       SameIsolationKeySameHostSameMatchSameMatchDest) {
   RunMultipleDictionariesTest(
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(10),
-          /*expiration*/ base::Seconds(100), "/pattern*",
+          /*expiration*/ base::Seconds(100), /*match=*/"/pattern*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
@@ -738,13 +830,39 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
           /*response_time=*/base::Time::Now() - base::Seconds(20),
-          /*expiration*/ base::Seconds(200), "/pattern*",
+          /*expiration*/ base::Seconds(200), /*match=*/"/pattern*",
           /*match_dest_string=*/"", /*id=*/"",
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
           /*primary_key_in_database=*/absl::nullopt),
       /*expect_merged=*/true);
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       SameIsolationKeySameHostSameMatchDifferentMatchDest) {
+  RunMultipleDictionariesTest(
+      isolation_key_,
+      SharedDictionaryInfo(
+          GURL("https://origin.test/dict"),
+          /*response_time=*/base::Time::Now() - base::Seconds(10),
+          /*expiration*/ base::Seconds(100), /*match=*/"/pattern*",
+          /*match_dest_string=*/"document", /*id=*/"",
+          /*last_used_time*/ base::Time::Now(),
+          /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
+          /*disk_cache_key_token=*/base::UnguessableToken::Create(),
+          /*primary_key_in_database=*/absl::nullopt),
+      isolation_key_,
+      SharedDictionaryInfo(
+          GURL("https://origin.test/dict"),
+          /*response_time=*/base::Time::Now() - base::Seconds(20),
+          /*expiration*/ base::Seconds(200), /*match=*/"/pattern*",
+          /*match_dest_string=*/"script", /*id=*/"",
+          /*last_used_time*/ base::Time::Now(),
+          /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
+          /*disk_cache_key_token=*/base::UnguessableToken::Create(),
+          /*primary_key_in_database=*/absl::nullopt),
+      /*expect_merged=*/false);
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::
@@ -2735,6 +2853,23 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   std::vector<SharedDictionaryInfo> dicts3 = GetDictionaries(isolation_key_);
   ASSERT_EQ(1u, dicts3.size());
   EXPECT_EQ(updated_last_used_time, dicts3[0].last_used_time());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV2) {
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    CreateV1Schema(&db);
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 1);
+  }
+  CreateStore();
+  EXPECT_EQ(GetTotalDictionarySize(), 0u);
+  DestroyStore();
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 2);
+  }
 }
 
 }  // namespace net

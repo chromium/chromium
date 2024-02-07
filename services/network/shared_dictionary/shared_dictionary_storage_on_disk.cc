@@ -279,6 +279,7 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
   }
 
   const bool need_matcher = NeedToUseUrlPatternMatcher();
+  const bool need_to_remove_dest_and_id = NeedToRemoveMatchDestAndId();
   for (auto& info : result.value()) {
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
@@ -291,6 +292,13 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
         continue;
       }
       matcher = std::move(matcher_create_result.value());
+    }
+    if (need_to_remove_dest_and_id) {
+      info = net::SharedDictionaryInfo(
+          info.url(), info.response_time(), info.expiration(), info.match(),
+          /*match_dest_string=*/"", /*id=*/"", info.last_used_time(),
+          info.size(), info.hash(), info.disk_cache_key_token(),
+          info.primary_key_in_database());
     }
     WrappedDictionaryInfo wrapped_info(std::move(info), std::move(matcher));
     auto key = std::make_tuple(match, wrapped_info.match_dest());
