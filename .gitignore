@@ -283,6 +283,7 @@ vs-chromium-project.txt
 /tools/tryserver
 /tools/win/link_limiter/build
 /ui/file_manager/tsconfig.json
+/ui/file_manager/integration_tests/tsconfig.json
 /ui/keyboard/keyboard_mojom_bindings.xml
 /ui/gl/resources/angle-metal
 /ui/surface/surface.xml
