@@ -79,16 +79,16 @@ InterpolableColor* InterpolableColor::Create(ColorKeyword color_keyword) {
   // the proper fraction of the keyword color is added in.
   switch (color_keyword) {
     case ColorKeyword::kCurrentcolor:
-      result->current_color_ = InlinedInterpolableNumber(1);
+      result->current_color_ = InlinedInterpolableDouble(1);
       break;
     case ColorKeyword::kWebkitActivelink:
-      result->webkit_active_link_ = InlinedInterpolableNumber(1);
+      result->webkit_active_link_ = InlinedInterpolableDouble(1);
       break;
     case ColorKeyword::kWebkitLink:
-      result->webkit_link_ = InlinedInterpolableNumber(1);
+      result->webkit_link_ = InlinedInterpolableDouble(1);
       break;
     case ColorKeyword::kQuirkInherit:
-      result->quirk_inherit_ = InlinedInterpolableNumber(1);
+      result->quirk_inherit_ = InlinedInterpolableDouble(1);
       break;
   }
   // Keyword colors are functionally legacy colors for interpolation.
@@ -120,14 +120,14 @@ InterpolableColor* InterpolableColor::Create(CSSValueID keyword) {
 }
 
 InterpolableColor::InterpolableColor(
-    InlinedInterpolableNumber param0,
-    InlinedInterpolableNumber param1,
-    InlinedInterpolableNumber param2,
-    InlinedInterpolableNumber alpha,
-    InlinedInterpolableNumber current_color,
-    InlinedInterpolableNumber webkit_active_link,
-    InlinedInterpolableNumber webkit_link,
-    InlinedInterpolableNumber quirk_inherit,
+    InlinedInterpolableDouble param0,
+    InlinedInterpolableDouble param1,
+    InlinedInterpolableDouble param2,
+    InlinedInterpolableDouble alpha,
+    InlinedInterpolableDouble current_color,
+    InlinedInterpolableDouble webkit_active_link,
+    InlinedInterpolableDouble webkit_link,
+    InlinedInterpolableDouble quirk_inherit,
     Color::ColorSpace color_space)
     : param0_(std::move(param0)),
       param1_(std::move(param1)),
@@ -147,10 +147,10 @@ InterpolableColor* InterpolableColor::RawClone() const {
 
 InterpolableColor* InterpolableColor::RawCloneAndZero() const {
   return MakeGarbageCollected<InterpolableColor>(
-      InlinedInterpolableNumber(0), InlinedInterpolableNumber(0),
-      InlinedInterpolableNumber(0), InlinedInterpolableNumber(0),
-      InlinedInterpolableNumber(0), InlinedInterpolableNumber(0),
-      InlinedInterpolableNumber(0), InlinedInterpolableNumber(0), color_space_);
+      InlinedInterpolableDouble(0), InlinedInterpolableDouble(0),
+      InlinedInterpolableDouble(0), InlinedInterpolableDouble(0),
+      InlinedInterpolableDouble(0), InlinedInterpolableDouble(0),
+      InlinedInterpolableDouble(0), InlinedInterpolableDouble(0), color_space_);
 }
 
 Color InterpolableColor::GetColor() const {

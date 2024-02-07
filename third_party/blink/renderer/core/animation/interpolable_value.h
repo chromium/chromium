@@ -35,6 +35,7 @@ class CORE_EXPORT InterpolableValue
                            const double progress,
                            InterpolableValue& result) const = 0;
 
+  virtual bool IsDouble() const { return false; }
   virtual bool IsNumber() const { return false; }
   virtual bool IsBool() const { return false; }
   virtual bool IsColor() const { return false; }
@@ -83,12 +84,12 @@ class CORE_EXPORT InterpolableValue
   virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
-class CORE_EXPORT InlinedInterpolableNumber final {
+class CORE_EXPORT InlinedInterpolableDouble final {
   DISALLOW_NEW();
 
  public:
-  InlinedInterpolableNumber() = default;
-  explicit InlinedInterpolableNumber(double d) : value_(d) {}
+  InlinedInterpolableDouble() = default;
+  explicit InlinedInterpolableDouble(double d) : value_(d) {}
 
   double Value() const { return value_; }
   void Set(double value) { value_ = value; }
@@ -105,6 +106,46 @@ class CORE_EXPORT InlinedInterpolableNumber final {
 
  private:
   double value_ = 0.;
+};
+
+class CORE_EXPORT InterpolableDouble final : public InterpolableValue {
+ public:
+  InterpolableDouble() = default;
+  explicit InterpolableDouble(double value) : value_(value) {
+    static_assert(std::is_trivially_destructible_v<InterpolableDouble>,
+                  "Require trivial destruction for faster sweeping");
+  }
+
+  double Value() const { return value_.Value(); }
+  void Set(double value) { value_.Set(value); }
+
+  // InterpolableValue
+  void Interpolate(const InterpolableValue& to,
+                   const double progress,
+                   InterpolableValue& result) const final;
+  bool IsDouble() const final { return true; }
+  bool Equals(const InterpolableValue& other) const final;
+  void Scale(double scale) final;
+  void Add(const InterpolableValue& other) final;
+  void AssertCanInterpolateWith(const InterpolableValue& other) const final;
+
+  InterpolableDouble* Clone() const { return RawClone(); }
+  InterpolableDouble* CloneAndZero() const { return RawCloneAndZero(); }
+
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(value_);
+  }
+
+ private:
+  InterpolableDouble* RawClone() const final {
+    return MakeGarbageCollected<InterpolableDouble>(value_.Value());
+  }
+  InterpolableDouble* RawCloneAndZero() const final {
+    return MakeGarbageCollected<InterpolableDouble>(0);
+  }
+
+  InlinedInterpolableDouble value_;
 };
 
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
@@ -138,7 +179,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
 
  private:
   InterpolableNumber* RawClone() const final {
-    if (IsDouble()) {
+    if (IsDoubleValue()) {
       return MakeGarbageCollected<InterpolableNumber>(value_.Value());
     }
     return MakeGarbageCollected<InterpolableNumber>(*expression_);
@@ -147,7 +188,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
     return MakeGarbageCollected<InterpolableNumber>(0);
   }
 
-  bool IsDouble() const { return type_ == Type::kDouble; }
+  bool IsDoubleValue() const { return type_ == Type::kDouble; }
   bool IsExpression() const { return type_ == Type::kExpression; }
 
   void SetDouble(double value);
@@ -156,7 +197,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
 
   enum class Type { kDouble, kExpression };
   Type type_;
-  InlinedInterpolableNumber value_;
+  InlinedInterpolableDouble value_;
   Member<const CSSMathExpressionNode> expression_;
 };
 
@@ -220,6 +261,13 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   InterpolableList* RawCloneAndZero() const final;
 
   HeapVector<Member<InterpolableValue>> values_;
+};
+
+template <>
+struct DowncastTraits<InterpolableDouble> {
+  static bool AllowFrom(const InterpolableValue& value) {
+    return value.IsDouble();
+  }
 };
 
 template <>

@@ -24,6 +24,31 @@ CSSMathExpressionNode* NumberNode(double number) {
 
 }  // namespace
 
+bool InterpolableDouble::Equals(const InterpolableValue& other) const {
+  return value_.Value() == To<InterpolableDouble>(other).value_.Value();
+}
+
+void InterpolableDouble::Interpolate(const InterpolableValue& to,
+                                     const double progress,
+                                     InterpolableValue& result) const {
+  const auto& to_number = To<InterpolableDouble>(to);
+  auto& result_number = To<InterpolableDouble>(result);
+  result_number.Set(value_.Interpolate(to_number.Value(), progress));
+}
+
+void InterpolableDouble::Scale(double scale) {
+  value_.Scale(scale);
+}
+
+void InterpolableDouble::Add(const InterpolableValue& other) {
+  value_.Add(To<InterpolableDouble>(other).value_.Value());
+}
+
+void InterpolableDouble::AssertCanInterpolateWith(
+    const InterpolableValue& other) const {
+  DCHECK(other.IsDouble());
+}
+
 InterpolableNumber::InterpolableNumber(double value) {
   SetDouble(value);
 }
@@ -35,7 +60,7 @@ InterpolableNumber::InterpolableNumber(
 
 double InterpolableNumber::Value(
     const CSSLengthResolver& length_resolver) const {
-  if (IsDouble()) {
+  if (IsDoubleValue()) {
     return value_.Value();
   }
   return expression_->ComputeNumber(length_resolver);
@@ -60,7 +85,7 @@ const CSSMathExpressionNode& InterpolableNumber::AsExpression() const {
 }
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
-  if (IsDouble()) {
+  if (IsDoubleValue()) {
     return value_.Value() == To<InterpolableNumber>(other).value_.Value();
   }
   return expression_->CustomCSSText() ==
@@ -78,7 +103,7 @@ bool InterpolableList::Equals(const InterpolableValue& other) const {
   return true;
 }
 
-double InlinedInterpolableNumber::Interpolate(double to,
+double InlinedInterpolableDouble::Interpolate(double to,
                                               const double progress) const {
   if (progress == 0 || value_ == to) {
     return value_;
@@ -99,7 +124,7 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
                                      InterpolableValue& result) const {
   const auto& to_number = To<InterpolableNumber>(to);
   auto& result_number = To<InterpolableNumber>(result);
-  if (IsDouble()) {
+  if (IsDoubleValue()) {
     result_number.SetDouble(value_.Interpolate(to_number.Value(), progress));
     return;
   }
@@ -153,7 +178,7 @@ InterpolableList* InterpolableList::RawCloneAndZero() const {
 }
 
 void InterpolableNumber::Scale(double scale) {
-  if (IsDouble()) {
+  if (IsDoubleValue()) {
     value_.Scale(scale);
     return;
   }
@@ -168,7 +193,7 @@ void InterpolableList::Scale(double scale) {
 }
 
 void InterpolableNumber::Add(const InterpolableValue& other) {
-  if (IsDouble()) {
+  if (IsDoubleValue()) {
     value_.Add(To<InterpolableNumber>(other).value_.Value());
     return;
   }

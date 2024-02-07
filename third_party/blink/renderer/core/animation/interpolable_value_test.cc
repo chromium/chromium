@@ -43,6 +43,14 @@ class AnimationInterpolableValueTest : public testing::Test {
         .Value();
   }
 
+  double InterpolateDoubles(int a, int b, double progress) {
+    auto* start = MakeGarbageCollected<InterpolableDouble>(a);
+    auto* end = MakeGarbageCollected<InterpolableDouble>(b);
+    auto* result = MakeGarbageCollected<InterpolableDouble>(0);
+    start->Interpolate(*end, progress, *result);
+    return result->Value();
+  }
+
   void ScaleAndAdd(InterpolableValue& base,
                    double scale,
                    const InterpolableValue& add) {
@@ -66,6 +74,15 @@ TEST_F(AnimationInterpolableValueTest, InterpolateNumbers) {
   EXPECT_FLOAT_EQ(21, InterpolateNumbers(42, 0, 0.5));
   EXPECT_FLOAT_EQ(0, InterpolateNumbers(42, 0, 1));
   EXPECT_FLOAT_EQ(-21, InterpolateNumbers(42, 0, 1.5));
+}
+
+TEST_F(AnimationInterpolableValueTest, InterpolateDoubles) {
+  EXPECT_FLOAT_EQ(126, InterpolateDoubles(42, 0, -2));
+  EXPECT_FLOAT_EQ(42, InterpolateDoubles(42, 0, 0));
+  EXPECT_FLOAT_EQ(29.4f, InterpolateDoubles(42, 0, 0.3));
+  EXPECT_FLOAT_EQ(21, InterpolateDoubles(42, 0, 0.5));
+  EXPECT_FLOAT_EQ(0, InterpolateDoubles(42, 0, 1));
+  EXPECT_FLOAT_EQ(-21, InterpolateDoubles(42, 0, 1.5));
 }
 
 TEST_F(AnimationInterpolableValueTest, SimpleList) {
@@ -124,6 +141,20 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
 
   base = MakeGarbageCollected<InterpolableNumber>(10);
   ScaleAndAdd(*base, -1, *MakeGarbageCollected<InterpolableNumber>(8));
+  EXPECT_FLOAT_EQ(-2, base->Value());
+}
+
+TEST_F(AnimationInterpolableValueTest, ScaleAndAddDoubles) {
+  InterpolableDouble* base = MakeGarbageCollected<InterpolableDouble>(10);
+  ScaleAndAdd(*base, 2, *MakeGarbageCollected<InterpolableDouble>(1));
+  EXPECT_FLOAT_EQ(21, base->Value());
+
+  base = MakeGarbageCollected<InterpolableDouble>(10);
+  ScaleAndAdd(*base, 0, *MakeGarbageCollected<InterpolableDouble>(5));
+  EXPECT_FLOAT_EQ(5, base->Value());
+
+  base = MakeGarbageCollected<InterpolableDouble>(10);
+  ScaleAndAdd(*base, -1, *MakeGarbageCollected<InterpolableDouble>(8));
   EXPECT_FLOAT_EQ(-2, base->Value());
 }
 
