@@ -357,8 +357,9 @@ class DeviceTrustCreateKeyUploadFailedBrowserTest
   }
 };
 
+// TODO(crbug.com/324104311): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
-                       AttestationFullFlowSucceedOnThirdAttempt) {
+                       DISABLED_AttestationFullFlowSucceedOnThirdAttempt) {
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
