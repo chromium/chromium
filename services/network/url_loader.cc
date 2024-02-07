@@ -1579,13 +1579,6 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
                                        net::SSLCertRequestInfo* cert_info) {
   DCHECK(!client_cert_responder_receiver_.is_bound());
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kIgnoreUrlFetcherCertRequests) &&
-      factory_params_->is_trusted) {
-    ContinueWithoutCertificate();
-    return;
-  }
-
   if (!url_loader_network_observer_) {
     CancelRequest();
     return;
