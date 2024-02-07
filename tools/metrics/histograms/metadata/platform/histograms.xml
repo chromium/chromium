@@ -1809,6 +1809,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.RksAgent.CertificateFetchResult"
+    enum="CertificateFetchResult" expires_after="2024-12-31">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    The result of fetching the recoverable key store certificate files from a
+    gstatic URL. This recorded after each fetch attempt, which is scheduled
+    periodically (once per day, retries every 10 minutes if fails).
+  </summary>
+</histogram>
+
 <histogram name="Platform.SATA.AvailableReservedSpace" units="%"
     expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>

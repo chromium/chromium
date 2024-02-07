@@ -458,6 +458,29 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.RecoverableKeyStore.ProviderUpdateCertResult"
+    enum="BackendCertProviderUpdateCertResult" expires_after="2024-12-31">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    Records the result of updating the certificate in the recoverable key store
+    backend cert provider. This is recorded whenever a certificate file is
+    successfully fetched.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.RecoverableKeyStore.VerifyAndParseCertResult"
+    enum="VerifyAndParseBackendCertResult" expires_after="2024-12-31">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
+  <summary>
+    Records the result of verifying and parsing the a recoverable key store
+    backend certificate file instance. This is recorded when the cert provider
+    loads the persisted cert files from disk on each boot, and when a
+    certificate file is successfully fetched.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.RestoreSELinuxContextResultForHome"
     enum="BooleanSuccess" expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>

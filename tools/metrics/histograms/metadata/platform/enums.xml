@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<enum name="CertificateFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+</enum>
+
 <enum name="ChapsReinitializingToken">
   <int value="0" label="Failed to unseal"/>
   <int value="1" label="Bad authorization data"/>
