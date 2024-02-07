@@ -107,7 +107,7 @@ common_screens_js_files = [
   "screens/common/display_size.ts",
   "screens/common/drive_pinning.ts",
   "screens/common/enable_kiosk.ts",
-  "screens/common/error_message.js",
+  "screens/common/error_message.ts",
   "screens/common/family_link_notice.ts",
   "screens/common/gaia_info.ts",
   "screens/common/gaia_signin.ts",
