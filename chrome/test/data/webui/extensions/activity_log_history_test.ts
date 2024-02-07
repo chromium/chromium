@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for activity-log-history. */
 
-import {ActivityLogHistoryElement, ActivityLogPageState} from 'chrome://extensions/extensions.js';
+import type {ActivityLogHistoryElement} from 'chrome://extensions/extensions.js';
+import {ActivityLogPageState} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

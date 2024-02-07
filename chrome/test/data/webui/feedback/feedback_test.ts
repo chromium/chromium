@@ -4,7 +4,7 @@
 
 import 'chrome://feedback/app.js';
 
-import {FeedbackAppElement} from 'chrome://feedback/app.js';
+import type {FeedbackAppElement} from 'chrome://feedback/app.js';
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';

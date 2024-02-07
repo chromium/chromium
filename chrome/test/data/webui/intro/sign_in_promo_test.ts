@@ -5,7 +5,7 @@
 import 'chrome://intro/sign_in_promo.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
-import {SignInPromoElement} from 'chrome://intro/sign_in_promo.js';
+import type {SignInPromoElement} from 'chrome://intro/sign_in_promo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

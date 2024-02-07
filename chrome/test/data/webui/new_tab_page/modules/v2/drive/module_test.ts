@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
-import {DisableModuleEvent, DismissModuleEvent, DriveProxy, driveV2Descriptor, DriveV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {DisableModuleEvent, DismissModuleEvent, DriveV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';

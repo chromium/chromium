@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 
-import {ManagedFootnoteElement} from 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
+import type {ManagedFootnoteElement} from 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

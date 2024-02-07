@@ -4,8 +4,10 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy, RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {AutocompleteMatch, NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';

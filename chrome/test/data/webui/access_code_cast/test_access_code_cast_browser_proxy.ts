@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
-import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
+import type {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import type {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class TestAccessCodeCastBrowserProxy extends TestBrowserProxy {

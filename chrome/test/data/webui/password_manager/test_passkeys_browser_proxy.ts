@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasskeysBrowserProxy. */
 
-import {PasskeysBrowserProxy} from 'chrome://password-manager/password_manager.js';
+import type {PasskeysBrowserProxy} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPasskeysBrowserProxy extends TestBrowserProxy implements

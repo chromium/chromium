@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksPageState, createEmptyState, NodeMap, removeBookmark, Store, StoreClientMixin} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksPageState, NodeMap} from 'chrome://bookmarks/bookmarks.js';
+import {createEmptyState, removeBookmark, Store, StoreClientMixin} from 'chrome://bookmarks/bookmarks.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

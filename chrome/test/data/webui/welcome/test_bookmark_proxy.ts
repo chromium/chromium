@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {BookmarkData, BookmarkProxy} from 'chrome://welcome/shared/bookmark_proxy.js';
+import type {BookmarkData, BookmarkProxy} from 'chrome://welcome/shared/bookmark_proxy.js';
 
 export class TestBookmarkProxy extends TestBrowserProxy implements
     BookmarkProxy {

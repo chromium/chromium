@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 module.exports = {
+  // clang-format off
   'env': {'browser': true, 'es6': true},
+  'extends': '../../../../ui/webui/resources/tools/eslint_import_type.config.js',
   'rules': {
     'no-restricted-properties': [
       'error', {
@@ -23,4 +25,5 @@ module.exports = {
     ],
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
+  // clang-format on
 };

@@ -6,7 +6,7 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsPackDialogAlertElement, ExtensionsPackDialogElement, PackDialogDelegate} from 'chrome://extensions/extensions.js';
+import type {ExtensionsPackDialogAlertElement, ExtensionsPackDialogElement, PackDialogDelegate} from 'chrome://extensions/extensions.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

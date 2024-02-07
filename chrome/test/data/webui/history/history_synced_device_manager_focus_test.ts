@@ -4,7 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {ensureLazyLoaded, HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
+import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
+import {ensureLazyLoaded} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

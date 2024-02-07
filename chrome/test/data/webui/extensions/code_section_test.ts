@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extensions-code-section. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsCodeSectionElement} from 'chrome://extensions/extensions.js';
+import type {ExtensionsCodeSectionElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 

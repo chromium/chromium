@@ -5,7 +5,7 @@
 import 'chrome://intro/lacros_app.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
-import {LacrosIntroAppElement} from 'chrome://intro/lacros_app.js';
+import type {LacrosIntroAppElement} from 'chrome://intro/lacros_app.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';

@@ -4,11 +4,12 @@
 
 import 'chrome://search-engine-choice/app.js';
 
-import {SearchEngineChoiceAppElement} from 'chrome://search-engine-choice/app.js';
+import type {SearchEngineChoiceAppElement} from 'chrome://search-engine-choice/app.js';
 import {SearchEngineChoiceBrowserProxy} from 'chrome://search-engine-choice/browser_proxy.js';
 import {PageHandlerRemote} from 'chrome://search-engine-choice/search_engine_choice.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

@@ -4,7 +4,7 @@
 
 import 'chrome://compose/textarea.js';
 
-import {ComposeTextareaElement} from 'chrome://compose/textarea.js';
+import type {ComposeTextareaElement} from 'chrome://compose/textarea.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

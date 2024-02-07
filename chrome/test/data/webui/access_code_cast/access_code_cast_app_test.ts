@@ -4,7 +4,7 @@
 
 import 'chrome://access-code-cast/access_code_cast.js';
 
-import {AccessCodeCastElement} from 'chrome://access-code-cast/access_code_cast.js';
+import type {AccessCodeCastElement} from 'chrome://access-code-cast/access_code_cast.js';
 import {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';

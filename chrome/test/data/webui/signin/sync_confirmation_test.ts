@@ -5,7 +5,7 @@
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
+import type {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

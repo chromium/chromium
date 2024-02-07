@@ -4,7 +4,7 @@
 
 import 'chrome://flags/experiment.js';
 
-import {FlagsExperimentElement} from 'chrome://flags/experiment.js';
+import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

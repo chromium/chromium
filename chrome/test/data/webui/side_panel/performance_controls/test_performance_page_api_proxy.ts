@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PerformancePageCallbackRouter, PerformancePageHandlerRemote, PerformancePageRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
-import {PerformancePageApiProxy} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy';
+import type {PerformancePageRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
+import {PerformancePageCallbackRouter, PerformancePageHandlerRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
+import type {PerformancePageApiProxy} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

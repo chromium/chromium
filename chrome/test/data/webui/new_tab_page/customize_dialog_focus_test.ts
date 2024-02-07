@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

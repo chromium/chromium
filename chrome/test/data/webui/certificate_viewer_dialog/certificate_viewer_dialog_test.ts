@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import type {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
-import {getRequiredElement} from 'chrome://resources/js/util.js';
-import {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
 
 /**
  * Find the first tree item (in the certificate fields tree) with a value.

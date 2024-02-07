@@ -6,7 +6,7 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
+import type {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

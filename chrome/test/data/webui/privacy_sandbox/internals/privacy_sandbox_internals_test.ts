@@ -6,9 +6,10 @@ import 'chrome://privacy-sandbox-internals/mojo_timedelta.js';
 import 'chrome://privacy-sandbox-internals/value_display.js';
 import 'chrome://privacy-sandbox-internals/pref_display.js';
 
-import {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
-import {timestampLogicalFn, ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
-import {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
+import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
+import {timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
+import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // Test that the <mojo-timestamp> CustomElement renders the correct time.

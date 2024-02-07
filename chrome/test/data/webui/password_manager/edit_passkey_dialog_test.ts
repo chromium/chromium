@@ -4,7 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {EditPasskeyDialogElement, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import type {EditPasskeyDialogElement} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

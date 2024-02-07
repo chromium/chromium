@@ -5,7 +5,7 @@
 /** @fileoverview Test implementation of PluralStringProxy. */
 
 // clang-format off
-import {PluralStringProxy} from 'chrome://resources/js/plural_string_proxy.js';
+import type {PluralStringProxy} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestBrowserProxy} from './test_browser_proxy.js';
 // clang-format on

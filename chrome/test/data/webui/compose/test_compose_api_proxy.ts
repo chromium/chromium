@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
-import {ComposeApiProxy} from 'chrome://compose/compose_api_proxy.js';
+import type {CloseReason, ComposeState, OpenMetadata, StyleModifiers} from 'chrome://compose/compose.mojom-webui.js';
+import {ComposeDialogCallbackRouter, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import type {ComposeApiProxy} from 'chrome://compose/compose_api_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 function getDefaultComposeState(): ComposeState {

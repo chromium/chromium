@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksApiProxy, Query} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksApiProxy, Query} from 'chrome://bookmarks/bookmarks.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBookmarksApiProxy extends TestBrowserProxy implements

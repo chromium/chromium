@@ -4,9 +4,8 @@
 
 import 'chrome://tab-strip.top-chrome/alert_indicators.js';
 
-import {AlertIndicatorsElement} from 'chrome://tab-strip.top-chrome/alert_indicators.js';
+import type {AlertIndicatorsElement} from 'chrome://tab-strip.top-chrome/alert_indicators.js';
 import {TabAlertState} from 'chrome://tab-strip.top-chrome/tabs.mojom-webui.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('AlertIndicators', () => {

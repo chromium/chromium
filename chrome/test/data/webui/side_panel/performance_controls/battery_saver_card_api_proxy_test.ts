@@ -4,7 +4,8 @@
 
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
-import {BatterySaverCardApiProxy, BatterySaverCardApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/battery_saver_card_api_proxy.js';
+import type {BatterySaverCardApiProxy} from 'chrome://performance-side-panel.top-chrome/battery_saver_card_api_proxy.js';
+import {BatterySaverCardApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/battery_saver_card_api_proxy.js';
 import {BatterySaverCardCallbackRouter, BatterySaverCardHandlerRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';

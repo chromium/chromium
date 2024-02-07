@@ -19,7 +19,8 @@ import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, make
 
 // clang-format off
 // <if expr="is_win or is_macosx">
-import {PasskeysBrowserProxyImpl, PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
+import type { PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
+import {PasskeysBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 
 import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
 // </if>

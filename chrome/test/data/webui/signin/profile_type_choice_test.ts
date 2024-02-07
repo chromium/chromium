@@ -4,9 +4,8 @@
 
 import 'chrome://profile-picker/lazy_load.js';
 
-import {ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
+import type {ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
-
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 

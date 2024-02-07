@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Tab} from 'chrome://new-tab-page/history_types.mojom-webui.js';
-import {tabResumptionDescriptor, TabResumptionModuleElement, TabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import type {Tab} from 'chrome://new-tab-page/history_types.mojom-webui.js';
+import type {TabResumptionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {tabResumptionDescriptor, TabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_resumption.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from '../../../test_support.js';
 

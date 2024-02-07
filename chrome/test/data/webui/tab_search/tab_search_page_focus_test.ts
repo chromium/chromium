@@ -4,7 +4,8 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {ProfileData, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, TabSearchApiProxyImpl, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

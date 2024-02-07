@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PromoCardsProxy. */
 
-import {PromoCard, PromoCardsProxy} from 'chrome://password-manager/password_manager.js';
+import type {PromoCard, PromoCardsProxy} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**

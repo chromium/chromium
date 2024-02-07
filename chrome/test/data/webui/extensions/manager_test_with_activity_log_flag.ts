@@ -4,7 +4,8 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsManagerElement, navigation, Page} from 'chrome://extensions/extensions.js';
+import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

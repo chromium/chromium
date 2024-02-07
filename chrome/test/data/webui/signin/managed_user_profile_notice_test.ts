@@ -4,9 +4,10 @@
 
 import 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
 
-import {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
-import {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxyImpl} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
+import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
+import {ManagedUserProfileNoticeBrowserProxyImpl} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

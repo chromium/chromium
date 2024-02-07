@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for extension-keyboard-shortcuts. */
 
-import {ExtensionsKeyboardShortcutsElement, isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
+import type {ExtensionsKeyboardShortcutsElement} from 'chrome://extensions/extensions.js';
+import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';

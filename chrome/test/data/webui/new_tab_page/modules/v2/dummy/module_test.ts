@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {FooHandlerRemote} from 'chrome://new-tab-page/foo.mojom-webui.js';
-import {DummyModuleElement, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {DummyModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';

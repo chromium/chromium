@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarkManagerApiProxy} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarkManagerApiProxy} from 'chrome://bookmarks/bookmarks.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

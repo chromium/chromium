@@ -4,7 +4,7 @@
 
 import 'chrome://compose/result_text.js';
 
-import {ComposeResultTextElement} from 'chrome://compose/result_text.js';
+import type {ComposeResultTextElement} from 'chrome://compose/result_text.js';
 // import {assertEquals, assertFalse, assertStringEquals, assertTrue} from
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Dialog, NavigationHelper, Page, PageState} from 'chrome://extensions/extensions.js';
+import type {PageState} from 'chrome://extensions/extensions.js';
+import {Dialog, NavigationHelper, Page} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockMethod} from 'chrome://webui-test/mock_controller.js';
 

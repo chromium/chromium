@@ -4,7 +4,7 @@
 
 import 'chrome://performance-side-panel.top-chrome/browser_health_card.js';
 
-import {BrowserHealthCardElement} from 'chrome://performance-side-panel.top-chrome/browser_health_card.js';
+import type {BrowserHealthCardElement} from 'chrome://performance-side-panel.top-chrome/browser_health_card.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

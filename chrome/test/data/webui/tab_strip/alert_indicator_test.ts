@@ -4,8 +4,7 @@
 
 import 'chrome://tab-strip.top-chrome/alert_indicator.js';
 
-import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
-
+import type {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('AlertIndicator', () => {

@@ -5,10 +5,11 @@
 import 'chrome://tab-strip.top-chrome/tab_list.js';
 
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
-import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
-import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip.top-chrome/tab_list.js';
-import {PageRemote, Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import type {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import type {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
+import type {TabListElement} from 'chrome://tab-strip.top-chrome/tab_list.js';
+import {setScrollAnimationEnabledForTesting} from 'chrome://tab-strip.top-chrome/tab_list.js';
+import type {PageRemote, Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

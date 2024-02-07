@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/theme_color_picker/check_mark_wrapper.js';
 
-import {CheckMarkWrapperElement} from 'chrome://resources/cr_components/theme_color_picker/check_mark_wrapper.js';
+import type {CheckMarkWrapperElement} from 'chrome://resources/cr_components/theme_color_picker/check_mark_wrapper.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 

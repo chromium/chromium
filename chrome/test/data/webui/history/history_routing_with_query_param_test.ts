@@ -4,7 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserServiceImpl, HistoryAppElement} from 'chrome://history/history.js';
+import type {HistoryAppElement} from 'chrome://history/history.js';
+import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

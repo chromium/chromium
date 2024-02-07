@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-import {GoogleAppProxy} from 'chrome://welcome/google_apps/google_app_proxy.js';
-import {BookmarkListItem} from 'chrome://welcome/shared/nux_types.js';
+import type {GoogleAppProxy} from 'chrome://welcome/google_apps/google_app_proxy.js';
+import type {BookmarkListItem} from 'chrome://welcome/shared/nux_types.js';
 
 export class TestGoogleAppProxy extends TestBrowserProxy implements
     GoogleAppProxy {

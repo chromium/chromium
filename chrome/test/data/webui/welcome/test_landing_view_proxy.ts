@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-import {LandingViewProxy} from 'chrome://welcome/landing_view_proxy.js';
+import type {LandingViewProxy} from 'chrome://welcome/landing_view_proxy.js';
 
 export class TestLandingViewProxy extends TestBrowserProxy implements
     LandingViewProxy {

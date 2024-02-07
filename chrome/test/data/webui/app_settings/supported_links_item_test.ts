@@ -5,17 +5,19 @@
 /** @fileoverview Test suite for AppManagementSupportedLinksItemElement. */
 import 'chrome://app-settings/supported_links_item.js';
 
-import {App, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementSupportedLinksItemElement} from 'chrome://app-settings/supported_links_item.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementSupportedLinksItemElement} from 'chrome://app-settings/supported_links_item.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {AppConfig, createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
+import type {AppConfig} from './app_management_test_support.js';
+import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
 suite('AppManagementSupportedLinksItemElement', function() {
   let supportedLinksItem: AppManagementSupportedLinksItemElement;

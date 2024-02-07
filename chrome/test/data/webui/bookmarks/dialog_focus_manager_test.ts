@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksCommandManagerElement, BookmarksItemElement, BookmarksListElement, DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksCommandManagerElement, BookmarksItemElement, BookmarksListElement} from 'chrome://bookmarks/bookmarks.js';
+import {DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
