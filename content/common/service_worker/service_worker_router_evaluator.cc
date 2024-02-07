@@ -13,6 +13,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -54,6 +56,11 @@ void RecordMatchedSourceType(
     const std::vector<blink::ServiceWorkerRouterSource>& sources) {
   base::UmaHistogramEnumeration(
       "ServiceWorker.RouterEvaluator.MatchedFirstSourceType", sources[0].type);
+}
+
+void RecordEvaluationTime(base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "ServiceWorker.RouterEvaluator.EvaluationTime", duration);
 }
 
 // TODO(crbug.com/1371756): consolidate code with blink::url_pattern.
@@ -624,9 +631,11 @@ ServiceWorkerRouterEvaluator::EvaluateInternal(
     const network::ResourceRequest& request,
     std::optional<blink::EmbeddedWorkerStatus> running_status) const {
   CHECK(is_valid_);
+  base::ElapsedTimer timer;
   for (const auto& rule : compiled_rules_) {
     if (rule->Match(request, running_status)) {
       VLOG(3) << "matched request url=" << request.url;
+      RecordEvaluationTime(timer.Elapsed());
       RecordMatchedSourceType(rule->sources());
       ServiceWorkerRouterEvaluator::Result result;
       result.id = rule->id();
@@ -635,6 +644,7 @@ ServiceWorkerRouterEvaluator::EvaluateInternal(
     }
   }
   VLOG(3) << "not matched request url=" << request.url;
+  RecordEvaluationTime(timer.Elapsed());
   return std::nullopt;
 }
 

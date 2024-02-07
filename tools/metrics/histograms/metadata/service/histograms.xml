@@ -1222,6 +1222,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.EvaluationTime"
+    units="microseconds" expires_after="2024-05-05">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Time spent for the router evaluation to handle a request. Recorded when the
+    service worker has associated routing info, and the browser or renderer is
+    processing requests. Both main resource and subresource record this metric
+    when being processed.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.RouterEvaluator.MatchedFirstSourceType"
     enum="ServiceWorkerRouterSourceType" expires_after="2024-08-04">
   <owner>sisidovski@chromium.org</owner>
