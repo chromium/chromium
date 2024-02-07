@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/input_method/ui/announcement_label.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -27,7 +28,10 @@ class UI_CHROMEOS_EXPORT AnnouncementView
   AnnouncementView& operator=(const AnnouncementView&) = delete;
   ~AnnouncementView() override;
 
+  // TODO(b/324129643): Refactor this to avoid the overridden methods in tests.
   virtual void Announce(const std::u16string& message);
+  virtual void AnnounceAfterDelay(const std::u16string& message,
+                                  base::TimeDelta delay);
 
  protected:
   AnnouncementView();

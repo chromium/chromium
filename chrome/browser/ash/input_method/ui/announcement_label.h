@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_LABEL_H_
 
 #include <memory>
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,8 +26,9 @@ class AnnouncementLabel : public views::Label {
   // views::Label overrides
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // Make announcement to ChromeVox with the given text
-  void Announce(const std::u16string& text);
+  // Make announcement to ChromeVox with the given text after a delay of N
+  // milliseconds specified by the param delay.
+  void AnnounceAfterDelay(const std::u16string& text, base::TimeDelta delay);
 
  private:
   // Callback used for delaying announcements

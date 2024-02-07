@@ -21,10 +21,11 @@
 
 namespace ash {
 namespace input_method {
-
-constexpr base::TimeDelta kShowSuggestionDelayMs = base::Milliseconds(5);
-
 namespace {
+
+constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kShowSuggestionDelay = base::Milliseconds(5);
+
 gfx::NativeView GetParentView() {
   gfx::NativeView parent = gfx::NativeView();
 
@@ -130,7 +131,10 @@ void AssistiveWindowController::Announce(const std::u16string& message) {
     InitAnnouncementView();
   }
 
-  announcement_view_->Announce(message);
+  // Announcements for assistive suggestions often collide with key press or
+  // text update announcements from ChromeVox. By adding a very small delay
+  // these collisions are *mostly* avoided.
+  announcement_view_->AnnounceAfterDelay(message, kAnnouncementDelay);
 }
 
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use
@@ -186,7 +190,7 @@ void AssistiveWindowController::ShowSuggestion(
   ClearPendingSuggestionTimer();
   pending_suggestion_timer_ = std::make_unique<base::OneShotTimer>();
   pending_suggestion_timer_->Start(
-      FROM_HERE, kShowSuggestionDelayMs,
+      FROM_HERE, kShowSuggestionDelay,
       base::BindOnce(&AssistiveWindowController::DisplayCompletionSuggestion,
                      weak_ptr_factory_.GetWeakPtr(), details));
 }

@@ -33,7 +33,7 @@ const char16_t kAnnounceString[] = u"announce string";
 namespace ash {
 namespace input_method {
 
-constexpr size_t kShowSuggestionDelayMs = 5;
+constexpr size_t kShowSuggestionDelay = 5;
 
 class MockDelegate : public AssistiveWindowControllerDelegate {
  public:
@@ -52,6 +52,10 @@ class TestAnnouncementView : public ui::ime::AnnouncementView {
   }
 
   void Announce(const std::u16string& text) override { text_ = text; }
+  void AnnounceAfterDelay(const std::u16string& text,
+                          base::TimeDelta delay) override {
+    text_ = text;
+  }
 
  private:
   std::u16string text_;
@@ -116,7 +120,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 
   void WaitForSuggestionWindowDelay() {
     task_environment()->FastForwardBy(
-        base::Milliseconds(kShowSuggestionDelayMs + 1));
+        base::Milliseconds(kShowSuggestionDelay + 1));
   }
 
   base::test::ScopedFeatureList feature_list_;

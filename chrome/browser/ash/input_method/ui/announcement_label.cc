@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ash/input_method/ui/announcement_label.h"
 
+#include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ui {
 namespace ime {
-
-constexpr base::TimeDelta kAnnouncementDelayMs = base::Milliseconds(100);
 
 AnnouncementLabel::AnnouncementLabel() = default;
 
@@ -24,15 +23,15 @@ void AnnouncementLabel::GetAccessibleNodeData(
       ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
 }
 
-void AnnouncementLabel::Announce(const std::u16string& text) {
+void AnnouncementLabel::AnnounceAfterDelay(const std::u16string& text,
+                                           base::TimeDelta delay) {
   if (text.empty())
     return;
   SetAccessibleName(text);
   delay_timer_ = std::make_unique<base::OneShotTimer>();
-  delay_timer_->Start(
-      FROM_HERE, kAnnouncementDelayMs,
-      base::BindOnce(&AnnouncementLabel::DoAnnouncement,
-                     base::Unretained(this)));
+  delay_timer_->Start(FROM_HERE, delay,
+                      base::BindOnce(&AnnouncementLabel::DoAnnouncement,
+                                     base::Unretained(this)));
 }
 
 void AnnouncementLabel::DoAnnouncement() {
