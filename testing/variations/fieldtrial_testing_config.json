@@ -10903,7 +10903,7 @@
             ]
         }
     ],
-    "MaldocaSkipChecks": [
+    "MaldocaSkipCheck": [
         {
             "platforms": [
                 "chromeos",
@@ -10916,7 +10916,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MaldocaSkipChecks"
+                        "MaldocaSkipCheck"
                     ]
                 }
             ]
