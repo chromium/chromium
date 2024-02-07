@@ -20882,7 +20882,6 @@
                     "enable_features": [
                         "CameraEffectsSupportedByHardware",
                         "CrOSLateBootAudioAPNoiseCancellation",
-                        "CrOSLateBootAudioFlexibleLoopback",
                         "FeatureManagementVideoConference",
                         "VCBackgroundReplace",
                         "VideoConference"
