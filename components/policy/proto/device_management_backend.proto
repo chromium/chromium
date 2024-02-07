@@ -3161,6 +3161,18 @@ message CertificateBasedDeviceRegisterRequest {
   optional SignedData signed_request = 1;
 }
 
+// Request from device to server to register a device (authenticated with an
+// enrollment token).
+message TokenBasedDeviceRegisterRequest {
+  optional DeviceRegisterRequest device_register_request = 1;
+}
+
+// Response to a token-based device registration request
+// (@code `TokenBasedDeviceRegisterRequest`).
+message TokenBasedDeviceRegisterResponse {
+  optional DeviceRegisterResponse device_register_response = 1;
+}
+
 // Requested configuration to be passed along a registration request.
 message DeviceRegisterConfiguration {
   // The device owner's email address.
@@ -4530,7 +4542,7 @@ enum DeviceManagementErrorDetail {
 //   * deviceid: MUST BE no more than 64-char in [\x21-\x7E].
 //   * agent: MUST BE no more than 64-char long.
 // * HTTP Authorization header MUST be in the following formats:
-//   * For register for Chrome browsers
+//   * For register for Chrome browsers and token_based_register requests.
 //     Authorization: GoogleEnrollmentToken token=<enrollment token>
 //
 //   * For unregister, policy, status, cert_upload, remote_commands,
@@ -4715,7 +4727,12 @@ message DeviceManagementRequest {
   // HTTP query parameter 'request': 'chrome_profile_report'
   optional ChromeProfileReportRequest chrome_profile_report_request = 40;
 
-  // Next id: 41.
+  // Request to register a device with an enrollment token.
+  // HTTP query parameter 'request': 'token_based_register'
+  optional TokenBasedDeviceRegisterRequest token_based_device_register_request =
+      41;
+
+  // Next id: 42.
 }
 
 // Response from server to device.
@@ -4728,7 +4745,8 @@ message DeviceManagementRequest {
 // Possible HTTP status codes:
 // 200 OK: valid response is returned to client.
 // 400 Bad Request: invalid argument or payload.
-// 401 Unauthorized: invalid auth cookie/OAuth token or DMToken.
+// 401 Unauthorized: invalid auth cookie/OAuth token, DMToken or enrollment
+//     token.
 // 402 Missing license.
 // 403 Forbidden: device management is not allowed (e.g. user may not enroll).
 // 404 Not Found: the request URL is invalid.
@@ -4870,7 +4888,11 @@ message DeviceManagementResponse {
   // Response to a Chrome Profile report request.
   optional ChromeProfileReportResponse chrome_profile_report_response = 38;
 
-  // Next id: 40.
+// Response to a token-based register request.
+  optional TokenBasedDeviceRegisterResponse
+      token_based_device_register_response = 40;
+
+  // Next id: 41.
 }
 
 // Device State Information stored in the server is retrieval at
