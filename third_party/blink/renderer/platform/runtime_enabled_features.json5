@@ -896,7 +896,7 @@
     {
       // crbug.com/1447058
       name: "CssFieldSizing",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Don't allow new line as preceding character for ::first-letter.
