@@ -429,6 +429,46 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     element.remove();
   });
 
+  async function assertDropdownSelectionPersisted(
+      tabName: string, prefName: string) {
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+    const timePeriodDropdown = getTimePeriodDropdown(tabName, element);
+    const selectElement =
+        timePeriodDropdown.shadowRoot!.querySelector('select');
+    assertTrue(!!selectElement);
+
+    // Ensure the test starts with a known pref and dropdown value.
+    element.setPrefValue(prefName, TimePeriod.LAST_DAY);
+    await waitAfterNextRender(timePeriodDropdown);
+    assertEquals(TimePeriod.LAST_DAY.toString(), selectElement.value);
+
+    // Changing the dropdown selection does not persist its value to the pref.
+    selectElement.value = TimePeriod.LAST_WEEK.toString();
+    assertEquals(TimePeriod.LAST_DAY, element.getPref(prefName).value);
+
+    // Select a datatype for deletion to enable the clear button.
+    assertTrue(!!element.$.cookiesCheckbox);
+    element.$.cookiesCheckbox.$.checkbox.click();
+    assertTrue(!!element.$.cookiesCheckboxBasic);
+    element.$.cookiesCheckboxBasic.$.checkbox.click();
+    // Confirming the deletion persists the dropdown selection to the pref.
+    const actionButton =
+        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+    assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
+  }
+
+  test('dropdownSelectionPersisted_Basic', function() {
+    return assertDropdownSelectionPersisted(
+        'basic-tab', 'browser.clear_data.time_period_basic');
+  });
+
+  test('dropdownSelectionPersisted_Advanced', function() {
+    return assertDropdownSelectionPersisted(
+        'advanced-tab', 'browser.clear_data.time_period');
+  });
+
   test('ClearBrowsingDataTap', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
 

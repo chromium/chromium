@@ -61,6 +61,7 @@ function closeDialog(dialog: CrDialogElement, isLast: boolean) {
 export interface SettingsClearBrowsingDataDialogElement {
   $: {
     clearBrowsingDataConfirm: HTMLElement,
+    cookiesCheckbox: SettingsCheckboxElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
     tabs: IronPagesElement,
@@ -544,10 +545,16 @@ export class SettingsClearBrowsingDataDialogElement extends
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
     }
 
+    // Dropdown menu and checkbox selections of both tabs should be persisted
+    // independently from the tab on which the user confirmed the deletion.
     this.shadowRoot!
         .querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
+    this.shadowRoot!
+        .querySelectorAll<SettingsDropdownMenuElement>(
+            'settings-dropdown-menu[no-set-pref]')
+        .forEach(dropdown => dropdown.sendPrefChange());
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);
