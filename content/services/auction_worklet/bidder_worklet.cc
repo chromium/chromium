@@ -28,7 +28,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
+#include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
@@ -133,17 +135,6 @@ bool SetDictMember(v8::Isolate* isolate,
   v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
                                        gin::StringToV8(isolate, key), v8_value);
   return !result.IsNothing() && result.FromJust();
-}
-
-bool SetRenderUrl(v8::Isolate* isolate,
-                  v8::Local<v8::Object> object,
-                  const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "renderURL", v8_value) &&
-         SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
 bool CanSetRequestedAdSize(
@@ -678,6 +669,7 @@ void BidderWorklet::V8State::ReportWin(
 
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+  AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
   if (!AppendJsonValueOrNull(v8_helper_.get(), context,
@@ -733,15 +725,21 @@ void BidderWorklet::V8State::ReportWin(
       break;
   }
 
+  DeprecatedUrlLazyFiller deprecated_render_url(
+      v8_helper_.get(), &v8_logger, &browser_signal_render_url,
+      "browserSignals.renderUrl is deprecated."
+      " Please use browserSignals.renderURL instead.");
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           url::Origin::Create(script_source_url_).Serialize()) ||
       !browser_signals_dict.Set(reporting_id_field_name, reporting_id) ||
+      !browser_signals_dict.Set("renderURL",
+                                browser_signal_render_url.spec()) ||
       // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-      !SetRenderUrl(isolate, browser_signals,
-                    browser_signal_render_url.spec()) ||
+      !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
+                                                    "renderUrl") ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set(
           "bidCurrency",

@@ -6390,6 +6390,87 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrl) {
       "sendReportTo(browserSignals.renderURL)", browser_signal_render_url_);
 }
 
+// Check that accessing `renderUrl` of browserSignals displays a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript("sendReportTo(browserSignals.renderUrl);"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(worklet_impl, browser_signal_render_url_,
+                                   /*expected_ad_beacon_map=*/{},
+                                   /*expected_ad_macro_map=*/{},
+                                   /*expected_pa_requests=*/{},
+                                   /*expected_reporting_latency_timeout=*/false,
+                                   /*expected_errors=*/{},
+                                   run_loop.QuitClosure());
+  run_loop.Run();
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"browserSignals.renderUrl is deprecated. Please use "
+      "browserSignals.renderURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportWin",
+      interest_group_bidding_url_, /*line_number=*/10);
+}
+
+// Check that accessing `renderURL` of browserSignals does not display a
+// warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when renderUrl is removed.
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript("sendReportTo(browserSignals.renderURL);"));
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(worklet_impl, browser_signal_render_url_,
+                                   /*expected_ad_beacon_map=*/{},
+                                   /*expected_ad_macro_map=*/{},
+                                   /*expected_pa_requests=*/{},
+                                   /*expected_reporting_latency_timeout=*/false,
+                                   /*expected_errors=*/{},
+                                   run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalBid) {
   browser_signal_bid_ = 4;
   RunReportWinWithFunctionBodyExpectingResult(

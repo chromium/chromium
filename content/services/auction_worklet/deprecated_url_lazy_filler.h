@@ -24,13 +24,13 @@ class AuctionV8Logger;
 class DeprecatedUrlLazyFiller : public LazyFiller {
  public:
   // Creates an object that can set a field on passed in objects to a string
-  // containing `url`, and display `warning` on first access. If `value` is
-  // nullptr / nullopt, does nothing. Name of the field is specified when
-  // calling SetLazyUrl().
+  // containing `url`, and display `warning` on first access. If `url` is
+  // nullptr, does nothing. Name of the field is specified when calling
+  // SetLazyUrl().
   //
   // All passed in pointers must outlive the created
-  // DeprecatedUrlLazyFiller. Additionally, `value` and `warning`
-  // must not be modified until the DeprecatedUrlLazyFiller is destroyed.
+  // DeprecatedUrlLazyFiller. Additionally, `url` and `warning` must not be
+  // modified until the DeprecatedUrlLazyFiller is destroyed.
   DeprecatedUrlLazyFiller(AuctionV8Helper* v8_helper,
                           AuctionV8Logger* v8_logger,
                           const GURL* url,

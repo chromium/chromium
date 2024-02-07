@@ -21,9 +21,9 @@ class AuctionV8Helper;
 
 // Helper class to populate fields of one or more v8::Objects on first access.
 // The associated v8::Context must be destroyed immediately after the LazyFiller
-// to avoid a UAF. Before would be better, but LazyFillers often have raw
-// pointers to other context-scoped variables (e.g., AuctionV8Loggers) which
-// must be destroyed before the LazyFiller.
+// to avoid a UAF. Before would be better, but LazyFiller subclasses often have
+// raw pointers to other context-scoped variables (e.g., an AuctionV8Logger)
+// which must be destroyed after the LazyFiller.
 //
 // API for implementers is as follows:
 //
