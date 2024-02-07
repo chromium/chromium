@@ -89,7 +89,7 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
 
   // Sets the color calibration for the specified display.
   virtual void SetColorCalibration(int64_t display_id,
-                                   const ColorCalibration& calibration) = 0;
+                                   const ColorCalibration& calibration);
 
   // Sets the display profile space gamma adjustment for the specified display.
   virtual void SetGammaAdjustment(int64_t display_id,
@@ -99,14 +99,14 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
   // This doesn't affect gamma or degamma. It returns true the color matrix was
   // sent to the GPU process successfully.
   virtual bool SetColorMatrix(int64_t display_id,
-                              const std::vector<float>& color_matrix) = 0;
+                              const std::vector<float>& color_matrix);
 
   // Sets the given |gamma_lut| and |degamma_lut| on the display with
   // |display_id|. Returns true if the given tables were sent to the GPU process
   // successfully.
   virtual bool SetGammaCorrection(int64_t display_id,
                                   const GammaCurve& degamma,
-                                  const GammaCurve& gamma) = 0;
+                                  const GammaCurve& gamma);
 
   // Sets the privacy screen state on the display with |display_id|.
   virtual void SetPrivacyScreen(int64_t display_id,
