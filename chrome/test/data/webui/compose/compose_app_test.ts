@@ -4,13 +4,13 @@
 
 import 'chrome://compose/app.js';
 
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
 import type {ComposeState} from 'chrome://compose/compose.mojom-webui.js';
 import {CloseReason, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
-import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';

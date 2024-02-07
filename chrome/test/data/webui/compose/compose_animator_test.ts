@@ -4,8 +4,8 @@
 
 import 'chrome://compose/animations/animator.js';
 
+import {getTrustedHTML} from '//resources/js/static_types.js';
 import {Animator} from 'chrome://compose/animations/animator.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('ComposeAnimator', () => {
