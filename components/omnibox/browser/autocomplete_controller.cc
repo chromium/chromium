@@ -1990,6 +1990,13 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
       "omnibox",
       "AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending");
 
+  // Sort according to traditional scores.
+  // This is needed in order to ensure that the relevance score assignment logic
+  // can properly break ties when two (or more) URL suggestions have the same ML
+  // score.
+  internal_result_.Sort(input_, template_url_service_,
+                        old_result.default_match_to_preserve);
+
   // Run the model for the eligible matches.
   std::vector<const ScoringSignals*> batch_scoring_signals;
   std::vector<size_t> scored_positions;
@@ -2037,6 +2044,42 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
     match.RecordAdditionalInfo("ml model output", *results[i]);
     match.relevance = min + *results[i] * (max - min);
     match.shortcut_boosted = match.relevance > grouping_threshold;
+  }
+
+  // Following the initial relevance assignment, build a sorted list of
+  // values which will contain the finalized set of relevance scores for URL
+  // suggestions.
+  std::vector<int> scores_pool;
+  for (size_t i = 0; i < internal_result_.size(); ++i) {
+    const auto& match = internal_result_.matches_[i];
+    if (!match.IsUrlScoringEligible()) {
+      continue;
+    }
+    scores_pool.push_back(match.relevance);
+  }
+  base::ranges::sort(scores_pool, std::greater<>());
+
+  // Avoid duplicate scores by ensuring that no two URL suggestions are assigned
+  // the same score.
+  int max_score = INT_MAX;
+  for (auto& score : scores_pool) {
+    score = std::min(score, max_score - 1);
+    max_score = score;
+  }
+
+  std::vector<std::pair<float, size_t>> prediction_and_position_heap;
+  for (size_t i = 0; i < results.size(); ++i) {
+    prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
+  }
+  base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
+                            [](const auto& pair) { return pair.first; });
+
+  // Assign the finalized relevance scores to each URL suggestion in order of
+  // priority (i.e. ML score).
+  for (size_t i = 0; i < prediction_and_position_heap.size(); ++i) {
+    auto& match =
+        internal_result_.matches_[prediction_and_position_heap[i].second];
+    match.relevance = scores_pool[i];
   }
 
   for (Observer& obs : observers_)

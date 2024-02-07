@@ -1455,11 +1455,12 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringUnlimitedNumCandidates[] =
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
 };
-// Sets Bookmark(1), History Quick(4), History URL(8), Shortcuts(64), and
-// History Fuzzy(65536) providers max matches to 10.
+// Sets Bookmark(1), History Quick(4), History URL(8), Shortcuts(64),
+// Document(512), and History Fuzzy(65536) providers max matches to 10.
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
     {
-        {"MlUrlScoringMaxMatchesByProvider", "1:10,4:10,8:10,64:10,65536:10"},
+        {"MlUrlScoringMaxMatchesByProvider",
+         "1:10,4:10,8:10,64:10,512:10,65536:10"},
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
 };

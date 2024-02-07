@@ -835,6 +835,12 @@ void DocumentProvider::SetCachedMatchesScoresTo0() {
 }
 
 void DocumentProvider::DemoteMatchesBeyondMax() {
+  // Allow all matches to retain their scores if unlimited matches param is
+  // enabled.
+  if (OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled()) {
+    return;
+  }
+
   for (size_t i = provider_max_matches_; i < matches_.size(); ++i)
     matches_[i].relevance = 0;
 }
