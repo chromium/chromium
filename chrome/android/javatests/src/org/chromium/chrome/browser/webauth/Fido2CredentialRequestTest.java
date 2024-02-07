@@ -39,7 +39,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -72,6 +71,7 @@ import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
+import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
@@ -448,7 +448,7 @@ public class Fido2CredentialRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        Assume.assumeTrue(gmsVersionSupported());
+        Assume.assumeTrue(GmsCoreUtils.isWebauthnSupported());
         mContext = ContextUtils.getApplicationContext();
         mIntentSender = new MockIntentSender();
         mTestServer = sActivityTestRule.getTestServer();
@@ -483,16 +483,6 @@ public class Fido2CredentialRequestTest {
         mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
 
         mStartTimeMs = SystemClock.elapsedRealtime();
-    }
-
-    /** Used to enable early exit of tests on bots that don't support GmsCore v16.1+ */
-    private boolean gmsVersionSupported() {
-        return PackageUtils.getPackageVersion(GOOGLE_PLAY_SERVICES_PACKAGE)
-                >= AuthenticatorImpl.GMSCORE_MIN_VERSION;
-    }
-
-    private boolean gmsVersionSupportsHybridClient() {
-        return PackageUtils.getPackageVersion(GOOGLE_PLAY_SERVICES_PACKAGE) >= 231206000;
     }
 
     @Test
@@ -2372,7 +2362,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testGetAssertion_conditionalUiHybrid_success() {
-        Assume.assumeTrue(gmsVersionSupportsHybridClient());
+        Assume.assumeTrue(GmsCoreUtils.isHybridClientApiSupported());
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         FeatureList.setTestValues(testValues);

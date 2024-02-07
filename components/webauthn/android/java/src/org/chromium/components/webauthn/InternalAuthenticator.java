@@ -161,7 +161,7 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public boolean isGetMatchingCredentialIdsSupported() {
-        return mAuthenticator.isGetMatchingCredentialIdsSupported();
+        return GmsCoreUtils.isGetMatchingCredentialIdsSupported();
     }
 
     /**

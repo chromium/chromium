@@ -504,7 +504,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         @Override
         public int getMinApkVersion() {
             // This minimum should be moot because it's enforced in `AuthenticatorImpl`.
-            return AuthenticatorImpl.GMSCORE_MIN_VERSION;
+            return GmsCoreUtils.GMSCORE_MIN_VERSION;
         }
 
         public static class Builder

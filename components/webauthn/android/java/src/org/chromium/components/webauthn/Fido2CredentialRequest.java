@@ -24,7 +24,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -65,7 +64,6 @@ public class Fido2CredentialRequest
     static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
-    public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
 
     private final FidoIntentSender mIntentSender;
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
@@ -714,7 +712,7 @@ public class Fido2CredentialRequest
         }
 
         Runnable hybridCallback = null;
-        if (isHybridClientApiAvailable()) {
+        if (GmsCoreUtils.isHybridClientApiSupported()) {
             hybridCallback =
                     () ->
                             dispatchHybridGetAssertionRequest(
@@ -1142,11 +1140,6 @@ public class Fido2CredentialRequest
         }
         messageDigest.update(mClientDataJson);
         return messageDigest.digest();
-    }
-
-    private boolean isHybridClientApiAvailable() {
-        return PackageUtils.getPackageVersion("com.google.android.gms")
-                        >= GMSCORE_MIN_VERSION_HYBRID_API;
     }
 
     private boolean isChrome() {

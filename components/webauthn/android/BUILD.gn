@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/FidoIntentSender.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/GmsCoreUtils.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
