@@ -48,6 +48,9 @@ class DeviceOrientationHandler : public DevToolsDomainHandler,
       double gamma,
       std::unique_ptr<SetDeviceOrientationOverrideCallback> callback) override;
 
+  // This is safe to store because it is updated by SetRenderer(). It is
+  // guaranteed that SetRenderer() is called before a RFH is deleted.
+  // See bug 323904196.
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
 
   std::unique_ptr<ScopedVirtualSensorForDevTools> virtual_sensor_;
