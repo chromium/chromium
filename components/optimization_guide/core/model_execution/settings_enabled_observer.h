@@ -22,7 +22,7 @@ class SettingsEnabledObserver : public base::CheckedObserver {
   // team should call `ShouldFeatureBeCurrentlyEnabledForUser` before displaying
   // any feature functionality. TODO(rajendrant): Remove this once all the
   // consumers stop using it.
-  virtual void PrepareToEnableOnRestart() {}
+  virtual void PrepareToEnableOnRestart() = 0;
 
   // Notifies the consumers whenever the feature enabled state is changed.
   // `is_now_enabled` indicates the current enabled state of the feature. This
