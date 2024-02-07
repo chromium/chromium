@@ -431,8 +431,8 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Name", u"n", NAME_FIRST},
       {u"Nachname", u"a", NAME_LAST},
-      {u"Straße und Hausnummer", u"addressline1", ADDRESS_HOME_LINE1},
-      {u"Adresszusatz", u"adresszusatz", ADDRESS_HOME_LINE2},
+      {u"Straße und Hausnummer", u"addressline1", ADDRESS_HOME_STREET_LOCATION},
+      {u"Adresszusatz", u"adresszusatz", ADDRESS_HOME_OVERFLOW},
       {u"PLZ", u"plz", ADDRESS_HOME_ZIP},
       {u"Ort", u"ort", ADDRESS_HOME_CITY},
   });
@@ -443,8 +443,8 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
 
   EXPECT_THAT(GetTypes(fields),
               ElementsAre(NAME_FIRST, NAME_LAST,
-                          /*changed*/ ADDRESS_HOME_STREET_LOCATION,
-                          /*changed*/ ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_ZIP,
+                          /*changed*/ ADDRESS_HOME_LINE1,
+                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
                           ADDRESS_HOME_CITY));
 }
 
