@@ -269,6 +269,10 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
   // which should clear LocalFrameView::fragment_anchor_ ...
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
+  // Allow any enqueued animation frame tasks to run
+  // so their resources can be cleaned up.
+  Compositor().BeginFrame();
+
   // Non-crash is considered a pass.
 }
 
