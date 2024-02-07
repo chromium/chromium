@@ -69,6 +69,20 @@ void TextPainterBase::UpdateGraphicsContext(
       context.SetStrokeThickness(text_style.stroke_width);
   }
 
+  switch (text_style.paint_order) {
+    case kPaintOrderNormal:
+    case kPaintOrderFillStrokeMarkers:
+    case kPaintOrderFillMarkersStroke:
+    case kPaintOrderMarkersFillStroke:
+      context.SetTextPaintOrder(kFillStroke);
+      break;
+    case kPaintOrderStrokeFillMarkers:
+    case kPaintOrderStrokeMarkersFill:
+    case kPaintOrderMarkersStrokeFill:
+      context.SetTextPaintOrder(kStrokeFill);
+      break;
+  }
+
   if (shadow_mode != kTextProperOnly) {
     DCHECK(shadow_mode == kBothShadowsAndTextProper ||
            shadow_mode == kShadowsOnly);
@@ -142,6 +156,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.emphasis_mark_color =
         style.VisitedDependentColorFast(GetCSSPropertyTextEmphasisColor());
     text_style.shadow = style.TextShadow();
+    text_style.paint_order = style.PaintOrder();
 
     // Adjust text color when printing with a white background.
     bool force_background_to_white =

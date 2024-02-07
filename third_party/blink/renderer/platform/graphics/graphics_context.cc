@@ -570,8 +570,10 @@ template <typename DrawTextFunc>
 void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
   TextDrawingModeFlags mode_flags = TextDrawingMode();
 
-  if (mode_flags & kTextModeFill) {
-    draw_text(ImmutableState()->FillFlags());
+  if (ImmutableState()->GetTextPaintOrder() == kFillStroke) {
+    if (mode_flags & kTextModeFill) {
+      draw_text(ImmutableState()->FillFlags());
+    }
   }
 
   if ((mode_flags & kTextModeStroke) && GetStrokeStyle() != kNoStroke &&
@@ -582,6 +584,12 @@ void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
       stroke_flags.setLooper(nullptr);
     }
     draw_text(stroke_flags);
+  }
+
+  if (ImmutableState()->GetTextPaintOrder() == kStrokeFill) {
+    if (mode_flags & kTextModeFill) {
+      draw_text(ImmutableState()->FillFlags());
+    }
   }
 }
 

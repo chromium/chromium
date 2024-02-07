@@ -515,6 +515,7 @@ void HighlightPainter::Paint(Phase phase) {
           text_style.current_color = platform_matched_color;
           text_style.stroke_width = originating_style_.TextStrokeWidth();
           text_style.color_scheme = originating_style_.UsedColorScheme();
+          text_style.paint_order = originating_style_.PaintOrder();
         } else {
           text_style = DocumentMarkerPainter::ComputeTextPaintStyleFrom(
               document, node_, originating_style_, text_match_marker,
@@ -1298,6 +1299,7 @@ void HighlightPainter::PaintDecoratedText(const StringView& text,
   text_style.stroke_width = originating_style_.TextStrokeWidth();
   text_style.color_scheme = originating_style_.UsedColorScheme();
   text_style.shadow = nullptr;
+  text_style.paint_order = originating_style_.PaintOrder();
 
   const ComputedStyle* pseudo_style =
       pseudo == PseudoId::kPseudoIdNone

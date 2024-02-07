@@ -468,8 +468,6 @@ crbug.com/1462758 fast/events/touch/touch-action-range-input.html [ Failure Pass
 
 crbug.com/980969 http/tests/input/discard-events-to-unstable-iframe.html [ Failure Pass ]
 
-crbug.com/815111 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
-
 crbug.com/1007134 external/wpt/intersection-observer/v2/delay-test.html [ Failure Pass ]
 crbug.com/1004547 external/wpt/intersection-observer/cross-origin-iframe.sub.html [ Failure Pass ]
 crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-iframe.sub.html [ Failure Pass ]

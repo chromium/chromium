@@ -198,6 +198,8 @@ enum TextAlign {
   kRightTextAlign
 };
 
+enum TextPaintOrder { kFillStroke, kStrokeFill };
+
 enum TextDrawingMode {
   kTextModeFill = 1 << 0,
   kTextModeStroke = 1 << 1,
