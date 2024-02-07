@@ -37,36 +37,44 @@ public class WebApkIntentDataProviderBuilder {
         mUrl = url;
     }
 
-    public void setScope(String scope) {
+    public WebApkIntentDataProviderBuilder setScope(String scope) {
         mScope = scope;
+        return this;
     }
 
-    public void setDisplayMode(@DisplayMode.EnumType int displayMode) {
+    public WebApkIntentDataProviderBuilder setDisplayMode(@DisplayMode.EnumType int displayMode) {
         mDisplayMode = displayMode;
+        return this;
     }
 
-    public void setManifestUrl(String manifestUrl) {
+    public WebApkIntentDataProviderBuilder setManifestUrl(String manifestUrl) {
         mManifestUrl = manifestUrl;
+        return this;
     }
 
-    public void setWebApkVersionCode(int versionCode) {
+    public WebApkIntentDataProviderBuilder setWebApkVersionCode(int versionCode) {
         mWebApkVersionCode = versionCode;
+        return this;
     }
 
-    public void setWebApkManifestId(String manifestId) {
+    public WebApkIntentDataProviderBuilder setWebApkManifestId(String manifestId) {
         mManifestId = manifestId;
+        return this;
     }
 
-    public void setName(String name) {
+    public WebApkIntentDataProviderBuilder setName(String name) {
         mName = name;
+        return this;
     }
 
-    public void setShortName(String shortName) {
+    public WebApkIntentDataProviderBuilder setShortName(String shortName) {
         mShortName = shortName;
+        return this;
     }
 
-    public void setToolbarColor(long color) {
+    public WebApkIntentDataProviderBuilder setToolbarColor(long color) {
         mToolbarColor = color;
+        return this;
     }
 
     private String manifestId() {

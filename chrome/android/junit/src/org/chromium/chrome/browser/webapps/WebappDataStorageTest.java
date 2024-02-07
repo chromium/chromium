@@ -329,14 +329,15 @@ public class WebappDataStorageTest {
         String manifestUrl = "manifest_url";
         int webApkVersionCode = 5;
 
-        WebApkIntentDataProviderBuilder intentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder(webApkPackageName, url);
-        intentDataProviderBuilder.setScope(scopeUrl);
-        intentDataProviderBuilder.setManifestUrl(manifestUrl);
-        intentDataProviderBuilder.setWebApkVersionCode(webApkVersionCode);
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(webApkPackageName, url)
+                        .setScope(scopeUrl)
+                        .setManifestUrl(manifestUrl)
+                        .setWebApkVersionCode(webApkVersionCode)
+                        .build();
 
         WebappDataStorage storage = WebappDataStorage.open("test");
-        storage.updateFromWebappIntentDataProvider(intentDataProviderBuilder.build());
+        storage.updateFromWebappIntentDataProvider(intentDataProvider);
 
         assertEquals(webApkPackageName, storage.getWebApkPackageName());
         assertEquals(scopeUrl, storage.getScope());
