@@ -807,4 +807,23 @@ TEST_F(RTCVideoDecoderAdapterTest,
   media_thread_.FlushForTesting();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(RTCVideoDecoderAdapterTest, FallbackToSWInAV1SVC) {
+  SetSdpFormat(webrtc::SdpVideoFormat(
+      webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecAV1)));
+  ASSERT_TRUE(CreateAndInitialize());
+  webrtc::VideoDecoder::Settings settings;
+  settings.set_codec_type(webrtc::kVideoCodecAV1);
+  ASSERT_TRUE(adapter_wrapper_->Configure(settings));
+  ASSERT_EQ(RegisterDecodeCompleteCallback(), WEBRTC_VIDEO_CODEC_OK);
+
+  SetSpatialIndex(2);
+  // kTesting will represent hw decoders for other use cases mentioned above.
+  EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
+
+  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+
+  media_thread_.FlushForTesting();
+}
+
 }  // namespace blink
