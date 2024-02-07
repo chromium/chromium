@@ -129,6 +129,9 @@ class NetworkUiElement extends NetworkUiElementBase {
   private tetheringChangeInProgress_: boolean;
   private invalidJSON_: boolean;
   private showNetworkSelect_: boolean;
+  private onHashChange_: () => void = () => {
+    this.selectTabFromHash_();
+  };
 
   private networkConfig_: CrosNetworkConfigRemote =
       CrosNetworkConfig.getRemote();
@@ -147,9 +150,12 @@ class NetworkUiElement extends NetworkUiElementBase {
     this.getTetheringStatus_();
     this.getHostname_();
     this.selectTabFromHash_();
-    window.addEventListener('hashchange', () => {
-      this.selectTabFromHash_();
-    });
+    window.addEventListener('hashchange', this.onHashChange_);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener('hashchange', this.onHashChange_);
   }
 
   private computeTabNames_(): string[] {
@@ -181,11 +187,10 @@ class NetworkUiElement extends NetworkUiElementBase {
     }
   }
 
-  private openCellularActivationUi_() {
-    this.browserProxy_.openCellularActivationUi().then(([result]) => {
-      this.shadowRoot!.querySelector<HTMLElement>(
-                          '#cellular-error-text')!.hidden = result;
-    });
+  private async openCellularActivationUi_() {
+    const response = await this.browserProxy_.openCellularActivationUi();
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#cellular-error-text')!.hidden = response[0];
   }
 
   private onResetEsimCacheClick_() {
@@ -248,66 +253,59 @@ class NetworkUiElement extends NetworkUiElementBase {
   /**
    * Requests the global policy dictionary and updates the page.
    */
-  private requestGlobalPolicy_() {
-    this.networkConfig_.getGlobalPolicy().then(result => {
-      this.shadowRoot!.querySelector('#global-policy')!.textContent =
-          stringifyJson(result.result);
-    });
+  private async requestGlobalPolicy_() {
+    const result = await this.networkConfig_.getGlobalPolicy();
+    this.shadowRoot!.querySelector('#global-policy')!.textContent =
+        stringifyJson(result.result);
   }
 
-  private getTetheringCapabilities_() {
-    this.browserProxy_.getTetheringCapabilities().then(result => {
-      this.shadowRoot!.querySelector(
-                          '#tethering-capabilities-div')!.textContent =
-          stringifyJson(result);
-    });
+  private async getTetheringCapabilities_() {
+    const result = await this.browserProxy_.getTetheringCapabilities();
+    this.shadowRoot!.querySelector('#tethering-capabilities-div')!.textContent =
+        stringifyJson(result);
   }
 
-  private getTetheringStatus_() {
-    this.browserProxy_.getTetheringStatus().then(result => {
-      this.shadowRoot!.querySelector('#tethering-status-div')!.textContent =
-          stringifyJson(result);
-      const state = result['state'];
-      const startingState = loadTimeData.getString('tetheringStateStarting');
-      const activeState = loadTimeData.getString('tetheringStateActive');
-      if (!!state && (state === startingState || state === activeState)) {
-        this.isTetheringEnabled_ = true;
-        return;
-      }
-      this.isTetheringEnabled_ = false;
-    });
+  private async getTetheringStatus_() {
+    const result = await this.browserProxy_.getTetheringStatus();
+    this.shadowRoot!.querySelector('#tethering-status-div')!.textContent =
+        stringifyJson(result);
+    const state = result.state;
+    const startingState = loadTimeData.getString('tetheringStateStarting');
+    const activeState = loadTimeData.getString('tetheringStateActive');
+    if (!!state && (state === startingState || state === activeState)) {
+      this.isTetheringEnabled_ = true;
+      return;
+    }
+    this.isTetheringEnabled_ = false;
   }
 
-  private getTetheringConfig_() {
-    this.browserProxy_.getTetheringConfig().then(result => {
-      this.shadowRoot!.querySelector('#tethering-config-div')!.textContent =
-          stringifyJson(result);
-    });
+  private async getTetheringConfig_() {
+    const result = await this.browserProxy_.getTetheringConfig();
+    this.shadowRoot!.querySelector('#tethering-config-div')!.textContent =
+        stringifyJson(result);
   }
 
-  private setTetheringConfig_() {
-    this.browserProxy_.setTetheringConfig(this.tetheringConfigToSet_)
-        .then((result) => {
-          const success = result === 'success';
-          const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
-              '#set-tethering-config-result');
-          assert(resultDiv);
-          resultDiv.innerText = result;
-          resultDiv.classList.toggle('error', !success);
-          if (success) {
-            this.getTetheringConfig_();
-          }
-        });
+  private async setTetheringConfig_() {
+    const result =
+        await this.browserProxy_.setTetheringConfig(this.tetheringConfigToSet_);
+    const success = result === 'success';
+    const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
+        '#set-tethering-config-result');
+    assert(resultDiv);
+    resultDiv.innerText = result;
+    resultDiv.classList.toggle('error', !success);
+    if (success) {
+      this.getTetheringConfig_();
+    }
   }
 
-  private checkTetheringReadiness_() {
-    this.browserProxy_.checkTetheringReadiness().then(result => {
-      const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
-          '#check-tethering-readiness-result');
-      assert(resultDiv);
-      resultDiv.innerText = result;
-      resultDiv.classList.toggle('error', result !== 'ready');
-    });
+  private async checkTetheringReadiness_() {
+    const result = await this.browserProxy_.checkTetheringReadiness();
+    const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
+        '#check-tethering-readiness-result');
+    assert(resultDiv);
+    resultDiv.innerText = result;
+    resultDiv.classList.toggle('error', result !== 'ready');
   }
 
   /**
@@ -332,18 +330,17 @@ class NetworkUiElement extends NetworkUiElementBase {
     }
   }
 
-  private onTetheringToggleChanged_() {
+  private async onTetheringToggleChanged_() {
     this.tetheringChangeInProgress_ = true;
-    this.browserProxy_.setTetheringEnabled(this.isTetheringEnabled_)
-        .then(result => {
-          const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
-              '#set-tethering-enabled-result');
-          assert(resultDiv);
-          resultDiv.innerText = result;
-          resultDiv.classList.toggle('error', result !== 'success');
-          this.getTetheringStatus_();
-          this.tetheringChangeInProgress_ = false;
-        });
+    const result =
+        await this.browserProxy_.setTetheringEnabled(this.isTetheringEnabled_);
+    const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
+        '#set-tethering-enabled-result');
+    assert(resultDiv);
+    resultDiv.innerText = result;
+    resultDiv.classList.toggle('error', result !== 'success');
+    this.getTetheringStatus_();
+    this.tetheringChangeInProgress_ = false;
   }
 
   private onHostnameChanged_(_: Event) {

@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface TetheringStatus {
-  [key: string]: string;
+  state?: string;
 }
 
 export interface NetworkUiBrowserProxy {
