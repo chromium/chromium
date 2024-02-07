@@ -429,7 +429,7 @@ const char kClassPath_${JAVA_CLASS}[] = \
     for full_clazz in classes.values():
       values = {
           'JAVA_CLASS': common.escape_class_name(full_clazz),
-          'JNI_CLASS_PATH': full_clazz.replace('/', '.'),
+          'JNI_CLASS_PATH': full_clazz,
       }
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.

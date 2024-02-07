@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/robolectric_buildflags.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/jni_zero/core.h"
 
@@ -34,8 +35,13 @@ BASE_FEATURE(kHandleExceptionsInJava,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 jclass g_out_of_memory_error_class = nullptr;
-jmethodID g_class_loader_load_class_method_id = nullptr;
 
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+jmethodID g_class_loader_load_class_method_id = nullptr;
+// ClassLoader.loadClass() accepts either slashes or dots on Android, but JVM
+// requires dots. We could translate, but there is no need to go through
+// ClassLoaders in Robolectric anyways.
+// https://cs.android.com/search?q=symbol:DexFile_defineClassNative
 jclass GetClassFromSplit(JNIEnv* env,
                          const char* class_name,
                          const char* split_name) {
@@ -60,6 +66,7 @@ void PrepareClassLoaders(JNIEnv* env) {
     CHECK(!ClearException(env));
   }
 }
+#endif  // !BUILDFLAG(IS_ROBOLECTRIC)
 }  // namespace
 
 LogFatalCallback g_log_fatal_callback_for_testing = nullptr;
@@ -86,11 +93,13 @@ void InitVM(JavaVM* vm) {
   jni_zero::InitVM(vm);
   jni_zero::SetExceptionHandler(CheckException);
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  // Warmup needed for GetClassFromSplit, must be called before we set the
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+  // Warm-up needed for GetClassFromSplit, must be called before we set the
   // resolver, since GetClassFromSplit won't work until after
   // PrepareClassLoaders has happened.
   PrepareClassLoaders(env);
   jni_zero::SetClassResolver(GetClassFromSplit);
+#endif
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);

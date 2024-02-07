@@ -1341,6 +1341,7 @@ component("base") {
     deps += [
       ":base_jni",
       ":process_launcher_jni",
+      "//build:robolectric_buildflags",
     ]
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
   }  # is_android || is_robolectric
