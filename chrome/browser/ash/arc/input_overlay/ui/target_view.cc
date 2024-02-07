@@ -118,13 +118,17 @@ int TargetView::GetCircleRingRadius() const {
   }
 }
 
+int TargetView::GetPadding() const {
+  return TouchPoint::GetEdgeLength(action_type_) / 2;
+}
+
 void TargetView::ClampCenter() {
-  const int circle_ring_radius = GetCircleRadius();
+  const int padding = GetPadding();
   const auto& view_size = size();
-  center_.set_x(std::clamp(center_.x(), /*lo=*/circle_ring_radius,
-                           view_size.width() - circle_ring_radius));
-  center_.set_y(std::clamp(center_.y(), /*lo=*/circle_ring_radius,
-                           view_size.height() - circle_ring_radius));
+  center_.set_x(std::clamp(center_.x(), /*lo=*/padding,
+                           /*hi=*/view_size.width() - padding));
+  center_.set_y(std::clamp(center_.y(), /*lo=*/padding,
+                           /*hi=*/view_size.height() - padding));
 }
 
 void TargetView::OnCenterChanged() {

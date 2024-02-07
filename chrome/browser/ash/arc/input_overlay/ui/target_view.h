@@ -39,6 +39,8 @@ class TargetView : public views::View {
   int GetCircleRadius() const;
   // The target circle ring radius excluding the ring thickness.
   int GetCircleRingRadius() const;
+  // The padding that `center_` can't access.
+  int GetPadding() const;
 
   // Clamps `center_` so that the target circle can show completely and
   // constraint the action position.

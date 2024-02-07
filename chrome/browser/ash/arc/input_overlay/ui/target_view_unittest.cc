@@ -27,9 +27,9 @@ class TargetViewTest : public OverlayViewTestBase {
     return target->center_;
   }
 
-  int GetTargetRadius(TargetView* target) {
+  int GetTargetPadding(TargetView* target) {
     DCHECK(target);
-    return target->GetCircleRadius();
+    return target->GetPadding();
   }
 
   // Convert the point in `TargetView` coordinates to screen coordinates.
@@ -118,7 +118,7 @@ TEST_F(TargetViewTest, TestCenterClamp) {
   // inside and show the complete circle.
   target_view = GetTargetView();
   EXPECT_TRUE(target_view);
-  EXPECT_EQ(GetTargetCenter(target_view).x(), GetTargetRadius(target_view));
+  EXPECT_EQ(GetTargetCenter(target_view).x(), GetTargetPadding(target_view));
 }
 
 TEST_F(TargetViewTest, TestKeyboardSupport) {

@@ -292,21 +292,28 @@ TouchPoint* TouchPoint::Show(views::View* parent,
   return touch_point_ptr;
 }
 
-gfx::Size TouchPoint::GetSize(ActionType action_type) {
-  int size = 0;
+// static
+int TouchPoint::GetEdgeLength(ActionType action_type) {
+  int length = 0;
   switch (action_type) {
     case ActionType::TAP:
-      size = kDotCenterDiameter + kDotInsideStrokeThickness * 2 +
-             kDotOutsideStrokeThickness * 2;
+      length = kDotCenterDiameter + kDotInsideStrokeThickness * 2 +
+               kDotOutsideStrokeThickness * 2;
       break;
     case ActionType::MOVE:
-      size = kCrossCenterLength + kCrossInsideStrokeThickness * 2 +
-             kCrossOutsideStrokeThickness * 2;
+      length = kCrossCenterLength + kCrossInsideStrokeThickness * 2 +
+               kCrossOutsideStrokeThickness * 2;
       break;
     default:
       NOTREACHED();
   }
-  return gfx::Size(size, size);
+  return length;
+}
+
+// static
+gfx::Size TouchPoint::GetSize(ActionType action_type) {
+  const int edge_length = GetEdgeLength(action_type);
+  return gfx::Size(edge_length, edge_length);
 }
 
 // static
