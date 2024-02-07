@@ -459,7 +459,10 @@ void WebPluginContainerImpl::Copy() {
     return;
 
   LocalFrame* frame = element_->GetDocument().GetFrame();
-  frame->GetSystemClipboard()->WriteHTML(web_plugin_->SelectionAsMarkup(),
+  String html = web_plugin_->SelectionAsMarkup();
+  // On Mac, add a meta charset tag for compatibility with native apps.
+  // See comments in AddMetaCharsetTagToHtmlOnMac for more details.
+  frame->GetSystemClipboard()->WriteHTML(AddMetaCharsetTagToHtmlOnMac(html),
                                          KURL());
   String text = web_plugin_->SelectionAsText();
   ReplaceNBSPWithSpace(text);

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
+#include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -206,8 +207,15 @@ String DataObjectItem::GetAsString() const {
     data = system_clipboard_->ReadRTF();
   } else if (type_ == kMimeTypeTextHTML) {
     KURL ignored_source_url;
-    unsigned ignored;
-    data = system_clipboard_->ReadHTML(ignored_source_url, ignored, ignored);
+    unsigned ignored_start = 0;
+    unsigned ignored_end = 0;
+    data = system_clipboard_->ReadHTML(ignored_source_url, ignored_start,
+                                       ignored_end);
+    // On Mac, remove meta charset tag that was added for compatibility with
+    // native apps. See comments in AddMetaCharsetTagToHtmlOnMac for more
+    // details.
+    data = RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac(data, ignored_start,
+                                                            ignored_end);
   } else {
     data = system_clipboard_->ReadCustomData(type_);
   }

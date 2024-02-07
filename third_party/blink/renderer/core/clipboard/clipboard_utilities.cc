@@ -104,4 +104,50 @@ String PNGToImageMarkup(const mojo_base::BigBuffer& png_data) {
   return markup.ToString();
 }
 
+// NSPasteboardTypeHTML does not define what encoding should be used, and if
+// no character encoding is specified, it is likely that the data will be
+// interpreted as ISO-8859-1, even with modern releases like macOS 14.2.
+// (https://crbug.com/11957)
+//
+// (Note that Safari does not encounter this issue because in addition to
+// adding the data to the pasteboard as a NSPasteboardTypeHTML flavor, it also
+// adds it as a UTTypeWebArchive type which includes the encoding.)
+//
+// This issue has been filed as FB13522476. When this feedback is addressed
+// and NSPasteboardTypeHTML is interpreted as UTF-8, remove the code that adds
+// a charset declaration.
+#if BUILDFLAG(IS_MAC)
+static constexpr char kMetaTag[] = "<meta charset=\"utf-8\">";
+static constexpr unsigned kMetaTagLength = sizeof(kMetaTag) - 1;
+#endif
+
+String AddMetaCharsetTagToHtmlOnMac(const String& html) {
+#if BUILDFLAG(IS_MAC)
+  if (html.Find(kMetaTag) == kNotFound) {
+    StringBuilder html_result;
+    html_result.Append(kMetaTag);
+    html_result.Append(html);
+    return html_result.ToString();
+  }
+#endif
+  return html;
+}
+
+String RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac(
+    const String& html,
+    unsigned& fragment_start,
+    unsigned& fragment_end) {
+#if BUILDFLAG(IS_MAC)
+  DCHECK_EQ(fragment_start, 0u);
+  DCHECK_EQ(fragment_end, html.length());
+  if (html.StartsWith(kMetaTag)) {
+    const String html_fragment = html.Substring(kMetaTagLength);
+    fragment_start = 0;
+    fragment_end = html_fragment.length();
+    return html_fragment;
+  }
+#endif
+  return html;
+}
+
 }  // namespace blink

@@ -47,6 +47,11 @@ CORE_EXPORT void ReplaceNBSPWithSpace(String&);
 CORE_EXPORT String ConvertURIListToURL(const String& uri_list);
 CORE_EXPORT String URLToImageMarkup(const KURL&, const String& title);
 CORE_EXPORT String PNGToImageMarkup(const mojo_base::BigBuffer& png_data);
+CORE_EXPORT String AddMetaCharsetTagToHtmlOnMac(const String& html);
+CORE_EXPORT String
+RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac(const String& html,
+                                                 unsigned& fragment_start,
+                                                 unsigned& fragment_end);
 
 }  // namespace blink
 

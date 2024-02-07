@@ -479,12 +479,8 @@ void ClipboardMac::WriteText(base::StringPiece text) {
 void ClipboardMac::WriteHTML(
     base::StringPiece markup,
     absl::optional<base::StringPiece> /* source_url */) {
-  // We need to mark it as utf-8. (see crbug.com/11957)
-  std::string html_fragment_str("<meta charset='utf-8'>");
-  html_fragment_str.append(markup);
-  NSString* html_fragment = base::SysUTF8ToNSString(html_fragment_str);
-
-  [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
+  [GetPasteboard() setString:base::SysUTF8ToNSString(markup)
+                     forType:NSPasteboardTypeHTML];
 }
 
 void ClipboardMac::WriteSvg(base::StringPiece markup) {

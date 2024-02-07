@@ -72,4 +72,39 @@ TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
       PNGToImageMarkup(png));
 }
 
+TEST(ClipboardUtilitiesTest, AddMetaCharsetTagToHtmlOnMac) {
+  const String html_markup = "<p>Test</p>";
+  const String expected_html_markup = "<meta charset=\"utf-8\"><p>Test</p>";
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(AddMetaCharsetTagToHtmlOnMac(html_markup), expected_html_markup);
+#else
+  EXPECT_EQ(AddMetaCharsetTagToHtmlOnMac(html_markup), html_markup);
+#endif
+}
+
+TEST(ClipboardUtilitiesTest, RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac) {
+#if BUILDFLAG(IS_MAC)
+  const String expected_html_markup = "<p>Test</p>";
+  const String html_markup = "<meta charset=\"utf-8\"><p>Test</p>";
+  unsigned fragment_start = 0;
+  unsigned fragment_end = html_markup.length();
+  const String actual_value = RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac(
+      html_markup, fragment_start, fragment_end);
+  EXPECT_EQ(actual_value, expected_html_markup);
+  EXPECT_EQ(fragment_start, 0u);
+  // Meta tag is not part of the copied fragment.
+  EXPECT_EQ(fragment_end, expected_html_markup.length());
+#else
+  const String html_markup = "<p>Test</p>";
+  unsigned fragment_start = 0;
+  unsigned fragment_end = html_markup.length();
+  const String actual_value = RemoveMetaTagAndCalcFragmentOffsetsFromHtmlOnMac(
+      html_markup, fragment_start, fragment_end);
+  // On non-Mac platforms, the HTML markup is unchanged.
+  EXPECT_EQ(actual_value, html_markup);
+  EXPECT_EQ(fragment_start, 0u);
+  EXPECT_EQ(fragment_end, html_markup.length());
+#endif
+}
+
 }  // namespace blink
