@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_discovery_metrics.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/package_id.h"
@@ -91,7 +94,7 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
       .SetAppType(static_cast<int>(app_type))
       .SetInstallSource(static_cast<int>(app_install_source))
       .SetInstallReason(static_cast<int>(app_install_reason));
-  event.Record();
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
 }
 
 void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
@@ -106,7 +109,7 @@ void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
   event.SetAppId(GetAppStringToRecord(app_id, app_type))
       .SetAppType(static_cast<int>(app_type))
       .SetLaunchSource(static_cast<int>(launch_source));
-  event.Record();
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
 }
 
 void AppDiscoveryMetrics::OnAppUninstalled(
@@ -129,7 +132,7 @@ void AppDiscoveryMetrics::OnAppUninstalled(
   event.SetAppId(app_str_to_record)
       .SetAppType(static_cast<int>(app_type))
       .SetUninstallSource(static_cast<int>(app_uninstall_source));
-  event.Record();
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
 }
 
 void AppDiscoveryMetrics::OnAppPlatformMetricsDestroyed() {
@@ -281,22 +284,22 @@ bool AppDiscoveryMetrics::IsStateActive(InstanceState instance_state) {
 
 void AppDiscoveryMetrics::RecordAppActive(
     const InstanceUpdate& instance_update) {
-  cros_events::AppDiscovery_AppStateChanged()
-      .SetAppId(
-          GetAppStringToRecord(instance_update.AppId(),
-                               GetAppType(profile_, instance_update.AppId())))
-      .SetAppState(static_cast<int>(AppStateChange::kActive))
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::AppDiscovery_AppStateChanged()
+                    .SetAppId(GetAppStringToRecord(
+                        instance_update.AppId(),
+                        GetAppType(profile_, instance_update.AppId())))
+                    .SetAppState(static_cast<int>(AppStateChange::kActive))));
 }
 
 void AppDiscoveryMetrics::RecordAppInactive(
     const InstanceUpdate& instance_update) {
-  cros_events::AppDiscovery_AppStateChanged()
-      .SetAppId(
-          GetAppStringToRecord(instance_update.AppId(),
-                               GetAppType(profile_, instance_update.AppId())))
-      .SetAppState(static_cast<int>(AppStateChange::kInactive))
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::AppDiscovery_AppStateChanged()
+                    .SetAppId(GetAppStringToRecord(
+                        instance_update.AppId(),
+                        GetAppType(profile_, instance_update.AppId())))
+                    .SetAppState(static_cast<int>(AppStateChange::kInactive))));
 }
 
 void AppDiscoveryMetrics::RecordAppClosed(
@@ -306,12 +309,12 @@ void AppDiscoveryMetrics::RecordAppClosed(
 
   // If instance_update is the only instance of the app.
   if (prev_instances.size() == 1) {
-    cros_events::AppDiscovery_AppStateChanged()
-        .SetAppId(
-            GetAppStringToRecord(instance_update.AppId(),
-                                 GetAppType(profile_, instance_update.AppId())))
-        .SetAppState(static_cast<int>(AppStateChange::kClosed))
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(
+        std::move(cros_events::AppDiscovery_AppStateChanged()
+                      .SetAppId(GetAppStringToRecord(
+                          instance_update.AppId(),
+                          GetAppType(profile_, instance_update.AppId())))
+                      .SetAppState(static_cast<int>(AppStateChange::kClosed))));
   }
 }
 
