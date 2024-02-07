@@ -466,6 +466,20 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+// On Android and ChromeOS, Graphite should fall back to Ganesh/GL.
+TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToGaneshGL) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+}
+#endif
+
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)

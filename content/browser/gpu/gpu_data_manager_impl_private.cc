@@ -579,10 +579,13 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     CHECK(false) << "GPU acceleration is required on certain platforms!";
 #endif
   } else if (features::IsSkiaGraphiteEnabled(command_line)) {
-    // If Graphite is enabled, do not add modes to fall back to Ganesh. Instead,
-    // fall back directly to software.
-    // TODO(crbug.com/1507801): Add fallback to Ganesh/GL on platforms that
-    // don't support software compositing (Android and ChromeOS).
+    // If Graphite is enabled, fall back to Ganesh only on platforms that do not
+    // support software compositing. Otherwise, fall back directly to software.
+    // TODO(b/323953910): Eliminate this fallback on each platform once Graphite
+    // stability is sufficient on that platform.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+    fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
+#endif
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
