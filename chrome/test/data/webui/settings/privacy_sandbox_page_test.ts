@@ -1292,6 +1292,14 @@ suite('ManageTopics', function() {
   test('ManageTopicsPageTestToggles', async function() {
     const toggles = page.shadowRoot!.querySelectorAll('cr-toggle');
     assertEquals(2, toggles.length);
+    const toggleAriaLabels =
+        Array.from(toggles).map(toggle => toggle.getAttribute('aria-label'));
+    assertDeepEquals(['test-topic-1', 'test-topic-4'], toggleAriaLabels);
+    const toggleAriaDescriptions = Array.from(toggles).map(
+        toggle => toggle.getAttribute('aria-description'));
+    assertDeepEquals(
+        ['test-topic-1-description', 'test-topic-4-description'],
+        toggleAriaDescriptions);
     const toggleIds = Array.from(toggles).map(topicToggle => topicToggle.id);
     assertDeepEquals(['toggle-1', 'toggle-4'], toggleIds);
     // Toggle 1 (topic 1) is also blocked so it is toggled OFF.

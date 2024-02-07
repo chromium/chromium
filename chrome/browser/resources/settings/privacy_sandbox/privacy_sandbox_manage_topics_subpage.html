@@ -51,7 +51,9 @@
       </div>
       <cr-toggle id="toggle-[[item.topic.topicId]]"
           on-change="onToggleChange_"
-          checked="[[!item.removed]]"></cr-toggle>
+          checked="[[!item.removed]]"
+          aria-label="[[item.topic.displayString]]"
+          aria-description="[[item.topic.description]]"></cr-toggle>
     </div>
   </div>
 </template>
