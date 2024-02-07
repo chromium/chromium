@@ -136,8 +136,6 @@ void AshEventStorage::CopyEvents(EventsProto* events_proto) const {
 }
 
 void AshEventStorage::OnWrite(const WriteStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case WriteStatus::kOk:
       break;
@@ -151,8 +149,6 @@ void AshEventStorage::OnWrite(const WriteStatus status) {
 }
 
 void AshEventStorage::OnRead(const ReadStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case ReadStatus::kOk:
     case ReadStatus::kMissing:
@@ -169,8 +165,6 @@ void AshEventStorage::OnRead(const ReadStatus status) {
 }
 
 void AshEventStorage::OnProfileRead(const ReadStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case ReadStatus::kOk:
     case ReadStatus::kMissing:

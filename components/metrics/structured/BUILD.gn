@@ -26,8 +26,9 @@ static_library("structured") {
     "key_data_provider_prefs.h",
     "key_util.cc",
     "key_util.h",
-    "persistent_proto.cc",
     "persistent_proto.h",
+    "persistent_proto_internal.cc",
+    "persistent_proto_internal.h",
     "reporting/structured_metrics_log_metrics.cc",
     "reporting/structured_metrics_log_metrics.h",
     "reporting/structured_metrics_reporting_service.cc",
@@ -60,6 +61,7 @@ static_library("structured") {
     "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+#// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/persistent_proto.h"
+#include "components/metrics/structured/persistent_proto_internal.h"
 
 #include <memory>
 #include <utility>
@@ -16,19 +16,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/lib/proto/key.pb.h"
-#include "components/metrics/structured/proto/event_storage.pb.h"
 
-namespace metrics::structured {
+namespace metrics::structured::internal {
+
 namespace {
 
-template <class T>
 // Attempts to read from |filepath| and returns a string with the file content
 // if successful.
-base::expected<std::unique_ptr<T>, ReadStatus> Read(
-    const base::FilePath& filepath) {
+base::expected<std::string, ReadStatus> Read(const base::FilePath& filepath) {
   if (!base::PathExists(filepath)) {
     return base::unexpected(ReadStatus::kMissing);
   }
@@ -38,22 +34,16 @@ base::expected<std::unique_ptr<T>, ReadStatus> Read(
     return base::unexpected(ReadStatus::kReadError);
   }
 
-  auto proto = std::make_unique<T>();
-  if (!proto->ParseFromString(proto_str)) {
-    return base::unexpected(ReadStatus::kParseError);
-  }
-
-  return base::ok(std::move(proto));
+  return base::ok(std::move(proto_str));
 }
 
 }  // namespace
 
-template <class T>
-PersistentProto<T>::PersistentProto(
+PersistentProtoInternal::PersistentProtoInternal(
     const base::FilePath& path,
-    const base::TimeDelta write_delay,
-    typename PersistentProto<T>::ReadCallback on_read,
-    typename PersistentProto<T>::WriteCallback on_write)
+    base::TimeDelta write_delay,
+    PersistentProtoInternal::ReadCallback on_read,
+    PersistentProtoInternal::WriteCallback on_write)
     : on_read_(std::move(on_read)),
       on_write_(std::move(on_write)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -65,38 +55,43 @@ PersistentProto<T>::PersistentProto(
                                     write_delay,
                                     "StructuredMetricsPersistentProto")) {
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&Read<T>, proto_file_.path()),
-      base::BindOnce(&PersistentProto<T>::OnReadComplete,
+      FROM_HERE, base::BindOnce(&Read, proto_file_.path()),
+      base::BindOnce(&PersistentProtoInternal::OnReadComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
-template <class T>
-PersistentProto<T>::~PersistentProto() {
+PersistentProtoInternal::~PersistentProtoInternal() {
   // Flush any existing writes that are scheduled.
   if (proto_file_.HasPendingWrite()) {
     proto_file_.DoScheduledWrite();
   }
 }
 
-template <class T>
-void PersistentProto<T>::OnReadComplete(
-    base::expected<std::unique_ptr<T>, ReadStatus> read_status) {
+void PersistentProtoInternal::OnReadComplete(
+    base::expected<std::string, ReadStatus> read_status) {
   ReadStatus status;
 
   if (read_status.has_value()) {
     status = ReadStatus::kOk;
-    proto_ = std::move(read_status.value());
+    proto_ = BuildEmptyProto();
+
+    if (!proto_->ParseFromString(read_status.value())) {
+      status = ReadStatus::kParseError;
+      QueueWrite();
+    }
   } else {
-    // If there was an error, write an empty proto.
     status = read_status.error();
-    proto_ = std::make_unique<T>();
+  }
+
+  // If there was an error, write an empty proto.
+  if (status != ReadStatus::kOk) {
+    proto_ = BuildEmptyProto();
     QueueWrite();
   }
 
   // Purge the read proto if |purge_after_reading_|.
   if (purge_after_reading_) {
-    proto_.reset();
-    proto_ = std::make_unique<T>();
+    proto_ = BuildEmptyProto();
     QueueWrite();
     purge_after_reading_ = false;
   }
@@ -104,8 +99,7 @@ void PersistentProto<T>::OnReadComplete(
   std::move(on_read_).Run(std::move(status));
 }
 
-template <class T>
-void PersistentProto<T>::QueueWrite() {
+void PersistentProtoInternal::QueueWrite() {
   // |proto_| will be null if OnReadComplete() has not finished executing. It is
   // up to the user to verify that OnReadComplete() has finished with callback
   // |on_read_| before calling QueueWrite().
@@ -113,8 +107,7 @@ void PersistentProto<T>::QueueWrite() {
   proto_file_.ScheduleWrite(this);
 }
 
-template <class T>
-void PersistentProto<T>::OnWriteAttempt(bool write_successful) {
+void PersistentProtoInternal::OnWriteAttempt(bool write_successful) {
   if (write_successful) {
     OnWriteComplete(WriteStatus::kOk);
   } else {
@@ -122,24 +115,21 @@ void PersistentProto<T>::OnWriteAttempt(bool write_successful) {
   }
 }
 
-template <class T>
-void PersistentProto<T>::OnWriteComplete(const WriteStatus status) {
+void PersistentProtoInternal::OnWriteComplete(const WriteStatus status) {
   on_write_.Run(status);
 }
 
-template <class T>
-void PersistentProto<T>::Purge() {
+void PersistentProtoInternal::Purge() {
   if (proto_) {
     proto_.reset();
-    proto_ = std::make_unique<T>();
+    proto_ = BuildEmptyProto();
     QueueWrite();
   } else {
     purge_after_reading_ = true;
   }
 }
 
-template <class T>
-std::optional<std::string> PersistentProto<T>::SerializeData() {
+std::optional<std::string> PersistentProtoInternal::SerializeData() {
   std::string proto_str;
   if (!proto_->SerializeToString(&proto_str)) {
     OnWriteComplete(WriteStatus::kSerializationError);
@@ -148,21 +138,16 @@ std::optional<std::string> PersistentProto<T>::SerializeData() {
   proto_file_.RegisterOnNextWriteCallbacks(
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory),
                      proto_file_.path().DirName()),
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(&PersistentProto<T>::OnWriteAttempt,
-                                        weak_factory_.GetWeakPtr())));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&PersistentProtoInternal::OnWriteAttempt,
+                         weak_factory_.GetWeakPtr())));
   return proto_str;
 }
 
-template <class T>
-void PersistentProto<T>::StartWriteForTesting() {
+void PersistentProtoInternal::StartWriteForTesting() {
   proto_file_.ScheduleWrite(this);
   proto_file_.DoScheduledWrite();
 }
 
-// A list of all types that the PersistentProto can be used with.
-template class PersistentProto<EventsProto>;
-template class PersistentProto<KeyDataProto>;
-template class PersistentProto<KeyProto>;
-
-}  // namespace metrics::structured
+}  // namespace metrics::structured::internal

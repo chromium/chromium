@@ -21,7 +21,6 @@ namespace base {
 
 class FilePath;
 class TimeDelta;
-class SequencedTaskRunner;
 
 }  // namespace base
 
@@ -69,8 +68,6 @@ class KeyDataFileDelegate : public KeyData::StorageDelegate {
   std::unique_ptr<PersistentProto<KeyDataProto>> proto_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<KeyDataFileDelegate> weak_factory_{this};
 };
