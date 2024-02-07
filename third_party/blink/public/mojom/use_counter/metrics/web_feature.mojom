@@ -4197,6 +4197,7 @@ enum WebFeature {
   kFirstPartySharedWorkerSameSiteCookiesNone = 4833,
   kCSSCustomStateDeprecatedSyntax = 4834,
   kFullscreenAllowedByContentSetting = 4835,
+  kSharedStorageAPI_CreateWorklet_Method = 4836,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -13,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_window_supplement.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
@@ -118,6 +118,21 @@ void OnSetterMethodFinished(ScriptPromiseResolver* resolver,
 
   LogTimingHistogramForSetterMethod(method, global_scope, start_time);
   resolver->Resolve();
+}
+
+mojom::blink::SharedStorageDocumentService* GetSharedStorageDocumentService(
+    ExecutionContext* execution_context) {
+  CHECK(execution_context->IsWindow());
+  return SharedStorageWindowSupplement::From(
+             To<LocalDOMWindow>(*execution_context))
+      ->GetSharedStorageDocumentService();
+}
+
+mojom::blink::SharedStorageWorkletServiceClient*
+GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context) {
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+  return To<SharedStorageWorkletGlobalScope>(execution_context)
+      ->GetSharedStorageWorkletServiceClient();
 }
 
 }  // namespace
@@ -318,7 +333,6 @@ SharedStorage::~SharedStorage() = default;
 
 void SharedStorage::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_worklet_);
-  visitor->Trace(shared_storage_document_service_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -755,37 +769,21 @@ ScriptPromise SharedStorage::run(
                                      exception_state);
 }
 
+ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
+                                           const String& module_url,
+                                           ExceptionState& exception_state) {
+  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
+  return worklet->AddModuleHelper(script_state, module_url, exception_state,
+                                  /*resolve_to_worklet=*/true);
+}
+
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  if (shared_storage_worklet_)
-    return shared_storage_worklet_.Get();
-
-  shared_storage_worklet_ = MakeGarbageCollected<SharedStorageWorklet>(this);
+  if (!shared_storage_worklet_) {
+    shared_storage_worklet_ = SharedStorageWorklet::Create(script_state);
+  }
 
   return shared_storage_worklet_.Get();
-}
-
-mojom::blink::SharedStorageDocumentService*
-SharedStorage::GetSharedStorageDocumentService(
-    ExecutionContext* execution_context) {
-  CHECK(execution_context->IsWindow());
-  if (!shared_storage_document_service_.is_bound()) {
-    LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
-    DCHECK(frame);
-
-    frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-        shared_storage_document_service_.BindNewEndpointAndPassReceiver(
-            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  return shared_storage_document_service_.get();
-}
-
-mojom::blink::SharedStorageWorkletServiceClient*
-SharedStorage::GetSharedStorageWorkletServiceClient(
-    ExecutionContext* execution_context) {
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
-  return To<SharedStorageWorkletGlobalScope>(execution_context)
-      ->GetSharedStorageWorkletServiceClient();
 }
 
 PairAsyncIterable<SharedStorage>::IterationSource*

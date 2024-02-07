@@ -1080,7 +1080,7 @@ void SharedStorageWorkletHost::ExpireWorklet() {
 
   // This will remove this worklet host from the manager.
   shared_storage_worklet_host_manager_->ExpireWorkletHostForDocumentService(
-      document_service_.get());
+      document_service_.get(), this);
 
   // Do not add code after this. SharedStorageWorkletHost has been destroyed.
 }

@@ -73,6 +73,13 @@
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
   [
+    RuntimeEnabled=SharedStorageAPIM123,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_CreateWorklet_Method
+  ] Promise<SharedStorageWorklet> createWorklet(USVString moduleURL);
+
+  [
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException

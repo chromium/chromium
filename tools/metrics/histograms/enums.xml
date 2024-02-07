@@ -11280,6 +11280,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4833" label="FirstPartySharedWorkerSameSiteCookiesNone"/>
   <int value="4834" label="CSSCustomStateDeprecatedSyntax"/>
   <int value="4835" label="FullscreenAllowedByContentSetting"/>
+  <int value="4836" label="SharedStorageAPI_CreateWorklet_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

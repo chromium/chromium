@@ -2091,9 +2091,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
-  EXPECT_THAT(result.error,
-              testing::HasSubstr("sharedStorage.worklet.addModule() can only "
-                                 "be invoked once per browsing context"));
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("addModule() can only be invoked once per worklet"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),

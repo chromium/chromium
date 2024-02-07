@@ -112,12 +112,16 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     CreateWorkletCallback callback) {
-  if (create_worklet_called_) {
-    // This could indicate a compromised renderer, so let's terminate it.
-    receiver_.ReportBadMessage("Attempted to create multiple worklets.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
-    return;
+  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+    if (create_worklet_called_) {
+      // This could indicate a compromised renderer, so let's terminate it.
+      receiver_.ReportBadMessage("Attempted to create multiple worklets.");
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
+      return;
+    }
   }
 
   create_worklet_called_ = true;

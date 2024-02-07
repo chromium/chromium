@@ -123,7 +123,14 @@ size_t GetAttachedSharedStorageWorkletHostsCount(
   SharedStorageWorkletHostManager* manager =
       GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition);
   DCHECK(manager);
-  return manager->GetAttachedWorkletHostsForTesting().size();
+
+  size_t count = 0;
+  for (const auto& [document_service, worklet_hosts] :
+       manager->GetAttachedWorkletHostsForTesting()) {
+    count += worklet_hosts.size();
+  }
+
+  return count;
 }
 
 size_t GetKeepAliveSharedStorageWorkletHostsCount(

@@ -142,10 +142,6 @@ class CONTENT_EXPORT SharedStorageWorkletHost
     return script_source_url_;
   }
 
-  const url::Origin& shared_storage_origin_for_testing() const {
-    return shared_storage_origin_;
-  }
-
  protected:
   // virtual for testing
   virtual void OnAddModuleOnWorkletFinished(
