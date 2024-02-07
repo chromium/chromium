@@ -79,6 +79,7 @@ class SharedStorageDocumentClearStory(SharedStorageStory):
   }, {
       'type': 'documentClear'
   }]
+  RENAVIGATE_AFTER_ACTION = True
 
 
 class SharedStorageWorkletRunSetStory(SharedStorageStory):

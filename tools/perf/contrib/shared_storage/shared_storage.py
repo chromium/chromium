@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
+
 from benchmarks import memory
 from contrib.shared_storage import page_set
 from core import perf_benchmark
@@ -21,7 +23,6 @@ _SHARED_STORAGE_UMA_HISTOGRAMS = [
     "Storage.SharedStorage.Document.Timing.SelectURL",
     "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
     "Storage.SharedStorage.Document.Timing.Set",
-    "Storage.SharedStorage.OnShutdown.NumSqlErrors",
     "Storage.SharedStorage.Worklet.Timing.Append",
     "Storage.SharedStorage.Worklet.Timing.Clear",
     "Storage.SharedStorage.Worklet.Timing.Delete",
@@ -34,8 +35,21 @@ _SHARED_STORAGE_UMA_HISTOGRAMS = [
     "Storage.SharedStorage.Worklet.Timing.Values.Next",
 ]
 
+# Features to enable via command line.
+_ENABLED_FEATURES = [
+    'SharedStorageAPI:SharedStorageDebugDisabledMessage/true',
+    'FencedFrames:implementation_type/mparch', 'FencedFramesDefaultMode',
+    'PrivacySandboxAdsAPIsOverride', 'DefaultAllowPrivacySandboxAttestations'
+]
+
 # Default number of times to run each shared storage action in a story.
 _DEFAULT_NUM_ITERATIONS = 10
+
+# Maximum number of times to run each shared storage action in a story.
+_MAX_NUM_ITERATIONS = 10
+
+# Default number of times to run each story.
+_DEFAULT_NUM_REPEAT = 10
 
 # Use maximum allowed trace buffer size (in KB).
 _TRACE_BUFFER_SIZE = 2**32 - 1
@@ -47,6 +61,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
   verbose_memory_metrics = False
   iterations = _DEFAULT_NUM_ITERATIONS
   verbosity = 0
+
+  options = {'pageset_repeat': _DEFAULT_NUM_REPEAT}
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
@@ -61,12 +77,14 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     parser.add_option('--verbose-memory-metrics',
                       action='store_true',
                       help='Enables non-UMA memory metrics.')
-    parser.add_option(
-        '--iterations',
-        action='store',
-        type='int',
-        default=_DEFAULT_NUM_ITERATIONS,
-        help='Number of times to repeat the test action for each test run.')
+    iter_help = ('Number of times (default %d, max %d)' %
+                 (_DEFAULT_NUM_ITERATIONS, _MAX_NUM_ITERATIONS))
+    iter_help += ' to repeat action for each story run.'
+    parser.add_option('--iterations',
+                      action='store',
+                      type='int',
+                      default=_DEFAULT_NUM_ITERATIONS,
+                      help=iter_help)
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -75,6 +93,10 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     cls.iterations = args.iterations
     if cls.iterations <= 0:
       raise ValueError('Got invalid value %d for iterations' % cls.iterations)
+    if cls.iterations > _MAX_NUM_ITERATIONS:
+      logging.warning('The maximum allowed number of iterations is 10. ' +
+                      'Increase pageset_repeat instead.')
+      cls.iterations = _MAX_NUM_ITERATIONS
 
   def SetExtraBrowserOptions(self, options):
     # `options` is an instance of `browser_options.BrowserOptions`.
@@ -82,13 +104,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
       memory.SetExtraBrowserOptionsForMemoryMeasurement(options)
 
     options.AppendExtraBrowserArgs([
-        ''.join([
-            '--enable-features=',
-            'SharedStorageAPI:SharedStorageDebugDisabledMessage/true,',
-            'FencedFrames:implementation_type/mparch,',
-            'FencedFramesDefaultMode,', 'PrivacySandboxAdsAPIsOverride,',
-            'DefaultAllowPrivacySandboxAttestations'
-        ]), '--enable-privacy-sandbox-ads-apis'
+        '--enable-features=' + ','.join(_ENABLED_FEATURES),
+        '--enable-privacy-sandbox-ads-apis'
     ])
 
   def CustomizeOptions(self, finder_options, possible_browser=None):
@@ -103,7 +120,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     self.verbosity = finder_options.verbosity
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
-    category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
+    category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string="benchmark")
     if self.verbose_memory_metrics:
       tbm_options = memory.CreateCoreTimelineBasedMemoryMeasurementOptions()
 

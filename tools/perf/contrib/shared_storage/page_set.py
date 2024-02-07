@@ -8,6 +8,7 @@ import os
 import py_utils
 import six
 from socket import timeout
+import time
 
 from telemetry import story
 from telemetry.internal.backends.chrome_inspector import websocket
@@ -17,6 +18,9 @@ from telemetry.page import shared_page_state
 # Timeouts in seconds.
 _ACTION_TIMEOUT = 2
 _NAVIGATION_TIMEOUT = 90
+
+# Time in seconds to sleep at end of story to let histograms finish recording.
+_SLEEP_TIME = 1
 
 # Placeholder substring for index value in the action script template.
 _INDEX_PLACEHOLDER = '{{ index }}'
@@ -161,6 +165,9 @@ class SharedStorageStory(
         action_runner.tab.WaitForDocumentReadyStateToBeComplete(
             _NAVIGATION_TIMEOUT)
         action_runner.tab.ClearSharedStorageNotifications()
+
+    # Sleep for a little to allow histograms to finish recording.
+    time.sleep(_SLEEP_TIME)
 
     if self._enable_memory_metric:
       action_runner.MeasureMemory(deterministic_mode=True)
