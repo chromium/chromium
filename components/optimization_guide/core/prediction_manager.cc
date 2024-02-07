@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -158,9 +160,8 @@ void RecordModelAvailableAtRegistration(
 }  // namespace
 
 PredictionManager::ModelRegistrationInfo::ModelRegistrationInfo(
-    absl::optional<proto::Any> metadata,
-    OptimizationTargetModelObserver* model_observer)
-    : metadata(metadata), model_observer(model_observer) {}
+    absl::optional<proto::Any> metadata)
+    : metadata(metadata) {}
 
 PredictionManager::ModelRegistrationInfo::~ModelRegistrationInfo() = default;
 
@@ -226,25 +227,41 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
     const absl::optional<proto::Any>& model_metadata,
     OptimizationTargetModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(model_registration_info_map_.find(optimization_target) ==
-         model_registration_info_map_.end());
+
+  // A limited number of targets support multiple registrations. In general
+  // multiple registrations are disallowed to mitigate the risk of subtle,
+  // conflicting behavior between two different uses of the same model file. If
+  // adding a target to this set, please document below why it's necessary.
+  constexpr auto kAllowedMultipleRegistrations =
+      base::MakeFixedFlatSet<proto::OptimizationTarget>({
+          // In addition to use by Translate's language detection features, this
+          // model is also needed by the On-Device Model service process, and
+          // ModelExecutionManager monitors for updates on its behalf.
+          proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+      });
+
+  DCHECK(base::Contains(kAllowedMultipleRegistrations, optimization_target) ||
+         !base::Contains(model_registration_info_map_, optimization_target));
   DCHECK(!model_metadata ||
          IsModelMetadataTypeOnServerAllowlist(*model_metadata));
 
   // As DCHECKS don't run in the wild, just do not register the observer if
   // something is already registered for the type. Otherwise, file reads may
   // blow up.
-  if (model_registration_info_map_.find(optimization_target) !=
-      model_registration_info_map_.end()) {
+  if (!base::Contains(kAllowedMultipleRegistrations, optimization_target) &&
+      base::Contains(model_registration_info_map_, optimization_target)) {
     DLOG(ERROR) << "Did not add observer for optimization target "
                 << static_cast<int>(optimization_target)
                 << " since an observer for the target was already registered ";
     return;
   }
 
-  model_registration_info_map_.emplace(
+  auto [it, registered] = model_registration_info_map_.emplace(
       std::piecewise_construct, std::forward_as_tuple(optimization_target),
-      std::forward_as_tuple(model_metadata, observer));
+      std::forward_as_tuple(model_metadata));
+  DCHECK(registered ||
+         base::Contains(kAllowedMultipleRegistrations, optimization_target));
+  it->second.model_observers.AddObserver(observer);
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
@@ -301,8 +318,13 @@ void PredictionManager::RemoveObserverForOptimizationTargetModel(
   auto registration_info =
       model_registration_info_map_.find(optimization_target);
   DCHECK(registration_info != model_registration_info_map_.end());
-  DCHECK(registration_info->second.model_observer == observer);
-  model_registration_info_map_.erase(registration_info);
+
+  auto& observers = registration_info->second.model_observers;
+  DCHECK(observers.HasObserver(observer));
+  observers.RemoveObserver(observer);
+  if (observers.empty()) {
+    model_registration_info_map_.erase(registration_info);
+  }
 }
 
 base::flat_set<proto::OptimizationTarget>
@@ -740,8 +762,9 @@ void PredictionManager::NotifyObserversOfNewModel(
   }
   RecordLifecycleState(optimization_target,
                        ModelDeliveryEvent::kModelDelivered);
-  registration_info_it->second.model_observer->OnModelUpdated(
-      optimization_target, model_info);
+  for (auto& observer : registration_info_it->second.model_observers) {
+    observer.OnModelUpdated(optimization_target, model_info);
+  }
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
     if (model_info.has_value()) {
       OPTIMIZATION_GUIDE_LOGGER(

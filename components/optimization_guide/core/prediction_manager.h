@@ -170,17 +170,16 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Contains the model registration specific info to be kept for each
   // optimization target.
   struct ModelRegistrationInfo {
-    ModelRegistrationInfo(absl::optional<proto::Any> metadata,
-                          OptimizationTargetModelObserver* model_observer);
+    explicit ModelRegistrationInfo(absl::optional<proto::Any> metadata);
     ~ModelRegistrationInfo();
 
     // The feature-provided metadata that was registered with the prediction
     // manager.
     absl::optional<proto::Any> metadata;
 
-    // The model observer that was registered to receive model updates from
-    // the prediction manager.
-    raw_ptr<OptimizationTargetModelObserver> model_observer;
+    // The set of model observers that were registered to receive model updates
+    // from the prediction manager.
+    base::ObserverList<OptimizationTargetModelObserver> model_observers;
   };
 
   friend class PredictionManagerTestBase;
