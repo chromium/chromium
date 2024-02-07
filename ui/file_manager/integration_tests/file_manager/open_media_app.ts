@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 
-import {getCaller, pending, repeatUntil, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {getCaller, pending, repeatUntil, sendTestMessage, type TestEntryInfo} from '../test_util.js';
 import {remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
 
 /**
  * Tests if the media app shows up for the selected file entry and that it has
  * loaded successfully.
- * @param {string} path Directory path (Downloads or Drive).
- * @param {TestEntryInfo} entry Selected file entry to open.
+ * @param path Directory path (Downloads or Drive).
+ * @param entry Selected file entry to open.
  */
-export async function opensInMediaApp(path, entry) {
+export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [entry.targetPath],
