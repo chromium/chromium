@@ -79,7 +79,7 @@ class SearchForShortcutsInteractiveUiTest
       "navigation-view-panel#navigationPanel",
       "#category-3",
       // Text editing subsection
-      "#container > accelerator-subsection:nth-child(2)",
+      "#contentWrapper > accelerator-subsection:nth-child(2)",
       "#rowList > accelerator-row:nth-child(10)",
   };
 
