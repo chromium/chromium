@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -29,6 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -41,9 +44,17 @@ using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 
 PDFExtensionTestBase::PDFExtensionTestBase() = default;
 
+PDFExtensionTestBase::~PDFExtensionTestBase() = default;
+
 void PDFExtensionTestBase::SetUpCommandLine(
     base::CommandLine* /*command_line*/) {
   feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
+
+  if (UseOopif()) {
+    factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
+  } else {
+    factory_ = std::make_unique<guest_view::TestGuestViewManagerFactory>();
+  }
 }
 
 void PDFExtensionTestBase::SetUpOnMainThread() {
@@ -55,6 +66,7 @@ void PDFExtensionTestBase::SetUpOnMainThread() {
 }
 
 void PDFExtensionTestBase::TearDownOnMainThread() {
+  factory_ = absl::monostate();
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   extensions::ExtensionApiTest::TearDownOnMainThread();
 }
@@ -161,8 +173,25 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager(
   if (!profile) {
     profile = browser()->profile();
   }
-  return factory_.GetOrCreateTestGuestViewManager(
-      profile, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
+  return absl::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
+             factory_)
+      ->GetOrCreateTestGuestViewManager(
+          profile,
+          ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
+}
+
+pdf::TestPdfViewerStreamManager*
+PDFExtensionTestBase::GetTestPdfViewerStreamManager(
+    content::WebContents* contents) {
+  return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+             factory_)
+      ->GetTestPdfViewerStreamManager(contents);
+}
+
+void PDFExtensionTestBase::CreateTestPdfViewerStreamManager() {
+  absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+      ->CreatePdfViewerStreamManager(
+          browser()->tab_strip_model()->GetActiveWebContents());
 }
 
 content::RenderFrameHost* PDFExtensionTestBase::GetPluginFrame(

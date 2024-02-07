@@ -570,12 +570,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
 
     WebContents* web_contents = GetActiveWebContents();
 
-    // `test_pdf_viewer_stream_manager` is used only if `UseOopif()` is true.
-    pdf::TestPdfViewerStreamManager* test_pdf_viewer_stream_manager = nullptr;
-    if (UseOopif()) {
-      test_pdf_viewer_stream_manager =
-          pdf::TestPdfViewerStreamManager::CreateForWebContents(web_contents);
-    } else {
+    if (!UseOopif()) {
       // Prepare to load a pdf plugin inside.
       TestMimeHandlerViewGuest::RegisterTestGuestViewType(
           test_guest_view_manager_);
@@ -589,7 +584,8 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // frame.
     content::RenderFrameHost* frame;
     if (UseOopif()) {
-      test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
+      GetTestPdfViewerStreamManager(web_contents)
+          ->WaitUntilPdfLoadedInFirstChild();
       frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     } else {
       auto* guest_view =
@@ -2848,6 +2844,12 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        IframedPdfHasNoPageItems) {
+  if (UseOopif()) {
+    // Create the manager first, since the following HTML page doesn't wait for
+    // the PDF navigation to complete.
+    CreateTestPdfViewerStreamManager();
+  }
+
   TestContextMenuOfPdfInsideWebPage(FILE_PATH_LITERAL("test-iframe-pdf.html"));
 }
 
