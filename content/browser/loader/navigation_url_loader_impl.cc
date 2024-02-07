@@ -61,6 +61,7 @@
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -92,6 +93,7 @@
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
@@ -120,6 +122,10 @@
 namespace content {
 
 namespace {
+
+BASE_FEATURE(kSkipUnnecessaryThreadHopsForParseHeaders,
+             "SkipUnnecessaryThreadHopsForParseHeaders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class NavigationLoaderInterceptorBrowserContainer
     : public NavigationLoaderInterceptor {
@@ -1251,6 +1257,21 @@ void NavigationURLLoaderImpl::ParseHeaders(
     const GURL& url,
     network::mojom::URLResponseHead* head,
     base::OnceClosure continuation) {
+  // As an optimization, when we know the parsed headers will be empty, we can
+  // skip the network process roundtrip.
+  // TODO(arthursonzogni): If there are any performance issues, consider
+  // checking the `head->headers` contains at least one header to be parsed.
+  if (!head->headers) {
+    head->parsed_headers = network::mojom::ParsedHeaders::New();
+  }
+
+  // If the network service is running in process, skip unnecessary thread hops.
+  if (base::FeatureList::IsEnabled(kSkipUnnecessaryThreadHopsForParseHeaders) &&
+      IsInProcessNetworkService() && !head->parsed_headers) {
+    head->parsed_headers =
+        network::PopulateParsedHeaders(head->headers.get(), url);
+  }
+
   // The main path:
   // --------------
   // The ParsedHeaders are already provided. No more work needed.
@@ -1274,16 +1295,6 @@ void NavigationURLLoaderImpl::ParseHeaders(
 #else
     std::move(continuation).Run();
 #endif
-    return;
-  }
-
-  // As an optimization, when we know the parsed headers will be empty, we can
-  // skip the network process roundtrip.
-  // TODO(arthursonzogni): If there are any performance issues, consider
-  // checking the `head->headers` contains at least one header to be parsed.
-  if (!head->headers) {
-    head->parsed_headers = network::mojom::ParsedHeaders::New();
-    std::move(continuation).Run();
     return;
   }
 
