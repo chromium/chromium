@@ -69,9 +69,9 @@ class Product:
         """Product-specific wptrunner parameters needed to run tests."""
         processes = self._options.child_processes
         if not processes:
-            if self._options.wrapper or not self._options.headless:
+            if self._options.wrapper:
                 _log.info('Defaulting to 1 worker because of debugging '
-                          'options (`--wrapper` or `--no-headless`)')
+                          'option `--wrapper`')
                 processes = 1
             else:
                 processes = self._port.default_child_processes()

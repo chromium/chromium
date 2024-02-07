@@ -237,7 +237,8 @@ class WPTAdapter:
         runner_options.no_capture_stdio = True
         runner_options.manifest_download = False
         runner_options.manifest_update = False
-        runner_options.headless = True
+        runner_options.pause_after_test = False
+        runner_options.headless = self.options.headless
 
         # Set up logging as early as possible.
         self._set_up_runner_output_options(runner_options)
@@ -376,15 +377,6 @@ class WPTAdapter:
                                                      '127.0.0.1.pem')
 
     def _set_up_runner_debugging_options(self, runner_options):
-        self.port.set_option_default('use_xvfb',
-                                     self.port.get_option('headless'))
-        if not self.options.headless:
-            logger.info('Not headless; default to 1 worker to avoid '
-                        'opening too many windows')
-            runner_options.headless = False
-            # Force `--pause-after-test`, since it doesn't make sense to run
-            # tests headfully without giving a chance for interaction.
-            runner_options.pause_after_test = True
         if self.options.wrapper:
             runner_options.debugger = self.options.wrapper[0]
             # `wpt run` expects a plain `str`, not a `List[str]`:
@@ -703,10 +695,6 @@ def parse_arguments(argv):
     # `--no-expectations` to `run_wpt_tests.py`, and skip reporting results when
     # the flag is passed.
     options.no_expectations = False
-    # Directly tie Xvfb usage to headless mode. Xvfb can supercede a real X
-    # server and therefore should never be started in `--no-headless` mode.
-    # Conversely, the default headless mode should always start Xvfb.
-    options.use_xvfb = options.headless
     return options, args
 
 
