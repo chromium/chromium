@@ -11,6 +11,7 @@ source_set("utilities") {
   deps = [
     "//base",
     "//components/component_updater",
+    "//components/services/screen_ai/buildflags",
     "//ui/accessibility:ax_base",
   ]
 

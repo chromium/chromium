@@ -99,8 +99,11 @@ class ScreenAIServiceRouterTest
   ~ScreenAIServiceRouterTest() override = default;
 
   bool IsLibraryAvailable() {
-    return screen_ai::PlatformSupportsBrowserTests() ? std::get<0>(GetParam())
-                                                     : false;
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+    return std::get<0>(GetParam());
+#else
+    return false;
+#endif
   }
 
   bool IsOCREnabled() { return std::get<1>(GetParam()); }

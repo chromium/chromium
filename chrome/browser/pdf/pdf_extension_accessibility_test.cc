@@ -67,11 +67,9 @@
 #include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-// TODO(crbug.com/1516559): Add a dummy library that is built with Chrome for
-// memory sanitizer tests.
-// TODO(crbug.com/323792320): Times out flakily on UBSan bots.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && \
-    !defined(MEMORY_SANITIZER) && !defined(UNDEFINED_SANITIZER)
+// TODO(crbug.com/41489544): Add a fake library that is built with Chrome for
+// sanitizer tests.
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
 

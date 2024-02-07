@@ -16,6 +16,7 @@
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "components/services/screen_ai/proto/visual_annotator_proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -27,7 +28,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if defined(MEMORY_SANITIZER)
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
 #include "components/services/screen_ai/screen_ai_library_wrapper_fake.h"
 #else
 #include "components/services/screen_ai/screen_ai_library_wrapper_impl.h"
@@ -136,7 +137,7 @@ ScreenAIService::~ScreenAIService() = default;
 void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-#if defined(MEMORY_SANITIZER)
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
   library_ = std::make_unique<ScreenAILibraryWrapperFake>();
 #else
   library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
