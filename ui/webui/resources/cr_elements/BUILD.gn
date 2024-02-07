@@ -117,10 +117,6 @@ build_webui("build") {
       "cr_expand_button/cr_expand_button.css",
       "cr_input/cr_input_style.css",
     ]
-
-    if (is_chromeos_ash) {
-      css_files += [ "chromeos/cros_color_overrides.css" ]
-    }
   }
 
   html_to_wrapper_template = "detect"
