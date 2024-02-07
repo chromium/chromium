@@ -887,6 +887,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                             getAllNetworksFiltered(mConnectivityManagerDelegate, network)) {
                         onAvailable(newNetwork);
                     }
+                    updateCurrentNetworkState();
                     @ConnectionType
                     final int newConnectionType = getCurrentNetworkState().getConnectionType();
                     runOnThread(
@@ -1059,7 +1060,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                                 ? new DefaultNetworkCallback()
                                 : null;
             }
-            mNetworkState = getCurrentNetworkState();
+            updateCurrentNetworkState();
             mIntentFilter = new NetworkConnectivityIntentFilter();
             mIgnoreNextBroadcast = false;
             mShouldSignalObserver = false;
@@ -1213,11 +1214,24 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Updates internally stored network state by querying the current state from the system.
+     * TODO(crbug/1493005): migrate external callers to getCurrentNetworkState() and make this
+     * method private (to be called only when updates are received from the system.)
+     */
+    public void updateCurrentNetworkState() {
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped(
+                        "NetworkChangeNotifierAutoDetect.updateCurrentNetworkState")) {
+            mNetworkState = mConnectivityManagerDelegate.getNetworkState(mWifiManagerDelegate);
+        }
+    }
+
     public NetworkState getCurrentNetworkState() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped(
                         "NetworkChangeNotifierAutoDetect.getCurrentNetworkState")) {
-            return mConnectivityManagerDelegate.getNetworkState(mWifiManagerDelegate);
+            return mNetworkState;
         }
     }
 
@@ -1373,7 +1387,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped(
                         "NetworkChangeNotifierAutoDetect.connectionTypeChanged")) {
-            connectionTypeChangedTo(getCurrentNetworkState());
+            connectionTypeChangedTo(
+                    mConnectivityManagerDelegate.getNetworkState(mWifiManagerDelegate));
         }
     }
 

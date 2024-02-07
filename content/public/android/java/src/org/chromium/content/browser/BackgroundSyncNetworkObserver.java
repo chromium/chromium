@@ -108,7 +108,8 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
                     "BackgroundSync.NetworkObserver.HasPermission", true);
         }
         mNativePtrs.add(nativePtr);
-
+        // TODO(crbug/1493005): remove this call if it is not necessary.
+        mNotifier.updateCurrentNetworkState();
         BackgroundSyncNetworkObserverJni.get()
                 .notifyConnectionTypeChanged(
                         nativePtr,
@@ -177,6 +178,8 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type
         // if necessary.
+        // TODO(crbug/1493005): remove this call if it is not necessary.
+        mNotifier.updateCurrentNetworkState();
         broadcastNetworkChangeIfNecessary(mNotifier.getCurrentNetworkState().getConnectionType());
     }
 

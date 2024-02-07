@@ -85,9 +85,10 @@ public class NetworkChangeNotifier {
     public int getCurrentConnectionSubtype() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("NetworkChangeNotifier.getCurrentConnectionSubtype")) {
-            return mAutoDetector == null
-                    ? ConnectionSubtype.SUBTYPE_UNKNOWN
-                    : mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
+            if (mAutoDetector == null) return ConnectionSubtype.SUBTYPE_UNKNOWN;
+
+            mAutoDetector.updateCurrentNetworkState();
+            return mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
         }
     }
 
@@ -245,6 +246,7 @@ public class NetworkChangeNotifier {
                                         }
                                     },
                                     policy);
+                    mAutoDetector.updateCurrentNetworkState();
                     final NetworkChangeNotifierAutoDetect.NetworkState networkState =
                             mAutoDetector.getCurrentNetworkState();
                     updateCurrentConnectionType(networkState.getConnectionType());
