@@ -1847,7 +1847,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Performance.AXObjectCacheImpl.Incremental.{DataType}"
-    units="bytes" expires_after="2024-02-11">
+    units="bytes" expires_after="2024-07-21">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
