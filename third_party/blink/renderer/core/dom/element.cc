@@ -4559,7 +4559,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (ForceApplyForLegacyLayout(*layout_style, *layout_object))
       apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     layout_object->SetStyle(layout_style.get(), apply_changes);
+    recordreplay::Assert("[RUN-3109-3242] Element::RecalcOwnStyle B %d",
+                         layout_style ? layout_style->HasOneRef() : -1);
   }
+  
+  recordreplay::Assert("[RUN-3109-3242] Element::RecalcOwnStyle C %d %d",
+                       new_style ? new_style->HasOneRef() : -1,
+                       old_style ? old_style->HasOneRef() : -1);
   return child_change;
 }
 
