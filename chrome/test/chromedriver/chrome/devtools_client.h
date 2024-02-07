@@ -108,6 +108,10 @@ class DevToolsClient {
   virtual DevToolsClient* GetParentClient() const = 0;
 
   virtual bool IsMainPage() const = 0;
+
+  virtual Status SendRaw(const std::string& message) = 0;
+
+  virtual bool HasMessageForAnySession() const = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVTOOLS_CLIENT_H_

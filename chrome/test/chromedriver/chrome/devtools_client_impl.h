@@ -164,6 +164,9 @@ class DevToolsClientImpl : public DevToolsClient {
   int AdvanceNextMessageId();
   void EnableEventTunnelingForTesting();
 
+  Status SendRaw(const std::string& message) override;
+  bool HasMessageForAnySession() const override;
+
  private:
   enum ResponseState {
     // The client is waiting for the response.

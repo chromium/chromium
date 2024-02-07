@@ -142,3 +142,11 @@ DevToolsClient* StubDevToolsClient::GetParentClient() const {
 bool StubDevToolsClient::IsMainPage() const {
   return true;
 }
+
+Status StubDevToolsClient::SendRaw(const std::string& message) {
+  return Status{kOk};
+}
+
+bool StubDevToolsClient::HasMessageForAnySession() const {
+  return false;
+}

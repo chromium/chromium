@@ -652,15 +652,12 @@ Status DevToolsClientImpl::HandleReceivedEvents() {
 
 Status DevToolsClientImpl::HandleEventsUntil(
     const ConditionalFunc& conditional_func, const Timeout& timeout) {
-  SyncWebSocket* socket =
-      static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
-  DCHECK(socket);
-  if (!socket->IsConnected()) {
+  if (!IsConnected()) {
     return Status(kDisconnected, "not connected to DevTools");
   }
 
   while (true) {
-    if (!socket->HasNextMessage()) {
+    if (!HasMessageForAnySession()) {
       bool is_condition_met = false;
       Status status = conditional_func.Run(&is_condition_met);
       if (status.IsError())
@@ -772,6 +769,26 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
                              nullptr, true, false, 0, nullptr);
 }
 
+Status DevToolsClientImpl::SendRaw(const std::string& message) {
+  if (socket_ && socket_->Send(message)) {
+    return Status{kOk};
+  }
+  if (parent_) {
+    return parent_->SendRaw(message);
+  }
+  return Status(kDisconnected, "unable to send message to renderer");
+}
+
+bool DevToolsClientImpl::HasMessageForAnySession() const {
+  if (socket_) {
+    return socket_->HasNextMessage();
+  }
+  if (parent_) {
+    return parent_->HasMessageForAnySession();
+  }
+  return false;
+}
+
 Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
                                                const base::Value::Dict& params,
                                                const std::string& session_id,
@@ -828,10 +845,11 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
             << ")" << ::SessionId(session_id) << " " << id_ << " "
             << FormatValueForDisplay(base::Value(params.Clone()));
   }
-  SyncWebSocket* socket =
-      static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
-  if (!socket->Send(message)) {
-    return Status(kDisconnected, "unable to send message to renderer");
+  {
+    Status status = SendRaw(message);
+    if (status.IsError()) {
+      return status;
+    }
   }
 
   if (expect_response) {

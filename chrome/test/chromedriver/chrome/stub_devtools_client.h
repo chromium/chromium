@@ -60,6 +60,8 @@ class StubDevToolsClient : public DevToolsClient {
   DevToolsClient* GetRootClient() override;
   DevToolsClient* GetParentClient() const override;
   bool IsMainPage() const override;
+  Status SendRaw(const std::string& message) override;
+  bool HasMessageForAnySession() const override;
 
  protected:
   const std::string id_;
