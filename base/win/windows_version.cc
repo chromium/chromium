@@ -349,6 +349,9 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
   }
 
   if (major == 10) {
+    if (build >= 22631) {
+      return Version::WIN11_23H2;
+    }
     if (build >= 22621) {
       return Version::WIN11_22H2;
     }

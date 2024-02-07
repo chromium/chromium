@@ -58,6 +58,7 @@ enum class Version {
   SERVER_2022 = 21,  // Server 2022: Build 20348.
   WIN11 = 22,        // Win11 21H2: Build 22000.
   WIN11_22H2 = 23,   // Win11 22H2: Build 22621.
+  WIN11_23H2 = 24,   // Win11 23H2: Build 22631.
   WIN_LAST,          // Indicates error condition.
 };
 
