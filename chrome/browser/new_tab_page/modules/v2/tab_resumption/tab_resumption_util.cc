@@ -7,6 +7,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
@@ -14,7 +15,9 @@
 
 namespace {
 
-std::unique_ptr<sessions::SessionTab> SampleSessionTab(int tab_id) {
+std::unique_ptr<sessions::SessionTab> SampleSessionTab(
+    int tab_id,
+    base::Time timestamp = base::Time::Now()) {
   auto session_tab = std::make_unique<sessions::SessionTab>();
   session_tab->current_navigation_index = 0;
 
@@ -25,19 +28,23 @@ std::unique_ptr<sessions::SessionTab> SampleSessionTab(int tab_id) {
   navigation.set_favicon_url(GURL(kSampleUrl));
   session_tab->navigations.push_back(navigation);
 
-  session_tab->timestamp = base::Time::Now();
+  session_tab->timestamp = timestamp;
   session_tab->tab_id = SessionID::FromSerializedValue(tab_id);
 
   return session_tab;
 }
 
 std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
-    int num_tabs) {
+    int num_tabs,
+    int curr_session) {
   auto synced_session_window =
       std::make_unique<sync_sessions::SyncedSessionWindow>();
   synced_session_window->wrapped_window.timestamp = base::Time::Now();
   for (int i = 0; i < num_tabs; i++) {
-    synced_session_window->wrapped_window.tabs.push_back(SampleSessionTab(i));
+    base::Time timestamp = base::Time::Now() - base::Hours(1) +
+                           base::Minutes(curr_session * num_tabs + i);
+    synced_session_window->wrapped_window.tabs.push_back(
+        SampleSessionTab(i, timestamp));
   }
   return synced_session_window;
 }
@@ -48,11 +55,12 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
     const char session_name[],
     const char session_tag[],
     int num_windows,
-    int num_tabs) {
+    int num_tabs,
+    int curr_session) {
   auto sample_session = std::make_unique<sync_sessions::SyncedSession>();
   for (int i = 0; i < num_windows; i++) {
     sample_session->windows[SessionID::FromSerializedValue(i)] =
-        SampleSessionWindow(num_tabs);
+        SampleSessionWindow(num_tabs, curr_session);
   }
 
   sample_session->SetSessionTag(session_tag);
@@ -90,4 +98,9 @@ bool IsVisitInCategories(const history::AnnotatedVisit& annotated_visit,
     }
   }
   return false;
+}
+
+bool CompareTabsByTime(history::mojom::TabPtr& tab1,
+                       history::mojom::TabPtr& tab2) {
+  return tab1->relative_time < tab2->relative_time;
 }

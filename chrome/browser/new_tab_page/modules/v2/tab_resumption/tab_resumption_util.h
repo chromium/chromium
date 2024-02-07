@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_TAB_RESUMPTION_TAB_RESUMPTION_UTIL_H_
 
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/sync_sessions/synced_session.h"
 
 inline constexpr char kSampleUrl[] = "https://www.google.com";
@@ -14,7 +15,8 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
     const char session_name[],
     const char session_tag[],
     int num_windows,
-    int num_tabs);
+    int num_tabs,
+    int curr_session = 0);
 
 base::flat_set<std::string> GetTabResumptionCategories(
     const char* feature_param,
@@ -22,5 +24,8 @@ base::flat_set<std::string> GetTabResumptionCategories(
 
 bool IsVisitInCategories(const history::AnnotatedVisit& annotated_visit,
                          const base::flat_set<std::string>& categories);
+
+bool CompareTabsByTime(history::mojom::TabPtr& tab1,
+                       history::mojom::TabPtr& tab2);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_TAB_RESUMPTION_TAB_RESUMPTION_UTIL_H_

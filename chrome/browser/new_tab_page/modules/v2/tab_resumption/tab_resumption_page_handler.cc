@@ -197,6 +197,8 @@ void TabResumptionPageHandler::OnAnnotatedVisits(
     scored_tabs.push_back(std::move(tabs[i]));
   }
 
+  std::sort(scored_tabs.begin(), scored_tabs.end(), CompareTabsByTime);
+
   std::move(callback).Run(std::move(scored_tabs));
 }
 
