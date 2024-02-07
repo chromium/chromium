@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -27,8 +28,8 @@
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
+using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
-using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
 using password_manager_upm_eviction::IsCurrentUserEvicted;
 
 namespace {

@@ -7,7 +7,6 @@
 #include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
@@ -17,6 +16,7 @@
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/base/features.h"
@@ -233,7 +233,7 @@ void PasswordStoreAndroidAccountBackend::GetAllLoginsForAccountAsync(
   CHECK(!account.empty());
   // This method is only used before the store split, to migrate non-syncable
   // data back to the built-in backend after password sync turns off.
-  CHECK(!password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs()));
+  CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs()));
   GetAllLoginsInternal(std::move(account), std::move(callback));
 }
 

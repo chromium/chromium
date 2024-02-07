@@ -16,6 +16,7 @@
 #include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -127,17 +128,6 @@ LocalUpmUserType GetLocalUpmUserType(PrefService* pref_service,
 
 }  // namespace
 
-bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
-  switch (GetSplitStoresAndLocalUpmPrefValue(pref_service)) {
-    case UseUpmLocalAndSeparateStoresState::kOff:
-    case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-      return false;
-    case UseUpmLocalAndSeparateStoresState::kOn:
-      return true;
-  }
-  NOTREACHED_NORETURN();
-}
-
 bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
   // TODO(crbug.com/1327294): Re-evaluate if the SyncService can be passed here
   // instead of the `is_pwd_sync_enabled` boolean.
@@ -149,7 +139,7 @@ bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
   if (is_pwd_sync_enabled) {
     return true;
   }
-  return UsesSplitStoresAndUPMForLocal(pref_service);
+  return password_manager::UsesSplitStoresAndUPMForLocal(pref_service);
 }
 
 void SetUsesSplitStoresAndUPMForLocal(
@@ -187,7 +177,7 @@ void SetUsesSplitStoresAndUPMForLocal(
               kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 
       if (no_migration_flag_enabled ==
-          UsesSplitStoresAndUPMForLocal(pref_service)) {
+          password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {
         return;
       }
 
@@ -235,7 +225,7 @@ void SetUsesSplitStoresAndUPMForLocal(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
       if (migration_flag_enabled ==
-          UsesSplitStoresAndUPMForLocal(pref_service)) {
+          password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {
         return;
       }
       pref_service->SetInteger(

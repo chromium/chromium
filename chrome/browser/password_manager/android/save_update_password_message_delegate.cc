@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +40,7 @@
 
 namespace {
 
-using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
+using password_manager::UsesSplitStoresAndUPMForLocal;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;

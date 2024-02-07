@@ -109,6 +109,7 @@
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "components/password_manager/core/browser/password_check_referrer_android.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "ui/android/window_android.h"
 #else
 #include "chrome/browser/ui/browser_list.h"
@@ -1124,7 +1125,7 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
       if (credentials_store.is_account_store) {
         should_show_checkup_for_local = false;
       } else if (credentials_store.is_profile_store && is_syncing_passwords &&
-                 !password_manager_android_util::UsesSplitStoresAndUPMForLocal(
+                 !password_manager::UsesSplitStoresAndUPMForLocal(
                      profile_->GetPrefs())) {
         should_show_checkup_for_local = false;
       }

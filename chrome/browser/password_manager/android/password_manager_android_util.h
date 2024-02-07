@@ -12,10 +12,6 @@ class FilePath;
 }  // namespace base
 
 namespace password_manager_android_util {
-//  Checks whether the UPM for local users is activated for this client.
-//  This also means that the single password store has been split in
-//  account and local stores.
-bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service);
 
 // Checks that the GMS backend can be used, irrespective of whether for account
 // or local passwords.

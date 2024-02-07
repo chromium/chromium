@@ -5,10 +5,11 @@
 #include <jni.h>
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
 
+using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager_android_util::CanUseUPMBackend;
-using password_manager_android_util::UsesSplitStoresAndUPMForLocal;
 
 jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
     JNIEnv* env,

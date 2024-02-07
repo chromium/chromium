@@ -77,7 +77,11 @@ source_set("password_store_impl") {
     "//url",
   ]
   if (is_android) {
-    sources += [ "android_backend_error.h" ]
+    sources += [
+      "android_backend_error.h",
+      "split_stores_and_local_upm.cc",
+      "split_stores_and_local_upm.h",
+    ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {
@@ -141,7 +145,10 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "password_store_backend_metrics_recorder_unittest.cc" ]
+    sources += [
+      "password_store_backend_metrics_recorder_unittest.cc",
+      "split_stores_and_local_upm_unittest.cc",
+    ]
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
