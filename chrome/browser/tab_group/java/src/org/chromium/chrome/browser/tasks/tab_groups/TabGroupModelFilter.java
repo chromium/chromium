@@ -626,8 +626,9 @@ public class TabGroupModelFilter extends TabModelFilter {
         closeTab(tab);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
-    protected void resetFilterState() {
+    public void resetFilterState() {
         mShouldRecordUma = false;
         mIsResetting = true;
         Map<Integer, Integer> rootIdToGroupLastShownTabId = new HashMap<>();
@@ -671,23 +672,33 @@ public class TabGroupModelFilter extends TabModelFilter {
         super.markTabStateInitialized();
         boolean correctOrder = isOrderValid();
         RecordHistogram.recordBooleanHistogram("Tabs.Tasks.OrderValidOnStartup", correctOrder);
+
+        int fixedRootIdCount = fixRootIds();
+        RecordHistogram.recordCount1000Histogram(
+                "TabGroups.NumberOfRootIdsFixed", fixedRootIdCount);
     }
 
     /**
-     * Checks whether the order of the tabs in the {@link TabModel} respects the invariant of
-     * {@link TabGroupModelFilter} that tabs within a group must be contiguous.
+     * Checks whether the order of the tabs in the {@link TabModel} respects the invariant of {@link
+     * TabGroupModelFilter} that tabs within a group must be contiguous.
      *
-     * Valid order:
-     * Tab 1, Group A
-     * Tab 2, Group A
-     * Tab 3, Group B
+     * <p>Valid order:
      *
-     * Invalid order:
-     * Tab 1, Group A
-     * Tab 2, Group B
-     * Tab 3, Group A
+     * <ul>
+     *   <li>Tab 1, Group A
+     *   <li>Tab 2, Group A
+     *   <li>Tab 3, Group B
+     * </ul>
+     *
+     * <p>Invalid order:
+     *
+     * <ul>
+     *   <li>Tab 1, Group A
+     *   <li>Tab 2, Group B
+     *   <li>Tab 3, Group A
+     * </ul>
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @VisibleForTesting
     public boolean isOrderValid() {
         HashSet<Integer> processedRootIds = new HashSet<>();
         int lastRootId = Tab.INVALID_TAB_ID;
@@ -704,6 +715,35 @@ public class TabGroupModelFilter extends TabModelFilter {
             lastRootId = rootId;
         }
         return true;
+    }
+
+    /**
+     * Fixes root identifiers to guarantee a group's root identifier is the tab id of one of its
+     * tabs.
+     *
+     * @return the number of groups that had to be fixed.
+     */
+    @VisibleForTesting
+    public int fixRootIds() {
+        int fixedRootIdCount = 0;
+        TabModel model = getTabModel();
+        for (Map.Entry<Integer, TabGroup> entry : mRootIdToGroupMap.entrySet()) {
+            int rootId = entry.getKey();
+            TabGroup group = entry.getValue();
+            if (group.contains(rootId)) continue;
+
+            int fixedRootId = group.getTabIdOfFirstTab();
+            for (int tabId : group.getTabIdList()) {
+                Tab tab = TabModelUtils.getTabById(model, tabId);
+                setRootId(tab, fixedRootId);
+            }
+            fixedRootIdCount++;
+        }
+
+        if (fixedRootIdCount != 0) {
+            resetFilterState();
+        }
+        return fixedRootIdCount;
     }
 
     @Override

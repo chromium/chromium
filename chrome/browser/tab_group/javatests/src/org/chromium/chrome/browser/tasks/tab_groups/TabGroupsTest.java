@@ -128,6 +128,7 @@ public class TabGroupsTest {
         tabs.add(4, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -143,6 +144,7 @@ public class TabGroupsTest {
         tabs.add(1, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -158,6 +160,7 @@ public class TabGroupsTest {
         tabs.add(4, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -173,6 +176,7 @@ public class TabGroupsTest {
         tabs.add(2, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -191,6 +195,7 @@ public class TabGroupsTest {
         tabs.add(tab2);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(false);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -212,6 +217,7 @@ public class TabGroupsTest {
         tabs.add(3, tab5);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(false);
+        assertFixedTabGroupRootIdCount(0);
     }
 
     @Test
@@ -233,6 +239,47 @@ public class TabGroupsTest {
         tabs.add(2, tab1);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
+        assertFixedTabGroupRootIdCount(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testFixTabGroupRootIds() {
+        prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));
+        List<Tab> tabs = getCurrentTabs();
+
+        // Tab 0
+        // Tab 1, 2, 3
+        // Tab 4, 5
+        // Tab 6
+        Tab tab0 = tabs.get(0);
+        Tab tab1 = tabs.get(1);
+        Tab tab2 = tabs.get(2);
+        Tab tab3 = tabs.get(3);
+        Tab tab4 = tabs.get(4);
+        Tab tab5 = tabs.get(5);
+        Tab tab6 = tabs.get(6);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab0.setRootId(tab6.getId());
+                    tab1.setRootId(tab0.getId());
+                    tab2.setRootId(tab0.getId());
+                    tab3.setRootId(tab0.getId());
+                    tab4.setRootId(tab5.getId());
+                    tab5.setRootId(tab5.getId());
+                    tab6.setRootId(tab1.getId());
+                    mTabGroupModelFilter.resetFilterState();
+                });
+
+        assertFixedTabGroupRootIdCount(3);
+
+        assertEquals(tab0.getId(), tab0.getRootId());
+        assertEquals(tab1.getId(), tab1.getRootId());
+        assertEquals(tab1.getId(), tab2.getRootId());
+        assertEquals(tab1.getId(), tab3.getRootId());
+        assertEquals(tab5.getId(), tab4.getRootId());
+        assertEquals(tab5.getId(), tab5.getRootId());
     }
 
     @Test
@@ -287,10 +334,14 @@ public class TabGroupsTest {
     private void assertOrderValid(boolean expectedState) {
         boolean isOrderValid =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return mTabGroupModelFilter.isOrderValid();
-                        });
+                        mTabGroupModelFilter::isOrderValid);
         assertEquals(expectedState, isOrderValid);
+    }
+
+    private void assertFixedTabGroupRootIdCount(int expectedCount) {
+        int fixedRootIdCount =
+                TestThreadUtils.runOnUiThreadBlockingNoException(mTabGroupModelFilter::fixRootIds);
+        assertEquals(expectedCount, fixedRootIdCount);
     }
 
     private void moveTab(Tab tab, int index) {
