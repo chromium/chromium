@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -216,7 +217,7 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
       this, gfx::Insets(kDeskButtonFocusRingHaloInset),
       kDeskButtonCornerRadius);
 
-  if (features::IsDeskButtonEnabled()) {
+  if (chromeos::features::IsDeskProfilesEnabled()) {
     AddChildView(views::Builder<views::ImageView>()
                      .CopyAddressTo(&desk_avatar_view_)
                      .SetPaintToLayer()
