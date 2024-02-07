@@ -1996,7 +1996,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(new_window->GetProperty(aura::client::kWindowWorkspaceKey) ==
                aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
 }
-#endif  // BUILDFLAG(IS_CHROME_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that a tab can be dragged from a browser window that is resized to full
 // screen.
@@ -4197,16 +4197,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 }
 
 // Crashes on ChromeOS. crbug.com/1003288
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay \
-  DISABLED_CDragBrowserWindowWhenMajorityOfBoundsInSecondDisplay
-#else
-#define MAYBE_DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay \
-  DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay
-#endif
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserInSeparateDisplayTabDragControllerTest,
-    MAYBE_DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay) {
+    DISABLED_DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay) {
   // Set the browser's window bounds such that the majority of its bounds
   // resides in the second display.
   const std::pair<Display, Display> displays =
