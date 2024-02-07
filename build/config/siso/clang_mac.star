@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for clang/mac."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
@@ -11,23 +12,42 @@ load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 def __filegroups(ctx):
+    sdk_includes = [
+        "*.framework",
+        "*.h",
+        "*.json",
+        "*.modulemap",
+        "Current",
+        "Frameworks",
+        "Headers",
+        "Modules",
+        "crt*.o",
+        "usr/include/c++/v1/*",
+        "usr/include/c++/v1/*/*",
+    ]
     fg = {
         "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
             "type": "glob",
-            "includes": [
-                "*.framework",
-                "*.h",
-                "*.json",
-                "*.modulemap",
-                "Current",
-                "Frameworks",
-                "Headers",
-                "Modules",
-                "crt*.o",
-                "usr/include/c++/v1/*",
-                "usr/include/c++/v1/*/*",
-            ],
+            "includes": sdk_includes,
         },
+    }
+
+    # precompute subtree for sysroot/frameworks for siso scandeps,
+    # which is not complex enough to handle C preprocessor tricks
+    # and need system include dirs when using deps log of -MMD.
+    # need to add new entries when new version is used.
+    # TODO: b/323091468 - get sysroot, ios_sdk_path from gn
+    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.2.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
+    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.2.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
+    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator.platform/Developer/Library/Frameworks") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
     }
     fg.update(clang_all.filegroups(ctx))
     return fg
@@ -55,6 +75,14 @@ def __step_config(ctx, step_config):
             "clang_large": largePlatform,
         })
         step_config["input_deps"].update(clang_all.input_deps)
+        # TODO: https://issues.chromium.org/40120210 - remove this
+	# once we can use relative path in hmap.
+        need_input_root_absolute_path_for_objc = False
+        gn_args = gn.args(ctx)
+        if gn_args.get("target_os") == "\"ios\"":
+            # objc/objcxx uses hmap, which contains absolute path
+            # see also b/256536089
+            need_input_root_absolute_path_for_objc = True
         step_config["rules"].extend([
             {
                 "name": "clang/cxx",
@@ -82,6 +110,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
                 "name": "clang/objc",
@@ -91,6 +120,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
                 "name": "clang-coverage/cxx",
@@ -130,6 +160,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
                 "name": "clang-coverage/objc",
@@ -143,6 +174,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
         ])
     return step_config
