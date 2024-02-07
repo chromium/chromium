@@ -820,7 +820,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 
 // TODO(crbug.com/1521926): Test is flaky on Win asan.
 // TODO(crbug.com/1517753): Test is flaky on Mac asan.
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)) && defined(LEAK_SANITIZER)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor15_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor15_ScrollRootScrollLayer
 #else
