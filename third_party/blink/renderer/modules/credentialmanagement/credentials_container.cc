@@ -99,6 +99,7 @@ using mojom::blink::CredentialInfoPtr;
 using mojom::blink::CredentialManagerError;
 using mojom::blink::CredentialMediationRequirement;
 using mojom::blink::PaymentCredentialInstrument;
+using mojom::blink::RequestDigitalIdentityStatus;
 using mojom::blink::WebAuthnDOMExceptionDetailsPtr;
 using MojoPublicKeyCredentialCreationOptions =
     mojom::blink::PublicKeyCredentialCreationOptions;
@@ -640,6 +641,16 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
   auth_request->CancelTokenRequest();
 }
 
+// Abort an ongoing WebIdentityDigitalCredential request. This will only be
+// called before the request finishes due to `scoped_abort_state`.
+void AbortDigitalIdentityRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
+}
+
 void OnRequestToken(ScriptPromiseResolver* resolver,
                     std::unique_ptr<ScopedAbortState> scoped_abort_state,
                     const CredentialRequestOptions* options,
@@ -682,6 +693,49 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
     case RequestTokenStatus::kSuccess: {
       IdentityCredential* credential =
           IdentityCredential::Create(token, is_auto_selected);
+      resolver->Resolve(credential);
+      return;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+}
+
+void OnRequestDigitalIdentity(
+    ScriptPromiseResolver* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    RequestDigitalIdentityStatus status,
+    const WTF::String& token) {
+  switch (status) {
+    case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one navigator.credentials.get request may be outstanding at "
+          "one time."));
+      return;
+    }
+    case RequestDigitalIdentityStatus::kErrorCanceled: {
+      AbortSignal* signal =
+          scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
+      if (signal && signal->aborted()) {
+        auto* script_state = resolver->GetScriptState();
+        ScriptState::Scope script_state_scope(script_state);
+        resolver->Reject(signal->reason(script_state));
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "The request has been aborted."));
+      }
+      return;
+    }
+    case RequestDigitalIdentityStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving a token."));
+      return;
+    }
+    case RequestDigitalIdentityStatus::kSuccess: {
+      IdentityCredential* credential =
+          IdentityCredential::Create(token, /*is_auto_selected=*/false);
       resolver->Resolve(credential);
       return;
     }
@@ -2221,31 +2275,23 @@ absl::optional<ScriptPromise> CredentialsContainer::GetForDigitalCredential(
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
-    auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
+    auto callback = WTF::BindOnce(&AbortDigitalIdentityRequest,
                                   WrapPersistent(script_state));
 
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
-  identity_provider_ptrs.push_back(
-      blink::mojom::blink::IdentityProvider::From(first_identity_provider));
+  auto digital_credential_provider =
+      blink::mojom::blink::DigitalCredentialProvider::From(
+          *first_identity_provider.holder());
 
-  mojom::blink::IdentityProviderGetParametersPtr get_params =
-      mojom::blink::IdentityProviderGetParameters::New(
-          std::move(identity_provider_ptrs), mojom::blink::RpContext::kSignIn,
-          mojom::blink::RpMode::kWidget);
-
-  Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
-  idp_get_params.push_back(std::move(get_params));
-
-  auto* auth_request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  auth_request->RequestToken(
-      std::move(idp_get_params), CredentialMediationRequirement::kRequired,
-      WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
-                    std::move(scoped_abort_state), WrapPersistent(&options)));
+  auto* request =
+      CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
+  request->Request(
+      std::move(digital_credential_provider),
+      WTF::BindOnce(&OnRequestDigitalIdentity, WrapPersistent(resolver),
+                    std::move(scoped_abort_state)));
   return promise;
 }
 

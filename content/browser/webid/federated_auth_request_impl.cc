@@ -23,7 +23,6 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
@@ -602,83 +601,6 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
       permission_context, identity_registry, std::move(receiver));
 }
 
-void FederatedAuthRequestImpl::CompleteDigitalCredentialRequest(
-    std::string response) {
-  if (!digital_credential_provider_) {
-    std::move(digital_credential_request_callback_)
-        .Run(RequestTokenStatus::kError, std::nullopt, "", /*error=*/nullptr,
-             /*is_auto_selected=*/false);
-    return;
-  }
-
-  if (!response.empty()) {
-    std::move(digital_credential_request_callback_)
-        .Run(RequestTokenStatus::kSuccess, std::nullopt, response,
-             /*error=*/nullptr,
-             /*is_auto_selected=*/false);
-  } else {
-    std::move(digital_credential_request_callback_)
-        .Run(RequestTokenStatus::kError, std::nullopt, "", /*error=*/nullptr,
-             /*is_auto_selected=*/false);
-  }
-}
-
-base::Value::Dict BuildDigitalCredentialRequest(
-    blink::mojom::DigitalCredentialProviderPtr provider) {
-  auto result = Value::Dict();
-
-  if (provider->params) {
-    auto params = Value::Dict();
-    for (const auto& pair : *provider->params) {
-      params.Set(pair.first, pair.second);
-    }
-    result.Set("params", std::move(params));
-  }
-
-  if (provider->selector) {
-    auto formats = Value::List();
-    for (auto& format : provider->selector->format) {
-      formats.Append(format);
-    }
-
-    auto fields = Value::List();
-
-    if (provider->selector->doctype) {
-      auto doctype = Value::Dict();
-      doctype.Set("name", "doctype");
-      doctype.Set("equals", provider->selector->doctype.value());
-      fields.Append(std::move(doctype));
-    }
-
-    for (auto& value : provider->selector->fields) {
-      auto field = Value::Dict();
-      field.Set("name", value->name);
-      if (value->equals) {
-        field.Set("equals", value->equals.value());
-      }
-      fields.Append(std::move(field));
-    }
-
-    result.Set("selector", Value::Dict().Set("fields", std::move(fields)));
-    result.Set("responseFormat", std::move(formats));
-  }
-
-  if (provider->protocol) {
-    result.Set("protocol", *provider->protocol);
-  }
-
-  if (provider->request) {
-    result.Set("request", *provider->request);
-  }
-
-  if (provider->publicKey) {
-    result.Set("publicKey", *provider->publicKey);
-  }
-
-  return Value::Dict().Set("providers",
-                           Value::List().Append(std::move(result)));
-}
-
 std::vector<blink::mojom::IdentityProviderPtr>
 FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
     std::vector<blink::mojom::IdentityProviderPtr>& providers) {
@@ -796,60 +718,6 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
-    return;
-  }
-
-  if (idp_get_params_ptrs[0]->providers[0]->is_holder()) {
-    if (!IsWebIdentityDigitalCredentialsEnabled() ||
-        IsFedCmMultipleIdentityProvidersEnabled()) {
-      // TODO(https://crbug.com/1416939): Support calling the Digital
-      // Credentials
-      //  API with the Multi IdP API support.
-      std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
-                              /*error=*/nullptr,
-                              /*is_auto_selected=*/false);
-      return;
-    }
-
-    if (digital_credential_request_callback_) {
-      // Similar to the token request, only allow one in-flight wallet request.
-      // TODO(https://crbug.com/1416939): Reconcile with federated identity
-      // requests.
-      std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                              std::nullopt, "", /*error=*/nullptr,
-                              /*is_auto_selected=*/false);
-      return;
-    }
-
-    digital_credential_request_callback_ = std::move(callback);
-    // digital_credential_provider_ is not destroyed after a successful wallet
-    // request so we need to have the nullcheck to avoid duplicated creation.
-    if (!digital_credential_provider_) {
-      digital_credential_provider_ = CreateDigitalCredentialProvider();
-    }
-    if (!digital_credential_provider_) {
-      std::move(digital_credential_request_callback_)
-          .Run(RequestTokenStatus::kError, std::nullopt, "", /*error=*/nullptr,
-               /*is_auto_selected=*/false);
-      return;
-    }
-
-    auto digital_credential =
-        std::move(idp_get_params_ptrs[0]->providers[0]->get_holder());
-
-    auto request = BuildDigitalCredentialRequest(std::move(digital_credential));
-
-    digital_credential_provider_->RequestDigitalCredential(
-        WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-        request,
-        base::BindOnce(
-            &FederatedAuthRequestImpl::CompleteDigitalCredentialRequest,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    // TODO(https://crbug.com/1416939): rather than returning early,
-    // we would ultimately like to make the wallet response reconcile with the
-    // federated identities, so that they can be presented to the user in an
-    // unified manner.
     return;
   }
 
@@ -2649,18 +2517,6 @@ FederatedAuthRequestImpl::CreateDialogController() {
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController(
       web_contents);
-}
-
-std::unique_ptr<DigitalCredentialProvider>
-FederatedAuthRequestImpl::CreateDigitalCredentialProvider() {
-  // A provider may only be created in browser tests by this moment.
-  std::unique_ptr<DigitalCredentialProvider> provider =
-      GetContentClient()->browser()->CreateDigitalCredentialProvider();
-
-  if (!provider) {
-    return DigitalCredentialProvider::Create();
-  }
-  return provider;
 }
 
 void FederatedAuthRequestImpl::SetNetworkManagerForTests(

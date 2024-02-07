@@ -36,7 +36,6 @@ class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
-class DigitalCredentialProvider;
 class RenderFrameHost;
 
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
@@ -317,7 +316,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       RequestUserInfoCallback callback,
       blink::mojom::RequestUserInfoStatus status,
       std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
-  void CompleteDigitalCredentialRequest(std::string response);
 
   // Notifies metrics endpoint that either the user did not select the IDP in
   // the prompt or that there was an error in fetching data for the IDP.
@@ -329,7 +327,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
-  std::unique_ptr<DigitalCredentialProvider> CreateDigitalCredentialProvider();
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
@@ -488,9 +485,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
   RpMode rp_mode_{RpMode::kWidget};
-
-  std::unique_ptr<DigitalCredentialProvider> digital_credential_provider_;
-  RequestTokenCallback digital_credential_request_callback_;
 
   // Time when the accounts dialog is last shown for metrics purposes.
   std::optional<base::TimeTicks> accounts_dialog_shown_time_;

@@ -34,7 +34,8 @@ class CONTENT_EXPORT DigitalCredentialProvider {
 
   static std::unique_ptr<DigitalCredentialProvider> Create();
 
-  using DigitalCredentialCallback = base::OnceCallback<void(std::string)>;
+  using DigitalCredentialCallback =
+      base::OnceCallback<void(const std::string&)>;
   virtual void RequestDigitalCredential(WebContents* web_contents,
                                         const url::Origin& origin,
                                         const base::Value::Dict& request,

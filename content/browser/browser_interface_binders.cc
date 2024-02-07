@@ -181,6 +181,7 @@
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
@@ -860,6 +861,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
         base::BindRepeating(&RenderFrameHostImpl::BindWebOTPServiceReceiver,
                             base::Unretained(host)));
   }
+
+  map->Add<blink::mojom::DigitalIdentityRequest>(base::BindRepeating(
+      &RenderFrameHostImpl::BindDigitalIdentityRequestReceiver,
+      base::Unretained(host)));
 
   map->Add<blink::mojom::FederatedAuthRequest>(base::BindRepeating(
       &RenderFrameHostImpl::BindFederatedAuthRequestReceiver,

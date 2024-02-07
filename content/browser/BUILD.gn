@@ -2318,6 +2318,8 @@ source_set("browser") {
     "webauth/webauth_request_security_checker.h",
     "webid/digital_credentials/digital_credential_provider.cc",
     "webid/digital_credentials/digital_credential_provider.h",
+    "webid/digital_credentials/digital_identity_request_impl.cc",
+    "webid/digital_credentials/digital_identity_request_impl.h",
     "webid/fake_identity_request_dialog_controller.cc",
     "webid/fake_identity_request_dialog_controller.h",
     "webid/fedcm_metrics.cc",
