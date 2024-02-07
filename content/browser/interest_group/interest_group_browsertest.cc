@@ -15525,15 +15525,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string host;
   RenderFrameHost* execution_targets[] = {
       main_frame,
-      same_origin_iframe,
-      cross_origin_iframe,
-      inner_cross_origin_iframe,
+      // Test the next two cases twice, to make sure the caching logic works, or
+      // at least doesn't prevent duplicate warnings.
+      same_origin_iframe, same_origin_iframe, cross_origin_iframe,
+      cross_origin_iframe, inner_cross_origin_iframe,
       same_origin_iframe_in_cross_origin_iframe,
       cross_origin_iframe_with_permissions,
       nested_cross_origin_iframe_with_permissions,
       same_origin_iframe_in_cross_origin_iframe_with_permissions,
-      same_origin_iframe_in_cross_origin_iframe2,
-      cross_origin_join_only,
+      same_origin_iframe_in_cross_origin_iframe2, cross_origin_join_only,
       cross_origin_run_auction_only};
 
   // The execution targets that are expected to have permissions warnings.

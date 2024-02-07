@@ -66,6 +66,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
@@ -772,9 +773,16 @@ bool AdAuctionServiceImpl::IsPermissionPolicyEnabledAndWarnIfNeeded(
     return false;
   }
 
-  // TODO(mmenke):  Cache result of these permissions checks, as they can be
-  // rather expensive.
-  if (ShouldWarnAboutPermissionPolicyDefault(*GetFrame(), feature)) {
+  auto warn_it = should_warn_about_feature_.find(feature);
+  if (warn_it == should_warn_about_feature_.end()) {
+    bool should_warn =
+        ShouldWarnAboutPermissionPolicyDefault(*GetFrame(), feature);
+    warn_it =
+        should_warn_about_feature_.emplace(std::pair(feature, should_warn))
+            .first;
+  }
+
+  if (warn_it->second) {
     auto feature_it =
         blink::GetPermissionsPolicyFeatureToNameMap().find(feature);
     CHECK(feature_it != blink::GetPermissionsPolicyFeatureToNameMap().end());

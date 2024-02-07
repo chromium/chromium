@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -251,6 +252,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // BiddingAndAuctionDataConstructionState's data and key will be edited in
   // place as they are loaded.
   base::queue<BiddingAndAuctionDataConstructionState> ba_data_callbacks_;
+
+  // True if a feature is currently enabled, but would be disabled if the
+  // default policy for the feature were switched to EnableForSelf. Lazily
+  // populated.
+  std::map<blink::mojom::PermissionsPolicyFeature, bool>
+      should_warn_about_feature_;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };
