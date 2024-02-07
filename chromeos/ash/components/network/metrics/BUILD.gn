@@ -33,6 +33,8 @@ source_set("metrics") {
     "connection_info_metrics_logger.h",
     "connection_results.cc",
     "connection_results.h",
+    "default_network_metrics_logger.cc",
+    "default_network_metrics_logger.h",
     "esim_policy_login_metrics_logger.cc",
     "esim_policy_login_metrics_logger.h",
     "hotspot_feature_usage_metrics.cc",
@@ -70,6 +72,7 @@ source_set("unit_tests") {
   sources = [
     "cellular_network_metrics_logger_unittest.cc",
     "connection_info_metrics_logger_unittest.cc",
+    "default_network_metrics_logger_unittest.cc",
     "esim_policy_login_metrics_logger_unittest.cc",
     "hotspot_feature_usage_metrics_unittest.cc",
     "hotspot_metrics_helper_unittest.cc",

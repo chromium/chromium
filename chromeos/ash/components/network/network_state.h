@@ -156,7 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   }
   bool hidden_ssid() const { return hidden_ssid_; }
   const std::string& passpoint_id() const { return passpoint_id_; }
-
+  bool metered() const { return metered_; }
   // Wifi property accessors
   const std::string& eap_method() const { return eap_method_; }
   const std::vector<uint8_t>& raw_ssid() const { return raw_ssid_; }
@@ -372,6 +372,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   bool blocked_by_policy_ = false;
   bool hidden_ssid_ = false;
   std::string passpoint_id_;
+  bool metered_ = false;
 
   // Cellular properties, used for icons, Connect, and Activation.
   std::string eid_;

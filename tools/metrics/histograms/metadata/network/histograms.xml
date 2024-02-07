@@ -460,6 +460,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.DefaultNetwork.MeterSubtype"
+    enum="NetworkTechnologyMeterSubtype" expires_after="2025-01-28">
+  <owner>hsuregan@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the technology type of the default network, which considers the
+    technology type and whether the network is metered. The default network here
+    means the first default/active non VPN network. Note that this metric is
+    recorded whenever the default network changes or when the metered property
+    changes. Note that if the default/active network drops and then reconnects
+    without another network taking its place, this metric will not be emitted.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Hotspot.SetConfig.OperationResult"
     enum="HotspotSetConfigResult" expires_after="2024-06-02">
   <owner>jiajunz@google.com</owner>

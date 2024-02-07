@@ -1212,6 +1212,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Unknown"/>
 </enum>
 
+<enum name="NetworkTechnologyMeterSubtype">
+  <int value="0" label="Ethernet"/>
+  <int value="1" label="WiFi"/>
+  <int value="2" label="WiFi Metered"/>
+  <int value="3" label="Cellular"/>
+  <int value="4" label="Cellular Metered"/>
+  <int value="5" label="Tether"/>
+  <int value="6" label="Tether Metered"/>
+</enum>
+
 <enum name="NotificationSuppressionState">
   <int value="0" label="NotSuppressed"/>
   <int value="1" label="UserSuppressed"/>
