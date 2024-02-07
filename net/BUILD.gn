@@ -803,6 +803,8 @@ component("net") {
     "quic/quic_session_key.h",
     "quic/quic_session_pool.cc",
     "quic/quic_session_pool.h",
+    "quic/quic_session_pool_direct_job.cc",
+    "quic/quic_session_pool_direct_job.h",
     "quic/quic_session_pool_job.cc",
     "quic/quic_session_pool_job.h",
     "quic/set_quic_flag.cc",

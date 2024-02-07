@@ -471,6 +471,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
  private:
   class Job;
+  class DirectJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
   friend class MockQuicSessionPool;
@@ -543,9 +544,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                            raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket);
+
+  // Called when the Job for the given key has created and confirmed a session.
   void ActivateSession(const QuicSessionAliasKey& key,
                        QuicChromiumClientSession* session,
                        std::set<std::string> dns_aliases);
+
   // Go away all active sessions. May disable session's connectivity monitoring
   // based on the |reason|.
   void MarkAllActiveSessionsGoingAway(AllActiveSessionsGoingAwayReason reason);

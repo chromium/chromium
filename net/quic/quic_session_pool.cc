@@ -53,6 +53,7 @@
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_key.h"
+#include "net/quic/quic_session_pool_direct_job.h"
 #include "net/quic/quic_session_pool_job.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/next_proto.h"
@@ -558,7 +559,7 @@ int QuicSessionPool::RequestSession(const QuicSessionKey& session_key,
   }
 
   QuicSessionAliasKey key(destination, session_key);
-  std::unique_ptr<Job> job = std::make_unique<Job>(
+  std::unique_ptr<Job> job = std::make_unique<DirectJob>(
       this, quic_version, host_resolver_, key,
       CreateCryptoConfigHandle(session_key.network_anonymization_key()),
       WasQuicRecentlyBroken(session_key),
@@ -1142,13 +1143,13 @@ void QuicSessionPool::OnJobComplete(Job* job, int rv) {
     auto session_it = active_sessions_.find(job->key().session_key());
     CHECK(session_it != active_sessions_.end());
     QuicChromiumClientSession* session = session_it->second;
-    for (auto* request : iter->second->stream_requests()) {
+    for (auto* request : iter->second->requests()) {
       // Do not notify |request| yet.
       request->SetSession(session->CreateHandle(job->key().destination()));
     }
   }
 
-  for (auto* request : iter->second->stream_requests()) {
+  for (auto* request : iter->second->requests()) {
     // Even though we're invoking callbacks here, we don't need to worry
     // about |this| being deleted, because the pool is owned by the
     // profile which can not be deleted via callbacks.
