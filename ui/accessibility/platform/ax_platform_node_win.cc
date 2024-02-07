@@ -1403,7 +1403,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"combobox"};
 
     case ax::mojom::Role::kAbbr:
-      return {UIALocalizationStrategy::kSupply, UIA_TextControlTypeId,
+      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"description"};
 
     case ax::mojom::Role::kTime:
