@@ -185,7 +185,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 // Integration test for UsesSplitStoresAndUPMForLocal(), which emulates restarts
 // by creating and destroying TestingProfiles. This doesn't exercise any of the
 // Java layers.
-// TODO(crbug.com/1257820): Replace with PRE_ AndroidBrowserTests when those
+// TODO(b/324196888): Replace with PRE_ AndroidBrowserTests when those
 // are supported, preferably using a FakePasswordStoreAndroidBackend.
 class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
  public:
@@ -407,7 +407,7 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
     // ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
     // Pretend the migration finished.
-    // TODO(crbug.com/1495626): Once the migration is implemented, make this a
+    // TODO(b/324196888): Once the migration is implemented, make this a
     // call to a fake instead of directly setting the pref.
     pref_service()->SetInteger(
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
