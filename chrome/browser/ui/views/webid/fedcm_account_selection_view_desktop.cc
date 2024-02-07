@@ -720,4 +720,5 @@ base::WeakPtr<views::Widget> FedCmAccountSelectionView::GetDialogWidget() {
 void FedCmAccountSelectionView::ResetAccountSelectionView() {
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
+  TabStripModelObserver::StopObservingAll(this);
 }
