@@ -102,9 +102,15 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
   }
 
   // Get the events from event storage.
-  event_storage_->MoveEvents(uma_proto);
+  auto events = event_storage_->TakeEvents();
 
-  const auto& structured_data = uma_proto.structured_data();
+  if (events.size() == 0) {
+    return;
+  }
+
+  StructuredDataProto& structured_data = *uma_proto.mutable_structured_data();
+  *structured_data.mutable_events() = std::move(events);
+
   LogUploadSizeBytes(structured_data.ByteSizeLong());
   LogNumEventsInUpload(structured_data.events_size());
 
@@ -248,7 +254,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   NotifyEventRecorded(event_proto);
 
   // Add new event to storage.
-  event_storage_->AddEvent(std::move(event_proto));
+  event_storage_->AddEvent(event_proto);
 
   test_callback_on_record_.Run();
 }

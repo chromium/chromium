@@ -6,12 +6,10 @@
 #define COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
 
 #include "base/files/file_path.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics {
 class StructuredEventProto;
-class ChromeUserMetricsExtension;
 }  // namespace metrics
 
 namespace metrics::structured {
@@ -34,10 +32,12 @@ class EventStorage {
   virtual void OnReady() {}
 
   // Add a new StructuredEventProto to be stored.
-  virtual void AddEvent(StructuredEventProto&& event) = 0;
+  virtual void AddEvent(StructuredEventProto event) = 0;
 
-  // Events are moved to UMA proto to be uploaded.
-  virtual void MoveEvents(ChromeUserMetricsExtension& uma_proto) = 0;
+  // External API for removing events from the storage.
+  // Intended to be used with a Swap for improved performance.
+  virtual ::google::protobuf::RepeatedPtrField<StructuredEventProto>
+  TakeEvents() = 0;
 
   // The number of events that have been recorded.
   virtual int RecordedEventsCount() const = 0;

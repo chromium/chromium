@@ -235,4 +235,33 @@ TEST_F(PersistentProtoTest, QueueWrites) {
   EXPECT_EQ(write_count_, 1);
 }
 
+TEST_F(PersistentProtoTest, ClearContents) {
+  const auto test_proto = MakeTestProto();
+  WriteToDisk(test_proto);
+
+  std::unique_ptr<PersistentProto<KeyProto>> pproto =
+      std::make_unique<PersistentProto<KeyProto>>(
+          GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+
+  EXPECT_EQ(pproto->get(), nullptr);
+
+  Wait();
+  EXPECT_EQ(read_status_, ReadStatus::kOk);
+  EXPECT_EQ(read_count_, 1);
+  EXPECT_EQ(write_count_, 0);
+
+  (*pproto)->Clear();
+  pproto->QueueWrite();
+
+  pproto.reset();
+
+  Wait();
+
+  int64_t size = 0;
+  std::string empty_proto;
+  KeyProto().SerializeToString(&empty_proto);
+
+  ASSERT_TRUE(base::GetFileSize(GetPath(), &size));
+  EXPECT_EQ(size, static_cast<int64_t>(empty_proto.size()));
+}
 }  // namespace metrics::structured

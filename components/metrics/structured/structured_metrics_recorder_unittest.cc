@@ -895,4 +895,30 @@ TEST_F(StructuredMetricsRecorderTest, EnumRecordedCorrectly) {
             (int64_t)events::v2::test_project_six::Enum1::VARIANT2);
 }
 
+TEST_F(StructuredMetricsRecorderTest, MultipleReports) {
+  Init();
+
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_two::TestEventThree().SetTestMetricFour(
+          "test-string")));
+
+  const auto data1 = GetEventMetrics();
+  EXPECT_EQ(data1.events_size(), 3);
+
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_two::TestEventThree().SetTestMetricFour(
+          "test-string")));
+
+  const auto data2 = GetEventMetrics();
+  EXPECT_EQ(data2.events_size(), 3);
+}
+
 }  // namespace metrics::structured
