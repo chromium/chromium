@@ -9,7 +9,7 @@ import * as androidPhotosTests from './file_manager/android_photos.js';
 // import * as copyBetweenWindowsTests from './file_manager/copy_between_windows.js';
 // import * as createNewFolderTests from './file_manager/create_new_folder.js';
 // import * as crostiniTests from './file_manager/crostini.js';
-// import * as directoryTreeTests from './file_manager/directory_tree.js';
+import * as directoryTreeTests from './file_manager/directory_tree.js';
 // import * as directoryTreeContextMenuTests from './file_manager/directory_tree_context_menu.js';
 // import * as dlpTests from './file_manager/dlp.js';
 // import * as dlpEnterpriseConnectorsTests from './file_manager/dlp_enterprise_connectors.js';
@@ -67,7 +67,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...copyBetweenWindowsTests,
   // ...createNewFolderTests,
   // ...crostiniTests,
-  // ...directoryTreeTests,
+  ...directoryTreeTests,
   // ...directoryTreeContextMenuTests,
   // ...dlpTests,
   // ...dlpEnterpriseConnectorsTests,
