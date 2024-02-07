@@ -490,6 +490,13 @@
       '--logs-dir=${ISOLATED_OUTDIR}/logs',
     ],
   },
+  'gce': {
+    'swarming': {
+      'dimensions': {
+        'gce': '1',
+      },
+    },
+  },
   'gpu-swarming-pool': {
     'swarming': {
       'dimensions': {

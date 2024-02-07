@@ -1376,6 +1376,9 @@ targets.legacy_matrix_compound_suite(
     name = "optimization_guide_linux_script_tests",
     basic_suites = {
         "model_validation_tests": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
@@ -1413,7 +1416,11 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_win_gtests",
     basic_suites = {
-        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_nogpu_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
         "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
             # TODO(b:321865883): Add NVIDIA variant once deployment is stable.
             variants = [
@@ -1428,6 +1435,9 @@ targets.legacy_matrix_compound_suite(
     name = "optimization_guide_win_script_tests",
     basic_suites = {
         "model_validation_tests": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",

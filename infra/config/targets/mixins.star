@@ -616,6 +616,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gce",
+    swarming = targets.swarming(
+        dimensions = {
+            "gce": "1",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu-swarming-pool",
     swarming = targets.swarming(
         dimensions = {

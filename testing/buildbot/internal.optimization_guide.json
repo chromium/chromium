@@ -218,6 +218,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -245,6 +246,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -754,6 +756,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -781,6 +784,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -942,6 +946,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -969,6 +974,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },

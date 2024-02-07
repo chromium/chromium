@@ -7974,6 +7974,9 @@
 
     'optimization_guide_linux_script_tests': {
       'model_validation_tests': {
+        'mixins': [
+          'gce',
+        ],
         'variants': [
           'MODEL_VALIDATION_BASE',
           'MODEL_VALIDATION_TRUNK',
@@ -8008,11 +8011,18 @@
           'INTEL_UHD_630',
         ],
       },
-      'optimization_guide_nogpu_gtests': {},
+      'optimization_guide_nogpu_gtests': {
+        'mixins': [
+          'gce',
+        ],
+      },
     },
 
     'optimization_guide_win_script_tests': {
       'model_validation_tests': {
+        'mixins': [
+          'gce',
+        ],
         'variants': [
           'MODEL_VALIDATION_BASE',
           'MODEL_VALIDATION_TRUNK',
