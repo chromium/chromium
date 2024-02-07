@@ -36,13 +36,14 @@ namespace internal {
 template <typename = void>
 struct FieldDescription {
   FieldType role = FieldType::EMPTY_TYPE;
-  // If the server type is not set explcitly, it is assumed to be given by the
+  // If the server type is not set explicitly, it is assumed to be given by the
   // role.
   std::optional<FieldType> server_type;
-  // If the heuristic type is not set explcitly, it is assumed to be given by
+  // If the heuristic type is not set explicitly, it is assumed to be given by
   // the role.
   std::optional<FieldType> heuristic_type;
   std::optional<LocalFrameToken> host_frame;
+  std::optional<FormSignature> host_form_signature;
   std::optional<FieldRendererId> renderer_id;
   bool is_focusable = true;
   bool is_visible = true;
@@ -127,6 +128,9 @@ testing::Message DescribeFormData(const FormData& form_data);
 
 // Returns the form field relevant to the |role|.
 FormFieldData CreateFieldByRole(FieldType role);
+
+// Creates a FormFieldData to be fed to the parser.
+FormFieldData GetFormFieldData(const FieldDescription& fd);
 
 // Creates a FormData to be fed to the parser.
 FormData GetFormData(const FormDescription& test_form_attributes);

@@ -85,6 +85,54 @@ FormFieldData CreateFieldByRole(FieldType role) {
   return field;
 }
 
+FormFieldData GetFormFieldData(const FieldDescription& fd) {
+  FormFieldData ff = CreateFieldByRole(fd.role);
+  ff.form_control_type = fd.form_control_type;
+  if (ff.form_control_type == FormControlType::kSelectOne &&
+      !fd.select_options.empty()) {
+    ff.options = fd.select_options;
+  }
+
+  ff.renderer_id = fd.renderer_id.value_or(MakeFieldRendererId());
+  ff.host_form_id = MakeFormRendererId();
+  ff.is_focusable = fd.is_focusable;
+  ff.is_visible = fd.is_visible;
+  if (!fd.autocomplete_attribute.empty()) {
+    ff.autocomplete_attribute = fd.autocomplete_attribute;
+    ff.parsed_autocomplete =
+        ParseAutocompleteAttribute(fd.autocomplete_attribute);
+  }
+  if (fd.host_frame) {
+    ff.host_frame = *fd.host_frame;
+  }
+  if (fd.host_form_signature) {
+    ff.host_form_signature = *fd.host_form_signature;
+  }
+  if (fd.label) {
+    ff.label = *fd.label;
+  }
+  if (fd.name) {
+    ff.name = *fd.name;
+  }
+  if (fd.value) {
+    ff.value = *fd.value;
+  }
+  if (fd.placeholder) {
+    ff.placeholder = *fd.placeholder;
+  }
+  if (fd.max_length) {
+    ff.max_length = *fd.max_length;
+  }
+  if (fd.origin) {
+    ff.origin = *fd.origin;
+  }
+  ff.is_autofilled = fd.is_autofilled.value_or(false);
+  ff.should_autocomplete = fd.should_autocomplete;
+  ff.properties_mask = fd.properties_mask;
+  ff.check_status = fd.check_status;
+  return ff;
+}
+
 FormData GetFormData(const FormDescription& d) {
   FormData f;
   f.url = GURL(d.url);
@@ -95,39 +143,12 @@ FormData GetFormData(const FormDescription& d) {
   if (d.main_frame_origin)
     f.main_frame_origin = *d.main_frame_origin;
   f.is_form_tag = d.is_form_tag;
+  f.fields.reserve(d.fields.size());
   for (const FieldDescription& dd : d.fields) {
-    FormFieldData ff = CreateFieldByRole(dd.role);
-    ff.form_control_type = dd.form_control_type;
-    if (ff.form_control_type == FormControlType::kSelectOne &&
-        !dd.select_options.empty()) {
-      ff.options = dd.select_options;
-    }
+    FormFieldData ff = GetFormFieldData(dd);
     ff.host_frame = dd.host_frame.value_or(f.host_frame);
-    ff.renderer_id = dd.renderer_id.value_or(MakeFieldRendererId());
-    ff.host_form_id = f.renderer_id;
-    ff.is_focusable = dd.is_focusable;
-    ff.is_visible = dd.is_visible;
-    if (!dd.autocomplete_attribute.empty()) {
-      ff.autocomplete_attribute = dd.autocomplete_attribute;
-      ff.parsed_autocomplete =
-          ParseAutocompleteAttribute(dd.autocomplete_attribute);
-    }
-    if (dd.label)
-      ff.label = *dd.label;
-    if (dd.name)
-      ff.name = *dd.name;
-    if (dd.value)
-      ff.value = *dd.value;
-    if (dd.placeholder)
-      ff.placeholder = *dd.placeholder;
-    if (dd.max_length) {
-      ff.max_length = *dd.max_length;
-    }
-    ff.is_autofilled = dd.is_autofilled.value_or(false);
     ff.origin = dd.origin.value_or(f.main_frame_origin);
-    ff.should_autocomplete = dd.should_autocomplete;
-    ff.properties_mask = dd.properties_mask;
-    ff.check_status = dd.check_status;
+    ff.host_form_id = f.renderer_id;
     f.fields.push_back(ff);
   }
   return f;
