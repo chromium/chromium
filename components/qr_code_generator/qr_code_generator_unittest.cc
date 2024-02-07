@@ -23,7 +23,6 @@ TEST(QRCodeGeneratorTest, Generate) {
 
   constexpr size_t kMaxInputLen = 210;
   uint8_t input[kMaxInputLen];
-  QRCodeGenerator qr;
   std::optional<int> smallest_size;
   std::optional<int> largest_size;
 
@@ -35,8 +34,8 @@ TEST(QRCodeGeneratorTest, Generate) {
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      std::optional<QRCodeGenerator::GeneratedCode> qr_code =
-          qr.Generate(base::span<const uint8_t>(input, input_len));
+      std::optional<GeneratedCode> qr_code =
+          Generate(base::span<const uint8_t>(input, input_len));
       ASSERT_NE(qr_code, std::nullopt);
       auto& qr_data = qr_code->data;
 
@@ -68,7 +67,6 @@ TEST(QRCodeGeneratorTest, ManySizes) {
   // implementation. We are now shipping a memory-safe Rust implementation so we
   // are now testing only sizes up to 90 - this helps to avoid flaky test
   // timeouts.
-  QRCodeGenerator qr;
   std::string input = "";
   std::map<int, size_t> max_input_length_for_qr_size;
 
@@ -78,8 +76,7 @@ TEST(QRCodeGeneratorTest, ManySizes) {
       break;
     }
 
-    std::optional<QRCodeGenerator::GeneratedCode> code =
-        qr.Generate(base::as_byte_span(input));
+    std::optional<GeneratedCode> code = Generate(base::as_byte_span(input));
     ASSERT_TRUE(code);
     max_input_length_for_qr_size[code->qr_size] = input.size();
   }
@@ -100,11 +97,9 @@ TEST(QRCodeGeneratorTest, ManySizes) {
 // Test helper that returns `GeneratedCode::qr_size` or -1 if there was a
 // failure.
 int GenerateAndGetQrCodeSize(size_t input_size) {
-  QRCodeGenerator qr;
   std::string input(input_size, '!');
 
-  std::optional<QRCodeGenerator::GeneratedCode> code =
-      qr.Generate(base::as_byte_span(input));
+  std::optional<GeneratedCode> code = Generate(base::as_byte_span(input));
   return code.has_value() ? code->qr_size : -1;
 }
 
@@ -140,28 +135,26 @@ TEST(QRCodeGeneratorTest, HugeInput) {
   std::vector<uint8_t> huge_binary_input(kMaxInputSizeForBinaryInputVersion40,
                                          '\0');
 
-  QRCodeGenerator qr;
 
   // The Rust implementation can generate QR codes up to version 40.
-  ASSERT_TRUE(qr.Generate(huge_numeric_input));
-  ASSERT_TRUE(qr.Generate(huge_binary_input));
+  ASSERT_TRUE(Generate(huge_numeric_input));
+  ASSERT_TRUE(Generate(huge_binary_input));
 
   // Adding another character means that the inputs will no longer fit into QR
   // code version 40 (as of year 2023 there are no further versions defined by
   // the spec).
   huge_numeric_input.push_back('0');
   huge_binary_input.push_back('\0');
-  ASSERT_FALSE(qr.Generate(huge_numeric_input));
-  ASSERT_FALSE(qr.Generate(huge_binary_input));
+  ASSERT_FALSE(Generate(huge_numeric_input));
+  ASSERT_FALSE(Generate(huge_binary_input));
 }
 
 TEST(QRCodeGeneratorTest, InvalidMinVersion) {
   std::vector<uint8_t> input(123);  // Arbitrary valid input.
-  QRCodeGenerator qr;
-  ASSERT_FALSE(qr.Generate(input, std::make_optional(41)));
+  ASSERT_FALSE(Generate(input, std::make_optional(41)));
   ASSERT_FALSE(
-      qr.Generate(input, std::make_optional(std::numeric_limits<int>::max())));
-  ASSERT_FALSE(qr.Generate(input, std::make_optional(-1)));
+      Generate(input, std::make_optional(std::numeric_limits<int>::max())));
+  ASSERT_FALSE(Generate(input, std::make_optional(-1)));
 }
 
 }  // namespace qr_code_generator

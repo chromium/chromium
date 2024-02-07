@@ -17,55 +17,44 @@
 
 namespace qr_code_generator {
 
-// QRCodeGenerator generates class M QR codes of various versions.
-// References in the following comments refer to ISO 18004 (3rd edition).
-class QRCodeGenerator {
+// Contains output data for Generate().
+// The default state contains no data.
+struct GeneratedCode {
  public:
-  // Contains output data for Generate().
-  // The default state contains no data.
-  struct GeneratedCode {
-   public:
-    GeneratedCode();
-    GeneratedCode(GeneratedCode&&);
-    GeneratedCode& operator=(GeneratedCode&&);
+  GeneratedCode();
+  GeneratedCode(GeneratedCode&&);
+  GeneratedCode& operator=(GeneratedCode&&);
 
-    GeneratedCode(const GeneratedCode&) = delete;
-    GeneratedCode& operator=(const GeneratedCode&) = delete;
+  GeneratedCode(const GeneratedCode&) = delete;
+  GeneratedCode& operator=(const GeneratedCode&) = delete;
 
-    ~GeneratedCode();
+  ~GeneratedCode();
 
-    // Pixel data.  The least-significant bit of each byte is set if that
-    // tile/module should be "black".
-    //
-    // Clients should ensure four tiles/modules of padding when rendering the
-    // code.
-    //
-    // On error, will not be populated, and will contain an empty vector.
-    std::vector<uint8_t> data;
-
-    // Width and height (which are equal) of the generated data, in
-    // tiles/modules.
-    //
-    // The following invariant holds: `qr_size * qr_size == data.size()`.
-    //
-    // On error, will not be populated, and will contain 0.
-    int qr_size = 0;
-  };
-
-  QRCodeGenerator();
-  ~QRCodeGenerator();
-
-  // Generates a QR code containing the given data.
-  // The generator will attempt to choose a version that fits the data and which
-  // is >= |min_version|, if given. The returned span's length is
-  // input-dependent and not known at compile-time.
+  // Pixel data.  The least-significant bit of each byte is set if that
+  // tile/module should be "black".
   //
-  // TODO(https://crbug.com/1431991): Make this a free function + delete the
-  // `QRCodeGenerator` class.
-  std::optional<GeneratedCode> Generate(
-      base::span<const uint8_t> in,
-      std::optional<int> min_version = std::nullopt);
+  // Clients should ensure four tiles/modules of padding when rendering the
+  // code.
+  //
+  // On error, will not be populated, and will contain an empty vector.
+  std::vector<uint8_t> data;
+
+  // Width and height (which are equal) of the generated data, in
+  // tiles/modules.
+  //
+  // The following invariant holds: `qr_size * qr_size == data.size()`.
+  //
+  // On error, will not be populated, and will contain 0.
+  int qr_size = 0;
 };
+
+// Generates a QR code containing the given data.
+// The generator will attempt to choose a version that fits the data and which
+// is >= |min_version|, if given. The returned span's length is
+// input-dependent and not known at compile-time.
+std::optional<GeneratedCode> Generate(
+    base::span<const uint8_t> in,
+    std::optional<int> min_version = std::nullopt);
 
 }  // namespace qr_code_generator
 

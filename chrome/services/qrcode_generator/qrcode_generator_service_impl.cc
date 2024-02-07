@@ -273,15 +273,14 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     return;
   }
 
-  std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;
+  std::optional<qr_code_generator::GeneratedCode> qr_data;
   {
     base::TimeTicks start_time = base::TimeTicks::Now();
     // The QR version (i.e. size) must be >= 5 because otherwise the dino
     // painted over the middle covers too much of the code to be decodable.
     constexpr int kMinimumQRVersion = 5;
-    qr_code_generator::QRCodeGenerator qr;
-    qr_data = qr.Generate(base::as_bytes(base::make_span(request->data)),
-                          kMinimumQRVersion);
+    qr_data = qr_code_generator::Generate(
+        base::as_bytes(base::make_span(request->data)), kMinimumQRVersion);
     base::UmaHistogramMicrosecondsTimes(
         "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2",
         base::TimeTicks::Now() - start_time);

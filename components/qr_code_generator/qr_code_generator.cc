@@ -14,11 +14,13 @@
 
 namespace qr_code_generator {
 
-namespace {
+GeneratedCode::GeneratedCode() = default;
+GeneratedCode::~GeneratedCode() = default;
+GeneratedCode::GeneratedCode(GeneratedCode&&) = default;
+GeneratedCode& GeneratedCode::operator=(GeneratedCode&&) = default;
 
-std::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
-    base::span<const uint8_t> in,
-    std::optional<int> min_version) {
+std::optional<GeneratedCode> Generate(base::span<const uint8_t> in,
+                                      std::optional<int> min_version) {
   rust::Slice<const uint8_t> rs_in = base::SpanToRustSlice(in);
 
   // `min_version` might come from a fuzzer and therefore we use a lenient
@@ -34,30 +36,11 @@ std::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
   if (!result_is_success) {
     return std::nullopt;
   }
-  QRCodeGenerator::GeneratedCode code;
+  GeneratedCode code;
   code.data = std::move(result_pixels);
   code.qr_size = base::checked_cast<int>(result_width);
   CHECK_EQ(code.data.size(), static_cast<size_t>(code.qr_size * code.qr_size));
   return code;
-}
-
-}  // namespace
-
-QRCodeGenerator::QRCodeGenerator() = default;
-
-QRCodeGenerator::~QRCodeGenerator() = default;
-
-QRCodeGenerator::GeneratedCode::GeneratedCode() = default;
-QRCodeGenerator::GeneratedCode::GeneratedCode(
-    QRCodeGenerator::GeneratedCode&&) = default;
-QRCodeGenerator::GeneratedCode& QRCodeGenerator::GeneratedCode::operator=(
-    QRCodeGenerator::GeneratedCode&&) = default;
-QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
-
-std::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
-    base::span<const uint8_t> in,
-    std::optional<int> min_version) {
-  return GenerateQrCodeUsingRust(in, min_version);
 }
 
 }  // namespace qr_code_generator

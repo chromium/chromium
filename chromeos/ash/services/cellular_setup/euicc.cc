@@ -212,16 +212,15 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   // Format EID to string that should be encoded in the QRCode.
   std::string qr_code_string =
       base::StrCat({kEidQrCodePrefix, properties_->eid});
-  qr_code_generator::QRCodeGenerator qr_generator;
-  std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data =
-      qr_generator.Generate(base::as_byte_span(qr_code_string));
+  std::optional<qr_code_generator::GeneratedCode> qr_data =
+      qr_code_generator::Generate(base::as_byte_span(qr_code_string));
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  // Data returned from QRCodeGenerator consist of bytes that represents
+  // Data returned from QR code generator consist of bytes that represents
   // tiles. Least significant bit of each byte is set if the tile should be
   // filled. Other bit positions indicate QR Code structure and are not required
   // for rendering. Convert this data to 0 or 1 values for simpler UI side

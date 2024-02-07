@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
     std::swap(black, white);
   }
 
-  qr_code_generator::QRCodeGenerator generator;
-  std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> code =
-      generator.Generate(base::span<const uint8_t>(input, input_len), mask);
+  std::optional<qr_code_generator::GeneratedCode> code =
+      qr_code_generator::Generate(base::span<const uint8_t>(input, input_len),
+                                  mask);
   if (!code) {
     fprintf(STDERR, "Input too long to be encoded.\n");
     return 2;
