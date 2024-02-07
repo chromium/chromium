@@ -151,7 +151,7 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   progress_indicator_ =
       ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
           [](FocusModeTray* view) -> std::optional<float> {
-            if (!view->GetVisible() || view->is_active()) {
+            if (!view->visible_preferred() || view->is_active()) {
               return 0.0f;
             }
             if (view->show_progress_ring_after_animation_) {
