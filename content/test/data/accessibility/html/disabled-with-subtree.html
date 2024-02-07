@@ -1,0 +1,13 @@
+<!--
+@WAIT-FOR:done
+-->
+<button id="button1" disabled>old<div></div></button>
+<script>
+function update() {
+  document.getElementById("button1").childNodes[0].textContent = "new";
+  document.title="done";
+}
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(update, 0);
+});
+</script>

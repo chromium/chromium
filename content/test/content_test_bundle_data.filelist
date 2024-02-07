@@ -3194,6 +3194,8 @@ data/accessibility/html/disabled-expected-android-assist-data.txt
 data/accessibility/html/disabled-expected-android-external.txt
 data/accessibility/html/disabled-expected-android.txt
 data/accessibility/html/disabled-expected-blink.txt
+data/accessibility/html/disabled-with-subtree-expected-blink.txt
+data/accessibility/html/disabled-with-subtree.html
 data/accessibility/html/disabled.html
 data/accessibility/html/div-expected-android-assist-data.txt
 data/accessibility/html/div-expected-android-external.txt
