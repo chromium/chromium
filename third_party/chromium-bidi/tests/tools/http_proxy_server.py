@@ -35,8 +35,7 @@ class HttpProxyServer():
         lines = []
         self._process.terminate()
         while self._process.stdout.peek().decode("utf-8").strip() != '':
-            line = self._process.stdout.read1().decode("utf-8").strip()
-            print("line: " + line)
+            line = self._process.stdout.readline().decode("utf-8").strip()
             lines.append(line)
         return lines
 
