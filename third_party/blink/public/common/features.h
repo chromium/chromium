@@ -470,6 +470,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Uses the kFilterName* values in ui_base_features.h as the 'filter' feature
 // param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFilteringScrollPrediction);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kFilteringScrollPredictionFilterParam;
 
 // (b/283408783): When enabled, first gesture scrolls on web pages that have
 // touch handlers registered will go through the normal queueing process if

@@ -929,6 +929,8 @@ BASE_FEATURE(kFilteringScrollPrediction,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+const base::FeatureParam<std::string> kFilteringScrollPredictionFilterParam{
+    &kFilteringScrollPrediction, "filter", "one_euro_filter"};
 
 BASE_FEATURE(kFixGestureScrollQueuingBug,
              "FixGestureScrollQueuingBug",
