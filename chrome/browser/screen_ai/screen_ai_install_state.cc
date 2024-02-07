@@ -30,10 +30,6 @@
 #include "base/files/file_util.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN)
-#include "base/native_library.h"
-#endif
-
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
 const char kMinExpectedVersion[] = "121.1";
@@ -56,8 +52,8 @@ enum class LibraryVerificationResult {
   kVersionInvalid = 1,
   kVersionLow = 2,
   kPathUnexpected = 3,
-  kLoadFailed = 4,
-  kMaxValue = kLoadFailed,
+  kDeprecatedLoadFailed = 4,
+  kMaxValue = kDeprecatedLoadFailed,
 };
 
 void RecordLibraryVerificationResult(LibraryVerificationResult result) {
@@ -110,6 +106,8 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
     const base::FilePath& install_dir) {
   // Check the file iterator heuristic to find the library in the sandbox
   // returns the same directory as `install_dir`.
+  // TODO(b/41489907): Convert path unexpected case to DumpWithoutCrash to
+  // investigate paths and update the UMA description.
   base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
   if (binary_path.DirName() != install_dir) {
     RecordLibraryVerificationResult(LibraryVerificationResult::kPathUnexpected);
@@ -117,28 +115,8 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
     return false;
   }
 
-#if !BUILDFLAG(IS_WIN)
   RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
   return true;
-#else
-  // Sometimes the library cannot be loaded due to an installation error or OS
-  // limitations.
-  base::NativeLibraryLoadError lib_error;
-  base::NativeLibrary library =
-      base::LoadNativeLibrary(binary_path, &lib_error);
-  bool available = (library != nullptr);
-  base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
-                           lib_error.code);
-  if (available) {
-    base::UnloadNativeLibrary(library);
-    RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
-  } else {
-    RecordLibraryVerificationResult(LibraryVerificationResult::kLoadFailed);
-    VLOG(0) << "Library could not be loaded.";
-  }
-
-  return available;
-#endif
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {
