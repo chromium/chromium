@@ -101,9 +101,9 @@ class TabStripMediatorTest : public PlatformTest {
         ios::FaviconServiceFactory::GetForBrowserState(
             browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
-    web_state_list_->InsertWebState(0, std::move(web_state),
-                                    WebStateList::INSERT_ACTIVATE,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
  protected:

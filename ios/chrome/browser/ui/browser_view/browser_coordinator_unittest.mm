@@ -159,8 +159,8 @@ class BrowserCoordinatorTest : public PlatformTest {
     AttachTabHelpers(web_state.get(), NO);
 
     int insertion_index = browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     browser_->GetWebStateList()->ActivateWebStateAt(insertion_index);
 
     return insertion_index;

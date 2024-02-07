@@ -47,9 +47,7 @@ TEST_F(VcardCoordinatorTest, InstallDelegates) {
   auto* web_state_ptr2 = web_state2.get();
   VcardTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(VcardTabHelper::FromWebState(web_state_ptr2)->delegate());
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state2),
-                                              WebStateList::INSERT_NO_FLAGS,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
   EXPECT_TRUE(VcardTabHelper::FromWebState(web_state_ptr2)->delegate());
 
   // Coordinator should install itself as delegate for a web state replacing an

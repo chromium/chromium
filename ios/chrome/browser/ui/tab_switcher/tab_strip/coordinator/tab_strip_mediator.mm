@@ -204,9 +204,8 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   self.webStateList->InsertWebState(
-      base::checked_cast<int>(self.webStateList->count()), std::move(webState),
-      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().Activate());
   TabSwitcherItem* item;
   if (self.webStateList->GetActiveWebState()) {
     item = [[WebStateTabSwitcherItem alloc]
@@ -458,9 +457,8 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   int webStateListIndex = [self webStateListIndexFromItemIndex:index];
 
   _webStateList->InsertWebState(
-      base::checked_cast<int>(webStateListIndex), std::move(webState),
-      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
 }
 
 // Converts the collection view's item index to WebStateList index.

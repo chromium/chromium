@@ -465,7 +465,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
 // Inserts a new item with the given`newTabURL` at `index`.
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
-  // There are some circumstances where a new tab insertion can be erroniously
+  // There are some circumstances where a new tab insertion can be erroneously
   // triggered while another web state list mutation is happening. To ensure
   // those bugs don't become crashes, check that the web state list is OK to
   // mutate.
@@ -483,11 +483,12 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
-  // Insert a new webState using the `INSERT_PINNED` flag and activate it.
+  // Insert a new pinned webState and activate it.
   self.webStateList->InsertWebState(
-      base::checked_cast<int>(index), std::move(webState),
-      (WebStateList::INSERT_PINNED | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(base::checked_cast<int>(index))
+          .Pinned()
+          .Activate());
 }
 
 // Inserts/removes a pinned item to/from the collection.

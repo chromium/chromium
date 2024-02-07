@@ -71,8 +71,8 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
     // Add fake web state.
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     browser_->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(fake_web_state),
-        WebStateList::INSERT_ACTIVATE, WebStateOpener());
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
     // SettingsCommands, it must be mocked as well.

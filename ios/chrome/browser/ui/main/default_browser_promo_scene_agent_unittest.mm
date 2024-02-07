@@ -90,9 +90,9 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     test_web_state_->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(test_web_state_);
-    browser->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                               WebStateList::INSERT_ACTIVATE,
-                                               WebStateOpener());
+    browser->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   void TearDown() override {

@@ -189,8 +189,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
       web::WebState::CreateParams params(chrome_browser_state_.get());
       std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
       AttachTabHelpers(webState.get(), NO);
-      browser_->GetWebStateList()->InsertWebState(0, std::move(webState), 0,
-                                                  WebStateOpener());
+      browser_->GetWebStateList()->InsertWebState(std::move(webState));
       browser_->GetWebStateList()->ActivateWebStateAt(0);
     }
 
@@ -327,9 +326,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   void InsertWebState(std::unique_ptr<web::WebState> web_state) {
     WebStateList* web_state_list = browser_->GetWebStateList();
-    web_state_list->InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   std::unique_ptr<web::WebState> CreateWebState() {

@@ -100,9 +100,8 @@ TEST_P(BaseGridMediatorTest, DragAndDropClosedItem) {
   std::unique_ptr<web::FakeWebState> web_state =
       CreateFakeWebStateWithURL(GURL("https://google.com"));
   web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
-  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state), WebStateList::InsertionParams::AtIndex(1));
 
   [mediator_ switchToMode:TabGridModeSelection];
   [mediator_ addToSelectionItemID:item_identifier];
@@ -125,9 +124,8 @@ TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   std::unique_ptr<web::FakeWebState> web_state =
       CreateFakeWebStateWithURL(GURL());
   web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
-  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state), WebStateList::InsertionParams::AtIndex(1));
   EXPECT_EQ(4UL, consumer_.items.size());
   // The same ID should be selected after the insertion, since the new web state
   // wasn't selected.

@@ -53,13 +53,7 @@ class ManualFillFormObserverHelperiOSTest : public PlatformTest {
   }
 
   void AppendNewWebState(const char* url) {
-    AppendNewWebState(url, WebStateOpener());
-  }
-
-  void AppendNewWebState(const char* url, WebStateOpener opener) {
-    web_state_list_.InsertWebState(WebStateList::kInvalidIndex,
-                                   CreateWebState(url),
-                                   WebStateList::INSERT_NO_FLAGS, opener);
+    web_state_list_.InsertWebState(CreateWebState(url));
   }
 };
 

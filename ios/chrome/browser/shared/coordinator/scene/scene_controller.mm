@@ -258,11 +258,9 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
     // will not be saved with the legacy session storage.
     int index = browser->GetWebStateList()->count();
     web_state_list->InsertWebState(
-        index, std::move(web_state),
-        (index == 0 && !web_state_list->GetActiveWebState())
-            ? WebStateList::INSERT_ACTIVATE
-            : WebStateList::INSERT_NO_FLAGS,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate(
+            index == 0 && !web_state_list->GetActiveWebState()));
   }
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -298,10 +296,9 @@ void InjectNTP(Browser* browser) {
   web_state->GetNavigationManager()->Restore(0, std::move(items));
   NewTabPageTabHelper::CreateForWebState(web_state.get());
   NewTabPageTabHelper::FromWebState(web_state.get())->SetShowStartSurface(true);
-  int index = browser->GetWebStateList()->count();
-  browser->GetWebStateList()->InsertWebState(index, std::move(web_state),
-                                             WebStateList::INSERT_ACTIVATE,
-                                             WebStateOpener());
+  browser->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 }
 
 }  // namespace

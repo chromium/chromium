@@ -85,8 +85,8 @@ class KeyCommandsProviderTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
     int insertedIndex = web_state_list_->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(index).Activate());
     return static_cast<web::FakeWebState*>(
         web_state_list_->GetWebStateAt(insertedIndex));
   }
@@ -125,8 +125,8 @@ class KeyCommandsProviderTest : public PlatformTest {
     web_state->SetBrowserState(browser_state_.get());
 
     int insertedIndex = web_state_list_->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(index).Activate());
     return static_cast<web::FakeWebState*>(
         web_state_list_->GetWebStateAt(insertedIndex));
   }
@@ -468,17 +468,14 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ReopenLastClosedTab) {
 
   // Add three new tabs.
   auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state1),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state1), WebStateList::InsertionParams::AtIndex(0));
   auto web_state2 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
-  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state2),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state2), WebStateList::InsertionParams::AtIndex(1));
   auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url3"));
-  browser_->GetWebStateList()->InsertWebState(2, std::move(web_state3),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state3), WebStateList::InsertionParams::AtIndex(2));
   browser_->GetWebStateList()->ActivateWebStateAt(0);
   EXPECT_FALSE(CanPerform(@"keyCommand_reopenLastClosedTab"));
 
@@ -954,7 +951,8 @@ TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
   GURL url = GURL("https://test/url");
   auto web_state = CreateFakeWebStateWithURL(url);
   browser_->GetWebStateList()->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];

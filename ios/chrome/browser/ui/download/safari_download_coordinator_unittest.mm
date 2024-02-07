@@ -75,9 +75,7 @@ class SafariDownloadCoordinatorTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     auto* web_state_ptr = web_state.get();
     SafariDownloadTabHelper::CreateForWebState(web_state_ptr);
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_NO_FLAGS,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
     [coordinator_ start];
   }
 
@@ -108,9 +106,7 @@ TEST_F(SafariDownloadCoordinatorTest, InstallDelegates) {
   SafariDownloadTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(
       SafariDownloadTabHelper::FromWebState(web_state_ptr2)->delegate());
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state2),
-                                              WebStateList::INSERT_NO_FLAGS,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
   EXPECT_TRUE(
       SafariDownloadTabHelper::FromWebState(web_state_ptr2)->delegate());
 
