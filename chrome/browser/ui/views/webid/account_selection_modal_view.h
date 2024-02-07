@@ -23,6 +23,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
  public:
   AccountSelectionModalView(
+      const std::u16string& top_frame_for_display,
+      const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       Browser* browser,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -70,6 +72,10 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::optional<std::string> GetDialogSubtitle() const override;
 
  private:
+  // Returns a View for header of an account chooser. It contains text to prompt
+  // the user to sign in to an RP with an account from an IDP.
+  std::unique_ptr<views::View> CreateAccountChooserHeader();
+
   // Returns a View for single account chooser. It contains clickable account
   // information, and a button for the user to close the modal dialog. The size
   // of the `idp_display_data.accounts` vector must be 1.
@@ -77,11 +83,16 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const IdentityProviderDisplayData& idp_display_data,
       const content::IdentityRequestAccount& account);
 
+  // Returns a View for multiple account chooser. It contains the info for each
+  // account in a button, so the user can pick an account.
+  std::unique_ptr<views::View> CreateMultipleAccountChooser(
+      const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
+
   // View containing the modal dialog title.
   raw_ptr<views::Label> title_label_ = nullptr;
 
-  // The relying party context to show in the title.
-  blink::mojom::RpContext rp_context_;
+  // The title for the modal dialog.
+  std::u16string title_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionModalView
   // is destroyed.

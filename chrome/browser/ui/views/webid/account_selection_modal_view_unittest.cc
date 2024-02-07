@@ -45,7 +45,6 @@
 namespace {
 
 const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
-const std::u16string kIframeETLDPlusOne = u"iframe-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kTitleSignIn =
     u"Sign in to top-frame-example.com with idp-example.com";
@@ -71,6 +70,17 @@ content::IdentityRequestAccount CreateTestIdentityRequestAccount(
       /*domain_hints=*/std::vector<std::string>(), login_state);
 }
 
+std::vector<content::IdentityRequestAccount> CreateTestIdentityRequestAccounts(
+    const std::vector<std::string>& account_suffixes,
+    content::IdentityRequestAccount::LoginState login_state) {
+  std::vector<content::IdentityRequestAccount> accounts;
+  for (const std::string& account_suffix : account_suffixes) {
+    accounts.push_back(
+        CreateTestIdentityRequestAccount(account_suffix, login_state));
+  }
+  return accounts;
+}
+
 content::ClientMetadata CreateTestClientMetadata(
     const std::string& terms_of_service_url) {
   return content::ClientMetadata((GURL(terms_of_service_url)),
@@ -81,7 +91,6 @@ std::vector<std::string> GetChildClassNames(views::View* parent) {
   std::vector<std::string> child_class_names;
   for (views::View* child_view : parent->children()) {
     child_class_names.push_back(child_view->GetClassName());
-    std::cout << child_view->GetClassName() << std::endl;
   }
   return child_class_names;
 }
@@ -97,11 +106,11 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     anchor_widget_ = CreateTestWidget();
     anchor_widget_->Show();
 
-    dialog_ = new AccountSelectionModalView(blink::mojom::RpContext::kSignIn,
-                                            /*browser=*/nullptr,
-                                            shared_url_loader_factory(),
-                                            /*observer=*/nullptr,
-                                            /*widget_observer=*/nullptr);
+    dialog_ = new AccountSelectionModalView(
+        kTopFrameETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
+        /*browser=*/nullptr, shared_url_loader_factory(),
+        /*observer=*/nullptr,
+        /*widget_observer=*/nullptr);
   }
 
   void CreateSingleAccountPicker(
@@ -117,10 +126,29 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
         CreateTestClientMetadata(terms_of_service_url), {account},
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(
-        kTopFrameETLDPlusOne,
-        exclude_iframe ? std::nullopt
-                       : std::make_optional<std::u16string>(kIframeETLDPlusOne),
-        account, idp_data, show_back_button);
+        kTopFrameETLDPlusOne, /*iframe_for_display=*/absl::nullopt, account,
+        idp_data, show_back_button);
+    constrained_window::CreateBrowserModalDialogViews(
+        dialog_->AsDialogDelegate(), anchor_widget_->GetNativeWindow());
+  }
+
+  void CreateMultiAccountPicker(
+      const std::vector<std::string>& account_suffixes,
+      bool supports_add_account = false) {
+    std::vector<content::IdentityRequestAccount> account_list =
+        CreateTestIdentityRequestAccounts(
+            account_suffixes,
+            content::IdentityRequestAccount::LoginState::kSignUp);
+
+    CreateAccountSelectionModal();
+    std::vector<IdentityProviderDisplayData> idp_data;
+    content::IdentityProviderMetadata metadata;
+    metadata.supports_add_account = supports_add_account;
+    idp_data.emplace_back(
+        kIdpETLDPlusOne, metadata,
+        CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
+        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+    dialog_->ShowMultiAccountPicker(idp_data);
     constrained_window::CreateBrowserModalDialogViews(
         dialog_->AsDialogDelegate(), anchor_widget_->GetNativeWindow());
   }
@@ -141,6 +169,15 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     EXPECT_TRUE(icon_view);
     EXPECT_EQ(icon_view->size(),
               gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  }
+
+  void CheckAccountRows(
+      const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
+      const std::vector<std::string>& account_suffixes) {
+    EXPECT_EQ(accounts.size(), account_suffixes.size());
+    for (size_t i = 0; i < std::size(account_suffixes); ++i) {
+      CheckAccountRow(accounts[i], account_suffixes[i]);
+    }
   }
 
   void PerformHeaderChecks(views::View* header,
@@ -203,6 +240,32 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     CheckAccountRow(single_account_chooser->children()[0], kAccountSuffix);
   }
 
+  void TestMultipleAccounts(const std::u16string& expected_title) {
+    const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
+    CreateMultiAccountPicker(kAccountSuffixes);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 2u);
+    PerformHeaderChecks(children[0], expected_title);
+
+    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
+    ASSERT_FALSE(scroller->children().empty());
+    views::View* wrapper = scroller->children()[0];
+    ASSERT_FALSE(wrapper->children().empty());
+    views::View* contents = wrapper->children()[0];
+
+    views::BoxLayout* layout_manager =
+        static_cast<views::BoxLayout*>(contents->GetLayoutManager());
+    EXPECT_TRUE(layout_manager);
+    EXPECT_EQ(layout_manager->GetOrientation(),
+              views::BoxLayout::Orientation::kVertical);
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        contents->children();
+
+    CheckAccountRows(accounts, kAccountSuffixes);
+  }
+
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kFedCm);
     test_web_contents_ =
@@ -245,4 +308,8 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
 
 TEST_F(AccountSelectionModalViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn);
+}
+
+TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
+  TestMultipleAccounts(kTitleSignIn);
 }
