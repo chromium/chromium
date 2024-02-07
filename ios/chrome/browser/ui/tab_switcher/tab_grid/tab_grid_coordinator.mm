@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -262,11 +263,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
                               forProtocol:@protocol(ApplicationCommands)];
     // -startDispatchingToTarget:forProtocol: doesn't pick up protocols the
-    // passed protocol conforms to, so ApplicationSettingsCommands and
+    // passed protocol conforms to, so SettingsCommands and
     // BrowsingDataCommands are explicitly dispatched to the endpoint as well.
-    [_dispatcher
-        startDispatchingToTarget:applicationCommandEndpoint
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
+                              forProtocol:@protocol(SettingsCommands)];
     [_dispatcher startDispatchingToTarget:browsingDataCommandEndpoint
                               forProtocol:@protocol(BrowsingDataCommands)];
 
@@ -924,8 +924,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];
-  [self.dispatcher
-      stopDispatchingForProtocol:@protocol(ApplicationSettingsCommands)];
+  [self.dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(BrowsingDataCommands)];
 
   [_toolbarsCoordinator stop];

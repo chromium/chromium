@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -143,11 +143,10 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
 TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
   InitInfobar();
 
-  id commands_handler =
-      OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+  id commands_handler = OCMStrictProtocolMock(@protocol(SettingsCommands));
   [mock_delegate().GetDispatcher()
       startDispatchingToTarget:commands_handler
-                   forProtocol:@protocol(ApplicationSettingsCommands)];
+                   forProtocol:@protocol(SettingsCommands)];
   [[commands_handler expect] showSavedPasswordsSettingsFromViewController:nil
                                                          showCancelButton:YES];
 

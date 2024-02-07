@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -56,11 +57,11 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
   }
 
   void TearDown() final {
@@ -142,7 +143,7 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
   id mock_downloads_settings_table_view_controller_;
   id mock_save_to_photos_settings_account_selection_view_controller_;
   id mock_application_commands_handler_;
-  id mock_application_settings_commands_handler_;
+  id mock_settings_commands_handler_;
 };
 
 #pragma mark - Tests

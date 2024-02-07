@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -76,8 +77,8 @@
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
   self.recentTabsTableViewController.applicationHandler = applicationHandler;
-  id<ApplicationSettingsCommands> settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
   self.recentTabsTableViewController.settingsHandler = settingsHandler;
   self.recentTabsTableViewController.presentationDelegate = self;
 

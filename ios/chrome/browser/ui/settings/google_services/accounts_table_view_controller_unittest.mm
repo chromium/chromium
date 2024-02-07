@@ -84,25 +84,17 @@ class AccountsTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    id mockApplicationCommandHandler =
+    // Set up ApplicationCommands mock.
+    id mock_application_handler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
 
     AccountsTableViewController* controller =
         [[AccountsTableViewController alloc] initWithBrowser:browser_.get()
                                    closeSettingsOnAddAccount:NO];
-    controller.applicationCommandsHandler = mockApplicationCommandHandler;
+    controller.applicationCommandsHandler = mock_application_handler;
     return controller;
   }
 

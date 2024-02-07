@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -175,18 +176,13 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         startDispatchingToTarget:mockParcelTrackingCommandHandler
                      forProtocol:@protocol(ParcelTrackingOptInCommands)];
 
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    mockApplicationCommandHandler_ =
-        OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler_
+    // Set up Applicationhander and SettingsHandler mocks.
+    mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    [dispatcher startDispatchingToTarget:mock_application_handler_
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler
+                             forProtocol:@protocol(SettingsCommands)];
 
     // Create three web states.
     for (int i = 0; i < 3; i++) {
@@ -284,7 +280,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
-    dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
+    dependencies.applicationCommandsHandler = mock_application_handler_;
     dependencies.ntpCoordinator = NTPCoordinator_;
 
     bvc_ = [[BrowserViewController alloc]
@@ -413,7 +409,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
   raw_ptr<PagePlaceholderBrowserAgent> page_placeholder_browser_agent_;
-  id mockApplicationCommandHandler_;
+  id mock_application_handler_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
@@ -479,14 +475,13 @@ TEST_F(BrowserViewControllerTest,
                      animated:NO
                    completion:nil];
 
-  OCMExpect(
-      [mockApplicationCommandHandler_ dismissModalDialogsWithCompletion:nil]);
+  OCMExpect([mock_application_handler_ dismissModalDialogsWithCompletion:nil]);
 
   // Present incognito authentication must dismiss presented state.
   [bvc_ setItemsRequireAuthentication:YES];
 
   // Verify that the command was dispatched.
-  EXPECT_OCMOCK_VERIFY(mockApplicationCommandHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // Tests that an off-the-record web state can be created and inserted in the

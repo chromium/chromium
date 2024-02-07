@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
@@ -101,11 +102,11 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
 
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     [test_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
 
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
@@ -172,7 +173,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id consumer_;
   id strict_consumer_;
   id mock_application_commands_handler_;
-  id mock_application_settings_commands_handler_;
+  id mock_settings_commands_handler_;
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;

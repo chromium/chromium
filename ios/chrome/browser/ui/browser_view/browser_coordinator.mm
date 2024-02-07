@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
@@ -99,6 +100,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -896,7 +898,7 @@ enum class ToolbarKind {
   _keyCommandsProvider.applicationHandler =
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   _keyCommandsProvider.settingsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+      HandlerForProtocol(_dispatcher, SettingsCommands);
   _keyCommandsProvider.findInPageHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _keyCommandsProvider.browserCoordinatorHandler =
@@ -1635,9 +1637,8 @@ enum class ToolbarKind {
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params];
-  self.paymentsSuggestionBottomSheetCoordinator
-      .applicationSettingsCommandsHandler =
-      HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
+  self.paymentsSuggestionBottomSheetCoordinator.settingsHandler =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
   self.paymentsSuggestionBottomSheetCoordinator
       .browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
@@ -2204,7 +2205,7 @@ enum class ToolbarKind {
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
 - (void)openPasswordManager {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showSavedPasswordsSettingsFromViewController:self.viewController
                                   showCancelButton:YES];
 }
@@ -2225,12 +2226,12 @@ enum class ToolbarKind {
 }
 
 - (void)openAddressSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showProfileSettingsFromViewController:self.viewController];
 }
 
 - (void)openCreditCardSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showCreditCardSettings];
 }
 
@@ -2848,17 +2849,17 @@ enum class ToolbarKind {
 }
 
 - (void)showSyncPassphraseSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showSyncPassphraseSettingsFromViewController:self.viewController];
 }
 
 - (void)showGoogleServicesSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showGoogleServicesSettingsFromViewController:self.viewController];
 }
 
 - (void)showAccountSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
       showAccountsSettingsFromViewController:self.viewController
                         skipIfUINotAvailable:NO];
 }
@@ -3253,8 +3254,8 @@ enum class ToolbarKind {
 }
 
 - (void)displaySavedPasswordList {
-  id<ApplicationSettingsCommands> settingsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, SettingsCommands);
   [settingsHandler
       showSavedPasswordsSettingsFromViewController:self.viewController
                                   showCancelButton:YES];
@@ -3262,8 +3263,8 @@ enum class ToolbarKind {
 
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
-  id<ApplicationSettingsCommands> settingsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential
                                    showCancelButton:YES];
 }

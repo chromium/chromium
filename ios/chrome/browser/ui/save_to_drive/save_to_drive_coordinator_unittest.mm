@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
@@ -72,11 +73,11 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
 
     mock_save_to_drive_mediator_ = OCMClassMock([SaveToDriveMediator class]);
 
@@ -128,7 +129,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   id mock_save_to_drive_mediator_;
   id mock_save_to_drive_commands_handler_;
   id mock_application_commands_handler_;
-  id mock_application_settings_commands_handler_;
+  id mock_settings_commands_handler_;
 };
 
 // Tests that the SaveToDriveCoordinator creates the mediator when started and

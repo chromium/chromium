@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -34,10 +35,10 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
         startDispatchingToTarget:application_commands_mock_
                      forProtocol:@protocol(ApplicationCommands)];
     settings_commands_mock_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:settings_commands_mock_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -63,7 +64,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<ApplicationCommands> application_commands_mock_;
-  id<ApplicationSettingsCommands> settings_commands_mock_;
+  id<SettingsCommands> settings_commands_mock_;
   UIViewController* base_view_controller_mock_;
 };
 

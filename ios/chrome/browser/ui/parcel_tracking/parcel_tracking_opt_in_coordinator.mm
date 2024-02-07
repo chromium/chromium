@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller.h"
 
@@ -109,8 +109,8 @@
   [self dismissPrompt];
   self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
       prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, true);
-  id<ApplicationSettingsCommands> settingsCommandHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsCommandHandler
       showGoogleServicesSettingsFromViewController:self.baseViewController];
 }

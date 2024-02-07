@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
@@ -195,7 +196,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   viewController.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+      HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
 

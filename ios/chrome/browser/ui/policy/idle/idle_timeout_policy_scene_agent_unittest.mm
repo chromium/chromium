@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
@@ -138,19 +139,17 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     // Create mock command handlers. These are just for initializing the view
     // controller; because the handlers are local to this methdd, they will not
     // exist during tests, so if the tests call any commands they will fail.
-    mockApplicationHandler_ = OCMProtocolMock(@protocol(ApplicationCommands));
-    mockApplicationSettingsHandler_ =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    mockSnackbarHandler_ = OCMProtocolMock(@protocol(SnackbarCommands));
+    mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    mockSettingsHandler_ = OCMProtocolMock(@protocol(SettingsCommands));
+    mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
 
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockSnackbarHandler_
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler_
                              forProtocol:@protocol(SnackbarCommands)];
-    [dispatcher startDispatchingToTarget:mockApplicationHandler_
+    [dispatcher startDispatchingToTarget:mock_application_handler_
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsHandler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsHandler_
+                             forProtocol:@protocol(SettingsCommands)];
 
     agent_ = [[IdleTimeoutPolicySceneAgent alloc]
            initWithSceneUIProvider:fake_provider
@@ -176,9 +175,9 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   FakeSceneState* scene_state_;
   // The agent under test.
   IdleTimeoutPolicySceneAgent* agent_;
-  id mockSnackbarHandler_;
-  id mockApplicationHandler_;
-  id mockApplicationSettingsHandler_;
+  id mock_snackbar_handler_;
+  id mock_application_handler_;
+  id mockSettingsHandler_;
 };
 
 // The UI should not be showing the dialog or blocking other scenes if the app
@@ -186,12 +185,12 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogDoesNotShowWhenAppStateNotReady) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   app_state_.initStageForTesting = InitStageEnterprise;
-  OCMReject(
-      [mockApplicationHandler_ dismissModalDialogsWithCompletion:[OCMArg any]]);
+  OCMReject([mock_application_handler_
+      dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);
-  EXPECT_OCMOCK_VERIFY(mockApplicationHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // The UI should show the dialog and block other scenes if the app state has
@@ -199,12 +198,12 @@ TEST_F(IdleTimeoutPolicySceneAgentTest, DialogDoesNotShowWhenAppStateNotReady) {
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogShowsWhenAppStateReady) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   app_state_.initStageForTesting = InitStageFinal;
-  OCMExpect(
-      [mockApplicationHandler_ dismissModalDialogsWithCompletion:[OCMArg any]]);
+  OCMExpect([mock_application_handler_
+      dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_EQ(app_state_.currentUIBlocker, scene_state_);
-  EXPECT_OCMOCK_VERIFY(mockApplicationHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // The UI should not show the dialog when the scene is not foregrounded.
@@ -213,24 +212,24 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
        DialogDoesNotShowWhenSceneStateNotInForeground) {
   app_state_.initStageForTesting = InitStageFinal;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-  OCMReject(
-      [mockApplicationHandler_ dismissModalDialogsWithCompletion:[OCMArg any]]);
+  OCMReject([mock_application_handler_
+      dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);
-  EXPECT_OCMOCK_VERIFY(mockApplicationHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // The UI should show the dialog when the scene is foregrounded.
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogShowsWhenSceneStateInForeground) {
   app_state_.initStageForTesting = InitStageFinal;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  OCMExpect(
-      [mockApplicationHandler_ dismissModalDialogsWithCompletion:[OCMArg any]]);
+  OCMExpect([mock_application_handler_
+      dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_EQ(app_state_.currentUIBlocker, scene_state_);
-  EXPECT_OCMOCK_VERIFY(mockApplicationHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // The UI should not show on a scene that is blocked by an overlay modal.
@@ -239,12 +238,12 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   app_state_.initStageForTesting = InitStageFinal;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   scene_state_.presentingModalOverlay = true;
-  OCMReject(
-      [mockApplicationHandler_ dismissModalDialogsWithCompletion:[OCMArg any]]);
+  OCMReject([mock_application_handler_
+      dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);
-  EXPECT_OCMOCK_VERIFY(mockApplicationHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
 // The snackbar should show when the actions are completed.
@@ -256,10 +255,10 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // after actions ran since the app is foregrounded and active.
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
-  OCMExpect([mockSnackbarHandler_ showSnackbarMessage:[OCMArg isNotNil]]);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg isNotNil]]);
   idle_service_->OnActionsCompleted();
   EXPECT_FALSE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
-  EXPECT_OCMOCK_VERIFY(mockSnackbarHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
 
 // The snackbar should not show when the actions are completed but the scene is
@@ -271,12 +270,12 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // Simulate that app ran actions on reforeground. The snack bar does not show
   // after actions run since the app is not foregrounded. The snackbar will be
   // pending display.
-  OCMReject([mockSnackbarHandler_ showSnackbarMessage:[OCMArg any]]);
+  OCMReject([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
   idle_service_->OnActionsCompleted();
   EXPECT_TRUE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
-  EXPECT_OCMOCK_VERIFY(mockSnackbarHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
 
 // A  snackbar should show when the actions are completed and the scene
@@ -290,12 +289,12 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
   // transitions to `SceneActivationLevelForegroundActive`.
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnBackground);
-  OCMExpect([mockSnackbarHandler_ showSnackbarMessage:[OCMArg isNotNil]]);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg isNotNil]]);
   idle_service_->OnActionsCompleted();
   EXPECT_TRUE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
   EXPECT_FALSE(idle_service_->ShouldIdleTimeoutSnackbarBePresented());
-  EXPECT_OCMOCK_VERIFY(mockSnackbarHandler_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }

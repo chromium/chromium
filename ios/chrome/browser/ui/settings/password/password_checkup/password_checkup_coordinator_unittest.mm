@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -71,17 +72,17 @@ class PasswordCheckupCoordinatorTest
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // SettingsCommands, it must be mocked as well.
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     id mocked_application_settings_command_handler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_settings_command_handler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]

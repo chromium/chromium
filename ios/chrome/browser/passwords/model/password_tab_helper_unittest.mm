@@ -14,8 +14,8 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
@@ -53,12 +53,11 @@ class PasswordTabHelperTest : public PlatformTest {
     PlatformTest::SetUp();
 
     id dispatcher = [[CommandDispatcher alloc] init];
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    dispatcher_ = mockApplicationSettingsCommandHandler;
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
+    dispatcher_ = mockSettingsCommandHandler;
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
 
     helper_ = PasswordTabHelper::FromWebState(web_state_.get());
     ASSERT_TRUE(helper_);

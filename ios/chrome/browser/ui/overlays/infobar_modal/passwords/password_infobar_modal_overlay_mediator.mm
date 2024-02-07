@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -128,8 +128,8 @@
 
   [self dismissInfobarModal:nil];
 
-  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
-      delegate_->GetDispatcher(), ApplicationSettingsCommands);
+  id<SettingsCommands> settings_command_handler =
+      HandlerForProtocol(delegate_->GetDispatcher(), SettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
                                                         showCancelButton:YES];
 

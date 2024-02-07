@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol ApplicationCommands;
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 class Browser;
 
 // TableView that handles the settings for accounts when the user is signed in

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/channel_info.h"
@@ -86,7 +87,7 @@ void HandleSafetyCheckUpdateChromeTap(
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& compromised_credentials,
     id<ApplicationCommands> applicationHandler,
-    id<ApplicationSettingsCommands> settingsHandler) {
+    id<SettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
   if (compromised_credentials.size() == 1) {

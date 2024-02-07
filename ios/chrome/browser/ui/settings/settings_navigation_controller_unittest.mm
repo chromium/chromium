@@ -70,7 +70,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
     NSArray<Protocol*>* command_protocols = @[
       @protocol(ApplicationCommands), @protocol(BrowserCommands),
-      @protocol(BrowsingDataCommands), @protocol(ApplicationSettingsCommands),
+      @protocol(BrowsingDataCommands), @protocol(SettingsCommands),
       @protocol(SnackbarCommands)
     ];
     fake_command_endpoint_ =

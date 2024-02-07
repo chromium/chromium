@@ -84,8 +84,7 @@ void ConfigureHandlers(id<SettingsRootViewControlling> controller,
   controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
   controller.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
-  controller.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }
 
@@ -1087,7 +1086,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self closeSettings];
 }
 
-#pragma mark - ApplicationSettingsCommands
+#pragma mark - SettingsCommands
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showAccountsSettingsFromViewController:

@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -579,8 +580,8 @@
 
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  id<ApplicationSettingsCommands> settingsHandler = HandlerForProtocol(
-      browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
 
   switch (type) {
     case SafetyCheckItemType::kUpdateChrome: {
@@ -852,10 +853,6 @@
                        l10n_util::GetNSString(
                            IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
                 messageAction:^{
-                  [weakSelf.contentSuggestionsMetricsRecorder
-                      recordContentNotificationSnackbarEvent:
-                          ContentNotificationSnackbarEvent::
-                              kActionButtonTapped];
                   [weakSelf showNotificationSettings];
                 }
              completionAction:nil];
@@ -938,8 +935,12 @@
 
 // Display the notification settings.
 - (void)showNotificationSettings {
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      ApplicationSettingsCommands) showNotificationsSettings];
+  [self.contentSuggestionsMetricsRecorder
+      recordContentNotificationSnackbarEvent:ContentNotificationSnackbarEvent::
+                                                 kActionButtonTapped];
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler showNotificationsSettings];
 }
 
 // Dismisses the parcel tracking alert modal.

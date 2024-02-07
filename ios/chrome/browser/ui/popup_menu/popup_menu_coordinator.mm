@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -275,8 +276,7 @@ using base::UserMetricsAction;
         HandlerForProtocol(dispatcher, ActivityServiceCommands);
     mediator.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
-    mediator.settingsHandler =
-        HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+    mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
     mediator.bookmarksHandler =
         HandlerForProtocol(dispatcher, BookmarksCommands);
     mediator.browserCoordinatorHandler =

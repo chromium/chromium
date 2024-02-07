@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
@@ -74,7 +75,7 @@ class MiniMapCoordinatorTest : public PlatformTest {
     mock_application_command_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     mock_application_settings_command_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     mock_mini_map_command_handler_ =
         OCMStrictProtocolMock(@protocol(MiniMapCommands));
 
@@ -83,7 +84,7 @@ class MiniMapCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher
         startDispatchingToTarget:mock_application_settings_command_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_mini_map_command_handler_
                              forProtocol:@protocol(MiniMapCommands)];
 

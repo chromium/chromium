@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
@@ -107,32 +108,27 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 
-    id mockQrScannerCommandHandler =
-        OCMProtocolMock(@protocol(QRScannerCommands));
-    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+    id mock_qr_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mock_qr_scanner_handler
                              forProtocol:@protocol(QRScannerCommands)];
-    id mockLensCommandsHandler = OCMProtocolMock(@protocol(LensCommands));
-    [dispatcher startDispatchingToTarget:mockLensCommandsHandler
+    id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
+    [dispatcher startDispatchingToTarget:mock_lens_handler
                              forProtocol:@protocol(LensCommands)];
-    id mockHelpCommandsHandler = OCMProtocolMock(@protocol(HelpCommands));
-    [dispatcher startDispatchingToTarget:mockHelpCommandsHandler
+    id mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
+    [dispatcher startDispatchingToTarget:mock_help_handler
                              forProtocol:@protocol(HelpCommands)];
-    id mockToolbarCommandsHandler = OCMProtocolMock(@protocol(ToolbarCommands));
-    [dispatcher startDispatchingToTarget:mockToolbarCommandsHandler
+    id mock_toolbar_handler = OCMProtocolMock(@protocol(ToolbarCommands));
+    [dispatcher startDispatchingToTarget:mock_toolbar_handler
                              forProtocol:@protocol(ToolbarCommands)];
 
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    id mockApplicationCommandHandler =
+    // Set up application and settings handler mocks.
+    id mock_application_handler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler
+                             forProtocol:@protocol(SettingsCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 

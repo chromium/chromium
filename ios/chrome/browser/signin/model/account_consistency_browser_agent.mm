@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -29,8 +30,8 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
   browser_->AddObserver(this);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  settings_handler_ = HandlerForProtocol(browser_->GetCommandDispatcher(),
-                                         ApplicationSettingsCommands);
+  settings_handler_ =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
 }
 
 AccountConsistencyBrowserAgent::~AccountConsistencyBrowserAgent() {}

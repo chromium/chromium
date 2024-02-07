@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -133,17 +134,16 @@ class BrowserCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(IncognitoReauthCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
     id mockApplicationCommandHandler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
     [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
   }
 
   BrowserCoordinator* GetBrowserCoordinator() {

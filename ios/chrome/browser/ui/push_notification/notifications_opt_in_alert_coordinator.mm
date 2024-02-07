@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -135,9 +135,8 @@
   // Show snackbar confirmation.
   id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
-  __weak id<ApplicationSettingsCommands> weakSettingsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ApplicationSettingsCommands);
+  __weak id<SettingsCommands> weakSettingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
   [snackbarHandler showSnackbarWithMessage:self.confirmationMessage
                                 buttonText:buttonText
                              messageAction:^{
@@ -155,7 +154,7 @@
   }
 
   [[UIApplication sharedApplication] openURL:url
-                                     options:{}
+                                     options:@{}
                            completionHandler:nil];
   [self setResult:NotificationsOptInAlertResult::kOpenedSettings];
 }

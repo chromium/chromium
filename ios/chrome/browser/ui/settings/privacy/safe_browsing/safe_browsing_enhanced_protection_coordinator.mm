@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -69,7 +70,7 @@
   viewController.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+      HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
 

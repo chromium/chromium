@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 
@@ -47,7 +48,7 @@ extern NSString* const kSettingsDoneButtonId;
 
 // Controller to modify user settings.
 @interface SettingsNavigationController
-    : UINavigationController <ApplicationSettingsCommands, KeyCommandActions>
+    : UINavigationController <SettingsCommands, KeyCommandActions>
 
 // Creates a new SettingsTableViewController and the chrome around it.
 // `browser` is the browser where settings are being displayed and should not be

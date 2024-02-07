@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 @protocol ApplicationCommands;
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
@@ -32,7 +32,7 @@ void HandleSafetyCheckUpdateChromeTap(
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& credentials,
     id<ApplicationCommands> applicationHandler,
-    id<ApplicationSettingsCommands> settingsHandler);
+    id<SettingsCommands> settingsHandler);
 
 // Returns true if `state` is considered an invalid state for the Update Chrome
 // check in the Safety Check (Magic Stack) module.
