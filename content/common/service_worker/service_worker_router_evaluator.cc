@@ -707,4 +707,9 @@ std::string ServiceWorkerRouterEvaluator::ToString() const {
   return json;
 }
 
+void ServiceWorkerRouterEvaluator::RecordRouterRuleCount() const {
+  base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.RuleCount",
+                               compiled_rules_.size());
+}
+
 }  // namespace content

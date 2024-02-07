@@ -1247,6 +1247,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.RuleCount"
+    enum="ServiceWorkerRouterSourceType" expires_after="2024-05-07">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The sum of registered router rules with the Static Routing API. Recorded
+    when the service worker, which has associated routing info, is activated.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
     enum="BooleanSkipped" expires_after="2024-06-30">
   <owner>chikamune@chromium.org</owner>

@@ -51,6 +51,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
 
   base::Value ToValue() const;
   std::string ToString() const;
+  void RecordRouterRuleCount() const;
 
  private:
   class RouterRule;
