@@ -370,7 +370,7 @@ BASE_FEATURE(kBorealisWebUIInstaller,
 
 BASE_FEATURE(kBorealisZinkGlDriver,
              "BorealisZinkGlDriver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<BorealisZinkGlDriverParam>::Option
     borealis_zink_gl_driver_options[] = {
