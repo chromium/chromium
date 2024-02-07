@@ -11,8 +11,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
+#include "chrome/common/channel_info.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -93,6 +95,15 @@ const char kChromeIpBlinding[] = "chromeipblinding";
 // should be much smaller than this).
 const int kIpProtectionRequestMaxBodySize = 256 * 1024;
 const char kProtobufContentType[] = "application/x-protobuf";
+
+// TODO(https://crbug.com/1299886): Once `google_apis::GetAPIKey()` handles this
+// logic we can remove this helper.
+std::string GetAPIKey() {
+  return chrome::GetChannel() == version_info::Channel::STABLE
+             ? google_apis::GetAPIKey()
+             : google_apis::GetNonStableAPIKey();
+}
+
 }  // namespace
 
 IpProtectionConfigHttp::IpProtectionConfigHttp(
@@ -222,8 +233,7 @@ void IpProtectionConfigHttp::GetProxyConfig(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({"Bearer ", oauth_token.value()}));
   } else {
-    resource_request->headers.SetHeader(kGoogApiKeyHeader,
-                                        google_apis::GetAPIKey());
+    resource_request->headers.SetHeader(kGoogApiKeyHeader, GetAPIKey());
   }
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
