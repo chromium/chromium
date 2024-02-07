@@ -730,8 +730,8 @@ namespace declarativeNetRequest {
     // Returns all rules matched for the extension. Callers can optionally
     // filter the list of matched rules by specifying a <code>filter</code>.
     // This method is only available to extensions with the
-    // <code>declarativeNetRequestFeedback</code> permission or having the
-    // <code>activeTab</code> permission granted for the <code>tabId</code>
+    // <code>"declarativeNetRequestFeedback"</code> permission or having the
+    // <code>"activeTab"</code> permission granted for the <code>tabId</code>
     // specified in <code>filter</code>.
     // Note: Rules not associated with an active document that were matched more
     // than five minutes ago will not be returned.
@@ -833,7 +833,7 @@ namespace declarativeNetRequest {
 
   interface Events {
     // Fired when a rule is matched with a request. Only available for unpacked
-    // extensions with the <code>declarativeNetRequestFeedback</code> permission
+    // extensions with the <code>"declarativeNetRequestFeedback"</code> permission
     // as this is intended to be used for debugging purposes only.
     // |info|: The rule that has been matched along with information about the
     // associated request.
