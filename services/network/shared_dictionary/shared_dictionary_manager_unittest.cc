@@ -751,6 +751,12 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
       // Valid `id` value.
       {"match=\"test\", id=\"test_id\"", /*expect_success_v1=*/true,
        /*expect_success_v2=*/true, /*expected_id=*/"test_id"},
+      // Valid `id` value with backslash.
+      {"match=\"test\", id=\"test\\\\id\"", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true, /*expected_id=*/"test\\id"},
+      // Valid `id` value with double quote.
+      {"match=\"test\", id=\"test\\\"id\"", /*expect_success_v1=*/true,
+       /*expect_success_v2=*/true, /*expected_id=*/"test\"id"},
       // `id` should not be a list.
       {"match=\"test\", id=(\"id1\" \"id2\")", /*expect_success_v1=*/true,
        /*expect_success_v2=*/false},

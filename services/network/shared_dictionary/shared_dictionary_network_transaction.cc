@@ -32,6 +32,7 @@
 #include "net/filter/source_stream.h"
 #include "net/filter/zstd_source_stream.h"
 #include "net/http/http_request_info.h"
+#include "net/http/structured_headers.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -282,6 +283,14 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
                                     GetSharedZstdContentEncodingName()}));
   } else {
     AddAcceptEncoding(request_headers, GetSharedBrotliContentEncodingName());
+  }
+
+  if (!shared_dictionary_->id().empty()) {
+    absl::optional<std::string> serialized_id =
+        net::structured_headers::SerializeItem(shared_dictionary_->id());
+    if (serialized_id) {
+      request_headers->SetHeader("Dictionary-ID", *serialized_id);
+    }
   }
 
   if (dictionary_status_ == DictionaryStatus::kNoDictionary) {

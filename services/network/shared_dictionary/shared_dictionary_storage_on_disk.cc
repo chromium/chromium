@@ -75,12 +75,14 @@ class SharedDictionaryStorageOnDisk::RefCountedSharedDictionary
   RefCountedSharedDictionary(
       size_t size,
       const net::SHA256HashValue& hash,
+      const std::string& id,
       const base::UnguessableToken& disk_cache_key_token,
       SharedDictionaryDiskCache& disk_cahe,
       base::OnceClosure disk_cache_error_callback,
       base::ScopedClosureRunner on_deleted_closure_runner)
       : SharedDictionaryOnDisk(size,
                                hash,
+                               id,
                                disk_cache_key_token,
                                &disk_cahe,
                                std::move(disk_cache_error_callback)),
@@ -118,6 +120,9 @@ class SharedDictionaryStorageOnDisk::WrappedSharedDictionary
   }
   const net::SHA256HashValue& hash() const override {
     return ref_counted_shared_dictionary_->hash();
+  }
+  const std::string& id() const override {
+    return ref_counted_shared_dictionary_->id();
   }
 
  private:
@@ -199,7 +204,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
 
   auto ref_counted_shared_dictionary = base::MakeRefCounted<
       RefCountedSharedDictionary>(
-      info->size(), info->hash(), info->disk_cache_key_token(),
+      info->size(), info->hash(), info->id(), info->disk_cache_key_token(),
       manager_->disk_cache(),
       base::BindOnce(
           &SharedDictionaryManagerOnDisk::MaybePostMismatchingEntryDeletionTask,

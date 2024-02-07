@@ -90,7 +90,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
       });
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id*/ "", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
   EXPECT_EQ(expected_size, dictionary->size());
   EXPECT_EQ(hash, dictionary->hash());
@@ -154,7 +154,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
       });
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
 
   bool read_all_finished = false;
@@ -212,7 +212,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
       });
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
 
   bool read_all_finished = false;
@@ -267,7 +267,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
       });
 
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
 
   // ReadAll() synchronously returns OK.
@@ -296,7 +296,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -335,7 +335,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id*/ "", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -382,7 +382,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadDataFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -442,7 +442,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadDataFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -499,7 +499,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadDataFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -554,7 +554,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadDataFailure) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));
@@ -591,7 +591,7 @@ TEST(SharedDictionaryOnDiskTest, UnexpectedDataSize) {
 
   bool disk_cache_error_callback_called = false;
   auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, disk_cache_key_token, disk_cache.get(),
+      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
       }));

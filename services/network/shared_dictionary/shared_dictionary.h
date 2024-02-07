@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 
@@ -38,6 +40,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionary {
   // Returns the hash of the binary of the dictionary. It is safe to call this
   // method before calling ReadAll().
   virtual const net::SHA256HashValue& hash() const = 0;
+
+  // Returns the server-provided id of the dictionary. When this id is not
+  // empty, it will be serialized [RFC8941] and sent in "Dictionary-ID" request
+  // when Chrome can use the dictionary.
+  // https://www.rfc-editor.org/rfc/rfc8941#name-serializing-a-string
+  virtual const std::string& id() const = 0;
 };
 
 }  // namespace network

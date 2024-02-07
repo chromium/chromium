@@ -7,6 +7,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary.h"
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -31,6 +33,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
  public:
   SharedDictionaryOnDisk(size_t size,
                          const net::SHA256HashValue& hash,
+                         const std::string& id,
                          const base::UnguessableToken& disk_cache_key_token,
                          SharedDictionaryDiskCache* disk_cahe,
                          base::OnceClosure disk_cache_error_callback);
@@ -42,6 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   scoped_refptr<net::IOBuffer> data() const override;
   size_t size() const override;
   const net::SHA256HashValue& hash() const override;
+  const std::string& id() const override;
 
  private:
   enum class State { kLoading, kDone, kFailed };
@@ -55,6 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
 
   const size_t size_;
   const net::SHA256HashValue hash_;
+  const std::string id_;
   base::OnceClosure disk_cache_error_callback_;
 
   std::vector<base::OnceCallback<void(int)>> readall_callbacks_;
