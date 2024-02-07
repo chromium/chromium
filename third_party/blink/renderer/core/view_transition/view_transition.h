@@ -62,6 +62,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       const std::optional<Vector<String>>& types,
       Delegate*);
 
+  // Creates a skipped transition that still runs the specified callbacks.
+  static ViewTransition* CreateSkipped(Document*, V8ViewTransitionCallback*);
+
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
   // |ViewTransitionStateCallback|.
@@ -85,6 +88,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                  V8ViewTransitionCallback*,
                  const std::optional<Vector<String>>& types,
                  Delegate*);
+  // Skipped transition constructor.
+  ViewTransition(PassKey, Document*, V8ViewTransitionCallback*);
   // Navigation-initiated for-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionStateCallback, Delegate*);
   // Navigation-initiated from-snapshot constructor.
@@ -322,14 +327,14 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   const CreationType creation_type_;
 
   Member<Document> document_;
-  Delegate* const delegate_;
+  Delegate* const delegate_ = nullptr;
   const viz::NavigationID navigation_id_;
 
   // The document tag identifies the document to which this transition
   // belongs. It's unique among other local documents.
   uint32_t document_tag_ = 0u;
 
-  Member<ViewTransitionStyleTracker> style_tracker_;
+  Member<ViewTransitionStyleTracker> style_tracker_ = nullptr;
 
   // Manages pausing rendering of the Document between capture and updateDOM
   // callback finishing.

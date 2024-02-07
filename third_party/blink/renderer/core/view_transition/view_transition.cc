@@ -136,6 +136,12 @@ ViewTransition* ViewTransition::CreateFromScript(
                                               types, delegate);
 }
 
+ViewTransition* ViewTransition::CreateSkipped(
+    Document* document,
+    V8ViewTransitionCallback* callback) {
+  return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback);
+}
+
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                V8ViewTransitionCallback* update_dom_callback,
@@ -158,6 +164,20 @@ ViewTransition::ViewTransition(PassKey,
     originating_element->ActiveViewTransitionStateChanged();
   }
   ProcessCurrentState();
+}
+
+ViewTransition::ViewTransition(PassKey,
+                               Document* document,
+                               V8ViewTransitionCallback* update_dom_callback)
+    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+      creation_type_(CreationType::kScript),
+      document_(document),
+      document_tag_(NextDocumentTag()),
+      script_delegate_(MakeGarbageCollected<DOMViewTransition>(
+          *document->GetExecutionContext(),
+          *this,
+          update_dom_callback)) {
+  SkipTransition();
 }
 
 // static
@@ -234,9 +254,12 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   }
 
   // If we already started processing the transition (i.e. we're beyond capture
-  // tag discovery), then send a release directive.
+  // tag discovery), then send a release directive. We don't do this, if we're
+  // capturing this for a snapshot. The only way that transition is skipped is
+  // if we finished capturing.
   if (static_cast<int>(state_) >
-      static_cast<int>(State::kCaptureTagDiscovery)) {
+          static_cast<int>(State::kCaptureTagDiscovery) &&
+      creation_type_ != CreationType::kForSnapshot) {
     delegate_->AddPendingRequest(
         ViewTransitionRequest::CreateRelease(document_tag_, navigation_id_));
   }
@@ -252,9 +275,13 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
 
   // Resume rendering, and finalize the rest of the state.
   ResumeRendering();
-  style_tracker_->Abort();
+  if (style_tracker_) {
+    style_tracker_->Abort();
+  }
 
-  delegate_->OnTransitionFinished(this);
+  if (delegate_) {
+    delegate_->OnTransitionFinished(this);
+  }
 
   // This should be the last call in this function to avoid erroneously checking
   // the `state_` against the wrong state.
@@ -264,8 +291,9 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
 bool ViewTransition::AdvanceTo(State state) {
   DCHECK(CanAdvanceTo(state)) << "Current state " << static_cast<int>(state_)
                               << " new state " << static_cast<int>(state);
+  bool was_initial = state_ == State::kInitial;
   state_ = state;
-  if (IsTerminalState(state_)) {
+  if (!was_initial && IsTerminalState(state_)) {
     if (auto* originating_element = document_->documentElement()) {
       originating_element->ActiveViewTransitionStateChanged();
     }
@@ -298,7 +326,7 @@ bool ViewTransition::CanAdvanceTo(State state) const {
   switch (state_) {
     case State::kInitial:
       return state == State::kCaptureTagDiscovery ||
-             state == State::kWaitForRenderBlock;
+             state == State::kWaitForRenderBlock || state == State::kAborted;
     case State::kCaptureTagDiscovery:
       return state == State::kCaptureRequestPending || state == State::kAborted;
     case State::kCaptureRequestPending:
@@ -460,6 +488,7 @@ void ViewTransition::ProcessCurrentState() {
 
           std::move(transition_state_callback_)
               .Run(std::move(view_transition_state));
+          SkipTransition(PromiseResponse::kRejectAbort);
           break;
         }
 

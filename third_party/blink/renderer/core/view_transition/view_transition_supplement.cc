@@ -142,11 +142,14 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     ExceptionState& exception_state) {
   // Disallow script initiated transitions during a navigation initiated
   // transition.
-  if (transition_ && !transition_->IsCreatedViaScriptAPI())
-    return nullptr;
+  if (transition_ && !transition_->IsCreatedViaScriptAPI()) {
+    return ViewTransition::CreateSkipped(&document, callback)
+        ->GetScriptDelegate();
+  }
 
-  if (transition_)
+  if (transition_) {
     transition_->SkipTransition();
+  }
 
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";
