@@ -118,6 +118,7 @@ class DiversionBackendDelegate : public FileSystemBackendDelegate,
 
   void OverrideTmpfileDirForTesting(const base::FilePath& tmpfile_dir);
   static bool ShouldDivertForTesting(const storage::FileSystemURL& url);
+  static base::TimeDelta IdleTimeoutForTesting();
 
  private:
   enum class OnDiversionFinishedCallSite {

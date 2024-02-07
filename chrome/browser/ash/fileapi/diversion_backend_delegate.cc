@@ -122,7 +122,11 @@ void DiversionBackendDelegate::EnsureFileExists(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
 
-  if (!ShouldDivert(url)) {
+  if (!url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL,
+                            /*created=*/false);
+    return;
+  } else if (!ShouldDivert(url)) {
     af_util->EnsureFileExists(std::move(context), url, std::move(callback));
     return;
   } else if (diversion_file_manager_->IsDiverting(url)) {
@@ -248,7 +252,10 @@ void DiversionBackendDelegate::CopyFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (src_url == dest_url) {
+  if (!src_url.is_valid() || !dest_url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  } else if (src_url == dest_url) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
@@ -283,7 +290,10 @@ void DiversionBackendDelegate::MoveFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (src_url == dest_url) {
+  if (!src_url.is_valid() || !dest_url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  } else if (src_url == dest_url) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
@@ -385,6 +395,11 @@ bool DiversionBackendDelegate::ShouldDivertForTesting(
 }
 
 // static
+base::TimeDelta DiversionBackendDelegate::IdleTimeoutForTesting() {
+  return kDiversionFileIdleTimeout;
+}
+
+// static
 void DiversionBackendDelegate::OnDiversionFinished(
     base::WeakPtr<DiversionBackendDelegate> weak_ptr,
     OnDiversionFinishedCallSite call_site,
@@ -397,6 +412,8 @@ void DiversionBackendDelegate::OnDiversionFinished(
     int64_t file_size,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK(dest_url.is_valid());
+  CHECK(src_url.is_valid());
 
   if (error != base::File::FILE_OK) {
     if (callback) {

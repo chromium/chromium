@@ -178,10 +178,22 @@ class DiversionBackendDelegateTest : public testing::Test,
         "fake_filesystem_id", storage::FileSystemMountOption());
   }
 
+  static const char* kExpectedContents;
+  static const char* kFragments[];
+
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir fs_context_temp_dir_;
   base::ScopedTempDir general_temp_dir_;
   scoped_refptr<storage::FileSystemContext> fs_context_;
+};
+
+const char* DiversionBackendDelegateTest::kExpectedContents =
+    "Lorem ipsum.Dolor sit.Amet.";
+
+const char* DiversionBackendDelegateTest::kFragments[] = {
+    "Lorem ipsum.",
+    "Dolor sit.",
+    "Amet.",
 };
 
 TEST_P(DiversionBackendDelegateTest, Basic) {
@@ -196,20 +208,17 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   ASSERT_TRUE(base::GetTempDir(&temp_dir));
   delegate.OverrideTmpfileDirForTesting(temp_dir);
 
-  const char* expected_contents = "Lorem ipsum.Dolor sit.Amet.";
-  const char* fragments[] = {"Lorem ipsum.", "Dolor sit.", "Amet."};
-
   // Simulate the "download a file" workflow that first writes to a temporary
   // file (fs_url0) before moving that over the ulimate destination (fs_url1).
   //
   // The final state should be the same, regardless of ShouldDivert(), in that
   // the fs_url0 file does not exist but the fs_url1 file does exist (and its
-  // contents match the expected_contents).
+  // contents match the kExpectedContents).
   //
   // We also test copying (instead of moving) fs_url0 to fsurl1, depending on
   // ShouldCopy(). The "download a file" workflow always moves, but copying
   // should work too (where the final state is that both fs_url0 and fs_url1
-  // files exist and have the expected_contents).
+  // files exist and have the kExpectedContents).
   storage::FileSystemURL fs_url0 =
       CreateFSURL(ShouldDivert() ? "diversion.dat.crdownload"
                                  : "diversion.dat.some_other_extension");
@@ -217,7 +226,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   ASSERT_EQ(ShouldDivert(), delegate.ShouldDivertForTesting(fs_url0));
 
   // The final state should be indifferent to whether or not fs_url1 already
-  // exists and, if it does, whether it's longer than expected_contents.
+  // exists and, if it does, whether it's longer than kExpectedContents.
   if (ShouldDestExists()) {
     ASSERT_TRUE(base::WriteFile(fs_url1.path(), std::string(100, 'x')));
   }
@@ -260,7 +269,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // depending on ShouldDivert().
   {
     int64_t offset = 0;
-    for (const char* fragment : fragments) {
+    for (const char* fragment : kFragments) {
       std::unique_ptr<storage::FileStreamWriter> writer =
           delegate.CreateFileStreamWriter(fs_url0, offset, fs_context_.get());
       SynchronousWrite(*writer, fragment);
@@ -281,7 +290,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
         ReadFromReader(*reader, 100);
     reader.reset();
     ASSERT_TRUE(read_from_reader_contents.has_value());
-    EXPECT_EQ(expected_contents, read_from_reader_contents.value());
+    EXPECT_EQ(kExpectedContents, read_from_reader_contents.value());
   }
 
   // Even though, in our unit test, our DiversionBackendDelegate is ultimately
@@ -329,12 +338,12 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
     if (ShouldCopy()) {
       std::string contents0;
       ASSERT_TRUE(base::ReadFileToString(fs_url0.path(), &contents0));
-      EXPECT_EQ(expected_contents, contents0);
+      EXPECT_EQ(kExpectedContents, contents0);
     }
 
     std::string contents1;
     ASSERT_TRUE(base::ReadFileToString(fs_url1.path(), &contents1));
-    EXPECT_EQ(expected_contents, contents1);
+    EXPECT_EQ(kExpectedContents, contents1);
   }
 }
 
@@ -343,5 +352,61 @@ INSTANTIATE_TEST_SUITE_P(
     DiversionBackendDelegateTest,
     testing::Range(0, 1 << DiversionBackendDelegateTest::kNumParamBits),
     &DiversionBackendDelegateTest::DescribeParams);
+
+TEST_F(DiversionBackendDelegateTest, Timeout) {
+  ASSERT_TRUE(
+      ::content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+
+  fake_fsb_delegate_create_file_stream_writer_count = 0;
+  DiversionBackendDelegate delegate(std::make_unique<FakeFSBDelegate>(
+      task_environment_.GetMainThreadTaskRunner()));
+
+  base::FilePath temp_dir;
+  ASSERT_TRUE(base::GetTempDir(&temp_dir));
+  delegate.OverrideTmpfileDirForTesting(temp_dir);
+
+  storage::FileSystemURL fs_url0 = CreateFSURL("diversion.dat.crdownload");
+  ASSERT_TRUE(delegate.ShouldDivertForTesting(fs_url0));
+
+  storage::AsyncFileUtil* async_file_util =
+      delegate.GetAsyncFileUtil(fs_url0.type());
+  {
+    async_file_util->EnsureFileExists(
+        CreateFSOContext(), fs_url0,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure, base::File::Error error,
+               bool created) {
+              ASSERT_EQ(base::File::FILE_OK, error);
+              ASSERT_TRUE(created);
+              quit_closure.Run();
+            },
+            task_environment_.QuitClosure()));
+    task_environment_.RunUntilQuit();
+  }
+
+  {
+    int64_t offset = 0;
+    for (const char* fragment : kFragments) {
+      std::unique_ptr<storage::FileStreamWriter> writer =
+          delegate.CreateFileStreamWriter(fs_url0, offset, fs_context_.get());
+      SynchronousWrite(*writer, fragment);
+      offset += strlen(fragment);
+    }
+  }
+
+  // The code above is similar to the DiversionBackendDelegateTest.Basic test,
+  // although it stops before the CopyFileLocal or MoveFileLocal call and there
+  // is no fs_url1 variable, only fs_url0. The code below is different.
+
+  {
+    ASSERT_FALSE(base::PathExists(fs_url0.path()));
+    task_environment_.FastForwardBy(delegate.IdleTimeoutForTesting());
+    ASSERT_TRUE(base::PathExists(fs_url0.path()));
+
+    std::string contents0;
+    ASSERT_TRUE(base::ReadFileToString(fs_url0.path(), &contents0));
+    EXPECT_EQ(kExpectedContents, contents0);
+  }
+}
 
 }  // namespace ash
