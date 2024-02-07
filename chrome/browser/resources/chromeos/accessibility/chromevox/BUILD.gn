@@ -56,6 +56,7 @@ ts_modules = [
   "common/tts_types.ts",
   "panel/panel.ts",
   "panel/panel_captions.ts",
+  "panel/panel_menu_item.ts",
   "chromevox_loader.ts",
 ]
 
@@ -169,7 +170,6 @@ js_modules = [
   "panel/menu_manager.js",
   "panel/panel_interface.js",
   "panel/panel_menu.js",
-  "panel/panel_menu_item.js",
   "panel/panel_mode.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
   "third_party/tamachiyomi/ja_phonetic_map.js",

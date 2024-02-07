@@ -12,54 +12,48 @@ import {EventSourceType} from '../common/event_source_type.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 export class PanelMenuItem {
+  callback: () => Promise<void>;
+  element?: HTMLElement;
+  gesture?: string;
+  menuItemBraille?: string;
+  menuItemShortcut?: string;
+  menuItemTitle: string;
+
+  private enabled_ = true;
+
   /**
-   * @param {string} menuItemTitle The title of the menu item.
-   * @param {string|undefined} menuItemShortcut The keystrokes to select this
-   *     item.
-   * @param {string|undefined} menuItemBraille The braille keystrokes to select
-   *     this item.
-   * @param {string|undefined} gesture The gesture to select this item.
-   * @param {function(): !Promise} callback The function to call if this item
-   *     is selected.
-   * @param {string=} opt_id An optional id for the menu item element.
+   * @param menuItemTitle The title of the menu item.
+   * @param menuItemShortcut The keystrokes to select this item.
+   * @param menuItemBraille The braille keystrokes to select this item.
+   * @param gesture The gesture to select this item.
+   * @param callback The function to call if this item is selected.
+   * @param optId An optional id for the menu item element.
    */
   constructor(
-      menuItemTitle, menuItemShortcut, menuItemBraille, gesture, callback,
-      opt_id) {
-    /** @type {string} */
+      menuItemTitle: string, menuItemShortcut: string | undefined,
+      menuItemBraille: string | undefined, gesture: string | undefined,
+      callback: () => Promise<void>, optId?: string) {
     this.menuItemTitle = menuItemTitle;
-    /** @type {string|undefined} */
     this.menuItemShortcut = menuItemShortcut;
-    /** @type {string|undefined} */
     this.menuItemBraille = menuItemBraille;
-    /** @type {string|undefined} */
     this.gesture = gesture;
-    /** @type {function(): !Promise} */
     this.callback = callback;
 
-    /** @type {Element} */
-    this.element;
-    /** @type {boolean} */
-    this.enabled_ = true;
-
-    this.init_(opt_id);
+    this.init_(optId);
   }
 
-  /**
-   * @param {string=} opt_id
-   * @private
-   */
-  async init_(opt_id) {
+  private async init_(optId?: string): Promise<void> {
     this.element = document.createElement('tr');
     this.element.className = 'menu-item';
     this.element.tabIndex = -1;
     this.element.setAttribute('role', 'menuitem');
-    if (opt_id) {
-      this.element.id = opt_id;
+    if (optId) {
+      this.element.id = optId;
     }
 
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     this.element.addEventListener(
-        'mouseover', () => this.element.focus(), false);
+        'mouseover', () => this.element!.focus(), false);
 
     const title = document.createElement('td');
     title.className = 'menu-item-title';
@@ -73,45 +67,41 @@ export class PanelMenuItem {
     if (eventSource === EventSourceType.TOUCH_GESTURE) {
       const gestureNode = document.createElement('td');
       gestureNode.className = 'menu-item-shortcut';
-      gestureNode.textContent = this.gesture;
+      gestureNode.textContent = this.gesture ?? null;
       this.element.appendChild(gestureNode);
       return;
     }
 
     const shortcut = document.createElement('td');
     shortcut.className = 'menu-item-shortcut';
-    shortcut.textContent = this.menuItemShortcut;
+    shortcut.textContent = this.menuItemShortcut ?? null;
     this.element.appendChild(shortcut);
 
     if (LocalStorage.get('brailleCaptions') ||
         SettingsManager.get('menuBrailleCommands')) {
       const braille = document.createElement('td');
       braille.className = 'menu-item-shortcut';
-      braille.textContent = this.menuItemBraille;
+      braille.textContent = this.menuItemBraille ?? null;
       this.element.appendChild(braille);
     }
   }
 
-  /**
-   * @return {string} The text content of this menu item.
-   */
-  get text() {
-    return this.element.textContent;
+  /** @return The text content of this menu item. */
+  get text(): string {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return this.element!.textContent!;
   }
 
-  /**
-   * @return {boolean} The enabled state of this item.
-   */
-  get enabled() {
+  /** @return The enabled state of this item. */
+  get enabled(): boolean {
     return this.enabled_;
   }
 
-  /**
-   * Marks this item as disabled.
-   */
-  disable() {
+  /** Marks this item as disabled. */
+  disable(): void {
     this.enabled_ = false;
-    this.element.classList.add('disabled');
-    this.element.setAttribute('aria-disabled', true);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.element!.classList.add('disabled');
+    this.element!.setAttribute('aria-disabled', String(true));
   }
 }
