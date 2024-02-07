@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/network_service_instance.h"
@@ -62,6 +63,7 @@ class AidaClientTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   signin::IdentityTestEnvironment* identity_test_env_;
+  base::HistogramTester histogram_tester_;
 };
 
 class Delegate {
@@ -153,6 +155,7 @@ TEST_F(AidaClientTest, Succeeds) {
 
   EXPECT_EQ(kRequest, delegate.request_);
   EXPECT_EQ(kResponse, delegate.response_);
+  histogram_tester_.ExpectTotalCount("DevTools.AidaResponseTime", 1);
 }
 
 TEST_F(AidaClientTest, ReusesOAuthToken) {
