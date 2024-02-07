@@ -29,6 +29,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_metrics.h"
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
@@ -521,10 +522,28 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     // See `holding_space_wallpaper_nudge_metrics::RecordInteraction()`.
   }
 
+  // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+  // into the production metrics code path when cleaning up the experiment.
   void OnHoldingSpacePodActionRecorded(
       holding_space_metrics::PodAction action) override {
-    // TODO(http://b/311411775): Record wallpaper nudge experiment metrics.
-    // See `holding_space_wallpaper_nudge_metrics::RecordInteraction()`.
+    using holding_space_metrics::PodAction;
+    using holding_space_wallpaper_nudge_metrics::Interaction;
+
+    switch (action) {
+      case PodAction::kDragAndDropToPin:
+        RecordInteraction(Interaction::kDroppedFileOnHoldingSpace);
+        break;
+      case PodAction::kShowBubble:
+        RecordInteraction(Interaction::kOpenedHoldingSpace);
+        break;
+      case PodAction::kCloseBubble:
+      case PodAction::kHidePod:
+      case PodAction::kHidePreviews:
+      case PodAction::kShowContextMenu:
+      case PodAction::kShowPod:
+      case PodAction::kShowPreviews:
+        break;
+    }
   }
 
   // SessionObserver:

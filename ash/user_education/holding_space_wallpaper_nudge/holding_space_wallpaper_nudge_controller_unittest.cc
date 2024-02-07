@@ -31,6 +31,7 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_metrics.h"
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
@@ -45,6 +46,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -73,12 +75,18 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::ash::holding_space_wallpaper_nudge_metrics::Interaction;
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::_;
 using ::testing::AnyOf;
+using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::ReturnRefOfCopy;
 using ::testing::WithArgs;
 
 // Helpers ---------------------------------------------------------------------
@@ -1464,6 +1472,100 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id, /*client=*/nullptr, /*model=*/nullptr);
+}
+
+// HoldingSpaceWallpaperNudgeMetricsTest ---------------------------------------
+
+// Base class for tests of the `HoldingSpaceWallpaperNudgeController` which are
+// concerned with metrics, parameterized by whether the holding space wallpaper
+// nudge is enabled.
+class HoldingSpaceWallpaperNudgeMetricsTest
+    : public UserEducationAshTestBase,
+      public ::testing::WithParamInterface</*nudge_enabled=*/bool> {
+ public:
+  HoldingSpaceWallpaperNudgeMetricsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceWallpaperNudge,
+        IsHoldingSpaceWallpaperNudgeEnabled());
+  }
+
+  // Whether the holding space wallpaper nudge is enabled given test
+  // parameterization.
+  bool IsHoldingSpaceWallpaperNudgeEnabled() const { return GetParam(); }
+
+ private:
+  // UserEducationAshTestBase:
+  void SetUp() override {
+    UserEducationAshTestBase::SetUp();
+
+    // When the holding space wallpaper nudge is enabled, provide an
+    // implementation of `IsNewUser()` which always returns `true`, thereby
+    // indicating that the user is new cross-device and therefore eligible for
+    // the experiment.
+    if (IsHoldingSpaceWallpaperNudgeEnabled()) {
+      ON_CALL(*user_education_delegate(), IsNewUser)
+          .WillByDefault(ReturnRefOfCopy(std::make_optional<bool>(true)));
+    }
+
+    // Log in a regular user.
+    const AccountId& account_id = AccountId::FromUserEmail("user@test");
+    SimulateNewUserFirstLogin(account_id.GetUserEmail());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceWallpaperNudgeMetricsTest,
+                         /*nudge_enabled=*/testing::Bool());
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that when the production holding space metrics code path records a
+// histogram indicating that a file was dropped on holding space, the
+// corresponding interaction histogram in the wallpaper nudge experiment
+// metrics code path is also recorded.
+TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
+       RecordsInteraction_DroppedFileOnHoldingSpace) {
+  base::HistogramTester histogram_tester;
+
+  // Whenever the production holding space metrics code path records a histogram
+  // to reflect that a file was dropped on holding space...
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kDragAndDropToPin);
+
+  // ...record the appropriate interaction histogram in the wallpaper nudge
+  // experiment metrics code path iff the nudge is enabled.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
+      Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
+                  BucketsAre(Bucket(Interaction::kDroppedFileOnHoldingSpace,
+                                    /*count=*/1u)),
+                  IsEmpty()));
+}
+
+// Verifies that when the production holding space metrics code path records a
+// histogram indicating that holding space was opened, the corresponding
+// interaction histogram in the wallpaper nudge experiment metrics code path is
+// also recorded.
+TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
+       RecordsInteraction_OpenedHoldingSpace) {
+  base::HistogramTester histogram_tester;
+
+  // Whenever the production holding space metrics code path records a histogram
+  // to reflect that holding space was opened...
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kShowBubble);
+
+  // ...record the appropriate interaction histogram in the wallpaper nudge
+  // experiment metrics code path iff the nudge is enabled.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
+              Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
+                          BucketsAre(Bucket(Interaction::kOpenedHoldingSpace,
+                                            /*count=*/1u)),
+                          IsEmpty()));
 }
 
 // HoldingSpaceWallpaperNudgePlaceholderTest -----------------------------------
