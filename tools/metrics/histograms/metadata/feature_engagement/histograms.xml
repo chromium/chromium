@@ -507,6 +507,8 @@ chromium-metrics-reviews@google.com.
       summary="the tutorial for the customize chrome side panel"/>
   <variant name=".PasswordManager"
       summary="the tutorial for the password manager"/>
+  <variant name=".SavedTabGroup"
+      summary="the tutorial for the saved tab group"/>
   <variant name=".SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
   <variant name=".TabGroup" summary="the tutorial for tab groups"/>
