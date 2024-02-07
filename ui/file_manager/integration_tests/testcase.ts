@@ -33,7 +33,7 @@ import * as filesTooltipTests from './file_manager/files_tooltip.js';
 // import * as navigationTests from './file_manager/navigation.js';
 // import * as officeTests from './file_manager/office.js';
 import * as openAudioMediaAppTests from './file_manager/open_audio_media_app.js';
-// import * as openFilesInWebDriveTests from './file_manager/open_files_in_web_drive.js';
+import * as openFilesInWebDriveTests from './file_manager/open_files_in_web_drive.js';
 import * as openImageMediaAppTests from './file_manager/open_image_media_app.js';
 import * as openSniffedFilesTests from './file_manager/open_sniffed_files.js';
 import * as openVideoMediaAppTests from './file_manager/open_video_media_app.js';
@@ -91,7 +91,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...navigationTests,
   // ...officeTests,
   ...openAudioMediaAppTests,
-  // ...openFilesInWebDriveTests,
+  ...openFilesInWebDriveTests,
   ...openImageMediaAppTests,
   ...openSniffedFilesTests,
   ...openVideoMediaAppTests,
