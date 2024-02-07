@@ -182,4 +182,15 @@ if (!is_official_build) {
     "wmp.DesksTemplatesLaunch",
     "wmp.SavedDeskDelete",
   ]
+
+  # b/315373487 the team working on the fix on CrOS side
+  tast_disabled_tests_from_chrome_all +=
+      [ "ui.ChromeCrashLoopV2.crashpad_mock_consent@jacuzzi" ]
+
+  # b/324159992 crypthome tests timeouts only on jacuzzi
+  tast_disabled_tests_from_chrome_all += [
+    "cryptohome.USSMigrationPinAfterPasswordMigration@jacuzzi",
+    "cryptohome.UssMigrationPasswordPin@jacuzzi",
+    "cryptohome.UssMigrationPinPassword@jacuzzi",
+  ]
 }
