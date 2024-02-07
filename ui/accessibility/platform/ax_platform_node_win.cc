@@ -1018,7 +1018,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"group"};
 
     case ax::mojom::Role::kFigcaption:
-      return {UIALocalizationStrategy::kSupply, UIA_TextControlTypeId,
+      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"description"};
 
     case ax::mojom::Role::kFigure:
