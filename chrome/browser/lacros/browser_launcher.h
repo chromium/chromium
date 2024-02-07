@@ -23,7 +23,11 @@ class BrowserLauncher : public base::SupportsUserData::Data {
 
   // Launches lacros-chrome for the last opened profiles. Returns true if
   // BrowserLauncher was able to perform the launch action successfully.
-  bool LaunchForLastOpenedProfiles(bool skip_crash_restore);
+  // `restore_tabbed_browser` should only be flipped false by Ash full
+  // restore code path, suppressing restoring a normal browser when there were
+  // only PWAs open in previous session. See crbug.com/1463906.
+  bool LaunchForLastOpenedProfiles(bool skip_crash_restore,
+                                   bool restore_tabbed_browser);
 
   bool is_launching_for_last_opened_profiles() const {
     return is_launching_for_last_opened_profiles_;

@@ -183,11 +183,13 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
-    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+    bool restore_tabbed_browser) {
   DCHECK(profile);
   profile_ = profile;
 
-  LaunchResult launch_result = DetermineURLsAndLaunch(process_startup);
+  LaunchResult launch_result =
+      DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
 
   // Check the true process command line for --try-chrome-again=N rather than
   // the one parsed for startup URLs and such.
@@ -355,7 +357,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 
 StartupBrowserCreatorImpl::LaunchResult
 StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
-    chrome::startup::IsProcessStartup process_startup) {
+    chrome::startup::IsProcessStartup process_startup,
+    bool restore_tabbed_browser) {
   if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
     // Checking the flags this late in the launch should be redundant.
     // TODO(https://crbug.com/1300109): Remove by M104.
@@ -447,7 +450,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       behavior_options);
 
   SessionRestore::BehaviorBitmask restore_options =
-      SessionRestore::RESTORE_BROWSER;
+      restore_tabbed_browser ? SessionRestore::RESTORE_BROWSER : 0;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
 #if BUILDFLAG(IS_MAC)
     bool was_mac_login_or_resume = base::mac::WasLaunchedAsLoginOrResumeItem();
@@ -458,7 +461,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
         browser_defaults::kAlwaysCreateTabbedBrowserOnSessionRestore,
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kCreateBrowserOnStartupForTests),
-        was_mac_login_or_resume);
+        was_mac_login_or_resume, restore_tabbed_browser);
   }
 
   Browser* browser = RestoreOrCreateBrowser(
@@ -715,9 +718,13 @@ SessionRestore::BehaviorBitmask
 StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
     bool has_create_browser_default,
     bool has_create_browser_switch,
-    bool was_mac_login_or_resume) {
-  SessionRestore::BehaviorBitmask options =
-      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER;
+    bool was_mac_login_or_resume,
+    bool restore_tabbed_browser) {
+  SessionRestore::BehaviorBitmask options = SessionRestore::SYNCHRONOUS;
+
+  if (restore_tabbed_browser) {
+    options |= SessionRestore::RESTORE_BROWSER;
+  }
 
   // Suppress the creation of a new window on Mac when restoring with no windows
   // if launching Chrome via a login item or the resume feature in OS 10.7+.

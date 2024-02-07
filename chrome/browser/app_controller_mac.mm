@@ -197,10 +197,10 @@ void LaunchBrowserStartup(Profile* profile) {
 
   base::AutoReset<bool> auto_reset_in_run(&g_is_opening_new_window, true);
   StartupBrowserCreator browser_creator;
-  browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
-                                profile, base::FilePath(),
-                                chrome::startup::IsProcessStartup::kNo,
-                                chrome::startup::IsFirstRun::kYes, nullptr);
+  browser_creator.LaunchBrowser(
+      *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
+      chrome::startup::IsProcessStartup::kNo, chrome::startup::IsFirstRun::kYes,
+      nullptr, /*restore_tabbed_browser=*/true);
 }
 
 // Creates an empty browser window with the given profile and returns a pointer

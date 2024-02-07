@@ -163,24 +163,32 @@ class StartupBrowserCreator {
   // |process_startup| indicates whether this is the first browser.
   // |is_first_run| indicates that this is a new profile.
   // If |launch_mode_recorder| is non null, and a browser is launched, a launch
-  // mode histogram will be recorded.
+  // mode histogram will be recorded. `restore_tabbed_browser` should only
+  // be flipped false by Ash full restore code path, suppressing restoring a
+  // normal browser when there were only PWAs open in previous session. See
+  // crbug.com/1463906.
   void LaunchBrowser(
       const base::CommandLine& command_line,
       Profile* profile,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
-      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder);
+      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+      bool restore_tabbed_browser);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
-  // launches browser for `profile_info`.
+  // launches browser for `profile_info`. `restore_tabbed_browser` should
+  // only be flipped false by Ash full restore code path, suppressing restoring
+  // a normal browser when there were only PWAs open in previous session. See
+  // crbug.com/1463906.
   void LaunchBrowserForLastProfiles(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
       StartupProfileInfo profile_info,
-      const Profiles& last_opened_profiles);
+      const Profiles& last_opened_profiles,
+      bool restore_tabbed_browser);
 
   // Returns true during browser process startup if the previous browser was
   // restarted. This only returns true before the first StartupBrowserCreator

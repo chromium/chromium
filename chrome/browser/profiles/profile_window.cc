@@ -126,9 +126,9 @@ void FindOrCreateNewWindowForProfile(
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator browser_creator;
   // This is not a browser launch from the user; don't record the launch mode.
-  browser_creator.LaunchBrowser(command_line, profile, base::FilePath(),
-                                process_startup, is_first_run,
-                                /*launch_mode_recorder=*/nullptr);
+  browser_creator.LaunchBrowser(
+      command_line, profile, base::FilePath(), process_startup, is_first_run,
+      /*launch_mode_recorder=*/nullptr, /*restore_tabbed_browser=*/true);
 }
 
 void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,

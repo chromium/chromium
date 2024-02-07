@@ -621,7 +621,7 @@ void BrowserServiceLacros::NewWindowWithProfile(
 
   if (HasPendingUncleanExit(profile) &&
       BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
-          /*skip_crash_restore=*/false)) {
+          /*skip_crash_restore=*/false, /*restore_tabbed_browser=*/true)) {
     // Restore all previously open profiles when recovering from a crash with
     // the profile picker disabled.
     std::move(callback).Run(crosapi::mojom::CreationResult::kUnknown);
@@ -740,7 +740,7 @@ void BrowserServiceLacros::LaunchOrNewTabWithProfile(
 
   if (HasPendingUncleanExit(profile) &&
       BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
-          /*skip_crash_restore=*/false)) {
+          /*skip_crash_restore=*/false, /*restore_tabbed_browser=*/true)) {
     // Restore all previously open profiles when recovering from a crash with
     // the profile picker disabled.
     std::move(callback).Run(crosapi::mojom::CreationResult::kUnknown);
@@ -820,7 +820,7 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(
     return;
   }
   BrowserLauncher::GetForProfile(profile)->LaunchForLastOpenedProfiles(
-      skip_crash_restore);
+      skip_crash_restore, /*restore_tabbed_browser=*/false);
 }
 
 void BrowserServiceLacros::UpdateComponentPolicy(

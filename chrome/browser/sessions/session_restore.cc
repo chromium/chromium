@@ -605,6 +605,10 @@ class SessionRestoreImpl : public BrowserListObserver {
 #endif  // BUIDLFLAG(IS_CHROMEOS)
   }
 
+  // Creates browsers for `windows` and returns the last tabbed browser or the
+  // one needs to be activated. If there is no tabbed browser (e.g. only PWAs
+  // open in the last session, see b/40275406) returns the last app browesr in
+  // `windows`.
   Browser* ProcessSessionWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID active_window_id,
@@ -633,6 +637,10 @@ class SessionRestoreImpl : public BrowserListObserver {
     // if no TYPE_NORMAL browser exists.
     Browser* last_normal_browser = nullptr;
     bool has_normal_browser = false;
+
+    // After the for loop this contains the last TYPE_APP browser, or nullptr
+    // if no TYPE_APP browser exists.
+    Browser* last_app_browser = nullptr;
 
     // After the for loop, this contains the browser to activate, if one of the
     // windows has the same id as specified in active_window_id.
@@ -687,6 +695,11 @@ class SessionRestoreImpl : public BrowserListObserver {
         has_normal_browser = true;
         last_normal_browser = browser;
         browser->SetWindowUserTitle((*i)->user_title);
+      }
+
+      // Track TYPE_APP browsers.
+      if ((*i)->type == sessions::SessionWindow::TYPE_APP) {
+        last_app_browser = browser;
       }
 
       // 3. Determine whether the currently active tab should be closed.
@@ -767,7 +780,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     profile_->GetDefaultStoragePartition()
         ->GetDOMStorageContext()
         ->StartScavengingUnusedSessionStorage();
-    return last_normal_browser;
+    return last_normal_browser ? last_normal_browser : last_app_browser;
   }
 
   // Record an app launch event (if appropriate) for a tab which is about to

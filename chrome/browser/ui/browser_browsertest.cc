@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
-                nullptr);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // The launch should have created a new browser.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
