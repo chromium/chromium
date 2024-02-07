@@ -121,8 +121,6 @@ const char kIOSBackForwardButtonTapped[] = "back_forward_button_tapped";
 const char kIOSSwipeBackForwardUsed[] = "swiped_back_forward_used";
 const char kEnhancedSafeBrowsingPromoCriterionMet[] =
     "enhanced_safe_browsing_promo_criterion_met";
-const char kEnhancedSafeBrowsingInlinePromoClosed[] =
-    "enhanced_safe_browsing_inline_promo_closed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

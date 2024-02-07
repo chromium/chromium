@@ -2017,9 +2017,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(EventConfig(
         feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet,
         Comparator(GREATER_THAN_OR_EQUAL, 1), 7, 360));
-    config->event_configs.insert(EventConfig(
-        feature_engagement::events::kEnhancedSafeBrowsingInlinePromoClosed,
-        Comparator(LESS_THAN, 1), 360, 360));
     config->used =
         EventConfig("enhanced_safe_browsing_inline_promo_used",
                     Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
