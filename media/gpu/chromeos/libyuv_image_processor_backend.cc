@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -210,15 +211,15 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     return nullptr;
   }
 
-  scoped_refptr<VideoFrame> intermediate_frame;
+  scoped_refptr<FrameResource> intermediate_frame;
   if (res == SupportResult::SupportedWithI420Pivot ||
       res == SupportResult::SupportedWithNV12Pivot) {
-    intermediate_frame = VideoFrame::CreateFrame(
+    intermediate_frame = VideoFrameResource::Create(VideoFrame::CreateFrame(
         res == SupportResult::SupportedWithI420Pivot ? PIXEL_FORMAT_I420
                                                      : PIXEL_FORMAT_NV12,
         input_config.visible_rect.size(),
         gfx::Rect(input_config.visible_rect.size()),
-        input_config.visible_rect.size(), base::TimeDelta());
+        input_config.visible_rect.size(), base::TimeDelta()));
     if (!intermediate_frame) {
       VLOGF(1) << "Failed to create intermediate frame";
       return nullptr;
@@ -230,13 +231,14 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   // as MM21 can not easily be converted starting at arbitrary origins. With
   // this intermediate buffer the tiled format can be converted to a linear
   // format that can be easily cropped.
-  scoped_refptr<VideoFrame> crop_intermediate_frame;
+  scoped_refptr<FrameResource> crop_intermediate_frame;
   if (input_config.visible_rect.origin() != gfx::Point(0, 0) &&
       input_config.fourcc == Fourcc(Fourcc::MM21)) {
     if (transform != Transform::kScaling) {
-      crop_intermediate_frame = VideoFrame::CreateFrame(
-          output_config.fourcc.ToVideoPixelFormat(), input_config.size,
-          input_config.visible_rect, input_config.size, base::TimeDelta());
+      crop_intermediate_frame =
+          VideoFrameResource::Create(VideoFrame::CreateFrame(
+              output_config.fourcc.ToVideoPixelFormat(), input_config.size,
+              input_config.visible_rect, input_config.size, base::TimeDelta()));
       if (!crop_intermediate_frame) {
         VLOGF(1) << "Failed to create cropping intermediate frame";
         return nullptr;
@@ -268,8 +270,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
 LibYUVImageProcessorBackend::LibYUVImageProcessorBackend(
     std::unique_ptr<VideoFrameMapper> input_frame_mapper,
     std::unique_ptr<VideoFrameMapper> output_frame_mapper,
-    scoped_refptr<VideoFrame> intermediate_frame,
-    scoped_refptr<VideoFrame> crop_intermediate_frame,
+    scoped_refptr<FrameResource> intermediate_frame,
+    scoped_refptr<FrameResource> crop_intermediate_frame,
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
@@ -293,10 +295,10 @@ std::string LibYUVImageProcessorBackend::type() const {
   return "LibYUVImageProcessor";
 }
 
-void LibYUVImageProcessorBackend::Process(
-    scoped_refptr<VideoFrame> input_frame,
-    scoped_refptr<VideoFrame> output_frame,
-    FrameReadyCB cb) {
+void LibYUVImageProcessorBackend::ProcessFrame(
+    scoped_refptr<FrameResource> input_frame,
+    scoped_refptr<FrameResource> output_frame,
+    FrameResourceReadyCB cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   DVLOGF(4);
   if (input_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
@@ -305,28 +307,30 @@ void LibYUVImageProcessorBackend::Process(
     int mapping_permissions = PROT_READ;
     if (input_frame->storage_type() != VideoFrame::STORAGE_DMABUFS)
       mapping_permissions |= PROT_WRITE;
-    input_frame =
-        input_frame_mapper_->Map(std::move(input_frame), mapping_permissions);
-    if (!input_frame) {
-      VLOGF(1) << "Failed to map input VideoFrame";
+    scoped_refptr<VideoFrame> mapped_input_frame =
+        input_frame_mapper_->MapFrame(input_frame, mapping_permissions);
+    if (!mapped_input_frame) {
+      VLOGF(1) << "Failed to map input FrameResource";
       error_cb_.Run();
       return;
     }
+    input_frame = VideoFrameResource::Create(std::move(mapped_input_frame));
   }
 
   // We don't replace |output_frame| with a mapped frame, because |output_frame|
   // is the output of ImageProcessor.
-  scoped_refptr<VideoFrame> mapped_frame = output_frame;
+  scoped_refptr<FrameResource> mapped_frame = output_frame;
   if (output_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
       output_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DCHECK_NE(output_frame_mapper_.get(), nullptr);
-    mapped_frame =
-        output_frame_mapper_->Map(output_frame, PROT_READ | PROT_WRITE);
-    if (!mapped_frame) {
-      VLOGF(1) << "Failed to map output VideoFrame";
+    scoped_refptr<VideoFrame> mapped_output_frame =
+        output_frame_mapper_->MapFrame(output_frame, PROT_READ | PROT_WRITE);
+    if (!mapped_output_frame) {
+      VLOGF(1) << "Failed to map output FrameResource";
       error_cb_.Run();
       return;
     }
+    mapped_frame = VideoFrameResource::Create(std::move(mapped_output_frame));
   }
 
   int res;
@@ -380,8 +384,8 @@ void LibYUVImageProcessorBackend::Process(
   std::move(cb).Run(std::move(output_frame));
 }
 
-int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
-                                              VideoFrame* const output) {
+int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
+                                              FrameResource* const output) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
 #define Y_U_V_DATA(fr)                                                        \

@@ -15,6 +15,7 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,6 +26,9 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
  public:
   // Callback for returning a processed image to the client.
   using FrameReadyCB = base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
+  // FrameResource version of FrameReadyCB.
+  using FrameResourceReadyCB =
+      base::OnceCallback<void(scoped_refptr<FrameResource>)>;
   // Callback for returning a processed image to the client.
   // Used when calling the "legacy" Process() method with buffers that are
   // managed by the processor. The first argument is the index of the returned
@@ -91,9 +95,19 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
   // Process |input_frame| and store in |output_frame|. Only used when output
   // mode is IMPORT. After processing, call |cb| with |output_frame|.
-  virtual void Process(scoped_refptr<VideoFrame> input_frame,
-                       scoped_refptr<VideoFrame> output_frame,
-                       FrameReadyCB cb) = 0;
+  // All ImageProcessorBackend implementations natively use FrameResource
+  // instead of VideoFrame. Process() provides an interface for users of
+  // VideoFrame to call, but ProcessFrame() will be called, in turn, to do the
+  // actual work.
+  void Process(scoped_refptr<VideoFrame> input_frame,
+               scoped_refptr<VideoFrame> output_frame,
+               FrameReadyCB cb);
+
+  // Process |input_frame| and store in |output_frame|. Only used when output
+  // mode is IMPORT. After processing, call |cb| with |output_frame|.
+  virtual void ProcessFrame(scoped_refptr<FrameResource> input_frame,
+                            scoped_refptr<FrameResource> output_frame,
+                            FrameResourceReadyCB cb) = 0;
 
   // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
   // used when output mode is ALLOCATE. After processing, call |cb| with the

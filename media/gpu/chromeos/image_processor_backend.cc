@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -30,6 +31,16 @@ std::string VectorToString(const std::vector<T>& vec) {
   }
   result << "]";
   return result.str();
+}
+
+// Used to adapt FrameResourceReadyCB to FrameReadyCB. The incoming
+// FrameResource gets to converted to VideoFrame and passed to |callback|.
+void FrameResourceToFrameReadyCB(ImageProcessorBackend::FrameReadyCB callback,
+                                 scoped_refptr<FrameResource> frame) {
+  VideoFrameResource* video_frame_resource = frame->AsVideoFrameResource();
+  // This callback only gets called when |frame| is a VideoFrameResource.
+  CHECK(!!video_frame_resource);
+  std::move(callback).Run(video_frame_resource->GetMutableVideoFrame());
 }
 
 }  // namespace
@@ -81,6 +92,17 @@ void ImageProcessorBackend::Destroy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
   delete this;
+}
+
+void ImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
+                                    scoped_refptr<VideoFrame> output_frame,
+                                    FrameReadyCB cb) {
+  // Wraps ProcessFrame.
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+  ProcessFrame(VideoFrameResource::Create(std::move(input_frame)),
+               VideoFrameResource::Create(std::move(output_frame)),
+               base::BindOnce(&FrameResourceToFrameReadyCB, std::move(cb)));
 }
 
 void ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,

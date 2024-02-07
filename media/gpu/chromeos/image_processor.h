@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -47,6 +48,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   using OutputMode = ImageProcessorBackend::OutputMode;
   using ErrorCB = ImageProcessorBackend::ErrorCB;
   using FrameReadyCB = ImageProcessorBackend::FrameReadyCB;
+  using FrameResourceReadyCB = ImageProcessorBackend::FrameResourceReadyCB;
   using LegacyFrameReadyCB = ImageProcessorBackend::LegacyFrameReadyCB;
 
   // Callback type for creating a ImageProcessorBackend instance. This allows us
@@ -98,6 +100,11 @@ class MEDIA_GPU_EXPORT ImageProcessor {
                scoped_refptr<VideoFrame> output_frame,
                FrameReadyCB cb);
 
+  // FrameResource version of Process().
+  bool Process(scoped_refptr<FrameResource> input_frame,
+               scoped_refptr<FrameResource> output_frame,
+               FrameResourceReadyCB cb);
+
   // Reset all processing frames. After this method returns, no more callbacks
   // will be invoked. ImageProcessor is ready to process more frames.
   // Reset() must be called on |client_task_runner_|.
@@ -125,11 +132,13 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   // IMPORT mode for output.
   struct ClientCallback {
     ClientCallback(FrameReadyCB ready_cb);
+    ClientCallback(FrameResourceReadyCB frame_resource_ready_cb);
     ClientCallback(LegacyFrameReadyCB legacy_ready_cb);
     ClientCallback(ClientCallback&&);
     ~ClientCallback();
 
     FrameReadyCB ready_cb;
+    FrameResourceReadyCB frame_resource_ready_cb;
     LegacyFrameReadyCB legacy_ready_cb;
   };
 
@@ -143,6 +152,11 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       std::optional<base::WeakPtr<ImageProcessor>> weak_this,
       int cb_index,
       scoped_refptr<VideoFrame> frame);
+  static void OnProcessFrameResourceDoneThunk(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::optional<base::WeakPtr<ImageProcessor>> weak_this,
+      int cb_index,
+      scoped_refptr<FrameResource> frame);
   static void OnProcessLegacyDoneThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<base::WeakPtr<ImageProcessor>> weak_this,
@@ -150,6 +164,8 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       size_t buffer_id,
       scoped_refptr<VideoFrame> frame);
   void OnProcessDone(int cb_index, scoped_refptr<VideoFrame> frame);
+  void OnProcessFrameResourceDone(int cb_index,
+                                  scoped_refptr<FrameResource> frame);
   void OnProcessLegacyDone(int cb_index,
                            size_t buffer_id,
                            scoped_refptr<VideoFrame> frame);

@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/format_utils.h"
-#include "media/base/video_frame.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_types.h"
@@ -66,14 +66,14 @@ bool CreateAndAttachShader(GLuint program,
 }
 
 std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
-    const VideoFrame* video_frame,
+    const FrameResource* frame,
     GLenum target,
     GLuint texture_id,
     bool should_split_planes,
     int plane) {
   CHECK(plane == 0 || plane == 1);
 
-  if (video_frame->format() != PIXEL_FORMAT_NV12) {
+  if (frame->format() != PIXEL_FORMAT_NV12) {
     LOG(ERROR) << "The frame's format is not NV12";
     return nullptr;
   }
@@ -81,7 +81,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   // Create a native pixmap from the frame's memory buffer handle. Not using
   // CreateNativePixmapDmaBuf() because we should be using the visible size.
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
-      CreateGpuMemoryBufferHandle(video_frame);
+      frame->CreateGpuMemoryBufferHandle();
   if (gpu_memory_buffer_handle.is_null() ||
       gpu_memory_buffer_handle.type != gfx::NATIVE_PIXMAP) {
     LOG(ERROR) << "Failed to create native GpuMemoryBufferHandle";
@@ -89,7 +89,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   }
 
   auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(video_frame->layout().format());
+      VideoPixelFormatToGfxBufferFormat(frame->layout().format());
   if (!buffer_format) {
     LOG(ERROR) << "Unexpected video frame format";
     return nullptr;
@@ -97,7 +97,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   if (!should_split_planes) {
     auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-        video_frame->coded_size(), *buffer_format,
+        frame->coded_size(), *buffer_format,
         std::move(gpu_memory_buffer_handle.native_pixmap_handle));
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
@@ -105,20 +105,18 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     return ui::OzonePlatform::GetInstance()
         ->GetSurfaceFactoryOzone()
         ->GetCurrentGLOzone()
-        ->ImportNativePixmap(
-            std::move(native_pixmap), gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferPlane::DEFAULT, video_frame->coded_size(),
-            gfx::ColorSpace(), target, texture_id);
+        ->ImportNativePixmap(std::move(native_pixmap),
+                             gfx::BufferFormat::YUV_420_BIPLANAR,
+                             gfx::BufferPlane::DEFAULT, frame->coded_size(),
+                             gfx::ColorSpace(), target, texture_id);
   }
 
   base::CheckedNumeric<int> uv_width(0);
   base::CheckedNumeric<int> uv_height(0);
 
   if (plane == 1) {
-    uv_width =
-        GetNV12PlaneDimension<int>(video_frame->coded_size().width(), plane);
-    uv_height =
-        GetNV12PlaneDimension<int>(video_frame->coded_size().height(), plane);
+    uv_width = GetNV12PlaneDimension<int>(frame->coded_size().width(), plane);
+    uv_height = GetNV12PlaneDimension<int>(frame->coded_size().height(), plane);
 
     if (!uv_width.IsValid() || !uv_height.IsValid()) {
       LOG(ERROR) << "Could not compute the UV plane's dimensions";
@@ -128,7 +126,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   const gfx::Size plane_size =
       plane ? gfx::Size(uv_width.ValueOrDie(), uv_height.ValueOrDie())
-            : video_frame->coded_size();
+            : frame->coded_size();
 
   const gfx::BufferFormat plane_format =
       plane ? gfx::BufferFormat::RG_88 : gfx::BufferFormat::R_8;
@@ -550,11 +548,12 @@ GLImageProcessorBackend::~GLImageProcessorBackend() {
   }
 }
 
-void GLImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
-                                      scoped_refptr<VideoFrame> output_frame,
-                                      FrameReadyCB cb) {
+void GLImageProcessorBackend::ProcessFrame(
+    scoped_refptr<FrameResource> input_frame,
+    scoped_refptr<FrameResource> output_frame,
+    FrameResourceReadyCB cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
-  TRACE_EVENT2("media", "GLImageProcessorBackend::Process", "input_frame",
+  TRACE_EVENT2("media", "GLImageProcessorBackend::ProcessFrame", "input_frame",
                input_frame->AsHumanReadableString(), "output_frame",
                output_frame->AsHumanReadableString());
   SCOPED_UMA_HISTOGRAM_TIMER("GLImageProcessorBackend::Process");

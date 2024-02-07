@@ -28,6 +28,7 @@
 #include "media/base/media_util.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 
@@ -36,8 +37,8 @@ namespace media {
 namespace {
 
 std::optional<gfx::GpuMemoryBufferHandle> CreateHandle(
-    const VideoFrame* frame) {
-  gfx::GpuMemoryBufferHandle handle = CreateGpuMemoryBufferHandle(frame);
+    const FrameResource* frame) {
+  gfx::GpuMemoryBufferHandle handle = frame->CreateGpuMemoryBufferHandle();
 
   if (handle.is_null() || handle.type != gfx::NATIVE_PIXMAP)
     return std::nullopt;
@@ -506,7 +507,7 @@ void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   CHECK_EQ(output_memory_type_, V4L2_MEMORY_MMAP);
 
   auto job_record = std::make_unique<JobRecord>();
-  job_record->input_frame = frame;
+  job_record->input_frame = VideoFrameResource::Create(std::move(frame));
   job_record->legacy_ready_cb = std::move(cb);
   if (MediaTraceIsEnabled()) {
     job_record->start_time = base::TimeTicks::Now();
@@ -516,9 +517,10 @@ void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   ProcessJobs();
 }
 
-void V4L2ImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
-                                        scoped_refptr<VideoFrame> output_frame,
-                                        FrameReadyCB cb) {
+void V4L2ImageProcessorBackend::ProcessFrame(
+    scoped_refptr<FrameResource> input_frame,
+    scoped_refptr<FrameResource> output_frame,
+    FrameResourceReadyCB cb) {
   DVLOGF(4) << "ts=" << input_frame->timestamp().InMilliseconds();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -540,7 +542,7 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
 
   while (!input_job_queue_.empty()) {
     if (!input_queue_->IsStreaming()) {
-      const VideoFrame& input_frame =
+      const FrameResource& input_frame =
           *(input_job_queue_.front()->input_frame.get());
       const gfx::Size input_buffer_size(input_frame.stride(0),
                                         input_frame.coded_size().height());
@@ -554,7 +556,7 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     if (input_job_queue_.front()
             ->output_frame &&  // output_frame is nullptr in ALLOCATE mode.
         !output_queue_->IsStreaming()) {
-      const VideoFrame& output_frame =
+      const FrameResource& output_frame =
           *(input_job_queue_.front()->output_frame.get());
       const gfx::Size output_buffer_size(output_frame.stride(0),
                                          output_frame.coded_size().height());
@@ -569,10 +571,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     std::optional<V4L2WritableBufferRef> input_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (input_memory_type_ == V4L2_MEMORY_DMABUF) {
-      const VideoFrame& input_frame =
+      const FrameResource& input_frame =
           *(input_job_queue_.front()->input_frame.get());
       input_buffer =
-          input_queue_->GetFreeBufferForFrame(GetSharedMemoryId(input_frame));
+          input_queue_->GetFreeBufferForFrame(input_frame.GetSharedMemoryId());
     }
     if (!input_buffer)
       input_buffer = input_queue_->GetFreeBuffer();
@@ -580,10 +582,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     std::optional<V4L2WritableBufferRef> output_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (output_memory_type_ == V4L2_MEMORY_DMABUF) {
-      const VideoFrame& output_frame =
+      const FrameResource& output_frame =
           *(input_job_queue_.front()->output_frame.get());
-      output_buffer =
-          output_queue_->GetFreeBufferForFrame(GetSharedMemoryId(output_frame));
+      output_buffer = output_queue_->GetFreeBufferForFrame(
+          output_frame.GetSharedMemoryId());
     }
     if (!output_buffer)
       output_buffer = output_queue_->GetFreeBuffer();
@@ -834,16 +836,16 @@ void V4L2ImageProcessorBackend::Dequeue() {
     std::unique_ptr<JobRecord> job_record = std::move(running_jobs_.front());
     running_jobs_.pop();
 
-    scoped_refptr<VideoFrame> output_frame;
+    scoped_refptr<FrameResource> output_frame;
     switch (output_memory_type_) {
       case V4L2_MEMORY_MMAP:
-        // Wrap the V4L2 VideoFrame into another one with a destruction observer
-        // so we can reuse the MMAP buffer once the client is done with it.
+        // Wrap the V4L2 frame into another one with a destruction observer so
+        // we can reuse the MMAP buffer once the client is done with it.
         {
-          const auto& orig_frame = buffer->GetVideoFrame();
-          output_frame = VideoFrame::WrapVideoFrame(
-              orig_frame, orig_frame->format(), orig_frame->visible_rect(),
-              orig_frame->natural_size());
+          const auto& orig_frame = buffer->GetFrameResource();
+          // Need to wrap the original frame since the timestamp needs to be
+          // set.
+          output_frame = orig_frame->CreateWrappingFrame();
           // Because VideoFrame destruction callback might be executed on any
           // sequence, we use a thunk to post the task to the current task
           // runner.
@@ -874,8 +876,17 @@ void V4L2ImageProcessorBackend::Dequeue() {
     }
 
     if (!job_record->legacy_ready_cb.is_null()) {
+      // Since the legacy API only supports a |output_memory_type_| of
+      // V4L2_MEMORY_MMAP, |output_frame| is manufactured by a call to
+      // |V4L2ReadableBufferRef::GetFrameResource()|. This always returns a
+      // VideoFrameResource object, so |output_frame->AsVideoFrameResource()|
+      // returns a valid pointer.
+      // TODO(nhebert): switch to NativePixmap FrameResource when V4L2Queue
+      // does.
+      CHECK(output_frame->AsVideoFrameResource());
       std::move(job_record->legacy_ready_cb)
-          .Run(buffer->BufferId(), std::move(output_frame));
+          .Run(buffer->BufferId(),
+               output_frame->AsVideoFrameResource()->GetMutableVideoFrame());
     } else {
       std::move(job_record->ready_cb).Run(std::move(output_frame));
     }
