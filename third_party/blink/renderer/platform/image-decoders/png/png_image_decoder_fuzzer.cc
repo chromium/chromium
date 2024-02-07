@@ -28,12 +28,13 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
-  // TODO(b/323934468): Initialize decoder settings dynamically using fuzzer
-  // input
+  // TODO(crbug.com/323934468): Initialize decoder settings dynamically using
+  // fuzzer input.
   return std::make_unique<PNGImageDecoder>(
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
@@ -47,8 +48,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   decoder->SetData(buffer.get(), kAllDataReceived);
   for (wtf_size_t frame = 0; frame < decoder->FrameCount(); ++frame) {
     decoder->DecodeFrameBufferAtIndex(frame);
-    if (decoder->Failed())
+    if (decoder->Failed()) {
       return 0;
+    }
   }
   return 0;
 }

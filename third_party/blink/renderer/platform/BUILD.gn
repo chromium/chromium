@@ -2624,6 +2624,17 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 
+# Fuzzer for blink::GIFImageDecoder
+fuzzer_test("blink_gif_decoder_fuzzer") {
+  sources = [ "image-decoders/gif/gif_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/giffuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
 fuzzer_test("blink_png_decoder_fuzzer") {
   sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [

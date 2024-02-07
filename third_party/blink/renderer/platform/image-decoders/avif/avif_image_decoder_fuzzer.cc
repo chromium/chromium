@@ -11,12 +11,14 @@
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
 std::unique_ptr<ImageDecoder> CreateAVIFDecoder() {
-  // TODO(b/323934468): Initialize decoder settings dynamically using fuzzer
-  // input.
+  // TODO(crbug.com/323934468): Initialize decoder settings dynamically using
+  // fuzzer input.
   return std::make_unique<AVIFImageDecoder>(
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit,
