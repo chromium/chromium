@@ -1923,6 +1923,76 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RemoveLoginReturnsEmptyResultWhenSyncOff) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::RepeatingClosure(), base::DoNothing());
+  DisableSyncFeature();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+  EXPECT_CALL(*bridge_helper(), RemoveLogin).Times(0);
+  backend().RemoveLoginAsync(form, mock_reply.Get());
+
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RemoveLoginsByURLAndTimeReturnsEmptyResultWhenSyncOff) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::RepeatingClosure(), base::DoNothing());
+  DisableSyncFeature();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::RepeatingCallback<bool(const GURL&)> url_filter =
+      base::BindRepeating([](const GURL& url) { return true; });
+  base::Time delete_begin = base::Time::FromTimeT(1000);
+  base::Time delete_end = base::Time::FromTimeT(2000);
+
+  EXPECT_CALL(*bridge_helper(), RemoveLogin).Times(0);
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  backend().RemoveLoginsByURLAndTimeAsync(url_filter, delete_begin, delete_end,
+                                          base::DoNothing(), mock_reply.Get());
+
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RemoveLoginsCreatedBetweenReturnsEmptyResultWhenSyncOff) {
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::RepeatingClosure(), base::DoNothing());
+  DisableSyncFeature();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::Time delete_begin = base::Time::FromTimeT(1000);
+  base::Time delete_end = base::Time::FromTimeT(2000);
+
+  EXPECT_CALL(*bridge_helper(), RemoveLogin).Times(0);
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  backend().RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
+                                            mock_reply.Get());
+
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
+  RunUntilIdle();
+}
+
 // Test suite to verify there is no unenrollment for most of the errors except
 // Passphrase. Each backend operation is checked by a separate test.
 class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest

@@ -111,9 +111,10 @@ ActionOnApiError GetRecoveryActionOnApiError(
                                  : ActionOnApiError::kEvict;
 }
 
-void ReplyWithEmptyList(LoginsOrErrorReply callback) {
+template <typename Response, typename CallbackType>
+void ReplyWithEmptyList(CallbackType callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), LoginsResult()));
+      FROM_HERE, base::BindOnce(std::move(callback), Response()));
 }
 
 }  // namespace
@@ -192,7 +193,7 @@ bool PasswordStoreAndroidAccountBackend::IsAbleToSavePasswords() {
 void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    ReplyWithEmptyList(std::move(callback));
+    ReplyWithEmptyList<LoginsResult>(std::move(callback));
     return;
   }
   GetAllLoginsInternal(GetSyncingAccount(sync_service_), std::move(callback));
@@ -201,7 +202,7 @@ void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
 void PasswordStoreAndroidAccountBackend::
     GetAllLoginsWithAffiliationAndBrandingAsync(LoginsOrErrorReply callback) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    ReplyWithEmptyList(std::move(callback));
+    ReplyWithEmptyList<LoginsResult>(std::move(callback));
     return;
   }
   if (bridge_helper()->CanUseGetAllLoginsWithBrandingInfoAPI()) {
@@ -220,7 +221,7 @@ void PasswordStoreAndroidAccountBackend::
 void PasswordStoreAndroidAccountBackend::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    ReplyWithEmptyList(std::move(callback));
+    ReplyWithEmptyList<LoginsResult>(std::move(callback));
     return;
   }
   GetAutofillableLoginsInternal(GetSyncingAccount(sync_service_),
@@ -242,7 +243,7 @@ void PasswordStoreAndroidAccountBackend::FillMatchingLoginsAsync(
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    ReplyWithEmptyList(std::move(callback));
+    ReplyWithEmptyList<LoginsResult>(std::move(callback));
     return;
   }
   FillMatchingLoginsInternal(GetSyncingAccount(sync_service_),
@@ -253,7 +254,7 @@ void PasswordStoreAndroidAccountBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    ReplyWithEmptyList(std::move(callback));
+    ReplyWithEmptyList<LoginsResult>(std::move(callback));
     return;
   }
   if (bridge_helper()->CanUseGetAffiliatedPasswordsAPI()) {
@@ -284,7 +285,10 @@ void PasswordStoreAndroidAccountBackend::UpdateLoginAsync(
 void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  CHECK(sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_));
+  if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
+    return;
+  }
   RemoveLoginInternal(GetSyncingAccount(sync_service_), form,
                       std::move(callback));
 }
@@ -295,7 +299,10 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
-  CHECK(sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_));
+  if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
+    return;
+  }
   RemoveLoginsByURLAndTimeInternal(GetSyncingAccount(sync_service_), url_filter,
                                    delete_begin, delete_end,
                                    std::move(callback));
@@ -305,7 +312,10 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
-  CHECK(sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_));
+  if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
+    return;
+  }
   RemoveLoginsCreatedBetweenInternal(GetSyncingAccount(sync_service_),
                                      delete_begin, delete_end,
                                      std::move(callback));
