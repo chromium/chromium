@@ -492,7 +492,7 @@ TEST_F(CompositorTestWithMessageLoop, MAYBE_CreateAndReleaseOutputSurface) {
 class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
  public:
   explicit LayerDelegateThatAddsDuringUpdateVisualState(Layer* parent)
-      : parent_(parent) {}
+      : parent_(*parent) {}
 
   bool update_visual_state_called() const {
     return update_visual_state_called_;
@@ -509,7 +509,7 @@ class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
  private:
-  raw_ptr<Layer, DanglingUntriaged> parent_;
+  const raw_ref<Layer> parent_;
   std::vector<std::unique_ptr<Layer>> added_layers_;
   bool update_visual_state_called_ = false;
 };
@@ -538,9 +538,6 @@ TEST_F(CompositorTestWithMessageLoop, AddLayerDuringUpdateVisualState) {
   DrawWaiterForTest::WaitForCompositingEnded(compositor());
   EXPECT_TRUE(child_layer_delegate.update_visual_state_called());
   compositor()->SetRootLayer(nullptr);
-  child_layer2.reset();
-  child_layer.reset();
-  root_layer.reset();
 }
 
 }  // namespace ui
