@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/renderer/accessibility/annotations/ax_image_stopwords.h"
+
 #include <string>
 #include <vector>
 
@@ -13,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/renderer/accessibility/ax_image_stopwords.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace content {

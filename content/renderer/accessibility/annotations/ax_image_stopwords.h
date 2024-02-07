@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_STOPWORDS_H_
-#define CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_STOPWORDS_H_
+#ifndef CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_STOPWORDS_H_
+#define CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_STOPWORDS_H_
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
@@ -67,4 +67,4 @@ class CONTENT_EXPORT AXImageStopwords {
 
 }  // namespace content
 
-#endif  // CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_STOPWORDS_H_
+#endif  // CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_STOPWORDS_H_

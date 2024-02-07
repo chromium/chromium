@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/accessibility/ax_image_annotator.h"
+#include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
 #include <utility>
 #include <vector>
@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/renderer/accessibility/ax_image_stopwords.h"
+#include "content/renderer/accessibility/annotations/ax_image_stopwords.h"
 #include "crypto/sha2.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

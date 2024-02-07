@@ -2797,7 +2797,7 @@ test("content_unittests") {
     "../public/test/permission_type_unittest.cc",
     "../public/test/referrer_unittest.cc",
     "../public/test/test_utils_unittest.cc",
-    "../renderer/accessibility/ax_image_stopwords_unittest.cc",
+    "../renderer/accessibility/annotations/ax_image_stopwords_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
     "../renderer/media/gpu/gpu_video_accelerator_factories_impl_unittest.cc",

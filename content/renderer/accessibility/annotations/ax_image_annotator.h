@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
-#define CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
+#ifndef CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_ANNOTATOR_H_
+#define CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_ANNOTATOR_H_
 
 #include <optional>
 #include <string>
@@ -134,4 +134,4 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
+#endif  // CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_IMAGE_ANNOTATOR_H_
