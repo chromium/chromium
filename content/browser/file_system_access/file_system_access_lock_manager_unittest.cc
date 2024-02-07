@@ -414,6 +414,44 @@ TEST_F(FileSystemAccessLockManagerTest, AncestorLocksSandboxed) {
   AssertAncestorLockBehavior(parent_url, child_url);
 }
 
+TEST_F(FileSystemAccessLockManagerTest, AncestorWithSameName) {
+  {
+    base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+    auto parent_url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+    auto child_url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal,
+        parent_path.Append(FILE_PATH_LITERAL("foo")));
+
+    AssertAncestorLockBehavior(parent_url, child_url);
+  }
+
+  {
+    base::FilePath parent_path =
+        base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
+    auto parent_url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kExternal, parent_path);
+    auto child_url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kExternal,
+        parent_path.Append(FILE_PATH_LITERAL("foo")));
+
+    AssertAncestorLockBehavior(parent_url, child_url);
+  }
+
+  {
+    auto parent_path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
+    auto parent_url = file_system_context_->CreateCrackedFileSystemURL(
+        kTestStorageKey, storage::kFileSystemTypeTemporary, parent_path);
+    parent_url.SetBucket(kTestBucketLocator);
+    auto child_url = file_system_context_->CreateCrackedFileSystemURL(
+        kTestStorageKey, storage::kFileSystemTypeTemporary,
+        parent_path.Append(FILE_PATH_LITERAL("foo")));
+    child_url.SetBucket(kTestBucketLocator);
+
+    AssertAncestorLockBehavior(parent_url, child_url);
+  }
+}
+
 TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
 
