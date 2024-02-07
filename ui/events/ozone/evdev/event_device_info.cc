@@ -114,7 +114,6 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
     {0x0b05, 0x1949},  // ASUS ROG Strix Impact II
     {0x0b33, 0x3022},  // Contour Design RollerMouse Pro
-    {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x0470},  // SteelSeries Reaper Edge
     {0x1038, 0x0471},  // SteelSeries Rival Rescuer
     {0x1038, 0x0472},  // SteelSeries Rival 150 net café
