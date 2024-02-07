@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/address_data_cleaner.h"
 
-#include <set>
-
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -49,15 +47,12 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
 }
 
 // - Merges local profiles occurring earlier in `profiles` with mergeable other
-//   local profiles later in `profiles`, marking the earlier one as deletable.
-// - Marks local profiles that are subsets of account profiles as deletable.
+//   local profiles later in `profiles`, deleting the earlier one.
+// - Deletes local profiles that are subsets of account profiles.
 // Mergability is determined using `comparator`.
-// The elements of `profiles` are updated and potentially reordered.
 void DeduplicateProfiles(const AutofillProfileComparator& comparator,
-                         std::vector<AutofillProfile>& profiles,
-                         std::set<std::string>& profiles_to_delete) {
-  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
-
+                         std::vector<AutofillProfile> profiles,
+                         PersonalDataManager& pdm) {
   // Partition the profiles into local and account profiles:
   // - Local: [profiles.begin(), bgn_account_profiles[
   // - Account: [bgn_account_profiles, profiles.end()[
@@ -66,6 +61,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
         return p.source() == AutofillProfile::Source::kLocalOrSyncable;
       });
 
+  size_t num_profiles_deleted = 0;
   for (auto local_profile_it = profiles.begin();
        local_profile_it != bgn_account_profiles; ++local_profile_it) {
     // If possible, merge `*local_profile_it` with another local profile and
@@ -78,7 +74,9 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
         merge_candidate != bgn_account_profiles) {
       merge_candidate->MergeDataFrom(*local_profile_it,
                                      comparator.app_locale());
-      profiles_to_delete.insert(local_profile_it->guid());
+      pdm.UpdateProfile(*merge_candidate);
+      pdm.RemoveByGUID(local_profile_it->guid());
+      num_profiles_deleted++;
       continue;
     }
     // `*local_profile_it` is not mergeable with another local profile. But it
@@ -91,7 +89,8 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                      local_profile_it->IsSubsetOf(comparator, account_profile);
             });
         superset_account_profile != profiles.end()) {
-      profiles_to_delete.insert(local_profile_it->guid());
+      pdm.RemoveByGUID(local_profile_it->guid());
+      num_profiles_deleted++;
       // Account profiles track from which service they originate. This allows
       // Autofill to distinguish between Chrome and non-Chrome account
       // profiles and measure the added utility of non-Chrome profiles. Since
@@ -103,10 +102,11 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
           AutofillProfile::kInitialCreatorOrModifierChrome);
       superset_account_profile->set_last_modifier_id(
           AutofillProfile::kInitialCreatorOrModifierChrome);
+      pdm.UpdateProfile(*superset_account_profile);
     }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
-      profiles_to_delete.size());
+      num_profiles_deleted);
 }
 
 }  // namespace
@@ -165,6 +165,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   if (profiles.size() < 2) {
     return;
   }
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
 
   // `profiles` contains pointers to the PDM's state. Modifying them directly
   // won't update them in the database and calling `PDM:UpdateProfile()`
@@ -173,19 +174,9 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   for (const AutofillProfile* profile : profiles) {
     deduplicated_profiles.push_back(*profile);
   }
-  std::set<std::string> profiles_to_delete;
   DeduplicateProfiles(
       AutofillProfileComparator(personal_data_manager_->app_locale()),
-      deduplicated_profiles, profiles_to_delete);
-
-  // Apply the profile changes to the database.
-  for (const AutofillProfile& profile : deduplicated_profiles) {
-    if (profiles_to_delete.contains(profile.guid())) {
-      personal_data_manager_->RemoveByGUID(profile.guid());
-    } else {
-      personal_data_manager_->UpdateProfile(profile);
-    }
-  }
+      std::move(deduplicated_profiles), *personal_data_manager_);
 }
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
