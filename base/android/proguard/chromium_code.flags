@@ -4,9 +4,18 @@
 
 # Contains flags that can be safely shared with Cronet, and thus would be
 # appropriate for third-party apps to include.
+#
+# IMPORTANT: MAKE SURE ALL RULES IN THIS FILE ARE ADEQUATELY SCOPED TO ONLY
+# AFFECT CHROMIUM CODE (typically that means the rule should have a restriction
+# on something under `org.chromium`). These rules are shipped in Cronet which is
+# a library used by a variety of downstream apps. ProGuard operates at the app
+# level, not the library level. It doesn't automatically scope rules shipped
+# in libraries. In other words: when downstream apps run ProGuard, these rules
+# will be applied to their entire app. It is our responsibility to ensure the
+# rules we ship in this way don't end up affecting code that is not ours.
 
 # Allow unused native methods to be removed, but prevent renaming on those that are kept.
--keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class !cr_allowunused,** {
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class !cr_allowunused,org.chromium.base.library_loader.LinkerJni {
   native <methods>;
 }
 
