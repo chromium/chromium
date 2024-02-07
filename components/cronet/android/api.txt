@@ -379,6 +379,7 @@ public class org.chromium.net.QuicOptions$Builder {
   public org.chromium.net.QuicOptions$Builder setPreCryptoHandshakeIdleTimeoutSeconds(long);
   public org.chromium.net.QuicOptions$Builder setCryptoHandshakeTimeoutSeconds(long);
   public org.chromium.net.QuicOptions$Builder setIdleConnectionTimeoutSeconds(long);
+  public org.chromium.net.QuicOptions$Builder setIdleConnectionTimeout(java.time.Duration);
   public org.chromium.net.QuicOptions$Builder setRetransmittableOnWireTimeoutMillis(long);
   public org.chromium.net.QuicOptions$Builder closeSessionsOnIpChange(boolean);
   public org.chromium.net.QuicOptions$Builder goawaySessionsOnIpChange(boolean);
@@ -392,7 +393,7 @@ public interface org.chromium.net.QuicOptions$Experimental extends java.lang.ann
 }
 public interface org.chromium.net.QuicOptions$QuichePassthroughOption extends java.lang.annotation.Annotation {
 }
-public class org.chromium.net.QuicOptions {
+public final class org.chromium.net.QuicOptions {
   public java.util.Set<java.lang.String> getQuicHostAllowlist();
   public java.util.Set<java.lang.String> getEnabledQuicVersions();
   public java.util.Set<java.lang.String> getConnectionOptions();
@@ -632,4 +633,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 223c6ca6e88c91ae2e6328a018805d64
+Stamp: 73bce49b7e758c401460fcb503a7345b

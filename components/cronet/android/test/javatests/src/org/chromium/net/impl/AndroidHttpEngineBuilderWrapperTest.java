@@ -10,6 +10,7 @@ import static com.google.common.truth.TruthJUnit.assume;
 import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.assertJsonEquals;
 import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseConnectionMigrationOptions;
 import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseDnsOptions;
+import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseQuicOptions;
 
 import android.content.Context;
 import android.net.http.HttpEngine;
@@ -253,6 +254,46 @@ public class AndroidHttpEngineBuilderWrapperTest {
                 .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
         assertThat(staleDnsOptions.getUseStaleOnNameNotResolved())
                 .isEqualTo(android.net.http.DnsOptions.DNS_OPTION_UNSPECIFIED);
+    }
+
+    @Test
+    @SmallTest
+    public void testParseQuicOptions_allSet_returnsCorrectValues() {
+        int max_server_config = 466360493;
+        int idle_conn_timeout = 435320688;
+        String user_agent_id = "handshakeUserAgent";
+        String host_whitelist = "quicHost1.com,quicHost2.com";
+        ExperimentalOptions options =
+                new ExperimentalOptions(
+                        "{  \"QUIC\": {   \"host_whitelist\": \""
+                                + host_whitelist
+                                + "\",   \"max_server_configs_stored_in_properties\": "
+                                + max_server_config
+                                + ",  \"user_agent_id\": \""
+                                + user_agent_id
+                                + "\",   \"idle_connection_timeout_seconds\": "
+                                + idle_conn_timeout
+                                + "   }}");
+        android.net.http.QuicOptions quicOptions = parseQuicOptions(options);
+
+        assertThat(quicOptions.getAllowedQuicHosts())
+                .containsExactlyElementsIn(host_whitelist.split(","));
+        assertThat(quicOptions.getInMemoryServerConfigsCacheSize()).isEqualTo(max_server_config);
+        assertThat(quicOptions.getHandshakeUserAgent()).isEqualTo(user_agent_id);
+        assertThat(quicOptions.getIdleConnectionTimeout())
+                .isEqualTo(Duration.ofSeconds(idle_conn_timeout));
+    }
+
+    @Test
+    @SmallTest
+    public void testParseQuicOptions_noneSet_returnsCorrectValues() {
+        ExperimentalOptions options = new ExperimentalOptions("{  \"QUIC\": {  }}");
+        android.net.http.QuicOptions quicOptions = parseQuicOptions(options);
+
+        assertThat(quicOptions.getAllowedQuicHosts()).isEmpty();
+        assertThat(quicOptions.hasInMemoryServerConfigsCacheSize()).isFalse();
+        assertThat(quicOptions.getHandshakeUserAgent()).isNull();
+        assertThat(quicOptions.getIdleConnectionTimeout()).isNull();
     }
 
     /**

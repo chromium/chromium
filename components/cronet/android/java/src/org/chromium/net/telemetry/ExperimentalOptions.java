@@ -119,6 +119,14 @@ public final class ExperimentalOptions {
                 getOrDefault(QUIC, "race_stale_dns_on_connection", null, Boolean.class));
     }
 
+    public String getHostWhitelist() {
+        return getOrDefault(QUIC, "host_whitelist", null, String.class);
+    }
+
+    public String getUserAgentId() {
+        return getOrDefault(QUIC, "user_agent_id", null, String.class);
+    }
+
     public OptionalBoolean getAsyncDnsEnableOption() {
         return OptionalBoolean.fromBoolean(getOrDefault(ASYNC_DNS, "enable", null, Boolean.class));
     }

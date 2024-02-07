@@ -118,6 +118,7 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         ExperimentalOptions options = new ExperimentalOptions(stringOptions);
         mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
         mBackend.setDnsOptions(parseDnsOptions(options));
+        mBackend.setQuicOptions(parseQuicOptions(options));
         return this;
     }
 
@@ -196,6 +197,36 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         }
 
         return dnsOptionsBuilder.build();
+    }
+
+    @VisibleForTesting
+    public static android.net.http.QuicOptions parseQuicOptions(ExperimentalOptions options) {
+        android.net.http.QuicOptions.Builder quicOptionsBuilder =
+                new android.net.http.QuicOptions.Builder();
+
+        if (options.getHostWhitelist() != null) {
+            for (String host : options.getHostWhitelist().split(",")) {
+                quicOptionsBuilder.addAllowedQuicHost(host);
+            }
+        }
+
+        int inMemoryServerConfigsCacheSize = options.getMaxServerConfigsStoredInPropertiesOption();
+        if (inMemoryServerConfigsCacheSize != ExperimentalOptions.UNSET_INT_VALUE) {
+            quicOptionsBuilder.setInMemoryServerConfigsCacheSize(inMemoryServerConfigsCacheSize);
+        }
+
+        String handshakeUserAgent = options.getUserAgentId();
+        if (handshakeUserAgent != null) {
+            quicOptionsBuilder.setHandshakeUserAgent(handshakeUserAgent);
+        }
+
+        int idleConnectionTimeoutSeconds = options.getIdleConnectionTimeoutSecondsOption();
+        if (idleConnectionTimeoutSeconds != ExperimentalOptions.UNSET_INT_VALUE) {
+            quicOptionsBuilder.setIdleConnectionTimeout(
+                    Duration.ofSeconds(idleConnectionTimeoutSeconds));
+        }
+
+        return quicOptionsBuilder.build();
     }
 
     /**
