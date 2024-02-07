@@ -112519,7 +112519,6 @@
     { "name": "salesdock.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "salesdock.nl", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "salva.ovh", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "salvageforgood.org", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "salz-und-sinn.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "same.lol", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "sammich.eu", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
