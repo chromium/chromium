@@ -6,20 +6,19 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible, isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="not is_chromeos">
 import {Router, routes} from 'chrome://settings/settings.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 
 // clang-format on
@@ -467,6 +466,38 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   test('dropdownSelectionPersisted_Advanced', function() {
     return assertDropdownSelectionPersisted(
         'advanced-tab', 'browser.clear_data.time_period');
+  });
+
+  test('tabSelection', async function() {
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+
+    // Ensure the test starts with a known pref state and tab selection.
+    element.setPrefValue('browser.last_clear_browsing_data_tab', 0);
+    await waitAfterNextRender(element);
+    assertEquals(
+        0, element.getPref('browser.last_clear_browsing_data_tab').value);
+    assertTrue(isChildVisible(element, '#basic-tab'));
+
+    // Changing the tab selection changes the visible tab, but does not persist
+    // the tab selection to the pref.
+    const crTabs = element.shadowRoot!.querySelector('cr-tabs');
+    assertTrue(!!crTabs);
+    crTabs.selected = 1;
+    await waitAfterNextRender(element);
+    assertEquals(
+        0, element.getPref('browser.last_clear_browsing_data_tab').value);
+    assertTrue(isChildVisible(element, '#advanced-tab'));
+
+    // Select a datatype for deletion to enable the clear button.
+    assertTrue(!!element.$.cookiesCheckbox);
+    element.$.cookiesCheckbox.$.checkbox.click();
+    // Confirming the deletion persists the tab selection to the pref.
+    const actionButton =
+        element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+    assertEquals(
+        1, element.getPref('browser.last_clear_browsing_data_tab').value);
   });
 
   test('ClearBrowsingDataTap', async function() {
