@@ -4048,11 +4048,14 @@ class DetachToBrowserInSeparateDisplayTabDragControllerTest
       const DetachToBrowserInSeparateDisplayTabDragControllerTest&) = delete;
   virtual ~DetachToBrowserInSeparateDisplayTabDragControllerTest() {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DetachToBrowserTabDragControllerTest::SetUpCommandLine(command_line);
+  void SetUpOnMainThread() override {
+    DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
     // Make screens sufficiently wide to host 2 browsers side by side.
-    command_line->AppendSwitchASCII("ash-host-window-bounds",
-                                    "0+0-800x600,800+0-800x600");
+    // 1280x800 is the default resolution for the main display in tests.
+    // We stick to it, as opposed to a smaller one, to avoid the browser
+    // window being shrunk and maximized when calling UpdateDisplay.
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("1280x800,1280x800");
   }
 };
 
@@ -4475,10 +4478,10 @@ class DifferentDeviceScaleFactorDisplayTabDragControllerTest
       const DifferentDeviceScaleFactorDisplayTabDragControllerTest&) = delete;
   virtual ~DifferentDeviceScaleFactorDisplayTabDragControllerTest() {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DetachToBrowserTabDragControllerTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII("ash-host-window-bounds",
-                                    "800x600,800+0-800x600*2");
+  void SetUpOnMainThread() override {
+    DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("1280x800,1280x800*2");
   }
 
   float GetCursorDeviceScaleFactor() const {
@@ -4569,10 +4572,10 @@ class DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest
       const DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest&) =
       delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DetachToBrowserTabDragControllerTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII("ash-host-window-bounds",
-                                    "0+0-800x600,800+0-800x600");
+  void SetUpOnMainThread() override {
+    DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
+    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+        .UpdateDisplay("1280x800,1280x800");
   }
 };
 
