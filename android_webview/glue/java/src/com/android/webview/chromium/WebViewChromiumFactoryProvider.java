@@ -126,8 +126,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final Object sSingletonLock = new Object();
     private static WebViewChromiumFactoryProvider sSingleton;
-    // Used to indicate if WebLayer and WebView are running in the same process.
-    private static boolean sWebLayerRunningInSameProcess;
 
     private final WebViewChromiumRunQueue mRunQueue =
             new WebViewChromiumRunQueue(
@@ -472,14 +470,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             mShouldDisableThreadChecking = shouldDisableThreadChecking(ctx);
 
             setSingleton(this);
-
-            // sWebLayerRunningInSameProcess may have been set before initialize().
-            if (sWebLayerRunningInSameProcess) {
-                addTask(
-                        () -> {
-                            getDefaultBrowserContextOnUiThread().setWebLayerRunningInSameProcess();
-                        });
-            }
         }
 
         mInitInfo.mDuration = SystemClock.uptimeMillis() - mInitInfo.mStartTime;
@@ -813,28 +803,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @Override
     public ClassLoader getWebViewClassLoader() {
         return new FilteredClassLoader(WebViewChromiumFactoryProvider.class.getClassLoader());
-    }
-
-    // This is called from WebLayer when WebView and WebLayer are run in the same process. It's
-    // used to set a crash key to help attribute crashes. It's entirely possible WebView has not
-    // been initialized when this is called.
-    public static void setWebLayerRunningInSameProcess() {
-        // This may be called before initialize().
-        synchronized (sSingletonLock) {
-            sWebLayerRunningInSameProcess = true;
-            if (sSingleton == null) {
-                // initialize() hasn't been called yet. When initialize() is called
-                // |sWebLayerRunningInSameProcess| will be checked.
-                return;
-            }
-        }
-        getSingleton()
-                .addTask(
-                        () -> {
-                            getSingleton()
-                                    .getDefaultBrowserContextOnUiThread()
-                                    .setWebLayerRunningInSameProcess();
-                        });
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
