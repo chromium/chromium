@@ -50,6 +50,8 @@ UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
 }
 
 bool IsSyncingEnabled(PrefService* pref_service) {
+  // See comment in GetLocalUpmUserType() regarding why the SyncService isn't
+  // used.
   switch (browser_sync::GetSyncToSigninMigrationDataTypeDecision(
       pref_service, syncer::PASSWORDS,
       syncer::prefs::internal::kSyncPasswords)) {
@@ -79,6 +81,10 @@ LocalUpmUserType GetLocalUpmUserType(PrefService* pref_service,
     return LocalUpmUserType::kNotEligible;
   }
 
+  // SyncService and the PasswordStores are not initialized yet by the time this
+  // function is called, so they can't be queried here. Instead, rely on prefs
+  // written in previous startups which cache the relevant state bits (see
+  // empty_profile_db_pref and GetSyncToSigninMigrationDataTypeDecision()).
   const PrefService::Preference* empty_profile_db_pref =
       pref_service->FindPreference(
           password_manager::prefs::kEmptyProfileStoreLoginDatabase);
