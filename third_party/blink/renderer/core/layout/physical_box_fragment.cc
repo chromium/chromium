@@ -286,7 +286,10 @@ PhysicalBoxFragment::PhysicalBoxFragment(
                  HasDescendantsForTablePartFlag::encode(false) |
                  IsFragmentationContextRootFlag::encode(
                      builder->is_fragmentation_context_root_) |
-                 IsMonolithicFlag::encode(builder->is_monolithic_)) {
+                 IsMonolithicFlag::encode(builder->is_monolithic_) |
+                 IsMonolithicOverflowPropagationDisabledFlag::encode(
+                     builder->GetConstraintSpace()
+                         .IsMonolithicOverflowPropagationDisabled())) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());

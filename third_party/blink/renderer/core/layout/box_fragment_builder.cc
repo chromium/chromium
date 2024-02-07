@@ -381,14 +381,37 @@ void BoxFragmentBuilder::PropagateBreakInfo(
        !child_fragment.IsFloatingOrOutOfFlowPositioned()) ||
       child_layout_result.ShouldForceSameFragmentationFlow();
 
+  // If we're paginated, monolithic overflow will be placed on subsequent pages,
+  // even though there are no fragments for the content there. We need to be
+  // aware of such overflow when laying out subsequent pages, so that we can
+  // move past it, rather than overlapping with it. This approach works (kind
+  // of) because in our implementation, pages are stacked in the block
+  // direction, so that the block-start offset of the next page is the same as
+  // the block-end offset of the preceding page.
+  //
+  // We need to reserve space for monolithic overflow caused by any child that
+  // is in the same flow as its parent, so that subsequent content in this flow
+  // gets pushed below the monolithic overflow. If we're at the root, even
+  // include content from parallel flows, since we want to encompass everything
+  // in that case, in order to create enough pages for it.
+  //
+  // Some children disable this monolithic overflow propagation, if they are
+  // out-of-flow and inside another out-of-flow (so that the containing block
+  // chain is broken), and the outer out-of-flow has clipped overflow.
+  //
+  // TODO(mstensho): Figure out if the !IsFragmentainerBoxType() condition below
+  // makes any sense.
   if (GetConstraintSpace().IsPaginated() &&
       ((child_is_in_same_flow && !IsFragmentainerBoxType()) ||
-       Node().IsPaginatedRoot())) {
+       Node().IsPaginatedRoot()) &&
+      (!child_box_fragment ||
+       !child_box_fragment->IsMonolithicOverflowPropagationDisabled())) {
     DCHECK(GetConstraintSpace().HasKnownFragmentainerBlockSize());
     // Include overflow inside monolithic content if this is for a page
     // fragment. Otherwise just use the fragment size.
     LayoutUnit block_size;
-    if (Node().IsPaginatedRoot()) {
+    if (Node().IsPaginatedRoot() &&
+        !child_fragment.HasNonVisibleBlockOverflow()) {
       // The root node is guaranteed to be block-level, so there should be a
       // child box fragment here.
       DCHECK(child_box_fragment);
@@ -407,11 +430,7 @@ void BoxFragmentBuilder::PropagateBreakInfo(
         fragment_block_end - FragmentainerSpaceLeft(GetConstraintSpace());
     if (fragmentainer_overflow > LayoutUnit()) {
       // This child overflows the page, because there's something monolithic
-      // inside. We need to be aware of this when laying out subsequent pages,
-      // so that we can move past it, rather than overlapping with it. This
-      // approach works (kind of) because in our implementation, pages are
-      // stacked in the block direction, so that the block-start offset of the
-      // next page is the same as the block-end offset of the preceding page.
+      // inside.
       ReserveSpaceForMonolithicOverflow(fragmentainer_overflow);
     }
   }

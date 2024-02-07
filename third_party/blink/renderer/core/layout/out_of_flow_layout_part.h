@@ -374,6 +374,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       HeapVector<NodeToLayout>& pending_descendants,
       wtf_size_t index,
       LogicalOffset fragmentainer_progression,
+      LayoutUnit* monolithic_overflow,
       bool* has_actual_break_inside,
       HeapVector<NodeToLayout>* fragmented_descendants);
   void AddOOFToFragmentainer(NodeToLayout& descendant,
@@ -387,7 +388,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   void ReplaceFragmentainer(wtf_size_t index,
                             LogicalOffset offset,
                             bool create_new_fragment,
-                            SimplifiedOofLayoutAlgorithm* algorithm);
+                            const PhysicalBoxFragment& new_fragmentainer);
   LogicalOffset UpdatedFragmentainerOffset(
       LogicalOffset offset,
       wtf_size_t index,

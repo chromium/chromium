@@ -542,6 +542,17 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() && rare_data_->is_block_fragmentation_forced_off;
   }
 
+  // Return true if monolithic overflow isn't to be propagated when printing.
+  // This is required when there's a tall monolithic abspos inside another
+  // abspos (or relpos) that has clipped overflow. Normally (non-OOF) it's not
+  // necessary to set such a flag, since we check for clipping when propagating
+  // up the tree, but OOF fragmentation breaks the containing block chain, so
+  // that any clipping ancestor won't be seen.
+  bool IsMonolithicOverflowPropagationDisabled() const {
+    return HasRareData() &&
+           rare_data_->is_monolithic_overflow_propagation_disabled;
+  }
+
   // Return true if the document is paginated (for printing).
   bool IsPaginated() const {
     // TODO(layout-dev): This will not work correctly if establishing a nested
@@ -882,6 +893,7 @@ class CORE_EXPORT ConstraintSpace final {
           block_direction_fragmentation_type(
               static_cast<unsigned>(kFragmentNone)),
           is_block_fragmentation_forced_off(false),
+          is_monolithic_overflow_propagation_disabled(false),
           requires_content_before_breaking(false),
           is_inside_balanced_columns(false),
           should_ignore_forced_breaks(false),
@@ -915,6 +927,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.block_direction_fragmentation_type),
           is_block_fragmentation_forced_off(
               other.is_block_fragmentation_forced_off),
+          is_monolithic_overflow_propagation_disabled(
+              other.is_monolithic_overflow_propagation_disabled),
           requires_content_before_breaking(
               other.requires_content_before_breaking),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
@@ -1002,6 +1016,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.block_direction_fragmentation_type ||
           is_block_fragmentation_forced_off !=
               other.is_block_fragmentation_forced_off ||
+          is_monolithic_overflow_propagation_disabled !=
+              other.is_monolithic_overflow_propagation_disabled ||
           requires_content_before_breaking !=
               other.requires_content_before_breaking ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
@@ -1011,8 +1027,9 @@ class CORE_EXPORT ConstraintSpace final {
           min_break_appeal != other.min_break_appeal ||
           propagate_child_break_values != other.propagate_child_break_values ||
           should_repeat != other.should_repeat ||
-          is_inside_repeatable_content != other.is_inside_repeatable_content)
+          is_inside_repeatable_content != other.is_inside_repeatable_content) {
         return false;
+      }
 
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
@@ -1044,12 +1061,14 @@ class CORE_EXPORT ConstraintSpace final {
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           is_block_fragmentation_forced_off ||
+          is_monolithic_overflow_propagation_disabled ||
           requires_content_before_breaking || is_inside_balanced_columns ||
           should_ignore_forced_breaks || is_in_column_bfc || is_past_break ||
           min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start ||
-          should_repeat || is_inside_repeatable_content)
+          should_repeat || is_inside_repeatable_content) {
         return false;
+      }
 
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
@@ -1313,6 +1332,7 @@ class CORE_EXPORT ConstraintSpace final {
 
     unsigned block_direction_fragmentation_type : 2;
     unsigned is_block_fragmentation_forced_off : 1;
+    unsigned is_monolithic_overflow_propagation_disabled : 1;
     unsigned requires_content_before_breaking : 1;
     unsigned is_inside_balanced_columns : 1;
     unsigned should_ignore_forced_breaks : 1;
@@ -1641,6 +1661,10 @@ class CORE_EXPORT ConstraintSpace final {
     DCHECK(rare_data_);
     rare_data_->block_direction_fragmentation_type = kFragmentNone;
     rare_data_->is_block_fragmentation_forced_off = true;
+  }
+
+  void DisableMonolithicOverflowPropagation() {
+    EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
   }
 
   LogicalSize available_size_;

@@ -411,6 +411,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   bool IsMonolithic() const { return bit_field_.get<IsMonolithicFlag>(); }
 
+  bool IsMonolithicOverflowPropagationDisabled() const {
+    return bit_field_.get<IsMonolithicOverflowPropagationDisabledFlag>();
+  }
+
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const PhysicalBoxFragment&,
                                     bool check_same_block_size,
@@ -553,6 +557,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       HasDescendantsForTablePartFlag::DefineNextValue<bool, 1>;
   using IsMonolithicFlag =
       IsFragmentationContextRootFlag::DefineNextValue<bool, 1>;
+  using IsMonolithicOverflowPropagationDisabledFlag =
+      IsMonolithicFlag::DefineNextValue<bool, 1>;
 
   bool IncludeBorderTop() const {
     return bit_field_.get<IncludeBorderTopFlag>();
