@@ -294,6 +294,16 @@ class TRIVIAL_ABI WeakPtr {
     ptr_ = nullptr;
   }
 
+  // Do not use this method. Almost all callers should instead use operator
+  // bool().
+  //
+  // There are a few rare cases where the caller intentionally needs to check
+  // validity of a base::WeakPtr on a sequence different from the bound sequence
+  // as an unavoidable performance optimization. This is the only valid use-case
+  // for this method. See
+  // https://docs.google.com/document/d/1IGzq9Nx69GS_2iynGmPWo5sFAD2DcCyBY1zIvZwF7k8
+  // for details.
+  //
   // Returns false if the WeakPtr is confirmed to be invalid. This call is safe
   // to make from any thread, e.g. to optimize away unnecessary work, but
   // RefIsValid() must always be called, on the correct sequence, before
