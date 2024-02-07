@@ -84,7 +84,7 @@ void WebSocketAdapter::OnFailure(const std::string& message,
   // this device should be dropped.
   if (on_tunnel_ready_) {
     std::move(on_tunnel_ready_)
-        .Run(Result::GONE, absl::nullopt, ConnectSignalSupport::NO);
+        .Run(Result::GONE, std::nullopt, ConnectSignalSupport::NO);
     // `this` may be invalid now.
   }
 }
@@ -102,7 +102,7 @@ void WebSocketAdapter::OnConnectionEstablished(
     return;
   }
 
-  absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id;
+  std::optional<std::array<uint8_t, kRoutingIdSize>> routing_id;
   ConnectSignalSupport connect_signal_support = ConnectSignalSupport::NO;
   for (const auto& header : response->headers) {
     if (base::EqualsCaseInsensitiveASCII(header->name.c_str(),
@@ -238,7 +238,7 @@ void WebSocketAdapter::OnMojoPipeDisconnect() {
   // failure to establish the tunnel.
   if (on_tunnel_ready_) {
     std::move(on_tunnel_ready_)
-        .Run(Result::FAILED, absl::nullopt, ConnectSignalSupport::NO);
+        .Run(Result::FAILED, std::nullopt, ConnectSignalSupport::NO);
     // `this` may be invalid now.
     return;
   }
@@ -253,7 +253,7 @@ void WebSocketAdapter::Close() {
   DCHECK(!closed_);
   closed_ = true;
   client_receiver_.reset();
-  on_tunnel_data_.Run(absl::nullopt);
+  on_tunnel_data_.Run(std::nullopt);
   // `this` may be invalid now.
 }
 

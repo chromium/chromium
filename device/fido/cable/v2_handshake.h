@@ -9,6 +9,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 class GURL;
@@ -30,7 +30,7 @@ namespace tunnelserver {
 // ToKnownDomainID creates a KnownDomainID from a raw 16-bit value, or returns
 // |nullopt| if the value maps to an assigned, but unknown, domain.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain);
+std::optional<KnownDomainID> ToKnownDomainID(uint16_t domain);
 
 // DecodeDomain converts a 16-bit tunnel server domain into a string in dotted
 // form.
@@ -71,7 +71,7 @@ std::array<uint8_t, kAdvertSize> Encrypt(
 // to |ToComponents|) by decrypting with |key|. It ensures that the encoded
 // tunnel server domain is recognised.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<CableEidArray> Decrypt(
+std::optional<CableEidArray> Decrypt(
     const std::array<uint8_t, kAdvertSize>& advert,
     base::span<const uint8_t, kEIDKeySize> key);
 
@@ -117,7 +117,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   // supports_linking is true if the device showing the QR code supports storing
   // and later using linking information. If this is false or absent, an
   // authenticator may wish to avoid bothering the user about linking.
-  absl::optional<bool> supports_linking;
+  std::optional<bool> supports_linking;
 
   // request_type contains the hinted type of the request. This can
   // be used to guide UI ahead of receiving the actual request. This defaults to
@@ -126,7 +126,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<Components> Parse(const std::string& qr_url);
+std::optional<Components> Parse(const std::string& qr_url);
 
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -139,7 +139,7 @@ std::string BytesToDigits(base::span<const uint8_t> in);
 
 // DigitsToBytes reverses the actions of |BytesToDigits|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in);
+std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in);
 
 }  // namespace qr
 
@@ -219,14 +219,13 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 // should be hidden. The function can fail if the CBOR encoding fails or,
 // somehow, the size overflows.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
+std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map);
 
 // DecodePaddedCBORMap unpads and decodes a CBOR map as produced by
 // |EncodePaddedCBORMap|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<cbor::Value> DecodePaddedCBORMap(
-    base::span<const uint8_t> input);
+std::optional<cbor::Value> DecodePaddedCBORMap(base::span<const uint8_t> input);
 
 // Crypter handles the post-handshake encryption of CTAP2 messages.
 class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
@@ -273,7 +272,7 @@ using HandshakeHash = std::array<uint8_t, 32>;
 // |Crypter| that can encrypt and decrypt future messages on the connection, and
 // the handshake hash that can be used to tie signatures to the connection.
 using HandshakeResult =
-    absl::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
+    std::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
 
 // HandshakeInitiator starts a caBLE v2 handshake and processes the single
 // response message from the other party. The handshake is always initiated from
@@ -283,15 +282,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   HandshakeInitiator(
       // psk is derived from the connection nonce and either QR-code secrets
       // pairing secrets. nullopt for enclave handshakes.
-      absl::optional<base::span<const uint8_t, 32>> psk,
+      std::optional<base::span<const uint8_t, 32>> psk,
       // peer_identity, if not nullopt, specifies that this is a paired
       // handshake and then contains a P-256 public key for the peer. Otherwise
       // this is a QR handshake.
-      absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+      std::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
       // identity_seed, if not nullopt, specifies that this is a QR handshake
       // and contains the seed for QR key for this client. identity_seed must be
       // provided iff |peer_identity| is not.
-      absl::optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
+      std::optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
 
   ~HandshakeInitiator();
 
@@ -306,9 +305,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
 
  private:
   Noise noise_;
-  absl::optional<std::array<uint8_t, 32>> psk_;
+  std::optional<std::array<uint8_t, 32>> psk_;
 
-  absl::optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
+  std::optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   bssl::UniquePtr<EC_KEY> local_identity_;
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
 };
@@ -319,13 +318,13 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 HandshakeResult RespondToHandshake(
     // psk is derived from the connection nonce and either QR-code secrets or
     // pairing secrets.
-    absl::optional<base::span<const uint8_t, 32>> psk,
+    std::optional<base::span<const uint8_t, 32>> psk,
     // identity, if not nullptr, specifies that this is a paired handshake and
     // contains the phone's private key.
     bssl::UniquePtr<EC_KEY> identity,
     // peer_identity, which must be non-nullopt iff |identity| is nullptr,
     // contains the peer's public key as taken from the QR code.
-    absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
+    std::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     // in contains the initial handshake message from the peer.
     base::span<const uint8_t> in,
     // out_response is set to the response handshake message, if successful.

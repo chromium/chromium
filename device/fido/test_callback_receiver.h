@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_TEST_CALLBACK_RECEIVER_H_
 #define DEVICE_FIDO_TEST_CALLBACK_RECEIVER_H_
 
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace test {
@@ -53,7 +53,7 @@ class TestCallbackReceiver {
 
   // The result, which is non-null exactly if the callback was already invoked
   // and the result has not yet been taken with TakeResult().
-  const absl::optional<TupleOfNonReferenceArgs>& result() const {
+  const std::optional<TupleOfNonReferenceArgs>& result() const {
     return result_;
   }
 
@@ -91,7 +91,7 @@ class TestCallbackReceiver {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  absl::optional<TupleOfNonReferenceArgs> result_;
+  std::optional<TupleOfNonReferenceArgs> result_;
 };
 
 template <class Value>

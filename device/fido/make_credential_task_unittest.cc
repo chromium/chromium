@@ -37,7 +37,7 @@ constexpr std::array<uint8_t, kAaguidLength> kTestDeviceAaguid = {
 using TestMakeCredentialTaskCallback =
     ::device::test::StatusAndValueCallbackReceiver<
         CtapDeviceResponseCode,
-        absl::optional<AuthenticatorMakeCredentialResponse>>;
+        std::optional<AuthenticatorMakeCredentialResponse>>;
 
 class FidoMakeCredentialTaskTest : public testing::Test {
  public:
@@ -149,7 +149,7 @@ TEST_F(FidoMakeCredentialTaskTest, EnforceClientPinWhenUserVerificationSet) {
 
   auto device = MockFidoDevice::MakeCtap(std::move(device_info));
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorMakeCredential, absl::nullopt);
+      CtapRequestCommand::kAuthenticatorMakeCredential, std::nullopt);
 
   PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
   PublicKeyCredentialUserEntity user(

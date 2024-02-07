@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   using GetPINCallback =
       base::OnceCallback<void(uint32_t current_min_pin_length,
                               uint32_t new_min_pin_length,
-                              absl::optional<int64_t> attempts)>;
+                              std::optional<int64_t> attempts)>;
 
   // FinishedCallback is called multiple times once an attempt has completed.
   // This can be called prior to |GetPINCallback| if the touched authenticator
@@ -95,10 +95,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   void OnTouch(FidoAuthenticator* authenticator);
   void RequestRetries();
   void OnRetriesResponse(CtapDeviceResponseCode status,
-                         absl::optional<pin::RetriesResponse> response);
+                         std::optional<pin::RetriesResponse> response);
 
   void OnSetPINComplete(CtapDeviceResponseCode status,
-                        absl::optional<pin::EmptyResponse> response);
+                        std::optional<pin::EmptyResponse> response);
 
   State state_ = State::kWaitingForTouch;
   GetPINCallback get_pin_callback_;

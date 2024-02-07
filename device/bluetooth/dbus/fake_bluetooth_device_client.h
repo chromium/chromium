@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -179,7 +179,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   // Create a test Bluetooth device with the given properties.
   void CreateTestDevice(
       const dbus::ObjectPath& adapter_path,
-      const absl::optional<std::string> name,
+      const std::optional<std::string> name,
       const std::string alias,
       const std::string device_address,
       const std::vector<std::string>& service_uuids,

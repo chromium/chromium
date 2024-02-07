@@ -74,7 +74,7 @@ void BluetoothRemoteGattDescriptorCast::OnReadRemoteDescriptor(
     const std::vector<uint8_t>& result) {
   if (success) {
     value_ = result;
-    std::move(callback).Run(/*error_code=*/absl::nullopt, result);
+    std::move(callback).Run(/*error_code=*/std::nullopt, result);
     return;
   }
   std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,

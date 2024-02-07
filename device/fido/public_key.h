@@ -6,11 +6,12 @@
 #define DEVICE_FIDO_PUBLIC_KEY_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -18,7 +19,7 @@ namespace device {
 struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   PublicKey(int32_t algorithm,
             base::span<const uint8_t> cbor_bytes,
-            absl::optional<std::vector<uint8_t>> der_bytes);
+            std::optional<std::vector<uint8_t>> der_bytes);
 
   PublicKey(const PublicKey&) = delete;
   PublicKey& operator=(const PublicKey&) = delete;
@@ -36,7 +37,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   // public key, if possible. (WebAuthn can negotiate the use of unknown
   // public-key algorithms so not all public keys can be transformed into SPKI
   // form.)
-  const absl::optional<std::vector<uint8_t>> der_bytes;
+  const std::optional<std::vector<uint8_t>> der_bytes;
 };
 
 }  // namespace device

@@ -16,15 +16,15 @@ bool PublicKeyCredentialParams::CredentialInfo::operator==(
 }
 
 // static
-absl::optional<PublicKeyCredentialParams>
+std::optional<PublicKeyCredentialParams>
 PublicKeyCredentialParams::CreateFromCBORValue(const cbor::Value& cbor_value) {
   if (!cbor_value.is_array())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<PublicKeyCredentialParams::CredentialInfo> credential_params;
   for (const auto& credential : cbor_value.GetArray()) {
     if (!credential.is_map() || credential.GetMap().size() != 2)
-      return absl::nullopt;
+      return std::nullopt;
 
     const auto& credential_map = credential.GetMap();
     const auto credential_type_it =
@@ -39,7 +39,7 @@ PublicKeyCredentialParams::CreateFromCBORValue(const cbor::Value& cbor_value) {
         !algorithm_type_it->second.is_integer() ||
         !base::IsValueInRangeForNumericType<int32_t>(
             algorithm_type_it->second.GetInteger())) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     credential_params.push_back(PublicKeyCredentialParams::CredentialInfo{

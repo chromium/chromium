@@ -5,9 +5,8 @@
 #define DEVICE_BLUETOOTH_TEST_FAKE_READ_RESPONSE_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 
@@ -17,7 +16,7 @@ namespace bluetooth {
 class FakeReadResponse {
  public:
   FakeReadResponse(uint16_t gatt_code,
-                   const absl::optional<std::vector<uint8_t>>& value);
+                   const std::optional<std::vector<uint8_t>>& value);
 
   FakeReadResponse(const FakeReadResponse&) = delete;
   FakeReadResponse& operator=(const FakeReadResponse&) = delete;
@@ -25,11 +24,11 @@ class FakeReadResponse {
   ~FakeReadResponse();
 
   uint16_t gatt_code() { return gatt_code_; }
-  const absl::optional<std::vector<uint8_t>>& value() { return value_; }
+  const std::optional<std::vector<uint8_t>>& value() { return value_; }
 
  private:
   uint16_t gatt_code_;
-  absl::optional<std::vector<uint8_t>> value_;
+  std::optional<std::vector<uint8_t>> value_;
 };
 
 }  // namespace bluetooth

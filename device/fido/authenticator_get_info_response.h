@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -48,17 +48,17 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   base::flat_set<ProtocolVersion> versions;
   base::flat_set<Ctap2Version> ctap2_versions;
   std::array<uint8_t, kAaguidLength> aaguid;
-  absl::optional<uint32_t> max_msg_size;
-  absl::optional<uint32_t> max_credential_count_in_list;
-  absl::optional<uint32_t> max_credential_id_length;
-  absl::optional<base::flat_set<PINUVAuthProtocol>> pin_protocols;
-  absl::optional<std::vector<std::string>> extensions;
-  absl::optional<std::vector<int32_t>> algorithms;
-  absl::optional<uint32_t> max_serialized_large_blob_array;
-  absl::optional<uint32_t> remaining_discoverable_credentials;
-  absl::optional<bool> force_pin_change;
-  absl::optional<uint32_t> min_pin_length;
-  absl::optional<base::flat_set<FidoTransportProtocol>> transports;
+  std::optional<uint32_t> max_msg_size;
+  std::optional<uint32_t> max_credential_count_in_list;
+  std::optional<uint32_t> max_credential_id_length;
+  std::optional<base::flat_set<PINUVAuthProtocol>> pin_protocols;
+  std::optional<std::vector<std::string>> extensions;
+  std::optional<std::vector<int32_t>> algorithms;
+  std::optional<uint32_t> max_serialized_large_blob_array;
+  std::optional<uint32_t> remaining_discoverable_credentials;
+  std::optional<bool> force_pin_change;
+  std::optional<uint32_t> min_pin_length;
+  std::optional<base::flat_set<FidoTransportProtocol>> transports;
   AuthenticatorSupportedOptions options;
 };
 

@@ -58,7 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossSocketManager
                           const Security security_level,
                           ConnectionCompleted callback) override;
   void Accept(const SocketId id,
-              absl::optional<uint32_t> timeout_ms,
+              std::optional<uint32_t> timeout_ms,
               ResponseCallback<BtifStatus> callback) override;
   void Close(const SocketId id, ResponseCallback<BtifStatus> callback) override;
 

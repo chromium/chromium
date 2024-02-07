@@ -88,7 +88,7 @@ void CredentialManagementHandler::OnTouch(FidoAuthenticator* authenticator) {
 
 void CredentialManagementHandler::OnRetriesResponse(
     CtapDeviceResponseCode status,
-    absl::optional<pin::RetriesResponse> response) {
+    std::optional<pin::RetriesResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
   if (status != CtapDeviceResponseCode::kSuccess) {
@@ -129,14 +129,14 @@ void CredentialManagementHandler::OnHavePIN(std::string pin) {
   }
   authenticator_->GetPINToken(
       std::move(pin), std::move(permissions),
-      /*rp_id=*/absl::nullopt,
+      /*rp_id=*/std::nullopt,
       base::BindOnce(&CredentialManagementHandler::OnHavePINToken,
                      weak_factory_.GetWeakPtr()));
 }
 
 void CredentialManagementHandler::OnHavePINToken(
     CtapDeviceResponseCode status,
-    absl::optional<pin::TokenResponse> response) {
+    std::optional<pin::TokenResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingPINToken);
 
@@ -211,7 +211,7 @@ void CredentialManagementHandler::OnDeleteCredentials(
     std::vector<device::PublicKeyCredentialDescriptor> remaining_credential_ids,
     CredentialManagementHandler::DeleteCredentialCallback callback,
     CtapDeviceResponseCode status,
-    absl::optional<DeleteCredentialResponse> response) {
+    std::optional<DeleteCredentialResponse> response) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     std::move(callback).Run(status);
     return;
@@ -274,7 +274,7 @@ void CredentialManagementHandler::DeleteCredentials(
 static void OnUpdateUserInformation(
     CredentialManagementHandler::UpdateUserInformationCallback callback,
     CtapDeviceResponseCode status,
-    absl::optional<UpdateUserInformationResponse> response) {
+    std::optional<UpdateUserInformationResponse> response) {
   std::move(callback).Run(status);
 }
 
@@ -298,11 +298,11 @@ void CredentialManagementHandler::UpdateUserInformation(
 
 void CredentialManagementHandler::OnCredentialsMetadata(
     CtapDeviceResponseCode status,
-    absl::optional<CredentialsMetadataResponse> response) {
+    std::optional<CredentialsMetadataResponse> response) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     state_ = State::kFinished;
     std::move(get_credentials_callback_)
-        .Run(status, absl::nullopt, absl::nullopt);
+        .Run(status, std::nullopt, std::nullopt);
     return;
   }
   authenticator_->EnumerateCredentials(
@@ -314,12 +314,12 @@ void CredentialManagementHandler::OnCredentialsMetadata(
 void CredentialManagementHandler::OnEnumerateCredentials(
     CredentialsMetadataResponse metadata_response,
     CtapDeviceResponseCode status,
-    absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
+    std::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
         responses) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     state_ = State::kFinished;
     std::move(get_credentials_callback_)
-        .Run(status, absl::nullopt, absl::nullopt);
+        .Run(status, std::nullopt, std::nullopt);
     return;
   }
 

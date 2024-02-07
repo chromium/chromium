@@ -85,11 +85,11 @@ uint16_t BluetoothDeviceAndroid::GetAppearance() const {
   return 0;
 }
 
-absl::optional<std::string> BluetoothDeviceAndroid::GetName() const {
+std::optional<std::string> BluetoothDeviceAndroid::GetName() const {
   auto name =
       Java_ChromeBluetoothDevice_getName(AttachCurrentThread(), j_device_);
   if (name.is_null())
-    return absl::nullopt;
+    return std::nullopt;
   return ConvertJavaStringToUTF8(name);
 }
 
@@ -200,7 +200,7 @@ void BluetoothDeviceAndroid::OnConnectionStateChange(
     bool connected) {
   gatt_connected_ = connected;
   if (gatt_connected_) {
-    DidConnectGatt(/*error_code=*/absl::nullopt);
+    DidConnectGatt(/*error_code=*/std::nullopt);
   } else if (!create_gatt_connection_callbacks_.empty()) {
     // We assume that if there are any pending connection callbacks there
     // was a failed connection attempt.
@@ -250,7 +250,7 @@ BluetoothDeviceAndroid::BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter)
     : BluetoothDevice(adapter) {}
 
 void BluetoothDeviceAndroid::CreateGattConnectionImpl(
-    absl::optional<device::BluetoothUUID> service_uuid) {
+    std::optional<device::BluetoothUUID> service_uuid) {
   Java_ChromeBluetoothDevice_createGattConnectionImpl(AttachCurrentThread(),
                                                       j_device_);
 }

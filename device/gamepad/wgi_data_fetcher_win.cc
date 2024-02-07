@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/nintendo_controller.h"
 #include "device/gamepad/wgi_gamepad_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -70,7 +70,7 @@ GetRawGameController(ABI::Windows::Gaming::Input::IGamepad* gamepad,
   return raw_game_controller;
 }
 
-absl::optional<GamepadId> GetGamepadId(
+std::optional<GamepadId> GetGamepadId(
     const std::u16string& product_name,
     ABI::Windows::Gaming::Input::IGamepad* gamepad,
     WgiDataFetcherWin::GetActivationFactoryFunction
@@ -81,19 +81,19 @@ absl::optional<GamepadId> GetGamepadId(
       raw_game_controller =
           GetRawGameController(gamepad, get_activation_factory_function);
   if (!raw_game_controller) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint16_t vendor_id;
   hr = raw_game_controller->get_HardwareVendorId(&vendor_id);
   if (FAILED(hr)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint16_t product_id;
   hr = raw_game_controller->get_HardwareProductId(&product_id);
   if (FAILED(hr)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return GamepadIdList::Get().GetGamepadId(product_name_string, vendor_id,
@@ -235,10 +235,10 @@ void WgiDataFetcherWin::OnGamepadAdded(
     return;
 
   const std::u16string display_name = GetGamepadDisplayName(gamepad);
-  absl::optional<GamepadId> gamepad_id_optional =
+  std::optional<GamepadId> gamepad_id_optional =
       GetGamepadId(display_name, gamepad, get_activation_factory_function_);
 
-  // If `gamepad_id_optional` has absl::nullopt, it means that an error has
+  // If `gamepad_id_optional` has std::nullopt, it means that an error has
   // happened when calling the Windows API's.
   if (!gamepad_id_optional.has_value()) {
     return;

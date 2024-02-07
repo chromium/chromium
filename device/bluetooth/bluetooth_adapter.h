@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -28,7 +29,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
@@ -152,11 +152,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     // returns the raw values that have been parsed from EIR.
     virtual void DeviceAdvertisementReceived(
         const std::string& device_address,
-        const absl::optional<std::string>& device_name,
-        const absl::optional<std::string>& advertisement_name,
-        absl::optional<int8_t> rssi,
-        absl::optional<int8_t> tx_power,
-        absl::optional<uint16_t> appearance,
+        const std::optional<std::string>& device_name,
+        const std::optional<std::string>& advertisement_name,
+        std::optional<int8_t> rssi,
+        std::optional<int8_t> tx_power,
+        std::optional<uint16_t> appearance,
         const BluetoothDevice::UUIDList& advertised_uuids,
         const BluetoothDevice::ServiceDataMap& service_data_map,
         const BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {}
@@ -356,9 +356,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     ServiceOptions();
     ~ServiceOptions();
 
-    absl::optional<int> channel;
-    absl::optional<int> psm;
-    absl::optional<std::string> name;
+    std::optional<int> channel;
+    std::optional<int> psm;
+    std::optional<std::string> name;
 
     // Clients can configure this option to choose if they want to enforce
     // bonding with remote devices that connect to this device. Options:
@@ -368,7 +368,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     //     use this are responsible for securing their communication at the
     //     application level.
     //   * Set to true: bonding is enforced by the local device.
-    absl::optional<bool> require_authentication;
+    std::optional<bool> require_authentication;
   };
 
   // The ErrorCallback is used for methods that can fail in which case it is
@@ -665,7 +665,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // a valid reference (in which case this method will fail).
   virtual void ConnectDevice(
       const std::string& address,
-      const absl::optional<BluetoothDevice::AddressType>& address_type,
+      const std::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) = 0;
 #endif

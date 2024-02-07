@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_PLATFORM_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"
@@ -104,7 +104,7 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   XrResult CreateInstance(XrInstance* instance);
 
   void CreateInstanceWithCreateInfo(
-      absl::optional<OpenXrCreateInfo> create_info,
+      std::optional<OpenXrCreateInfo> create_info,
       CreateInstanceCallback instance_ready_callback,
       PlatormInitiatedShutdownCallback shutdown_callback);
 

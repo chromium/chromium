@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -16,7 +17,6 @@
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -26,14 +26,14 @@ namespace device {
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
 class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
-  static absl::optional<AuthenticatorMakeCredentialResponse>
+  static std::optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
-      absl::optional<FidoTransportProtocol> transport_used,
+      std::optional<FidoTransportProtocol> transport_used,
       base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
       base::span<const uint8_t> u2f_data);
 
   AuthenticatorMakeCredentialResponse(
-      absl::optional<FidoTransportProtocol> transport_used,
+      std::optional<FidoTransportProtocol> transport_used,
       AttestationObject attestation_object);
   AuthenticatorMakeCredentialResponse(
       AuthenticatorMakeCredentialResponse&& that);
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // is_resident_key indicates whether the created credential is client-side
   // discoverable. It is nullopt if no discoverable credential was requested,
   // but the authenticator may have created one anyway.
-  absl::optional<bool> is_resident_key;
+  std::optional<bool> is_resident_key;
 
   // attestation_should_be_filtered is true iff a filter indicated that the
   // attestation should not be returned. This is acted upon by
@@ -71,17 +71,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
 
   // transports contains the full set of transports supported by the
   // authenticator, if known.
-  absl::optional<base::flat_set<FidoTransportProtocol>> transports;
+  std::optional<base::flat_set<FidoTransportProtocol>> transports;
 
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).
-  absl::optional<FidoTransportProtocol> transport_used;
+  std::optional<FidoTransportProtocol> transport_used;
 
   // Whether the credential that was created has an associated large blob key or
   // supports the largeBlob extension. This can only be true if the credential
   // is created with the largeBlob or largeBlobKey extension on a capable
   // authenticator.
-  absl::optional<LargeBlobSupportType> large_blob_type;
+  std::optional<LargeBlobSupportType> large_blob_type;
 
   // Whether a PRF is configured for this credential. This only reflects the
   // output of the `prf` extension. Any output from the `hmac-secret` extension
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   bool prf_enabled = false;
 
   // hmac-secret contains the output of the prf extension.
-  absl::optional<std::vector<uint8_t>> prf_results;
+  std::optional<std::vector<uint8_t>> prf_results;
 };
 
 // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array

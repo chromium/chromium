@@ -54,7 +54,7 @@ class Cryptor {
                             base::span<const uint8_t> plaintext,
                             base::span<const uint8_t> authenticated_data) const;
 
-  absl::optional<std::vector<uint8_t>> Unseal(
+  std::optional<std::vector<uint8_t>> Unseal(
       Algorithm alg,
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> ciphertext,
@@ -63,7 +63,7 @@ class Cryptor {
   std::string HmacForStorage(std::string_view data) const;
 
  private:
-  static absl::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
+  static std::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
       Algorithm alg);
 
   // Derives an Algorithm-specific key from |secret_| to avoid using the same
@@ -90,7 +90,7 @@ std::vector<uint8_t> Cryptor::Seal(
   return aead.Seal(plaintext, nonce, authenticated_data);
 }
 
-absl::optional<std::vector<uint8_t>> Cryptor::Unseal(
+std::optional<std::vector<uint8_t>> Cryptor::Unseal(
     Algorithm algorithm,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> ciphertext,
@@ -115,7 +115,7 @@ std::string Cryptor::HmacForStorage(std::string_view data) const {
 }
 
 // static
-absl::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
+std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     Algorithm alg) {
   switch (alg) {
     case Algorithm::kAes256Gcm:
@@ -124,7 +124,7 @@ absl::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
       return crypto::Aead::AES_256_GCM_SIV;
     case Algorithm::kHmacSha256:
       NOTREACHED() << "invalid AEAD";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -247,7 +247,7 @@ std::vector<uint8_t> SealCredentialMetadata(
   cbor_metadata.emplace_back(cbor::Value(metadata.is_resident));
   cbor_metadata.emplace_back(
       cbor::Value(static_cast<uint8_t>(metadata.sign_counter_type)));
-  absl::optional<std::vector<uint8_t>> pt =
+  std::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
   DCHECK(pt);
 
@@ -270,7 +270,7 @@ std::vector<uint8_t> SealCredentialMetadata(
 // In these versions, the `version` field is not part of the AEAD pt. Version 0
 // also lacks the `is_resident` boolean inside the metadata (i.e. all V0
 // credentials are non-resident).
-static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
+static std::optional<CredentialMetadata> UnsealLegacyCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
@@ -281,27 +281,27 @@ static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
            static_cast<uint8_t>(CredentialMetadata::Version::kV0) &&
        credential_id[0] !=
            static_cast<uint8_t>(CredentialMetadata::Version::kV1))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto version = static_cast<CredentialMetadata::Version>(credential_id[0]);
 
-  absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
+  std::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(1, kNonceLength),
       credential_id.subspan(1 + kNonceLength), MakeAad(version, rp_id));
   if (!plaintext) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The recovered plaintext should decode into the CredentialMetadata struct.
-  absl::optional<cbor::Value> maybe_array = cbor::Reader::Read(*plaintext);
+  std::optional<cbor::Value> maybe_array = cbor::Reader::Read(*plaintext);
   if (!maybe_array || !maybe_array->is_array()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::ArrayValue& array = maybe_array->GetArray();
   if (array.size() < 3 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto user_id = array[0].GetBytestring();
   auto user_name = array[1].GetBytestringAsString();
@@ -311,11 +311,11 @@ static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
   DCHECK(version == CredentialMetadata::Version::kV0 ||
          version == CredentialMetadata::Version::kV1);
   if (version == CredentialMetadata::Version::kV0 && array.size() != 3) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (version == CredentialMetadata::Version::kV1) {
     if (array.size() != 4 || !array[3].is_bool()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     is_resident = array[3].GetBool();
   }
@@ -334,37 +334,37 @@ static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
 // version prefix. Since the metadata version is still part of the AEAD's
 // authenticated data, this is generally called iteratively for each potential
 // version. Returns nullopt if unsealing fails.
-static absl::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
+static std::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
     CredentialMetadata::Version version,
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
   DCHECK_GE(version, CredentialMetadata::Version::kV2);
   if (credential_id.size() <= kNonceLength) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
+  std::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256Gcm, credential_id.first(kNonceLength),
       credential_id.subspan(kNonceLength), MakeAad(version, rp_id));
   if (!plaintext) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
+  std::optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
       reinterpret_cast<const uint8_t*>(plaintext->data()), plaintext->size()));
   if (!maybe_array || !maybe_array->is_array()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::ArrayValue& array = maybe_array->GetArray();
   if (array.size() < 4 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring() ||
       !array[3].is_bool()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (version == CredentialMetadata::Version::kV2) {
     if (array.size() != 4) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return CredentialMetadata(
         CredentialMetadata::Version::kV2, array[0].GetBytestring(),
@@ -381,12 +381,12 @@ static absl::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
       "versions");
   DCHECK_GE(version, CredentialMetadata::Version::kV3);
   if (array.size() != 5) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Decode SignCounter enum:
   const int64_t counter_type = array[4].GetUnsigned();
   if (counter_type < 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CredentialMetadata(version, array[0].GetBytestring(),
                             std::string(array[1].GetBytestringAsString()),
@@ -395,12 +395,12 @@ static absl::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
                             CredentialMetadata::SignCounter(counter_type));
 }
 
-absl::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
+std::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
   // Trial decrypt under V2 first, and if that fails try again with V0/V1.
-  absl::optional<CredentialMetadata> credential_metadata =
+  std::optional<CredentialMetadata> credential_metadata =
       UnsealV2OrLaterCredentialMetadata(CredentialMetadata::Version::kV2,
                                         secret, rp_id, credential_id);
   if (credential_metadata) {
@@ -409,7 +409,7 @@ absl::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
   return UnsealLegacyCredentialId(secret, rp_id, credential_id);
 }
 
-absl::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
+std::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> application_tag) {
@@ -423,13 +423,13 @@ absl::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
   // decryption because the version is part of the AEAD authententication tag.
   for (const auto version :
        {CredentialMetadata::Version::kV3, CredentialMetadata::Version::kV4}) {
-    if (absl::optional<CredentialMetadata> metadata =
+    if (std::optional<CredentialMetadata> metadata =
             UnsealV2OrLaterCredentialMetadata(version, secret, rp_id,
                                               application_tag)) {
       return metadata;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
@@ -460,18 +460,18 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
   return base::HexEncode(ct);
 }
 
-absl::optional<std::string> DecodeRpId(const std::string& secret,
-                                       const std::string& ciphertext) {
+std::optional<std::string> DecodeRpId(const std::string& secret,
+                                      const std::string& ciphertext) {
   std::vector<uint8_t> ct;
   if (!base::HexStringToBytes(ciphertext, &ct)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   static constexpr std::array<uint8_t, kNonceLength> fixed_zero_nonce = {};
-  absl::optional<std::vector<uint8_t>> pt = Cryptor(secret).Unseal(
+  std::optional<std::vector<uint8_t>> pt = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256GcmSiv, fixed_zero_nonce, ct,
       /*authenticated_data=*/{});
   if (!pt) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::string(pt->begin(), pt->end());
 }
@@ -507,7 +507,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
   if (version > CredentialMetadata::Version::kV0) {
     cbor_metadata.emplace_back(cbor::Value(is_resident));
   }
-  absl::optional<std::vector<uint8_t>> pt =
+  std::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
   DCHECK(pt);
 

@@ -94,7 +94,7 @@ class FakeCentral final : public mojom::FakeCentral,
                             RemoveFakeDescriptorCallback callback) override;
   void SetNextReadCharacteristicResponse(
       uint16_t gatt_code,
-      const absl::optional<std::vector<uint8_t>>& value,
+      const std::optional<std::vector<uint8_t>>& value,
       const std::string& characteristic_id,
       const std::string& service_id,
       const std::string& peripheral_address,
@@ -128,7 +128,7 @@ class FakeCentral final : public mojom::FakeCentral,
       GetLastWrittenCharacteristicValueCallback callback) override;
   void SetNextReadDescriptorResponse(
       uint16_t gatt_code,
-      const absl::optional<std::vector<uint8_t>>& value,
+      const std::optional<std::vector<uint8_t>>& value,
       const std::string& descriptor_id,
       const std::string& characteristic_id,
       const std::string& service_id,
@@ -195,7 +195,7 @@ class FakeCentral final : public mojom::FakeCentral,
                         AdvertisementErrorCallback error_callback) override;
   void ConnectDevice(
       const std::string& address,
-      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      const std::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) override;
 #endif

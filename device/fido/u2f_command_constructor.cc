@@ -41,10 +41,10 @@ bool IsConvertibleToU2fSignCommand(const CtapGetAssertionRequest& request) {
          !request.allow_list.empty();
 }
 
-absl::optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
+std::optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request) {
   if (!IsConvertibleToU2fRegisterCommand(request))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (request.pin_auth && request.pin_auth->size() == 0) {
     // An empty pin_auth in CTAP2 indicates that the device should just wait
@@ -60,7 +60,7 @@ absl::optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
       request.client_data_hash, is_individual_attestation);
 }
 
-absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
+std::optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
     const CtapMakeCredentialRequest& request,
     base::span<const uint8_t> key_handle) {
   return ConstructU2fSignCommand(
@@ -68,12 +68,12 @@ absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
       kBogusChallenge, key_handle);
 }
 
-absl::optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
+std::optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
     const CtapGetAssertionRequest& request,
     ApplicationParameterType application_parameter_type,
     base::span<const uint8_t> key_handle) {
   if (!IsConvertibleToU2fSignCommand(request))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto& application_parameter =
       application_parameter_type == ApplicationParameterType::kPrimary
@@ -103,12 +103,12 @@ std::vector<uint8_t> ConstructU2fRegisterCommand(
   return command.GetEncodedCommand();
 }
 
-absl::optional<std::vector<uint8_t>> ConstructU2fSignCommand(
+std::optional<std::vector<uint8_t>> ConstructU2fSignCommand(
     base::span<const uint8_t, kU2fApplicationParamLength> application_parameter,
     base::span<const uint8_t, kU2fChallengeParamLength> challenge_parameter,
     base::span<const uint8_t> key_handle) {
   if (key_handle.size() > kMaxKeyHandleLength) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> data;

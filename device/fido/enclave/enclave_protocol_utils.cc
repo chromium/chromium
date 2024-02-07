@@ -152,23 +152,23 @@ const char* ToString(ClientKeyType key_type) {
 
 }  // namespace
 
-std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
+std::pair<std::optional<AuthenticatorGetAssertionResponse>, std::string>
 ParseGetAssertionResponse(cbor::Value response_value,
                           base::span<const uint8_t> credential_id) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
-    return {absl::nullopt, "Command response was not a valid CBOR array."};
+    return {std::nullopt, "Command response was not a valid CBOR array."};
   }
 
   base::Value response_element =
       CborValueToBaseValue(response_value.GetArray()[0]);
 
   if (!response_element.is_dict()) {
-    return {absl::nullopt, "Command response element is not a map."};
+    return {std::nullopt, "Command response element is not a map."};
   }
 
   if (const std::string* error =
           response_element.GetDict().FindString(kResponseErrorKey)) {
-    return {absl::nullopt,
+    return {std::nullopt,
             base::StrCat({"Error received from enclave: ", *error})};
   }
 
@@ -176,21 +176,20 @@ ParseGetAssertionResponse(cbor::Value response_value,
       response_element.GetDict().FindDict(kResponseSuccessKey);
   if (!success_response) {
     return {
-        absl::nullopt,
+        std::nullopt,
         "Command response did not contain a successful response or an error."};
   }
 
   base::Value* assertion_response =
       success_response->Find(kGetAssertionResponseKey);
   if (!assertion_response) {
-    return {absl::nullopt,
-            "Command response did not contain a response field."};
+    return {std::nullopt, "Command response did not contain a response field."};
   }
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       AuthenticatorGetAssertionResponseFromValue(*assertion_response);
   if (!response) {
-    return {absl::nullopt, "Assertion response failed to parse."};
+    return {std::nullopt, "Assertion response failed to parse."};
   }
 
   response->credential = PublicKeyCredentialDescriptor(
@@ -200,14 +199,14 @@ ParseGetAssertionResponse(cbor::Value response_value,
   return {std::move(response), std::string()};
 }
 
-std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
-           absl::optional<sync_pb::WebauthnCredentialSpecifics>,
+std::tuple<std::optional<AuthenticatorMakeCredentialResponse>,
+           std::optional<sync_pb::WebauthnCredentialSpecifics>,
            std::string>
 ParseMakeCredentialResponse(cbor::Value response_value,
                             const CtapMakeCredentialRequest& request,
                             int32_t wrapped_secret_version) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
-    return {absl::nullopt, absl::nullopt,
+    return {std::nullopt, std::nullopt,
             "Command response was not a valid CBOR array."};
   }
 
@@ -219,13 +218,13 @@ ParseMakeCredentialResponse(cbor::Value response_value,
       CborValueToBaseValue(response_value.GetArray()[0]);
 
   if (!response_element.is_dict()) {
-    return {absl::nullopt, absl::nullopt,
+    return {std::nullopt, std::nullopt,
             "Command response element is not a map."};
   }
 
   if (const std::string* error =
           response_element.GetDict().FindString(kResponseErrorKey)) {
-    return {absl::nullopt, absl::nullopt,
+    return {std::nullopt, std::nullopt,
             base::StrCat({"Error received from enclave: ", *error})};
   }
 
@@ -233,21 +232,21 @@ ParseMakeCredentialResponse(cbor::Value response_value,
       response_element.GetDict().FindDict(kResponseSuccessKey);
   if (!success_response) {
     return {
-        absl::nullopt, absl::nullopt,
+        std::nullopt, std::nullopt,
         "Command response did not contain a successful response or an error."};
   }
 
   const std::vector<uint8_t>* pubkey_field =
       success_response->FindBlob(kMakeCredentialResponsePubKeyKey);
   if (!pubkey_field) {
-    return {absl::nullopt, absl::nullopt,
+    return {std::nullopt, std::nullopt,
             "MakeCredential response did not contain a public key."};
   }
 
   const std::vector<uint8_t>* encrypted_field =
       success_response->FindBlob(kMakeCredentialResponseEncryptedKey);
   if (!encrypted_field) {
-    return {absl::nullopt, absl::nullopt,
+    return {std::nullopt, std::nullopt,
             "MakeCredential response did not contain an encrypted passkey."};
   }
 
@@ -363,7 +362,7 @@ void BuildCommandRequestBody(
     command = cbor::Value(std::move(requests));
   }
 
-  absl::optional<std::vector<uint8_t>> serialized_requests =
+  std::optional<std::vector<uint8_t>> serialized_requests =
       cbor::Writer::Write(command);
   std::array<uint8_t, crypto::kSHA256Length> serialized_requests_hash;
   if (!signing_callback.is_null()) {
@@ -398,7 +397,7 @@ void BuildCommandRequestBody(
         request_body_map.emplace(
             cbor::Value(kCommandSigKey),
             cbor::Value(std::move(client_signature.signature)));
-        absl::optional<std::vector<uint8_t>> serialized_request =
+        std::optional<std::vector<uint8_t>> serialized_request =
             cbor::Writer::Write(cbor::Value(std::move(request_body_map)));
         std::move(complete_callback).Run(*serialized_request);
       };

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -75,37 +75,37 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
 
     AdvertisementType type() { return type_; }
 
-    absl::optional<UUIDList> service_uuids() {
+    std::optional<UUIDList> service_uuids() {
       return pass_value(service_uuids_);
     }
-    absl::optional<ManufacturerData> manufacturer_data() {
+    std::optional<ManufacturerData> manufacturer_data() {
       return pass_value(manufacturer_data_);
     }
-    absl::optional<UUIDList> solicit_uuids() {
+    std::optional<UUIDList> solicit_uuids() {
       return pass_value(solicit_uuids_);
     }
-    absl::optional<ServiceData> service_data() {
+    std::optional<ServiceData> service_data() {
       return pass_value(service_data_);
     }
-    absl::optional<ScanResponseData> scan_response_data() {
+    std::optional<ScanResponseData> scan_response_data() {
       return pass_value(scan_response_data_);
     }
 
-    void set_service_uuids(absl::optional<UUIDList> service_uuids) {
+    void set_service_uuids(std::optional<UUIDList> service_uuids) {
       service_uuids_ = std::move(service_uuids);
     }
     void set_manufacturer_data(
-        absl::optional<ManufacturerData> manufacturer_data) {
+        std::optional<ManufacturerData> manufacturer_data) {
       manufacturer_data_ = std::move(manufacturer_data);
     }
-    void set_solicit_uuids(absl::optional<UUIDList> solicit_uuids) {
+    void set_solicit_uuids(std::optional<UUIDList> solicit_uuids) {
       solicit_uuids_ = std::move(solicit_uuids);
     }
-    void set_service_data(absl::optional<ServiceData> service_data) {
+    void set_service_data(std::optional<ServiceData> service_data) {
       service_data_ = std::move(service_data);
     }
     void set_scan_response_data(
-        absl::optional<ScanResponseData> scan_response_data) {
+        std::optional<ScanResponseData> scan_response_data) {
       scan_response_data_ = std::move(scan_response_data);
     }
 
@@ -119,18 +119,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     // Passes the value along held by |from|, and restore the optional moved
     // from to nullopt.
     template <typename T>
-    static absl::optional<T> pass_value(absl::optional<T>& from) {
-      absl::optional<T> value = std::move(from);
-      from = absl::nullopt;
+    static std::optional<T> pass_value(std::optional<T>& from) {
+      std::optional<T> value = std::move(from);
+      from = std::nullopt;
       return value;
     }
 
     AdvertisementType type_;
-    absl::optional<UUIDList> service_uuids_;
-    absl::optional<ManufacturerData> manufacturer_data_;
-    absl::optional<UUIDList> solicit_uuids_;
-    absl::optional<ServiceData> service_data_;
-    absl::optional<ScanResponseData> scan_response_data_;
+    std::optional<UUIDList> service_uuids_;
+    std::optional<ManufacturerData> manufacturer_data_;
+    std::optional<UUIDList> solicit_uuids_;
+    std::optional<ServiceData> service_data_;
+    std::optional<ScanResponseData> scan_response_data_;
     bool include_tx_power_;
   };
 

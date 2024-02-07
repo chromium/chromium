@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/socket.h"
 
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "net/base/io_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 

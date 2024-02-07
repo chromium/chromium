@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -41,13 +41,12 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   // object, or else is called with a value other than |kSuccess| and
   // |nullopt|.
   using DeviceResponseCallback =
-      base::OnceCallback<void(CtapDeviceResponseCode,
-                              absl::optional<Response>)>;
+      base::OnceCallback<void(CtapDeviceResponseCode, std::optional<Response>)>;
   // DeviceResponseParser converts a generic CBOR structure into an
   // operation-specific response. If the response didn't have a payload then the
   // argument will be |nullopt|. The parser should return |nullopt| on error.
-  using DeviceResponseParser = base::OnceCallback<absl::optional<Response>(
-      const absl::optional<cbor::Value>&)>;
+  using DeviceResponseParser = base::OnceCallback<std::optional<Response>(
+      const std::optional<cbor::Value>&)>;
   // CBORPathPredicate takes a vector of CBOR |Value|s that are map keys and
   // returns true if the string at that location may validly be truncated.
   // For example, the path of the string "bar" in {"x": {"y": "foo",
@@ -76,7 +75,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   ~Ctap2DeviceOperation() override = default;
 
   void Start() override {
-    std::pair<CtapRequestCommand, absl::optional<cbor::Value>> request(
+    std::pair<CtapRequestCommand, std::optional<cbor::Value>> request(
         AsCTAPRequestValuePair(this->request()));
     std::vector<uint8_t> request_bytes;
 
@@ -86,7 +85,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     if (request.second) {
       FIDO_LOG(DEBUG) << "<- " << request.first << " "
                       << cbor::DiagnosticWriter::Write(*request.second);
-      absl::optional<std::vector<uint8_t>> cbor_bytes =
+      std::optional<std::vector<uint8_t>> cbor_bytes =
           cbor::Writer::Write(*request.second);
       DCHECK(cbor_bytes);
       request_bytes = std::move(*cbor_bytes);
@@ -116,8 +115,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     }
   }
 
-  void OnResponseReceived(
-      absl::optional<std::vector<uint8_t>> device_response) {
+  void OnResponseReceived(std::optional<std::vector<uint8_t>> device_response) {
     this->token_.reset();
 
     // TODO: it would be nice to see which device each response is coming from,
@@ -126,7 +124,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     if (!device_response || device_response->empty()) {
       FIDO_LOG(ERROR) << "-> (error reading)";
       std::move(this->callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, std::nullopt);
       return;
     }
 
@@ -138,13 +136,13 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
       } else {
         FIDO_LOG(DEBUG) << "-> (CTAP2 error code " << response_code << ")";
       }
-      std::move(this->callback()).Run(response_code, absl::nullopt);
+      std::move(this->callback()).Run(response_code, std::nullopt);
       return;
     }
     DCHECK(!device_response->empty());
 
-    absl::optional<cbor::Value> cbor;
-    absl::optional<Response> response;
+    std::optional<cbor::Value> cbor;
+    std::optional<Response> response;
     base::span<const uint8_t> cbor_bytes(*device_response);
     cbor_bytes = cbor_bytes.subspan(1);
 
@@ -163,7 +161,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
                         << "' from raw message "
                         << base::HexEncode(device_response.value()) << ")";
         std::move(this->callback())
-            .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
+            .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, std::nullopt);
         return;
       }
 
@@ -174,7 +172,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
               << "-> (CBOR with unfixable UTF-8 errors from raw message "
               << base::HexEncode(device_response.value()) << ")";
           std::move(this->callback())
-              .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
+              .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, std::nullopt);
           return;
         }
       }
@@ -188,7 +186,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
       }
     } else {
       response =
-          std::move(std::move(device_response_parser_).Run(absl::nullopt));
+          std::move(std::move(device_response_parser_).Run(std::nullopt));
       if (response) {
         FIDO_LOG(DEBUG) << "-> (empty payload)";
       } else {

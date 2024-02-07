@@ -5,17 +5,17 @@
 #ifndef DEVICE_FIDO_CABLE_V2_AUTHENTICATOR_H_
 #define DEVICE_FIDO_CABLE_V2_AUTHENTICATOR_H_
 
+#include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
-
-#include <stdint.h>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
@@ -92,7 +92,7 @@ class Platform {
   // OnCompleted is called when the transaction has completed. Note that calling
   // this may result in the |Transaction| that owns this |Platform| being
   // deleted.
-  virtual void OnCompleted(absl::optional<Error>) = 0;
+  virtual void OnCompleted(std::optional<Error>) = 0;
 
   virtual std::unique_ptr<BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) = 0;
@@ -144,7 +144,7 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     // TODO: name this constant.
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    absl::optional<std::vector<uint8_t>> contact_id);
+    std::optional<std::vector<uint8_t>> contact_id);
 
 // TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
@@ -156,7 +156,7 @@ std::unique_ptr<Transaction> TransactFromFCM(
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
     base::span<const uint8_t, kPairingIDSize> pairing_id,
     base::span<const uint8_t, kClientNonceSize> client_nonce,
-    absl::optional<base::span<const uint8_t>> contact_id);
+    std::optional<base::span<const uint8_t>> contact_id);
 
 }  // namespace authenticator
 }  // namespace cablev2

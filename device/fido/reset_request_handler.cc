@@ -61,7 +61,7 @@ void ResetRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
 
 void ResetRequestHandler::OnResetComplete(
     CtapDeviceResponseCode status,
-    absl::optional<pin::EmptyResponse> response) {
+    std::optional<pin::EmptyResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK(processed_touch_);
 

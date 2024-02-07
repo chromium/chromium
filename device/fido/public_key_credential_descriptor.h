@@ -6,6 +6,8 @@
 #define DEVICE_FIDO_PUBLIC_KEY_CREDENTIAL_DESCRIPTOR_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +16,6 @@
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -24,7 +25,7 @@ namespace device {
 // AuthenticatorGetAssertion command.
 class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialDescriptor {
  public:
-  static absl::optional<PublicKeyCredentialDescriptor> CreateFromCBORValue(
+  static std::optional<PublicKeyCredentialDescriptor> CreateFromCBORValue(
       const cbor::Value& cbor);
 
   PublicKeyCredentialDescriptor();

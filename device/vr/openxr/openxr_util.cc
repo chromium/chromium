@@ -38,7 +38,7 @@ device::Pose XrPoseToDevicePose(const XrPosef& pose) {
 }
 
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
-  absl::optional<gfx::DecomposedTransform> decomposed_transform =
+  std::optional<gfx::DecomposedTransform> decomposed_transform =
       transform.Decompose();
   // This pose should always be a simple translation and rotation so this should
   // always be true

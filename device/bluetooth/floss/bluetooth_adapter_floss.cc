@@ -100,7 +100,7 @@ class BleDelegateForDiscovery
   // Empty device::BluetoothLowEnergyScanSession::Delegate overrides
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override {}
   void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
                      device::BluetoothDevice* device) override {}
@@ -602,7 +602,7 @@ void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
   }
 
   device->SetBondState(static_cast<FlossAdapterClient::BondState>(*ret),
-                       absl::nullopt);
+                       std::nullopt);
   if (device->HasReadProperties()) {
     NotifyDevicePairedChanged(device, device->IsPaired());
   }
@@ -1134,7 +1134,7 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     return;
   }
 
-  device->SetBondState(bond_state, absl::nullopt);
+  device->SetBondState(bond_state, std::nullopt);
   NotifyDeviceChanged(device);
   NotifyDevicePairedChanged(device, device->IsPaired());
 
@@ -1175,7 +1175,7 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   }
 }
 
-absl::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
+std::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
     const std::string& variant) {
   std::unordered_map<std::string, device::BluetoothDevice::BatteryType>
       battery_type_lookup = {
@@ -1186,7 +1186,7 @@ absl::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
           {"case", device::BluetoothDevice::BatteryType::kCaseTrueWireless},
       };
   if (!base::Contains(battery_type_lookup, variant)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return battery_type_lookup[variant];
 }
@@ -1201,7 +1201,7 @@ void BluetoothAdapterFloss::BatteryInfoUpdated(std::string remote_address,
   }
 
   for (const auto& battery : battery_set.batteries) {
-    absl::optional<device::BluetoothDevice::BatteryType> battery_type =
+    std::optional<device::BluetoothDevice::BatteryType> battery_type =
         variant_to_battery_type(battery.variant);
     if (!battery_type) {
       LOG(WARNING) << "Unable to convert to battery_type from "
@@ -1245,7 +1245,7 @@ BluetoothAdapterFloss::RetrieveGattConnectedDevicesWithDiscoveryFilter(
 #if BUILDFLAG(IS_CHROMEOS)
 void BluetoothAdapterFloss::DevicePolicyEffectChanged(
     const FlossDeviceId& device_id,
-    const absl::optional<PolicyEffect>& effect) {
+    const std::optional<PolicyEffect>& effect) {
   BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_id;
 
   BluetoothDeviceFloss* device =
@@ -1379,7 +1379,7 @@ void BluetoothAdapterFloss::ResetAdvertising(
 
 void BluetoothAdapterFloss::ConnectDevice(
     const std::string& address,
-    const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+    const std::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ConnectDeviceErrorCallback error_callback) {
   // On Floss, ACL and RFCOMM connection are done with
@@ -1572,7 +1572,7 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
   FlossDBusManager::Get()->GetLEScanClient()->StartScan(
       base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
                      weak_ptr_factory_.GetWeakPtr(), uuid, scanner_id),
-      scanner_id, absl::nullopt, scanners_[uuid]->GetFlossScanFilter());
+      scanner_id, std::nullopt, scanners_[uuid]->GetFlossScanFilter());
 }
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {

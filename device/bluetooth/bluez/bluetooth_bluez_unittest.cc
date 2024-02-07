@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -46,7 +47,6 @@
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -104,7 +104,7 @@ CreateLowEnergyScanFilter() {
       kBackgroundScanningDeviceLostRSSIThreshold,
       kBackgroundScanningDeviceFoundTimeout,
       kBackgroundScanningDeviceLostTimeout, {pattern},
-      /*rssi_sampling_period=*/absl::nullopt);
+      /*rssi_sampling_period=*/std::nullopt);
 }
 
 bluez::FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
@@ -208,7 +208,7 @@ class FakeBluetoothLowEnergyScanSessionDelegate
   // device::BluetoothLowEnergyScanSession::Delegate
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override {
     sessions_started_.push_back(std::make_pair(scan_session, error_code));
   }
@@ -227,7 +227,7 @@ class FakeBluetoothLowEnergyScanSessionDelegate
 
   const std::vector<std::pair<
       device::BluetoothLowEnergyScanSession*,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>&
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>&
   sessions_started() const {
     return sessions_started_;
   }
@@ -257,7 +257,7 @@ class FakeBluetoothLowEnergyScanSessionDelegate
  private:
   std::vector<std::pair<
       device::BluetoothLowEnergyScanSession*,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>
       sessions_started_;
   std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
                         device::BluetoothDevice*>>
@@ -2483,7 +2483,7 @@ TEST_P(BluetoothBlueZTestP, ForgetUnpairedDevice) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2533,7 +2533,7 @@ TEST_P(BluetoothBlueZTestP, ConnectPairedDevice) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2569,7 +2569,7 @@ TEST_P(BluetoothBlueZTestP, ConnectUnpairableDevice) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2619,7 +2619,7 @@ TEST_P(BluetoothBlueZTestP, ConnectConnectedDevice) {
         device, nullptr,
         base::BindLambdaForTesting(
             [&run_loop](
-                absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+                std::optional<BluetoothDevice::ConnectErrorCode> error) {
               EXPECT_FALSE(error.has_value());
               run_loop.Quit();
             }));
@@ -2638,7 +2638,7 @@ TEST_P(BluetoothBlueZTestP, ConnectConnectedDevice) {
         device, nullptr,
         base::BindLambdaForTesting(
             [&run_loop](
-                absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+                std::optional<BluetoothDevice::ConnectErrorCode> error) {
               EXPECT_FALSE(error.has_value());
               run_loop.Quit();
             }));
@@ -2674,7 +2674,7 @@ TEST_P(BluetoothBlueZTestP, ConnectDeviceFails) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
             run_loop.Quit();
           }));
@@ -2699,7 +2699,7 @@ TEST_P(BluetoothBlueZTestP, RemoveDeviceDuringConnection) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             FAIL() << "Connection callback should never be called.";
           }));
 
@@ -2737,7 +2737,7 @@ TEST_P(BluetoothBlueZTestP, DisconnectDevice) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2841,7 +2841,7 @@ TEST_F(BluetoothBlueZTest, PairTrustedDevice) {
   device->Pair(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2886,7 +2886,7 @@ TEST_F(BluetoothBlueZTest, PairAlreadyPairedDevice) {
   device->Pair(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2913,7 +2913,7 @@ TEST_P(BluetoothBlueZTestP, PairLegacyAutopair) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -2971,7 +2971,7 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPinCode) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3035,7 +3035,7 @@ TEST_P(BluetoothBlueZTestP, PairDisplayPasskey) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3095,7 +3095,7 @@ TEST_P(BluetoothBlueZTestP, PairRequestPinCode) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3160,7 +3160,7 @@ TEST_P(BluetoothBlueZTestP, PairConfirmPasskey) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3221,7 +3221,7 @@ TEST_P(BluetoothBlueZTestP, PairRequestPasskey) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3276,7 +3276,7 @@ TEST_P(BluetoothBlueZTestP, PairJustWorks) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -3329,7 +3329,7 @@ TEST_P(BluetoothBlueZTestP, PairUnpairableDeviceFails) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
             run_loop.Quit();
           }));
@@ -3359,7 +3359,7 @@ TEST_P(BluetoothBlueZTestP, PairingFails) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_TIMEOUT, error);
             run_loop.Quit();
           }));
@@ -3390,7 +3390,7 @@ TEST_P(BluetoothBlueZTestP, PairingFailsAtConnection) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
             run_loop.Quit();
           }));
@@ -3448,7 +3448,7 @@ TEST_P(BluetoothBlueZTestP, PairingRejectedAtPinCode) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
             run_loop.Quit();
           }));
@@ -3485,7 +3485,7 @@ TEST_P(BluetoothBlueZTestP, PairingCancelledAtPinCode) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
             run_loop.Quit();
           }));
@@ -3522,7 +3522,7 @@ TEST_P(BluetoothBlueZTestP, PairingRejectedAtPasskey) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
             run_loop.Quit();
           }));
@@ -3559,7 +3559,7 @@ TEST_P(BluetoothBlueZTestP, PairingCancelledAtPasskey) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
             run_loop.Quit();
           }));
@@ -3597,7 +3597,7 @@ TEST_P(BluetoothBlueZTestP, PairingRejectedAtConfirmation) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
             run_loop.Quit();
           }));
@@ -3635,7 +3635,7 @@ TEST_P(BluetoothBlueZTestP, PairingCancelledAtConfirmation) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
             run_loop.Quit();
           }));
@@ -3668,7 +3668,7 @@ TEST_P(BluetoothBlueZTestP, PairingCancelledInFlight) {
   PerformConnect(
       device, &pairing_delegate,
       base::BindLambdaForTesting(
-          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             callback_called = true;
             EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
             run_loop.Quit();
@@ -4254,7 +4254,7 @@ TEST_P(BluetoothBlueZTestP, GetConnectionInfoForConnectedDevice) {
   PerformConnect(
       device, nullptr,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -5201,7 +5201,7 @@ TEST_F(BluetoothBlueZTest,
   advertisement_monitor->delegate()->OnActivate();
   EXPECT_EQ(1u, delegate.sessions_started().size());
   std::pair<device::BluetoothLowEnergyScanSession*,
-            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+            std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
       session_started_pair = delegate.sessions_started()[0];
 
   // Check that the correct scan session is started.
@@ -5241,7 +5241,7 @@ TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZFailsToStart) {
   EXPECT_EQ(1u, delegate.sessions_started().size());
 
   std::pair<device::BluetoothLowEnergyScanSession*,
-            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+            std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
       session_started_pair = delegate.sessions_started()[0];
 
   // Check that the correct scan session.

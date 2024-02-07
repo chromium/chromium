@@ -244,7 +244,7 @@ class FlossLEScanClientTest : public testing::Test,
   std::unique_ptr<FlossLEScanClient> client_;
 
   // For observer test inspections.
-  absl::optional<std::tuple<device::BluetoothUUID, uint8_t, GattStatus>>
+  std::optional<std::tuple<device::BluetoothUUID, uint8_t, GattStatus>>
       fake_scanner_registered_info_;
   ScanResult fake_scan_result_;
 
@@ -253,11 +253,11 @@ class FlossLEScanClientTest : public testing::Test,
 };
 
 static bool ReadNullOptDBusParam(dbus::MessageReader* reader) {
-  absl::optional<int32_t> param;
+  std::optional<int32_t> param;
   if (!FlossDBusClient::ReadDBusParam(reader, &param)) {
     return false;
   }
-  return param == absl::nullopt;
+  return param == std::nullopt;
 }
 
 TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
@@ -428,8 +428,8 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                            EXPECT_EQ(ret.value(),
                                      FlossDBusClient::BtifStatus::kSuccess);
                          }),
-                     kTestScannerId, absl::nullopt /* ScanSettings */,
-                     absl::nullopt /* ScanFilter*/);
+                     kTestScannerId, std::nullopt /* ScanSettings */,
+                     std::nullopt /* ScanFilter*/);
 
   // Method of 1 parameter with no return.
   EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(

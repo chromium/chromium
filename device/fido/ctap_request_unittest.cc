@@ -96,7 +96,7 @@ TEST(CTAPRequestTest, PublicKeyCredentialDescriptorNoticesExtraKeys) {
     if (extra_key) {
       map.emplace("unexpected", "value");
     }
-    const absl::optional<PublicKeyCredentialDescriptor> descriptor(
+    const std::optional<PublicKeyCredentialDescriptor> descriptor(
         PublicKeyCredentialDescriptor::CreateFromCBORValue(
             cbor::Value(std::move(map))));
     ASSERT_TRUE(descriptor);

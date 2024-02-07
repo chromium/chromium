@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 #include "device/bluetooth/test/bluetooth_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -40,7 +40,7 @@ class BluetoothTestCast : public BluetoothTestBase {
 
   void UpdateAdapter(
       const std::string& address,
-      const absl::optional<std::string>& name,
+      const std::optional<std::string>& name,
       const std::vector<std::string>& service_uuids,
       const std::map<std::string, std::vector<uint8_t>>& service_data,
       const std::map<uint16_t, std::vector<uint8_t>>& manufacturer_data);

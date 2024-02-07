@@ -21,9 +21,9 @@ void FakeFlossBatteryManagerClient::Init(dbus::Bus* bus,
 }
 
 void FakeFlossBatteryManagerClient::GetBatteryInformation(
-    ResponseCallback<absl::optional<BatterySet>> callback,
+    ResponseCallback<std::optional<BatterySet>> callback,
     const FlossDeviceId& device) {
-  std::move(callback).Run(DBusResult<absl::optional<BatterySet>>({}));
+  std::move(callback).Run(DBusResult<std::optional<BatterySet>>({}));
 }
 
 void FakeFlossBatteryManagerClient::AddObserver(

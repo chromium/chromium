@@ -7,13 +7,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -25,11 +26,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestedCredentialData {
   // Parses an |AttestedCredentialData| from a prefix of |*buffer|. Returns
   // nullopt on error, or else the parse return and a (possibly empty) suffix of
   // |buffer| that was not parsed.
-  static absl::optional<
+  static std::optional<
       std::pair<AttestedCredentialData, base::span<const uint8_t>>>
   ConsumeFromCtapResponse(base::span<const uint8_t> buffer);
 
-  static absl::optional<AttestedCredentialData> CreateFromU2fRegisterResponse(
+  static std::optional<AttestedCredentialData> CreateFromU2fRegisterResponse(
       base::span<const uint8_t> u2f_data,
       std::unique_ptr<PublicKey> public_key);
 

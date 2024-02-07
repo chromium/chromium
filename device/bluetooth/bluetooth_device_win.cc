@@ -78,7 +78,7 @@ uint16_t BluetoothDeviceWin::GetAppearance() const {
   return 0;
 }
 
-absl::optional<std::string> BluetoothDeviceWin::GetName() const {
+std::optional<std::string> BluetoothDeviceWin::GetName() const {
   return name_;
 }
 
@@ -106,16 +106,16 @@ BluetoothDevice::UUIDSet BluetoothDeviceWin::GetUUIDs() const {
   return uuids_;
 }
 
-absl::optional<int8_t> BluetoothDeviceWin::GetInquiryRSSI() const {
+std::optional<int8_t> BluetoothDeviceWin::GetInquiryRSSI() const {
   // In windows, we can only get connected devices and connected
   // devices don't have an Inquiry RSSI.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int8_t> BluetoothDeviceWin::GetInquiryTxPower() const {
+std::optional<int8_t> BluetoothDeviceWin::GetInquiryTxPower() const {
   // In windows, we can only get connected devices and connected
   // devices don't have an Inquiry Tx Power.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BluetoothDeviceWin::ExpectingPinCode() const {
@@ -258,7 +258,7 @@ void BluetoothDeviceWin::Update(
 }
 
 void BluetoothDeviceWin::CreateGattConnectionImpl(
-    absl::optional<BluetoothUUID> service_uuid) {
+    std::optional<BluetoothUUID> service_uuid) {
   // Windows will create the Gatt connection as needed.  See:
   // https://docs.microsoft.com/en-us/windows/uwp/devices-sensors/gatt-client#connecting-to-the-device
 }

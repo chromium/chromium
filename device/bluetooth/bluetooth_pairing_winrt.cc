@@ -55,7 +55,7 @@ using ABI::Windows::Foundation::IAsyncOperation;
 using Microsoft::WRL::ComPtr;
 
 void PostTask(BluetoothPairingWinrt::ConnectCallback callback,
-              absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+              std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error_code));
 }
@@ -391,7 +391,7 @@ void BluetoothPairingWinrt::OnPair(
   switch (status) {
     case DevicePairingResultStatus_AlreadyPaired:
     case DevicePairingResultStatus_Paired:
-      std::move(callback_).Run(/*error_code=*/absl::nullopt);
+      std::move(callback_).Run(/*error_code=*/std::nullopt);
       return;
     case DevicePairingResultStatus_PairingCanceled:
       std::move(callback_).Run(

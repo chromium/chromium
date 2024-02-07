@@ -236,7 +236,7 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest, Unregister_Success) {
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Unregister_InvalidAdvertisement) {
   scoped_refptr<BluetoothAdvertisementMac> invalid_advertisement =
-      new BluetoothAdvertisementMac(absl::nullopt, base::DoNothing(),
+      new BluetoothAdvertisementMac(std::nullopt, base::DoNothing(),
                                     base::DoNothing(), &advertisement_manager_);
 
   // Register advertisement.

@@ -166,8 +166,8 @@ void FlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FlossLEScanClient::StartScan(
     ResponseCallback<BtifStatus> callback,
     uint8_t scanner_id,
-    const absl::optional<ScanSettings>& scan_settings,
-    const absl::optional<ScanFilter>& filter) {
+    const std::optional<ScanSettings>& scan_settings,
+    const std::optional<ScanFilter>& filter) {
   if (version_ >= base::Version("0.3")) {
     CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
                        scan_settings, filter);

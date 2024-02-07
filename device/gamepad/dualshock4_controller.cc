@@ -171,7 +171,7 @@ void ReadTouchCoordinates(base::span<const uint8_t> ds4_touch_data_span,
 template <typename Transform>
 void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
                       Transform& id_transform,
-                      absl::optional<uint32_t>& initial_touch_id,
+                      std::optional<uint32_t>& initial_touch_id,
                       Gamepad* pad) {
   pad->touch_events_length = 0;
   GamepadTouch* touches = pad->touch_events;

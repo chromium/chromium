@@ -4,6 +4,7 @@
 #ifndef DEVICE_BLUETOOTH_TEST_FAKE_REMOTE_GATT_DESCRIPTOR_H_
 #define DEVICE_BLUETOOTH_TEST_FAKE_REMOTE_GATT_DESCRIPTOR_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 
@@ -34,7 +34,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   // its success callback with |value|. Otherwise it will call its error
   // callback.
   void SetNextReadResponse(uint16_t gatt_code,
-                           const absl::optional<std::vector<uint8_t>>& value);
+                           const std::optional<std::vector<uint8_t>>& value);
 
   // If |gatt_code| is mojom::kGATTSuccess the next write request will call its
   // success callback. Otherwise it will call its error callback.
@@ -42,7 +42,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
 
   // Returns the last successfully written value to the descriptor. Returns
   // nullopt if no value has been written yet.
-  const absl::optional<std::vector<uint8_t>>& last_written_value() {
+  const std::optional<std::vector<uint8_t>>& last_written_value() {
     return last_written_value_;
   }
 
@@ -76,15 +76,15 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   std::vector<uint8_t> value_;
 
   // Last successfully written value to the descriptor.
-  absl::optional<std::vector<uint8_t>> last_written_value_;
+  std::optional<std::vector<uint8_t>> last_written_value_;
 
   // Used to decide which callback should be called when
   // ReadRemoteDescriptor is called.
-  absl::optional<FakeReadResponse> next_read_response_;
+  std::optional<FakeReadResponse> next_read_response_;
 
   // Used to decide which callback should be called when WriteRemoteDescriptor
   // is called.
-  absl::optional<uint16_t> next_write_response_;
+  std::optional<uint16_t> next_write_response_;
 
   base::WeakPtrFactory<FakeRemoteGattDescriptor> weak_ptr_factory_{this};
 };

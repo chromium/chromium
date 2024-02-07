@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -28,7 +29,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace floss {
 
@@ -494,7 +494,7 @@ const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
 }
 
 template <typename T>
-const DBusTypeInfo& GetDBusTypeInfo(const absl::optional<T>*) {
+const DBusTypeInfo& GetDBusTypeInfo(const std::optional<T>*) {
   static const base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
   static const base::NoDestructor<DBusTypeInfo> info{
@@ -618,7 +618,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Optional container type needs to be explicitly listed here.
   template <typename T>
   static void WriteDBusParam(dbus::MessageWriter* writer,
-                             const absl::optional<T>& data) {
+                             const std::optional<T>& data) {
     dbus::MessageWriter array(nullptr);
     dbus::MessageWriter dict(nullptr);
 
@@ -636,7 +636,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
   template <typename T>
   static void WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                        const absl::optional<T>& data) {
+                                        const std::optional<T>& data) {
     dbus::MessageWriter variant(nullptr);
     writer->OpenVariant("a{sv}", &variant);
     WriteDBusParam(&variant, data);
@@ -730,7 +730,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Optional container type needs to be explicitly implemented here.
   template <typename T>
   static bool ReadDBusParam(dbus::MessageReader* reader,
-                            absl::optional<T>* value) {
+                            std::optional<T>* value) {
     dbus::MessageReader array(nullptr);
     dbus::MessageReader dict(nullptr);
 
@@ -749,7 +749,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
           return false;
         }
 
-        *value = std::move(absl::optional<T>(std::move(inner)));
+        *value = std::move(std::optional<T>(std::move(inner)));
       }
     }
 

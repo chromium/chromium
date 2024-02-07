@@ -241,18 +241,18 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
       BluetoothDevice::ClampPower(rssi),
       // Android uses -1 to indicate no advertising flags.
       // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getAdvertiseFlags()
-      advertisement_flags == -1 ? absl::nullopt
-                                : absl::make_optional(advertisement_flags),
+      advertisement_flags == -1 ? std::nullopt
+                                : std::make_optional(advertisement_flags),
       advertised_bluetooth_uuids,
       // Android uses INT32_MIN to indicate no Advertised Tx Power.
       // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-      tx_power == INT32_MIN ? absl::nullopt
-                            : absl::make_optional(clamped_tx_power),
+      tx_power == INT32_MIN ? std::nullopt
+                            : std::make_optional(clamped_tx_power),
       service_data_map, manufacturer_data_map);
 
   for (auto& observer : observers_) {
-    absl::optional<std::string> device_name_opt = device_android->GetName();
-    absl::optional<std::string> advertisement_name_opt;
+    std::optional<std::string> device_name_opt = device_android->GetName();
+    std::optional<std::string> advertisement_name_opt;
     if (local_name)
       advertisement_name_opt = ConvertJavaStringToUTF8(env, local_name);
 
@@ -261,9 +261,9 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
         BluetoothDevice::ClampPower(rssi),
         // Android uses INT32_MIN to indicate no Advertised Tx Power.
         // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-        tx_power == INT32_MIN ? absl::nullopt
-                              : absl::make_optional(clamped_tx_power),
-        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        tx_power == INT32_MIN ? std::nullopt
+                              : std::make_optional(clamped_tx_power),
+        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         advertised_bluetooth_uuids, service_data_map, manufacturer_data_map);
   }
 

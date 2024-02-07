@@ -117,48 +117,48 @@ void LargeBlobsRequest::SetPinParam(
 }
 
 // static
-absl::optional<LargeBlobsResponse> LargeBlobsResponse::ParseForRead(
+std::optional<LargeBlobsResponse> LargeBlobsResponse::ParseForRead(
     const size_t bytes_to_read,
-    const absl::optional<cbor::Value>& cbor_response) {
+    const std::optional<cbor::Value>& cbor_response) {
   if (!cbor_response || !cbor_response->is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const cbor::Value::MapValue& map = cbor_response->GetMap();
   auto it =
       map.find(cbor::Value(static_cast<int>(LargeBlobsResponseKey::kConfig)));
   if (it == map.end() || !it->second.is_bytestring()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::vector<uint8_t>& config = it->second.GetBytestring();
   if (config.size() > bytes_to_read) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return LargeBlobsResponse(std::move(config));
 }
 
 // static
-absl::optional<LargeBlobsResponse> LargeBlobsResponse::ParseForWrite(
-    const absl::optional<cbor::Value>& cbor_response) {
+std::optional<LargeBlobsResponse> LargeBlobsResponse::ParseForWrite(
+    const std::optional<cbor::Value>& cbor_response) {
   // For writing, we expect an empty response.
   if (cbor_response) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return LargeBlobsResponse();
 }
 
 LargeBlobsResponse::LargeBlobsResponse(
-    absl::optional<std::vector<uint8_t>> config)
+    std::optional<std::vector<uint8_t>> config)
     : config_(std::move(config)) {}
 LargeBlobsResponse::LargeBlobsResponse(LargeBlobsResponse&& other) = default;
 LargeBlobsResponse& LargeBlobsResponse::operator=(LargeBlobsResponse&& other) =
     default;
 LargeBlobsResponse::~LargeBlobsResponse() = default;
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const LargeBlobsRequest& request) {
   cbor::Value::MapValue map;
   if (request.get_) {
@@ -185,26 +185,26 @@ AsCTAPRequestValuePair(const LargeBlobsRequest& request) {
 }
 
 // static.
-absl::optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
+std::optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
   if (!value.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::MapValue& map = value.GetMap();
   auto ciphertext_it =
       map.find(cbor::Value(static_cast<int>(LargeBlobDataKeys::kCiphertext)));
   if (ciphertext_it == map.end() || !ciphertext_it->second.is_bytestring()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto nonce_it =
       map.find(cbor::Value(static_cast<int>(LargeBlobDataKeys::kNonce)));
   if (nonce_it == map.end() || !nonce_it->second.is_bytestring() ||
       nonce_it->second.GetBytestring().size() != kLargeBlobArrayNonceLength) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto orig_size_it =
       map.find(cbor::Value(static_cast<int>(LargeBlobDataKeys::kOrigSize)));
   if (orig_size_it == map.end() || !orig_size_it->second.is_unsigned()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return LargeBlobData(ciphertext_it->second.GetBytestring(),
                        base::make_span<kLargeBlobArrayNonceLength>(
@@ -236,13 +236,13 @@ bool LargeBlobData::operator==(const LargeBlobData& other) const {
          orig_size_ == other.orig_size_;
 }
 
-absl::optional<LargeBlob> LargeBlobData::Decrypt(LargeBlobKey key) const {
+std::optional<LargeBlob> LargeBlobData::Decrypt(LargeBlobKey key) const {
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(key);
-  absl::optional<std::vector<uint8_t>> compressed_data = aead.Open(
+  std::optional<std::vector<uint8_t>> compressed_data = aead.Open(
       ciphertext_, nonce_, GenerateLargeBlobAdditionalData(orig_size_));
   if (!compressed_data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return LargeBlob(*compressed_data, orig_size_);
 }
@@ -263,16 +263,16 @@ void LargeBlobArrayReader::Append(const std::vector<uint8_t>& fragment) {
   bytes_.insert(bytes_.end(), fragment.begin(), fragment.end());
 }
 
-absl::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
+std::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
   if (!VerifyLargeBlobArrayIntegrity(bytes_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::span<const uint8_t> cbor_bytes =
       base::span(bytes_).first(bytes_.size() - kTruncatedHashBytes);
-  absl::optional<cbor::Value> cbor = cbor::Reader::Read(cbor_bytes);
+  std::optional<cbor::Value> cbor = cbor::Reader::Read(cbor_bytes);
   if (!cbor || !cbor->is_array()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   cbor::Value::ArrayValue large_blob_array;

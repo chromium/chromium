@@ -75,7 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
 
   // Get the current cached battery info from BatteryManager.
   virtual void GetBatteryInformation(
-      ResponseCallback<absl::optional<BatterySet>> callback,
+      ResponseCallback<std::optional<BatterySet>> callback,
       const FlossDeviceId& device);
 
   // Initialize the BatteryManager client for the given adapter.
@@ -133,7 +133,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
       exported_callback_manager_{battery_manager::kCallbackInterface};
 
   // Callback ID used for callbacks registered to this client.
-  absl::optional<uint32_t> battery_manager_callback_id_;
+  std::optional<uint32_t> battery_manager_callback_id_;
 
   // Signal when the client is ready to be used.
   base::OnceClosure on_ready_;

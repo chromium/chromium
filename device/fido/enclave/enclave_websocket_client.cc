@@ -132,7 +132,7 @@ void EnclaveWebSocketClient::Connect() {
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*auth_handler=*/mojo::NullRemote(),
       /*header_client=*/mojo::NullRemote(),
-      /*throttling_profile_id=*/absl::nullopt);
+      /*throttling_profile_id=*/std::nullopt);
 }
 
 void EnclaveWebSocketClient::InternalWrite(base::span<const uint8_t> data) {
@@ -199,7 +199,7 @@ void EnclaveWebSocketClient::OnConnectionEstablished(
 
   if (pending_write_data_) {
     InternalWrite(*pending_write_data_);
-    pending_write_data_ = absl::nullopt;
+    pending_write_data_ = std::nullopt;
   }
 }
 
@@ -299,7 +299,7 @@ void EnclaveWebSocketClient::ClosePipe(SocketStatus status) {
   }
   state_ = State::kDisconnected;
   client_receiver_.reset();
-  pending_write_data_ = absl::nullopt;
+  pending_write_data_ = std::nullopt;
   pending_read_data_index_ = 0;
   pending_read_finished_ = false;
   pending_read_data_.clear();

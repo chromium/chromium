@@ -5,10 +5,11 @@
 #ifndef DEVICE_FIDO_AUTHENTICATOR_SUPPORTED_OPTIONS_H_
 #define DEVICE_FIDO_AUTHENTICATOR_SUPPORTED_OPTIONS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -103,7 +104,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   bool enterprise_attestation = false;
   // Whether the authenticator supports large blobs, and, if so, the method of
   // that support.
-  absl::optional<LargeBlobSupportType> large_blob_type;
+  std::optional<LargeBlobSupportType> large_blob_type;
   // Indicates whether user verification must be used for make credential, final
   // (i.e. not pre-flight) get assertion requests, and writing large blobs. An
   // |always_uv| value of true will make uv=0 get assertion requests return
@@ -123,7 +124,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   bool supports_prf = false;
   // max_cred_blob_length is the longest credBlob value that this authenticator
   // can store. A value of `nullopt` indicates no support for credBlob.
-  absl::optional<uint16_t> max_cred_blob_length;
+  std::optional<uint16_t> max_cred_blob_length;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

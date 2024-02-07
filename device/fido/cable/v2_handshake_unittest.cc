@@ -68,7 +68,7 @@ TEST(CableV2Encoding, EIDEncrypt) {
   crypto::RandBytes(key);
   std::array<uint8_t, kAdvertSize> advert = eid::Encrypt(eid, key);
 
-  const absl::optional<CableEidArray> eid2 = eid::Decrypt(advert, key);
+  const std::optional<CableEidArray> eid2 = eid::Decrypt(advert, key);
   ASSERT_TRUE(eid2.has_value());
   EXPECT_TRUE(memcmp(eid.data(), eid2->data(), eid.size()) == 0);
 
@@ -86,7 +86,7 @@ TEST(CableV2Encoding, QRs) {
   std::array<uint8_t, kQRKeySize> qr_key;
   crypto::RandBytes(qr_key);
   std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
-  const absl::optional<qr::Components> decoded = qr::Parse(url);
+  const std::optional<qr::Components> decoded = qr::Parse(url);
   ASSERT_TRUE(decoded.has_value()) << url;
   static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
   EXPECT_EQ(memcmp(decoded->secret.data(),
@@ -119,7 +119,7 @@ TEST(CableV2Encoding, KnownQRs) {
     std::function<void(cbor::Value::MapValue* m)> build;
     bool is_valid;
     int64_t num_known_domains;
-    absl::optional<bool> supports_linking;
+    std::optional<bool> supports_linking;
     FidoRequestType request_type;
   } kTests[] = {
       {
@@ -130,7 +130,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 0,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kGetAssertion,
       },
       {
@@ -161,7 +161,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 4567,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kGetAssertion,
       },
       {
@@ -215,7 +215,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 0,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kGetAssertion,
       },
       {
@@ -227,7 +227,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 0,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kMakeCredential,
       },
       {
@@ -239,7 +239,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 0,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kGetAssertion,
       },
       {
@@ -260,7 +260,7 @@ TEST(CableV2Encoding, KnownQRs) {
           },
           /* is_valid= */ true,
           /* num_known_domains= */ 0,
-          /* supports_linking= */ absl::nullopt,
+          /* supports_linking= */ std::nullopt,
           /* request_type= */ FidoRequestType::kGetAssertion,
       },
   };
@@ -272,10 +272,10 @@ TEST(CableV2Encoding, KnownQRs) {
 
     cbor::Value::MapValue map;
     test.build(&map);
-    const absl::optional<std::vector<uint8_t>> qr_data =
+    const std::optional<std::vector<uint8_t>> qr_data =
         cbor::Writer::Write(cbor::Value(std::move(map)));
     const std::string qr = std::string("FIDO:/") + qr::BytesToDigits(*qr_data);
-    const absl::optional<qr::Components> decoded = qr::Parse(qr);
+    const std::optional<qr::Components> decoded = qr::Parse(qr);
 
     EXPECT_EQ(decoded.has_value(), test.is_valid);
     if (!decoded.has_value() || !test.is_valid) {
@@ -300,12 +300,12 @@ TEST(CableV2Encoding, RequestTypeToString) {
 
 TEST(CableV2Encoding, PaddedCBOR) {
   cbor::Value::MapValue map1;
-  absl::optional<std::vector<uint8_t>> encoded =
+  std::optional<std::vector<uint8_t>> encoded =
       EncodePaddedCBORMap(std::move(map1));
   ASSERT_TRUE(encoded);
   EXPECT_EQ(kPostHandshakeMsgPaddingGranularity, encoded->size());
 
-  absl::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
+  std::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(0u, decoded->GetMap().size());
 
@@ -324,19 +324,19 @@ TEST(CableV2Encoding, PaddedCBOR) {
 // EncodePaddedCBORMapOld is the old padding function that used to be used.
 // We should still be compatible with it until M99 has been out in the world
 // for long enough.
-absl::optional<std::vector<uint8_t>> EncodePaddedCBORMapOld(
+std::optional<std::vector<uint8_t>> EncodePaddedCBORMapOld(
     cbor::Value::MapValue map) {
-  absl::optional<std::vector<uint8_t>> cbor_bytes =
+  std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
   padded_size_checked += 1;  // padding-length byte
   padded_size_checked = (padded_size_checked + 255) & ~255;
   if (!padded_size_checked.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
@@ -358,11 +358,11 @@ TEST(CableV2Encoding, OldPaddedCBOR) {
     const std::vector<uint8_t> dummy_array(i);
     cbor::Value::MapValue map;
     map.emplace(1, dummy_array);
-    absl::optional<std::vector<uint8_t>> encoded =
+    std::optional<std::vector<uint8_t>> encoded =
         EncodePaddedCBORMapOld(std::move(map));
     ASSERT_TRUE(encoded);
 
-    absl::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
+    std::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
     ASSERT_TRUE(decoded);
   }
 }
@@ -385,7 +385,7 @@ TEST(CableV2Encoding, Digits) {
   for (size_t i = 0; i < sizeof(test_data); i++) {
     std::string digits =
         qr::BytesToDigits(base::span<const uint8_t>(test_data, i));
-    absl::optional<std::vector<uint8_t>> test_data_again =
+    std::optional<std::vector<uint8_t>> test_data_again =
         qr::DigitsToBytes(digits);
     ASSERT_TRUE(test_data_again.has_value());
     ASSERT_EQ(test_data_again.value(),
@@ -405,7 +405,7 @@ TEST(CableV2Encoding, Digits) {
   char digits[20];
   memset(digits, '0', sizeof(digits));
   for (size_t i = 0; i < sizeof(digits); i++) {
-    absl::optional<std::vector<uint8_t>> bytes =
+    std::optional<std::vector<uint8_t>> bytes =
         qr::DigitsToBytes(std::string_view(digits, i));
     if (!bytes.has_value()) {
       continue;
@@ -594,19 +594,19 @@ TEST_F(CableV2HandshakeTest, NKHandshake) {
   for (const bool use_correct_key : {false, true}) {
     HandshakeInitiator initiator(use_correct_key ? psk_ : wrong_psk,
                                  identity_public_,
-                                 /*identity_seed=*/absl::nullopt);
+                                 /*identity_seed=*/std::nullopt);
     std::vector<uint8_t> message = initiator.BuildInitialMessage();
     std::vector<uint8_t> response;
     EC_KEY_up_ref(identity_key_.get());
-    HandshakeResult responder_result(RespondToHandshake(
-        psk_, bssl::UniquePtr<EC_KEY>(identity_key_.get()),
-        /*peer_identity=*/absl::nullopt, message, &response));
+    HandshakeResult responder_result(
+        RespondToHandshake(psk_, bssl::UniquePtr<EC_KEY>(identity_key_.get()),
+                           /*peer_identity=*/std::nullopt, message, &response));
     ASSERT_EQ(responder_result.has_value(), use_correct_key);
     if (!use_correct_key) {
       continue;
     }
 
-    absl::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
+    std::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
         initiator_result(initiator.ProcessResponse(response));
     ASSERT_TRUE(initiator_result.has_value());
     EXPECT_EQ(initiator_result->second, responder_result->second);
@@ -626,7 +626,7 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
     base::span<const uint8_t, kQRSeedSize> seed =
         use_correct_key ? identity_seed_ : wrong_seed;
     HandshakeInitiator initiator(psk_,
-                                 /*peer_identity=*/absl::nullopt, seed);
+                                 /*peer_identity=*/std::nullopt, seed);
     std::vector<uint8_t> message = initiator.BuildInitialMessage();
     std::vector<uint8_t> response;
     HandshakeResult responder_result(RespondToHandshake(
@@ -638,7 +638,7 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
       continue;
     }
 
-    absl::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
+    std::optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
         initiator_result(initiator.ProcessResponse(response));
     ASSERT_TRUE(initiator_result.has_value());
     EXPECT_TRUE(responder_result->first->IsCounterpartyOfForTesting(

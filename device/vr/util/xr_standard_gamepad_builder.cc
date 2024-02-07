@@ -28,9 +28,9 @@ void XRStandardGamepadBuilder::AddOptionalButtonData(
   AddOptionalButtonData(data);
 }
 
-absl::optional<Gamepad> XRStandardGamepadBuilder::GetGamepad() const {
+std::optional<Gamepad> XRStandardGamepadBuilder::GetGamepad() const {
   if (!primary_button_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GamepadBuilder builder("", GamepadMapping::kXrStandard, handedness_);

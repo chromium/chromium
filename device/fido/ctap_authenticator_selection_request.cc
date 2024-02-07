@@ -6,10 +6,10 @@
 
 namespace device {
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapAuthenticatorSelectionRequest&) {
   return std::make_pair(CtapRequestCommand::kAuthenticatorSelection,
-                        absl::nullopt);
+                        std::nullopt);
 }
 
 }  // namespace device

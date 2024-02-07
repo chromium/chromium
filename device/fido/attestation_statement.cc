@@ -34,9 +34,9 @@ bool NoneAttestationStatement::IsSelfAttestation() const {
   return false;
 }
 
-absl::optional<base::span<const uint8_t>>
+std::optional<base::span<const uint8_t>>
 NoneAttestationStatement::GetLeafCertificate() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 cbor::Value NoneAttestationStatement::AsCBOR() const {

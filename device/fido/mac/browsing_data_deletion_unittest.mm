@@ -132,7 +132,7 @@ class BrowsingDataDeletionTest : public testing::Test {
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
     TestCallbackReceiver<CtapDeviceResponseCode,
-                         absl::optional<AuthenticatorMakeCredentialResponse>>
+                         std::optional<AuthenticatorMakeCredentialResponse>>
         callback_receiver;
     authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
                                   callback_receiver.callback());

@@ -63,17 +63,17 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
 // given CTAP response message in |cbor|. It wraps
 // ReadCTAPMakeCredentialResponse() and in addition fills in |is_resident_key|,
 // which requires looking at the request and device.
-absl::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
+std::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     FidoDevice* device,
     bool resident_key_required,
-    const absl::optional<cbor::Value>& cbor) {
+    const std::optional<cbor::Value>& cbor) {
   DCHECK_EQ(device->supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(device->device_info());
 
-  absl::optional<AuthenticatorMakeCredentialResponse> response =
+  std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(device->DeviceTransport(), cbor);
   if (!response) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Fill in whether the created credential is client-side discoverable
@@ -258,7 +258,7 @@ void MakeCredentialTask::MakeCredential() {
 
 void MakeCredentialTask::HandleResponseToSilentSignRequest(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (canceled_) {
     return;
   }
@@ -328,15 +328,15 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
 
 void MakeCredentialTask::HandleResponseToDummyTouch(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorMakeCredentialResponse> response_data) {
+    std::optional<AuthenticatorMakeCredentialResponse> response_data) {
   std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                           absl::nullopt);
+                           std::nullopt);
 }
 
 void MakeCredentialTask::U2fRegister() {
   if (!IsConvertibleToU2fRegisterCommand(request_)) {
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                             absl::nullopt);
+                             std::nullopt);
     return;
   }
 
@@ -350,7 +350,7 @@ void MakeCredentialTask::U2fRegister() {
 
 void MakeCredentialTask::MaybeRevertU2fFallback(
     CtapDeviceResponseCode status,
-    absl::optional<AuthenticatorMakeCredentialResponse> response) {
+    std::optional<AuthenticatorMakeCredentialResponse> response) {
   DCHECK_EQ(ProtocolVersion::kU2f, device()->supported_protocol());
   if (device()->device_info()) {
     // This was actually a CTAP2 device, but the protocol version was set to U2F

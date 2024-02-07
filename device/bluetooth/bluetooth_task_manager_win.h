@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/win/scoped_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -82,7 +82,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
     // Properties common to Bluetooth Classic and LE devices.
     std::string address;  // This uniquely identifies the device.
-    absl::optional<std::string> name;  // Friendly name
+    std::optional<std::string> name;  // Friendly name
     bool visible;
     bool connected;
     bool authenticated;

@@ -6,12 +6,12 @@
 #define DEVICE_FIDO_BIO_ENROLLMENT_H_
 
 #include <map>
+#include <optional>
 
 #include "base/component_export.h"
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -97,11 +97,11 @@ enum class BioEnrollmentSampleStatus : uint8_t {
 };
 
 template <typename T>
-static absl::optional<T> ToBioEnrollmentEnum(uint8_t v) {
+static std::optional<T> ToBioEnrollmentEnum(uint8_t v) {
   // Check if enum-class is in range...
   if (v < static_cast<int>(T::kMin) || v > static_cast<int>(T::kMax)) {
     // ...to avoid possible undefined behavior (casting from int to enum).
-    return absl::nullopt;
+    return std::nullopt;
   }
   return static_cast<T>(v);
 }
@@ -133,12 +133,12 @@ struct BioEnrollmentRequest {
                                         std::vector<uint8_t> id);
 
   Version version;
-  absl::optional<BioEnrollmentModality> modality;
-  absl::optional<BioEnrollmentSubCommand> subcommand;
-  absl::optional<cbor::Value::MapValue> params;
-  absl::optional<PINUVAuthProtocol> pin_protocol;
-  absl::optional<std::vector<uint8_t>> pin_auth;
-  absl::optional<bool> get_modality;
+  std::optional<BioEnrollmentModality> modality;
+  std::optional<BioEnrollmentSubCommand> subcommand;
+  std::optional<cbor::Value::MapValue> params;
+  std::optional<PINUVAuthProtocol> pin_protocol;
+  std::optional<std::vector<uint8_t>> pin_auth;
+  std::optional<bool> get_modality;
 
   BioEnrollmentRequest(BioEnrollmentRequest&&);
   BioEnrollmentRequest& operator=(BioEnrollmentRequest&&);
@@ -149,8 +149,8 @@ struct BioEnrollmentRequest {
 };
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {
-  static absl::optional<BioEnrollmentResponse> Parse(
-      const absl::optional<cbor::Value>& cbor_response);
+  static std::optional<BioEnrollmentResponse> Parse(
+      const std::optional<cbor::Value>& cbor_response);
 
   BioEnrollmentResponse();
   BioEnrollmentResponse(BioEnrollmentResponse&&);
@@ -159,18 +159,18 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {
 
   bool operator==(const BioEnrollmentResponse&) const;
 
-  absl::optional<BioEnrollmentModality> modality;
-  absl::optional<BioEnrollmentFingerprintKind> fingerprint_kind;
-  absl::optional<uint8_t> max_samples_for_enroll;
-  absl::optional<std::vector<uint8_t>> template_id;
-  absl::optional<BioEnrollmentSampleStatus> last_status;
-  absl::optional<uint8_t> remaining_samples;
-  absl::optional<std::map<std::vector<uint8_t>, std::string>> template_infos;
-  absl::optional<uint32_t> max_template_friendly_name;
+  std::optional<BioEnrollmentModality> modality;
+  std::optional<BioEnrollmentFingerprintKind> fingerprint_kind;
+  std::optional<uint8_t> max_samples_for_enroll;
+  std::optional<std::vector<uint8_t>> template_id;
+  std::optional<BioEnrollmentSampleStatus> last_status;
+  std::optional<uint8_t> remaining_samples;
+  std::optional<std::map<std::vector<uint8_t>, std::string>> template_infos;
+  std::optional<uint32_t> max_template_friendly_name;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const BioEnrollmentRequest& request);
 
 }  // namespace device

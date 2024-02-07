@@ -29,11 +29,11 @@ TEST(MakeAuthenticatorDataTest, TestTimestampSignatureCounter) {
       []() { return g_fake_now; }, nullptr, nullptr);
 
   EXPECT_THAT(MakeAuthenticatorData(CredentialMetadata::SignCounter::kTimestamp,
-                                    kRpId, absl::nullopt, /*has_uv=*/true)
+                                    kRpId, std::nullopt, /*has_uv=*/true)
                   .counter(),
               ElementsAre(0xff, 0xce, 0xdd, 0x80));
   EXPECT_THAT(MakeAuthenticatorData(CredentialMetadata::SignCounter::kZero,
-                                    kRpId, absl::nullopt, /*has_uv=*/true)
+                                    kRpId, std::nullopt, /*has_uv=*/true)
                   .counter(),
               ElementsAre(0x00, 0x00, 0x00, 0x00));
 }
@@ -41,7 +41,7 @@ TEST(MakeAuthenticatorDataTest, TestTimestampSignatureCounter) {
 TEST(MakeAuthenticatorDataTest, UvBit) {
   for (const bool has_uv : {false, true}) {
     AuthenticatorData data = MakeAuthenticatorData(
-        CredentialMetadata::SignCounter::kZero, kRpId, absl::nullopt, has_uv);
+        CredentialMetadata::SignCounter::kZero, kRpId, std::nullopt, has_uv);
     EXPECT_TRUE(data.obtained_user_presence());
     EXPECT_EQ(data.obtained_user_verification(), has_uv);
   }

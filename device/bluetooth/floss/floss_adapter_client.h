@@ -499,10 +499,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   int pending_register_calls_ = 0;
 
   // Callback ID used for callbacks registered to this client.
-  absl::optional<uint32_t> callback_id_;
+  std::optional<uint32_t> callback_id_;
 
   // Callback ID used for connection callbacks registered to this client.
-  absl::optional<uint32_t> connection_callback_id_;
+  std::optional<uint32_t> connection_callback_id_;
 
   base::WeakPtrFactory<FlossAdapterClient> weak_ptr_factory_{this};
 };

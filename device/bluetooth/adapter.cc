@@ -242,7 +242,7 @@ void Adapter::ConnectToServiceInsecurely(
   // to previously. Use the ConnectDevice() API, if available, to connect to it.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_->ConnectDevice(
-      address, /*address_type=*/absl::nullopt,
+      address, /*address_type=*/std::nullopt,
       base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
                      weak_ptr_factory_.GetWeakPtr(), request_id),
       base::BindOnce(&Adapter::OnConnectToServiceError,
@@ -396,7 +396,7 @@ void Adapter::ProcessPendingInsecureServiceConnectionRequest(
 void Adapter::OnGattConnect(
     ConnectToDeviceCallback callback,
     std::unique_ptr<device::BluetoothGattConnection> connection,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     std::move(callback).Run(
         mojo::ConvertTo<mojom::ConnectResult>(error_code.value()),
@@ -510,7 +510,7 @@ void Adapter::OnConnectToServiceError(int request_id,
   ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  absl::optional<ConnectToServiceInsecurelyResult> result =
+  std::optional<ConnectToServiceInsecurelyResult> result =
       ExtractResultFromErrorString(message);
   if (result) {
     RecordConnectToServiceInsecurelyResult(*result);

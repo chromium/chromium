@@ -12,24 +12,24 @@
 namespace device {
 
 // static
-absl::optional<PublicKeyCredentialRpEntity>
+std::optional<PublicKeyCredentialRpEntity>
 PublicKeyCredentialRpEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::MapValue& rp_map = cbor.GetMap();
   for (const auto& element : rp_map) {
     if (!element.first.is_string() || !element.second.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     const std::string& key = element.first.GetString();
     if (key != kEntityIdMapKey && key != kEntityNameMapKey) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   const auto id_it = rp_map.find(cbor::Value(kEntityIdMapKey));
   if (id_it == rp_map.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   PublicKeyCredentialRpEntity rp(id_it->second.GetString());
   const auto name_it = rp_map.find(cbor::Value(kEntityNameMapKey));
@@ -46,7 +46,7 @@ PublicKeyCredentialRpEntity::PublicKeyCredentialRpEntity(std::string id_)
 
 PublicKeyCredentialRpEntity::PublicKeyCredentialRpEntity(
     std::string id_,
-    absl::optional<std::string> name_)
+    std::optional<std::string> name_)
     : id(std::move(id_)), name(std::move(name_)) {}
 
 PublicKeyCredentialRpEntity::PublicKeyCredentialRpEntity(

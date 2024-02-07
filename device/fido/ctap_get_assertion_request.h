@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -44,10 +44,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
 
   // The PUAT used for the request. The caller is expected to set this if needed
   // with the correct permissions. Obtain from |FidoAuthenticator::GetPINToken|.
-  absl::optional<pin::TokenResponse> pin_uv_auth_token;
+  std::optional<pin::TokenResponse> pin_uv_auth_token;
 
   // The ephemeral key use to encrypt PIN material.
-  absl::optional<pin::KeyAgreementResponse> pin_key_agreement;
+  std::optional<pin::KeyAgreementResponse> pin_key_agreement;
 
   // prf_inputs may contain a default PRFInput without a |credential_id|. If so,
   // it will be the first element and all others will have |credential_id|s.
@@ -58,7 +58,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
   bool large_blob_read = false;
 
   // If set, attempt to write a large blob.
-  absl::optional<std::vector<uint8_t>> large_blob_write;
+  std::optional<std::vector<uint8_t>> large_blob_write;
 
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Chrome Incognito mode).
@@ -84,7 +84,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
     HMACSecret(base::span<const uint8_t, kP256X962Length> public_key_x962,
                base::span<const uint8_t> encrypted_salts,
                base::span<const uint8_t> salts_auth,
-               absl::optional<PINUVAuthProtocol> pin_protocol);
+               std::optional<PINUVAuthProtocol> pin_protocol);
     HMACSecret(const HMACSecret&);
     ~HMACSecret();
     HMACSecret& operator=(const HMACSecret&);
@@ -94,18 +94,18 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
     std::vector<uint8_t> salts_auth;
     // pin_protocol is ignored during serialisation and the request's PIN
     // protocol will be used instead.
-    absl::optional<PINUVAuthProtocol> pin_protocol;
+    std::optional<PINUVAuthProtocol> pin_protocol;
   };
 
   // Decodes a CTAP2 authenticatorGetAssertion request message. The request's
   // |client_data_json| will be empty and |client_data_hash| will be set.
   //
   // A |uv| bit of 0 is mapped to UserVerificationRequirement::kDiscouraged.
-  static absl::optional<CtapGetAssertionRequest> Parse(
+  static std::optional<CtapGetAssertionRequest> Parse(
       const cbor::Value::MapValue& request_map) {
     return Parse(request_map, ParseOpts());
   }
-  static absl::optional<CtapGetAssertionRequest> Parse(
+  static std::optional<CtapGetAssertionRequest> Parse(
       const cbor::Value::MapValue& request_map,
       const ParseOpts& opts);
 
@@ -124,13 +124,13 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   bool user_presence_required = true;
 
   std::vector<PublicKeyCredentialDescriptor> allow_list;
-  absl::optional<std::vector<uint8_t>> pin_auth;
-  absl::optional<PINUVAuthProtocol> pin_protocol;
-  absl::optional<std::vector<CableDiscoveryData>> cable_extension;
-  absl::optional<std::string> app_id;
-  absl::optional<std::array<uint8_t, crypto::kSHA256Length>>
+  std::optional<std::vector<uint8_t>> pin_auth;
+  std::optional<PINUVAuthProtocol> pin_protocol;
+  std::optional<std::vector<CableDiscoveryData>> cable_extension;
+  std::optional<std::string> app_id;
+  std::optional<std::array<uint8_t, crypto::kSHA256Length>>
       alternative_application_parameter;
-  absl::optional<HMACSecret> hmac_secret;
+  std::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
   bool get_cred_blob = false;
 
@@ -148,7 +148,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   // using the largeBlob extension that includes largeBlob data directly
   // in getAssertion requests.
   bool large_blob_extension_read = false;
-  absl::optional<LargeBlob> large_blob_extension_write;
+  std::optional<LargeBlob> large_blob_extension_write;
 };
 
 struct CtapGetNextAssertionRequest {};
@@ -157,11 +157,11 @@ struct CtapGetNextAssertionRequest {};
 // integer keys and CBOR encoded values as defined by the CTAP spec.
 // https://drafts.fidoalliance.org/fido-2/latest/fido-client-to-authenticator-protocol-v2.0-wd-20180305.html#authenticatorGetAssertion
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest&);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetNextAssertionRequest&);
 
 }  // namespace device

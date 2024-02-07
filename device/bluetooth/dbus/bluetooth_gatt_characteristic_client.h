@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -81,7 +81,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
       base::OnceCallback<void(const std::string& error_name,
                               const std::string& error_message)>;
   using ValueCallback = base::OnceCallback<void(
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value)>;
 
   BluetoothGattCharacteristicClient(const BluetoothGattCharacteristicClient&) =

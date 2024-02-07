@@ -442,22 +442,22 @@ void BluetoothLowEnergyAdapterApple::LowEnergyDeviceUpdated(
   NSString* local_name = advertisement_data[CBAdvertisementDataLocalNameKey];
 
   for (auto& observer : observers_) {
-    absl::optional<std::string> device_name_opt = device_mac->GetName();
-    absl::optional<std::string> local_name_opt =
+    std::optional<std::string> device_name_opt = device_mac->GetName();
+    std::optional<std::string> local_name_opt =
         base::SysNSStringToUTF8(local_name);
 
     observer.DeviceAdvertisementReceived(
         device_mac->GetAddress(), device_name_opt,
-        local_name == nil ? absl::nullopt : local_name_opt, rssi,
-        tx_power == nil ? absl::nullopt : absl::make_optional(clamped_tx_power),
-        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        local_name == nil ? std::nullopt : local_name_opt, rssi,
+        tx_power == nil ? std::nullopt : std::make_optional(clamped_tx_power),
+        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         advertised_uuids, service_data_map, manufacturer_data_map);
   }
 
   device_mac->UpdateAdvertisementData(
-      BluetoothDevice::ClampPower(rssi), absl::nullopt /* flags */,
+      BluetoothDevice::ClampPower(rssi), std::nullopt /* flags */,
       std::move(advertised_uuids),
-      tx_power == nil ? absl::nullopt : absl::make_optional(clamped_tx_power),
+      tx_power == nil ? std::nullopt : std::make_optional(clamped_tx_power),
       std::move(service_data_map), std::move(manufacturer_data_map));
 
   if (is_new_device) {

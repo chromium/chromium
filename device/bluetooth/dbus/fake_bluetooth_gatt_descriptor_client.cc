@@ -122,7 +122,7 @@ void FakeBluetoothGattDescriptorClient::ReadValue(
     }
   }
 
-  std::move(callback).Run(/*error_code=*/absl::nullopt,
+  std::move(callback).Run(/*error_code=*/std::nullopt,
                           iter->second->properties->value.value());
 }
 

@@ -24,7 +24,7 @@ FakeRemoteGattDescriptor::~FakeRemoteGattDescriptor() = default;
 
 void FakeRemoteGattDescriptor::SetNextReadResponse(
     uint16_t gatt_code,
-    const absl::optional<std::vector<uint8_t>>& value) {
+    const std::optional<std::vector<uint8_t>>& value) {
   DCHECK(!next_read_response_);
   next_read_response_.emplace(gatt_code, value);
 }
@@ -83,14 +83,14 @@ void FakeRemoteGattDescriptor::WriteRemoteDescriptor(
 void FakeRemoteGattDescriptor::DispatchReadResponse(ValueCallback callback) {
   DCHECK(next_read_response_);
   uint16_t gatt_code = next_read_response_->gatt_code();
-  absl::optional<std::vector<uint8_t>> value = next_read_response_->value();
+  std::optional<std::vector<uint8_t>> value = next_read_response_->value();
   next_read_response_.reset();
 
   switch (gatt_code) {
     case mojom::kGATTSuccess:
       DCHECK(value);
       value_ = std::move(value.value());
-      std::move(callback).Run(/*error_code=*/absl::nullopt, value_);
+      std::move(callback).Run(/*error_code=*/std::nullopt, value_);
       break;
     case mojom::kGATTInvalidHandle:
       DCHECK(!value);

@@ -130,7 +130,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   void ConnectDevice(
       const std::string& address,
-      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      const std::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) override;
 
@@ -312,7 +312,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // floss::FlossAdminClientObserver override.
   void DevicePolicyEffectChanged(
       const FlossDeviceId& device_id,
-      const absl::optional<PolicyEffect>& effect) override;
+      const std::optional<PolicyEffect>& effect) override;
   void ServiceAllowlistChanged(
       const std::vector<device::BluetoothUUID>& allowlist) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)

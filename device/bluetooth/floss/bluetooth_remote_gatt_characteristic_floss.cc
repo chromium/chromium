@@ -192,7 +192,7 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicRead(
     cached_data_ = data;
 
     std::move(pending_read_callback_)
-        .Run(/*error_code=*/absl::nullopt, cached_data_);
+        .Run(/*error_code=*/std::nullopt, cached_data_);
   } else {
     std::move(pending_read_callback_)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status), {});

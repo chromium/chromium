@@ -56,7 +56,7 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance) {
 }
 
 void OpenXrPlatformHelper::CreateInstanceWithCreateInfo(
-    absl::optional<OpenXrCreateInfo> create_info,
+    std::optional<OpenXrCreateInfo> create_info,
     CreateInstanceCallback instance_ready_callback,
     PlatormInitiatedShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;

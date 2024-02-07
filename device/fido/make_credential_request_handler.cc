@@ -60,7 +60,7 @@ const std::set<pin::Permissions> GetMakeCredentialRequestPermissions(
   return permissions;
 }
 
-absl::optional<MakeCredentialStatus> ConvertDeviceResponseCode(
+std::optional<MakeCredentialStatus> ConvertDeviceResponseCode(
     CtapDeviceResponseCode device_response_code) {
   switch (device_response_code) {
     case CtapDeviceResponseCode::kSuccess:
@@ -88,7 +88,7 @@ absl::optional<MakeCredentialStatus> ConvertDeviceResponseCode(
     // For all other errors, the authenticator will be dropped, and other
     // authenticators may continue.
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -173,7 +173,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kAuthenticatorMissingUserVerification;
   }
 
-  absl::optional<base::span<const int32_t>> supported_algorithms(
+  std::optional<base::span<const int32_t>> supported_algorithms(
       authenticator->GetAlgorithms());
   if (supported_algorithms) {
     // Substitution of defaults should have happened by this point.
@@ -230,7 +230,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
 }
 
 void ReportMakeCredentialResponseTransport(
-    absl::optional<FidoTransportProtocol> transport) {
+    std::optional<FidoTransportProtocol> transport) {
   if (transport) {
     base::UmaHistogramEnumeration(
         "WebAuthentication.MakeCredentialResponseTransport", *transport);
@@ -334,7 +334,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  const absl::optional<cbor::Value>& extensions =
+  const std::optional<cbor::Value>& extensions =
       response.attestation_object.authenticator_data().extensions();
   if (extensions && !ValidateResponseExtensions(request, options, authenticator,
                                                 response, *extensions)) {
@@ -509,7 +509,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
   } else {
     DispatchRequestAfterAppIdExclude(std::move(request), authenticator,
                                      CtapDeviceResponseCode::kSuccess,
-                                     absl::nullopt);
+                                     std::nullopt);
   }
 }
 
@@ -517,7 +517,7 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
     std::unique_ptr<CtapMakeCredentialRequest> request,
     FidoAuthenticator* authenticator,
     CtapDeviceResponseCode status,
-    absl::optional<bool> unused) {
+    std::optional<bool> unused) {
   if (state_ != State::kWaitingForTouch) {
     return;
   }
@@ -537,7 +537,7 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
     default:
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
-               absl::nullopt, authenticator);
+               std::nullopt, authenticator);
       return;
   }
 
@@ -587,7 +587,7 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
       state_ = State::kFinished;
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorRemovedDuringPINEntry,
-               absl::nullopt, nullptr);
+               std::nullopt, nullptr);
     }
   }
 }
@@ -636,8 +636,8 @@ void MakeCredentialRequestHandler::PromptForInternalUVRetry(int attempts) {
 void MakeCredentialRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
     FidoAuthenticator* authenticator,
     AuthTokenRequester::Result result,
-    absl::optional<pin::TokenResponse> token_response) {
-  absl::optional<MakeCredentialStatus> error;
+    std::optional<pin::TokenResponse> token_response) {
+  std::optional<MakeCredentialStatus> error;
   switch (result) {
     case AuthTokenRequester::Result::kPreTouchUnsatisfiableRequest:
     case AuthTokenRequester::Result::kPreTouchAuthenticatorResponseInvalid:
@@ -669,7 +669,7 @@ void MakeCredentialRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
   DCHECK_EQ(selected_authenticator_for_pin_uv_auth_token_, authenticator);
   if (error) {
     state_ = State::kFinished;
-    std::move(completion_callback_).Run(*error, absl::nullopt, authenticator);
+    std::move(completion_callback_).Run(*error, std::nullopt, authenticator);
     return;
   }
 
@@ -722,7 +722,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     std::unique_ptr<CtapMakeCredentialRequest> request,
     base::ElapsedTimer request_timer,
     CtapDeviceResponseCode status,
-    absl::optional<AuthenticatorMakeCredentialResponse> response) {
+    std::optional<AuthenticatorMakeCredentialResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   if (state_ != State::kWaitingForTouch &&
@@ -747,7 +747,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
           .Run(WinCtapDeviceResponseCodeToMakeCredentialStatus(status),
-               absl::nullopt, authenticator);
+               std::nullopt, authenticator);
       return;
     }
     if (!response ||
@@ -756,7 +756,7 @@ void MakeCredentialRequestHandler::HandleResponse(
           << "Failing make credential request due to bad response from "
           << authenticator->GetDisplayName();
       std::move(completion_callback_)
-          .Run(MakeCredentialStatus::kWinNotAllowedError, absl::nullopt,
+          .Run(MakeCredentialStatus::kWinNotAllowedError, std::nullopt,
                authenticator);
       return;
     }
@@ -819,13 +819,13 @@ void MakeCredentialRequestHandler::HandleResponse(
     return;
   }
 
-  const absl::optional<MakeCredentialStatus> maybe_result =
+  const std::optional<MakeCredentialStatus> maybe_result =
       ConvertDeviceResponseCode(status);
   if (!maybe_result) {
     if (state_ == State::kWaitingForResponseWithToken) {
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
-               absl::nullopt, authenticator);
+               std::nullopt, authenticator);
     } else if (authenticator->GetType() == AuthenticatorType::kPhone ||
                authenticator->GetType() == AuthenticatorType::kEnclave) {
       FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
@@ -835,7 +835,7 @@ void MakeCredentialRequestHandler::HandleResponse(
           .Run(authenticator->GetType() == AuthenticatorType::kPhone
                    ? MakeCredentialStatus::kHybridTransportError
                    : MakeCredentialStatus::kEnclaveError,
-               absl::nullopt, authenticator);
+               std::nullopt, authenticator);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();
@@ -850,7 +850,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     FIDO_LOG(ERROR) << "Failing make credential request due to status "
                     << status << " from " << authenticator->GetDisplayName();
     std::move(completion_callback_)
-        .Run(*maybe_result, absl::nullopt, authenticator);
+        .Run(*maybe_result, std::nullopt, authenticator);
     return;
   }
 
@@ -860,7 +860,7 @@ void MakeCredentialRequestHandler::HandleResponse(
         << "Failing make credential request due to bad response from "
         << authenticator->GetDisplayName();
     std::move(completion_callback_)
-        .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, absl::nullopt,
+        .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt,
              authenticator);
     return;
   }
@@ -879,7 +879,7 @@ void MakeCredentialRequestHandler::HandleExcludedAuthenticator(
   CancelActiveAuthenticators(authenticator->GetId());
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kUserConsentButCredentialExcluded,
-           absl::nullopt, nullptr);
+           std::nullopt, nullptr);
 }
 
 void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
@@ -890,7 +890,7 @@ void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
 
   state_ = State::kFinished;
   CancelActiveAuthenticators(authenticator->GetId());
-  std::move(completion_callback_).Run(status, absl::nullopt, nullptr);
+  std::move(completion_callback_).Run(status, std::nullopt, nullptr);
 }
 
 void MakeCredentialRequestHandler::OnSampleCollected(
@@ -900,7 +900,7 @@ void MakeCredentialRequestHandler::OnSampleCollected(
 }
 
 void MakeCredentialRequestHandler::OnEnrollmentDone(
-    absl::optional<std::vector<uint8_t>> template_id) {
+    std::optional<std::vector<uint8_t>> template_id) {
   state_ = State::kBioEnrollmentDone;
 
   bio_enrollment_complete_barrier_->Run();
@@ -911,7 +911,7 @@ void MakeCredentialRequestHandler::OnEnrollmentError(
   bio_enroller_.reset();
   state_ = State::kFinished;
   std::move(completion_callback_)
-      .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, absl::nullopt,
+      .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt,
            nullptr);
 }
 

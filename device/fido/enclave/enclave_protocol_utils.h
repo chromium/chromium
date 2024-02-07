@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_ENCLAVE_ENCLAVE_PROTOCOL_UTILS_H_
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_PROTOCOL_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -20,7 +21,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -37,14 +37,14 @@ class JSONRequest;
 namespace enclave {
 
 // Parses a decrypted assertion command response from the enclave.
-std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
+std::pair<std::optional<AuthenticatorGetAssertionResponse>, std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseGetAssertionResponse(cbor::Value response_value,
                                   base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
-std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
-           absl::optional<sync_pb::WebauthnCredentialSpecifics>,
+std::tuple<std::optional<AuthenticatorMakeCredentialResponse>,
+           std::optional<sync_pb::WebauthnCredentialSpecifics>,
            std::string>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,

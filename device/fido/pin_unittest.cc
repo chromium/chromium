@@ -39,7 +39,7 @@ class PINProtocolTest : public ::testing::TestWithParam<PINUVAuthProtocol> {
                                 POINT_CONVERSION_UNCOMPRESSED, peer_x962.data(),
                                 peer_x962.size(), nullptr /* BN_CTX */),
              peer_x962.size());
-    const absl::optional<pin::KeyAgreementResponse> peer_response =
+    const std::optional<pin::KeyAgreementResponse> peer_response =
         pin::KeyAgreementResponse::ParseFromCOSE(
             pin::EncodeCOSEPublicKey(peer_x962));
     CHECK(peer_response);

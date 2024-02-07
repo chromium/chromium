@@ -8,11 +8,11 @@
 #import <IOBluetooth/IOBluetooth.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class IOBluetoothDevice;
 
@@ -41,15 +41,15 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  absl::optional<std::string> GetName() const override;
+  std::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;
-  absl::optional<int8_t> GetInquiryRSSI() const override;
-  absl::optional<int8_t> GetInquiryTxPower() const override;
+  std::optional<int8_t> GetInquiryRSSI() const override;
+  std::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -86,7 +86,7 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
-      absl::optional<BluetoothUUID> service_uuid) override;
+      std::optional<BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
  private:

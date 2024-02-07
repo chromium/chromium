@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "device/fido/platform_credential_store.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(__OBJC__)
 @class LAContext;
@@ -84,9 +84,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 #endif  // __OBJC__
 
   // CreateCredential inserts a new credential into the keychain. It returns
-  // the new credential and its public key, or absl::nullopt if an error
+  // the new credential and its public key, or std::nullopt if an error
   // occurred.
-  absl::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
+  std::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredential(const std::string& rp_id,
                    const PublicKeyCredentialUserEntity& user,
                    Discoverable discoverable) const;
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // CreateCredentialLegacyCredentialForTesting inserts a credential for an old
   // `CredentialMetadata::Version`. Such credentials can't be created anymore,
   // but they still exist and we need to be able to exercise them.
-  absl::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
+  std::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredentialLegacyCredentialForTesting(
       CredentialMetadata::Version version,
       const std::string& rp_id,
@@ -106,8 +106,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // matches a credential if its transports() set is either empty or contains
   // FidoTransportProtocol::kInternal, and if its id() is the credential ID.
   // The returned credentials may be discoverable or non-discoverable. If any
-  // unexpected keychain API error occurs, absl::nullopt is returned instead.
-  absl::optional<std::list<Credential>>
+  // unexpected keychain API error occurs, std::nullopt is returned instead.
+  std::optional<std::list<Credential>>
   FindCredentialsFromCredentialDescriptorList(
       const std::string& rp_id,
       const std::vector<PublicKeyCredentialDescriptor>& descriptors) const;
@@ -115,8 +115,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // FindResidentCredentials returns the client-side discoverable credentials
   // for the given |rp_id|. If |rp_id| is not specified, all resident
   // credentials are returned. nullopt is returned if an error occurred.
-  absl::optional<std::list<Credential>> FindResidentCredentials(
-      const absl::optional<std::string>& rp_id) const;
+  std::optional<std::list<Credential>> FindResidentCredentials(
+      const std::optional<std::string>& rp_id) const;
 
   // DeleteCredentialsForUserId deletes all credentials for the given RP and
   // user ID. Returns true if deleting succeeded or no matching credential
@@ -150,8 +150,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
       std::string rp_id);
 
  private:
-  absl::optional<std::list<Credential>> FindCredentialsImpl(
-      const absl::optional<std::string>& rp_id,
+  std::optional<std::list<Credential>> FindCredentialsImpl(
+      const std::optional<std::string>& rp_id,
       const std::set<std::vector<uint8_t>>& credential_ids) const;
 
   AuthenticatorConfig config_;

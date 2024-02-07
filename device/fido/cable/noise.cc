@@ -119,7 +119,7 @@ std::vector<uint8_t> Noise::EncryptAndHash(
   return ciphertext;
 }
 
-absl::optional<std::vector<uint8_t>> Noise::DecryptAndHash(
+std::optional<std::vector<uint8_t>> Noise::DecryptAndHash(
     base::span<const uint8_t> ciphertext) {
   uint8_t nonce[12] = {0};
   const uint32_t counter = base::ByteSwap(symmetric_nonce_);

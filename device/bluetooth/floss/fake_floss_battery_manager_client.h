@@ -21,7 +21,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossBatteryManagerClient
             base::OnceClosure on_ready) override;
 
   void GetBatteryInformation(
-      ResponseCallback<absl::optional<BatterySet>> callback,
+      ResponseCallback<std::optional<BatterySet>> callback,
       const FlossDeviceId& device) override;
 
   void AddObserver(FlossBatteryManagerClientObserver* observer) override;

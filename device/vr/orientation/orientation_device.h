@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDevice
   base::OnceClosure ready_callback_;
 
   // The initial state of the world used to define forwards.
-  absl::optional<gfx::Quaternion> base_pose_;
+  std::optional<gfx::Quaternion> base_pose_;
   gfx::Quaternion latest_pose_;
 
   mojo::Remote<mojom::Sensor> sensor_;

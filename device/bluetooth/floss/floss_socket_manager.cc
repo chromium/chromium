@@ -90,17 +90,17 @@ bool FlossDBusClient::ReadDBusParam(
         required_keys[key] = ReadDBusParamFromVariant(&dict, &socket->flags);
       } else if (key == kListeningPropPsm) {
         required_keys[key] =
-            ReadDBusParamFromVariant<absl::optional<int>>(&dict, &socket->psm);
+            ReadDBusParamFromVariant<std::optional<int>>(&dict, &socket->psm);
       } else if (key == kListeningPropChannel) {
-        required_keys[key] = ReadDBusParamFromVariant<absl::optional<int>>(
+        required_keys[key] = ReadDBusParamFromVariant<std::optional<int>>(
             &dict, &socket->channel);
       } else if (key == kListeningPropName) {
         required_keys[key] =
-            ReadDBusParamFromVariant<absl::optional<std::string>>(
-                &dict, &socket->name);
+            ReadDBusParamFromVariant<std::optional<std::string>>(&dict,
+                                                                 &socket->name);
       } else if (key == kListeningPropUuid) {
         required_keys[key] =
-            ReadDBusParamFromVariant<absl::optional<device::BluetoothUUID>>(
+            ReadDBusParamFromVariant<std::optional<device::BluetoothUUID>>(
                 &dict, &socket->uuid);
       }
     }
@@ -118,7 +118,7 @@ bool FlossDBusClient::ReadDBusParam(
 template bool
 FlossDBusClient::ReadDBusParam<FlossSocketManager::FlossListeningSocket>(
     dbus::MessageReader* reader,
-    absl::optional<FlossSocketManager::FlossListeningSocket>* socket);
+    std::optional<FlossSocketManager::FlossListeningSocket>* socket);
 
 template <>
 void FlossDBusClient::WriteDBusParam(
@@ -172,13 +172,13 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
         required_keys[key] = ReadDBusParamFromVariant(&dict, &socket->flags);
       } else if (key == kConnectingPropFd) {
         required_keys[key] =
-            ReadDBusParamFromVariant<absl::optional<base::ScopedFD>>(
+            ReadDBusParamFromVariant<std::optional<base::ScopedFD>>(
                 &dict, &socket->fd);
       } else if (key == kConnectingPropPort) {
         required_keys[key] = ReadDBusParamFromVariant(&dict, &socket->port);
       } else if (key == kConnectingPropUuid) {
         required_keys[key] =
-            ReadDBusParamFromVariant<absl::optional<device::BluetoothUUID>>(
+            ReadDBusParamFromVariant<std::optional<device::BluetoothUUID>>(
                 &dict, &socket->uuid);
       } else if (key == kConnectingPropMaxRxSize) {
         required_keys[key] =
@@ -201,7 +201,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 
 template bool FlossDBusClient::ReadDBusParam<FlossSocketManager::FlossSocket>(
     dbus::MessageReader* reader,
-    absl::optional<FlossSocketManager::FlossSocket>* socket);
+    std::optional<FlossSocketManager::FlossSocket>* socket);
 
 template <>
 void FlossDBusClient::WriteDBusParam(
@@ -391,10 +391,10 @@ void FlossSocketManager::ListenUsingL2capLe(
 }
 
 void FlossSocketManager::ListenUsingRfcommAlt(
-    const absl::optional<std::string> name,
-    const absl::optional<device::BluetoothUUID> application_uuid,
-    const absl::optional<int> channel,
-    const absl::optional<int> flags,
+    const std::optional<std::string> name,
+    const std::optional<device::BluetoothUUID> application_uuid,
+    const std::optional<int> channel,
+    const std::optional<int> flags,
     ResponseCallback<BtifStatus> callback,
     ConnectionStateChanged ready_cb,
     ConnectionAccepted new_connection_cb) {
@@ -440,7 +440,7 @@ void FlossSocketManager::ConnectUsingL2cap(const FlossDeviceId& remote_device,
                                            const Security security_level,
                                            ConnectionCompleted callback) {
   if (callback_id_ == kInvalidCallbackId) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -459,7 +459,7 @@ void FlossSocketManager::ConnectUsingL2capLe(const FlossDeviceId& remote_device,
                                              const Security security_level,
                                              ConnectionCompleted callback) {
   if (callback_id_ == kInvalidCallbackId) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -478,7 +478,7 @@ void FlossSocketManager::ConnectUsingRfcomm(const FlossDeviceId& remote_device,
                                             const Security security_level,
                                             ConnectionCompleted callback) {
   if (callback_id_ == kInvalidCallbackId) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -494,7 +494,7 @@ void FlossSocketManager::ConnectUsingRfcomm(const FlossDeviceId& remote_device,
 }
 
 void FlossSocketManager::Accept(const SocketId id,
-                                absl::optional<uint32_t> timeout_ms,
+                                std::optional<uint32_t> timeout_ms,
                                 ResponseCallback<BtifStatus> callback) {
   if (callback_id_ == kInvalidCallbackId) {
     std::move(callback).Run(base::unexpected(Error(kErrorInvalidCallback, "")));
@@ -635,7 +635,7 @@ void FlossSocketManager::CompleteListen(ResponseCallback<BtifStatus> callback,
 void FlossSocketManager::CompleteConnect(ConnectionCompleted callback,
                                          DBusResult<SocketResult> result) {
   if (!result.has_value()) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -647,7 +647,7 @@ void FlossSocketManager::CompleteConnect(ConnectionCompleted callback,
         std::move(callback),
     });
   } else {
-    std::move(callback).Run(result->status, /*socket=*/absl::nullopt);
+    std::move(callback).Run(result->status, /*socket=*/std::nullopt);
   }
 }
 
@@ -741,7 +741,7 @@ void FlossSocketManager::OnOutgoingConnectionResult(
   dbus::MessageReader reader(method_call);
   SocketId id;
   BtifStatus status;
-  absl::optional<FlossSocket> socket;
+  std::optional<FlossSocket> socket;
 
   if (!ReadAllDBusParams(&reader, &id, &status, &socket)) {
     std::move(response_sender)

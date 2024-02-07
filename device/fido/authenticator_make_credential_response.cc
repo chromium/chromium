@@ -20,22 +20,22 @@
 namespace device {
 
 // static
-absl::optional<AuthenticatorMakeCredentialResponse>
+std::optional<AuthenticatorMakeCredentialResponse>
 AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
-    absl::optional<FidoTransportProtocol> transport_used,
+    std::optional<FidoTransportProtocol> transport_used,
     base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
     base::span<const uint8_t> u2f_data) {
   auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), u2f_data);
   if (!public_key)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto attested_credential_data =
       AttestedCredentialData::CreateFromU2fRegisterResponse(
           u2f_data, std::move(public_key));
 
   if (!attested_credential_data)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Extract the credential_id for packing into the response data.
   std::vector<uint8_t> credential_id =
@@ -54,7 +54,7 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
       FidoAttestationStatement::CreateFromU2fRegisterResponse(u2f_data);
 
   if (!fido_attestation_statement)
-    return absl::nullopt;
+    return std::nullopt;
 
   AuthenticatorMakeCredentialResponse response(
       transport_used, AttestationObject(std::move(authenticator_data),
@@ -64,7 +64,7 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
 }
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
-    absl::optional<FidoTransportProtocol> in_transport_used,
+    std::optional<FidoTransportProtocol> in_transport_used,
     AttestationObject in_attestation_object)
     : attestation_object(std::move(in_attestation_object)),
       transport_used(in_transport_used) {}

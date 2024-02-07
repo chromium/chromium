@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_TEST_OPENXR_TEST_HELPER_H_
 
 #include <array>
+#include <optional>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
@@ -16,7 +17,6 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -190,8 +190,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
                      uint32_t& height) const;
   XrResult UpdateAction(XrAction action);
   void SetSessionState(XrSessionState state);
-  absl::optional<gfx::Transform> GetPose();
-  absl::optional<device::DeviceConfig> GetDeviceConfig();
+  std::optional<gfx::Transform> GetPose();
+  std::optional<device::DeviceConfig> GetDeviceConfig();
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(

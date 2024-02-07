@@ -44,8 +44,8 @@ void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FakeFlossLEScanClient::StartScan(
     ResponseCallback<BtifStatus> callback,
     uint8_t scanner_id,
-    const absl::optional<ScanSettings>& scan_settings,
-    const absl::optional<ScanFilter>& filters) {
+    const std::optional<ScanSettings>& scan_settings,
+    const std::optional<ScanFilter>& filters) {
   scanner_ids_.insert(scanner_id);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), BtifStatus::kSuccess));

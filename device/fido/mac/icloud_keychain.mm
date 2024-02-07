@@ -7,6 +7,8 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,7 +35,6 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::icloud_keychain {
 
@@ -231,7 +232,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              ToVector(cred.userHandle), cred.name.UTF8String,
                              /* iCloud Keychain does not store
                                 a displayName for passkeys */
-                             absl::nullopt));
+                             std::nullopt));
       }
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::
@@ -264,8 +265,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     return *options;
   }
 
-  absl::optional<FidoTransportProtocol> AuthenticatorTransport()
-      const override {
+  std::optional<FidoTransportProtocol> AuthenticatorTransport() const override {
     return FidoTransportProtocol::kInternal;
   }
 
@@ -293,14 +293,14 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                       << " msg: " << error.localizedDescription.UTF8String;
       if (domain == "WKErrorDomain" && error.code == 8) {
         std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, absl::nullopt);
+            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded, std::nullopt);
       } else {
         // All other errors are currently mapped to `kCtap2ErrOperationDenied`
         // because it's not obvious that we want to differentiate them:
         // https://developer.apple.com/documentation/authenticationservices/asauthorizationerror?language=objc
         //
         std::move(callback).Run(
-            CtapDeviceResponseCode::kCtap2ErrOperationDenied, absl::nullopt);
+            CtapDeviceResponseCode::kCtap2ErrOperationDenied, std::nullopt);
       }
       return;
     }
@@ -313,21 +313,21 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         (id<ASAuthorizationPublicKeyCredentialRegistration>)
             authorization.credential;
 
-    absl::optional<cbor::Value> attestation_object_value =
+    std::optional<cbor::Value> attestation_object_value =
         cbor::Reader::Read(ToSpan(result.rawAttestationObject));
     if (!attestation_object_value || !attestation_object_value->is_map()) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation CBOR";
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
-    absl::optional<AttestationObject> attestation_object =
+    std::optional<AttestationObject> attestation_object =
         AttestationObject::Parse(*attestation_object_value);
     if (!attestation_object) {
       FIDO_LOG(ERROR) << "iCKC: failed to parse attestation object";
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -342,7 +342,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                       << base::HexEncode(credential_id_from_auth_data) << " vs "
                       << base::HexEncode(credential_id);
       std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -398,7 +398,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         (id<ASAuthorizationPublicKeyCredentialAssertion>)
             authorization.credential;
 
-    absl::optional<AuthenticatorData> authenticator_data =
+    std::optional<AuthenticatorData> authenticator_data =
         AuthenticatorData::DecodeAuthenticatorData(
             ToSpan(result.rawAuthenticatorData));
     if (!authenticator_data) {

@@ -59,7 +59,7 @@ CtapGetAssertionRequest::HMACSecret::HMACSecret(
     base::span<const uint8_t, kP256X962Length> in_public_key_x962,
     base::span<const uint8_t> in_encrypted_salts,
     base::span<const uint8_t> in_salts_auth,
-    absl::optional<PINUVAuthProtocol> in_pin_protocol)
+    std::optional<PINUVAuthProtocol> in_pin_protocol)
     : public_key_x962(fido_parsing_utils::Materialize(in_public_key_x962)),
       encrypted_salts(fido_parsing_utils::Materialize(in_encrypted_salts)),
       salts_auth(fido_parsing_utils::Materialize(in_salts_auth)),
@@ -71,22 +71,22 @@ CtapGetAssertionRequest::HMACSecret&
 CtapGetAssertionRequest::HMACSecret::operator=(const HMACSecret&) = default;
 
 // static
-absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
+std::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
     const cbor::Value::MapValue& request_map,
     const ParseOpts& opts) {
   if (!AreGetAssertionRequestMapKeysCorrect(request_map))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto rp_id_it = request_map.find(cbor::Value(1));
   if (rp_id_it == request_map.end() || !rp_id_it->second.is_string())
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto client_data_hash_it = request_map.find(cbor::Value(2));
   if (client_data_hash_it == request_map.end() ||
       !client_data_hash_it->second.is_bytestring() ||
       client_data_hash_it->second.GetBytestring().size() !=
           kClientDataHashLength) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::span<const uint8_t, kClientDataHashLength> client_data_hash(
       client_data_hash_it->second.GetBytestring().data(),
@@ -99,11 +99,11 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
   const auto allow_list_it = request_map.find(cbor::Value(3));
   if (allow_list_it != request_map.end()) {
     if (!allow_list_it->second.is_array())
-      return absl::nullopt;
+      return std::nullopt;
 
     const auto& credential_descriptors = allow_list_it->second.GetArray();
     if (credential_descriptors.empty())
-      return absl::nullopt;
+      return std::nullopt;
 
     std::vector<PublicKeyCredentialDescriptor> allow_list;
     for (const auto& credential_descriptor : credential_descriptors) {
@@ -111,7 +111,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           PublicKeyCredentialDescriptor::CreateFromCBORValue(
               credential_descriptor);
       if (!allowed_credential)
-        return absl::nullopt;
+        return std::nullopt;
 
       allow_list.push_back(std::move(*allowed_credential));
     }
@@ -121,40 +121,40 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
   const auto extensions_it = request_map.find(cbor::Value(4));
   if (extensions_it != request_map.end()) {
     if (!extensions_it->second.is_map()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const cbor::Value::MapValue& extensions = extensions_it->second.GetMap();
     if (opts.reject_all_extensions && !extensions.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     for (const auto& extension : extensions) {
       if (!extension.first.is_string()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       const std::string& extension_id = extension.first.GetString();
       if (extension_id == kExtensionHmacSecret) {
         if (!extension.second.is_map()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         const auto& hmac_extension = extension.second.GetMap();
 
         auto hmac_it = hmac_extension.find(cbor::Value(1));
         if (hmac_it == hmac_extension.end() || !hmac_it->second.is_map()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
-        const absl::optional<pin::KeyAgreementResponse> key(
+        const std::optional<pin::KeyAgreementResponse> key(
             pin::KeyAgreementResponse::ParseFromCOSE(hmac_it->second.GetMap()));
         if (!key) {
-          return absl::nullopt;
+          return std::nullopt;
         }
 
         hmac_it = hmac_extension.find(cbor::Value(2));
         if (hmac_it == hmac_extension.end() ||
             !hmac_it->second.is_bytestring()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         const std::vector<uint8_t>& encrypted_salts =
             hmac_it->second.GetBytestring();
@@ -162,23 +162,23 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         hmac_it = hmac_extension.find(cbor::Value(3));
         if (hmac_it == hmac_extension.end() ||
             !hmac_it->second.is_bytestring()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         const std::vector<uint8_t>& salts_auth =
             hmac_it->second.GetBytestring();
 
-        absl::optional<PINUVAuthProtocol> pin_protocol;
+        std::optional<PINUVAuthProtocol> pin_protocol;
         const auto pin_protocol_it = hmac_extension.find(cbor::Value(4));
         if (pin_protocol_it != hmac_extension.end()) {
           if (!pin_protocol_it->second.is_unsigned() ||
               pin_protocol_it->second.GetUnsigned() >
                   std::numeric_limits<uint8_t>::max()) {
-            return absl::nullopt;
+            return std::nullopt;
           }
           pin_protocol =
               ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
           if (!pin_protocol) {
-            return absl::nullopt;
+            return std::nullopt;
           }
         }
 
@@ -186,24 +186,24 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
                                     pin_protocol);
       } else if (extension_id == kExtensionLargeBlobKey) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         request.large_blob_key = true;
       } else if (extension_id == kExtensionCredBlob) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         request.get_cred_blob = true;
       } else if (extension_id == kExtensionPRF) {
         if (!extension.second.is_map()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         const cbor::Value::MapValue& prf = extension.second.GetMap();
         const auto eval_it = prf.find(cbor::Value(kExtensionPRFEval));
         if (eval_it != prf.end()) {
-          absl::optional<PRFInput> input = PRFInput::FromCBOR(eval_it->second);
+          std::optional<PRFInput> input = PRFInput::FromCBOR(eval_it->second);
           if (!input) {
-            return absl::nullopt;
+            return std::nullopt;
           }
           request.prf_inputs.emplace_back(std::move(*input));
         }
@@ -211,17 +211,17 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
             prf.find(cbor::Value(kExtensionPRFEvalByCredential));
         if (by_cred_it != prf.end()) {
           if (!by_cred_it->second.is_map()) {
-            return absl::nullopt;
+            return std::nullopt;
           }
           const cbor::Value::MapValue& by_cred = by_cred_it->second.GetMap();
           for (const auto& cred : by_cred) {
-            absl::optional<PRFInput> input = PRFInput::FromCBOR(cred.second);
+            std::optional<PRFInput> input = PRFInput::FromCBOR(cred.second);
             if (!input || !cred.first.is_bytestring()) {
-              return absl::nullopt;
+              return std::nullopt;
             }
             input->credential_id = cred.first.GetBytestring();
             if (input->credential_id->empty()) {
-              return absl::nullopt;
+              return std::nullopt;
             }
             request.prf_inputs.emplace_back(std::move(*input));
           }
@@ -229,7 +229,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         std::sort(request.prf_inputs.begin(), request.prf_inputs.end());
       } else if (extension_id == kExtensionLargeBlob) {
         if (!extension.second.is_map()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         const cbor::Value::MapValue& large_blob_ext = extension.second.GetMap();
         const auto read_it =
@@ -247,7 +247,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         if ((has_read && !read_it->second.is_bool()) ||
             (has_write && !write_it->second.is_bytestring()) ||
             (has_original_size && !original_size_it->second.is_unsigned())) {
-          return absl::nullopt;
+          return std::nullopt;
         }
 
         if (has_read && !has_write && !has_original_size) {
@@ -259,7 +259,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
                   original_size_it->second.GetUnsigned()));
         } else {
           // No other combinations of keys are acceptable.
-          return absl::nullopt;
+          return std::nullopt;
         }
       }
     }
@@ -268,12 +268,12 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
   const auto option_it = request_map.find(cbor::Value(5));
   if (option_it != request_map.end()) {
     if (!option_it->second.is_map()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const auto& option_map = option_it->second.GetMap();
     if (!IsGetAssertionOptionMapFormatCorrect(option_map)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const auto user_presence_option =
@@ -295,7 +295,7 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
   const auto pin_auth_it = request_map.find(cbor::Value(6));
   if (pin_auth_it != request_map.end()) {
     if (!pin_auth_it->second.is_bytestring())
-      return absl::nullopt;
+      return std::nullopt;
 
     request.pin_auth = pin_auth_it->second.GetBytestring();
   }
@@ -305,12 +305,12 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
     if (!pin_protocol_it->second.is_unsigned() ||
         pin_protocol_it->second.GetUnsigned() >
             std::numeric_limits<uint8_t>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
-    absl::optional<PINUVAuthProtocol> pin_protocol =
+    std::optional<PINUVAuthProtocol> pin_protocol =
         ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
     if (!pin_protocol) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.pin_protocol = *pin_protocol;
   }
@@ -340,7 +340,7 @@ CtapGetAssertionRequest& CtapGetAssertionRequest::operator=(
 
 CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   cbor::Value::MapValue cbor_map;
   cbor_map[cbor::Value(1)] = cbor::Value(request.rp_id);
@@ -450,10 +450,10 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
                         cbor::Value(std::move(cbor_map)));
 }
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetNextAssertionRequest&) {
   return std::make_pair(CtapRequestCommand::kAuthenticatorGetNextAssertion,
-                        absl::nullopt);
+                        std::nullopt);
 }
 
 }  // namespace device
