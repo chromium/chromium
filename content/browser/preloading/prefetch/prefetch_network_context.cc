@@ -52,12 +52,10 @@ network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
       CHECK(network_context_);
     } else {
       // Create new URL factory in the default network context.
-      url_loader_factory_ =
-          CreateNewURLLoaderFactory(service->GetBrowserContext(),
-                                    service->GetBrowserContext()
-                                        ->GetDefaultStoragePartition()
-                                        ->GetNetworkContext(),
-                                    std::nullopt);
+      url_loader_factory_ = CreateNewURLLoaderFactory(
+          service->GetBrowserContext(), service->GetBrowserContext()
+                                            ->GetDefaultStoragePartition()
+                                            ->GetNetworkContext());
     }
   }
   CHECK(url_loader_factory_);
@@ -160,15 +158,14 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
     network_context_->SetClient(std::move(client_remote));
   }
 
-  url_loader_factory_ = CreateNewURLLoaderFactory(
-      service->GetBrowserContext(), network_context_.get(), std::nullopt);
+  url_loader_factory_ = CreateNewURLLoaderFactory(service->GetBrowserContext(),
+                                                  network_context_.get());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchNetworkContext::CreateNewURLLoaderFactory(
     BrowserContext* browser_context,
-    network::mojom::NetworkContext* network_context,
-    std::optional<net::IsolationInfo> isolation_info) {
+    network::mojom::NetworkContext* network_context) {
   CHECK(network_context);
 
   // Prerender should not trigger any prefetch. This assumption is needed to
@@ -183,9 +180,6 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
   factory_params->process_id = network::mojom::kBrowserProcessId;
   factory_params->is_trusted = true;
   factory_params->is_corb_enabled = false;
-  if (isolation_info) {
-    factory_params->isolation_info = *isolation_info;
-  }
   return url_loader_factory::Create(
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url_loader_factory::TerminalParams::ForNetworkContext(

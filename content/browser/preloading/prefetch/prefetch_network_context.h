@@ -56,8 +56,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // Returns a URLLoaderFactory associated with the given |network_context|.
   scoped_refptr<network::SharedURLLoaderFactory> CreateNewURLLoaderFactory(
       BrowserContext* browser_context,
-      network::mojom::NetworkContext* network_context,
-      std::optional<net::IsolationInfo> isolation_info);
+      network::mojom::NetworkContext* network_context);
 
   // Bind |network_context_| to a new network context and configure it to use
   // the prefetch proxy. Also set up |url_loader_factory_| as a new URL loader
