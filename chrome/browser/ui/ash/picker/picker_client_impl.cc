@@ -14,6 +14,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_web_view_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -39,6 +41,21 @@ void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
   }
   // TODO: b/316936723 - Add better handling of errors.
   std::move(callback).Run(std::string());
+}
+
+void OnCrosSearchResultsUpdated(
+    PickerClientImpl::CrosSearchResultsCallback callback,
+    ash::AppListSearchResultType result_type,
+    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+  std::vector<ash::PickerSearchResult> picker_results;
+
+  picker_results.reserve(results.size());
+  for (std::unique_ptr<ChromeSearchResult>& result : results) {
+    // TODO: b/316936687 - Handle results for each provider.
+    picker_results.push_back(ash::PickerSearchResult::Text(result->title()));
+  }
+
+  callback.Run(result_type, std::move(picker_results));
 }
 
 }  // namespace
@@ -118,9 +135,10 @@ void PickerClientImpl::DownloadGifToString(
 
 void PickerClientImpl::StartCrosSearch(const std::u16string& query,
                                        CrosSearchResultsCallback callback) {
-  // TODO: b/316936687 - Call CrOS Search here.
-  callback.Run(ash::AppListSearchResultType::kOmnibox,
-               {ash::PickerSearchResult::Text(query)});
+  CHECK(search_engine_);
+  search_engine_->StartSearch(
+      query, app_list::SearchOptions(),
+      base::BindRepeating(&OnCrosSearchResultsUpdated, std::move(callback)));
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
@@ -141,5 +159,11 @@ void PickerClientImpl::SetProfileByUser(const user_manager::User* user) {
 }
 
 void PickerClientImpl::SetProfile(Profile* profile) {
+  if (profile_ == profile) {
+    return;
+  }
+
   profile_ = profile;
+
+  search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
 }

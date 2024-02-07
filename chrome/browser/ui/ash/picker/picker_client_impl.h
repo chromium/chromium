@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/picker/picker_client.h"
@@ -12,6 +13,10 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 class Profile;
+
+namespace app_list {
+class SearchEngine;
+}
 
 namespace ash {
 class PickerController;
@@ -50,6 +55,8 @@ class PickerClientImpl
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
+
+  std::unique_ptr<app_list::SearchEngine> search_engine_;
 
   base::WeakPtrFactory<PickerClientImpl> weak_factory_{this};
 };
