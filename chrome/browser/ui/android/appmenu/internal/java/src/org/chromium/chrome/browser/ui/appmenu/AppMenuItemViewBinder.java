@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -58,18 +66,29 @@ class AppMenuItemViewBinder {
         } else if (key == AppMenuItemProperties.ICON) {
             Drawable icon = model.get(AppMenuItemProperties.ICON);
             ChromeImageView imageView = (ChromeImageView) view.findViewById(R.id.menu_item_icon);
-            imageView.setImageDrawable(icon);
-            imageView.setVisibility(icon == null ? View.GONE : View.VISIBLE);
 
-            // tint the icon
             @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
             if (colorResId == 0) {
                 // If there is no color assigned to the icon, use the default color.
                 colorResId = R.color.default_icon_color_secondary_tint_list;
             }
-            ImageViewCompat.setImageTintList(
-                    imageView,
-                    AppCompatResources.getColorStateList(imageView.getContext(), colorResId));
+            ColorStateList tintList =
+                    AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+
+            if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
+                // Draw the icon with a red badge on top.
+                icon = drawIconWithBadge(imageView.getContext(), icon, colorResId);
+                // `colorResId` has already been applied by `drawIconWithBadge` and thus, passing
+                // `tintList` is not required.
+                // Note that tint is set to null to clear any tint previously set via XML.
+                tintList = null;
+            }
+
+            imageView.setImageDrawable(icon);
+            imageView.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+
+            // tint the icon
+            ImageViewCompat.setImageTintList(imageView, tintList);
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
@@ -252,5 +271,60 @@ class AppMenuItemViewBinder {
 
         // Menu items may be hidden by command line flags before they get to this point.
         button.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Draws a badge (a red dot) on icon.
+     *
+     * @param context The activity context.
+     * @param icon The icon to draw the badge on.
+     * @param iconColorResId The resounce id of the color to color the icon with.
+     * @return A new drawable that portrays a badge on the passed icon.
+     */
+    // TODO(crbug.com/1503649): Consider moving the following to UiUtils or somewhere re-usable.
+    private static Drawable drawIconWithBadge(
+            Context context, Drawable icon, @ColorRes int iconColorResId) {
+        if (icon == null || icon.getIntrinsicWidth() <= 0 || icon.getIntrinsicHeight() <= 0) {
+            return icon;
+        }
+
+        int width = icon.getIntrinsicWidth();
+        int height = icon.getIntrinsicHeight();
+
+        // Create new drawable.
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        icon.draw(canvas);
+
+        // Color the icon.
+        canvas.drawColor(context.getColor(iconColorResId), PorterDuff.Mode.SRC_IN);
+
+        int badgeRadius =
+                context.getResources().getDimensionPixelSize(R.dimen.menu_item_icon_badge_size) / 2;
+        int badgeCenterX = width - badgeRadius;
+        int badgeCenterY = height / 2 - badgeRadius;
+
+        // Cut a transparent hole through the background icon. This will serve as a border to
+        // the badge being overlaid.
+        Paint hole = new Paint();
+        hole.setAntiAlias(true);
+        hole.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawCircle(
+                badgeCenterX,
+                badgeCenterY,
+                badgeRadius
+                        + context.getResources()
+                                .getDimensionPixelSize(R.dimen.menu_item_icon_badge_border_size),
+                hole);
+
+        // Draw the red badge.
+        Paint badge = new Paint();
+        hole.setAntiAlias(true);
+        badge.setColor(context.getColor(R.color.default_red));
+        canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius, badge);
+
+        return new BitmapDrawable(context.getResources(), bitmap);
     }
 }

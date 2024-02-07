@@ -50,6 +50,10 @@ public class AppMenuItemProperties {
     /** The menu item icon's color resource value. */
     public static final WritableIntPropertyKey ICON_COLOR_RES = new WritableIntPropertyKey();
 
+    /** Whether to show a badge on the menu item icon. */
+    public static final WritableBooleanPropertyKey ICON_SHOW_BADGE =
+            new WritableBooleanPropertyKey();
+
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
 
@@ -90,6 +94,7 @@ public class AppMenuItemProperties {
                 CHECKED,
                 ICON,
                 ICON_COLOR_RES,
+                ICON_SHOW_BADGE,
                 POSITION,
                 SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,

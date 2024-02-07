@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -85,6 +87,7 @@ import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -373,6 +376,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
             PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
             propertyModel.set(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(item));
+            propertyModel.set(
+                    AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(item));
             propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
             propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
             if (item.hasSubMenu()) {
@@ -974,6 +979,32 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             && readAloudController.isReadable(currentTab);
         }
         menu.findItem(R.id.readaloud_menu_id).setVisible(visible);
+    }
+
+    /** Returns true if a badge (i.e. a red-dot) should be shown on the menu item icon. */
+    protected boolean shouldShowBadgeOnMenuItemIcon(MenuItem item) {
+        if (item.getItemId() == R.id.preferences_id) {
+            if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
+                return false;
+            }
+            // Theoretically mTabModelSelector could return a stub model.
+            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+            if (profile == null) {
+                return false;
+            }
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            if (syncService == null || syncService.isSyncDisabledByEnterprisePolicy()) {
+                return false;
+            }
+            // Return true if there is any identity error(for signed-in users) or sync error(for
+            // syncing users).
+            return SyncSettingsUtils.getIdentityError(syncService)
+                            != SyncSettingsUtils.SyncError.NO_ERROR
+                    || SyncSettingsUtils.getSyncError(syncService)
+                            != SyncSettingsUtils.SyncError.NO_ERROR;
+        }
+        return false;
     }
 
     @Override
