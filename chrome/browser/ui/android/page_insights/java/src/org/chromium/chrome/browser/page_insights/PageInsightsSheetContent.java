@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsights
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -45,6 +46,10 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     @VisibleForTesting
     static final String PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM =
             "page_insights_peek_with_privacy_height_ratio";
+
+    @VisibleForTesting
+    static final String PAGE_INSIGHTS_ALT_PRIVACY_NOTICE_URL_PARAM =
+            "page_insights_alt_privacy_notice_url";
 
     interface OnBottomSheetTouchHandler {
         /** Returns true if the tap has been handled. */
@@ -77,6 +82,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private final float mFullHeightRatio;
     private final float mPeekHeightRatio;
     private final float mPeekWithPrivacyHeightRatio;
+    private final String mAltPrivacyNoticeUrl;
 
     private Context mContext;
     private View mLayoutView;
@@ -84,7 +90,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private ViewGroup mSheetContentView;
     private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
-    private Callback<View> mOnPrivacyNoticeLinkClickCallback;
+    private Callback<String> mLoadUrlCallback;
     private boolean mShouldHavePeekState;
     private boolean mSwipeToDismissEnabled;
     @Nullable private RecyclerView mCurrentRecyclerView;
@@ -95,7 +101,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
      * @param context An Android context.
      * @param intentParams params specified in the custom tabs intent
      * @param layoutView the top-level view for the Window
-     * @param onPrivacyNoticeLinkClickCallback callback for use on privacy notice
+     * @param loadUrlCallback callback that loads the given URL
      * @param onBackPressHandler back press handler
      * @param willHandleBackPressSupplier supplier of whether we will handle back presses
      * @param onBottomSheetTouchHandler handler for touches on bottom sheet
@@ -104,7 +110,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             Context context,
             PageInsightsIntentParams intentParams,
             View layoutView,
-            Callback<View> onPrivacyNoticeLinkClickCallback,
+            Callback<String> loadUrlCallback,
             OnBackPressHandler onBackPressHandler,
             ObservableSupplierImpl<Boolean> willHandleBackPressSupplier,
             OnBottomSheetTouchHandler onBottomSheetTouchHandler) {
@@ -130,6 +136,10 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                                         ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                                         PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
                                         DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
+        mAltPrivacyNoticeUrl =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                        PAGE_INSIGHTS_ALT_PRIVACY_NOTICE_URL_PARAM);
         mLayoutView = layoutView;
         mToolbarView =
                 (ViewGroup)
@@ -152,7 +162,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mToolbarView.setOnClickListener((view) -> onBottomSheetTouchHandler.handleTap());
 
         mContext = context;
-        mOnPrivacyNoticeLinkClickCallback = onPrivacyNoticeLinkClickCallback;
+        mLoadUrlCallback = loadUrlCallback;
         mOnBackPressHandler = onBackPressHandler;
         mWillHandleBackPressSupplier = willHandleBackPressSupplier;
         mFullScreenHeight = context.getResources().getDisplayMetrics().heightPixels;
@@ -483,19 +493,34 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mSheetContentView
                 .findViewById(R.id.page_insights_privacy_notice_close_button)
                 .setOnClickListener((view) -> onPrivacyNoticeClosed());
-        TextView privacyNoticeMessage =
+        TextView privacyNoticeTextView =
                 mSheetContentView.findViewById(R.id.page_insights_privacy_notice_message);
-        privacyNoticeMessage.setMovementMethod(LinkMovementMethod.getInstance());
-        privacyNoticeMessage.setText(
+        privacyNoticeTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        if (mAltPrivacyNoticeUrl.isEmpty()) {
+            preparePrivacyNoticeText(
+                    privacyNoticeTextView,
+                    R.string.page_insights_hub_privacy_notice,
+                    UrlConstants.MY_ACTIVITY_HOME_URL);
+        } else {
+            preparePrivacyNoticeText(
+                    privacyNoticeTextView,
+                    R.string.page_insights_hub_alt_privacy_notice,
+                    mAltPrivacyNoticeUrl);
+        }
+    }
+
+    private void preparePrivacyNoticeText(
+            TextView privacyNoticeTextView, int resourceId, String url) {
+        privacyNoticeTextView.setText(
                 SpanApplier.applySpans(
-                        mContext.getString(R.string.page_insights_hub_privacy_notice),
+                        mContext.getString(resourceId),
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
                                 new NoUnderlineClickableSpan(
                                         mContext,
                                         R.color.default_bg_color_blue,
-                                        mOnPrivacyNoticeLinkClickCallback))));
+                                        view -> mLoadUrlCallback.onResult(url)))));
     }
 
     private void updateCurrentRecyclerView(View currentPageView) {

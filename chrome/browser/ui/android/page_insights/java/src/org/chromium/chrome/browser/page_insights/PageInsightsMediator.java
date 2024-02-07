@@ -55,7 +55,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -254,7 +253,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         mContext,
                         intentParams,
                         layoutView,
-                        view -> loadMyActivityUrl(tabObservable),
+                        this::loadUrl,
                         this::handleBackPress,
                         mWillHandleBackPressSupplier,
                         mOnBottomSheetTouchHandler);
@@ -648,10 +647,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         }
     }
 
-    private void loadMyActivityUrl(Supplier<Tab> currTabObserver) {
-        Tab currTab = currTabObserver.get();
-        if (currTab != null) {
-            currTab.loadUrl(new LoadUrlParams(UrlConstants.MY_ACTIVITY_HOME_URL));
+    private void loadUrl(String url) {
+        Tab tab = mTabObservable.get();
+        if (tab != null) {
+            tab.loadUrl(new LoadUrlParams(url));
         }
     }
 
