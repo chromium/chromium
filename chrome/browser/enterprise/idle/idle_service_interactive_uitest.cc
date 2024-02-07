@@ -116,6 +116,7 @@ class IdleServiceTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     polling_service().SetTaskRunnerForTest(task_runner_);
+    polling_service().SetPollIntervalForTest(base::Seconds(1));
 
     auto time_provider =
         std::make_unique<testing::NiceMock<MockIdleTimeProvider>>();

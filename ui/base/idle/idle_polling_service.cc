@@ -14,8 +14,6 @@ namespace ui {
 
 namespace {
 
-constexpr base::TimeDelta kPollInterval = base::Seconds(1);
-
 // Default provider implementation. Everything is delegated to
 // ui::CalculateIdleTime and ui::CheckIdleStateIsLocked.
 class DefaultIdleProvider : public IdleTimeProvider {
@@ -51,7 +49,9 @@ void IdlePollingService::AddObserver(Observer* observer) {
   if (observers_.empty()) {
     DCHECK(!timer_.IsRunning());
     PollIdleState();
-    timer_.Reset();
+    timer_.Start(FROM_HERE, poll_interval_,
+                 base::BindRepeating(&IdlePollingService::PollIdleState,
+                                     base::Unretained(this)));
   }
 
   observers_.AddObserver(observer);
@@ -75,6 +75,11 @@ void IdlePollingService::SetProviderForTest(
   }
 }
 
+void IdlePollingService::SetPollIntervalForTest(base::TimeDelta poll_interval) {
+  DCHECK(!timer_.IsRunning());
+  poll_interval_ = poll_interval;
+}
+
 bool IdlePollingService::IsPollingForTest() {
   return timer_.IsRunning();
 }
@@ -85,10 +90,7 @@ void IdlePollingService::SetTaskRunnerForTest(
 }
 
 IdlePollingService::IdlePollingService()
-    : timer_(FROM_HERE,
-             kPollInterval,
-             base::BindRepeating(&IdlePollingService::PollIdleState,
-                                 base::Unretained(this))),
+    : poll_interval_(kPollInterval),
       provider_(std::make_unique<DefaultIdleProvider>()) {
   DCHECK(!timer_.IsRunning());
 }
