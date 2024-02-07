@@ -9,6 +9,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 
 namespace base {
 class TimeDelta;
@@ -201,6 +203,36 @@ ASH_PUBLIC_EXPORT void RecordUserPreferences(UserPreferences user_preferences);
 // Records counts for the visible holding space `items` specified.
 ASH_PUBLIC_EXPORT void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
+
+// Observation -----------------------------------------------------------------
+
+// An observer which receives notification of holding space metrics events.
+class ASH_PUBLIC_EXPORT Observer : public base::CheckedObserver {
+ public:
+  // Invoked when holding space item action metrics are recorded.
+  // See `RecordItemAction()`.
+  virtual void OnHoldingSpaceItemActionRecorded(
+      const std::vector<const HoldingSpaceItem*>& items,
+      ItemAction action,
+      EventSource event_source) {}
+
+  // Invoked when holding space pod action metrics are recorded.
+  // See `RecordPodAction()`.
+  virtual void OnHoldingSpacePodActionRecorded(PodAction action) {}
+};
+
+// A scoped object which registers a specified `observer` to receive
+// notification of holding space metrics events until its destruction.
+class ASH_PUBLIC_EXPORT ScopedObservation {
+ public:
+  explicit ScopedObservation(Observer* observer);
+  ScopedObservation(const ScopedObservation&) = delete;
+  ScopedObservation& operator=(const ScopedObservation&) = delete;
+  ~ScopedObservation();
+
+ private:
+  const raw_ptr<Observer> observer_;
+};
 
 }  // namespace ash::holding_space_metrics
 

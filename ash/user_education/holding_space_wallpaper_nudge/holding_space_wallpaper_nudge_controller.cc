@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -211,6 +212,7 @@ class Highlight : public ui::LayerOwner, public views::ViewObserver {
 // While the observed drag-and-drop sequence is in progress.
 class DragDropDelegate : public WallpaperDragDropDelegate,
                          public HoldingSpaceControllerObserver,
+                         public holding_space_metrics::Observer,
                          public SessionObserver {
  public:
   explicit DragDropDelegate(
@@ -510,6 +512,21 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     }
   }
 
+  // holding_space_metrics::Observer:
+  void OnHoldingSpaceItemActionRecorded(
+      const std::vector<const HoldingSpaceItem*>& items,
+      holding_space_metrics::ItemAction action,
+      holding_space_metrics::EventSource event_source) override {
+    // TODO(http://b/311411775): Record wallpaper nudge experiment metrics.
+    // See `holding_space_wallpaper_nudge_metrics::RecordInteraction()`.
+  }
+
+  void OnHoldingSpacePodActionRecorded(
+      holding_space_metrics::PodAction action) override {
+    // TODO(http://b/311411775): Record wallpaper nudge experiment metrics.
+    // See `holding_space_wallpaper_nudge_metrics::RecordInteraction()`.
+  }
+
   // SessionObserver:
   void OnChromeTerminating() override { session_observer_.Reset(); }
 
@@ -670,6 +687,11 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observer_{this};
+
+  // Observes holding space metrics events in order to record downstream
+  // wallpaper nudge experiment metrics.
+  holding_space_metrics::ScopedObservation holding_space_metrics_observer_{
+      this};
 
   // Observes session changes so that user eligibility can be saved after login.
   base::ScopedObservation<SessionController, SessionObserver> session_observer_{

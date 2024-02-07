@@ -12,7 +12,9 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -45,6 +47,12 @@ constexpr size_t kExtensionsSize =
     kFirstKnownExtension + kKnownExtensions.size();
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the list of holding space metrics observers.
+base::ObserverList<Observer>& GetObserverList() {
+  static base::NoDestructor<base::ObserverList<Observer>> observer_list;
+  return *observer_list;
+}
 
 // Returns the `FilePickerBindingContext` representation of the specified
 // `file_picker_binding_context`. Note that these values are persisted to
@@ -235,7 +243,10 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
         item->file().file_system_type);
   }
 
-  // TODO(https://b/311411775): Record metrics pertaining to `event_source`.
+  // Notify observers.
+  for (Observer& observer : GetObserverList()) {
+    observer.OnHoldingSpaceItemActionRecorded(items, action, event_source);
+  }
 }
 
 void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
@@ -260,6 +271,11 @@ void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
 
 void RecordPodAction(PodAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
+
+  // Notify observers.
+  for (Observer& observer : GetObserverList()) {
+    observer.OnHoldingSpacePodActionRecorded(action);
+  }
 }
 
 void RecordPodResizeAnimationSmoothness(int smoothness) {
@@ -313,6 +329,16 @@ void RecordUserPreferences(UserPreferences preferences) {
 void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts("HoldingSpace.Item.VisibleCount", items);
+}
+
+// Observation -----------------------------------------------------------------
+
+ScopedObservation::ScopedObservation(Observer* observer) : observer_(observer) {
+  GetObserverList().AddObserver(observer_);
+}
+
+ScopedObservation::~ScopedObservation() {
+  GetObserverList().RemoveObserver(observer_);
 }
 
 }  // namespace ash::holding_space_metrics

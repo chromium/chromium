@@ -506,6 +506,7 @@ source_set("unit_tests") {
     "holding_space/holding_space_controller_unittest.cc",
     "holding_space/holding_space_image_unittest.cc",
     "holding_space/holding_space_item_unittest.cc",
+    "holding_space/holding_space_metrics_unittest.cc",
     "holding_space/holding_space_model_unittest.cc",
     "holding_space/holding_space_progress_unittest.cc",
     "holding_space/holding_space_section_unittest.cc",
