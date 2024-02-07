@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -22,6 +23,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/url_constants.h"
+
+namespace ash {
+enum class AppListSearchResultType;
+}
 
 namespace {
 
@@ -109,6 +114,13 @@ void PickerClientImpl::DownloadGifToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&OnGifDownloaded, std::move(callback), std::move(loader)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PickerClientImpl::StartCrosSearch(const std::u16string& query,
+                                       CrosSearchResultsCallback callback) {
+  // TODO: b/316936687 - Call CrOS Search here.
+  callback.Run(ash::AppListSearchResultType::kOmnibox,
+               {ash::PickerSearchResult::Text(query)});
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {

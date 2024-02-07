@@ -8,9 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
 #include "url/gurl.h"
 
@@ -35,6 +38,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
  public:
   using DownloadGifToStringCallback =
       base::OnceCallback<void(const std::string& gif_data)>;
+  using CrosSearchResultsCallback =
+      base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
+                                   std::vector<PickerSearchResult> results)>;
 
   virtual std::unique_ptr<ash::AshWebView> CreateWebView(
       const ash::AshWebView::InitParams& params) = 0;
@@ -44,6 +50,11 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // `callback` is run with an empty string.
   virtual void DownloadGifToString(const ValidGifUrl& url,
                                    DownloadGifToStringCallback callback) = 0;
+
+  // Starts a search using the CrOS Search API
+  // (`app_list::SearchEngine::StartSearch`).
+  virtual void StartCrosSearch(const std::u16string& query,
+                               CrosSearchResultsCallback callback) = 0;
 
  protected:
   PickerClient();

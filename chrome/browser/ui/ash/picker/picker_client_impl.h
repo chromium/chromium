@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 
+#include <string>
+
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -36,6 +38,8 @@ class PickerClientImpl
       const ash::AshWebView::InitParams& params) override;
   void DownloadGifToString(const ash::ValidGifUrl& url,
                            DownloadGifToStringCallback callback) override;
+  void StartCrosSearch(const std::u16string& query,
+                       CrosSearchResultsCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
