@@ -961,18 +961,25 @@ void ShellSurface::Configure(bool ends_drag) {
 
   if (!configure_callback_.is_null()) {
     if (window_state) {
+      auto occlusion_state = root_surface()
+                                 ? root_surface()->window()->GetOcclusionState()
+                                 : aura::Window::OcclusionState::HIDDEN;
       auto restore_state_type = std::optional<chromeos::WindowStateType>{
           window_state->GetRestoreWindowState()};
       serial = configure_callback_.Run(
           GetClientBoundsInScreen(widget_), window_state->GetStateType(),
           IsResizing(), widget_->IsActive(), origin_offset,
-          pending_raster_scale_, restore_state_type);
+          pending_raster_scale_, occlusion_state, restore_state_type);
     } else {
       auto state = chromeos::ToWindowStateType(initial_show_state_);
+      // Assume the window is initially visible, unless it is minimized.
+      auto occlusion_state = state == chromeos::WindowStateType::kMinimized
+                                 ? aura::Window::OcclusionState::HIDDEN
+                                 : aura::Window::OcclusionState::VISIBLE;
       gfx::Rect bounds = GetInitialBoundsForState(state);
-      serial =
-          configure_callback_.Run(bounds, state, false, false, origin_offset,
-                                  pending_raster_scale_, std::nullopt);
+      serial = configure_callback_.Run(bounds, state, false, false,
+                                       origin_offset, pending_raster_scale_,
+                                       occlusion_state, std::nullopt);
     }
   }
 

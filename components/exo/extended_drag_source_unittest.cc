@@ -698,7 +698,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   auto configure_callback = base::BindLambdaForTesting(
       [&](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
           bool resizing, bool activated, const gfx::Vector2d& origin_offset,
-          float raster_scale,
+          float raster_scale, aura::Window::OcclusionState occlusion_state,
           std::optional<chromeos::WindowStateType> restore_state_type) {
         drop_bounds = bounds;
         return ++serial;
