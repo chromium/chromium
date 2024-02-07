@@ -1130,9 +1130,17 @@ static bool EnableCaretInEditableText(LocalFrame& frame,
 static bool EnabledInEditableText(LocalFrame& frame,
                                   Event* event,
                                   EditorCommandSource source) {
-  if (source == EditorCommandSource::kDOM &&
-      frame.GetInputMethodController().GetActiveEditContext()) {
-    return false;
+  if (frame.GetInputMethodController().GetActiveEditContext()) {
+    if (source == EditorCommandSource::kDOM) {
+      return false;
+    } else if (source == EditorCommandSource::kMenuOrKeyBinding) {
+      // If there's an active EditContext, always give the EditContext
+      // a chance to handle menu or key binding commands regardless
+      // of the selection position. This is important for the case
+      // where the EditContext's associated element is a <canvas>,
+      // which cannot contain selection; only focus.
+      return true;
+    }
   }
 
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
