@@ -1,0 +1,7 @@
+# TODO(crbug.com/324003984): These tests failed since the `UseGles2ForOopR`
+# feature was disabled.
+-GpuChannelExitForContextLostTest.CreateFailsDuringLostContextShutdown_1
+-GpuChannelExitForContextLostTest.CreateFailsDuringLostContextShutdown_2
+-GpuChannelTest.CreateFailsIfSharedContextIsLost
+-GpuChannelTest.CreateOffscreenCommandBuffer
+-GpuChannelTest.IncompatibleStreamIds

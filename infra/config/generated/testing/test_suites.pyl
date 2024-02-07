@@ -4116,7 +4116,12 @@
       'gin_unittests': {},
       'gl_unittests': {},
       'google_apis_unittests': {},
-      'gpu_unittests': {},
+      'gpu_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter',
+        ],
+      },
       'gwp_asan_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},

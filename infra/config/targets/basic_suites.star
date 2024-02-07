@@ -3718,7 +3718,12 @@ targets.legacy_basic_suite(
         "gin_unittests": targets.legacy_test_config(),
         "gl_unittests": targets.legacy_test_config(),
         "google_apis_unittests": targets.legacy_test_config(),
-        "gpu_unittests": targets.legacy_test_config(),
+        "gpu_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter",
+            ],
+        ),
         "gwp_asan_unittests": targets.legacy_test_config(),
         "ipc_tests": targets.legacy_test_config(),
         "latency_unittests": targets.legacy_test_config(),
