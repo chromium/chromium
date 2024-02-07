@@ -61,6 +61,8 @@ static_library("browser") {
   sources = [
     "address_data_cleaner.cc",
     "address_data_cleaner.h",
+    "address_data_manager.cc",
+    "address_data_manager.h",
     "address_normalization_manager.cc",
     "address_normalization_manager.h",
     "address_normalizer.h",

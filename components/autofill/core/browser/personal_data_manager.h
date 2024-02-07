@@ -23,6 +23,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -142,19 +143,7 @@ class PersonalDataManager : public KeyedService,
                             public signin::IdentityManager::Observer,
                             public AccountInfoGetter {
  public:
-  // Profiles can be retrieved from the PersonalDataManager in different orders.
-  enum class ProfileOrder {
-    // Arbitrary order.
-    kNone,
-    // In descending order of frecency
-    // (`AutofillProfile::HasGreaterRankingThan())`.
-    kHighestFrecencyDesc,
-    // Most recently modified profiles first.
-    kMostRecentlyModifiedDesc,
-    // Most recently used profiles first.
-    kMostRecentlyUsedFirstDesc,
-    kMaxValue = kMostRecentlyUsedFirstDesc
-  };
+  using ProfileOrder = AddressDataManager::ProfileOrder;
 
   explicit PersonalDataManager(const std::string& app_locale);
   PersonalDataManager(const std::string& app_locale,
@@ -192,7 +181,8 @@ class PersonalDataManager : public KeyedService,
   // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
   // called.
   bool IsAwaitingPendingAddressChanges() const {
-    return ProfileChangesAreOngoing() || HasPendingAddressQueries();
+    return ProfileChangesAreOngoing() ||
+           address_data_manager_->HasPendingQueries();
   }
 
   // history::HistoryServiceObserver
@@ -801,9 +791,8 @@ class PersonalDataManager : public KeyedService,
   // to the query handle.
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
-  // The first time this is called, logs a UMA metrics about the user's autofill
-  // addresses, credit card, offer and IBAN.
-  void LogStoredAddressDataMetrics() const;
+  // The first time this is called, logs a UMA metrics about the user's credit
+  // card, offer and IBAN.
   void LogStoredPaymentsDataMetrics() const;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
@@ -817,33 +806,15 @@ class PersonalDataManager : public KeyedService,
   // Asks `image_fetcher_` to fetch images. Virtual for testing.
   virtual void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
-  // The PersonalDataManager supports two types of AutofillProfiles, stored in
-  // `synced_local_profiles_` and `account_profiles_` and distinguished by their
-  // source.
-  // Several function need to read/write from the correct vector, depending
-  // on the source of the profile they are dealing with. This helper function
-  // returns the vector where profiles of the given `source` are stored.
-  const std::vector<std::unique_ptr<AutofillProfile>>& GetProfileStorage(
-      AutofillProfile::Source source) const;
-  std::vector<std::unique_ptr<AutofillProfile>>& GetProfileStorage(
-      AutofillProfile::Source source) {
-    return const_cast<std::vector<std::unique_ptr<AutofillProfile>>&>(
-        const_cast<const PersonalDataManager*>(this)->GetProfileStorage(
-            source));
-  }
+  // Responsible for all address-related logic of the PDM.
+  // Non-null after `Init()`.
+  std::unique_ptr<AddressDataManager> address_data_manager_;
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PersonalDatabaseHelper> database_helper_;
 
   // True if personal data has been loaded from the web database.
-  bool is_address_data_loaded_ = false;
   bool is_payments_data_loaded_ = false;
-
-  // The loaded profiles from the AutofillTable come from two sources:
-  // - kLocalOrSyncable: Stored in `synced_local_profiles_`.
-  // - kAccount: Stored in `account_profiles_`.
-  std::vector<std::unique_ptr<AutofillProfile>> synced_local_profiles_;
-  std::vector<std::unique_ptr<AutofillProfile>> account_profiles_;
 
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
@@ -874,10 +845,7 @@ class PersonalDataManager : public KeyedService,
 
   // When the manager makes a request from WebDataServiceBase, the database
   // is queried on another sequence, we record the query handle until we
-  // get called back.  We store handles for both profile and credit card queries
-  // so they can be loaded at the same time.
-  WebDataServiceBase::Handle pending_synced_local_profiles_query_ = 0;
-  WebDataServiceBase::Handle pending_account_profiles_query_ = 0;
+  // get called back.
   WebDataServiceBase::Handle pending_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =
@@ -946,7 +914,6 @@ class PersonalDataManager : public KeyedService,
   void OnProfileChangeDone(const std::string& guid);
 
   // Returns if there are any pending queries to the web database.
-  bool HasPendingAddressQueries() const;
   bool HasPendingPaymentQueries() const;
 
   // Returns the database that is used for storing local data.

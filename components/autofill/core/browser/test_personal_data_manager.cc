@@ -9,13 +9,17 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 
 namespace autofill {
 
 TestPersonalDataManager::TestPersonalDataManager()
-    : PersonalDataManager("en-US", "US") {}
+    : PersonalDataManager("en-US", "US") {
+  address_data_manager_ = std::make_unique<AddressDataManager>(
+      /*webdata_service=*/nullptr, app_locale());
+}
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
@@ -72,7 +76,8 @@ void TestPersonalDataManager::AddProfile(const AutofillProfile& profile) {
   std::unique_ptr<AutofillProfile> profile_ptr =
       std::make_unique<AutofillProfile>(profile);
   profile_ptr->FinalizeAfterImport();
-  GetProfileStorage(profile.source()).push_back(std::move(profile_ptr));
+  address_data_manager_->GetProfileStorage(profile.source())
+      .push_back(std::move(profile_ptr));
   NotifyPersonalDataObserver();
 }
 
@@ -96,7 +101,7 @@ void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
   } else if (AutofillProfile* profile = GetProfileByGUID(guid)) {
     std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-        GetProfileStorage(profile->source());
+        address_data_manager_->GetProfileStorage(profile->source());
     profiles.erase(base::ranges::find(profiles, profile,
                                       &std::unique_ptr<AutofillProfile>::get));
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
@@ -169,25 +174,27 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
 void TestPersonalDataManager::LoadProfiles() {
   // Overridden to avoid a trip to the database. This should be a no-op except
   // for the side-effect of logging the profile count.
-  pending_synced_local_profiles_query_ = 123;
-  pending_account_profiles_query_ = 124;
+  address_data_manager_->pending_synced_local_profiles_query_ = 123;
+  address_data_manager_->pending_account_profiles_query_ = 124;
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    synced_local_profiles_.swap(profiles);
+    address_data_manager_->synced_local_profiles_.swap(profiles);
     auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_synced_local_profiles_query_,
-                                std::move(result));
+    address_data_manager_->OnWebDataServiceRequestDone(
+        address_data_manager_->pending_synced_local_profiles_query_,
+        std::move(result));
   }
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    account_profiles_.swap(profiles);
+    address_data_manager_->account_profiles_.swap(profiles);
     auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_account_profiles_query_,
-                                std::move(result));
+    address_data_manager_->OnWebDataServiceRequestDone(
+        address_data_manager_->pending_account_profiles_query_,
+        std::move(result));
   }
 }
 
@@ -361,8 +368,8 @@ void TestPersonalDataManager::ClearLocalCvcs() {
 }
 
 void TestPersonalDataManager::ClearProfiles() {
-  synced_local_profiles_.clear();
-  account_profiles_.clear();
+  address_data_manager_->synced_local_profiles_.clear();
+  address_data_manager_->account_profiles_.clear();
 }
 
 void TestPersonalDataManager::ClearCreditCards() {
