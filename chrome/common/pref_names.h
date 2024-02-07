@@ -3017,6 +3017,11 @@ inline constexpr char kDeviceWeeklyScheduledSuspend[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Defines administrator-set availability of Chrome for Testing.
+inline constexpr char kChromeForTestingAllowed[] = "chrome_for_testing.allowed";
+#endif
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

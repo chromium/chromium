@@ -1725,6 +1725,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
+#endif
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }

@@ -1491,6 +1491,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kChromeForTestingAllowed)) {
+    LOG(ERROR) << "Chrome for Testing is disallowed by the system admin.";
+    return static_cast<int>(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
+  }
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMakeDefaultBrowser)) {
     bool is_managed = g_browser_process->local_state()->IsManagedPreference(
