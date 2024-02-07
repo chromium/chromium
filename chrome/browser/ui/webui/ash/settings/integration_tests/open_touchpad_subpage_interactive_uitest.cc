@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/events/devices/device_data_manager_test_api.h"
-#include "ui/events/devices/input_device.h"
+#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
 #include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
 namespace {
 
-constexpr char kDeviceSectionPath[] = "device";
 const ui::TouchpadDevice kSampleTouchpadInternal(1,
                                                  ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleTouchpadInternal",
@@ -27,11 +20,8 @@ const ui::TouchpadDevice kSampleTouchpadInternal(1,
                                                  0x4444,
                                                  0);
 
-class DeviceSettingsTouchpadInteractiveUiTest : public InteractiveAshTest {
+class DeviceSettingsTouchpadInteractiveUiTest : public DeviceSettingsBaseTest {
  public:
-  DeviceSettingsTouchpadInteractiveUiTest() {
-    feature_list_.InitAndEnableFeature(features::kInputDeviceSettingsSplit);
-  }
 
   // Query to pierce through Shadow DOM to find the touchpad row.
   const DeepQuery kTouchpadRowQuery{
@@ -49,42 +39,16 @@ class DeviceSettingsTouchpadInteractiveUiTest : public InteractiveAshTest {
       "settings-per-device-touchpad-subsection",
       "h2#touchpadName",
   };
-
-  // InteractiveAshTest:
-  void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
-
-    // Set up context for element tracking for InteractiveBrowserTest.
-    SetupContextWidget();
-
-    // Ensure the OS Settings system web app (SWA) is installed.
-    InstallSystemApps();
-
-    // Initialize touchpad.
-    ui::DeviceDataManagerTestApi().SetTouchpadDevices(
-        {kSampleTouchpadInternal});
-    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsTouchpadInteractiveUiTest,
                        OpenTouchpadSubpage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+  SetTouchpadDevices({kSampleTouchpadInternal});
   RunTestSequence(
-      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()), Do([&]() {
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            GetActiveUserProfile(), kDeviceSectionPath);
-      }),
-      WaitForShow(kOsSettingsWebContentsId),
-      Log("Waiting for per device section to load"),
-      WaitForWebContentsReady(kOsSettingsWebContentsId,
-                              chrome::GetOSSettingsUrl(kDeviceSectionPath)),
-      WaitForElementExists(kOsSettingsWebContentsId, kTouchpadRowQuery),
-      ClickElement(kOsSettingsWebContentsId, kTouchpadRowQuery),
-      WaitForElementTextContains(kOsSettingsWebContentsId, kTouchpadNameQuery,
+      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      WaitForElementExists(webcontents_id_, kTouchpadRowQuery),
+      ClickElement(webcontents_id_, kTouchpadRowQuery),
+      WaitForElementTextContains(webcontents_id_, kTouchpadNameQuery,
                                  "Built-in Touchpad"));
 }
 
