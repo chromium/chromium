@@ -177,4 +177,23 @@ suite('<os-settings-saved-devices-list>', () => {
     assertTrue(isVisible(
         getListItems()[1]!.shadowRoot!.querySelector('#deviceImage')));
   });
+
+  test('Device names are set properly', async () => {
+    const getDeviceName = () => {
+      return getListItems()[0]!.shadowRoot!
+          .querySelector<HTMLElement>('#deviceName')!.innerText;
+    };
+    const deviceName = 'deviceName';
+    const device = {name: deviceName, imageUrl: 'fakeUrl', accountKey: '1'};
+
+    savedDevicesList.set('devices', [device]);
+    await flushTasks();
+    assertEquals(deviceName, getDeviceName());
+
+    const nameWithHtml = '<a>test</a>';
+    device.name = nameWithHtml;
+    savedDevicesList.set('devices', [{...device}]);
+    await flushTasks();
+    assertEquals(nameWithHtml, getDeviceName());
+  });
 });

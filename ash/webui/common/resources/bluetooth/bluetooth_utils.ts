@@ -7,16 +7,20 @@ import {BluetoothDeviceProperties, PairedBluetoothDeviceProperties} from 'chrome
 
 import {BatteryType} from './bluetooth_types.js';
 
-export function getDeviceName(device: PairedBluetoothDeviceProperties | null): string {
-  if (!device) {
+
+/**
+ *  WARNING: The returned string may contain malicious HTML and should not be
+ *  used for Polymer bindings in CSS code. For additional information see
+ *  b/298724102.
+ */
+export function getDeviceNameUnsafe(device: PairedBluetoothDeviceProperties|
+                                    null): string {
+  if (!device || (!device.nickname && !device.deviceProperties?.publicName)) {
     return '';
   }
 
-  if (device.nickname) {
-    return device.nickname;
-  }
-
-  return mojoString16ToString(device.deviceProperties.publicName);
+  return device.nickname ||
+      mojoString16ToString(device.deviceProperties.publicName);
 }
 
 /**
