@@ -25,7 +25,7 @@ class ResettersForTestingTestRule implements TestRule {
                 } finally {
                     // We cannot guarantee that this Rule will be evaluated first, so never
                     // call setMethodMode(), and reset class resetters after each method.
-                    ResettersForTesting.onAfterClass();
+                    ResettersForTesting.afterClassHooksDidExecute();
                 }
             }
         };
