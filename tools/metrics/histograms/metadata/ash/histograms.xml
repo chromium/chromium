@@ -5009,6 +5009,7 @@ chromium-metrics-reviews@google.com.
     after the migrations are run.
   </summary>
   <token key="AuthFactorMigrationName">
+    <variant name="KnowledgeFactorHashInfoMigration"/>
     <variant name="RecoveryFactorHsmPubkeyMigration"/>
   </token>
 </histogram>
