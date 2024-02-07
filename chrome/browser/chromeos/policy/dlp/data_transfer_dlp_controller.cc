@@ -420,8 +420,14 @@ void DataTransferDlpController::ReportWarningProceededEvent(
   if (data_dst.has_value() && IsVM(data_dst->type())) {
     NOTREACHED();
   } else {
+    const std::string src_url = (data_src.has_value() && data_src->IsUrlType())
+                                    ? data_src->GetURL()->spec()
+                                    : src_pattern;
+    const std::string dst_url = (data_dst.has_value() && data_dst->IsUrlType())
+                                    ? data_dst->GetURL()->spec()
+                                    : dst_pattern;
     reporting_manager->ReportWarningProceededEvent(
-        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
+        src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
         rule_metadata.name, rule_metadata.obfuscated_id);
   }
 }
@@ -532,35 +538,42 @@ void DataTransferDlpController::ReportEvent(
     last_reported_.is_warning_proceeded = false;
   }
 
+  const std::string src_url = (data_src.has_value() && data_src->IsUrlType())
+                                  ? data_src->GetURL()->spec()
+                                  : src_pattern;
   ui::EndpointType dst_type =
       data_dst.has_value() ? data_dst->type() : ui::EndpointType::kDefault;
   switch (dst_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini:
       reporting_manager->ReportEvent(
-          src_pattern, data_controls::Component::kCrostini,
+          src_url, data_controls::Component::kCrostini,
           DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
           rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kPluginVm:
       reporting_manager->ReportEvent(
-          src_pattern, data_controls::Component::kPluginVm,
+          src_url, data_controls::Component::kPluginVm,
           DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
           rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kArc:
-      reporting_manager->ReportEvent(
-          src_pattern, data_controls::Component::kArc,
-          DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
-          rule_metadata.obfuscated_id);
+      reporting_manager->ReportEvent(src_url, data_controls::Component::kArc,
+                                     DlpRulesManager::Restriction::kClipboard,
+                                     level, rule_metadata.name,
+                                     rule_metadata.obfuscated_id);
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
+      const std::string dst_url =
+          (data_dst.has_value() && data_dst->IsUrlType())
+              ? data_dst->GetURL()->spec()
+              : dst_pattern;
       reporting_manager->ReportEvent(
-          src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
-          level, rule_metadata.name, rule_metadata.obfuscated_id);
+          src_url, dst_url, DlpRulesManager::Restriction::kClipboard, level,
+          rule_metadata.name, rule_metadata.obfuscated_id);
       break;
   }
 }

@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
   EXPECT_THAT(
       events[0],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kMailUrl, data_controls::Component::kArc,
+          GURL(kMailUrl).spec(), data_controls::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
           DlpRulesManager::Level::kBlock)));
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
   EXPECT_THAT(
       events[1],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kMailUrl, data_controls::Component::kCrostini,
+          GURL(kMailUrl).spec(), data_controls::Component::kCrostini,
           DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
           DlpRulesManager::Level::kBlock)));
 }
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
   EXPECT_THAT(
       events[0],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kMailUrl, data_controls::Component::kArc,
+          GURL(kMailUrl).spec(), data_controls::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
           DlpRulesManager::Level::kWarn)));
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
   EXPECT_THAT(
       events[1],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kMailUrl, data_controls::Component::kCrostini,
+          GURL(kMailUrl).spec(), data_controls::Component::kCrostini,
           DlpRulesManager::Restriction::kClipboard, kRuleName, kRuleId,
           DlpRulesManager::Level::kWarn)));
 }
