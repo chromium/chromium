@@ -4126,7 +4126,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should
-// offer re-auth opt-in, we start the opt-in flow.
+// offer re-auth opt-in, we start the opt-in in credit card processing flow.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthOffered) {
   CreditCard extracted_credit_card = test::GetCreditCard2();
@@ -4163,6 +4163,62 @@ TEST_F(FormDataImporterTest,
           .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
 }
+
+// This test is disabled for Android because the implementation for IBAN on
+// Clank, will remove the flag once the IBAN on Clank is ready.
+#if !BUILDFLAG(IS_ANDROID)
+// Test that in the case where the MandatoryReauthManager denotes we should
+// offer re-auth opt-in, we start the opt-in in IBAN processing flow.
+TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
+  FormStructure form_structure(CreateTestIbanFormData());
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+  form_data_importer()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalIban);
+
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              ShouldOfferOptin)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              StartOptInFlow);
+
+  EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+
+  // Ensure that we reset the record type at the end of the flow.
+  EXPECT_FALSE(
+      form_data_importer()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
+}
+
+// Test that in the case where the MandatoryReauthManager denotes we should not
+// offer re-auth opt-in, we do not start the opt-in in IBAN processing flow.
+TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
+  FormStructure form_structure(CreateTestIbanFormData());
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              ShouldOfferOptin)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              StartOptInFlow)
+      .Times(0);
+
+  EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+
+  // Ensure that we reset the record type at the end of the flow.
+  EXPECT_FALSE(
+      form_data_importer()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // Test that ProceedWithSavingIfApplicable gets called for server cards with the

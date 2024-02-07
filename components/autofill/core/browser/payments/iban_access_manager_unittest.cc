@@ -449,6 +449,50 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Fail) {
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 }
 
+// Tests that `NonInteractivePaymentMethodType` is set to `kLocalIban` on
+// local IBAN retrieval flow.
+TEST_F(IbanAccessManagerMandatoryReauthTest,
+       NonInteractivePaymentMethodType_Local) {
+  autofill_client_.GetPrefs()->SetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+
+  Iban local_iban = test::GetLocalIban();
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  EXPECT_EQ(
+      autofill_client_.GetFormDataImporter()
+          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      NonInteractivePaymentMethodType::kLocalIban);
+}
+
+// Tests that `NonInteractivePaymentMethodType` is set to `kServerIban` on
+// server IBAN retrieval flow.
+TEST_F(IbanAccessManagerMandatoryReauthTest,
+       NonInteractivePaymentMethodType_Server) {
+  autofill_client_.GetPrefs()->SetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(server_iban.instrument_id());
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  EXPECT_EQ(
+      autofill_client_.GetFormDataImporter()
+          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      NonInteractivePaymentMethodType::kServerIban);
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace autofill

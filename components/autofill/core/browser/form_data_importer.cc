@@ -733,8 +733,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     return false;
   }
 
-  // If a flow where there was no interactive authentication was completed, we
-  // might need to initiate the re-auth opt-in flow.
+  // If a flow where there was no interactive authentication was completed,
+  // re-auth opt-in flow might be offered.
   if (auto* mandatory_reauth_manager =
           client_->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
@@ -786,6 +786,19 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
+  // If a flow where there was no interactive authentication was completed,
+  // re-auth opt-in flow might be offered.
+  if (auto* mandatory_reauth_manager =
+          client_->GetOrCreatePaymentsMandatoryReauthManager();
+      mandatory_reauth_manager &&
+      mandatory_reauth_manager->ShouldOfferOptin(
+          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
+    payment_method_type_if_non_interactive_authentication_flow_completed_
+        .reset();
+    mandatory_reauth_manager->StartOptInFlow();
+    return true;
+  }
+
   return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 

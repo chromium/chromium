@@ -133,9 +133,13 @@ chromium-metrics-reviews@google.com.
       summary="Feature is trying to be updated from full server card checkout"/>
   <variant name="CheckoutLocalCard"
       summary="Feature is trying to be updated from local card checkout"/>
+  <variant name="CheckoutLocalIban"
+      summary="Feature is trying to be updated from local IBAN checkout"/>
   <variant name="CheckoutMaskedServerCard"
       summary="Feature is trying to be updated from masked server card
                checkout"/>
+  <variant name="CheckoutServerIban"
+      summary="Feature is trying to be updated from server IBAN checkout"/>
   <variant name="CheckoutVirtualCard"
       summary="Feature is trying to be updated from virtual card checkout"/>
   <variant name="SettingsPage"

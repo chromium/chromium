@@ -117,7 +117,11 @@ enum class MandatoryReauthOptInOrOutSource {
   // The OptIn is triggered after using a green-pathed masked server card during
   // checkout.
   kCheckoutMaskedServerCard = 5,
-  kMaxValue = kCheckoutMaskedServerCard,
+  // The OptIn is triggered after using a local IBAN during checkout.
+  kCheckoutLocalIban = 6,
+  // The OptIn is triggered after using a server IBAN during checkout.
+  kCheckoutServerIban = 7,
+  kMaxValue = kCheckoutServerIban,
 };
 
 void LogMandatoryReauthOfferOptInDecision(

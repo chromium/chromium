@@ -477,6 +477,10 @@ class MandatoryReauthManagerOptInFlowTest
         return "CheckoutVirtualCard";
       case NonInteractivePaymentMethodType::kMaskedServerCard:
         return "CheckoutMaskedServerCard";
+      case NonInteractivePaymentMethodType::kLocalIban:
+        return "CheckoutLocalIban";
+      case NonInteractivePaymentMethodType::kServerIban:
+        return "CheckoutServerIban";
     }
   }
 

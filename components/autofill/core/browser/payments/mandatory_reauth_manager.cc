@@ -29,16 +29,28 @@ MandatoryReauthManager::~MandatoryReauthManager() = default;
 // static
 NonInteractivePaymentMethodType
 MandatoryReauthManager::GetNonInteractivePaymentMethodType(
-    CreditCard::RecordType record_type) {
-  switch (record_type) {
-    case CreditCard::RecordType::kLocalCard:
-      return NonInteractivePaymentMethodType::kLocalCard;
-    case CreditCard::RecordType::kFullServerCard:
-      return NonInteractivePaymentMethodType::kFullServerCard;
-    case CreditCard::RecordType::kVirtualCard:
-      return NonInteractivePaymentMethodType::kVirtualCard;
-    case CreditCard::RecordType::kMaskedServerCard:
-      return NonInteractivePaymentMethodType::kMaskedServerCard;
+    absl::variant<CreditCard::RecordType, Iban::RecordType> record_type) {
+  if (CreditCard::RecordType* type =
+          absl::get_if<CreditCard::RecordType>(&record_type)) {
+    switch (*type) {
+      case CreditCard::RecordType::kLocalCard:
+        return NonInteractivePaymentMethodType::kLocalCard;
+      case CreditCard::RecordType::kFullServerCard:
+        return NonInteractivePaymentMethodType::kFullServerCard;
+      case CreditCard::RecordType::kVirtualCard:
+        return NonInteractivePaymentMethodType::kVirtualCard;
+      case CreditCard::RecordType::kMaskedServerCard:
+        return NonInteractivePaymentMethodType::kMaskedServerCard;
+    }
+  } else {
+    if (absl::get<Iban::RecordType>(record_type) ==
+        Iban::RecordType::kLocalIban) {
+      return NonInteractivePaymentMethodType::kLocalIban;
+    } else {
+      CHECK_NE(absl::get<Iban::RecordType>(record_type),
+               Iban::RecordType::kUnknown);
+      return NonInteractivePaymentMethodType::kServerIban;
+    }
   }
 }
 
@@ -165,6 +177,14 @@ bool MandatoryReauthManager::ShouldOfferOptin(
     case NonInteractivePaymentMethodType::kMaskedServerCard:
       opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
           kCheckoutMaskedServerCard;
+      break;
+    case NonInteractivePaymentMethodType::kLocalIban:
+      opt_in_source_ =
+          autofill_metrics::MandatoryReauthOptInOrOutSource::kCheckoutLocalIban;
+      break;
+    case NonInteractivePaymentMethodType::kServerIban:
+      opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
+          kCheckoutServerIban;
       break;
   }
   LogMandatoryReauthOfferOptInDecision(

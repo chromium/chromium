@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -20,7 +21,9 @@ enum class NonInteractivePaymentMethodType {
   kFullServerCard = 1,
   kVirtualCard = 2,
   kMaskedServerCard = 3,
-  kMaxValue = kMaskedServerCard,
+  kLocalIban = 4,
+  kServerIban = 5,
+  kMaxValue = kServerIban,
 };
 
 namespace payments {
@@ -46,7 +49,7 @@ class MandatoryReauthManager {
   virtual ~MandatoryReauthManager();
 
   static NonInteractivePaymentMethodType GetNonInteractivePaymentMethodType(
-      CreditCard::RecordType card_record_type);
+      absl::variant<CreditCard::RecordType, Iban::RecordType> record_type);
 
   // Helper method to get all NonInteractivePaymentMethodType for testing
   // purpose.
