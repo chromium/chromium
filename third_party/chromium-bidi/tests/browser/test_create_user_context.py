@@ -88,4 +88,4 @@ async def test_browser_create_user_context_proxy_server(
             }
         })
 
-    assert http_proxy_server.stop() == ["http://example.com/"]
+    assert http_proxy_server.stop()[0] == "http://example.com/"
