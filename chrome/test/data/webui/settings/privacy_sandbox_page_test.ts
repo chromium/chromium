@@ -1066,13 +1066,13 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     // When the parent topic was blocked, the child topic does not get moved
     // to the blocked items list which is why we only have 3 blocked topics
     assertEquals(3, blockedItems.length);
-    const allowButton = blockedItems[0]!.shadowRoot!.querySelector('cr-button');
-    assert(allowButton);
-    assertEquals(page.i18n('unblockTopicButtonTextV2'), allowButton.innerText);
+    const unblockButton =
+        blockedItems[0]!.shadowRoot!.querySelector('cr-button');
+    assert(unblockButton);
+    assertEquals('Unblock', unblockButton.innerText);
     assertEquals(
-        page.i18n('topicsPageAllowTopicA11yLabel', 'test-topic-1'),
-        allowButton.getAttribute('aria-label'));
-    allowButton.click();
+        'Unblock test-topic-1', unblockButton.getAttribute('aria-label'));
+    unblockButton.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',

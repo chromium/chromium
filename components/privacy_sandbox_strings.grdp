@@ -239,6 +239,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get added back to the pool of potential topics.">
     Add <ph name="TOPIC">$1<ex>Movies</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_UNBLOCK_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get unblocked back to the pool of potential topics." translateable="false">
+    Unblock <ph name="TOPIC">$1<ex>Movies</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" desc="The title of a dialog box that offers more information about the Topics setting." formatter_data="android_java">
     More about ad topics
   </message>
