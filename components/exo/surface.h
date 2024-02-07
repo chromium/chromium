@@ -206,6 +206,10 @@ class Surface final : public ui::PropertyHandler {
   // Sets the surface's clip rectangle.
   void SetClipRect(const std::optional<gfx::RectF>& clip_rect);
 
+  // Sets the trace ID for tracking frame submission, which is used for the next
+  // surface commit.
+  void SetFrameTraceId(int64_t frame_trace_id);
+
   // Sets the surface's clip rectangle on parent surface coordinates.
   // TODO(crbug.com/1457446): Remove this.
   void SetClipRectOnParentSurface(const std::optional<gfx::RectF>& clip_rect);
@@ -496,6 +500,8 @@ class Surface final : public ui::PropertyHandler {
   // Returns the buffer scale of the last committed buffer.
   float GetBufferScale() const { return state_.basic_state.buffer_scale; }
 
+  int64_t GetFrameTraceId() const { return state_.frame_trace_id; }
+
   // Returns the last committed buffer.
   Buffer* GetBuffer();
 
@@ -621,6 +627,10 @@ class Surface final : public ui::PropertyHandler {
     // for subsurfaces, and doesn't apply to children of this surface.
     // Persisted between commits.
     gfx::Transform surface_transform;
+
+    // Trace ID for tracking frame submission.
+    // Not persisted between commits.
+    int64_t frame_trace_id;
   };
 
   friend class subtle::PropertyHelper;
