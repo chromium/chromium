@@ -1225,8 +1225,6 @@ component("base") {
       "android/thread_instruction_count.h",
       "android/timezone_utils.cc",
       "android/timezone_utils.h",
-      "android/token_android.cc",
-      "android/token_android.h",
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
       "debug/stack_trace_android.cc",
@@ -1335,6 +1333,8 @@ component("base") {
       "android/library_loader/library_loader_hooks.h",
       "android/native_uma_recorder.cc",
       "android/scoped_java_ref.h",
+      "android/token_android.cc",
+      "android/token_android.h",
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
     ]
@@ -4301,6 +4301,18 @@ if (is_android || is_robolectric) {
   generate_jni("base_shared_preferences_jni") {
     sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
   }
+
+  shared_library_with_jni("libbase_junit_tests") {
+    testonly = true
+    enable_target = is_robolectric
+    sources = [ "android/robolectric_jni_onload.cc" ]
+    deps = [ ":base($robolectric_toolchain)" ]
+    java_targets = [ ":base_junit_tests" ]
+    visibility = [ ":*" ]
+
+    # Make jni.h available.
+    configs += [ "//third_party/jdk" ]
+  }
 }  # is_android || is_robolectric
 
 if (is_android) {
@@ -4619,7 +4631,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/ObserverListTest.java",
       "android/javatests/src/org/chromium/base/PackageUtilsTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
-      "android/javatests/src/org/chromium/base/TokenTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
       "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
@@ -4852,6 +4863,7 @@ if (is_android) {
   }
 
   robolectric_binary("base_junit_tests") {
+    shared_libraries = [ ":libbase_junit_tests($robolectric_toolchain)" ]
     sources = [
       "android/junit/src/org/chromium/base/ApplicationStatusTest.java",
       "android/junit/src/org/chromium/base/BuildInfoTest.java",

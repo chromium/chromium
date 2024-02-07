@@ -11,8 +11,8 @@ namespace android {
 
 ScopedJavaLocalRef<jobject> TokenAndroid::Create(JNIEnv* env,
                                                  const base::Token& token) {
-  return Java_Token_create(env, static_cast<jlong>(token.high()),
-                           static_cast<jlong>(token.low()));
+  return Java_Token_Constructor(env, static_cast<jlong>(token.high()),
+                                static_cast<jlong>(token.low()));
 }
 
 base::Token TokenAndroid::FromJavaToken(JNIEnv* env,
