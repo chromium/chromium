@@ -4063,6 +4063,8 @@ static_library("browser") {
       "new_tab_page/modules/history_clusters/history_clusters_page_handler.cc",
       "new_tab_page/modules/history_clusters/history_clusters_page_handler.h",
       "new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.cc",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.h",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.cc",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.cc",

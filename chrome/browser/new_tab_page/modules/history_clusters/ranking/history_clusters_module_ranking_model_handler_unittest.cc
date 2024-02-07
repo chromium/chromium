@@ -175,6 +175,11 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
   inputs1.num_abandoned_carts = 1;
   inputs1.num_times_seen_last_24h = 2;
   inputs1.num_times_used_last_24h = 1;
+  inputs1.num_associated_categories = 2;
+  inputs1.belongs_to_most_seen_category = true;
+  inputs1.belongs_to_most_used_category = true;
+  inputs1.most_frequent_category_seen_count_last_24h = 2;
+  inputs1.most_frequent_category_used_count_last_24h = 1;
 
   HistoryClustersModuleRankingSignals inputs2;
   inputs2.duration_since_most_recent_visit = base::Minutes(5);
@@ -185,6 +190,11 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
   inputs2.num_abandoned_carts = 0;
   inputs2.num_times_seen_last_24h = 1;
   inputs2.num_times_used_last_24h = 0;
+  inputs2.num_associated_categories = 1;
+  inputs2.belongs_to_most_seen_category = false;
+  inputs2.belongs_to_most_used_category = false;
+  inputs2.most_frequent_category_seen_count_last_24h = 1;
+  inputs2.most_frequent_category_used_count_last_24h = 1;
 
   {
     new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
@@ -244,6 +254,54 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest,
     EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
 
     EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 1, 1 + 0));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_NUM_ABANDONED_CARTS);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_NUM_ASSOCIATED_CATEGORIES);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(1 + 2, 0 + 1));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_SEEN_CATEGORY);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_USED_CATEGORY);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(1 + 1, 0 + 0));
+  }
+
+  {
+    new_tab_page::proto::HistoryClustersModuleRankingModelMetadata metadata;
+    metadata.set_version(HistoryClustersModuleRankingSignals::kClientVersion);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_SEEN_CATEGORY_COUNT);
+    metadata.add_signals(
+        new_tab_page::proto::
+            HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_USED_CATEGORY_COUNT);
+    PushModelFileToModelExecutor(metadata);
+
+    EXPECT_TRUE(model_handler()->CanExecuteAvailableModel());
+
+    EXPECT_THAT(GetOutputs({inputs1, inputs2}), ElementsAre(2 + 1, 1 + 1));
   }
 }
 

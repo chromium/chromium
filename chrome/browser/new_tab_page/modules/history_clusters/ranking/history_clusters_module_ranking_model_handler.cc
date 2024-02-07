@@ -9,6 +9,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_metadata.pb.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace {
 
@@ -54,6 +55,28 @@ std::vector<float> ConstructInputVector(
       case new_tab_page::proto::HISTORY_CLUSTERS_MODULE_RANKING_NUM_TIMES_USED:
         input_vector.push_back(signals.num_times_used_last_24h);
         break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_NUM_ASSOCIATED_CATEGORIES:
+        input_vector.push_back(signals.num_associated_categories);
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_SEEN_CATEGORY:
+        input_vector.push_back(signals.belongs_to_most_seen_category);
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_BELONGS_TO_MOST_USED_CATEGORY:
+        input_vector.push_back(signals.belongs_to_most_used_category);
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_SEEN_CATEGORY_COUNT:
+        input_vector.push_back(
+            signals.most_frequent_category_seen_count_last_24h);
+        break;
+      case new_tab_page::proto::
+          HISTORY_CLUSTERS_MODULE_RANKING_MOST_FREQUENT_USED_CATEGORY_COUNT:
+        input_vector.push_back(
+            signals.most_frequent_category_used_count_last_24h);
+        break;
       default:
         NOTREACHED();
     }
@@ -66,6 +89,23 @@ void OnSingleExecutionComplete(std::vector<float>* outputs,
                                const std::optional<float>& output) {
   outputs->push_back(output.value_or(0.0));
   std::move(closure).Run();
+}
+
+std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
+  new_tab_page::proto::HistoryClustersModuleRankingModelMetadata model_metadata;
+  model_metadata.set_version(
+      HistoryClustersModuleRankingSignals::kClientVersion);
+
+  std::string serialized_metadata;
+  model_metadata.SerializeToString(&serialized_metadata);
+  optimization_guide::proto::Any any;
+  any.set_value(std::move(serialized_metadata));
+  any.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "HistoryClustersModuleRankingModelMetadata");
+
+  return any;
 }
 
 }  // namespace
@@ -81,7 +121,7 @@ HistoryClustersModuleRankingModelHandler::
           /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING,
-          /*model_metadata=*/std::nullopt) {
+          CreateModelMetadata()) {
   // Unloading the model is done via custom logic in this class.
   SetShouldUnloadModelOnComplete(false);
 }

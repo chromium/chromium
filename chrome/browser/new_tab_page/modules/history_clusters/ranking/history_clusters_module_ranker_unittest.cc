@@ -4,6 +4,9 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
 
+#include <set>
+#include <string>
+
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -12,7 +15,10 @@
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_test_support.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
+#include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -33,6 +39,7 @@
 
 namespace {
 
+using ntp::MockHistoryService;
 using segmentation_platform::DatabaseClient;
 using FeaturesCallback =
     segmentation_platform::DatabaseClient::FeaturesCallback;
@@ -71,6 +78,8 @@ class HistoryClustersModuleRankerTest : public testing::Test {
         std::make_unique<MockSegmentationPlatformService>();
 
     mock_database_client_ = std::make_unique<MockDatabaseClient>();
+
+    mock_history_service_ = std::make_unique<MockHistoryService>();
 
     mock_cart_service_ =
         std::make_unique<MockCartService>(testing_profile_.get());
@@ -121,6 +130,8 @@ class HistoryClustersModuleRankerTest : public testing::Test {
 
   MockDatabaseClient& mock_database_client() { return *mock_database_client_; }
 
+  MockHistoryService& mock_history_service() { return *mock_history_service_; }
+
   MockCartService& mock_cart_service() { return *mock_cart_service_; }
 
  protected:
@@ -132,6 +143,7 @@ class HistoryClustersModuleRankerTest : public testing::Test {
   std::unique_ptr<MockSegmentationPlatformService>
       mock_segmentation_platform_service_;
   std::unique_ptr<MockDatabaseClient> mock_database_client_;
+  std::unique_ptr<MockHistoryService> mock_history_service_;
   std::unique_ptr<MockCartService> mock_cart_service_;
 };
 
@@ -179,11 +191,26 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
         false;
   }
 
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
+
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr,
-      /*segmentation_platform_service=*/nullptr, /*cart_service=*/nullptr,
-      boost);
+      /*segmentation_platform_service=*/nullptr,
+      /*history_service=*/&history_service,
+      /*cart_service=*/nullptr, boost);
+
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
@@ -284,11 +311,26 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
         false;
   }
 
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
+
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr,
-      /*segmentation_platform_service=*/nullptr, /*cart_service=*/nullptr,
-      boost);
+      /*segmentation_platform_service=*/nullptr,
+      /*history_service=*/&history_service,
+      /*cart_service=*/nullptr, boost);
+
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters = RankClusters(
       module_ranker.get(), {cluster1, cluster2, cluster3}, &ranking_signals);
@@ -328,44 +370,89 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
   EXPECT_TRUE(ranking_signals[3].belongs_to_boosted_category);
 }
 
-TEST_F(HistoryClustersModuleRankerTest, RecencyWithClusterMetrics) {
-  base::Time now = base::Time::Now();
-  history::AnnotatedVisit visit1 =
-      history_clusters::testing::CreateDefaultAnnotatedVisit(
-          1, GURL("https://github.com/"));
-  visit1.visit_row.is_known_to_sync = true;
-  visit1.content_annotations.has_url_keyed_image = true;
-  visit1.visit_row.visit_time = now - base::Hours(2);
-  history::Cluster cluster1;
-  cluster1.cluster_id = 1;
-  cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-      visit1, /*normalized_url=*/std::nullopt, 1.0)};
+class HistoryClustersModuleRankerWithMetricsTest
+    : public HistoryClustersModuleRankerTest,
+      public ::testing::WithParamInterface<bool> {};
 
-  history::AnnotatedVisit visit2 =
+INSTANTIATE_TEST_SUITE_P(All,
+                         HistoryClustersModuleRankerWithMetricsTest,
+                         ::testing::Bool());
+
+TEST_P(HistoryClustersModuleRankerWithMetricsTest,
+       RecencyWithClusterAndCategoryMetrics) {
+  base::Time now = base::Time::Now();
+  bool add_category_metrics = GetParam();
+  const int kSampleCategoryWeight = 95;
+
+  const auto kSampleCategory1 = std::string("category1");
+  history::AnnotatedVisit cluster1_visit =
       history_clusters::testing::CreateDefaultAnnotatedVisit(
           1, GURL("https://github.com/"));
-  visit2.visit_row.is_known_to_sync = true;
-  visit2.content_annotations.has_url_keyed_image = true;
-  visit2.visit_row.visit_time = now - base::Hours(1);
-  history::Cluster cluster2;
-  cluster2.cluster_id = 2;
-  cluster2.visits = {history_clusters::testing::CreateClusterVisit(
-      visit2, /*normalized_url=*/std::nullopt, 1.0)};
+  cluster1_visit.visit_row.is_known_to_sync = true;
+  cluster1_visit.content_annotations.has_url_keyed_image = true;
+  cluster1_visit.visit_row.visit_time = now - base::Hours(2);
+  const auto kSampleCategory2 = std::string("category2");
+  history::AnnotatedVisit cluster2_visit =
+      history_clusters::testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://github.com/"));
+  cluster2_visit.visit_row.is_known_to_sync = true;
+  cluster2_visit.content_annotations.has_url_keyed_image = true;
+  cluster2_visit.visit_row.visit_time = now - base::Hours(1);
+
+  if (add_category_metrics) {
+    cluster1_visit.content_annotations.model_annotations.categories = {
+        {kSampleCategory1, kSampleCategoryWeight}};
+
+    cluster2_visit.content_annotations.model_annotations.categories = {
+        {kSampleCategory2, kSampleCategoryWeight}};
+  }
+
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, false, false, _, _))
+      .WillOnce(Invoke(
+          [&cluster1_visit, &cluster2_visit](
+              const history::QueryOptions& options,
+              bool compute_redirect_chain_start_properties,
+              bool get_unclustered_visits_only,
+              history::HistoryService::GetAnnotatedVisitsCallback callback,
+              base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({cluster1_visit, cluster2_visit});
+            return 0;
+          }));
 
   auto& segmentation_platform_service = mock_segmentation_platform_service();
   EXPECT_CALL(segmentation_platform_service, GetDatabaseClient())
       .WillOnce(testing::Return(&mock_database_client()));
 
+  std::vector<float> frequencies = {2.0, 1.0, 1.0, 0.0};
+  if (add_category_metrics) {
+    frequencies.insert(frequencies.end(),
+                       {/*category1 seen*/ 3, /*category2 seen*/ 7,
+                        /*category1 used*/ 5, /*category2 used*/ 10});
+  }
   EXPECT_CALL(mock_database_client(), ProcessFeatures(_, _, _))
-      .WillOnce(Invoke([](const SegmentationModelMetadata& metadata,
-                          base::Time end_time, FeaturesCallback callback) {
-        std::move(callback).Run(ResultStatus::kSuccess, {2.0, 1.0, 1.0, 0.0});
+      .WillOnce(Invoke([&frequencies](const SegmentationModelMetadata& metadata,
+                                      base::Time end_time,
+                                      FeaturesCallback callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, frequencies);
       }));
 
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr,
-      &segmentation_platform_service, /*cart_service=*/nullptr, boost);
+      /*segmentation_platform_service=*/&segmentation_platform_service,
+      /*history_service=*/&history_service,
+      /*cart_service=*/nullptr, boost);
+
+  history::Cluster cluster1;
+  cluster1.cluster_id = 1;
+  cluster1.visits = {history_clusters::testing::CreateClusterVisit(
+      cluster1_visit, /*normalized_url=*/std::nullopt, 1.0)};
+  history::Cluster cluster2;
+  cluster2.cluster_id = 2;
+  cluster2.visits = {history_clusters::testing::CreateClusterVisit(
+      cluster2_visit, /*normalized_url=*/std::nullopt, 1.0)};
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
@@ -378,9 +465,23 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyWithClusterMetrics) {
   EXPECT_TRUE(ranking_signals.contains(1));
   EXPECT_EQ(ranking_signals[1].num_times_seen_last_24h, 2u);
   EXPECT_EQ(ranking_signals[1].num_times_used_last_24h, 1u);
+  EXPECT_EQ(ranking_signals[1].belongs_to_most_seen_category, false);
+  EXPECT_EQ(ranking_signals[1].belongs_to_most_used_category, false);
   EXPECT_TRUE(ranking_signals.contains(2));
   EXPECT_EQ(ranking_signals[2].num_times_seen_last_24h, 1u);
   EXPECT_EQ(ranking_signals[2].num_times_used_last_24h, 0u);
+  if (add_category_metrics) {
+    EXPECT_EQ(ranking_signals[1].most_frequent_category_seen_count_last_24h,
+              7u);
+    EXPECT_EQ(ranking_signals[1].most_frequent_category_used_count_last_24h,
+              10u);
+    EXPECT_EQ(ranking_signals[2].belongs_to_most_seen_category, true);
+    EXPECT_EQ(ranking_signals[2].belongs_to_most_used_category, true);
+    EXPECT_EQ(ranking_signals[2].most_frequent_category_seen_count_last_24h,
+              7u);
+    EXPECT_EQ(ranking_signals[2].most_frequent_category_used_count_last_24h,
+              10u);
+  }
 }
 
 class HistoryClustersModuleRankerCartTest
@@ -442,10 +543,24 @@ TEST_F(HistoryClustersModuleRankerCartTest,
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(true, carts);
           })));
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
+
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr,
-      /*segmentation_platform_service=*/nullptr, &cart_service, boost);
+      /*segmentation_platform_service=*/nullptr, &history_service,
+      &cart_service, boost);
   std::vector<history::Cluster> clusters =
       RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
 
@@ -574,11 +689,24 @@ TEST_F(HistoryClustersModuleRankerWithModelTest,
         false;
   }
 
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
   auto model_provider = std::make_unique<
       optimization_guide::TestOptimizationGuideModelProvider>();
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       model_provider.get(), /*segmentation_platform_service=*/nullptr,
+      &history_service,
       /*cart_service=*/nullptr, boost);
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters =
@@ -688,6 +816,18 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   auto& cart_service = mock_cart_service();
   cart_db::ChromeCartContentProto cart_proto;
   std::vector<CartDB::KeyAndValue> carts = {{"amazon.com", cart_proto}};
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
   EXPECT_CALL(cart_service, LoadAllActiveCarts(base::test::IsNotNullCallback()))
       .WillOnce(testing::WithArgs<0>(
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
@@ -695,7 +835,7 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
           })));
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       model_provider.get(), /*segmentation_platform_service=*/nullptr,
-      &cart_service, boost);
+      &history_service, &cart_service, boost);
   auto model_handler = std::make_unique<FakeModelHandler>(model_provider.get());
   module_ranker->OverrideModelHandlerForTesting(std::move(model_handler));
   base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
@@ -755,12 +895,25 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailableScoreThreshold) {
   history::Cluster cluster2 = cluster1;
   cluster2.cluster_id = 2;
 
+  auto& history_service = mock_history_service();
+  EXPECT_CALL(history_service, GetAnnotatedVisits(_, _, _, _, _))
+      .WillOnce(Invoke(
+          [](const history::QueryOptions& options,
+             bool compute_redirect_chain_start_properties,
+             bool get_unclustered_visits_only,
+             history::HistoryService::GetAnnotatedVisitsCallback callback,
+             base::CancelableTaskTracker* tracker)
+              -> base::CancelableTaskTracker::TaskId {
+            std::move(callback).Run({});
+            return 0;
+          }));
+
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
   auto model_provider = std::make_unique<
       optimization_guide::TestOptimizationGuideModelProvider>();
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       model_provider.get(), /*optimization_guide_model_provider=*/nullptr,
-      nullptr, boost);
+      &history_service, /*cart_service=*/nullptr, boost);
   auto model_handler =
       std::make_unique<MockHistoryClustersModuleRankingModelHandler>(
           model_provider.get());

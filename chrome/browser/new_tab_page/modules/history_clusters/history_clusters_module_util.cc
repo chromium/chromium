@@ -208,7 +208,7 @@ history::Cluster GenerateSampleCluster(int64_t cluster_id,
       GenerateSampleVisit(0, kSampleSearchQuery + " - Google Search",
                           GURL("https://www.google.com/search?q=" +
                                std::string(encoded_query.view())),
-                          false));
+                          false, visit_categories));
 
   return history::Cluster(
       cluster_id, sample_visits, {},

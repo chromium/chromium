@@ -16618,6 +16618,16 @@ be describing additional metrics about the same event.
       Cluster is of a boosted category.
     </summary>
   </metric>
+  <metric name="BelongsToMostSeenCategory" enum="Boolean">
+    <summary>
+      Cluster is of the most frequently seen category.
+    </summary>
+  </metric>
+  <metric name="BelongsToMostUsedCategory" enum="Boolean">
+    <summary>
+      Cluster is of the most frequently used category.
+    </summary>
+  </metric>
   <metric name="DidDisableModule" enum="Boolean">
     <summary>
       Whether the user disabled the module.
@@ -16650,9 +16660,26 @@ be describing additional metrics about the same event.
       bucketed using GetExponentialBucketMin with a spacing of 1.3.
     </summary>
   </metric>
+  <metric name="MostFrequentSeenCategoryCount">
+    <summary>
+      The number of times the most frequently seen category by a user occurred
+      in a fixed time period.
+    </summary>
+  </metric>
+  <metric name="MostFrequentUsedCategoryCount">
+    <summary>
+      The number of times the most frequently used category by a user occurred
+      in a fixed time period.
+    </summary>
+  </metric>
   <metric name="NumAbandonedCarts">
     <summary>
       Number of abandoned carts associated with the cluster.
+    </summary>
+  </metric>
+  <metric name="NumAssociatedCategories">
+    <summary>
+      Number of categories associated with the cluster.
     </summary>
   </metric>
   <metric name="NumTimesSeenLast24h">

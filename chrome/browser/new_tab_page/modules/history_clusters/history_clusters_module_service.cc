@@ -16,6 +16,8 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
@@ -69,6 +71,7 @@ base::Time GetBeginTime() {
 
 HistoryClustersModuleService::HistoryClustersModuleService(
     history_clusters::HistoryClustersService* history_clusters_service,
+    history::HistoryService* history_service,
     CartService* cart_service,
     TemplateURLService* template_url_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
@@ -88,7 +91,7 @@ HistoryClustersModuleService::HistoryClustersModuleService(
       optimization_guide_keyed_service) {
     module_ranker_ = std::make_unique<HistoryClustersModuleRanker>(
         optimization_guide_keyed_service, segmentation_platform_service,
-        cart_service_, category_boostlist_);
+        history_service, cart_service_, category_boostlist_);
   }
 }
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
