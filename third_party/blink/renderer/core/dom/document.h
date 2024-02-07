@@ -882,7 +882,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool WellFormed() const { return well_formed_; }
 
-  const DocumentToken& Token() const { return token_; }
+  const DocumentToken& Token() const {
+    if (!token_.has_value()) {
+      token_.emplace();
+    }
+    return token_.value();
+  }
 
   // Return the document URL, or an empty URL if it's unavailable.
   // This is not an implementation of web-exposed Document.prototype.URL.
@@ -2288,7 +2293,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ResizeObserver& GetLazyLoadedAutoSizedImgObserver();
 
-  const DocumentToken token_;
+  // Mutable because the token is lazily-generated on demand if no token is
+  // explicitly set.
+  mutable std::optional<DocumentToken> token_;
 
   // Bitfield used for tracking UKM sampling of media features such that each
   // media feature is sampled only once per document.
