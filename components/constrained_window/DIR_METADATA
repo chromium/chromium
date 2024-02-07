@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Internals>Views"
+}
+buganizer_public: {
+  component_id: 1456991
 }
