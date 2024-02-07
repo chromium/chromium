@@ -343,6 +343,12 @@ const char
         "security "
         "settings page.";
 
+const char kDisableLensCameraName[] = "Disable Lens camera experience";
+const char kDisableLensCameraDescription[] =
+    "When enabled, the option use Lens to search for images from your device "
+    "camera menu when Google is the selected search engine, accessible from "
+    "the home screen widget, new tab page, and keyboard, is disabled.";
+
 const char kEnableRedInterstitialFaceliftName[] = "Red interstitial facelift";
 const char kEnableRedInterstitialFaceliftDescription[] =
     "Enables red interstitial facelift UI changes, including icon, string, and "

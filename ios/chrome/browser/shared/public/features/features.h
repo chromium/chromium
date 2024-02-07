@@ -370,6 +370,9 @@ BASE_DECLARE_FEATURE(kTabGroupsInGrid);
 // Enabled by default.
 BASE_DECLARE_FEATURE(kIOSExternalActionURLs);
 
+// Feature flag to disable Lens LVF features.
+BASE_DECLARE_FEATURE(kDisableLensCamera);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

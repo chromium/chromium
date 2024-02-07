@@ -125,6 +125,7 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   // Create and add a stackview containing the leading assistive buttons, i.e.
   // Voice search, camera/Lens search and paste search.
   BOOL useLens = ios::provider::IsLensSupported() &&
+                 !base::FeatureList::IsEnabled(kDisableLensCamera) &&
                  [self isGoogleSearchEngine:self.templateURLService];
   NSArray<UIControl*>* leadingControls =
       OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget,

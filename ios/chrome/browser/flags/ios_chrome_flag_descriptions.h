@@ -312,6 +312,11 @@ extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
 extern const char
     kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
 
+// Title and description for the flag to disable the Lens input selection
+// and camera experience.
+extern const char kDisableLensCameraName[];
+extern const char kDisableLensCameraDescription[];
+
 // Title and description for the flag to enable red interstitial facelift UI
 // changes.
 extern const char kEnableRedInterstitialFaceliftName[];

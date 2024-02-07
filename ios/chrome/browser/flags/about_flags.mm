@@ -1633,6 +1633,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-grid-always-bounce", flag_descriptions::kTabGridAlwaysBounceName,
      flag_descriptions::kTabGridAlwaysBounceDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridAlwaysBounce)},
+    {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
+     flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisableLensCamera)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
