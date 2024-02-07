@@ -26,7 +26,6 @@ class CannedCacheStorageHelper;
 class CannedCookieHelper;
 class CannedDatabaseHelper;
 class CannedFileSystemHelper;
-class CannedIndexedDBHelper;
 class CannedServiceWorkerHelper;
 class CannedSharedWorkerHelper;
 class CannedLocalStorageHelper;
@@ -73,7 +72,6 @@ class LocalSharedObjectsContainer {
   CannedCookieHelper* cookies() const { return cookies_.get(); }
   CannedDatabaseHelper* databases() const { return databases_.get(); }
   CannedFileSystemHelper* file_systems() const { return file_systems_.get(); }
-  CannedIndexedDBHelper* indexed_dbs() const { return indexed_dbs_.get(); }
   CannedLocalStorageHelper* local_storages() const {
     return local_storages_.get();
   }
@@ -96,7 +94,6 @@ class LocalSharedObjectsContainer {
   scoped_refptr<CannedCookieHelper> cookies_;
   scoped_refptr<CannedDatabaseHelper> databases_;
   scoped_refptr<CannedFileSystemHelper> file_systems_;
-  scoped_refptr<CannedIndexedDBHelper> indexed_dbs_;
   scoped_refptr<CannedLocalStorageHelper> local_storages_;
   scoped_refptr<CannedServiceWorkerHelper> service_workers_;
   scoped_refptr<CannedSharedWorkerHelper> shared_workers_;

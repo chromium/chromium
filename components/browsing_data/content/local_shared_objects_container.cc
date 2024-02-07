@@ -16,7 +16,6 @@
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
 #include "components/browsing_data/content/file_system_helper.h"
-#include "components/browsing_data/content/indexed_db_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
@@ -52,8 +51,6 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
       file_systems_(base::MakeRefCounted<CannedFileSystemHelper>(
           storage_partition->GetFileSystemContext(),
           additional_file_system_types)),
-      indexed_dbs_(
-          base::MakeRefCounted<CannedIndexedDBHelper>(storage_partition)),
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
           storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
@@ -74,7 +71,6 @@ size_t LocalSharedObjectsContainer::GetObjectCount() const {
   count += cookies()->GetCookieCount();
   count += databases()->GetCount();
   count += file_systems()->GetCount();
-  count += indexed_dbs()->GetCount();
   count += local_storages()->GetCount();
   count += service_workers()->GetCount();
   count += shared_workers()->GetSharedWorkerCount();
@@ -147,11 +143,6 @@ LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
     origins[storage_key.origin()]++;
   }
 
-  for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    origins[storage_key.origin()]++;
-  }
-
   for (const auto& origin : service_workers()->GetOrigins())
     origins[origin]++;
 
@@ -181,7 +172,6 @@ void LocalSharedObjectsContainer::Reset() {
   cookies_->Reset();
   databases_->Reset();
   file_systems_->Reset();
-  indexed_dbs_->Reset();
   local_storages_->Reset();
   service_workers_->Reset();
   shared_workers_->Reset();

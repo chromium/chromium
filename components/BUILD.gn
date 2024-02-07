@@ -929,7 +929,6 @@ if (use_blink) {
       "browsing_data/content/browsing_data_helper_browsertest.h",
       "browsing_data/content/cache_storage_helper_browsertest.cc",
       "browsing_data/content/database_helper_browsertest.cc",
-      "browsing_data/content/indexed_db_helper_browsertest.cc",
       "browsing_data/content/local_storage_helper_browsertest.cc",
       "content_settings/renderer/content_settings_agent_impl_browsertest.cc",
       "continuous_search/renderer/search_result_extractor_browsertest.cc",

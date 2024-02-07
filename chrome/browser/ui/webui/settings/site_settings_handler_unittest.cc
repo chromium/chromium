@@ -874,7 +874,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         mock_browsing_data_cookie_helper,
         /*database_helper=*/nullptr, mock_browsing_data_local_storage_helper,
         /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
         /*file_system_helper=*/nullptr,
         /*quota_helper=*/nullptr,
         /*service_worker_helper=*/nullptr,
