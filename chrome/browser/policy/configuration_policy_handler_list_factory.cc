@@ -200,6 +200,7 @@
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -1195,7 +1196,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kRebootAfterUpdate,
     base::Value::Type::BOOLEAN },
   { key::kChromeOsMultiProfileUserBehavior,
-    prefs::kMultiProfileUserBehavior,
+    user_manager::prefs::kMultiProfileUserBehaviorPref,
     base::Value::Type::STRING },
   { key::kKeyboardDefaultToFunctionKeys,
     ash::prefs::kSendFunctionKeys,

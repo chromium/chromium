@@ -44,6 +44,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -503,8 +504,9 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
       false /* is_child */);
   ResetUserManager();
 
-  EXPECT_EQ(
-      1U, local_state_->Get()->GetList(user_manager::kRegularUsersPref).size());
+  EXPECT_EQ(1U, local_state_->Get()
+                    ->GetList(user_manager::prefs::kRegularUsersPref)
+                    .size());
   EXPECT_EQ(2U, user_manager::UserManager::Get()->GetUsers().size());
 
   SetDeviceSettings(
@@ -512,8 +514,9 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
       /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
-  EXPECT_TRUE(
-      local_state_->Get()->GetList(user_manager::kRegularUsersPref).empty());
+  EXPECT_TRUE(local_state_->Get()
+                  ->GetList(user_manager::prefs::kRegularUsersPref)
+                  .empty());
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUsers().size());
 }
 

@@ -105,6 +105,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
@@ -117,12 +118,16 @@
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
-namespace {
 
 // TODO(b/278643115) Remove the using when moved.
-using user_manager::kMultiProfileUserBehaviorPref;
+namespace prefs {
+using user_manager::prefs::kMultiProfileUserBehaviorPref;
+using user_manager::prefs::kRegularUsersPref;
+}  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
 using user_manager::ParseMultiUserSignInPolicyPref;
+
+namespace {
 
 using ::content::BrowserThread;
 
@@ -168,7 +173,7 @@ bool GetUserLockAttributes(const user_manager::User* user,
   }
   if (policy) {
     *policy = ParseMultiUserSignInPolicyPref(
-                  prefs->GetString(kMultiProfileUserBehaviorPref))
+                  prefs->GetString(prefs::kMultiProfileUserBehaviorPref))
                   .value_or(MultiUserSignInPolicy::kUnrestricted);
   }
   return true;
@@ -696,7 +701,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
-                                            user_manager::kRegularUsersPref);
+                                            prefs::kRegularUsersPref);
     // Take snapshot because DeleteUser called in the loop will update it.
     std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
     for (user_manager::User* user : users) {

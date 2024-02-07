@@ -38,6 +38,7 @@
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -300,7 +301,7 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   }
 
   user_profile->GetPrefs()->SetString(
-      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::prefs::kMultiProfileUserBehaviorPref,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
@@ -429,7 +430,7 @@ TEST_F(SessionControllerClientImplTest,
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   user_profile->GetPrefs()->SetString(
-      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::prefs::kMultiProfileUserBehaviorPref,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   user_manager()->AddUser(

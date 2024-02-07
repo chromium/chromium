@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -18,12 +17,18 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
 
 // TODO(b/278643115) Remove the using when moved.
-using user_manager::kMultiProfileUserBehaviorPref;
+namespace prefs {
+using user_manager::prefs::kCachedMultiProfileUserBehavior;
+using user_manager::prefs::kMultiProfileNeverShowIntro;
+using user_manager::prefs::kMultiProfileUserBehaviorPref;
+using user_manager::prefs::kMultiProfileWarningShowDismissed;
+}  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
 using user_manager::MultiUserSignInPolicyToPrefValue;
 using user_manager::ParseMultiUserSignInPolicyPref;
@@ -56,7 +61,7 @@ void MultiProfileUserController::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 void MultiProfileUserController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(kMultiProfileUserBehaviorPref,
+  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
                                std::string(MultiUserSignInPolicyToPrefValue(
                                    MultiUserSignInPolicy::kUnrestricted)));
   registry->RegisterBooleanPref(
@@ -85,7 +90,7 @@ MultiProfileUserController::GetPrimaryUserPolicy() const {
 
   // No user is allowed if the primary user policy forbids it.
   auto value = ParseMultiUserSignInPolicyPref(
-      profile->GetPrefs()->GetString(kMultiProfileUserBehaviorPref));
+      profile->GetPrefs()->GetString(prefs::kMultiProfileUserBehaviorPref));
   if (value == MultiUserSignInPolicy::kNotAllowed) {
     return NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS;
   }
@@ -130,7 +135,7 @@ void MultiProfileUserController::StartObserving(Profile* user_profile) {
   std::unique_ptr<PrefChangeRegistrar> registrar(new PrefChangeRegistrar);
   registrar->Init(user_profile->GetPrefs());
   registrar->Add(
-      prefs::kMultiProfileUserBehavior,
+      prefs::kMultiProfileUserBehaviorPref,
       base::BindRepeating(&MultiProfileUserController::OnUserPrefChanged,
                           base::Unretained(this), user_profile));
   pref_watchers_.push_back(std::move(registrar));
@@ -182,7 +187,7 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
   user_email = gaia::CanonicalizeEmail(user_email);
 
   PrefService* prefs = user_profile->GetPrefs();
-  if (prefs->FindPreference(prefs::kMultiProfileUserBehavior)
+  if (prefs->FindPreference(prefs::kMultiProfileUserBehaviorPref)
           ->IsDefaultValue()) {
     // Migration code to clear cached default behavior.
     // TODO(xiyuan): Remove this after M35.
@@ -191,7 +196,7 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
     update->Remove(user_email);
   } else {
     auto policy = ParseMultiUserSignInPolicyPref(
-        prefs->GetString(kMultiProfileUserBehaviorPref));
+        prefs->GetString(prefs::kMultiProfileUserBehaviorPref));
     SetCachedValue(user_email,
                    policy.value_or(MultiUserSignInPolicy::kUnrestricted));
   }

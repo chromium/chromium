@@ -9,6 +9,7 @@ component("user_manager") {
     "multi_user/multi_user_sign_in_policy.cc",
     "multi_user/multi_user_sign_in_policy.h",
     "user_manager_export.h",
+    "user_manager_pref_names.h",
     "user_names.cc",
     "user_names.h",
     "user_type.cc",

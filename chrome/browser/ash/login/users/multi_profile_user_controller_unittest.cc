@@ -30,6 +30,7 @@
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/x509_certificate.h"
@@ -39,13 +40,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-namespace {
 
 // TODO(b/278643115) Remove the using when moved.
-using user_manager::kMultiProfileUserBehaviorPref;
+namespace prefs {
+using user_manager::prefs::kCachedMultiProfileUserBehavior;
+using user_manager::prefs::kMultiProfileUserBehaviorPref;
+}  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
 using user_manager::MultiUserSignInPolicyToPrefValue;
 using user_manager::ParseMultiUserSignInPolicyPref;
+
+namespace {
 
 const char* const kUsers[] = {"a@gmail.com", "b@gmail.com"};
 
@@ -191,7 +196,7 @@ class MultiProfileUserControllerTest : public testing::Test {
 
   void SetPrefBehavior(size_t user_index, MultiUserSignInPolicy policy) {
     GetUserPrefs(user_index)
-        ->SetString(prefs::kMultiProfileUserBehavior,
+        ->SetString(prefs::kMultiProfileUserBehaviorPref,
                     MultiUserSignInPolicyToPrefValue(policy));
   }
 

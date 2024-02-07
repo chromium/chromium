@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/metrics/demographics/user_demographics.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/variations/service/google_groups_updater_service.h"
 #include "ui/events/ash/pref_names.h"
 #endif
@@ -1007,11 +1008,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kLanguageRemapSearchKeyTo,
       syncer::OS_PRIORITY_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kMultiProfileNeverShowIntro,
+    {user_manager::prefs::kMultiProfileNeverShowIntro,
      {syncable_prefs_ids::kMultiProfileNeverShowIntro, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kMultiProfileWarningShowDismissed,
+    {user_manager::prefs::kMultiProfileWarningShowDismissed,
      {syncable_prefs_ids::kMultiProfileWarningShowDismissed,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

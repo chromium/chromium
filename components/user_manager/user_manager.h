@@ -23,10 +23,6 @@ namespace internal {
 class ScopedUserManagerImpl;
 }  // namespace internal
 
-// A list pref of the the regular users known on this device, arranged in LRU
-// order, stored in local state.
-USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
-
 enum class UserRemovalReason : int32_t {
   UNKNOWN = 0,
   LOCAL_USER_INITIATED = 1,

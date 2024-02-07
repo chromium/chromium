@@ -18,13 +18,6 @@ enum class MultiUserSignInPolicy {
   kNotAllowed = 2,
 };
 
-// A string pref that holds string enum values of how the user should behave
-// in a multi-user sign-in session. See ChromeOsMultiProfileUserBehavior policy
-// for more details of the valid values.
-// Named MultiProfile for historical reasons.
-inline constexpr char kMultiProfileUserBehaviorPref[] =
-    "settings.multiprofile_user_behavior";
-
 // Stringifies the policy to store in the pref.
 USER_MANAGER_EXPORT std::string_view MultiUserSignInPolicyToPrefValue(
     MultiUserSignInPolicy policy);
