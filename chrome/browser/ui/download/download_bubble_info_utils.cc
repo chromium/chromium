@@ -52,7 +52,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
                           kColorDownloadItemIconDangerous};
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       if (enterprise_connectors::ShouldPromptReviewForDownload(
-              model.profile(), model.GetDangerType())) {
+              model.profile(), model.GetDownloadItem())) {
         return IconAndColor{features::IsChromeRefresh2023()
                                 ? &kDownloadWarningIcon
                                 : &vector_icons::kNotSecureWarningIcon,
@@ -132,7 +132,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
   }
 
   if (enterprise_connectors::ShouldPromptReviewForDownload(
-          model.profile(), model.GetDangerType())) {
+          model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
         return IconAndColor{features::IsChromeRefresh2023()

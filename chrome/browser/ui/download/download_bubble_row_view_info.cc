@@ -113,7 +113,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
   }
 
   if (enterprise_connectors::ShouldPromptReviewForDownload(
-          model_->profile(), model_->GetDangerType())) {
+          model_->profile(), model_->GetDownloadItem())) {
     switch (model_->GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
         primary_button_command_ = DownloadCommands::Command::REVIEW;
@@ -288,7 +288,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     }
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       if (enterprise_connectors::ShouldPromptReviewForDownload(
-              model_->profile(), model_->GetDangerType())) {
+              model_->profile(), model_->GetDownloadItem())) {
         primary_button_command_ = DownloadCommands::Command::REVIEW;
       } else {
         has_subpage_ = true;

@@ -402,7 +402,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       enterprise_connectors::ShouldPromptReviewForDownload(
           Profile::FromBrowserContext(
               content::DownloadItemUtils::GetBrowserContext(download_item)),
-          download_item->GetDangerType());
+          download_item);
 
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;

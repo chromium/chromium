@@ -175,7 +175,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
       return;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       if (!enterprise_connectors::ShouldPromptReviewForDownload(
-              model.profile(), model.GetDangerType())) {
+              model.profile(), model.GetDownloadItem())) {
         warning_summary_ = l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK);
       }
@@ -286,7 +286,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
   }
 
   if (enterprise_connectors::ShouldPromptReviewForDownload(
-          model.profile(), model.GetDangerType())) {
+          model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:

@@ -951,7 +951,7 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
                            kColorDownloadItemIconDangerous);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       if (enterprise_connectors::ShouldPromptReviewForDownload(
-              profile(), GetDangerType())) {
+              profile(), GetDownloadItem())) {
         return DownloadUIModel::BubbleUIInfo()
             .AddIconAndColor(features::IsChromeRefresh2023()
                                  ? kDownloadWarningIcon
@@ -1102,7 +1102,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
   }
 
   if (enterprise_connectors::ShouldPromptReviewForDownload(profile(),
-                                                           GetDangerType())) {
+                                                           GetDownloadItem())) {
     switch (GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
         return DownloadUIModel::BubbleUIInfo()

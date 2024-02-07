@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 
 namespace enterprise_connectors {
 
@@ -26,7 +27,9 @@ class ContentAnalysisDownloadsDelegate
       bool bypass_justification_required,
       base::OnceCallback<void()> open_file_callback,
       base::OnceCallback<void()> discard_file_callback,
-      download::DownloadItem* download_item);
+      download::DownloadItem* download_item,
+      const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+          custom_rule_message);
   ~ContentAnalysisDownloadsDelegate() override;
 
   // Called when the user opts to keep the download and open it. Should not be
@@ -58,6 +61,10 @@ class ContentAnalysisDownloadsDelegate
   // can't be attempted on a file that has already been opened or discarded
   // (which may be undefined).
   void ResetCallbacks();
+
+  // Custom message for rule.
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_rule_message_;
 
   std::u16string filename_;
   std::u16string custom_message_;

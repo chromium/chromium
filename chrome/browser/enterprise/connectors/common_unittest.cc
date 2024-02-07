@@ -12,8 +12,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/fake_download_item.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -237,6 +240,33 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
 
   EXPECT_EQ(custom_message, expected_message());
   EXPECT_TRUE(custom_ranges.empty());
+}
+
+TEST_P(ContentAnalysisResponseCustomMessageTest, DownloadsItemCustomMessage) {
+  ContentAnalysisResponse response =
+      CreateContentAnalysisResponse(triggered_rules(), kTestUrl);
+  download::DownloadDangerType danger_type;
+  TriggeredRule::Action action = GetHighestPrecedenceAction(response, nullptr);
+  if (action == TriggeredRule::WARN) {
+    danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING;
+  } else {
+    danger_type = download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
+  }
+
+  // Create download item
+  testing::NiceMock<download::MockDownloadItem> item;
+  enterprise_connectors::FileMetadata file_metadata(
+      "examplename", "12345678", "fake/mimetype", 1234, response);
+  auto scan_result = std::make_unique<enterprise_connectors::ScanResult>(
+      std::move(file_metadata));
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::move(scan_result));
+
+  auto custom_rule_message = GetDownloadsCustomRuleMessage(&item, danger_type);
+  EXPECT_EQ(custom_rule_message.has_value()
+                ? GetCustomRuleString(custom_rule_message.value())
+                : std::u16string{},
+            expected_message());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1095,7 +1095,7 @@ void DownloadItemModel::ReviewScanningVerdict(
       };
   enterprise_connectors::ShowDownloadReviewDialog(
       GetFileNameToReportUser().LossyDisplayName(), profile(), download_,
-      web_contents, download_->GetDangerType(),
+      web_contents,
       base::BindOnce(
           command_callback, std::make_unique<DownloadItemModel>(download_),
           std::make_unique<DownloadCommands>(DownloadUIModel::GetWeakPtr()),

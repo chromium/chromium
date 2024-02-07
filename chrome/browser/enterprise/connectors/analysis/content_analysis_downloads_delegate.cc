@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -20,8 +21,11 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     bool bypass_justification_required,
     base::OnceCallback<void()> open_file_callback,
     base::OnceCallback<void()> discard_file_callback,
-    download::DownloadItem* download_item)
-    : filename_(filename),
+    download::DownloadItem* download_item,
+    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
+        custom_rule_message)
+    : custom_rule_message_(custom_rule_message),
+      filename_(filename),
       custom_message_(custom_message),
       custom_learn_more_url_(custom_learn_more_url),
       bypass_justification_required_(bypass_justification_required),
@@ -75,6 +79,17 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
 
 std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
+  // Rule-based custom messages take precedence over policy-based.
+  if (IsDialogCustomRuleMessageEnabled()) {
+    std::u16string custom_rule_message =
+        GetCustomRuleString(custom_rule_message_);
+    if (!custom_rule_message.empty()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
+          custom_rule_message);
+    }
+  }
+
   if (custom_message_.empty())
     return std::nullopt;
   return l10n_util::GetStringFUTF16(
@@ -89,9 +104,17 @@ std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
   return custom_learn_more_url_;
 }
 
-// TODO(b/322829143): Implement per-rule custom message for downloads.
 std::optional<std::vector<std::pair<gfx::Range, GURL>>>
 ContentAnalysisDownloadsDelegate::GetCustomRuleMessageRanges() const {
+  std::vector<size_t> offsets;
+  l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE,
+                             {filename_, std::u16string{}}, &offsets);
+
+  std::vector<std::pair<gfx::Range, GURL>> custom_rule_message_ranges =
+      GetCustomRuleStyles(custom_rule_message_, offsets.back());
+  if (!custom_rule_message_ranges.empty()) {
+    return custom_rule_message_ranges;
+  }
   return std::nullopt;
 }
 
