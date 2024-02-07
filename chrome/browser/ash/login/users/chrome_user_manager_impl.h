@@ -39,6 +39,10 @@ namespace policy {
 class CloudExternalDataPolicyHandler;
 }  // namespace policy
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace ash {
 
 class MultiProfileUserController;
@@ -64,6 +68,7 @@ class ChromeUserManagerImpl
 
   // Registers user manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // UserManagerInterface implementation:
   MultiProfileUserController* GetMultiProfileUserController() override;

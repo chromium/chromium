@@ -279,9 +279,16 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
+  MultiProfileUserController::RegisterPrefs(registry);
 
   SessionLengthLimiter::RegisterPrefs(registry);
   enterprise_user_session_metrics::RegisterPrefs(registry);
+}
+
+// static
+void ChromeUserManagerImpl::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  MultiProfileUserController::RegisterProfilePrefs(registry);
 }
 
 // static
