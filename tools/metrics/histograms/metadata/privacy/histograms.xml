@@ -692,7 +692,7 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.AggregationService.Storage.Sql.RequestDelayFromUpdatedReportTime"
+    name="PrivacySandbox.AggregationService.Storage.Sql.RequestDelayFromUpdatedReportTime2"
     units="ms" expires_after="2024-07-21">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
