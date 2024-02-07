@@ -186,15 +186,6 @@ void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
   views::Button::OnGestureEvent(event);
 }
 
-void DeskButton::StateChanged(ButtonState old_state) {
-  if (GetState() != ButtonState::STATE_NORMAL &&
-      GetState() != ButtonState::STATE_HOVERED) {
-    return;
-  }
-
-  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !GetHovered());
-}
-
 void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   desk_button_container_->desk_button_widget()->MaybeFocusOut(reverse);
 }
@@ -242,10 +233,6 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
   // context menu.
   set_context_menu_controller(
       desk_button_container_->shelf()->hotseat_widget()->GetShelfView());
-}
-
-bool DeskButton::GetHovered() const {
-  return GetState() == ButtonState::STATE_HOVERED;
 }
 
 void DeskButton::SetActivation(bool is_activated) {

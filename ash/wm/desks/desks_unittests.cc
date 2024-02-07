@@ -11208,35 +11208,14 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenActivated) {
   ClickDeskButton();
   UnhoverDeskButton();
   EXPECT_TRUE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->GetHovered());
+  EXPECT_NE(desk_button->GetState(), views::Button::ButtonState::STATE_HOVERED);
   EXPECT_TRUE(shelf->disable_auto_hide());
 
   ClickDeskButton();
   UnhoverDeskButton();
   EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->GetHovered());
+  EXPECT_NE(desk_button->GetState(), views::Button::ButtonState::STATE_HOVERED);
   ASSERT_FALSE(shelf->disable_auto_hide());
-}
-
-// Tests that when the desk button is hovered, shelf auto-hide should be
-// suspended.
-TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
-  auto* shelf = GetPrimaryShelf();
-  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  ASSERT_FALSE(shelf->disable_auto_hide());
-
-  auto* desk_button = GetDeskButton();
-  ASSERT_TRUE(desk_button);
-
-  HoverDeskButton();
-  EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_TRUE(desk_button->GetHovered());
-  EXPECT_TRUE(shelf->disable_auto_hide());
-
-  UnhoverDeskButton();
-  EXPECT_FALSE(desk_button->is_activated());
-  EXPECT_FALSE(desk_button->GetHovered());
-  EXPECT_FALSE(shelf->disable_auto_hide());
 }
 
 // Tests that the desk button and its child components are correctly positioned

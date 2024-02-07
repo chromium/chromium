@@ -51,14 +51,11 @@ class ASH_EXPORT DeskButton : public views::Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void StateChanged(ButtonState old_state) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // Initializes the view. Must be called before any meaningful UIs can be laid
   // out.
   void Init(DeskButtonContainer* desk_button_container);
-
-  bool GetHovered() const;
 
   void SetActivation(bool is_activated);
 
@@ -115,11 +112,9 @@ class ASH_EXPORT DeskButton : public views::Button {
   // button has been pressed).
   bool is_activated_ = false;
 
-  // Used to suspend the shelf from auto-hiding when the button is activated or
-  // hovered.
+  // Used to suspend the shelf from auto-hiding when the button is activated.
   std::optional<Shelf::ScopedDisableAutoHide>
       disable_shelf_auto_hide_activation_;
-  std::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DeskButton, views::Button)
