@@ -6815,6 +6815,21 @@
             ]
         }
     ],
+    "EnableMojoJSProtectedMemory": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableMojoJSProtectedMemory"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableNtpHistoryClustersModuleDiscounts": [
         {
             "platforms": [
