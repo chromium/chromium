@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
 namespace ash {
@@ -28,7 +29,12 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
 
  private:
   void SetFwupdFeatureFlags() override;
-  bool install_success_ = false;
+
+  // The temporary directory where fake update files are created.
+  base::ScopedTempDir temp_directory_;
+
+  // Creates a fake update file (with .cab extension) in a temporary directory.
+  base::FilePath CreateUpdateFilePath();
 };
 
 }  // namespace ash
