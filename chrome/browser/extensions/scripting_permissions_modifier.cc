@@ -45,10 +45,11 @@ void ScriptingPermissionsModifier::SetWithholdHostPermissions(
   extension_prefs_->SetWithholdingPermissions(extension_->id(),
                                               should_withhold);
 
-  if (should_withhold)
-    WithholdHostPermissions();
-  else
+  if (should_withhold) {
+    RemoveAllGrantedHostPermissions();
+  } else {
     GrantWithheldHostPermissions();
+  }
 }
 
 void ScriptingPermissionsModifier::GrantHostPermission(const GURL& url) {
@@ -153,7 +154,13 @@ void ScriptingPermissionsModifier::RemoveBroadGrantedHostPermissions() {
 
 void ScriptingPermissionsModifier::RemoveAllGrantedHostPermissions() {
   DCHECK(permissions_manager_->CanAffectExtension(*extension_));
-  WithholdHostPermissions();
+
+  std::unique_ptr<const PermissionSet> revokable_permissions =
+      permissions_manager_->GetRevokablePermissions(*extension_);
+  DCHECK(revokable_permissions);
+  PermissionsUpdater(browser_context_)
+      .RevokeRuntimePermissions(*extension_, *revokable_permissions,
+                                base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
@@ -165,15 +172,6 @@ void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
                             withheld.scriptable_hosts().Clone());
   PermissionsUpdater(browser_context_)
       .GrantRuntimePermissions(*extension_, permissions, base::DoNothing());
-}
-
-void ScriptingPermissionsModifier::WithholdHostPermissions() {
-  std::unique_ptr<const PermissionSet> revokable_permissions =
-      permissions_manager_->GetRevokablePermissions(*extension_);
-  DCHECK(revokable_permissions);
-  PermissionsUpdater(browser_context_)
-      .RevokeRuntimePermissions(*extension_, *revokable_permissions,
-                                base::DoNothing());
 }
 
 void ScriptingPermissionsModifier::WithholdHostPermissions(

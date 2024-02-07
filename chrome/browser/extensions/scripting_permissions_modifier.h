@@ -89,10 +89,6 @@ class ScriptingPermissionsModifier {
   // Grants any withheld host permissions.
   void GrantWithheldHostPermissions();
 
-  // Revokes any granted host permissions.
-  // TODO(crbug.com/1393266): Change to `WithholdAllHostPermissions()`.
-  void WithholdHostPermissions();
-
   // Revokes `explicit_hosts` and `scriptable_hosts` permissions. Calls
   // `done_callback` on completion.
   void WithholdHostPermissions(URLPatternSet explicit_hosts,
