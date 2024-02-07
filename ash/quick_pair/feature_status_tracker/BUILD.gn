@@ -11,6 +11,8 @@ static_library("feature_status_tracker") {
   sources = [
     "base_enabled_provider.cc",
     "base_enabled_provider.h",
+    "battery_saver_active_provider.cc",
+    "battery_saver_active_provider.h",
     "bluetooth_enabled_provider.cc",
     "bluetooth_enabled_provider.h",
     "fast_pair_enabled_provider.cc",
@@ -86,6 +88,7 @@ source_set("unit_tests") {
 
   sources = [
     "base_enabled_provider_unittest.cc",
+    "battery_saver_active_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
     "fast_pair_support_utils_unittest.cc",
