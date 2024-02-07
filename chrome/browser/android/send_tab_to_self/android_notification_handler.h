@@ -38,7 +38,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
 
  private:
   void DisplayNewEntriesOnUIThread(
-      const std::vector<const SendTabToSelfEntry>& new_entries);
+      const std::vector<SendTabToSelfEntry>& new_entries);
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(

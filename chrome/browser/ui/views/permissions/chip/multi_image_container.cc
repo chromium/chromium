@@ -28,7 +28,7 @@ std::unique_ptr<views::View> MultiImageContainer::CreateView() {
 }
 
 void MultiImageContainer::SetImages(
-    const std::vector<const ui::ImageModel>& image_models) {
+    const std::vector<ui::ImageModel>& image_models) {
   if (images_.size() < image_models.size()) {
     AddExtraImages(image_models.size());
   } else if (images_.size() > image_models.size()) {

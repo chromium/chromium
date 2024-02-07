@@ -132,8 +132,8 @@ class TouchToFillCreditCardControllerTest
         autofill_manager().touch_to_fill_delegate());
   }
 
-  const std::vector<const CreditCard> credit_cards_ = {test::GetCreditCard(),
-                                                       test::GetCreditCard2()};
+  const std::vector<CreditCard> credit_cards_ = {test::GetCreditCard(),
+                                                 test::GetCreditCard2()};
   std::unique_ptr<MockTouchToFillCreditCardViewImpl> mock_view_;
 
   void OnBeforeAskForValuesToFill() {

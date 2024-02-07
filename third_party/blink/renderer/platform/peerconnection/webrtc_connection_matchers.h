@@ -139,7 +139,7 @@ MATCHER(CricketBlinkConnectionTupleEq,
 // cricket::Connection objects each, ignoring null cricket::Connections and
 // ordering.
 MATCHER_P(ConnectionSequenceEq,
-          /* std::vector<const blink::IceConnection> arg, */
+          /* std::vector<blink::IceConnection> arg, */
           /* std::vector<const cricket::Connection*> */ connections,
           "") {
   std::vector<const cricket::Connection*> non_null_connections;

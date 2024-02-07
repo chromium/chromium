@@ -62,7 +62,7 @@ struct ExpectedRun {
   // a requirement. This really just expects montonicity.
   enum ClusterDirection { kAscending, kDescending } cluster_direction;
 };
-using ExpectedBlob = std::vector<const ExpectedRun>;
+using ExpectedBlob = std::vector<ExpectedRun>;
 
 struct ExpectedRange {
   unsigned from;
@@ -71,7 +71,7 @@ struct ExpectedRange {
 };
 
 void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
-                     const std::vector<const ExpectedBlob>& expected_blobs) {
+                     const std::vector<ExpectedBlob>& expected_blobs) {
   EXPECT_EQ(blob_buffer.size(), expected_blobs.size());
   const ShapeResultBloberizer::BlobInfo* blob_info_iter = blob_buffer.begin();
   auto&& expected_blob_iter = expected_blobs.begin();

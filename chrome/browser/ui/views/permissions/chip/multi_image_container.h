@@ -31,7 +31,7 @@ class MultiImageContainer final : public views::LabelButtonImageContainer {
   MultiImageContainer& operator=(const MultiImageContainer&) = delete;
   ~MultiImageContainer() override;
 
-  void SetImages(const std::vector<const ui::ImageModel>& image_model);
+  void SetImages(const std::vector<ui::ImageModel>& image_model);
   void SetImage(size_t index, const ui::ImageModel& image_model);
   void SetImage(size_t index, const gfx::ImageSkia& image);
 

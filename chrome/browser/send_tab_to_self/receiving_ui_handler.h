@@ -15,7 +15,7 @@ namespace send_tab_to_self {
 class SendTabToSelfEntry;
 
 // Interface implemented by platforms to handle changes to the SendTabToSelf
-// model. sImplementors of this interface should override all functions and
+// model. Implementors of this interface should override all functions and
 // update the UI accordingly. They should also register themselves with the
 // ReceivingUIRegistry.
 class ReceivingUiHandler {
