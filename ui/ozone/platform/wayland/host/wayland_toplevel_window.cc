@@ -883,6 +883,10 @@ void WaylandToplevelWindow::SetShadowCornersRadii(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+void WaylandToplevelWindow::RoundTripQueue() {
+  connection()->RoundTripQueue();
+}
+
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {

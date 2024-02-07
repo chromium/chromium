@@ -72,6 +72,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  // Wait for a Wayland roundtrip to ensure all side effects have been
+  // processed.
+  virtual void RoundTripQueue() = 0;
+
   // Signals the underneath platform to shows a preview for the given window
   // snap direction. `allow_haptic_feedback` indicates if it should send haptic
   // feedback.
