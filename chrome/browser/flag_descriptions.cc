@@ -987,11 +987,6 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnableBookmarkFoldersForAccountStorageName[] =
-    "Enable account bookmark folders";
-const char kEnableBookmarkFoldersForAccountStorageDescription[] =
-    "Enables account bookmark folders to be made available to users.";
-
 const char kEnterpriseProfileBadgingName[] =
     "Enable enterprise profile badging";
 const char kEnterpriseProfileBadgingDescription[] =
@@ -3899,6 +3894,12 @@ const char kAccessibilitySnapshotStressTestsName[] =
 const char kAccessibilitySnapshotStressTestsDescription[] =
     "Enable experiment that will disable max node and timeout limits for the "
     "AXTreeSnapshotter, and track performance stats.";
+
+const char kAccountBookmarksAndReadingListBehindOptInName[] =
+    "Account bookmarks and reading list behind opt-in";
+const char kAccountBookmarksAndReadingListBehindOptInDescription[] =
+    "Make account bookmarks and reading lists available to users that sign in "
+    "via promo in the bookmark manager.";
 
 const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
 const char kAddToHomescreenIPHDescription[] =

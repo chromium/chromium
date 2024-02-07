@@ -574,9 +574,6 @@ extern const char kViewTransitionOnNavigationDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
-extern const char kEnableBookmarkFoldersForAccountStorageName[];
-extern const char kEnableBookmarkFoldersForAccountStorageDescription[];
-
 extern const char kEnterpriseProfileBadgingName[];
 extern const char kEnterpriseProfileBadgingDescription[];
 
@@ -2264,6 +2261,9 @@ extern const char kAccessibilityPageZoomEnhancementsName[];
 extern const char kAccessibilityPageZoomEnhancementsDescription[];
 extern const char kAccessibilitySnapshotStressTestsName[];
 extern const char kAccessibilitySnapshotStressTestsDescription[];
+
+extern const char kAccountBookmarksAndReadingListBehindOptInName[];
+extern const char kAccountBookmarksAndReadingListBehindOptInDescription[];
 
 extern const char kAdaptiveButtonInTopToolbarName[];
 extern const char kAdaptiveButtonInTopToolbarDescription[];

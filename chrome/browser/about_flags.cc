@@ -3758,6 +3758,16 @@ const FeatureEntry::FeatureVariation
         {"V2", kCompressionDictionaryTransportBackendVersionV2,
          std::size(kCompressionDictionaryTransportBackendVersionV2), nullptr}};
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
+    {
+        {"Default", "", ""},
+        {"Enabled", switches::kEnableFeatures,
+         "EnableBookmarkFoldersForAccountStorage,"
+         "ReadingListEnableSyncTransportModeUponSignIn"},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11091,11 +11101,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-bookmark-folders-for-account-storage",
-     flag_descriptions::kEnableBookmarkFoldersForAccountStorageName,
-     flag_descriptions::kEnableBookmarkFoldersForAccountStorageDescription,
+    {"bookmarks-and-reading-list-behind-opt-in",
+     flag_descriptions::kAccountBookmarksAndReadingListBehindOptInName,
+     flag_descriptions::kAccountBookmarksAndReadingListBehindOptInDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kEnableBookmarkFoldersForAccountStorage)},
+     MULTI_VALUE_TYPE(kAccountBookmarksAndReadingListBehindOptInChoices)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

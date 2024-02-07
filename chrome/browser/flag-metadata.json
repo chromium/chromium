@@ -893,6 +893,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "bookmarks-and-reading-list-behind-opt-in",
+    "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "bookmarks-improved-save-flow",
     "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
@@ -2218,11 +2223,6 @@
     // This is used by testers and developers to determine whether a bug is
     // caused by a non-default feature configuration.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-bookmark-folders-for-account-storage",
-    "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
-    "expiry_milestone": 126
   },
   {
     "name": "enable-borderless-printing",
