@@ -1211,6 +1211,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface Observable
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker]     method forEach
 [Worker]     method subscribe
 [Worker]     method takeUntil
 [Worker]     method toArray

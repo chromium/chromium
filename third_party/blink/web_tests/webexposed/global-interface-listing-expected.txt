@@ -6790,6 +6790,7 @@ interface OTPCredential : Credential
 interface Observable
     attribute @@toStringTag
     method constructor
+    method forEach
     method subscribe
     method takeUntil
     method toArray

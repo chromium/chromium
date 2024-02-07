@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_visitor.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
@@ -134,6 +135,72 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
  private:
   Member<ScriptPromiseResolver> resolver_;
   HeapVector<ScriptValue> values_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+class OperatorForEachInternalObserver final
+    : public ObservableInternalObserver {
+ public:
+  OperatorForEachInternalObserver(ScriptPromiseResolver* resolver,
+                                  AbortController* controller,
+                                  V8Visitor* callback,
+                                  AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        callback_(callback),
+        abort_algorithm_handle_(handle) {}
+
+  void Next(ScriptValue value) override {
+    // Invoke callback with the passed in value.
+    //
+    // If an exception |E| was thrown, then reject |p| with |E| and signal
+    // abort |visitor callback controller| with |E|.
+
+    // `ScriptState::Scope` can only be created in a valid context, so
+    // early-return if we're in a detached one.
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
+
+    ScriptState::Scope scope(script_state);
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    // Invoking `callback_` can detach the context, but that's OK, nothing below
+    // this invocation relies on a detached context.
+    std::ignore = callback_->Invoke(nullptr, value, idx_++);
+    if (try_catch.HasCaught()) {
+      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      resolver_->Reject(exception);
+      controller_->abort(script_state, exception);
+    }
+  }
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with undefined."
+    resolver_->Resolve(ScriptValue());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(callback_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  uint64_t idx_ = 0;
+  Member<ScriptPromiseResolver> resolver_;
+  Member<AbortController> controller_;
+  Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
@@ -457,6 +524,56 @@ ScriptPromise Observable::toArray(ScriptState* script_state,
 
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     options);
+
+  return promise;
+}
+
+ScriptPromise Observable::forEach(ScriptState* script_state,
+                                  V8Visitor* callback,
+                                  SubscribeOptions* options) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  AbortController* visitor_callback_controller =
+      AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+  signals.push_back(visitor_callback_controller->signal());
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  // The internal observer associated with this operator must have the ability
+  // to unsubscribe from `this`. This is important in the internal observer's
+  // `next()` handler, which invokes `callback` with each passed-in value. If
+  // `callback` throws an error, we must unsubscribe from `this` and reject
+  // `promise`.
+  //
+  // This means we have to maintain a separate, internal `AbortController` that
+  // will abort the subscription in that case. Consequently, this means we have
+  // to subscribe with an internal `SubscribeOptions`, whose signal is always
+  // present, and is a composite signal derived from the aforementioned
+  // controller, and the given `options`'s signal, if present.
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(internal_options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorForEachInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorForEachInternalObserver>(
+          resolver, visitor_callback_controller, callback, algorithm_handle);
+
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
 
   return promise;
 }

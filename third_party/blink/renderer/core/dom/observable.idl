@@ -8,6 +8,13 @@ callback SubscribeCallback = void (Subscriber subscriber);
 callback ObserverCallback = void (any value);
 callback ObserverCompleteCallback = void ();
 
+// TODO(crbug.com/14859810): Introduce `Mapper` when `map()` is implemented,
+// since we reference it in the below comment.
+//
+// Differs from Mapper only in return type, since this callback is exclusively
+// used to visit each element in a sequence, not transform it.
+callback Visitor = undefined (any element, unsigned long long index);
+
 dictionary Observer {
   ObserverCallback next;
   ObserverCallback error;
@@ -36,5 +43,6 @@ interface Observable {
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.
   [CallWith=ScriptState] Promise<sequence<any>> toArray(optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<undefined> forEach(Visitor callback, optional SubscribeOptions options = {});
 };
 

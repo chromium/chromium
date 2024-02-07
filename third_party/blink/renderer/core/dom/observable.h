@@ -19,6 +19,7 @@ class Subscriber;
 class SubscribeOptions;
 class V8SubscribeCallback;
 class V8UnionObserverOrObserverCallback;
+class V8Visitor;
 
 // Implementation of the DOM `Observable` API. See
 // https://github.com/WICG/observable and
@@ -58,6 +59,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
   ScriptPromise toArray(ScriptState*, SubscribeOptions*);
+  ScriptPromise forEach(ScriptState*, V8Visitor*, SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 
