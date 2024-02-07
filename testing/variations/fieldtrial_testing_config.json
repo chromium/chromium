@@ -6331,6 +6331,30 @@
             ]
         }
     ],
+    "DiscountsAutoPopup": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "params": {
+                        "history-cluster-behavior": "1",
+                        "merchant-wide-behavior": "0",
+                        "non-merchant-wide-behavior": "0"
+                    },
+                    "enable_features": [
+                        "DiscountDialogAutoPopupBehaviorSetting"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsHttpsSvcbTimeout": [
         {
             "platforms": [

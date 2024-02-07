@@ -204,26 +204,44 @@ INSTANTIATE_TEST_SUITE_P(
     GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayCardLinked",
-        AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER}));
+        "GPayCardLinked", AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+              {{commerce::kHistoryClustersBehaviorParam, "0"},
+               {commerce::kMerchantWideBehaviorParam, "2"},
+               {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}));
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_default",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER},
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+                  {{commerce::kHistoryClustersBehaviorParam, "0"},
+                   {commerce::kMerchantWideBehaviorParam, "2"},
+                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
             std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}}})}),
+                {{::features::kChromeRefresh2023, {}},
+                 {commerce::kDiscountDialogAutoPopupBehaviorSetting,
+                  {{commerce::kHistoryClustersBehaviorParam, "0"},
+                   {commerce::kMerchantWideBehaviorParam, "2"},
+                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}),
     GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+              {{commerce::kHistoryClustersBehaviorParam, "0"},
+               {commerce::kMerchantWideBehaviorParam, "2"},
+               {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}));
 
 // TODO(crbug.com/1491942): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
