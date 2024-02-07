@@ -234,17 +234,22 @@ export abstract class Realm {
     };
   }
 
-  protected initialize() {
-    for (const browsingContext of this.associatedBrowsingContexts) {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.Script.EventNames.RealmCreated,
-          params: this.realmInfo,
-        },
-        browsingContext.id
-      );
+  #registerEvent(event: ChromiumBidi.Event) {
+    if (this.associatedBrowsingContexts.length === 0) {
+      this.#eventManager.registerEvent(event, null);
+    } else {
+      for (const browsingContext of this.associatedBrowsingContexts) {
+        this.#eventManager.registerEvent(event, browsingContext.id);
+      }
     }
+  }
+
+  protected initialize() {
+    this.#registerEvent({
+      type: 'event',
+      method: ChromiumBidi.Script.EventNames.RealmCreated,
+      params: this.realmInfo,
+    });
   }
 
   /**
@@ -707,17 +712,12 @@ export abstract class Realm {
   }
 
   dispose(): void {
-    for (const browsingContext of this.associatedBrowsingContexts) {
-      this.#eventManager.registerEvent(
-        {
-          type: 'event',
-          method: ChromiumBidi.Script.EventNames.RealmDestroyed,
-          params: {
-            realm: this.realmId,
-          },
-        },
-        browsingContext.id
-      );
-    }
+    this.#registerEvent({
+      type: 'event',
+      method: ChromiumBidi.Script.EventNames.RealmDestroyed,
+      params: {
+        realm: this.realmId,
+      },
+    });
   }
 }

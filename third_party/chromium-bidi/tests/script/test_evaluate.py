@@ -399,11 +399,10 @@ async def test_scriptEvaluate_realm(websocket, context_id):
     } == result
 
 
-@pytest.mark.timeout(20)
 @pytest.mark.asyncio
 async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html,
                                                snapshot):
-    worker_url = 'data:application/javascript,'
+    worker_url = 'data:text/javascript,setTimeout(() => {}, 20000)'
     url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
 
     await subscribe(websocket, ["script.realmCreated"])

@@ -26,8 +26,16 @@ import type {EventManager} from '../session/EventManager.js';
 import {Realm} from './Realm.js';
 import type {RealmStorage} from './RealmStorage.js';
 
-export class DedicatedWorkerRealm extends Realm {
-  readonly #ownerRealm: Realm;
+export type WorkerRealmType = Pick<
+  | Script.SharedWorkerRealmInfo
+  | Script.DedicatedWorkerRealmInfo
+  | Script.ServiceWorkerRealmInfo,
+  'type'
+>['type'];
+
+export class WorkerRealm extends Realm {
+  readonly #realmType: WorkerRealmType;
+  readonly #ownerRealms: Realm[];
 
   constructor(
     cdpClient: CdpClient,
@@ -35,9 +43,10 @@ export class DedicatedWorkerRealm extends Realm {
     executionContextId: Protocol.Runtime.ExecutionContextId,
     logger: LoggerFn | undefined,
     origin: string,
-    ownerRealm: Realm,
+    ownerRealms: Realm[],
     realmId: Script.Realm,
-    realmStorage: RealmStorage
+    realmStorage: RealmStorage,
+    realmType: WorkerRealmType
   ) {
     super(
       cdpClient,
@@ -49,17 +58,20 @@ export class DedicatedWorkerRealm extends Realm {
       realmStorage
     );
 
-    this.#ownerRealm = ownerRealm;
+    this.#ownerRealms = ownerRealms;
+    this.#realmType = realmType;
 
     this.initialize();
   }
 
   override get associatedBrowsingContexts(): BrowsingContextImpl[] {
-    return this.#ownerRealm.associatedBrowsingContexts;
+    return this.#ownerRealms.flatMap(
+      (realm) => realm.associatedBrowsingContexts
+    );
   }
 
-  override get realmType(): 'dedicated-worker' {
-    return 'dedicated-worker';
+  override get realmType(): WorkerRealmType {
+    return this.#realmType;
   }
 
   override get source(): Script.Source {
@@ -71,11 +83,28 @@ export class DedicatedWorkerRealm extends Realm {
     };
   }
 
-  override get realmInfo(): Script.DedicatedWorkerRealmInfo {
-    return {
-      ...this.baseInfo,
-      type: this.realmType,
-      owners: [this.#ownerRealm.realmId],
-    };
+  override get realmInfo(): Script.RealmInfo {
+    const owners = this.#ownerRealms.map((realm) => realm.realmId);
+    const {realmType} = this;
+    switch (realmType) {
+      case 'dedicated-worker': {
+        const owner = owners[0];
+        if (owner === undefined || owners.length !== 1) {
+          throw new Error('Dedicated worker must have exactly one owner');
+        }
+        return {
+          ...this.baseInfo,
+          type: realmType,
+          owners: [owner],
+        };
+      }
+      case 'service-worker':
+      case 'shared-worker': {
+        return {
+          ...this.baseInfo,
+          type: realmType,
+        };
+      }
+    }
   }
 }

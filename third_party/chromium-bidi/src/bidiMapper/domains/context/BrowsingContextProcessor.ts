@@ -28,15 +28,21 @@ import {
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
-import {DedicatedWorkerRealm} from '../script/DedicatedWorkerRealm.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
+import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {BrowsingContextImpl, serializeOrigin} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {CdpTarget} from './CdpTarget.js';
+
+const cdpToBidiTargetTypes = {
+  service_worker: 'service-worker',
+  shared_worker: 'shared-worker',
+  worker: 'dedicated-worker',
+} as const;
 
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
@@ -325,6 +331,9 @@ export class BrowsingContextProcessor {
     cdpClient.on('Target.targetInfoChanged', (params) => {
       this.#handleTargetInfoChangedEvent(params);
     });
+    cdpClient.on('Inspector.targetCrashed', () => {
+      this.#handleTargetCrashedEvent(cdpClient);
+    });
 
     cdpClient.on(
       'Page.frameAttached',
@@ -413,25 +422,33 @@ export class BrowsingContextProcessor {
         }
         return;
       }
+      case 'service_worker':
       case 'worker': {
-        const browsingContext =
-          parentSessionCdpClient.sessionId &&
-          this.#browsingContextStorage.findContextBySession(
-            parentSessionCdpClient.sessionId
-          );
+        const realm = this.#realmStorage.findRealm({
+          cdpSessionId: parentSessionCdpClient.sessionId,
+        });
         // If there is no browsing context, this worker is already terminated.
-        if (!browsingContext) {
+        if (!realm) {
           break;
         }
 
         const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
         this.#handleWorkerTarget(
+          cdpToBidiTargetTypes[targetInfo.type],
           cdpTarget,
-          this.#realmStorage.getRealm({
-            browsingContextId: browsingContext.id,
-            type: 'window',
-            sandbox: undefined,
-          })
+          realm
+        );
+        return;
+      }
+      // In CDP, we only emit shared workers on the browser and not the set of
+      // frames that use the shared worker. If we change this in the future to
+      // behave like service workers (emits on both browser and frame targets),
+      // we can remove this block and merge service workers with the above one.
+      case 'shared_worker': {
+        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+        this.#handleWorkerTarget(
+          cdpToBidiTargetTypes[targetInfo.type],
+          cdpTarget
         );
         return;
       }
@@ -467,18 +484,23 @@ export class BrowsingContextProcessor {
   }
 
   #workers = new Map<string, Realm>();
-  #handleWorkerTarget(cdpTarget: CdpTarget, ownerRealm: Realm) {
+  #handleWorkerTarget(
+    realmType: WorkerRealmType,
+    cdpTarget: CdpTarget,
+    ownerRealm?: Realm
+  ) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
-      const workerRealm = new DedicatedWorkerRealm(
+      const workerRealm = new WorkerRealm(
         cdpTarget.cdpClient,
         this.#eventManager,
         id,
         this.#logger,
         serializeOrigin(origin),
-        ownerRealm,
+        ownerRealm ? [ownerRealm] : [],
         uniqueId,
-        this.#realmStorage
+        this.#realmStorage,
+        realmType
       );
       this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
     });
@@ -514,6 +536,18 @@ export class BrowsingContextProcessor {
     );
     if (context) {
       context.onTargetInfoChanged(params);
+    }
+  }
+
+  #handleTargetCrashedEvent(cdpClient: CdpClient) {
+    // This is primarily used for service and shared workers. CDP tends to not
+    // signal they closed gracefully and instead says they crashed to signal
+    // they are closed.
+    const realms = this.#realmStorage.findRealms({
+      cdpSessionId: cdpClient.sessionId,
+    });
+    for (const realm of realms) {
+      realm.dispose();
     }
   }
 }
