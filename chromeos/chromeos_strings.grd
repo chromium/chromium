@@ -4364,7 +4364,7 @@
           Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator">
-          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut. To replace the original shortcut, press this shortcut again.
+          Shortcut is being used for "<ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>". Press a new shortcut. To replace the existing shortcut, press this shortcut again.
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog">
           You can only customize 5 shortcuts. Delete a shortcut to add a new one.
