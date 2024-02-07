@@ -133,8 +133,6 @@ struct FontCacheKey {
     return kFontSizePrecisionMultiplier;
   }
 
-  void ClearFontSize() { font_size_ = 0; }
-
 #if BUILDFLAG(IS_ANDROID)
   // Set the locale if the font is locale-specific. This allows different
   // |FontPlatformData| instances for each locale.

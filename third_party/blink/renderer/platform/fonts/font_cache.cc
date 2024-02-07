@@ -158,20 +158,6 @@ FontPlatformData* FontCache::GetFontPlatformData(
       this, font_description, creation_params, alternate_font_name);
 }
 
-std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
-    const FontPlatformData& font_platform_data,
-    const FontDescription& font_description,
-    const FontFaceCreationParams& creation_params,
-    float font_size) {
-  TRACE_EVENT0("fonts,ui", "FontCache::ScaleFontPlatformData");
-
-#if BUILDFLAG(IS_MAC)
-  return CreateFontPlatformData(font_description, creation_params, font_size);
-#else
-  return std::make_unique<FontPlatformData>(font_platform_data, font_size);
-#endif
-}
-
 ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
   auto result = fallback_list_shaper_cache_.insert(key, nullptr);
   if (result.is_new_entry) {
