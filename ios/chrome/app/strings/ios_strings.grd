@@ -424,6 +424,12 @@
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
       </message>
+      <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
+        You can swipe the edge to go back.
+      </message>
+      <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
+        You can swipe the edge to go forward.
+      </message>
       <message name="IDS_IOS_BADGE_INCOGNITO_HINT" desc="Button displayed when the user is in Incognito mode. [iOS only]">
         Current Webpage is on Incognito
       </message>

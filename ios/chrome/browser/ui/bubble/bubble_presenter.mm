@@ -46,6 +46,7 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -619,18 +620,37 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (!userEligible) {
     return;
   }
+
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
+    return;
+  }
+
+  // Retrieve swipe-able directions.
+  const web::NavigationManager* navigationManager =
+      currentWebState->GetNavigationManager();
+  BOOL back = navigationManager->CanGoBack();
+  BOOL forward = navigationManager->CanGoForward();
+  int textId = IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY;
+  if (forward) {
+    textId = back ? IDS_IOS_BACK_FORWARD_SWIPE_IPH
+                  : IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY;
+  }
+
   __weak BubblePresenter* weakSelf = self;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_BACK_FORWARD_SWIPE_IPH);
   ProceduralBlock resetSwipeBackForwardGestureIPH = ^{
     weakSelf.swipeBackForwardGestureIPH = nil;
   };
   self.swipeBackForwardGestureIPH = [self
       presentGestureInProductHelpForFeature:backForwardSwipeFeature
-                                  direction:BubbleArrowDirectionLeading
-                                       text:text
+                                  direction:back ? BubbleArrowDirectionLeading
+                                                 : BubbleArrowDirectionTrailing
+                                       text:l10n_util::GetNSString(textId)
                               dismissAction:resetSwipeBackForwardGestureIPH];
-  self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
-  self.swipeBackForwardGestureIPH.bidirectional = YES;
+  if (back && forward) {
+    self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
+    self.swipeBackForwardGestureIPH.bidirectional = YES;
+  }
   [self.swipeBackForwardGestureIPH startAnimation];
 }
 
