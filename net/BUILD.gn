@@ -2756,7 +2756,6 @@ test("net_unittests") {
     "test/embedded_test_server/http_request_unittest.cc",
     "test/embedded_test_server/http_response_unittest.cc",
     "test/run_all_unittests.cc",
-    "third_party/nist-pkits/pkits_testcases-inl.h",
     "third_party/uri_template/uri_template_test.cc",
     "tools/content_decoder_tool/content_decoder_tool.cc",
     "tools/content_decoder_tool/content_decoder_tool.h",
@@ -2931,30 +2930,20 @@ test("net_unittests") {
 
   data = [
     "data/cache_tests/",
-    "data/certificate_policies_unittest/",
     "data/cert_issuer_source_aia_unittest/",
     "data/cert_issuer_source_static_unittest/",
-    "data/crl_unittest/",
     "data/embedded_test_server/",
     "data/file_stream_unittest/",
     "data/filter_unittests/",
     "data/gencerts/",
-    "data/name_constraints_unittest/",
-    "data/ocsp_unittest/",
     "data/pac_file_fetcher_unittest/",
-    "data/path_builder_unittest/",
     "data/quic_http_response_cache_data/",
     "data/quic_http_response_cache_data_with_push/",
     "data/spdy_tests/",
     "data/test.html",
     "data/verify_certificate_chain_unittest/",
-    "data/verify_name_match_unittest/",
-    "data/verify_signed_data_unittest/",
   ]
-  data_deps = [
-    "third_party/nist-pkits/",
-    "//testing/buildbot/filters:net_unittests_filters",
-  ]
+  data_deps = [ "//testing/buildbot/filters:net_unittests_filters" ]
 
   if (is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     deps += [ "//third_party/pywebsocket3/" ]
@@ -3086,10 +3075,7 @@ test("net_unittests") {
   }
 
   if (is_ios) {
-    bundle_deps = [
-      ":net_test_bundle_data",
-      "//net/third_party/nist-pkits:test_bundle_data",
-    ]
+    bundle_deps = [ ":net_test_bundle_data" ]
   }
 
   if (enable_unix_sockets) {
