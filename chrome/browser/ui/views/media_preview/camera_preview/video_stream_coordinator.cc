@@ -12,15 +12,10 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
-#include "ui/compositor/compositor.h"
 
 VideoStreamCoordinator::VideoStreamCoordinator(views::View& parent_view) {
   auto* video_stream_view =
       parent_view.AddChildView(std::make_unique<VideoStreamView>());
-
-  video_stream_view->SetRasterContextProvider(
-      content::GetContextFactory()->SharedMainThreadRasterContextProvider());
-
   video_stream_view_tracker_.SetView(video_stream_view);
 }
 

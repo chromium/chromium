@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/context_factory.h"
 #include "media/base/video_transformation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,10 +26,31 @@ VideoStreamView::VideoStreamView()
       IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME));
   SetAccessibleRole(ax::mojom::Role::kImage);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
+  raster_context_provider_ =
+      content::GetContextFactory()->SharedMainThreadRasterContextProvider();
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
+  }
 }
 
 VideoStreamView::~VideoStreamView() {
   ClearFrame();
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
+}
+
+void VideoStreamView::OnContextLost() {
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
+
+  raster_context_provider_ =
+      content::GetContextFactory()->SharedMainThreadRasterContextProvider();
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
+  }
 }
 
 void VideoStreamView::ScheduleFramePaint(
