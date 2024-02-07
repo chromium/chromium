@@ -10,8 +10,10 @@ import json
 import logging
 import math
 import os
+import posixpath
 import queue
 import signal
+import textwrap
 import threading
 import time
 from typing import (
@@ -27,6 +29,7 @@ from typing import (
     Tuple,
     TypedDict,
 )
+from urllib.parse import quote_plus, urlsplit, urlunsplit
 
 import mozinfo
 
@@ -67,6 +70,10 @@ _status_mapping = collections.OrderedDict([
     ('SKIP', ResultType.Skip),
     ('NOTRUN', ResultType.Failure),
 ])
+_WPT_DOC_URL: str = ('https://chromium.googlesource.com/chromium/src/+/HEAD'
+                     '/docs/testing/run_web_platform_tests.md')
+_WPT_BASE_FYI_URL: str = urlsplit(
+    'https://wpt.fyi/results/?label=experimental&label=master&aligned')
 
 RunInfo = Dict[str, Any]
 TestType = Literal[tuple(wpttest.manifest_test_cls)]
@@ -74,6 +81,15 @@ TestType = Literal[tuple(wpttest.manifest_test_cls)]
 
 def wptrunner_to_chromium_status(status: str) -> str:
     return _status_mapping[status]
+
+
+def wpt_fyi_url(test: str) -> Optional[str]:
+    prefix = 'external/wpt/'
+    if not test.startswith(prefix):
+        return None
+    scheme, netloc, path, query, fragment = _WPT_BASE_FYI_URL
+    path = posixpath.join(path, quote_plus(test[len(prefix):]))
+    return urlunsplit((scheme, netloc, path, query, fragment))
 
 
 @memoized
@@ -133,6 +149,8 @@ class WPTResult(Result):
         self.test_type = test_type
         self.has_stderr = False
         self.image_diff_stats = None
+        # TODO(crbug.com/1521922): Populate `self.failure_reason` like
+        # `run_web_tests.py` does to help LUCI cluster failures.
 
     def _maybe_add_testharness_result(self,
                                       status: str,
@@ -183,6 +201,8 @@ class WPTResult(Result):
         if priority >= self._result_priority(self.actual, self.unexpected):
             self.actual, self.expected = actual, expected
             self.unexpected = unexpected
+            self.is_regression = (self.actual != ResultType.Pass
+                                  and self.unexpected)
 
     def _result_priority(self, status: str,
                          unexpected: bool) -> Tuple[bool, bool, int]:
@@ -226,6 +246,31 @@ class WPTResult(Result):
             *self.testharness_results,
             TestharnessLine(LineType.FOOTER),
         ])
+
+    def summarize(self) -> Optional[str]:
+        """Generate a summary of this test result as sanitized HTML.
+
+        See [1] for ResultDB-specific markup features.
+
+        [1]: https://source.chromium.org/chromium/_/chromium/infra/luci/luci-go/+/1f5926756ec235cc63fbed7c7e603e86335998d3:resultdb/proto/v1/test_result.proto;l=99-112
+        """
+        if not self.is_regression:
+            return None
+        # TODO(crbug.com/1521922): Unify result sink reporting with
+        # `blinkpy.web_tests.*`.
+        summary = textwrap.dedent(f"""\
+            <p><strong>This WPT was run against <code>chrome</code> using
+            <code>chromedriver</code>. See <a href="{_WPT_DOC_URL}">these
+            instructions</a> about running these tests locally and triaging
+            failures.</strong></p>""").replace('\n', ' ')
+        url = wpt_fyi_url(self.name)
+        if url:
+            summary += f'<p><a href="{url}">Latest wpt.fyi results</a></p>'
+        for name in ['stderr', 'crash_log']:
+            if name in self.artifacts:
+                summary += f'<h3>{name}</h3>'
+                summary += f'<p><text-artifact artifact-id="{name}"/></p>'
+        return summary
 
 
 class Event(NamedTuple):
@@ -541,7 +586,8 @@ class WPTResultsProcessor:
             result=result,
             artifact_output_dir=self.fs.dirname(self.artifacts_dir),
             expectations=None,
-            test_file_location=result.file_path)
+            test_file_location=result.file_path,
+            html_summary=result.summarize())
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
@@ -586,7 +632,6 @@ class WPTResultsProcessor:
             expected = ' '.join(results[0].expected)
             actual = [result.actual for result in results]
             is_pass = results[-1].actual == ResultType.Pass
-            is_unexpected = results[-1].unexpected
             if is_pass:
                 num_passes += 1
 
@@ -606,12 +651,11 @@ class WPTResultsProcessor:
 
             if self.port.is_slow_wpt_test(test_name):
                 test_dict['is_slow_test'] = True
-
-            if is_unexpected:
+            if results[-1].unexpected:
                 test_dict['is_unexpected'] = True
-                if not is_pass:
-                    test_dict['is_regression'] = True
-                    num_regressions += 1
+            if results[-1].is_regression:
+                test_dict['is_regression'] = True
+                num_regressions += 1
 
             if results[0].image_diff_stats:
                 test_dict['image_diff_stats'] = results[0].image_diff_stats
