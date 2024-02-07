@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -218,11 +219,12 @@ public interface TabManagementDelegate {
      *
      * @param activity The current Android's context.
      * @param colors The list of colors used for this color picker component.
-     * @param delegate The {@link ColorPickerDelegate} holding information regarding the UI layout
-     *     to inflate.
+     * @param colorPickerLayout The layout resource to be inflated.
+     * @param colorPickerType The {@link ColorPickerType} that this color picker use.
      */
     ColorPicker createColorPickerCoordinator(
             @NonNull Context context,
             @NonNull List<Integer> colors,
-            @NonNull ColorPickerDelegate delegate);
+            @NonNull @LayoutRes int colorPickerLayout,
+            @NonNull @ColorPickerType int colorPickerType);
 }

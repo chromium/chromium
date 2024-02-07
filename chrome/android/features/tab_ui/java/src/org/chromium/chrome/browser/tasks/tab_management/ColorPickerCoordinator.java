@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -22,13 +23,13 @@ public class ColorPickerCoordinator implements ColorPicker {
     public ColorPickerCoordinator(
             @NonNull Context context,
             @NonNull List<Integer> colors,
-            @NonNull ColorPickerDelegate delegate) {
+            @NonNull @LayoutRes int colorPickerLayout,
+            @NonNull @ColorPickerType int colorPickerType) {
         mContainerView =
                 (ColorPickerContainer)
-                        LayoutInflater.from(context)
-                                .inflate(delegate.getColorPickerUIComponent(), /* root= */ null);
+                        LayoutInflater.from(context).inflate(colorPickerLayout, /* root= */ null);
 
-        mMediator = new ColorPickerMediator(colors);
+        mMediator = new ColorPickerMediator(colors, colorPickerType);
         mMediator.setColorListItems(mContainerView);
     }
 

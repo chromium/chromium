@@ -53,6 +53,7 @@ public class ColorPickerItemViewBinderUnitTest {
                 ColorPickerItemProperties.create(
                         1,
                         false,
+                        ColorPickerType.TAB_GROUP,
                         () -> {
                             mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
                         });

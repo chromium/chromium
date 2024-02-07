@@ -10,6 +10,7 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -219,7 +220,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     public ColorPicker createColorPickerCoordinator(
             @NonNull Context context,
             @NonNull List<Integer> colors,
-            @NonNull ColorPickerDelegate delegate) {
-        return new ColorPickerCoordinator(context, colors, delegate);
+            @NonNull @LayoutRes int colorPickerLayout,
+            @NonNull @ColorPickerType int colorPickerType) {
+        return new ColorPickerCoordinator(context, colors, colorPickerLayout, colorPickerType);
     }
 }

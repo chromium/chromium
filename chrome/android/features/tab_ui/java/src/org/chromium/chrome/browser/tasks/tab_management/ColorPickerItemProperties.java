@@ -18,18 +18,28 @@ public class ColorPickerItemProperties {
     /** An indicator of whether this color is the currently selected one. */
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
 
+    /** The {@link ColorPickerType} that this color item corresponds to. */
+    public static final ReadableIntPropertyKey COLOR_PICKER_TYPE = new ReadableIntPropertyKey();
+
     /** The function to run when this color item is selected by the user. */
     public static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new ReadableObjectPropertyKey<>();
 
     /** Creates a model for a color item. */
-    public static PropertyModel create(int color, boolean isSelected, Runnable onClickListener) {
+    public static PropertyModel create(
+            int color,
+            boolean isSelected,
+            @ColorPickerType int colorPickerType,
+            Runnable onClickListener) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(COLOR_ID, color)
                 .with(IS_SELECTED, isSelected)
+                .with(COLOR_PICKER_TYPE, colorPickerType)
                 .with(ON_CLICK_LISTENER, onClickListener)
                 .build();
     }
 
-    public static final PropertyKey[] ALL_KEYS = {COLOR_ID, IS_SELECTED, ON_CLICK_LISTENER};
+    public static final PropertyKey[] ALL_KEYS = {
+        COLOR_ID, IS_SELECTED, COLOR_PICKER_TYPE, ON_CLICK_LISTENER
+    };
 }

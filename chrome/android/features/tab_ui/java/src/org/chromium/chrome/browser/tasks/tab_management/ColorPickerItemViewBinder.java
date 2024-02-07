@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.COLOR_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.COLOR_PICKER_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.ColorPickerItemProperties.ON_CLICK_LISTENER;
 
@@ -47,17 +48,18 @@ public class ColorPickerItemViewBinder {
     }
 
     private static void setColorOnColorIcon(PropertyModel model, View view) {
-        @TabGroupColorId int colorId = model.get(COLOR_ID);
+        @ColorPickerType int colorPickerType = model.get(COLOR_PICKER_TYPE);
+        int colorId = model.get(COLOR_ID);
 
         // Update the color icon with the indicated color id.
         ImageView colorIcon = view.findViewById(R.id.color_picker_icon);
         LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
         ((GradientDrawable) layerDrawable.getDrawable(OUTER_LAYER))
-                .setColor(getColorScheme(colorId));
+                .setColor(getColor(colorPickerType, colorId));
         ((GradientDrawable) layerDrawable.getDrawable(SELECTION_LAYER))
-                .setColor(getColorScheme(SELECTION_BG_COLOR));
+                .setColor(getColor(colorPickerType, SELECTION_BG_COLOR));
         ((GradientDrawable) layerDrawable.getDrawable(INNER_LAYER))
-                .setColor(getColorScheme(colorId));
+                .setColor(getColor(colorPickerType, colorId));
 
         // Refresh the color item view.
         colorIcon.invalidate();
@@ -75,9 +77,17 @@ public class ColorPickerItemViewBinder {
         colorIcon.invalidate();
     }
 
+    private static @ColorInt int getColor(@ColorPickerType int colorPickerType, int colorId) {
+        if (colorPickerType == ColorPickerType.TAB_GROUP) {
+            return getTabGroupColor(colorId);
+        } else {
+            return Color.TRANSPARENT;
+        }
+    }
+
     // TODO(crbug.com/1517346): Replace temp colors with proper color palette, and add accessibility
     // strings for each view.
-    private static @ColorInt int getColorScheme(@TabGroupColorId int colorId) {
+    private static @ColorInt int getTabGroupColor(int colorId) {
         switch (colorId) {
             case TabGroupColorId.GREY:
                 return Color.GRAY;

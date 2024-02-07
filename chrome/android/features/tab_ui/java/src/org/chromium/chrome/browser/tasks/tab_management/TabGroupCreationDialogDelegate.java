@@ -134,16 +134,12 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
                                         tabCount));
 
         List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
-        ColorPickerDelegate delegate =
-                new ColorPickerDelegate() {
-                    @Override
-                    public int getColorPickerUIComponent() {
-                        return R.layout.tab_group_color_picker_container;
-                    }
-                };
-
         ColorPickerCoordinator colorPickerCoordinator =
-                new ColorPickerCoordinator(mActivity, colors, delegate);
+                new ColorPickerCoordinator(
+                        mActivity,
+                        colors,
+                        R.layout.tab_group_color_picker_container,
+                        ColorPickerType.TAB_GROUP);
         colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
         TabGroupCreationTextInputLayout groupTitle = customView.findViewById(R.id.tab_group_title);

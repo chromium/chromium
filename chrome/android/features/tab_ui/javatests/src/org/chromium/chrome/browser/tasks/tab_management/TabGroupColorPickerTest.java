@@ -65,17 +65,12 @@ public class TabGroupColorPickerTest {
                         colors.add(i);
                     }
 
-                    ColorPickerDelegate delegate =
-                            new ColorPickerDelegate() {
-                                @Override
-                                public int getColorPickerUIComponent() {
-                                    return R.layout.tab_group_color_picker_container;
-                                }
-                            };
-
                     mCoordinator =
                             new ColorPickerCoordinator(
-                                    mActivityTestRule.getActivity(), colors, delegate);
+                                    mActivityTestRule.getActivity(),
+                                    colors,
+                                    R.layout.tab_group_color_picker_container,
+                                    ColorPickerType.TAB_GROUP);
                     mCoordinator.setSelectedColorItem(colors.get(selectedIndex));
                     mContainerView = (ColorPickerContainer) mCoordinator.getContainerView();
                     mColorList = colors;
