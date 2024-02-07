@@ -155,6 +155,10 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
   mojo::Remote<mojom::ShellController> shell_controller_;
 };
 
+// TODO(http://crbug.com/323984075): This test invokes content_shell in a way
+// that is not supported on Lacros (without crosapi data). Figure out what to
+// do about that.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   // Verifies that we can launch an instance of Content Shell with a Mojo
   // invitation on the command line and reach the new browser process's exposed
@@ -180,6 +184,7 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
 
   shell_controller->ShutDown();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1259557): This test implementation fundamentally conflicts

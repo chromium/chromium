@@ -57,10 +57,6 @@ CreateContentClients() {
 int main(int argc, char** argv) {
   base::PlatformThread::SetName("MainThread");
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedDisableCrosapiForTesting disable_crosapi;
-#endif
-
   content::UnitTestTestSuite test_suite(
       new ChromeUnitTestSuite(argc, argv),
       base::BindRepeating(CreateContentClients));

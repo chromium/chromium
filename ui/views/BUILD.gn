@@ -1170,6 +1170,10 @@ source_set("test_support") {
     ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+
   if (use_aura) {
     sources += [
       "corewm/tooltip_controller_test_helper.cc",

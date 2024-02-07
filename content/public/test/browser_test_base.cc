@@ -129,7 +129,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/files/scoped_file.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/lacros/lacros_test_helper.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #endif
@@ -455,16 +455,14 @@ void BrowserTestBase::SetUp() {
   // For more details, please see:
   // //chrome/browser/ash/crosapi/test_mojo_connection_manager.h.
   {
-    // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
-    // //ash/constants/ash_switches.h.
-    // Please refer to the CL comments for why it can't be done now:
-    // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
-    std::string socket_path =
-        command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
-    if (socket_path.empty()) {
-      disable_crosapi_ =
-          std::make_unique<chromeos::ScopedDisableCrosapiForTesting>();
-    } else {
+    if (!chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+      // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
+      // //ash/constants/ash_switches.h.
+      // Please refer to the CL comments for why it can't be done now:
+      // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
+      CHECK(command_line->HasSwitch("lacros-mojo-socket-for-testing"));
+      std::string socket_path =
+          command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
       auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
       base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
 
