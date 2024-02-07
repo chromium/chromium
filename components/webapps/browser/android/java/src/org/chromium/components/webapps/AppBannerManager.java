@@ -5,7 +5,9 @@
 package org.chromium.components.webapps;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -230,6 +232,12 @@ public class AppBannerManager {
         return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
     }
 
+    public Pair<Bitmap, Boolean> getIcon(WebContents contents) {
+        return Pair.create(
+                AppBannerManagerJni.get().getInstallableWebAppIcon(contents),
+                AppBannerManagerJni.get().getInstallableWebAppIconHasMaskable(contents));
+    }
+
     @NativeMethods
     public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
@@ -237,6 +245,10 @@ public class AppBannerManager {
         String getInstallableWebAppName(WebContents webContents);
 
         String getInstallableWebAppManifestId(WebContents webContents);
+
+        Bitmap getInstallableWebAppIcon(WebContents webContents);
+
+        boolean getInstallableWebAppIconHasMaskable(WebContents webContents);
 
         boolean onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,

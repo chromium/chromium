@@ -3071,7 +3071,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
-                        this, controller, R.drawable.ic_forward_arrow_black_24dp);
+                        this,
+                        currentTab.getWebContents(),
+                        controller,
+                        R.drawable.ic_forward_arrow_black_24dp);
         if (!pwaUniversalInstallBottomSheetCoordinator.show()) {
             // Fall back to install method for the PWA.
             return doAddToHomescreenOrInstallWebApp(

@@ -4,7 +4,11 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import static org.mockito.Mockito.mock;
+
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,6 +26,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.R;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Instrumentation tests for PWA Universal Install bottom sheet. */
@@ -37,13 +42,29 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    private Pair<Bitmap, Boolean> constructTestIconData() {
+        Bitmap allBlack2x2 =
+                Bitmap.createBitmap(
+                        new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000},
+                        2,
+                        2,
+                        Bitmap.Config.ARGB_8888);
+        return Pair.create(allBlack2x2, /* maskable= */ false);
+    }
+
     @Test
     @MediumTest
     public void testShowing() {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+
+        PwaUniversalInstallBottomSheetCoordinator.setIconCallForTesting(
+                this::constructTestIconData);
+
+        // Setup the coordinator with a mocked WebContents object.
+        MockWebContents webContents = mock(MockWebContents.class);
         PwaUniversalInstallBottomSheetCoordinator coordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
-                        activity, mBottomSheetControllerMock, 0);
+                        activity, webContents, mBottomSheetControllerMock, 0);
 
         View view = coordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(

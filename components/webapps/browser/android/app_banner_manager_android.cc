@@ -46,6 +46,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -693,6 +694,32 @@ JNI_AppBannerManager_GetInstallableWebAppManifestId(
   return base::android::ConvertUTF8ToJavaString(
       env, AppBannerManager::GetInstallableWebAppManifestId(
                content::WebContents::FromJavaWebContents(java_web_contents)));
+}
+
+// static
+base::android::ScopedJavaLocalRef<jobject>
+JNI_AppBannerManager_GetInstallableWebAppIcon(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_web_contents) {
+  auto* manager =
+      static_cast<AppBannerManagerAndroid*>(AppBannerManager::FromWebContents(
+          content::WebContents::FromJavaWebContents(java_web_contents)));
+  if (!manager) {
+    return nullptr;
+  }
+
+  return gfx::ConvertToJavaBitmap(manager->primary_icon(),
+                                  gfx::OomBehavior::kReturnNullOnOom);
+}
+
+// static
+jboolean JNI_AppBannerManager_GetInstallableWebAppIconHasMaskable(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_web_contents) {
+  auto* manager =
+      static_cast<AppBannerManagerAndroid*>(AppBannerManager::FromWebContents(
+          content::WebContents::FromJavaWebContents(java_web_contents)));
+  return manager ? manager->has_maskable_primary_icon() : false;
 }
 
 // static

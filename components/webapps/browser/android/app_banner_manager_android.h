@@ -113,6 +113,16 @@ class AppBannerManagerAndroid
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppManifestId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_web_contents);
+  // Returns the primary icon for the installable web app, if the icon has been
+  // retrieved (and null if not).
+  base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppIcon(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
+  // Returns whether the primary icon for the installable web app is maskable,
+  // if the icon has been fetched (and false if not).
+  jboolean GetInstallableWebAppIconHasMaskable(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
 
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env,
