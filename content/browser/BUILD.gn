@@ -41,6 +41,7 @@ source_set("browser") {
     "//content/app:*",
     "//content/public/browser:browser_sources",
     "//content/test/fuzzer:ad_auction_headers_util_fuzzer",
+    "//content/test/fuzzer:ad_auction_service_mojolpm_fuzzer",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
     "//content/test/fuzzer:clipboard_host_mojolpm_fuzzer",
     "//content/test/fuzzer:first_party_set_parser_fuzzer_support",

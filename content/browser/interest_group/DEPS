@@ -9,4 +9,7 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+content/services/auction_worklet",
   ],
+  ".*_fuzzer.cc": [
+    "+third_party/libprotobuf-mutator/src/src/libfuzzer",
+  ],
 }

@@ -193,6 +193,9 @@ these:
 * ParseUpdateJson in interest_group_update_manager.cc
 * Update AdAuctionServiceImplTest.UpdateAllUpdatableFields
 
+If the new field is a required Mojo field, set a value for it in all the
+texprotos in the ad_auction_service_mojolpm_fuzzer/ directory.
+
 See crrev.com/c/3517534 for an example (adding the priority field), and also
 remember to update bidder_worklet.cc too.
 
