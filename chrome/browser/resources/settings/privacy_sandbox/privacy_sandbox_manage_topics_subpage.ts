@@ -113,9 +113,6 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
   override ready() {
     super.ready();
 
-    this.$.explanationText.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
     this.privacySandboxBrowserProxy_.getFirstLevelTopics().then(
         state => this.onFirstLevelTopicsStateChanged_(state));
   }

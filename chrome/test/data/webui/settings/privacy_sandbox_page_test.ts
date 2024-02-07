@@ -1264,14 +1264,15 @@ suite('ManageTopics', function() {
         '#explanationText a[href]');
     assertEquals(
         links.length, 1, 'Explanation text should have one Learn more link');
-    links.forEach(
-        link => assertEquals(
-            link.getAttribute('aria-description'),
-            loadTimeData.getString('opensInNewTab'),
-            'the link should indicate that it will be opened in a new tab'));
-    const hrefs = Array.from(links).map(link => link.href);
-    const expectedLinks = ['https://support.google.com/chrome?p=ad_privacy'];
-    assertDeepEquals(expectedLinks, hrefs);
+    assertEquals(
+        links[0]!.getAttribute('aria-description'),
+        loadTimeData.getString('opensInNewTab'),
+        'the link should indicate that it will be opened in a new tab');
+    assertEquals(
+        links[0]!.getAttribute('aria-label'),
+        'Learn more about managing your ad privacy in Chrome.');
+    assertEquals(
+        'https://support.google.com/chrome?p=ad_privacy', links[0]!.href);
   });
 
   test('ManageTopicsPageTestLabelsAndSubLabels', async function() {
