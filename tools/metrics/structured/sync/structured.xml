@@ -1647,6 +1647,48 @@
         each instance would have a unique ID.
       </summary>
     </metric>
+    <metric name="Width" type="int">
+      <summary>
+        Width of the element in pixels
+      </summary>
+    </metric>
+    <metric name="Height" type="int">
+      <summary>
+        Height of the element in pixels
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Resize">
+    <summary>
+      Recorded whenever a visual element significantly changes in size
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+    <metric name="Width" type="int">
+      <summary>
+        Width of the element in pixels
+      </summary>
+    </metric>
+    <metric name="Height" type="int">
+      <summary>
+        Height of the element in pixels
+      </summary>
+    </metric>
   </event>
 
   <event name="Click">

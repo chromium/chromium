@@ -104,6 +104,36 @@ bool GetValue(const base::Value& value, ImpressionEvent* event) {
     if (context) {
       event->impressions.back().context = *context;
     }
+    std::optional<int> width = impression.GetDict().FindInt("width");
+    if (width) {
+      event->impressions.back().width = *width;
+    }
+    std::optional<int> height = impression.GetDict().FindInt("height");
+    if (height) {
+      event->impressions.back().height = *height;
+    }
+  }
+  return true;
+}
+
+bool GetValue(const base::Value& value, ResizeEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  std::optional<int> veid = value.GetDict().FindInt("veid");
+  if (!veid) {
+    return false;
+  }
+  event->veid = *veid;
+
+  std::optional<int> width = value.GetDict().FindInt("width");
+  if (width) {
+    event->width = *width;
+  }
+  std::optional<int> height = value.GetDict().FindInt("height");
+  if (height) {
+    event->height = *height;
   }
   return true;
 }
@@ -378,6 +408,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("recordUserMetricsAction",
                      &Delegate::RecordUserMetricsAction, delegate);
   d->RegisterHandler("recordImpression", &Delegate::RecordImpression, delegate);
+  d->RegisterHandler("recordResize", &Delegate::RecordResize, delegate);
   d->RegisterHandler("recordClick", &Delegate::RecordClick, delegate);
   d->RegisterHandler("recordHover", &Delegate::RecordHover, delegate);
   d->RegisterHandler("recordDrag", &Delegate::RecordDrag, delegate);

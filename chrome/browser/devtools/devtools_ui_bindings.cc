@@ -1449,10 +1449,25 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
             .SetVeType(ve.type)
             .SetVeParent(ve.parent)
             .SetVeContext(ve.context)
+            .SetWidth(ve.width)
+            .SetHeight(ve.height)
             .SetTimeSinceSessionStart(
                 GetTimeSinceSessionStart().InMilliseconds())
             .SetSessionId(session_id_for_logging_.GetLowForSerialization())));
   }
+}
+
+void DevToolsUIBindings::RecordResize(const ResizeEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      metrics::structured::events::v2::dev_tools::Impression()
+          .SetVeId(event.veid)
+          .SetWidth(event.width)
+          .SetHeight(event.height)
+          .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
+          .SetSessionId(session_id_for_logging_.GetLowForSerialization())));
 }
 
 void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
