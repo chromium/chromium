@@ -39,7 +39,6 @@ js_library("oobe_loading_dialog") {
   deps = [
     ":oobe_adaptive_dialog",
     ":oobe_content_dialog",
-    "..:oobe_cr_lottie",
     "../behaviors:oobe_dialog_host_behavior",
     "../behaviors:oobe_i18n_behavior",
     "//ash/webui/common/resources:cr.m",

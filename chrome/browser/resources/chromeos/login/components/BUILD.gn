@@ -44,7 +44,6 @@ group("closure_compile") {
     ":hd_iron_icon",
     ":oobe_a11y_option",
     ":oobe_carousel",
-    ":oobe_cr_lottie",
     ":oobe_display_size_selector",
     ":oobe_i18n_dropdown",
     ":oobe_icons.html",
@@ -115,18 +114,6 @@ js_library("oobe_carousel") {
   deps = [
     "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_cr_lottie") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.js" ]
-  deps = [
-    "behaviors:oobe_i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -209,7 +196,6 @@ html_to_js("web_components_local") {
     "hd_iron_icon.js",
     "oobe_a11y_option.js",
     "oobe_carousel.js",
-    "oobe_cr_lottie.js",
     "oobe_display_size_selector.js",
     "oobe_i18n_dropdown.js",
     "oobe_screens_list.js",

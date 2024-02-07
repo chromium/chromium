@@ -36,7 +36,6 @@ const OobeWelcomeDialogBase =
  * @typedef {{
  *   title:  HTMLAnchorElement,
  *   chromeVoxHint:  OobeModalDialog,
- *   welcomeAnimation:  OobeCrLottie,
  * }}
  */
 OobeWelcomeDialogBase.$;
