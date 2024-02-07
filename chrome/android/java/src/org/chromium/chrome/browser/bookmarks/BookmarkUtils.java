@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -637,16 +636,6 @@ public class BookmarkUtils {
         } else {
             context.startActivity(intent);
         }
-    }
-
-    /** Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}. */
-    public static void startFolderPickerActivity(Context context, BookmarkId... bookmarkIds) {
-        // TODO(crbug.com/1465757): Record user action.
-        Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                bookmarkIdsToStringList(bookmarkIds));
-        context.startActivity(intent);
     }
 
     /** Given the {@link BookmarkId}s, return a list of those ids serialized to string. */

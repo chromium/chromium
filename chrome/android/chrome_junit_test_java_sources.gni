@@ -75,6 +75,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkModelListTestUtil.java",
+  "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkMoveSnackbarManagerTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayoutTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediatorTest.java",
