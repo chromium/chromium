@@ -156,7 +156,7 @@ void AutofillMergeTest::SetUp() {
   test::DisableSystemServices(nullptr);
   personal_data_.set_auto_accept_address_imports_for_testing(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
-      &autofill_client_, &personal_data_, "en");
+      &autofill_client_, &personal_data_, /*history_service=*/nullptr, "en");
 }
 
 void AutofillMergeTest::TearDown() {

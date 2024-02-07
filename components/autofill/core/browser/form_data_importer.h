@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -23,6 +24,8 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 
 namespace autofill {
 
@@ -33,7 +36,8 @@ enum class NonInteractivePaymentMethodType;
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
 // Owned by `ChromeAutofillClient`.
-class FormDataImporter : public PersonalDataManagerObserver {
+class FormDataImporter : public PersonalDataManagerObserver,
+                         public history::HistoryServiceObserver {
  public:
   // Record type of the credit card extracted from the form, if one exists.
   // TODO(crbug.com/1412326): Remove this enum and user CreditCard::RecordType
@@ -55,10 +59,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
   };
 
   // The parameters should outlive the FormDataImporter.
-  FormDataImporter(
-      AutofillClient* client,
-      PersonalDataManager* personal_data_manager,
-      const std::string& app_locale);
+  FormDataImporter(AutofillClient* client,
+                   PersonalDataManager* personal_data_manager,
+                   history::HistoryService* history_service,
+                   const std::string& app_locale);
 
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
@@ -125,8 +129,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // PersonalDataManagerObserver
   void OnPersonalDataChanged() override;
-  void OnBrowsingHistoryCleared(
-      const history::DeletionInfo& deletion_info) override;
+
+  // history::HistoryServiceObserver
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
 
   // See `FormAssociator::GetFormAssociations()`.
   std::optional<FormStructure::FormAssociations> GetFormAssociations(
@@ -342,6 +348,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Represents the type of the credit card import candidate from the submitted
   // form. It will be used to determine whether to offer upload save or card

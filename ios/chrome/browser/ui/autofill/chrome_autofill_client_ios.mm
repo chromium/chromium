@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -113,6 +114,9 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
           personal_data_manager_,
+          ios::HistoryServiceFactory::GetForBrowserState(
+              browser_state,
+              ServiceAccessType::EXPLICIT_ACCESS),
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
       unmask_controller_(browser_state->GetPrefs()),

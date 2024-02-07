@@ -88,6 +88,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       form_data_importer_(
           std::make_unique<FormDataImporter>(this,
                                              personal_data_manager_,
+                                             /*history_service=*/nullptr,
                                              locale)),
       strike_database_(strike_database),
       sync_service_(sync_service),

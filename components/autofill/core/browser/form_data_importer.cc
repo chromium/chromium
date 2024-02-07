@@ -153,12 +153,13 @@ FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
                                    PersonalDataManager* personal_data_manager,
+                                   history::HistoryService* history_service,
                                    const std::string& app_locale)
     : client_(client),
-      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
-          client,
-          app_locale,
-          personal_data_manager)),
+      credit_card_save_manager_(
+          std::make_unique<CreditCardSaveManager>(client,
+                                                  app_locale,
+                                                  personal_data_manager)),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
@@ -179,8 +180,12 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
               client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
-  if (personal_data_manager_)
+  if (personal_data_manager_) {
     personal_data_manager_->AddObserver(this);
+  }
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 FormDataImporter::~FormDataImporter() {
@@ -1179,7 +1184,8 @@ void FormDataImporter::OnPersonalDataChanged() {
   multistep_importer_.OnPersonalDataChanged(*personal_data_manager_);
 }
 
-void FormDataImporter::OnBrowsingHistoryCleared(
+void FormDataImporter::OnURLsDeleted(
+    history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   multistep_importer_.OnBrowsingHistoryCleared(deletion_info);
   form_associator_.OnBrowsingHistoryCleared(deletion_info);
