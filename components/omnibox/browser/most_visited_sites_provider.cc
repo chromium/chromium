@@ -119,6 +119,8 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
                      is_search ? AutocompleteMatchType::TILE_REPEATABLE_QUERY
                                : AutocompleteMatchType::TILE_MOST_VISITED_SITE);
       if (is_search) {
+        match.subtypes.emplace(
+            omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES);
         match.keyword = dse->keyword();
         std::u16string query = tile.title;
 
@@ -136,6 +138,9 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
             std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
         num_search_tiles++;
       } else {
+        match.subtypes.emplace(
+            omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
+        match.subtypes.emplace(omnibox::SUBTYPE_URL_BASED);
         num_url_tiles++;
       }
       matches.emplace_back(std::move(match));
@@ -175,6 +180,8 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
       }
     }
 
+    match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
+    match.subtypes.emplace(omnibox::SUBTYPE_URL_BASED);
     matches.push_back(std::move(match));
   }
 

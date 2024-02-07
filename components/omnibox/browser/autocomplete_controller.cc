@@ -281,15 +281,11 @@ void AutocompleteController::ExtendMatchSubtypes(
       // aren't personalized by the server. That is, it indicates either
       // client-side most-likely URL suggestions or server-side suggestions
       // that depend only on the URL as context.
-      if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
-          match.type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
-          match.type == AutocompleteMatchType::NAVSUGGEST) {
+      if (match.type == AutocompleteMatchType::NAVSUGGEST) {
         subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
         subtypes->emplace(omnibox::SUBTYPE_URL_BASED);
       } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST) {
         subtypes->emplace(omnibox::SUBTYPE_URL_BASED);
-      } else if (match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY) {
-        subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES);
       }
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_QUERY_TILE) {
@@ -1432,6 +1428,9 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
         subtypes.contains(
             omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES) ||
         subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
+        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_IMAGE) ||
+        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_TEXT) ||
+        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_URL) ||
         subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
       num_zero_prefix_suggestions_shown++;
     }
