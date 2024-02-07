@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/editor_feedback.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
@@ -15,6 +18,10 @@
 
 namespace ash::input_method {
 namespace {
+
+constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(200);
+constexpr char16_t kAnnouncementMessage[] =
+    u"Replacing selected text with suggestion";
 
 bool IsUrlAllowed(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) ||
@@ -39,11 +46,15 @@ void EditorSystemActuator::InsertText(const std::string& text) {
   logger->LogNumberOfCharactersInserted(text.length());
   logger->LogNumberOfCharactersSelectedForInsert(
       system_->GetSelectedTextLength());
-  // The text cannot be immediately inserted as the target input is not focused
-  // at this point, the WebUI is focused. After closing the WebUI focus will
-  // return to the original text input.
-  queued_text_insertion_ = std::make_unique<EditorTextInsertion>(text);
-  system_->CloseUI();
+  // After making an announcement there needs to be a small delay to ensure any
+  // other announcements triggered from a text insertion do not collide with the
+  // original announcement.
+  system_->Announce(kAnnouncementMessage);
+  announcement_delay_.Reset();
+  announcement_delay_.Start(
+      FROM_HERE, kAnnouncementDelay,
+      base::BindOnce(&EditorSystemActuator::QueueTextInsertion,
+                     weak_ptr_factory_.GetWeakPtr(), text));
 }
 
 void EditorSystemActuator::ApproveConsent() {
@@ -83,6 +94,15 @@ void EditorSystemActuator::OnFocus(int context_id) {
                                  queued_text_insertion_->Commit())) {
     queued_text_insertion_ = nullptr;
   }
+}
+
+void EditorSystemActuator::QueueTextInsertion(const std::string pending_text) {
+  // The text cannot be immediately inserted as the target input is not focused
+  // at this point, the WebUI is focused. After closing the WebUI focus will
+  // return to the original text input.
+  queued_text_insertion_ =
+      std::make_unique<EditorTextInsertion>(std::move(pending_text));
+  system_->CloseUI();
 }
 
 }  // namespace ash::input_method

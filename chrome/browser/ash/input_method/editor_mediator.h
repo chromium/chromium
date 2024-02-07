@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/input_method/editor_client_connector.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
@@ -80,6 +81,7 @@ class EditorMediator : public EditorEventSink,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // EditorSystemActuator::System overrides
+  void Announce(const std::u16string& message) override;
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
   void CloseUI() override;
@@ -121,6 +123,7 @@ class EditorMediator : public EditorEventSink,
   std::unique_ptr<EditorMetricsRecorder> metrics_recorder_;
   std::unique_ptr<EditorConsentStore> consent_store_;
   EditorServiceConnector editor_service_connector_;
+  EditorLiveRegionAnnouncer announcer_;
 
   // TODO: b:298285960 - add the instantiation of this instance.
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;

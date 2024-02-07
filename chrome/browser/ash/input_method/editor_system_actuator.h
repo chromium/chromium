@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_text_insertion.h"
@@ -24,6 +26,7 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   class System {
    public:
     virtual ~System() = default;
+    virtual void Announce(const std::u16string& message) = 0;
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
@@ -50,6 +53,8 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   void OnFocus(int context_id);
 
  private:
+  void QueueTextInsertion(const std::string pending_text);
+
   raw_ptr<Profile> profile_;
   mojo::AssociatedReceiver<orca::mojom::SystemActuator>
       system_actuator_receiver_;
@@ -62,6 +67,9 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   // Only one text insertion can be queued at a time, with new text insertions
   // overwriting previously queued insertions.
   std::unique_ptr<EditorTextInsertion> queued_text_insertion_;
+
+  base::OneShotTimer announcement_delay_;
+  base::WeakPtrFactory<EditorSystemActuator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::input_method

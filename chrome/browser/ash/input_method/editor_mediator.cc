@@ -150,6 +150,10 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
   editor_switch_->OnTextSelectionLengthChanged(selected_length);
 }
 
+void EditorMediator::Announce(const std::u16string& message) {
+  announcer_.Announce(message);
+}
+
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
   HandleTrigger(/*preset_query_id=*/std::nullopt,
