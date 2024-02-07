@@ -164,4 +164,18 @@ TEST(Util, CeilingDivide) {
   EXPECT_EQ(CeilingDivide(-4, -2), 2);
 }
 
+TEST(Util, OptionalBaseInsertion) {
+  // Tests insertion in a gTest expectation.
+  std::optional<base::FilePath> file_path;
+  EXPECT_TRUE(true) << file_path;
+
+  std::stringstream os;
+  os << file_path << std::endl;
+  EXPECT_EQ(os.str(), "std::nullopt\n");
+  os.str("");
+  file_path = std::make_optional<base::FilePath>(FILE_PATH_LITERAL("test"));
+  os << file_path << std::endl;
+  EXPECT_EQ(os.str(), "test\n");
+}
+
 }  // namespace updater

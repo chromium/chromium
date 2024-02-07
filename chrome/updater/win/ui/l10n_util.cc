@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/i18n.h"
