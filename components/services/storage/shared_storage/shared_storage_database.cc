@@ -204,7 +204,9 @@ SharedStorageDatabase::SharedStorageDatabase(
     base::FilePath db_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<SharedStorageDatabaseOptions> options)
-    : db_({// We DCHECK that the page size is valid in the constructor for
+    : db_({.wal_mode = base::FeatureList::IsEnabled(
+               blink::features::kSharedStorageAPIEnableWALForDatabase),
+           // We DCHECK that the page size is valid in the constructor for
            // `SharedStorageOptions`.
            .page_size = options->max_page_size,
            .cache_size = options->max_cache_size}),

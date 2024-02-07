@@ -1316,6 +1316,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
 // shipped.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM123);
 
+// Enables WAL (write-ahead-logging) mode for the Shared Storage API SQLite
+// database backend.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIEnableWALForDatabase);
+
 // TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
 // can adjust to us not simulating click events on a focus action. It is in the
 // process of being removed completely and is currently disabled by default on
