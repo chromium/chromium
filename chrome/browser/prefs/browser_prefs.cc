@@ -1006,6 +1006,10 @@ constexpr char kSafeBrowsingDeepScanPromptSeen[] =
 constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
     "safebrowsing.esb_enabled_timestamp";
 
+#if BUILDFLAG(IS_MAC)
+constexpr char kScreenTimeEnabled[] = "policy.screen_time";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1123,6 +1127,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kExtendedFkeysModifier, 0);
+#endif
+
+  // Deprecated 02/2024
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(kScreenTimeEnabled, true);
 #endif
 }
 
@@ -2101,10 +2110,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);
 
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(policy::policy_prefs::kScreenTimeEnabled, true);
-#endif
-
   RegisterProfilePrefsForMigration(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2302,6 +2307,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kExtendedFkeysModifier);
 #endif
 
+// Added 02/2024
+#if BUILDFLAG(IS_MAC)
+  local_state->ClearPref(kScreenTimeEnabled);
+#endif
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 

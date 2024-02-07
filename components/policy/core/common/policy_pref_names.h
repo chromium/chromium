@@ -38,7 +38,6 @@ extern const char kDlpReportingEnabled[];
 extern const char kDlpRulesList[];
 #if BUILDFLAG(IS_MAC)
 extern const char kEnterpriseMDMManagementMac[];
-extern const char kScreenTimeEnabled[];
 #endif
 extern const char kFeedbackSurveysEnabled[];
 extern const char kLastPolicyStatisticsUpdate[];

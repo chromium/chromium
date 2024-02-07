@@ -980,7 +980,7 @@ policies:
   979: LocalFontsBlockedForUrls
   980: ProjectorDogfoodForFamilyLinkEnabled
   981: UrlParamFilterEnabled
-  982: ScreenTimeEnabled
+  982: ''
   983: DefaultClipboardSetting
   984: ClipboardAllowedForUrls
   985: ClipboardBlockedForUrls
