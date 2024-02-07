@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -17,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,6 +43,7 @@ public class TabModelUtilsUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
+    @Mock private Callback<TabModelSelector> mTabModelSelectorCallback;
 
     private MockTabModelSelector mTabModelSelector;
     private MockTabModel mTabModel;
@@ -100,5 +105,22 @@ public class TabModelUtilsUnitTest {
         TabModelUtils.selectTabById(
                 mTabModelSelector, UNUSED_TAB_ID, TabSelectionType.FROM_USER, false);
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
+    }
+
+    @Test
+    @SmallTest
+    public void testRunOnTabStateInitializedCallback() {
+        mTabModelSelector.markTabStateInitialized();
+        TabModelUtils.runOnTabStateInitialized(mTabModelSelector, mTabModelSelectorCallback);
+        verify(mTabModelSelectorCallback, times(1)).onResult(mTabModelSelector);
+    }
+
+    @Test
+    @SmallTest
+    public void testRunOnTabStateInitializedObserver() {
+        TabModelUtils.runOnTabStateInitialized(mTabModelSelector, mTabModelSelectorCallback);
+        verify(mTabModelSelectorCallback, never()).onResult(mTabModelSelector);
+        mTabModelSelector.markTabStateInitialized();
+        verify(mTabModelSelectorCallback, times(1)).onResult(mTabModelSelector);
     }
 }
