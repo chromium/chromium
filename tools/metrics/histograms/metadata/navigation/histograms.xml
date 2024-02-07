@@ -1365,6 +1365,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Renderer.BlockedForFilterURL"
+    enum="RendererBlockedURLReason" expires_after="2025-02-05">
+  <owner>creis@chromium.org</owner>
+  <owner>site-isolation-dev@chromium.org</owner>
+  <summary>
+    Recorded when RenderFrameImpl::IsValidCommitUrl detects a navigation URL
+    that would be blocked by RenderProcessHostImpl::FilterURL and rewrites it to
+    about:blank#blocked. See also BrowserRenderProcessHost.BlockedByFilterURL
+    for cases caught by the browser process, and https://crbug.com/40066983.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.RendererCommitDelay.{FrameType}" units="ms"
     expires_after="2023-05-05">
   <owner>cduvall@chromium.org</owner>

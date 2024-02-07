@@ -335,6 +335,18 @@ typedef std::map<blink::WebFrame*, RenderFrameImpl*> FrameMap;
 base::LazyInstance<FrameMap>::DestructorAtExit g_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
+// Please keep in sync with "RendererBlockedURLReason" in
+// tools/metrics/histograms/metadata/navigation/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class RendererBlockedURLReason {
+  kInvalidURL = 0,
+  kTooLongURL = 1,
+  kBadAboutURL = 2,
+
+  kMaxValue = kBadAboutURL
+};
+
 int64_t ExtractPostId(const WebHistoryItem& item) {
   if (item.IsNull() || item.HttpBody().IsNull())
     return -1;
@@ -398,6 +410,38 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
                            document_loader->ReplacesCurrentHistoryItem(),
                            is_main_frame, is_in_fenced_frame_tree,
                            document_loader->GetNavigationType());
+}
+
+// Ensure that the renderer does not send commit URLs to the browser process
+// that are known to be unsupported. Ideally these would be caught earlier in
+// Blink and not get this far. Histograms are reported (similar to those in
+// RenderProcessHostImpl::FilterURL) to track the cases that should be handled
+// earlier. See https://crbug.com/40066983.
+bool IsValidCommitUrl(const GURL& url) {
+  // Invalid URLs are not accepted by the browser process.
+  if (!url.is_valid()) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+                                  RendererBlockedURLReason::kInvalidURL);
+    return false;
+  }
+
+  // Do not send a URL longer than Mojo will serialize.
+  if (url.possibly_invalid_spec().length() > url::kMaxURLChars) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+                                  RendererBlockedURLReason::kTooLongURL);
+    return false;
+  }
+
+  // Any about: URLs must be either about:blank or about:srcdoc (optionally with
+  // fragments).
+  if (url.SchemeIs(url::kAboutScheme) &&
+      (!url.IsAboutBlank() && !url.IsAboutSrcdoc())) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+                                  RendererBlockedURLReason::kBadAboutURL);
+    return false;
+  }
+
+  return true;
 }
 
 // Gets URL that should override the default getter for this data source
@@ -4204,7 +4248,11 @@ void RenderFrameImpl::WillFreezePage() {
 }
 
 void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
-  GetFrameHost()->DidOpenDocumentInputStream(url);
+  GURL filtered_url(url);
+  if (!IsValidCommitUrl(filtered_url)) {
+    filtered_url = GURL(kBlockedURL);
+  }
+  GetFrameHost()->DidOpenDocumentInputStream(filtered_url);
 }
 
 void RenderFrameImpl::DidSetPageLifecycleState() {
@@ -4829,6 +4877,14 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
       (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc())) {
     params->initiator_base_url = frame_document.BaseURL();
+  }
+
+  // Don't send commit URLs to the browser that are known to be unsupported
+  // (e.g., would not pass RenderProcessHostImpl::FilterURL). This is applied
+  // after the initiator_base_url check above to avoid passing a base URL when
+  // the URL was not about:blank but was rewritten to about:blank#blocked.
+  if (!IsValidCommitUrl(params->url)) {
+    params->url = GURL(kBlockedURL);
   }
 
   // TODO(https://crbug.com/1158101): Reconsider how we calculate

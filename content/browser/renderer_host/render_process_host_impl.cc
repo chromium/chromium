@@ -1060,8 +1060,9 @@ BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep in sync with "RenderProcessHostBlockedURLReason" in
-// tools/metrics/histograms/enums.xml. // These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
+// tools/metrics/histograms/metadata/browser/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class BlockedURLReason {
   kInvalidURL = 0,
   kFailedCanRequestURLCheck = 1,

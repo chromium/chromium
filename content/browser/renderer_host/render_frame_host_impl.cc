@@ -12737,8 +12737,14 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
       process->FilterURL(false, &params->url);
   process->FilterURL(true, &params->referrer->url);
 
+  // Check whether the URL was blocked by FilterURL, or by similar logic in the
+  // renderer process. Exclude cases where the renderer may have actually
+  // navigated same-document to about:blank#blocked.
+  bool blocked_by_renderer =
+      params->url == GURL(kBlockedURL) && !GetLastCommittedURL().IsAboutBlank();
   if (is_same_document_navigation &&
-      url_filter_result == RenderProcessHost::FilterURLResult::kBlocked) {
+      (url_filter_result == RenderProcessHost::FilterURLResult::kBlocked ||
+       blocked_by_renderer)) {
     // For same-document navigations, keeping about:blank#blocked can lead to
     // some really strange results with navigating back/forward and session
     // restore. So if the URL was filtered, replace it with the current URL:
@@ -12749,9 +12755,10 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     // Note that this would be unsafe for cross-document navigations, which can
     // be cross-origin.
     //
-    // TODO(crbug.com/1464018): It would be nice to catch and block this in the
-    // renderer process, so the browser process could just treat this as a 'bad
-    // message received' situation.
+    // TODO(crbug.com/1464018): It would be nice to catch and block this earlier
+    // in the renderer process (causing the same-document navigation to fail),
+    // so the browser process could just treat this as a 'bad message received'
+    // situation.
     params->url = GetLastCommittedURL();
   }
 

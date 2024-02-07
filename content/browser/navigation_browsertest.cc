@@ -3600,6 +3600,29 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(main_frame_process_host, wc->GetPrimaryMainFrame()->GetProcess());
 }
 
+// Verify that actual renderer-initiated navigations to about:blank#blocked
+// are respected, even though both the browser and renderer rewrite some illegal
+// navigations to that URL as well. See https://crbug.com/40066983.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentHashNavigationToBlockedFragmentAllowed) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  TestNavigationObserver blank_observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "location.href = 'about:blank';"));
+  blank_observer.Wait();
+
+  GURL blocked_url = GURL(kBlockedURL);
+  TestNavigationObserver blocked_observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location.href = $1", blocked_url)));
+  blocked_observer.Wait();
+
+  // If the browser process receives a request to same-document navigate to
+  // about:blank#blocked, the URL should be used and not ignored (as in a
+  // blocked case like the SameDocumentLongURLHashNavigation test).
+  EXPECT_EQ(blocked_url, web_contents()->GetLastCommittedURL());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        SameDocumentLongURLHashNavigation) {
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
@@ -7522,11 +7545,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
 
   // Verify that browser-initiated navigation to `about:mumble` doesn't crash.
   //
-  // The Commit IPC will carry the original "about:mumble" URL, which will still
-  // show up via `window.location.href`, but the URL passed back in DidCommit
-  // will be rewritten to `about:blank#blocked` in
-  // `RenderProcessHostImpl::FilterURL` and therefore this is what we expect in
-  // `GetLastCommittedURL`.
+  // The renderer will try to commit the original "about:mumble" URL, which will
+  // still show up via `window.location.href`, but the URL passed back in the
+  // DidCommit IPC will be rewritten to `about:blank#blocked` due to
+  // `RenderFrameImpl`'s `IsValidCommitUrl` and therefore this is what we expect
+  // in `GetLastCommittedURL`.
   ASSERT_FALSE(NavigateToURL(shell(), GURL("about:mumble")));
   EXPECT_EQ(EvalJs(shell(), "window.location.href"), "about:mumble");
   EXPECT_EQ(

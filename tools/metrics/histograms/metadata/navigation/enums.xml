@@ -1702,6 +1702,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kPotentiallySyncAccessible"/>
 </enum>
 
+<enum name="RendererBlockedURLReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="URL Was Too Long"/>
+  <int value="2" label="Invalid about: URL">
+    URL had about: scheme without being about:blank or about:srcdoc.
+  </int>
+</enum>
+
 <enum name="ThirdPartyCookieBlockState">
   <int value="0" label="Cookies allowed"/>
   <int value="1" label="Third-party cookies blocked"/>
