@@ -5435,6 +5435,7 @@ crbug.com/1462683 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-f
 
 crbug.com/1455262 virtual/view-transition/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
 crbug.com/1521474 virtual/disable-intersection-optimization/external/wpt/intersection-observer/callback-cross-realm-report-exception.html [ Failure ]
+crbug.com/324293120 [ Debug Linux ] external/wpt/webstorage/event_case_sensitive.html [ Failure Pass ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
