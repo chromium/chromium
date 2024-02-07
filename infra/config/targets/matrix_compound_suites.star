@@ -267,6 +267,16 @@ targets.legacy_matrix_compound_suite(
                 "CROS_OCTOPUS_PUBLIC_LKGM",
             ],
         ),
+        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_OCTOPUS_PUBLIC_LKGM",
+            ],
+        ),
+        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_OCTOPUS_PUBLIC_LKGM",
+            ],
+        ),
     },
 )
 

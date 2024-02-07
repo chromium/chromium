@@ -6971,6 +6971,16 @@
           'CROS_OCTOPUS_PUBLIC_LKGM',
         ],
       },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
       'chromeos_device_only_gtests': {
         'variants': [
           'CROS_OCTOPUS_PUBLIC_LKGM',
