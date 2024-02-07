@@ -1,7 +1,7 @@
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
 // META: script=/resources/test-only-api.js
-// META: script=/serial/resources/automation.js
+// META: script=resources/automation.js
 
 promise_test(async (t) => {
   const {SerialService} = await import(
