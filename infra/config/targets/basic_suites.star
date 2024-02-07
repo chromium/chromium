@@ -4965,6 +4965,21 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "webrtc_chromium_without_baremetal_gtests",
+    tests = {
+        # Run capture unittests on bots that don't have real webcams.
+        "capture_unittests": targets.legacy_test_config(
+            args = [
+                "--enable-logging",
+                "--v=1",
+                "--test-launcher-jobs=1",
+                "--test-launcher-print-test-stdio=always",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "webrtc_chromium_gtests",
     tests = {
         "browser_tests": targets.legacy_test_config(

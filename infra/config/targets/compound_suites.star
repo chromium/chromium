@@ -1342,6 +1342,14 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "webrtc_chromium_tests_without_baremetal_tests",
+    basic_suites = [
+        "webrtc_chromium_without_baremetal_gtests",
+        "webrtc_chromium_gtests",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "webview_bot_all_gtests",
     basic_suites = [
         "system_webview_shell_instrumentation_tests",
