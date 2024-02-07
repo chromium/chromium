@@ -936,14 +936,18 @@ class AutocompleteMediator
             }
 
             if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
-                mDelegate.loadUrlWithPostData(
-                        url.getSpec(),
-                        transition,
-                        inputStart,
-                        suggestion.getPostContentType(),
-                        suggestion.getPostData());
+                mDelegate.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
+                                .setInputStartTimestamp(inputStart)
+                                .setpostDataAndType(
+                                        suggestion.getPostData(), suggestion.getPostContentType())
+                                .build());
             } else {
-                mDelegate.loadUrl(url.getSpec(), transition, inputStart, openInNewTab);
+                mDelegate.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
+                                .setInputStartTimestamp(inputStart)
+                                .setOpenInNewTab(openInNewTab)
+                                .build());
             }
 
             if (mClearFocusAfterNavigationAsynchronously) {

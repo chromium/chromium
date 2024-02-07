@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -34,6 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -123,6 +125,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
     private @Mock OmniboxActionFactoryJni mActionFactoryJni;
     private @Mock TemplateUrlService mTemplateUrlService;
+
+    private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -587,8 +591,9 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
         // Verify that the URL is not loaded in a new tab.
-        verify(mAutocompleteDelegate)
-                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
     }
 
     @Test
@@ -611,8 +616,9 @@ public class AutocompleteMediatorUnitTest {
         // Simulate profile loaded.
         mMediator.setAutocompleteProfile(mProfile);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mAutocompleteDelegate)
-                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
         verify(mAutocompleteDelegate).clearOmniboxFocus();
         verifyNoMoreInteractions(mAutocompleteDelegate);
 

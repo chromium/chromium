@@ -18,6 +18,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
@@ -147,12 +148,11 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             String[] postData = urlService.getImageUrlAndPostContent();
             // TODO(crbug.com/1473127): Pass in correct imageByteArray to AutocompleteDelegate
             byte[] imageByteArray = new byte[0];
-            mAutocompleteDelegate.loadUrlWithPostData(
-                    postData[0],
-                    PageTransition.GENERATED,
-                    SystemClock.uptimeMillis(),
-                    postData[1],
-                    imageByteArray);
+            mAutocompleteDelegate.loadUrl(
+                    new OmniboxLoadUrlParams.Builder(postData[0], PageTransition.GENERATED)
+                            .setInputStartTimestamp(SystemClock.uptimeMillis())
+                            .setpostDataAndType(imageByteArray, postData[1])
+                            .build());
             recordDropType(DropType.CHROME_IMAGE);
         } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TEXT)) {
             mOmniboxStub.setUrlBarFocus(
@@ -173,10 +173,10 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
              */
             String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
             mAutocompleteDelegate.loadUrl(
-                    url,
-                    PageTransition.TYPED,
-                    SystemClock.uptimeMillis(),
-                    /* openInNewTab= */ false);
+                    new OmniboxLoadUrlParams.Builder(url, PageTransition.TYPED)
+                            .setInputStartTimestamp(SystemClock.uptimeMillis())
+                            .setOpenInNewTab(false)
+                            .build());
             recordDropType(DropType.CHROME_LINK);
         } else {
             // case where dragged object is not from Chrome

@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -375,7 +376,10 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
@@ -389,7 +393,11 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false, mAutocompleteLoadCallback);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .setAutocompleteLoadCallback(mAutocompleteLoadCallback)
+                        .build());
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
@@ -411,7 +419,10 @@ public class LocationBarMediatorTest {
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(data).when(mResourceRequestBodyJni).createResourceRequestBodyFromBytes(any());
-        mMediator.loadUrlWithPostData(TEST_URL, PageTransition.TYPED, 0, text, data, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setpostDataAndType(data, text)
+                        .build());
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
@@ -426,7 +437,10 @@ public class LocationBarMediatorTest {
     public void testLoadUrl_NativeNotInitialized() {
         if (BuildConfig.ENABLE_ASSERTS) {
             try {
-                mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+                mMediator.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                                .setOpenInNewTab(false)
+                                .build());
                 throw new Error("Expected an assert to be triggered.");
             } catch (AssertionError e) {
             }
@@ -442,7 +456,10 @@ public class LocationBarMediatorTest {
                 .when(mOverrideUrlLoadingDelegate)
                 .willHandleLoadUrlWithPostData(
                         TEST_URL, PageTransition.TYPED, 0, null, null, false);
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
 
         verify(mOverrideUrlLoadingDelegate)
                 .willHandleLoadUrlWithPostData(
@@ -456,7 +473,10 @@ public class LocationBarMediatorTest {
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(false).when(mTab).isIncognito();
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, true);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(true)
+                        .build());
 
         verify(mTabModelSelector)
                 .openNewTab(
@@ -1219,10 +1239,16 @@ public class LocationBarMediatorTest {
         assertTrue(UrlUtilities.isNtpUrl(mTab.getUrl()));
         doReturn(false).when(mTab).isIncognito();
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         // The time to be checked for the calling of recordNavigationOnNtp is still 1 here
         // as we verify with the argument PageTransition.GENERATED instead.
         verify(mOmniboxUma, times(1))
@@ -1234,20 +1260,32 @@ public class LocationBarMediatorTest {
         ShadowUrlUtilities.sIsNtp = false;
         assertFalse(UrlUtilities.isNtpUrl(mTab.getUrl()));
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
 
         // Test clicking omnibox on html/rendered web page.
         doReturn(false).when(mTab).isNativePage();
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
 
@@ -1261,10 +1299,16 @@ public class LocationBarMediatorTest {
                 .willHandleLoadUrlWithPostData(
                         TEST_URL, PageTransition.GENERATED, 0, null, null, false);
         // Test navigating using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);
         // Test searching using omnibox.
-        mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0, false);
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.GENERATED)
+                        .setOpenInNewTab(false)
+                        .build());
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
     }
