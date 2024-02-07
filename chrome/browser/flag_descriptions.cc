@@ -5148,6 +5148,15 @@ const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
     "during a manifest update if the icons were generated, indictative of"
     "network errors during the sync install.";
 
+const char kWebAppUniversalInstallName[] = "Web App Universal Install";
+const char kWebAppUniversalInstallDescription[] =
+    "Allows any site to be installable on Windows, Mac, and Linux.";
+
+const char kShortcutsNotAppsName[] = "Shortcuts not Apps";
+const char kShortcutsNotAppsDescription[] =
+    "Changes the 'create shortcut' 3-dot menu option to put a fire-and-forget "
+    "link on the desktop, instead of an app.";
+
 const char kUserDisplayModeSyncBrowserMitigationName[] =
     "Web App User Display Mode Sync Browser Mitigation";
 const char kUserDisplayModeSyncBrowserMitigationDescription[] =

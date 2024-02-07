@@ -19879,6 +19879,7 @@ from previous Chrome versions.
   <int value="-373365335" label="JourneysOmniboxAction:disabled"/>
   <int value="-373233195" label="SyncUSSAutofillWalletData:enabled"/>
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
+  <int value="-371771269" label="ShortcutsNotApps:enabled"/>
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
   <int value="-371103035" label="OmniboxTouchDownTriggerForPrefetch:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
@@ -20104,6 +20105,7 @@ from previous Chrome versions.
   <int value="-276907217" label="EventPath:enabled"/>
   <int value="-276260362" label="GamepadVibration:enabled"/>
   <int value="-276196379" label="ShimlessRMASkuDescription:enabled"/>
+  <int value="-276042128" label="ShortcutsNotApps:disabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
   <int value="-275619817"
@@ -20896,6 +20898,7 @@ from previous Chrome versions.
   <int value="90673685" label="cast-mirroring-target-playout-delay"/>
   <int value="91916443" label="ManagedConfiguration:disabled"/>
   <int value="91938915" label="enable-suggestions-service"/>
+  <int value="92082387" label="WebAppUniversalInstall:disabled"/>
   <int value="92106937" label="CloseTabSuggestions:disabled"/>
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
@@ -24911,6 +24914,7 @@ from previous Chrome versions.
   <int value="1939413645" label="enable-invalid-cert-collection"/>
   <int value="1939884866" label="web-otp-backend"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
+  <int value="1941193767" label="WebAppUniversalInstall:enabled"/>
   <int value="1941845443" label="ScrollableTabStrip:enabled"/>
   <int value="1942174659" label="ArcSyncInstallPriority:enabled"/>
   <int value="1942542793" label="CrosPrivacyHubV0:disabled"/>
