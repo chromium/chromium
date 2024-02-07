@@ -1032,6 +1032,11 @@ void RenderAccessibilityImpl::AddPluginTreeToUpdate(
       node.child_ids.push_back(root->id());
 
       ui::AXTreeUpdate plugin_update;
+
+      // TODO(crbug.com/324124958): meant as a short-term workaround for
+      // instability.
+      plugin_serializer_->Reset();
+
       plugin_serializer_->SerializeChanges(root, &plugin_update);
 
       size_t old_count = update->nodes.size();
