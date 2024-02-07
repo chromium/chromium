@@ -1433,6 +1433,12 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
+        "ondevice_stability_tests": targets.legacy_matrix_config(
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "INTEL_UHD_630",
+            ],
+        ),
     },
 )
 

@@ -8018,6 +8018,12 @@
           'MODEL_VALIDATION_TRUNK',
         ],
       },
+      'ondevice_stability_tests': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630',
+        ],
+      },
     },
 
     'webview_trichrome_10_cts_tests_gtest': {
