@@ -4,9 +4,12 @@
 
 source_set("tab_resumption") {
   sources = [
+    "tab_resumption_commands.h",
     "tab_resumption_helper_delegate.h",
     "tab_resumption_item.h",
     "tab_resumption_item.mm",
+    "tab_resumption_mediator.h",
+    "tab_resumption_mediator.mm",
     "tab_resumption_view.h",
     "tab_resumption_view.mm",
   ]
@@ -14,30 +17,12 @@ source_set("tab_resumption") {
     ":constants",
     "//base",
     "//components/sessions:session_id",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/content_suggestions:public",
-    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
-    "//url",
-  ]
-}
-
-source_set("helper") {
-  sources = [
-    "tab_resumption_helper.h",
-    "tab_resumption_helper.mm",
-  ]
-  deps = [
-    ":tab_resumption",
-    "//base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/base",
     "//components/sync/service",
     "//components/sync_sessions",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
@@ -48,13 +33,26 @@ source_set("helper") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/model:tab_sync_util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
   ]
 }
 

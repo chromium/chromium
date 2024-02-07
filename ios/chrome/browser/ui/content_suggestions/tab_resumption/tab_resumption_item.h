@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
-@protocol ContentSuggestionsCommands;
+@protocol TabResumptionCommands;
 
 namespace base {
 class Time;
@@ -47,7 +47,7 @@ enum TabResumptionItemType {
 @property(nonatomic, strong) UIImage* faviconImage;
 
 // Command handler for user actions.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+@property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType

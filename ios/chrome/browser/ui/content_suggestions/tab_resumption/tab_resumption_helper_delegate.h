@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class ContentSuggestionsModuleType;
+
 // Delegate handling events from the TabResumptionHelper.
 @protocol TabResumptionHelperDelegate
 
@@ -15,6 +17,9 @@
 
 // Signals that the Tab Resumption module should be removed.
 - (void)removeTabResumptionModule;
+
+// Logs a user Magic Stack engagement for module `type`.
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
 @end
 

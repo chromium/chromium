@@ -75,9 +75,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
-#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -133,8 +132,6 @@ using RequestSource = SearchTermsData::RequestSource;
 @implementation ContentSuggestionsMediator {
   // Local State prefs.
   raw_ptr<PrefService> _localState;
-  // Helper class for the tab resumption tile.
-  std::unique_ptr<TabResumptionHelper> _tabResumptionHelper;
   // The latest module ranking returned from the SegmentationService.
   NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
   // YES if the module ranking has been received from the SegmentationService.
@@ -146,6 +143,7 @@ using RequestSource = SearchTermsData::RequestSource;
   NSArray<NSNumber*>* _latestMagicStackOrder;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   SetUpListMediator* _setUpListMediator;
+  TabResumptionMediator* _tabResumptionMediator;
 }
 
 #pragma mark - Public
@@ -163,6 +161,7 @@ using RequestSource = SearchTermsData::RequestSource;
                           browser:(Browser*)browser {
   self = [super init];
   if (self) {
+    _browser = browser;
     _localState = GetApplicationContext()->GetLocalState();
     _articleForYouEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
@@ -190,13 +189,13 @@ using RequestSource = SearchTermsData::RequestSource;
     }
 
     if (IsTabResumptionEnabled()) {
-      _tabResumptionHelper = std::make_unique<TabResumptionHelper>(
-          browser, identityManager, _localState);
-      _tabResumptionHelper->SetDelegate(self);
+      _tabResumptionMediator =
+          [[TabResumptionMediator alloc] initWithLocalState:_localState
+                                                prefService:prefService
+                                            identityManager:identityManager
+                                                    browser:_browser];
+      _tabResumptionMediator.delegate = self;
     }
-
-    _browser = browser;
-
   }
 
   return self;
@@ -212,10 +211,8 @@ using RequestSource = SearchTermsData::RequestSource;
   _setUpListMediator = nil;
   [_mostVisitedTilesMediator disconnect];
   _mostVisitedTilesMediator = nil;
-  if (_tabResumptionHelper) {
-    _tabResumptionHelper->SetDelegate(nullptr);
-    _tabResumptionHelper = nil;
-  }
+  [_tabResumptionMediator disconnect];
+  _tabResumptionMediator = nil;
   _localState = nullptr;
 }
 
@@ -321,31 +318,6 @@ using RequestSource = SearchTermsData::RequestSource;
   webStateList->ActivateWebStateAt(index);
 }
 
-- (void)openTabResumptionItem:(TabResumptionItem*)item {
-  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
-  tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
-      item.tabURL, self.browser->GetBrowserState()->GetPrefs());
-  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                           kTabResumption];
-
-  switch (item.itemType) {
-    case TabResumptionItemType::kLastSyncedTab:
-      [self.NTPMetricsDelegate distantTabResumptionOpened];
-      _tabResumptionHelper->OpenDistantTab();
-      break;
-    case TabResumptionItemType::kMostRecentTab: {
-      [self.NTPMetricsDelegate recentTabTileOpened];
-      web::NavigationManager::WebLoadParams webLoadParams =
-          web::NavigationManager::WebLoadParams(item.tabURL);
-      UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
-      params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-      break;
-    }
-  }
-  [self removeTabResumptionModule];
-}
-
 #pragma mark - ParcelTrackingMediatorDelegate
 
 - (void)newParcelsAvailable {
@@ -427,7 +399,7 @@ using RequestSource = SearchTermsData::RequestSource;
     return;
   }
 
-  [self showTabResumptionWithItem:_tabResumptionHelper->GetTabResumptionItem()];
+  [self showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
 }
 
 - (void)removeTabResumptionModule {
@@ -453,11 +425,9 @@ using RequestSource = SearchTermsData::RequestSource;
       _latestMagicStackOrder = [self magicStackOrder];
       [self.consumer setMagicStackOrder:_latestMagicStackOrder];
     }
-    if (IsTabResumptionEnabled() &&
-        _tabResumptionHelper->GetTabResumptionItem()) {
-      TabResumptionItem* item = _tabResumptionHelper->GetTabResumptionItem();
-      item.commandHandler = self;
-      [self.consumer showTabResumptionWithItem:item];
+    if (IsTabResumptionEnabled() && _tabResumptionMediator.itemConfig) {
+      [self.consumer
+          showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
     }
   }
   if (self.returnToRecentTabItem) {
@@ -484,7 +454,8 @@ using RequestSource = SearchTermsData::RequestSource;
       !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
       self.safetyCheckMediator.safetyCheckState.runningState ==
           RunningSafetyCheckState::kDefault) {
-    //    _safetyCheckState.commandhandler = self.presentationDelegate;
+    self.safetyCheckMediator.safetyCheckState.commandhandler =
+        self.presentationDelegate;
     [self.consumer showSafetyCheck:self.safetyCheckMediator.safetyCheckState];
   }
   if (IsIOSParcelTrackingEnabled() &&
@@ -519,7 +490,7 @@ using RequestSource = SearchTermsData::RequestSource;
   NSMutableArray* magicStackModules = [NSMutableArray array];
   if (IsTabResumptionEnabled() &&
       !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
-      _tabResumptionHelper->GetTabResumptionItem()) {
+      _tabResumptionMediator.itemConfig) {
     [magicStackModules
         addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
   }
@@ -579,7 +550,7 @@ using RequestSource = SearchTermsData::RequestSource;
       case ContentSuggestionsModuleType::kTabResumption:
         if (!IsTabResumptionEnabled() ||
             tab_resumption_prefs::IsTabResumptionDisabled(_localState) ||
-            !_tabResumptionHelper->GetTabResumptionItem()) {
+            !_tabResumptionMediator.itemConfig) {
           break;
         }
         // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
@@ -778,7 +749,6 @@ using RequestSource = SearchTermsData::RequestSource;
     return;
   }
 
-  item.commandHandler = self;
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
@@ -850,11 +820,14 @@ using RequestSource = SearchTermsData::RequestSource;
 - (void)setNTPMetricsDelegate:(id<NewTabPageMetricsDelegate>)delegate {
   _NTPMetricsDelegate = delegate;
   _mostVisitedTilesMediator.NTPMetricsDelegate = delegate;
+  _tabResumptionMediator.NTPMetricsDelegate = delegate;
 }
 
 - (void)setContentSuggestionsMetricsRecorder:
     (ContentSuggestionsMetricsRecorder*)contentSuggestionsMetricsRecorder {
   _contentSuggestionsMetricsRecorder = contentSuggestionsMetricsRecorder;
+  _tabResumptionMediator.contentSuggestionsMetricsRecorder =
+      contentSuggestionsMetricsRecorder;
 }
 
 - (BOOL)contentSuggestionsEnabled {
