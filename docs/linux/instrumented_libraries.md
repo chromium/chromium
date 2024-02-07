@@ -96,7 +96,8 @@ third_party/instrumented_libraries/scripts/build_and_package.py --parallel -j $(
 ## Uploading the libraries
 
 This requires write permission on the `chromium-instrumented-libraries` GCS
-bucket. `dpranke@` can grant access.
+bucket. File a ticket at [go/peepsec-bug](https://goto.google.com/peepsec-bug)
+to request access.
 
 ```shell
 # Exit the chroot.
