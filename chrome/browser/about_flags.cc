@@ -3755,7 +3755,7 @@ const FeatureEntry::FeatureVariation
     kCompressionDictionaryTransportBackendVariations[] = {
         {"V1", kCompressionDictionaryTransportBackendVersionV1,
          std::size(kCompressionDictionaryTransportBackendVersionV1), nullptr},
-        {"experimental V2", kCompressionDictionaryTransportBackendVersionV2,
+        {"V2", kCompressionDictionaryTransportBackendVersionV2,
          std::size(kCompressionDictionaryTransportBackendVersionV2), nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:

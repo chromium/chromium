@@ -403,7 +403,7 @@ const base::FeatureParam<CompressionDictionaryTransportBackendVersion>
     kCompressionDictionaryTransportBackendVersion{
         &kCompressionDictionaryTransportBackend,
         "CompressionDictionaryTransportBackendVersion",
-        CompressionDictionaryTransportBackendVersion::kV1,
+        CompressionDictionaryTransportBackendVersion::kV2,
         &kCompressionDictionaryTransportBackendVersionOptions};
 
 // When both this feature and the kCompressionDictionaryTransportBackend feature
