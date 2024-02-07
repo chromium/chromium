@@ -4444,7 +4444,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
     // results are serialized.
     if (!CachedChildrenIncludingIgnored().empty()) {
       AXObjectCache().AddDirtyObjectToSerializationQueue(
-          this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
+          this, ax::mojom::blink::EventFrom::kNone,
           ax::mojom::blink::Action::kNone, {});
     }
   } else {

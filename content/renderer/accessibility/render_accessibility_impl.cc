@@ -279,7 +279,7 @@ void RenderAccessibilityImpl::HitTest(
     if (event_to_fire != ax::mojom::Event::kNone) {
       const std::vector<ui::AXEventIntent> intents;
       // Marking dirty ensures that a lifecycle update will be scheduled.
-      MarkWebAXObjectDirty(ax_object, /*subtree*/ false);
+      MarkWebAXObjectDirty(ax_object);
       HandleAXEvent(ui::AXEvent(
           ax_object.AxID(), event_to_fire, ax::mojom::EventFrom::kAction,
           ax::mojom::Action::kHitTest, intents, request_id));
@@ -433,7 +433,6 @@ void RenderAccessibilityImpl::Reset(uint32_t reset_token) {
 
 void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     const WebAXObject& obj,
-    bool subtree,
     ax::mojom::EventFrom event_from,
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents,
@@ -441,7 +440,7 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
   DCHECK(obj.AccessibilityIsIncludedInTree())
       << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
 
-  obj.AddDirtyObjectToSerializationQueue(subtree, event_from, event_from_action,
+  obj.AddDirtyObjectToSerializationQueue(event_from, event_from_action,
                                          event_intents);
 }
 
@@ -515,7 +514,7 @@ void RenderAccessibilityImpl::OnPluginRootNodeUpdated() {
   if (obj.IsNull())
     return;
 
-  MarkWebAXObjectDirty(obj, /* subtree */ false);
+  MarkWebAXObjectDirty(obj);
   // Schedule an update immediately whenever the PDF root in PDF accessibility
   // tree changes. It is needed to ensure that changes (e.g. bounds) in PDF
   // accessibility tree are serialized.
@@ -1011,7 +1010,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
   }
 
-  obj.MarkSerializerSubtreeDirty();
+  MarkWebAXObjectDirty(obj);
   HandleAXEvent(ui::AXEvent(obj.AxID(), ax::mojom::Event::kImageFrameUpdated));
 }
 
