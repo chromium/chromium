@@ -78,7 +78,8 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
       snap_action_source = WindowSnapActionSource::kSnapByWindowLayoutMenu;
       break;
     case SnapRequestSource::kFromLacrosSnapButtonOrWindowLayoutMenu:
-      // TODO: handle the lacros snap request.
+      snap_action_source =
+          WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu;
       break;
   }
 

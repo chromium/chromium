@@ -2415,7 +2415,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="WindowSnapActionSource">
   <int value="0" label="Not specified"/>
   <int value="1" label="Drag window to screen edge to snap"/>
-  <int value="2" label="Use window caption button to snap"/>
+  <int value="2" label="Long press window caption button to snap"/>
   <int value="3" label="Use keyboard shortcut to snap"/>
   <int value="4" label="Drag or select overview window to snap"/>
   <int value="5" label="Long press overview button to snap"/>
@@ -2434,6 +2434,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="15"
       label="Window is snapped when updating a window in snap group"/>
   <int value="16" label="Window is snapped in test"/>
+  <int value="17"
+      label="Window is snapped by long pressing lacros window caption button
+             or window layout menu"/>
 </enum>
 
 <enum name="WindowSplittingDragType">

@@ -29,6 +29,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -206,6 +207,8 @@ const char* GetSnapActionSourceMetricComponent(
       return "SnapGroupWindowUpdate";
     case WindowSnapActionSource::kTest:
       return "Test";
+    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+      return "SnapByLacrosSnapButtonOrWindowLayoutMenu";
   }
 }
 
@@ -899,6 +902,7 @@ bool ShouldConsiderWindowForFasterSplitView(
       case WindowSnapActionSource::kSnapByWindowLayoutMenu:
       case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
       case WindowSnapActionSource::kTest:
+      case ash::WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
         // We only start partial overview for the above snap sources.
         break;
       default:

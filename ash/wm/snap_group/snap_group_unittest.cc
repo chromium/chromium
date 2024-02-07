@@ -334,6 +334,40 @@ TEST_F(FasterSplitScreenTest, Basic) {
   EXPECT_FALSE(overview_grid->faster_splitview_widget_for_testing());
 }
 
+// Tests that faster split screen can only start with certain snap action
+// sources.
+TEST_F(FasterSplitScreenTest, SnapActionSourceLimitations) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  struct {
+    WindowSnapActionSource snap_action_source;
+    bool should_show_partial_overview;
+  } kTestCases[]{
+      {WindowSnapActionSource::kSnapByWindowLayoutMenu,
+       /*should_show_partial_overview=*/true},
+      {WindowSnapActionSource::kDragWindowToEdgeToSnap,
+       /*should_show_partial_overview=*/true},
+      {WindowSnapActionSource::kLongPressCaptionButtonToSnap,
+       /*should_show_partial_overview=*/true},
+      {WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu,
+       /*should_show_partial_overview=*/true},
+      {WindowSnapActionSource::kKeyboardShortcutToSnap,
+       /*should_show_partial_overview=*/false},
+      {WindowSnapActionSource::kSnapByWindowStateRestore,
+       /*should_show_partial_overview=*/false},
+      {WindowSnapActionSource::kSnapByFullRestoreOrDeskTemplateOrSavedDesk,
+       /*should_show_partial_overview=*/false},
+  };
+
+  for (const auto test_case : kTestCases) {
+    SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped,
+                      test_case.snap_action_source);
+    EXPECT_EQ(test_case.should_show_partial_overview, IsInOverviewSession());
+    MaximizeToClearTheSession(w1.get());
+  }
+}
+
 TEST_F(FasterSplitScreenTest, CycleSnap) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   auto* window_state = WindowState::Get(w1.get());
