@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
       label="Cookie rotation success (request completed before cookie fresh
              notification)"/>
   <int value="2" label="Cookie rotation failure"/>
-  <int value="3" label="Network connection offline"/>
+  <int value="3" label="(obsolete) Network connection offline"/>
   <int value="4" label="Timeout"/>
   <int value="5" label="Shutdown or session termination"/>
   <int value="6" label="Cookie is already fresh"/>

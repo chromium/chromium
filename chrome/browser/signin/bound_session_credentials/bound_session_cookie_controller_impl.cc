@@ -17,7 +17,6 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
-#include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -45,9 +44,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     : BoundSessionCookieController(bound_session_params, delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
-      network_connection_tracker_(network_connection_tracker),
-      wait_for_network_callback_helper_(
-          std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
+      network_connection_tracker_(network_connection_tracker) {
   CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
@@ -84,29 +81,19 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
 
 void BoundSessionCookieControllerImpl::Initialize() {
   network_connection_observer_.Observe(network_connection_tracker_);
+  is_offline_ = network_connection_tracker_->IsOffline();
   CreateBoundCookiesObservers();
   MaybeRefreshCookie();
 }
 
 void BoundSessionCookieControllerImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
-    // Let network requests fail now while there is no internet connection,
-    // instead of holding them up until the network is back or timeout occurs.
-    // The network could come back shortly before the timeout which would result
-    // in requests being released without a valid cookie.
-    ResumeBlockedRequests(
-        chrome::mojom::ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
+  if (is_offline_ && type != network::mojom::ConnectionType::CONNECTION_NONE) {
+    // We are back online. Schedule a new cookie rotation if needed.
+    MaybeScheduleCookieRotation();
   }
-}
 
-bool BoundSessionCookieControllerImpl::IsConnectionTypeAvailableAndOffline() {
-  network::mojom::ConnectionType type;
-  return network_connection_tracker_->GetConnectionType(
-             &type, base::BindOnce(
-                        &BoundSessionCookieControllerImpl::OnConnectionChanged,
-                        weak_ptr_factory_.GetWeakPtr())) &&
-         type == network::mojom::ConnectionType::CONNECTION_NONE;
+  is_offline_ = type == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
 void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
@@ -121,13 +108,6 @@ void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   MaybeRefreshCookie();
-
-  if (IsConnectionTypeAvailableAndOffline()) {
-    // See the comment in `OnConnectionChanged()` for explanation.
-    ResumeBlockedRequests(
-        chrome::mojom::ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
-    return;
-  }
 
   if (!resume_blocked_requests_timer_.IsRunning() &&
       !resume_blocked_requests_.empty()) {
@@ -196,8 +176,7 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
-                   *wait_for_network_callback_helper_, *session_binding_helper_,
-                   url_, std::move(cookie_names))
+                   *session_binding_helper_, url_, std::move(cookie_names))
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
                    url_, std::move(cookie_names));

@@ -16,7 +16,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
-#include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -51,12 +50,10 @@ bool IsExpectedCookie(
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
     SessionBindingHelper& session_binding_helper,
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names)
     : url_loader_factory_(std::move(url_loader_factory)),
-      wait_for_network_callback_helper_(wait_for_network_callback_helper),
       session_binding_helper_(session_binding_helper),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)) {}
@@ -72,9 +69,7 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
-  wait_for_network_callback_helper_->DelayNetworkCall(
-      base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+  StartRefreshRequest(/*sec_session_challenge_response=*/std::nullopt);
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -334,9 +329,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     return;
   }
 
-  wait_for_network_callback_helper_->DelayNetworkCall(
-      base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(assertion)));
+  StartRefreshRequest(std::move(assertion));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(

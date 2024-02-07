@@ -23,7 +23,6 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class WaitForNetworkCallbackHelper;
 class SessionBindingHelper;
 
 class BoundSessionRefreshCookieFetcherImpl
@@ -32,7 +31,6 @@ class BoundSessionRefreshCookieFetcherImpl
  public:
   BoundSessionRefreshCookieFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
       SessionBindingHelper& session_binding_helper,
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names);
@@ -83,7 +81,6 @@ class BoundSessionRefreshCookieFetcherImpl
                  observer) override;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ref<WaitForNetworkCallbackHelper> wait_for_network_callback_helper_;
   const raw_ref<SessionBindingHelper> session_binding_helper_;
 
   // Used to check whether the refresh request has set the required cookie.
