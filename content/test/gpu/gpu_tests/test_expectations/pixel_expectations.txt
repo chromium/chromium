@@ -327,8 +327,9 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 crbug.com/1458976 [ linux angle-opengles display-server-wayland intel passthrough release renderer-skia-gl no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/1458976 [ linux angle-opengles display-server-wayland intel passthrough release renderer-skia-gl no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
-# Times out on Pixel 4s in webview.
+# Times out / fails on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/324145503 [ android android-pixel-4 android-webview-instrumentation ] Pixel_Video_HEVC [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Android devices yet.
 crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
