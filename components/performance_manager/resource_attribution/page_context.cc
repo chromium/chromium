@@ -11,10 +11,15 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
+
+using PerformanceManagerTabHelper =
+    performance_manager::PerformanceManagerTabHelper;
+using WebContentsProxy = performance_manager::WebContentsProxy;
 
 PageContext::PageContext(base::UnguessableToken token,
                          WebContentsProxy web_contents_proxy,
@@ -96,4 +101,4 @@ std::string PageContext::ToString() const {
   return base::StrCat({"PageContext:", token_.ToString()});
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

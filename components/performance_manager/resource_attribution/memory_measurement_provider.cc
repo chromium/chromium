@@ -17,9 +17,10 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 MemoryMeasurementProvider::MemoryMeasurementProvider(Graph* graph)
     : graph_(graph) {
@@ -105,4 +106,4 @@ void MemoryMeasurementProvider::OnMemorySummary(
   std::move(callback).Run(std::move(results));
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

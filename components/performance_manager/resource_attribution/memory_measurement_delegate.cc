@@ -17,11 +17,12 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
@@ -132,4 +133,4 @@ MemoryMeasurementDelegate::GetDefaultFactory() {
   return default_factory.get();
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

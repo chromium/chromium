@@ -14,7 +14,7 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // A class that, given a series of consecutive CPUTimeResult measurements, will
 // calculate the proportion of CPU used over a series of consecutive intervals.
@@ -87,6 +87,6 @@ class CPUProportionTracker {
   ContextFilterCallback context_filter_;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_PROPORTION_TRACKER_H_

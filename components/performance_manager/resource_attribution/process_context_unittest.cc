@@ -8,10 +8,10 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_browser_child_process.h"
@@ -26,11 +26,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
-using ResourceAttrProcessContextTest = PerformanceManagerTestHarness;
+using TestBrowserChildProcess = performance_manager::TestBrowserChildProcess;
+
+using ResourceAttrProcessContextTest =
+    performance_manager::PerformanceManagerTestHarness;
 using ResourceAttrProcessContextNoPMTest = content::RenderViewHostTestHarness;
 
 TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
@@ -52,7 +55,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
       process_context->GetWeakProcessNode();
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForBrowserProcess();
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     ASSERT_TRUE(process_node);
     ASSERT_TRUE(process_node_from_pm);
     EXPECT_EQ(process_node.get(), process_node_from_pm.get());
@@ -65,10 +68,10 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
               ProcessContext::FromWeakProcessNode(process_node));
   });
 
-  DeleteBrowserProcessNodeForTesting();
+  performance_manager::DeleteBrowserProcessNodeForTesting();
 
   EXPECT_TRUE(process_context->IsBrowserProcessContext());
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
     EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
@@ -103,7 +106,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
       process_context->GetWeakProcessNode();
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForRenderProcessHost(rph);
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     ASSERT_TRUE(process_node);
     ASSERT_TRUE(process_node_from_pm);
     EXPECT_EQ(process_node.get(), process_node_from_pm.get());
@@ -137,7 +140,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   EXPECT_EQ(nullptr, process_context->GetRenderProcessHost());
   EXPECT_EQ(rph_id, process_context->GetRenderProcessHostId());
 
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
     EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
@@ -168,7 +171,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForBrowserChildProcessHost(
           utility_process->host());
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     ASSERT_TRUE(process_node);
     ASSERT_TRUE(process_node_from_pm);
     EXPECT_EQ(process_node.get(), process_node_from_pm.get());
@@ -196,7 +199,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   EXPECT_EQ(nullptr, process_context->GetBrowserChildProcessHost());
   EXPECT_EQ(utility_id, process_context->GetBrowserChildProcessHostId());
 
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     EXPECT_FALSE(process_node);
     EXPECT_EQ(nullptr, process_context->GetProcessNode());
     EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
@@ -225,4 +228,4 @@ TEST_F(ResourceAttrProcessContextNoPMTest, ProcessContextWithoutPM) {
 
 }  // namespace
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

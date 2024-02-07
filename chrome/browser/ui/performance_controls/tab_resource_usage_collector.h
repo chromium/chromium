@@ -19,7 +19,7 @@ class WebContents;
 }
 
 class TabResourceUsageCollector
-    : public performance_manager::resource_attribution::QueryResultObserver {
+    : public resource_attribution::QueryResultObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -38,20 +38,17 @@ class TabResourceUsageCollector
   void ImmediatelyRefreshMetrics(content::WebContents* web_contents);
   void ImmediatelyRefreshMetricsForAllTabs();
 
-  // performance_manager::resource_attribution::QueryResultObserver:
+  // resource_attribution::QueryResultObserver:
   void OnResourceUsageUpdated(
-      const performance_manager::resource_attribution::QueryResultMap& results)
-      override;
+      const resource_attribution::QueryResultMap& results) override;
 
  private:
   friend base::NoDestructor<TabResourceUsageCollector>;
 
   TabResourceUsageCollector();
 
-  performance_manager::resource_attribution::ScopedResourceUsageQuery
-      scoped_query_;
-  performance_manager::resource_attribution::ScopedQueryObservation
-      query_observer_{this};
+  resource_attribution::ScopedResourceUsageQuery scoped_query_;
+  resource_attribution::ScopedQueryObservation query_observer_{this};
   base::ObserverList<Observer> observers_;
 };
 

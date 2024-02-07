@@ -11,7 +11,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // A mixed collection of individual ResourceContext's and
 // ResourceContextTypeId's.
@@ -59,6 +59,6 @@ class ContextCollection {
   std::bitset<absl::variant_size<ResourceContext>::value> all_context_types_;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CONTEXT_COLLECTION_H_

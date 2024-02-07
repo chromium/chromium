@@ -7,7 +7,7 @@
 
 #include "base/containers/enum_set.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Types of resources that Resource Attribution can measure.
 enum class ResourceType {
@@ -23,6 +23,6 @@ using ResourceTypeSet = base::EnumSet<ResourceType,
                                       /*min=*/ResourceType::kCPUTime,
                                       /*max=*/ResourceType::kMemorySummary>;
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_TYPES_H_

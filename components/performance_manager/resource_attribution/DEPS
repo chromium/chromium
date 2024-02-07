@@ -1,0 +1,4 @@
+include_rules = [
+  # Aliases may be used in this directory.
+  "+components/performance_manager/resource_attribution/performance_manager_aliases.h",
+]

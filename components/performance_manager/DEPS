@@ -27,4 +27,8 @@ include_rules = [
   "+third_party/blink/public/mojom/tokens",
   "+third_party/leveldatabase",
   "+ui/gfx/geometry",
+
+  # Aliases used in the resource_attribution implementation should never be
+  # included elsewhere, to avoid cluttering the public namespace.
+  "-components/performance_manager/resource_attribution/performance_manager_aliases.h",
 ]

@@ -6,14 +6,10 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager {
-class FrameNode;
-class WorkerNode;
-}  // namespace performance_manager
-
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Graph changes that can affect resource measurement distribution.
 // These are all passed on the stack so don't need to use raw_ptr.
@@ -90,6 +86,6 @@ using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeAddClientWorkerToWorker,
                                   GraphChangeRemoveClientWorkerFromWorker>;
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_

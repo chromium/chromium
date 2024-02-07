@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 CPUProportionTracker::CPUProportionTracker(ContextFilterCallback context_filter)
     : context_filter_(std::move(context_filter)) {}
@@ -158,4 +158,4 @@ bool CPUProportionTracker::IsTracking() const {
   return last_measurement_time_.has_value();
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

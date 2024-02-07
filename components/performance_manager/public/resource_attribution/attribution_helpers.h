@@ -16,15 +16,16 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager {
-
 class FrameNode;
 class WorkerNode;
+}  // namespace performance_manager
 
 namespace resource_attribution {
 
 // A set of nodes to include or exclude from a resource split.
 using NodeSplitSet =
-    std::set<absl::variant<const FrameNode*, const WorkerNode*>>;
+    std::set<absl::variant<const performance_manager::FrameNode*,
+                           const performance_manager::WorkerNode*>>;
 
 // Splits a resource of type T between all frames and workers hosted in
 // `process_node`. `frame_setter` or `worker_setter` will be called for each
@@ -34,25 +35,35 @@ using NodeSplitSet =
 // in `process_node`, and any node in `nodes_to_skip` will be excluded from the
 // split.
 template <typename T,
+          // Template parameters are used to alias FrameNode and WorkerNode
+          // without introducing them into the resource_attribution namespace.
+          typename FrameNode = performance_manager::FrameNode,
+          typename WorkerNode = performance_manager::WorkerNode,
           typename FrameSetter = base::FunctionRef<void(const FrameNode*, T)>,
           typename WorkerSetter = base::FunctionRef<void(const WorkerNode*, T)>>
-void SplitResourceAmongFramesAndWorkers(T resource_value,
-                                        const ProcessNode* process_node,
-                                        const NodeSplitSet& extra_nodes,
-                                        const NodeSplitSet& nodes_to_skip,
-                                        FrameSetter frame_setter,
-                                        WorkerSetter worker_setter);
+void SplitResourceAmongFramesAndWorkers(
+    T resource_value,
+    const performance_manager::ProcessNode* process_node,
+    const NodeSplitSet& extra_nodes,
+    const NodeSplitSet& nodes_to_skip,
+    FrameSetter frame_setter,
+    WorkerSetter worker_setter);
 
 // Splits a resource of type T between all frames and workers hosted in
 // `process_node`. `frame_setter` or `worker_setter` will be called for each
 // node with that node's fraction of `resource_value`.
 template <typename T,
+          // Template parameters are used to alias FrameNode and WorkerNode
+          // without introducing them into the resource_attribution namespace.
+          typename FrameNode = performance_manager::FrameNode,
+          typename WorkerNode = performance_manager::WorkerNode,
           typename FrameSetter = base::FunctionRef<void(const FrameNode*, T)>,
           typename WorkerSetter = base::FunctionRef<void(const WorkerNode*, T)>>
-void SplitResourceAmongFramesAndWorkers(T resource_value,
-                                        const ProcessNode* process_node,
-                                        FrameSetter frame_setter,
-                                        WorkerSetter worker_setter) {
+void SplitResourceAmongFramesAndWorkers(
+    T resource_value,
+    const performance_manager::ProcessNode* process_node,
+    FrameSetter frame_setter,
+    WorkerSetter worker_setter) {
   SplitResourceAmongFramesAndWorkers(resource_value, process_node,
                                      /*extra_nodes=*/{},
                                      /*nodes_to_skip=*/{}, frame_setter,
@@ -61,13 +72,18 @@ void SplitResourceAmongFramesAndWorkers(T resource_value,
 
 // Implementation
 
-template <typename T, typename FrameSetter, typename WorkerSetter>
-void SplitResourceAmongFramesAndWorkers(T resource_value,
-                                        const ProcessNode* process_node,
-                                        const NodeSplitSet& extra_nodes,
-                                        const NodeSplitSet& nodes_to_skip,
-                                        FrameSetter frame_setter,
-                                        WorkerSetter worker_setter) {
+template <typename T,
+          typename FrameNode,
+          typename WorkerNode,
+          typename FrameSetter,
+          typename WorkerSetter>
+void SplitResourceAmongFramesAndWorkers(
+    T resource_value,
+    const performance_manager::ProcessNode* process_node,
+    const NodeSplitSet& extra_nodes,
+    const NodeSplitSet& nodes_to_skip,
+    FrameSetter frame_setter,
+    WorkerSetter worker_setter) {
   // Attribute the resources of the process to its frames and workers
   // Only renderers can host frames and workers.
   CHECK(process_node);
@@ -121,7 +137,5 @@ void SplitResourceAmongFramesAndWorkers(T resource_value,
 }
 
 }  // namespace resource_attribution
-
-}  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_ATTRIBUTION_HELPERS_H_

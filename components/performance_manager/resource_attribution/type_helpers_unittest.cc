@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution::internal {
+namespace resource_attribution::internal {
 
 namespace {
 
@@ -267,4 +267,4 @@ TEST(ResourceAttrTypeHelpersTest, VariantComparatorsManyAlternatives) {
 
 }  // namespace
 
-}  // namespace performance_manager::resource_attribution::internal
+}  // namespace resource_attribution::internal

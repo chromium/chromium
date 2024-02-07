@@ -14,11 +14,11 @@
 namespace {
 constexpr base::TimeDelta kTabResourceUsageRefreshInterval = base::Minutes(2);
 
-using performance_manager::resource_attribution::MemorySummaryResult;
-using performance_manager::resource_attribution::PageContext;
-using performance_manager::resource_attribution::QueryBuilder;
-using performance_manager::resource_attribution::QueryResultMap;
-using performance_manager::resource_attribution::ResourceType;
+using resource_attribution::MemorySummaryResult;
+using resource_attribution::PageContext;
+using resource_attribution::QueryBuilder;
+using resource_attribution::QueryResultMap;
+using resource_attribution::ResourceType;
 }  // namespace
 
 TabResourceUsageCollector::TabResourceUsageCollector()
@@ -76,8 +76,7 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
         result.memory_summary_result;
     if (memory_result.has_value()) {
       content::WebContents* const web_contents =
-          performance_manager::resource_attribution::AsContext<PageContext>(
-              page_context)
+          resource_attribution::AsContext<PageContext>(page_context)
               .GetWebContents();
       if (web_contents) {
         auto* const tab_resource_usage_tab_helper =

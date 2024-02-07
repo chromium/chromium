@@ -13,7 +13,10 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/common/process_type.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
+
+using Graph = performance_manager::Graph;
+using ProcessNode = performance_manager::ProcessNode;
 
 SimulatedCPUMeasurementDelegateFactory::
     SimulatedCPUMeasurementDelegateFactory() = default;
@@ -161,4 +164,4 @@ void FakeMemoryMeasurementDelegate::RequestMemorySummary(
   std::move(callback).Run(factory_->memory_summaries());
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

@@ -15,7 +15,7 @@
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
@@ -305,4 +305,4 @@ void QueryBuilder::ValidateQuery() const {
   CHECK(!params_->resource_types.Empty());
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
