@@ -290,15 +290,6 @@ public class WebViewBrowserFragment extends Fragment {
         }
     }
 
-    public boolean onBackPressed() {
-        if (mWebView.canGoBack()) {
-            mWebView.goBack();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     ViewGroup getContainer() {
         return getView().findViewById(R.id.container);
     }
