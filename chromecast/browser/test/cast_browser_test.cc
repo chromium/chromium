@@ -59,6 +59,7 @@ content::WebContents* CastBrowserTest::CreateWebView() {
   // MOJO_RENDERER is CMA renderer on Chromecast
   params->renderer_type = ::chromecast::mojom::RendererType::MOJO_RENDERER;
   params->enabled_for_dev = true;
+  params->log_js_console_messages = true;
   cast_web_view_ = web_service_->CreateWebViewInternal(std::move(params));
 
   return cast_web_view_->web_contents();
