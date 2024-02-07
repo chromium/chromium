@@ -647,12 +647,6 @@ void PersonalDataManager::OnSyncPaymentsIntegrationEnabledChanged(
   }
 }
 
-void PersonalDataManager::OnSyncShutdown(syncer::SyncService* sync_service) {
-  DCHECK_EQ(sync_service_, sync_service);
-  sync_service_->RemoveObserver(this);
-  sync_service_ = nullptr;
-}
-
 CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
   // Return the account of the active signed-in user irrespective of whether
   // they enabled sync or not.

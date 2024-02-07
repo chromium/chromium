@@ -2156,23 +2156,17 @@ TEST_F(PersonalDataManagerTest, GetAutofillOffers) {
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_F(PersonalDataManagerTest, GetAutofillOffers_WalletImportDisabled) {
-  syncer::TestSyncService sync_service;
-  personal_data_->SetSyncServiceForTest(&sync_service);
-
   // Add a card-linked offer and a promo code offer.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
   ASSERT_EQ(2U, personal_data_->GetAutofillOffers().size());
 
-  sync_service.GetUserSettings()->SetSelectedTypes(
+  sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   // Should return neither of them as the wallet import pref is disabled.
   EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
-
-  // Unregister the Sync observer.
-  personal_data_->OnSyncShutdown(&sync_service);
 }
 
 // Tests that GetAutofillOffers does not return any offers if
@@ -2216,9 +2210,6 @@ TEST_F(PersonalDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
 // promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_F(PersonalDataManagerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
-  syncer::TestSyncService sync_service;
-  personal_data_->SetSyncServiceForTest(&sync_service);
-
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com")));
@@ -2228,7 +2219,7 @@ TEST_F(PersonalDataManagerTest,
                         GURL("http://www.example.com"))
                     .size());
 
-  sync_service.GetUserSettings()->SetSelectedTypes(
+  sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   // Should not return the offer as the wallet import pref is disabled.
@@ -2236,9 +2227,6 @@ TEST_F(PersonalDataManagerTest,
                     ->GetActiveAutofillPromoCodeOffersForOrigin(
                         GURL("http://www.example.com"))
                     .size());
-
-  // Unregister the Sync observer.
-  personal_data_->OnSyncShutdown(&sync_service);
 }
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
@@ -3250,35 +3238,6 @@ TEST_F(PersonalDataManagerTest, GetCreditCards_NoSyncService) {
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 }
 
-// Test that setting a sync service in auth error returns only local credit
-// cards.
-TEST_F(PersonalDataManagerTest, GetCreditCards_NotActiveSyncService) {
-  base::HistogramTester histogram_tester;
-  SetUpThreeCardTypes();
-
-  // Set a sync service in auth error.
-  syncer::TestSyncService sync_service;
-  sync_service.SetPersistentAuthError();
-  personal_data_->SetSyncServiceForTest(&sync_service);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-
-  // Remove the auth error to be able to get the server cards.
-  sync_service.ClearAuthError();
-
-  // Check that cards were masked and other were untouched.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
-      personal_data_->GetServerCreditCards();
-  EXPECT_EQ(2U, server_cards.size());
-  for (CreditCard* card : server_cards)
-    EXPECT_TRUE(card->record_type() ==
-                CreditCard::RecordType::kMaskedServerCard);
-
-  // Call OnSyncShutdown to ensure removing observer added by
-  // SetSyncServiceForTest.
-  personal_data_->OnSyncShutdown(&sync_service);
-}
-
 // Sync Transport mode is only for Win, Mac, and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -4071,17 +4030,12 @@ TEST_F(PersonalDataManagerTest, RemoveObserverInOnPersonalDataChanged) {
 }
 
 TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
+  // All data types are running by default.
+  EXPECT_TRUE(personal_data_->IsEligibleForAddressAccountStorage());
+
   // No Sync, no account storage.
   personal_data_->SetSyncServiceForTest(nullptr);
   EXPECT_FALSE(personal_data_->IsEligibleForAddressAccountStorage());
-
-  // Fake the Sync service. All data types are running by default.
-  syncer::TestSyncService sync_service;
-  personal_data_->SetSyncServiceForTest(&sync_service);
-  EXPECT_TRUE(personal_data_->IsEligibleForAddressAccountStorage());
-
-  // Unregister the Sync observer.
-  personal_data_->OnSyncShutdown(&sync_service);
 }
 
 TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {

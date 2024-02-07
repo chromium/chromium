@@ -201,7 +201,6 @@ class PersonalDataManager : public KeyedService,
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncPaymentsIntegrationEnabledChanged(
       syncer::SyncService* sync) override;
-  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // AccountInfoGetter:
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
