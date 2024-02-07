@@ -257,7 +257,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // or an event from a focus action.
   virtual void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
-      bool subtree,
       ax::mojom::blink::EventFrom event_from,
       ax::mojom::blink::Action event_from_action,
       const std::vector<ui::AXEventIntent>& event_intents) = 0;

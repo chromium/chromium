@@ -126,7 +126,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // An AXObject should be serialized at the next available opportunity.
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
-      bool subtree,
       ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
       std::vector<ui::AXEventIntent> event_intents = {},

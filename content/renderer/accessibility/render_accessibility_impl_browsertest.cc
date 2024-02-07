@@ -273,6 +273,15 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     return accessibility_manager->GetRenderAccessibilityImpl();
   }
 
+  void MarkSubtreeDirty(const WebAXObject& obj) {
+    unsigned num_children = obj.ChildCount();
+    for (unsigned child_index = 0; child_index < num_children; child_index++) {
+      const WebAXObject& child = obj.ChildAt(child_index);
+      MarkSubtreeDirty(child);
+    }
+    GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(obj);
+  }
+
   // Loads a page given an HTML snippet and initializes its accessibility tree.
   //
   // Consolidates the initialization code required by all tests into a single
@@ -377,7 +386,7 @@ TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
   ClearHandledUpdates();
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
   {
@@ -443,7 +452,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
 
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(node_a, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(node_a);
 
   // Hide node "B" ("C" stays visible).
   ExecuteJavaScriptForTests(
@@ -491,7 +500,7 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   WebAXObject node_c = node_b.ChildAt(0);
 
   // Send a childrenChanged on "A" and show node "B",
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(node_a, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(node_a);
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
 
@@ -1005,14 +1014,14 @@ TEST_F(RenderAccessibilityImplTest, SendPendingAccessibilityEventsPostLoad) {
       "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2", 0);
 
   // Now we start logging.
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents2", 3);
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2", 1);
 
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents2", 4);
@@ -1354,8 +1363,7 @@ TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
 
   // This should update the annotations of all images on the page, including the
   // already visible one.
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
-                                                     true /* subtree */);
+  MarkSubtreeDirty(root_obj);
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator().image_ids_,
@@ -1391,9 +1399,9 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   ASSERT_FALSE(root_obj.IsNull());
+
   // This should update the annotations of all images on the page.
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
-                                                     true /* subtree */);
+  MarkSubtreeDirty(root_obj);
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator().image_ids_,
@@ -1410,8 +1418,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
   // now updated image src.
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
-                                                     true /* subtree */);
+  MarkSubtreeDirty(root_obj);
   SendPendingAccessibilityEvents();
 
   EXPECT_THAT(mock_annotator().image_ids_,
@@ -1477,7 +1484,7 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // No URL-keyed metrics should be fired after we send one event.
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   EXPECT_EQ(0, ukm_recorder()->calls());
   histogram_tester.ExpectTotalCount(
@@ -1486,7 +1493,7 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // No URL-keyed metrics should be fired even after an event that takes
   // 300 ms, but we should now have something to send.
   // This must be >= kMinSerializationTimeToSendInMS
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   SetTimeDelayForNextSerialize(base::Milliseconds(300));
   EXPECT_EQ(0, ukm_recorder()->calls());
@@ -1496,7 +1503,7 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // After 1000 seconds have passed, the next time we send an event we should
   // send URL-keyed metrics.
   task_environment_.FastForwardBy(base::Seconds(1000));
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   EXPECT_EQ(1, ukm_recorder()->calls());
   histogram_tester.ExpectTotalCount(
@@ -1505,7 +1512,7 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // Send another event that takes a long (simulated) time to serialize.
   // This must be >= kMinSerializationTimeToSend
   SetTimeDelayForNextSerialize(base::Milliseconds(200));
-  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj, false);
+  GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj);
   SendPendingAccessibilityEvents();
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents2", 4);

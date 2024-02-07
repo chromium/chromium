@@ -292,7 +292,7 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
 
           // Mark as dirty the subtree rooted at one of the nodes.
           if (l > 0)
-            serializer.MarkSubtreeDirty(tree1.GetFromId(l));
+            serializer.MarkSubtreeDirty(l);
 
           // Serialize a sequence of updates to |dst_tree| to match.
           for (int k_index = 0; k_index < tree_size; ++k_index) {

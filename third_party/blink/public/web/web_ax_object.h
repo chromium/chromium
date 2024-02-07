@@ -104,7 +104,6 @@ class BLINK_EXPORT WebAXObject {
   void Serialize(ui::AXNodeData* node_data,
                  ui::AXMode accessibility_mode) const;
 
-  void MarkSerializerSubtreeDirty() const;
   void OnLoadInlineTextBoxes() const;
   void SetImageAsDataNodeId(const gfx::Size& max_size) const;
   int ImageDataNodeId() const;
@@ -270,10 +269,8 @@ class BLINK_EXPORT WebAXObject {
                          gfx::Transform& container_transform,
                          bool* clips_children = nullptr) const;
 
-  // Marks ths object as dirty (needing serialization). If subtree is true,
-  // the entire AX subtree should be invalidated as well.
+  // Marks this object as dirty (needing serialization).
   void AddDirtyObjectToSerializationQueue(
-      bool subtree,
       ax::mojom::EventFrom event_from,
       ax::mojom::Action event_from_action,
       std::vector<ui::AXEventIntent> event_intents) const;
