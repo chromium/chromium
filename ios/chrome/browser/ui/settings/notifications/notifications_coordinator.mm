@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
@@ -102,11 +104,10 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  _optInAlertCoordinator.clientId = PushNotificationClientId::kContent;
+  _optInAlertCoordinator.clientIds =
+      std::vector{PushNotificationClientId::kContent};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
-  _optInAlertCoordinator.confirmationMessage =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE);
   [_optInAlertCoordinator start];
 }
 
@@ -115,12 +116,10 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  _optInAlertCoordinator.clientId = PushNotificationClientId::kTips;
+  _optInAlertCoordinator.clientIds =
+      std::vector{PushNotificationClientId::kTips};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
-  _optInAlertCoordinator.confirmationMessage = l10n_util::GetNSStringF(
-      IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
-      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
   [_optInAlertCoordinator start];
 }
 

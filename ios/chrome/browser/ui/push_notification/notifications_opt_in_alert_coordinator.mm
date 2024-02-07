@@ -29,8 +29,7 @@
 }
 
 - (void)start {
-  CHECK(self.clientId.has_value());
-  CHECK(self.confirmationMessage);
+  CHECK(self.clientIds.has_value());
 
   [self requestPushNotificationPermission];
 }
@@ -76,7 +75,9 @@
   } else {
     // Permission has been granted!
     [self enableNotifications];
-    [self showConfirmationSnackbar];
+    if (self.confirmationMessage) {
+      [self showConfirmationSnackbar];
+    }
     [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
   }
 }
@@ -124,8 +125,11 @@
   size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithPath(path);
   NSString* gaiaID = base::SysUTF8ToNSString(
       infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
-  GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      gaiaID, self.clientId.value(), true);
+  std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
+  for (PushNotificationClientId clientID : clientIDs) {
+    GetApplicationContext()->GetPushNotificationService()->SetPreference(
+        gaiaID, clientID, true);
+  }
 }
 
 // Shows a snackbar message indicating that notifications are enabled.

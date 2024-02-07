@@ -445,8 +445,8 @@
       [[NotificationsOptInAlertCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
-  _notificationsOptInAlertCoordinator.clientId =
-      PushNotificationClientId::kTips;
+  _notificationsOptInAlertCoordinator.clientIds =
+      std::vector{PushNotificationClientId::kTips};
   _notificationsOptInAlertCoordinator.confirmationMessage =
       l10n_util::GetNSStringF(
           IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
