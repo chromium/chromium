@@ -61,5 +61,6 @@ class TabStripNewTabButton: UIView {
 
     button.translatesAutoresizingMaskIntoConstraints = false
     button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+    button.isPointerInteractionEnabled = true
   }
 }

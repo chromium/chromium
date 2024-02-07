@@ -97,13 +97,19 @@ UIImage* DefaultFavicon() {
   // Separator height constraints.
   NSArray<NSLayoutConstraint*>* _separatorHeightConstraints;
   CGFloat _separatorHeight;
+
+  // whether the view is hovered.
+  BOOL _hovered;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.layer.masksToBounds = NO;
     _decorationLayersUpdated = NO;
+    _hovered = NO;
     _separatorHeight = 0;
+
+    [self addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
     UIView* contentView = self.contentView;
     contentView.layer.masksToBounds = YES;
@@ -300,10 +306,53 @@ UIImage* DefaultFavicon() {
   [self setFaviconImage:nil];
 }
 
+- (void)setHighlighted:(BOOL)highlighted {
+  [super setHighlighted:highlighted];
+  [self updateColors];
+}
+
+- (void)dragStateDidChange:(UICollectionViewCellDragState)dragState {
+  [super dragStateDidChange:dragState];
+  [self updateColors];
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  [self updateColors];
+}
+
+#pragma mark - UIPointerInteractionDelegate
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  UIPointerHoverEffect* effect = [UIPointerHoverEffect
+      effectWithPreview:[[UITargetedPreview alloc]
+                            initWithView:self.contentView
+                              parameters:[self dragPreviewParameters]]];
+  effect.prefersScaledContent = NO;
+  effect.prefersShadow = NO;
+  return [UIPointerStyle styleWithEffect:effect shape:nil];
+}
+
+- (void)pointerInteraction:(UIPointerInteraction*)interaction
+           willEnterRegion:(UIPointerRegion*)region
+                  animator:(id<UIPointerInteractionAnimating>)animator {
+  _hovered = YES;
+  [self updateColors];
+}
+
+- (void)pointerInteraction:(UIPointerInteraction*)interaction
+            willExitRegion:(UIPointerRegion*)region
+                  animator:(id<UIPointerInteractionAnimating>)animator {
+  _hovered = NO;
   [self updateColors];
 }
 
@@ -349,9 +398,21 @@ UIImage* DefaultFavicon() {
 
 // Updates view colors.
 - (void)updateColors {
-  UIColor* backgroundColor =
-      self.selected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                    : [UIColor colorNamed:kTabStripBackgroundColor];
+  UIColor* backgroundColor;
+  if (self.isHighlighted || self.configurationState.cellDragState !=
+                                UICellConfigurationDragStateNone) {
+    // Before a cell is dragged, it is highlighted.
+    // The cell's background color must be updated at this moment, otherwise it
+    // will not be applied correctly.
+    backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  } else if (_hovered) {
+    backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+  } else {
+    backgroundColor =
+        self.isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+                        : [UIColor colorNamed:kTabStripBackgroundColor];
+  }
+
   // Needed to correctly update the `_titleGradientView` colors in incognito.
   backgroundColor =
       [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
@@ -622,6 +683,7 @@ UIImage* DefaultFavicon() {
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
+  closeButton.pointerInteractionEnabled = YES;
   return closeButton;
 }
 
