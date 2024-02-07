@@ -25,8 +25,8 @@ class PrefService;
 namespace ash::language_packs {
 
 // All Language Pack IDs are listed here.
-constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
-constexpr char kTtsFeatureId[] = "LP_ID_TTS";
+inline constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
+inline constexpr char kTtsFeatureId[] = "LP_ID_TTS";
 
 // Feature IDs.
 // These values are persisted to logs. Entries should not be renumbered and
