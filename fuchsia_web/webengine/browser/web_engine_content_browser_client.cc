@@ -341,7 +341,7 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     int frame_tree_node_id,
     absl::optional<int64_t> navigation_id) {
   if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
-    // TODO(crbug.com/1378791): Add support for workers.
+    // TODO(crbug.com/1378791): Add support for Shared and Service Workers.
     return {};
   }
 
