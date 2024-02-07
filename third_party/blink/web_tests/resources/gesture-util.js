@@ -1051,6 +1051,56 @@ function touchTap(x, y, options = {}) {
   return pointerTap(x, y, options);
 }
 
+// Long press on the target element. The options are of the form:
+// {
+//    x: horizontal offset from midpoint of the element (default 0)
+//    y: vertical offset from the midpoint of the element (default 0)
+//    duration: duration of the press in milliseconds (default 400)
+// }
+//
+// Be sure to call preventContextMenu during test setup to avoid a memory leak
+// before calling this method. If event handling is permitted to transfer to the
+// browser process, we are unable to fully tear down the test resulting in a
+// leak.
+function touchLongPressElement(target, options) {
+  // Conservative long-press duration based on timing for a context menu popup.
+  // Some long-press operations require longer.
+  const LONG_PRESS_DURATION = 400;
+  const x = (options && options.x)? options.x : 0;
+  const y = (options && options.y)? options.y : 0;
+  const duration = (options && options.duration !== undefined)
+                       ? options.duration
+                       : LONG_PRESS_DURATION;
+  verifyTestDriverLoaded();
+  const pointerPromise = new Promise((resolve) => {
+    const listener = () => {
+      document.removeEventListener('pointerup', listener);
+      document.removeEventListener('pointercancel', listener);
+      resolve();
+    }
+    document.addEventListener('pointerup', listener);
+    document.addEventListener('pointercancel', listener);
+  });
+  const actionPromise = new test_driver.Actions()
+      .addPointer('pointer1', 'touch')
+      .pointerMove(x, y, {origin: target})
+      .pointerDown()
+      .pause(duration)
+      .pointerUp()
+      .send();
+  return actionPromise.then(pointerPromise);
+}
+
+function preventContextMenu(test) {
+  const listener = (event) => {
+    event.preventDefault();
+  }
+  document.addEventListener('contextmenu', listener);
+  test.add_cleanup(() => {
+    document.removeEventListener('contextmenu', listener);
+  });
+}
+
 // Perform a click action where a scroll is expected such as on a scrollbar
 // arrow or on a scrollbar track. The promise will timeout if no scrolling is
 // triggered.
