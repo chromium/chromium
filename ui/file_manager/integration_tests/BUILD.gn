@@ -40,7 +40,6 @@ js_files = [
   "file_manager/navigation.js",
   "file_manager/office.js",
   "file_manager/open_files_in_web_drive.js",
-  "file_manager/open_sniffed_files.js",
   "file_manager/providers.js",
   "file_manager/quick_view.js",
   "file_manager/recents.js",
@@ -139,9 +138,7 @@ ts_files = [
 
   "file_manager/open_image_media_app.ts",
   "file_manager/open_media_app.ts",
-
-  # "file_manager/open_sniffed_files.ts",
-
+  "file_manager/open_sniffed_files.ts",
   "file_manager/open_video_media_app.ts",
 
   # "file_manager/providers.ts",

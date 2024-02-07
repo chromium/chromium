@@ -112,8 +112,10 @@ async function webDriveFileOpen(entry, expected_hostname) {
   chrome.test.assertTrue(normalWindow !== undefined);
   // Check we have only one tab opened from trying to open the file.
   const tabs = normalWindow.tabs;
+  // @ts-ignore: error TS18048: 'tabs' is possibly 'undefined'.
   chrome.test.assertTrue(tabs.length === 1);
   // Get the url of the tab, which may still be pending.
+  // @ts-ignore: error TS18048: 'tabs' is possibly 'undefined'.
   const url = new URL(tabs[0].pendingUrl || tabs[0].url);
   // Check the end of the URL matches the file we tried to open.
   chrome.test.assertEq(expected_hostname, url.hostname);
