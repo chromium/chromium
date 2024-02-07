@@ -3,7 +3,6 @@ image_loader_static_js_files = [
   "image_loader/image_loader_util.js",
   "image_loader/image_request_task.js",
   "image_loader/load_image_request.js",
-  "image_loader/piex_loader.js",
 ]
 
 image_loader_ts = [
@@ -20,7 +19,7 @@ image_loader_ts = [
 
   # "image_loader/load_image_request.ts",
 
-  # "image_loader/piex_loader.ts",
+  "image_loader/piex_loader.ts",
 
   "image_loader/scheduler.ts",
 ]

@@ -5,50 +5,45 @@
 /**
  * Declares the piex-wasm Module interface. The Module has many interfaces
  * but only declare the parts required for PIEX work.
- *
- * @typedef {{
- *  calledRun: boolean,
- *  HEAP8: !Uint8Array,
- *  _malloc: function(number):number,
- *  _free: function(number):undefined,
- *  image: function(number, number):!PiexWasmImageResult
- * }}
  */
-// @ts-ignore: error TS7005: Variable 'PiexWasmModule' implicitly has an 'any'
-// type.
-export let PiexWasmModule;
+export interface PiexWasmModule {
+  calledRun: boolean;
+  HEAP8: Uint8Array;
+  _malloc: (size: number) => number;
+  _free: (size: number) => void;
+  image: (width: number, height: number) => PiexWasmImageResult;
+}
+
+interface VoidCallback {
+  (): void;
+}
 
 /**
  * Subset of the Emscripten Module API required for initialization. See
  * https://emscripten.org/docs/api_reference/module.html#module.
- * @typedef {{
- *  onAbort: function((!Error|string)):undefined,
- * }}
  */
-let ModuleInitParams;
+interface ModuleInitParams {
+  onAbort: (result: Error|string) => void;
+}
 
 /**
  * Module defined by 'piex.js.wasm' script upon initialization.
- * @type {!PiexWasmModule}
  */
-let PiexModule;
+let PiexModule: PiexWasmModule;
+
+declare global {
+  function createPiexModule(params: ModuleInitParams): Promise<PiexWasmModule>;
+}
 
 /**
  * Module constructor defined by 'piex.js.wasm' script.
- * @type {function(!ModuleInitParams): !Promise<!PiexWasmModule>}
  */
-const initPiexModule =
-    /** @type {function(!ModuleInitParams): !Promise<!PiexWasmModule>} */ (
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type '"createPiexModule"' can't be used to
-        // index type 'typeof globalThis'.
-        globalThis['createPiexModule']);
+const initPiexModule = globalThis.createPiexModule;
 
 console.log(`[PiexLoader] available [init=${typeof initPiexModule}]`);
 
 /**
  * Set true if the Module.onAbort() handler is called.
- * @type {boolean}
  */
 let piexFailed = false;
 
@@ -57,23 +52,21 @@ const MODULE_SETTINGS = {
    * Installs an (Emscripten) Module.onAbort handler. Record that the
    * Module has failed in piexFailed and re-throw the error.
    *
-   * @param {!Error|string} error
    * @throws {!Error|string}
    */
-  onAbort: (error) => {
+  onAbort: (error: Error|string) => {
     piexFailed = true;
     throw error;
   },
 };
 
-/** @type {?Promise<void>} */
-let initPiexModulePromise = null;
+let initPiexModulePromise: Promise<void>|null = null;
+
 /**
  * Returns a promise that resolves once initialization is complete. PiexModule
  * may be undefined before this promise resolves.
- * @return {!Promise<void>}
  */
-function piexModuleInitialized() {
+function piexModuleInitialized(): Promise<void> {
   if (!initPiexModulePromise) {
     initPiexModulePromise = new Promise(resolve => {
       initPiexModule(MODULE_SETTINGS).then(module => {
@@ -95,9 +88,8 @@ function piexModuleInitialized() {
  * Module state. Log the error, and return true to tell caller to initiate
  * failure recovery steps.
  *
- * @return {boolean}
  */
-function piexModuleFailed() {
+function piexModuleFailed(): boolean {
   if (piexFailed || !PiexModule.calledRun) {
     console.error('[PiexLoader] piex wasm module failed');
     return true;
@@ -105,64 +97,40 @@ function piexModuleFailed() {
   return false;
 }
 
-/**
- * @typedef {{
- *  thumbnail: !ArrayBuffer,
- *  mimeType?: (string|undefined),
- *  orientation: number,
- *  colorSpace: string,
- *  ifd: ?string
- * }}
- */
-let PiexPreviewImageData;
+interface PiexPreviewImageData {
+  thumbnail: ArrayBuffer;
+  mimeType?: string;
+  orientation: number;
+  colorSpace: string;
+  ifd: string|null;
+}
 
-/**
- * @struct
- */
 class PiexLoaderResponse {
+  readonly thumbnail: ArrayBuffer;
+  readonly mimeType: string;
+
+  /** JEITA EXIF image orientation being an integer in [1..8].  */
+  readonly orientation: number;
+
+  /** JEITA EXIF image color space: 'sRgb' or 'adobeRgb'.  */
+  readonly colorSpace: string;
+
+  /** JSON encoded RAW image photographic details.  */
+  readonly ifd: string|null;
+
   /**
-   * @param {!PiexPreviewImageData} data The extracted preview image data.
+   * @param data The extracted preview image data.
    */
-  constructor(data) {
-    /**
-     * @type {!ArrayBuffer}
-     * @const
-     */
+  constructor(data: PiexPreviewImageData) {
     this.thumbnail = data.thumbnail;
-
-    /**
-     * @type {string}
-     * @const
-     */
     this.mimeType = data.mimeType || 'image/jpeg';
-
-    /**
-     * JEITA EXIF image orientation being an integer in [1..8].
-     * @type {number}
-     * @const
-     */
     this.orientation = data.orientation;
-
-    /**
-     * JEITA EXIF image color space: 'sRgb' or 'adobeRgb'.
-     * @type {string}
-     * @const
-     */
     this.colorSpace = data.colorSpace;
-
-    /**
-     * JSON encoded RAW image photographic details.
-     * @type {?string}
-     * @const
-     */
     this.ifd = data.ifd || null;
   }
 }
 
-/**
- * JFIF APP2 ICC_PROFILE segment containing an AdobeRGB1998 Color Profile.
- * @const {!Uint8Array}
- */
+/** JFIF APP2 ICC_PROFILE segment containing an AdobeRGB1998 Color Profile. */
 const adobeProfile = new Uint8Array([
   // clang-format off
   // APP2 ICC_PROFILE\0 segment header.
@@ -230,70 +198,81 @@ const adobeProfile = new Uint8Array([
  * The |offset| to, and |length| of, the preview image relative to the source
  * data is indicated by those fields. They are positive > 0. Note: the values
  * are controlled by a third-party and are untrustworthy (Security).
- *
- * @typedef {{
- *  format:number,
- *  colorSpace:string,
- *  orientation:number,
- *  width:?number,
- *  height:?number,
- *  offset:number,
- *  length:number
- * }}
  */
-let PiexWasmPreviewImageMetadata;
+interface PiexWasmPreviewImageMetadata {
+  /** Ether 0 (JPEG), or 1 (RGB). */
+  format: number;
+
+  /** JEITA EXIF: sRGB or AdobeRGB1998. */
+  colorSpace: string;
+
+  /** JEITA EXIF image orientation.  */
+  orientation: number;
+
+  /** Only available for RGB format preview image. */
+  width?: number;
+
+  /** Only available for RGB format preview image. */
+  height?: number;
+
+  /**
+   * The offset of the preview image relative to the source data. They are
+   * positive > 0. Note: ths value is controlled by a third-party and are
+   * untrustworthy (Security).
+   */
+  offset: number;
+
+  /**
+   * The length of the preview image relative to the source data. They are
+   * positive > 0. Note: ths value is controlled by a third-party and are
+   * untrustworthy (Security).
+   */
+  length: number;
+}
 
 /**
- * The piex-wasm Module.image(<RAW image source>,...) API returns |error|, or
- * else the source |preview| and/or |thumbnail| image metadata along with the
- * photographic |details| derived from the RAW image EXIF.
- *
- * The |preview| images are JPEG. The |thumbnail| images are smaller, lower-
- * quality, JPEG or RGB format images.
- *
- * @typedef {{
- *  error:?string,
- *  preview:?PiexWasmPreviewImageMetadata,
- *  thumbnail:?PiexWasmPreviewImageMetadata,
- *  details:?Object
- * }}
+ * The piex-wasm Module.image(<RAW image source>,...) API returns `error`, or
+ * else the source `preview` and/or `thumbnail` image metadata along with the
+ * photographic `details` derived from the RAW image EXIF.
  */
-let PiexWasmImageResult;
+interface PiexWasmImageResult {
+  error: string|null;
+
+  /** The `preview` images are JPEG.*/
+  preview: PiexWasmPreviewImageMetadata|null;
+
+  /**
+   * The `thumbnail` images are smaller, lower  quality, JPEG or RGB format
+   * images.
+   */
+  thumbnail: PiexWasmPreviewImageMetadata|null;
+
+  /** The photographic `details` derived from the RAW image EXIF. */
+  details: Record<string, any>|null;
+}
 
 /**
  * Preview Image EXtractor (PIEX).
  */
 class ImageBuffer {
+  private readonly source: Uint8Array;
+  private readonly length: number;
+  private memory = 0;
+
   /**
-   * @param {!ArrayBuffer} buffer - RAW image source data.
+   * @param buffer - RAW image source data.
    */
-  constructor(buffer) {
-    /**
-     * @const {!Uint8Array}
-     * @private
-     */
+  constructor(buffer: ArrayBuffer) {
     this.source = new Uint8Array(buffer);
-
-    /**
-     * @const {number}
-     * @private
-     */
     this.length = buffer.byteLength;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this.memory = 0;
   }
 
   /**
    * Calls Module.image() to process |this.source| and return the result.
    *
    * @throws {!Error} Memory allocation error.
-   * @return {!PiexWasmImageResult}
    */
-  process() {
+  process(): PiexWasmImageResult {
     this.memory = PiexModule._malloc(this.length);
     if (!this.memory) {
       throw new Error('Image malloc failed: ' + this.length + ' bytes');
@@ -312,11 +291,9 @@ class ImageBuffer {
    * Returns the preview image data. If no preview image was found, returns
    * the thumbnail image.
    *
-   * @param {!PiexWasmImageResult} result
    * @throws {!Error} Data access security error.
-   * @return {!PiexPreviewImageData}
    */
-  preview(result) {
+  preview(result: PiexWasmImageResult): PiexPreviewImageData {
     const preview = result.preview;
     if (!preview) {
       return this.thumbnail_(result);
@@ -342,12 +319,9 @@ class ImageBuffer {
    * Returns the thumbnail image. If no thumbnail image was found, returns
    * an empty thumbnail image.
    *
-   * @private
-   * @param {!PiexWasmImageResult} result
    * @throws {!Error} Data access security error.
-   * @return {!PiexPreviewImageData}
    */
-  thumbnail_(result) {
+  private thumbnail_(result: PiexWasmImageResult): PiexPreviewImageData {
     const thumbnail = result.thumbnail;
     if (!thumbnail) {
       return {
@@ -382,12 +356,9 @@ class ImageBuffer {
    * Returns the RGB thumbnail. If no RGB thumbnail was found, returns
    * an empty thumbnail image.
    *
-   * @private
-   * @param {!PiexWasmImageResult} result
    * @throws {!Error} Data access security error.
-   * @return {!PiexPreviewImageData}
    */
-  rgb_(result) {
+  private rgb_(result: PiexWasmImageResult): PiexPreviewImageData {
     const thumbnail = result.thumbnail;
     if (!thumbnail || thumbnail.format !== 1) {
       return {
@@ -477,13 +448,13 @@ class ImageBuffer {
     }
 
     // RGB CIEXYZ.
-    bitmap.setUint32( 74, /* R CIEXYZ x */ rx, true);
-    bitmap.setUint32( 78, /* R CIEXYZ y */ ry, true);
-    bitmap.setUint32( 82, /* R CIEXYZ z */ zz, true);
-    bitmap.setUint32( 86, /* G CIEXYZ x */ gx, true);
-    bitmap.setUint32( 90, /* G CIEXYZ y */ gy, true);
-    bitmap.setUint32( 94, /* G CIEXYZ z */ zz, true);
-    bitmap.setUint32( 98, /* B CIEXYZ x */ bx, true);
+    bitmap.setUint32(74, /* R CIEXYZ x */ rx, true);
+    bitmap.setUint32(78, /* R CIEXYZ y */ ry, true);
+    bitmap.setUint32(82, /* R CIEXYZ z */ zz, true);
+    bitmap.setUint32(86, /* G CIEXYZ x */ gx, true);
+    bitmap.setUint32(90, /* G CIEXYZ y */ gy, true);
+    bitmap.setUint32(94, /* G CIEXYZ z */ zz, true);
+    bitmap.setUint32(98, /* B CIEXYZ x */ bx, true);
     bitmap.setUint32(102, /* B CIEXYZ y */ by, true);
     bitmap.setUint32(106, /* B CIEXYZ z */ zz, true);
 
@@ -544,15 +515,9 @@ class ImageBuffer {
       }
 
       for (let x = 0; x <= w; ++x, input += 3, output += dx) {
-        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
-        // not assignable to parameter of type 'number'.
-        bitmap.setUint8(output + 0, view[input + 2]);  // B
-        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
-        // not assignable to parameter of type 'number'.
-        bitmap.setUint8(output + 1, view[input + 1]);  // G
-        // @ts-ignore: error TS2345: Argument of type 'number | undefined' is
-        // not assignable to parameter of type 'number'.
-        bitmap.setUint8(output + 2, view[input + 0]);  // R
+        bitmap.setUint8(output + 0, view[input + 2]!);  // B
+        bitmap.setUint8(output + 1, view[input + 1]!);  // G
+        bitmap.setUint8(output + 2, view[input + 0]!);  // R
       }
     }
 
@@ -564,15 +529,18 @@ class ImageBuffer {
         let output = paddingOffset;
 
         switch (rowPad) {
-          case 3:
-            bitmap.setUint8(output++, 0);
-            // Fallthrough
-          case 2:
-            bitmap.setUint8(output++, 0);
-            // Fallthrough
           case 1:
             bitmap.setUint8(output++, 0);
-            // Fallthrough
+            break;
+          case 2:
+            bitmap.setUint8(output++, 0);
+            bitmap.setUint8(output++, 0);
+            break;
+          case 3:
+            bitmap.setUint8(output++, 0);
+            bitmap.setUint8(output++, 0);
+            bitmap.setUint8(output++, 0);
+            break;
         }
 
         paddingOffset += rowStride;
@@ -593,12 +561,9 @@ class ImageBuffer {
    * AdobeRGB1998 ICC Color Profile in that data if the preview is JPEG and
    * it has 'adodeRgb' color space.
    *
-   * @private
-   * @param {!PiexWasmPreviewImageMetadata} preview
-   * @param {!Uint8Array} view
-   * @return {!Uint8Array}
    */
-  createImageDataArray_(view, preview) {
+  private createImageDataArray_(
+      view: Uint8Array, preview: PiexWasmPreviewImageMetadata): Uint8Array {
     const jpeg = view.byteLength > 2 && view[0] === 0xff && view[1] === 0xd8;
 
     if (jpeg && preview.colorSpace === 'adobeRgb') {
@@ -617,34 +582,23 @@ class ImageBuffer {
    * Only number and string values are retained, and they are formatted for
    * presentation to the user.
    *
-   * @private
-   * @param {!PiexWasmImageResult} result
-   * @param {number} orientation - image EXIF orientation
-   * @return {?string}
+   * @param orientation - image EXIF orientation
    */
-  details_(result, orientation) {
+  private details_(result: PiexWasmImageResult, orientation: number): null
+      |string {
     const details = result.details;
     if (!details) {
       return null;
     }
 
-    /** @type {!Object<string|number, number|string>} */
-    const format = {};
-    /** @type {!Array<!Array<string|number>>} */
-    const entries = Object.entries(details);
-    for (const [key, value] of entries) {
+    const format: Record<string, string|number> = {};
+    for (const [key, value] of Object.entries(details)) {
       if (typeof value === 'string') {
-        // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
-        // type.
         format[key] = value.replace(/\0+$/, '').trim();
       } else if (typeof value === 'number') {
         if (!Number.isInteger(value)) {
-          // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
-          // index type.
           format[key] = Number(value.toFixed(3).replace(/0+$/, ''));
         } else {
-          // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
-          // index type.
           format[key] = value;
         }
       }
@@ -652,8 +606,8 @@ class ImageBuffer {
 
     const usesWidthAsHeight = orientation >= 5;
     if (usesWidthAsHeight) {
-      const width = format['width'];
-      format['width'] = format['height'];
+      const width = format['width']!;
+      format['width'] = format['height']!;
       format['height'] = width;
     }
 
@@ -675,48 +629,45 @@ class ImageBuffer {
 /**
  * PiexLoader: is a namespace.
  */
-export const PiexLoader = {};
+export const PiexLoader = {
 
-/**
- * Loads a RAW image. Returns the image metadata and the image thumbnail in a
- * PiexLoaderResponse.
- *
- * piexModuleFailed() returns true if the Module is in an unrecoverable error
- * state. This is rare, but possible, and the only reliable way to recover is
- * to reload the page. Callback |onPiexModuleFailed| is used to indicate that
- * the caller should initiate failure recovery steps.
- *
- * @param {!ArrayBuffer} buffer
- * @param {VoidCallback} onPiexModuleFailed
- * @return {!Promise<!PiexLoaderResponse>}
- */
-PiexLoader.load = function(buffer, onPiexModuleFailed) {
-  /** @type {?ImageBuffer} */
-  let imageBuffer;
+  /**
+   * Loads a RAW image. Returns the image metadata and the image thumbnail in a
+   * PiexLoaderResponse.
+   *
+   * piexModuleFailed() returns true if the Module is in an unrecoverable error
+   * state. This is rare, but possible, and the only reliable way to recover is
+   * to reload the page. Callback |onPiexModuleFailed| is used to indicate that
+   * the caller should initiate failure recovery steps.
+   *
+   */
+  load(buffer: ArrayBuffer, onPiexModuleFailed: VoidCallback):
+      Promise<PiexLoaderResponse> {
+        let imageBuffer: ImageBuffer|null;
 
-  return piexModuleInitialized()
-      .then(() => {
-        if (piexModuleFailed()) {
-          throw new Error('piex wasm module failed');
-        }
-        imageBuffer = new ImageBuffer(buffer);
-        return imageBuffer.process();
-      })
-      .then((/** !PiexWasmImageResult */ result) => {
-        const buffer = /** @type {!ImageBuffer} */ (imageBuffer);
-        return new PiexLoaderResponse(buffer.preview(result));
-      })
-      .catch((error) => {
-        if (piexModuleFailed()) {
-          setTimeout(onPiexModuleFailed, 0);
-          return Promise.reject('piex wasm module failed');
-        }
-        console.warn('[PiexLoader] ' + error);
-        return Promise.reject(error);
-      })
-      .finally(() => {
-        imageBuffer && imageBuffer.close();
-      });
+        return piexModuleInitialized()
+            .then(() => {
+              if (piexModuleFailed()) {
+                throw new Error('piex wasm module failed');
+              }
+              imageBuffer = new ImageBuffer(buffer);
+              return imageBuffer.process();
+            })
+            .then((result: PiexWasmImageResult) => {
+              return new PiexLoaderResponse(imageBuffer!.preview(result));
+            })
+            .catch((error) => {
+              if (piexModuleFailed()) {
+                setTimeout(onPiexModuleFailed, 0);
+                return Promise.reject('piex wasm module failed');
+              }
+              console.warn('[PiexLoader] ' + error);
+              return Promise.reject(error);
+            })
+            .finally(() => {
+              imageBuffer && imageBuffer.close();
+            });
+      },
 };
 
 export const PIEX_LOADER_TEST_ONLY = {
