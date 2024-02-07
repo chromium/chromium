@@ -942,17 +942,13 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   // If `kUiCompositorScrollWithLayers` is enabled, then a ScrollView performs
   // scrolling by using layers. These layers are not affected by the clip path
-  // of the widget. If the corner radius of the popup is larger than the
-  // vertical padding that separates the widget's top border and the
-  // ScrollView, this will cause pixel artifacts.
-  // To avoid these, set a corner radius for the ScrollView's ViewPort if layer
-  // scrolling is enabled.
-  const int kPaddingCornerDelta =
-      GetCornerRadius() - GetContentsVerticalPadding();
-  if (kPaddingCornerDelta > 0 && scroll_view_ &&
+  // of the widget and their corners remain unrounded, thus going beyond
+  // the popup's rounded corners. To avoid these, set a corner radius for
+  // the ScrollView's ViewPort if layer scrolling is enabled.
+  if (scroll_view_ &&
       base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
     scroll_view_->SetViewportRoundedCornerRadius(
-        gfx::RoundedCornersF(kPaddingCornerDelta));
+        gfx::RoundedCornersF(GetCornerRadius()));
   }
 
   SchedulePaint();
