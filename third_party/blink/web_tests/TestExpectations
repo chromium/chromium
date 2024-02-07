@@ -6449,6 +6449,14 @@ crbug.com/1464614 [ Win11-arm64 ] css2.1/t1202-counters-04-b.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] custom-elements/form-validation-bubble-appearance.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure ]
 crbug.com/1464614 [ Win11-arm64 ] fast/ruby/nested-ruby.html [ Failure ]
+crbug.com/1464614 [ Win11-arm64 ] external/wpt/credential-management/fedcm-disconnect-errors.https.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/cross-origin-status.https.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/pna-permission/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-permissions-policy-default.tentative.https.sub.html [ Pass Timeout Failure ] # Flaky
+crbug.com/1464614 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-animations/animationevent-types.html [ Pass Timeout Failure ] # Flaky
 
 crbug.com/1411760 [ Debug Mac13-arm64 ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position.html [ Failure Pass ]
 

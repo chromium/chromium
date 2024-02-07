@@ -11,6 +11,16 @@ ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
+    headers : {
+        Ad-Auction-Allowed : true
+        Connection : Keep-Alive
+        Content-Length : 598
+        Content-Type : application/javascript
+        Date : <date>
+        Keep-Alive : timeout=10
+        Server : Apache
+        X-Powered-By : <x-powered-by>
+    }
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>
@@ -52,6 +62,16 @@ ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
+    headers : {
+        Ad-Auction-Allowed : true
+        Connection : Keep-Alive
+        Content-Length : 522
+        Content-Type : application/javascript
+        Date : <date>
+        Keep-Alive : timeout=10
+        Server : Apache
+        X-Powered-By : <x-powered-by>
+    }
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>
