@@ -192,9 +192,10 @@ class CONTENT_EXPORT VideoCaptureManager
       const std::string& device_id);
 
   // If there is a capture session associated with |session_id|, and the
-  // captured entity a tab, return the GlobalRoutingID of the captured tab.
-  // Otherwise, returns an empty GlobalRoutingID.
-  GlobalRoutingID GetGlobalRoutingID(
+  // captured entity a tab, return the GlobalRenderFrameHostId of
+  // the captured tab.
+  // Otherwise, returns an empty GlobalRenderFrameHostId.
+  GlobalRenderFrameHostId GetGlobalRenderFrameHostId(
       const base::UnguessableToken& session_id) const;
 
   // Sets the platform-dependent window ID for the desktop capture notification

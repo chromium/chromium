@@ -2721,6 +2721,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}
 
+  // Returns whether, when using SubCaptureTargets (cropTo, restrictTo),
+  // the sub-capture target tokens should be associated with the *outermost*
+  // main-frame or embedder. If not, then the direct main-frame will be used.
+  // This even allows changing the WebContents being captured, which is a very
+  // powerful feature, and is likely only appropriate on embedded systems
+  // where the Web application is trusted.
+  virtual bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Allows the embedder to correlate backend media services with profile-keyed
   // effect settings.

@@ -1641,6 +1641,11 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
+    const {
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ContentBrowserClient::BindVideoEffectsManager(
     const std::string& device_id,
