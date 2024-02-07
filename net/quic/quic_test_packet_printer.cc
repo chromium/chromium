@@ -15,6 +15,8 @@
 
 namespace quic {
 
+namespace {
+
 class QuicPacketPrinter : public QuicFramerVisitorInterface {
  public:
   explicit QuicPacketPrinter(QuicFramer* framer, std::ostream* output)
@@ -195,6 +197,10 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnAckFrequencyFrame: " << frame;
     return true;
   }
+  bool OnResetStreamAtFrame(const QuicResetStreamAtFrame& frame) override {
+    *output_ << "OnResetStreamAtFrame: " << frame;
+    return true;
+  }
   void OnPacketComplete() override { *output_ << "OnPacketComplete\n"; }
   bool IsValidStatelessResetToken(
       const StatelessResetToken& token) const override {
@@ -210,6 +216,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   raw_ptr<QuicFramer> framer_;  // Unowned.
   mutable raw_ptr<std::ostream> output_;
 };
+
+}  // namespace
 
 }  // namespace quic
 
