@@ -1397,12 +1397,12 @@ struct GemmTester {
         helper.ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
   }
 };
 
 TEST_P(MLGraphTest, GemmTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -1913,8 +1913,7 @@ struct TransposeTester {
 };
 
 TEST_P(MLGraphTest, TransposeTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -2002,8 +2001,7 @@ struct ConcatTester {
 };
 
 TEST_P(MLGraphTest, ConcatTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test concat operator with one input and axis = 0.
     ConcatTester<float>{

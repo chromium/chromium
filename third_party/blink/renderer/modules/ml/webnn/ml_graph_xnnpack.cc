@@ -1096,37 +1096,13 @@ xnn_status DefineXnnNodeForGemm(xnn_subgraph_t subgraph,
 
   const MLGemmOptions* options =
       static_cast<const MLGemmOptions*>(gemm->Options());
-  if (options->hasC()) {
-    // XNNPACK fully connected Node only supports 1-D bias tensor (operand c of
-    // WebNN gemm operator) with [output_channels] dimensions.
-    const auto* bias = options->c();
-    const auto output_channels = gemm->Outputs()[0]->Dimensions()[1];
-    if (bias->Dimensions().size() != 1u ||
-        bias->Dimensions()[0] != output_channels) {
-      // TODO(crbug.com/1273291): Support the bias with other dimensions by
-      // element-wise addition operator.
-      error_message = String::Format("The dimensions of bias must be [%u].",
-                                     output_channels);
-      return xnn_status_unsupported_parameter;
-    }
-  }
-  if (options->alpha() != 1.0f) {
-    // TODO(crbug.com/1273291): Support alpha by using element-wise
-    // multiplication operator.
-    error_message = "gemm doesn't support alpha option.";
+  const auto output_channels = gemm->Outputs()[0]->Dimensions()[1];
+  const auto validation_result = ValidateGemmOptions(options, output_channels);
+  if (!validation_result.has_value()) {
+    error_message = validation_result.error();
     return xnn_status_unsupported_parameter;
   }
-  if (options->beta() != 1.0f) {
-    // TODO(crbug.com/1273291): Support beta by using element-wise
-    // multiplication operator.
-    error_message = "gemm doesn't support beta option.";
-    return xnn_status_unsupported_parameter;
-  }
-  if (options->aTranspose()) {
-    // TODO(crbug.com/1273291): Support aTranspose by using transpose operator.
-    error_message = "gemm doesn't support aTranspose option.";
-    return xnn_status_unsupported_parameter;
-  }
+
   uint32_t flags = 0;
   if (!options->bTranspose()) {
     // When bTranspose option is false, the filter tensor (operand b of WebNN
@@ -1725,16 +1701,8 @@ xnn_status DefineXnnNodeForTranspose(
   const auto* input = transpose->Inputs()[0].Get();
   CHECK(input);
   const auto input_rank = input->Dimensions().size();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
-  // When permutation is not specified, it’s set to [N-1, ..., 0], where N is
-  // the rank of the input tensor.
-  Vector<uint32_t> default_permutation(input_rank);
-  for (wtf_size_t i = 0; i < input_rank - 1; i++) {
-    default_permutation[i] = input_rank - 1 - i;
-  }
   const Vector<uint32_t> permutation =
-      options->getPermutationOr(std::move(default_permutation));
+      options->getPermutationOr(CreateDefaultPermutation(input_rank));
 
   // The current WebNN spec defines the value of permutation as signed
   // integer: https://www.w3.org/TR/webnn/#dom-mltransposeoptions-permutation

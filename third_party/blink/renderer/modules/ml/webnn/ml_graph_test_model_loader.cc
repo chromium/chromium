@@ -76,6 +76,10 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
                /* min_version */ 1,
                /* max_version */ 3);
+    AddBuiltin(tflite::BuiltinOperator_CONCATENATION,
+               tflite::ops::builtin::Register_CONCATENATION(),
+               /* min_version = */ 1,
+               /* max_version = */ 3);
     AddBuiltin(tflite::BuiltinOperator_CAST,
                tflite::ops::builtin::Register_CAST());
     AddBuiltin(tflite::BuiltinOperator_ADD,
@@ -104,6 +108,10 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_EXP());
     AddBuiltin(tflite::BuiltinOperator_FLOOR,
                tflite::ops::builtin::Register_FLOOR());
+    AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
+               tflite::ops::builtin::Register_FULLY_CONNECTED(),
+               /* min_version = */ 1,
+               /* max_version = */ 9);
     AddBuiltin(tflite::BuiltinOperator_HARD_SWISH,
                tflite::ops::builtin::Register_HARD_SWISH());
     AddBuiltin(tflite::BuiltinOperator_LEAKY_RELU,
@@ -164,6 +172,10 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                tflite::ops::builtin::Register_SUB(),
                /* min_version = */ 1,
                /* max_version = */ 3);
+    AddBuiltin(tflite::BuiltinOperator_TRANSPOSE,
+               tflite::ops::builtin::Register_TRANSPOSE(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
   }
 };
 
@@ -232,7 +244,9 @@ struct ElementWiseAddTester {
   OperandInfo<T> rhs;
   OperandInfo<T> expected;
 
-  ~ElementWiseAddTester() { MLGraphModelLoader::SetFlatbufferForTesting(nullptr); }
+  ~ElementWiseAddTester() {
+    MLGraphModelLoader::SetFlatbufferForTesting(nullptr);
+  }
 
   void Test(MLGraphTestTfLite& helper, V8TestingScope& scope) {
     // Set the flatbuffer of tflite model converted from the WebNN graph.

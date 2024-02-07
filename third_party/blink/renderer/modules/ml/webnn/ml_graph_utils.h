@@ -180,6 +180,10 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     uint32_t output_padding_height,
     uint32_t output_padding_width);
 
+// Helper to validate gemm options.
+base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
+                                                 uint32_t output_channels);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_UTILS_H_
