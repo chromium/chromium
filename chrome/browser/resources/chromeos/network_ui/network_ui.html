@@ -73,7 +73,7 @@
 
     <div>
       <h2>$i18n{resetESimCacheLabel}</h2>
-      <cr-button class="action-button" on-click="onResetESimCacheClick_">
+      <cr-button class="action-button" on-click="onResetEsimCacheClick_">
         $i18n{resetESimCacheButtonText}
       </cr-button>
     </div>
@@ -81,7 +81,7 @@
     <div>
       <h2>$i18n{disableESimProfilesLabel}</h2>
       <cr-button class="action-button"
-          on-click="onDisableActiveESimProfileClick_">
+          on-click="onDisableActiveEsimProfileClick_">
         $i18n{disableActiveESimProfileButtonText}
       </cr-button>
     </div>
@@ -188,7 +188,7 @@
     <cr-input id="tethering-config-input" value="{{tetheringConfigToSet_}}"
         placeholder='Example: {"ssid": "test_ssid", "passphrase": "test_password",
  "auto_disable": true, "security": "wpa2", "band": "5GHz"}'
-        type="text" on-input="validateJSON_"
+        type="text" on-input="validateJson_"
         error-message="Please enter valid JSON object"
         invalid="[[invalidJSON_]]">
     </cr-input>

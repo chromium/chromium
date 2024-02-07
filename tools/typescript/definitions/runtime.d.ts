@@ -10,9 +10,10 @@ import {ChromeEvent} from './chrome_event.js';
 declare global {
   export namespace chrome {
     export namespace runtime {
-      export let lastError: {
-        message?: string,
-      }|undefined;
+      export interface Error {
+        message?: string;
+      }
+      export let lastError: Error|undefined;
 
       export let id: string;
 
