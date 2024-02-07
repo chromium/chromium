@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/search/ntp_features.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/content_features.h"
@@ -191,6 +192,9 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#if !BUILDFLAG(IS_ANDROID)
+          ntp_features::kCustomizeChromeWallpaperSearch
+#endif  // !BUILDFLAG(IS_ANDROID)
         },
         {});
     // clang-format on
@@ -550,6 +554,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "UserPolicySigninService",
 #if !BUILDFLAG(IS_ANDROID)
     "VisualQuerySuggestionsService",
+    "WallpaperSearchService",
 #endif  // !BUILDFLAG(IS_ANDROID)
     "WarningBadgeService",
     "WarningService",
