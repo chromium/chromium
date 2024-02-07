@@ -1,4 +1,4 @@
-from typing import Any, Mapping, MutableMapping, Optional
+from typing import Any, Mapping, MutableMapping
 
 from ._module import BidiModule, command
 
@@ -34,7 +34,7 @@ class Browser(BidiModule):
 
     @command
     def remove_user_context(
-        self, user_context: Optional[str] = None
+        self, user_context: str
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
 

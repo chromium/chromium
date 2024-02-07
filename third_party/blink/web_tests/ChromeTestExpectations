@@ -48,6 +48,7 @@ crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_node
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/max_node_count.py [ Failure ]
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/ownership.py [ Failure ]
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/start_nodes.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure ]
 
 # Gardener 2023-12-19
 crbug.com/1512897 external/wpt/webdriver/tests/bidi/network/combined/network_events.py [ Failure ]
