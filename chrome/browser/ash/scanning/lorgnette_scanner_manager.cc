@@ -223,6 +223,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::string device_name;
     ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
+      PRINTER_LOG(ERROR) << "GetScannerCapabilities failed for: "
+                         << scanner_name;
       std::move(callback).Run(std::nullopt);
       return;
     }
@@ -238,6 +240,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // LorgnetteScannerManager:
   void OpenScanner(const lorgnette::OpenScannerRequest& request,
                    OpenScannerCallback callback) override {
+    std::string connection_string = request.scanner_id().connection_string();
+
     // If the client doesn't have any tokens, whatever they supplied can't be
     // valid.
     TokenToScannerId* valid_tokens =
@@ -246,17 +250,21 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       lorgnette::OpenScannerResponse response;
       *response.mutable_scanner_id() = request.scanner_id();
       response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+      PRINTER_LOG(ERROR) << "OpenScanner: No valid tokens for "
+                         << connection_string;
       std::move(callback).Run(std::move(response));
       return;
     }
 
     // If the token isn't found in the previously returned set, it isn't valid.
-    std::optional<ScannerId>* device_id = base::FindOrNull(
-        *valid_tokens, request.scanner_id().connection_string());
+    std::optional<ScannerId>* device_id =
+        base::FindOrNull(*valid_tokens, connection_string);
     if (!device_id) {
       lorgnette::OpenScannerResponse response;
       *response.mutable_scanner_id() = request.scanner_id();
       response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+      PRINTER_LOG(ERROR) << "OpenScanner: No device ID for "
+                         << connection_string;
       std::move(callback).Run(std::move(response));
       return;
     }
@@ -267,15 +275,19 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       lorgnette::OpenScannerResponse response;
       *response.mutable_scanner_id() = request.scanner_id();
       response.set_result(lorgnette::OPERATION_RESULT_MISSING);
+      PRINTER_LOG(ERROR) << "OpenScanner: Empty device ID for "
+                         << connection_string;
       std::move(callback).Run(std::move(response));
       return;
     }
 
     // Token is valid.  The necessary SANE connection string is the second
     // field.
+    connection_string = device_id->value().second;
     lorgnette::OpenScannerRequest lorgnette_request = request;
     lorgnette_request.mutable_scanner_id()->set_connection_string(
-        device_id->value().second);
+        connection_string);
+    PRINTER_LOG(EVENT) << "OpenScanner for " << connection_string;
     GetLorgnetteManagerClient()->OpenScanner(
         std::move(lorgnette_request),
         base::BindOnce(&LorgnetteScannerManagerImpl::OnOpenScannerResponse,
@@ -286,6 +298,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // LorgnetteScannerManager:
   void CloseScanner(const lorgnette::CloseScannerRequest& request,
                     CloseScannerCallback callback) override {
+    PRINTER_LOG(EVENT) << "CloseScanner: " << request.scanner().token();
     GetLorgnetteManagerClient()->CloseScanner(
         request,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnCloseScannerResponse,
@@ -338,7 +351,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::string device_name;
     ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      LOG(ERROR) << "Failed to get device name for " << scanner_name;
+      PRINTER_LOG(ERROR) << "IsRotateAlternate: Failed to get device name for "
+                         << scanner_name;
       return false;
     }
 
@@ -669,7 +683,11 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       OpenScannerCallback callback,
       std::optional<lorgnette::OpenScannerResponse> response) {
     if (response) {
+      PRINTER_LOG(EVENT) << "OpenScanner response received. Handle: "
+                         << response->config().scanner().token();
       *response->mutable_scanner_id() = scanner_id;
+    } else {
+      PRINTER_LOG(ERROR) << "OpenScanner null response received.";
     }
     std::move(callback).Run(response);
   }
@@ -943,7 +961,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
                                       ScanProtocol& protocol_out) {
     const auto scanner_it = deduped_scanners_.find(scanner_name);
     if (scanner_it == deduped_scanners_.end()) {
-      LOG(ERROR) << "Failed to find scanner with name " << scanner_name;
+      PRINTER_LOG(ERROR) << "Failed to find scanner with name " << scanner_name;
       return false;
     }
 
@@ -962,7 +980,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       }
     }
 
-    LOG(ERROR) << "Failed to find usable device name for " << scanner_name;
+    PRINTER_LOG(ERROR) << "Failed to find usable device name for "
+                       << scanner_name;
     return false;
   }
 
@@ -1020,6 +1039,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 // static
 std::unique_ptr<LorgnetteScannerManager> LorgnetteScannerManager::Create(
     std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector) {
+  PRINTER_LOG(EVENT) << "LorgnetteScannerManager::Create";
   return std::make_unique<LorgnetteScannerManagerImpl>(
       std::move(zeroconf_scanner_detector));
 }
