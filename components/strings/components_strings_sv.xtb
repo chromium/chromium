@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Inte säker</translation>
 <translation id="1075079914415273530">Jord- och skogsbruk</translation>
 <translation id="1075364221219156102">Använd en nyckel</translation>
-<translation id="1078033282564106222">Alternativet för husnummer har valts</translation>
 <translation id="1080116354587839789">Anpassa till fönstrets bredd</translation>
 <translation id="1081061862829655580">Fack 19</translation>
 <translation id="1082026381988252344">Scrolla och zooma på innehållet i en delad flik</translation>
@@ -613,7 +612,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2126374524350484896">PDF-källa:</translation>
 <translation id="2130448033692577677">Det går inte att tillämpa de angivna mallarna eftersom principen DnsOverHttpsMode inte har ställts in.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">Laddar ned språkpaketet för <ph name="LANGUAGE" /> …<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Herrkläder</translation>
 <translation id="2137891579555018930">Väntar på behörighet …</translation>
 <translation id="213826338245044447">Bokmärken i mobilen</translation>
@@ -1387,7 +1385,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3681007416295224113">Certifikatinformation</translation>
 <translation id="3681421644246505351">Chrome registrerar ämnen du är intresserad av baserat på din senaste webbhistorik.</translation>
 <translation id="3682094733650754138">Alternativet för att fylla i adress har valts</translation>
-<translation id="3689867156802445220">Husnummer</translation>
 <translation id="3693327506115126094">Välj hur du vill verifiera din identitet</translation>
 <translation id="3698629142018988477">Knappen Skapa webbplats: aktivera om du snabbt vill skapa en ny webbplats i Google Sites</translation>
 <translation id="3701325639446035885">Biljettförsäljning</translation>

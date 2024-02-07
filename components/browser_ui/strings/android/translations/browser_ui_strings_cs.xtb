@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Soubory cookie třetích stran jsou omezovány</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Ze zařízení <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povoleno</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Čaroděj ze země Oz</translation>
 <translation id="7684642910516280563">Nepovolení, aby web používal soubory cookie třetích stran</translation>
 <translation id="7719367874908701697">Přiblížení/oddálení stránky</translation>
-<translation id="7770832849480336015">Skrýt modul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Přidat</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Pokračovat s touto kartou}few{Pokračovat s těmito kartami}many{Pokračovat s těmito kartami}other{Pokračovat s těmito kartami}}</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7804248752222191302">Web používá váš fotoaparát</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>

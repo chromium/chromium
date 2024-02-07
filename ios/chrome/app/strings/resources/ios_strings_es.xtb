@@ -1142,7 +1142,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6822587385560699678">Si esta opción está activada, las contraseñas se guardan en <ph name="ACCOUNT" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6839843088069935119">{count,plural, =1{Marcador guardado en "{title}". Solo se guarda en este dispositivo.}other{Marcadores guardados en "{title}". Solo se guardan en este dispositivo.}}</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6852222216891664518">Cerrar pestaña fija</translation>
@@ -1412,6 +1411,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8273982424131314219">Rellenarás la información en <ph name="URL" /></translation>
 <translation id="8281781826761538115">Predeterminada: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
+<translation id="828291969289324795">{count,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8299417921174340354">Para usar las contraseñas, primero debes establecer una contraseña en tu dispositivo.</translation>

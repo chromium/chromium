@@ -75,6 +75,7 @@ Tänk på detta:
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2702250627063295552">Lägg till ett objekt från läslistan i Chrome</translation>
+<translation id="2703746758996815929">Om du vill få användbara tips om Chrome kan du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2789947168960170215">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
+<translation id="8874688701962049679">Tips om hur du får ut mesta möjliga av Chrome.</translation>
 <translation id="8891935667620843985">Du kan öppna länkar i Chrome automatiskt genom att ställa in den som standardwebbläsare.</translation>
 <translation id="8897749957032330183">Lösenorden sparas med Google Lösenordshantering på den här enheten.</translation>
 <translation id="8949681853939555434">Ställ in Chrome som standardwebbläsare</translation>

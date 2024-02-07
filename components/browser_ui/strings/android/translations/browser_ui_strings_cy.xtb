@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="310297983047869047">Sleid flaenorol</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> O <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Caniateir</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Dewin Rhyfeddol Oz</translation>
 <translation id="7684642910516280563">Peidio â chaniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
 <translation id="7719367874908701697">Lefel chwyddo'r dudalen</translation>
-<translation id="7770832849480336015">Cuddio '<ph name="TITLE_OF_MODULE" />'</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Parhau gyda'r tab hwn}zero{Parhau gyda'r tabiau hyn}two{Parhau gyda'r tabiau hyn}few{Parhau gyda'r tabiau hyn}many{Parhau gyda'r tabiau hyn}other{Parhau gyda'r tabiau hyn}}</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7804248752222191302">Mae gwefan yn defnyddio'ch camera</translation>
 <translation id="7807060072011926525">Darperir gan Google</translation>

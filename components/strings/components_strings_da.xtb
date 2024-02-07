@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Ikke sikker</translation>
 <translation id="1075079914415273530">Landbrug og skovbrug</translation>
 <translation id="1075364221219156102">Brug en adgangsnøgle</translation>
-<translation id="1078033282564106222">Valgmuligheden for bygningsnummer blev valgt</translation>
 <translation id="1080116354587839789">Tilpas til bredden</translation>
 <translation id="1081061862829655580">Bakke 19</translation>
 <translation id="1082026381988252344">Rul ned, og zoom ind på indholdet på din delte fane</translation>
@@ -613,7 +612,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">De skabeloner, du har angivet, anvendes muligvis ikke, da politikken DnsOverHttpsMode ikke er angivet.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Downloader sprogpakken for <ph name="LANGUAGE" />...<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Herretøj</translation>
 <translation id="2137891579555018930">Afventer tilladelse ...</translation>
 <translation id="213826338245044447">Bogmærker på mobil</translation>
@@ -1387,7 +1385,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3681007416295224113">Certifikatoplysninger</translation>
 <translation id="3681421644246505351">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik.</translation>
 <translation id="3682094733650754138">Valgmuligheden for udfyldelse af adresse blev valgt</translation>
-<translation id="3689867156802445220">Bygningsnummer</translation>
 <translation id="3693327506115126094">Vælg, hvordan du vil verificere din identitet</translation>
 <translation id="3698629142018988477">Knappen Opret website, aktivér for hurtigt at oprette et nyt website i Google Sites</translation>
 <translation id="3701325639446035885">Salg af billetter til events</translation>
@@ -1576,6 +1573,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4089152113577680600">Bakke 14</translation>
 <translation id="4092349052316400070">Udfyld adresse</translation>
 <translation id="4096237801206588987">11 x 15 tommer</translation>
+<translation id="4098306082496067348">Tryk på oplysningerne om dit virtuelle kort for at føje dem til betalingen.</translation>
 <translation id="4098354747657067197">Vildledende website forude</translation>
 <translation id="4099048595830172239">Administratorpolitikken anbefaler, at du ikke deler din skærm med <ph name="APPLICATION_TITLE" />, når fortroligt indhold er synligt:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at tilpasse skriftstørrelser og skrifttyper i Chrome</translation>

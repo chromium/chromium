@@ -75,6 +75,7 @@ Vær opmærksom på følgende:
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="2702250627063295552">Føj et element til læselisten i Chrome</translation>
+<translation id="2703746758996815929">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chrome.</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2789947168960170215">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="8865415417596392024">Chrome-data på din konto</translation>
+<translation id="8874688701962049679">Tips til at få mest muligt ud af Chrome.</translation>
 <translation id="8891935667620843985">Du kan åbne links i Chrome automatisk ved at angive Chrome som din standardapp til browsing.</translation>
 <translation id="8897749957032330183">Adgangskoder gemmes i Google Adgangskodeadministrator på denne enhed.</translation>
 <translation id="8949681853939555434">Angiv Chrome som din standardbrowser</translation>

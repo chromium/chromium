@@ -1145,7 +1145,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="681368974849482173">Into idaliwe</translation>
 <translation id="6822587385560699678">Uma kuvuliwe, amaphasiwedi alondolozwa ku-<ph name="ACCOUNT" />. Uma kuvaliwe, amaphasiwedi alondolozwa kule divayisi kuphela.</translation>
 <translation id="6831043979455480757">Humusha</translation>
-<translation id="6839843088069935119">{count,plural, =1{Ibhukhimakhi ilondolozwe ku-"{title}". Ilondolozwe kuphela kule divayisi.}one{Amabhukhimakhi alondolozwe ku-"{title}". Alondolozwe kuphela kule divayisi.}other{Amabhukhimakhi alondolozwe ku-"{title}". Alondolozwe kuphela kule divayisi.}}</translation>
 <translation id="6842136130964845393">Ukuze uqiniseke ukuthi ungafinyelela njalo kumaphasiwedi akho alondoloziwe, qinisekisa ukuthi uwena</translation>
 <translation id="6851516051005285358">Cela isayithi ledeskithophu</translation>
 <translation id="6852222216891664518">Vala Ithebhu Ephiniwe</translation>
@@ -1416,6 +1415,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8273982424131314219">Uzogcwalisa ulwazi ku-<ph name="URL" /></translation>
 <translation id="8281781826761538115">Okuzenzakalelayo - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Yeqa</translation>
+<translation id="828291969289324795">{count,plural, =1{Engeza Ithebhu Eqenjini Elisha}one{Engeza Amathebhu Eqenjini Elisha}other{Engeza Amathebhu Eqenjini Elisha}}</translation>
 <translation id="8283172974887967105">Setha…</translation>
 <translation id="8286036467436129157">Ngena Ngemvume</translation>
 <translation id="8292843446079898078">Thola izexwayiso zokwehla kwentengo yemikhiqizo oyilandelelayo.</translation>

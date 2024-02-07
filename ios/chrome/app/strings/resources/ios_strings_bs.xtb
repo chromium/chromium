@@ -1145,7 +1145,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="6822587385560699678">Kada je uključeno, lozinke se pohranjuju na računu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se pohranjuju samo na ovom uređaju.</translation>
 <translation id="6831043979455480757">Prevedi</translation>
-<translation id="6839843088069935119">{count,plural, =1{Oznaka je sačuvana u pregledniku "{title}". Sačuvana je samo na ovom uređaju.}one{Oznake su sačuvane u pregledniku "{title}". Sačuvane su samo na ovom uređaju.}few{Oznake su sačuvane u pregledniku "{title}". Sačuvane su samo na ovom uređaju.}other{Oznake su sačuvane u pregledniku "{title}". Sačuvane su samo na ovom uređaju.}}</translation>
 <translation id="6842136130964845393">Potvrdite svoj identitet da uvijek možete pristupati sačuvanim lozinkama</translation>
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
 <translation id="6852222216891664518">Zatvori zakačenu karticu</translation>

@@ -4003,7 +4003,6 @@
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4031527940632463547">มีการบล็อกเซ็นเซอร์</translation>
 <translation id="4033471457476425443">เพิ่มโฟลเดอร์ใหม่</translation>
-<translation id="4033711848170683365">การดำเนินการนี้จะลบข้อมูลการท่องเว็บของคุณจากอุปกรณ์นี้อย่างถาวร แอปอื่นๆ ใน <ph name="DEVICE_TYPE" /> อาจใช้บัญชี Google ในโปรไฟล์นี้อยู่ คุณนำบัญชีเหล่านี้ออกได้ใน <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /></translation>
 <translation id="4033963223187371752">เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหา เช่น เฟรมรูปภาพหรือเว็บ ซึ่งไม่ปลอดภัย</translation>
 <translation id="4034706080855851454">หากต้องการใช้อุปกรณ์ของคุณกับโปรไฟล์องค์กร องค์กรจะต้องมีข้อมูลเกี่ยวกับอุปกรณ์นั้น
 
@@ -5871,7 +5870,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">แอปนี้ต้องการสิทธิ์เข้าถึง Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">ตั้งค่าด้วยโทรศัพท์ Android</translation>
 <translation id="5519053700692355541">คุณจะเปิดฟีเจอร์ส่วนใหญ่ของแผงด้านข้างผ่านเมนู Chrome ได้ที่ด้านขวาบน</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">รักษาบัญชีนี้ให้ปลอดภัยยิ่งขึ้นด้วยรหัสผ่านที่รัดกุม โดยระบบจะบันทึกรหัสผ่านดังกล่าวไว้ใน<ph name="GOOGLE_PASSWORD_MANAGER" /> สำหรับ <ph name="EMAIL" /></translation>
@@ -9675,6 +9673,7 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ Chrome OS ของบุตรหลาน หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />หากเปิดการตั้งค่ากิจกรรมบนเว็บและแอปไว้สำหรับบัญชี Google ของบุตรหลาน ระบบอาจบันทึกข้อมูลของบุตรหลานไว้ในบัญชีนั้น ดูข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าเหล่านี้และวิธีปรับเปลี่ยนที่ families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ป้อนรหัสผ่านไฟล์</translation>
+<translation id="8476942730579767658">หน้าต่างและเดสก์</translation>
 <translation id="8477178913400731244">ลบข้อมูล</translation>
 <translation id="8477241577829954800">ถูกแทนที่</translation>
 <translation id="8477384620836102176">&amp;ทั่วไป</translation>

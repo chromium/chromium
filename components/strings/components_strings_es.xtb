@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">No es seguro</translation>
 <translation id="1075079914415273530">Agricultura y silvicultura</translation>
 <translation id="1075364221219156102">Usa una llave de acceso</translation>
-<translation id="1078033282564106222">Opción de número de edificio seleccionada</translation>
 <translation id="1080116354587839789">Se ajusta al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y ampliar el contenido de tu pestaña compartida</translation>
@@ -613,7 +612,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2126374524350484896">Proveedor de PDF:</translation>
 <translation id="2130448033692577677">Es posible que las plantillas que has especificado no se apliquen por no haber configurado la política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Descargando el paquete de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Ropa de hombre</translation>
 <translation id="2137891579555018930">Esperando permiso...</translation>
 <translation id="213826338245044447">Marcadores del móvil</translation>
@@ -1387,7 +1385,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="3682094733650754138">Se ha seleccionado la opción para rellenar la dirección</translation>
-<translation id="3689867156802445220">Número de edificio</translation>
 <translation id="3693327506115126094">Elige cómo verificar tu identidad</translation>
 <translation id="3698629142018988477">Botón Crear sitio: actívalo para crear un nuevo sitio en Google Sites rápidamente</translation>
 <translation id="3701325639446035885">Venta de entradas de eventos</translation>
@@ -1576,6 +1573,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Rellenar dirección</translation>
 <translation id="4096237801206588987">11x15 pulgadas</translation>
+<translation id="4098306082496067348">Toca la información de la tarjeta virtual para añadirla a la tramitación de la compra.</translation>
 <translation id="4098354747657067197">Sitio web engañoso</translation>
 <translation id="4099048595830172239">La política del administrador no recomienda que compartas tu pantalla con <ph name="APPLICATION_TITLE" /> cuando se muestra contenido confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para personalizar los tamaños de fuente y los tipos de letra de Chrome</translation>

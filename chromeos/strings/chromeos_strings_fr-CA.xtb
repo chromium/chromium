@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou essayez de charger les images à nouveau.</translation>
 <translation id="1751249301761991853">Personnel</translation>
 <translation id="1753496554272155572">Quitter l'aperçu des fonds d'écran</translation>
+<translation id="1754578112426924640">Bouton Modifier pour <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Application de diagnostics</translation>
 <translation id="175763766237925754">Bon (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
 <translation id="551689408806449779">L'appareil a été déconnecté. Essayez de vous reconnecter pour tester.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">verrouillée</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Basculer automatiquement au thème sombre au coucher du soleil</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5703716265115423771">diminuer le volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Bouton Modifier pour <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Moyenne</translation>
 <translation id="5757187557809630523">chanson suivante</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Bouton Supprimer pour <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="593880865674747800">En créer d'autres dans ce style</translation>
 <translation id="5939518447894949180">Recommencer</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6791471867139427246">couleur de l'éclairage du clavier</translation>
+<translation id="6796229976413584781">Raccourci supprimé</translation>
 <translation id="6798678288485555829">Navigation dans le texte</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Gérez les paramètres de nom de point d'accès du réseau. Les noms de point d'accès établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
+<translation id="7233782086689993269">Raccourci restauré</translation>
 <translation id="725133483556299729">Sélectionner un courriel</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7271932918253517778">Un raccourci comprenant les touches de la rangée supérieure doit inclure la touche de <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Changer d'avatar</translation>
 <translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">éclairage du clavier</translation>
 <translation id="7730077286107534951">Certains renseignements relatifs à votre compte et à votre système peuvent être envoyés à Google. Nous utilisons ces renseignements pour nous aider à résoudre des problèmes techniques et à améliorer nos services, sous réserve de notre <ph name="BEGIN_LINK2" />politique de confidentialité<ph name="END_LINK2" /> et de nos <ph name="BEGIN_LINK3" />conditions d'utilisation<ph name="END_LINK3" />. Pour demander des modifications de contenu, accédez à l'<ph name="BEGIN_LINK1" />aide juridique<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Compte de cycles</translation>
+<translation id="7746357909584236306">modifiable</translation>
 <translation id="7747039790905080783">Clé prépartagée</translation>
 <translation id="7752963721013053477">De l'aube à l'obscurité – exclusif</translation>
 <translation id="7762130827864645708">La modification de votre mot de passe a bien été effectuée. Veuillez utiliser le nouveau mot de passe à partir de maintenant.</translation>

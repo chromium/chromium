@@ -26,6 +26,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1087110696012418426">Buenas tardes, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más. Usa las teclas de flecha para desplazarte por tus aplicaciones.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + flecha hacia abajo</translation>
+<translation id="1094756674036064790">¿Desactivar Bluetooth?</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Muestra configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan aún mejor juntos</translation>
@@ -159,7 +160,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1586324912145647027">Ir a un escritorio del 1 al 8</translation>
 <translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
-<translation id="1592682369233288537">Siguiente escritorio: <ph name="NEXT_DESK_NAME" />. Pulsa Búsqueda + barra espaciadora para activarlo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo</translation>
 <translation id="1604857178818051494">Pausar el contenido multimedia</translation>
 <translation id="1607312127821884567">Cerrar la configuración de la visualización de las aplicaciones de tu teléfono</translation>
@@ -660,6 +660,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3660860940251915011">Activar o desactivar alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Desliza para ocultar tu ventana flotante</translation>
+<translation id="3673898235958558034">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME_1" /> y <ph name="DEVICE_NAME_2" /> se desconectarán de tu Chromebook.</translation>
 <translation id="367531336287639526">Seleccionar primer icono a la izquierda de la barra de direcciones</translation>
 <translation id="3677931086890821290">Esto permite que todas las aplicaciones y los sitios web que tengan el permiso de ubicación y ChromeOS utilicen la ubicación mediante Wi-Fi y redes móviles.</translation>
 <translation id="3679827876008292680">Ir a la última pestaña de la ventana</translation>
@@ -873,7 +874,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4491109536499578614">Imagen</translation>
 <translation id="450584155212756404">Canal para desarrolladores</translation>
 <translation id="4513946894732546136">Comentarios</translation>
-<translation id="4516212064498225455">Escritorio actual: <ph name="CURRENT_DESK_NAME" />. Pulsa Búsqueda + barra espaciadora para abrir el menú de todos los escritorios.</translation>
 <translation id="4518404433291145981">Para desbloquear tu Chromebook, desbloquea primero tu teléfono</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse.</translation>
 <translation id="4533343294786968049">Ampliando la duración de la batería. La batería estará totalmente cargada a las <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -916,6 +916,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4666911709726371538">Más aplicaciones</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Ahorro de batería activado</translation>
+<translation id="4673427585974421255">Mantener activado</translation>
 <translation id="468293128311738995">Aplicaciones de tu teléfono</translation>
 <translation id="4690510401873698237">La estantería está en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
@@ -1054,7 +1055,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="5208059991603368177">Sí</translation>
 <translation id="5216991270656129561">Desactivada hasta el <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Siguiente escritorio: <ph name="NEXT_DESK_NAME" />. Pulsa Búsqueda + barra espaciadora o usa la combinación de teclas Mayús + Búsqueda + <ph name="NEXT_DESK_INDEX" /> para activarlo.</translation>
 <translation id="5218064144558110424">Marcar como no completada</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
@@ -1216,6 +1216,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5802516411616338943">Abrir ajustes rápidos</translation>
 <translation id="5804651031882187592">Desactiva el ajuste Bloquear SIM</translation>
 <translation id="5805809050170488595">Clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> y otros <ph name="DEVICE_COUNT" /> dispositivos se desconectarán de tu Chromebook.</translation>
 <translation id="5823239091726045201">Tareas de Google en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
@@ -1396,6 +1397,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6539852571005954999">Analizando <ph name="FILENAME" /> para descargar</translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Búsqueda de imágenes por contenido y vistas previas de imágenes</translation>
+<translation id="6547795021703527064">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME" /> se desconectará de tu Chromebook.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, a continuación, pulsa <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
@@ -1870,7 +1872,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de micrófono controlada por <ph name="APP_NAME" />}other{Entrada de micrófono controlada por # aplicaciones}}</translation>
 <translation id="8535393432370007982">Deshacer orden por color</translation>
-<translation id="853768060447955562">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />. Pulsa Búsqueda + barra espaciadora o usa la combinación de teclas Mayús + Búsqueda + <ph name="PREVIOUS_DESK_INDEX" /> para activarlo.</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>
 <translation id="8546059259582788728">Orden deshecho correctamente</translation>
@@ -2035,7 +2036,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> inmediatamente</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
-<translation id="943067377221312471">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />. Pulsa Búsqueda + barra espaciadora para activarlo.</translation>
 <translation id="945383118875625837">Arrastra el enlace a la barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>

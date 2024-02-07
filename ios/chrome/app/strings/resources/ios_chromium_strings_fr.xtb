@@ -100,6 +100,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="3833326979834193417">Chromium effectue automatiquement un contrôle de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web dangereux. Vous trouverez plus d'informations sur ce contrôle dans les paramètres.</translation>
 <translation id="3855938650519180865">Nouveautés de Chromium</translation>
 <translation id="3886689467633467988">Connectez-vous à ce site et à Chromium pour accéder sur tous vos appareils à vos favoris et bien plus.</translation>
+<translation id="3904484643286601695">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chromium.</translation>
 <translation id="394413318816989199">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
@@ -203,6 +204,7 @@ Points à prendre en compte :
 
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium a été amélioré ! Une nouvelle version est désormais disponible.</translation>
+<translation id="6433172051771630690">Conseils pour exploiter tout le potentiel de Chromium.</translation>
 <translation id="6502321914804101924">Chromium est déconnecté</translation>
 <translation id="6563921047760808519">Découvrez <ph name="BEGIN_LINK" />comment Chromium protège la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium est désormais compatible avec les règles relatives aux utilisateurs de votre compte géré</translation>
@@ -255,6 +257,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="7990085102929105708">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chromium ne sera pas synchronisé.
 
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Pour recevoir des conseils pratiques sur Chromium, activez les notifications dans les réglages iOS.</translation>
 <translation id="7995166854192397899">Les suggestions sont basées sur votre activité de navigation sur vos autres appareils. Pour les obtenir, connectez-vous à Chromium sur tous vos appareils.</translation>
 <translation id="800195749539500647">Exploitez tout le potentiel de Chromium</translation>
 <translation id="8013573822802650211">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>

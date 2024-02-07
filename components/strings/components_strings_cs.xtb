@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Nezabezpečeno</translation>
 <translation id="1075079914415273530">Zemědělství a lesnictví</translation>
 <translation id="1075364221219156102">Použít přístupový klíč</translation>
-<translation id="1078033282564106222">Byla vybrána možnost Číslo budovy</translation>
 <translation id="1080116354587839789">Přizpůsobit na šířku</translation>
 <translation id="1081061862829655580">Přihrádka 19</translation>
 <translation id="1082026381988252344">Posouvání a přibližování obsahu sdílené karty</translation>
@@ -613,7 +612,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Stahování jazykového balíčku pro jazyk <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Pánské oděvy</translation>
 <translation id="2137891579555018930">Čeká se na oprávnění…</translation>
 <translation id="213826338245044447">Mobilní záložky</translation>
@@ -1383,7 +1381,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3681007416295224113">Informace o certifikátu</translation>
 <translation id="3681421644246505351">Chrome zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají.</translation>
 <translation id="3682094733650754138">Byla vybrána možnost Vyplnit adresu</translation>
-<translation id="3689867156802445220">Číslo budovy</translation>
 <translation id="3693327506115126094">Vyberte způsob ověření totožnosti</translation>
 <translation id="3698629142018988477">Tlačítko Vytvořit web, aktivací rychle vytvoříte nový web ve Webech Google</translation>
 <translation id="3701325639446035885">Prodej vstupenek na akce</translation>
@@ -1572,6 +1569,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4089152113577680600">Přihrádka 14</translation>
 <translation id="4092349052316400070">Vyplnit adresu</translation>
 <translation id="4096237801206588987">11 × 15″</translation>
+<translation id="4098306082496067348">Klepnutím na podrobnosti virtuální karty je přidáte k platbě.</translation>
 <translation id="4098354747657067197">Chystáte se navštívit podvodné webové stránky</translation>
 <translation id="4099048595830172239">Zásady administrátora nedoporučují sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" />, když je vidět důvěrný obsah:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v Chromu můžete přizpůsobit velikosti a typy písem</translation>

@@ -26,6 +26,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1087110696012418426">Mirëdita <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera. Përdor tastet e shigjetave për të naviguar nëpër aplikacionet e tua.</translation>
 <translation id="1093645050124056515">ctrl + alt + shigjeta poshtë</translation>
+<translation id="1094756674036064790">Të çaktivizohet Bluetooth-i?</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
 <translation id="1104084341931202936">Shfaq cilësimet e qasshmërisë</translation>
 <translation id="1104621072296271835">Pajisjet e tua punojnë edhe më mirë së bashku</translation>
@@ -159,7 +160,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="158838227375272121">Uebsajti i "Klasës së Google"</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
-<translation id="1592682369233288537">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë për ta aktivizuar.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + shigjeta poshtë</translation>
 <translation id="1604857178818051494">Vendose median në pauzë</translation>
 <translation id="1607312127821884567">Hiq konfigurimin e shikimit të aplikacioneve të telefonit tënd</translation>
@@ -660,6 +660,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3660860940251915011">Aktivizo/çaktivizo dukshmërinë e lartë për "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Rrëshqit shpejt për të fshehur dritaren pluskuese</translation>
+<translation id="3673898235958558034">Kur të çaktivizosh Bluetooth-in, "<ph name="DEVICE_NAME_1" />" dhe "<ph name="DEVICE_NAME_2" />" do të shkëputen nga Chromebook.</translation>
 <translation id="367531336287639526">Zgjidh ikonën e parë në të majtë të shiritit të adresave</translation>
 <translation id="3677931086890821290">Kjo lejon që të gjitha aplikacionet dhe uebsajtet që kanë lejen për vendndodhjen dhe ChromeOS të përdorin vendndodhjen e rrjeteve celulare dhe Wi-Fi.</translation>
 <translation id="3679827876008292680">Shko te skeda e fundit në dritare</translation>
@@ -872,7 +873,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4491109536499578614">Imazh</translation>
 <translation id="450584155212756404">Kanali i zhvilluesve</translation>
 <translation id="4513946894732546136">Komente</translation>
-<translation id="4516212064498225455">Tavolina aktuale e punës: <ph name="CURRENT_DESK_NAME" />, përdor Kërko + Hapësirë për të hapur menynë e të gjitha tavolinave të punës.</translation>
 <translation id="4518404433291145981">Për të shkyçur Chromebook-un tënd, shkyç fillimisht telefonin</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="4533343294786968049">Kohëzgjatja e baterisë po rritet. Bateria do të karikohet plotësisht në <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -915,6 +915,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">"Kursyesi i baterisë" u aktivizua</translation>
+<translation id="4673427585974421255">Mbaje aktiv</translation>
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
@@ -1053,7 +1054,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5216991270656129561">Joaktive deri në <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë ose shkurtoren e tastierës: Shift + Kërko + <ph name="NEXT_DESK_INDEX" /> për ta aktivizuar.</translation>
 <translation id="5218064144558110424">Shëno si të papërfunduar</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5229343007215035173">Aktivizo/çaktivizo ekranin e privatësisë</translation>
@@ -1215,6 +1215,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5802516411616338943">Hap "Cilësimet e shpejta"</translation>
 <translation id="5804651031882187592">Çaktivizo cilësimin "Kyç kartën SIM"</translation>
 <translation id="5805809050170488595">Kliko për të aktivizuar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Kur të çaktivizosh Bluetooth-in, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" dhe <ph name="DEVICE_COUNT" /> pajisje të tjera do të shkëputen nga Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks në ueb</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1396,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="6539852571005954999">Po skanohet shkarkimi: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Kërkimi i imazheve sipas përmbajtjes dhe pamjeve paraprake të imazheve</translation>
+<translation id="6547795021703527064">Kur të çaktivizosh Bluetooth-in, "<ph name="DEVICE_NAME" />" do të shkëputet nga Chromebook.</translation>
 <translation id="6555373427270923730">Shkruaj një adresë uebi në shiritin e adresës dhe më pas shtyp <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalim i ri</translation>
@@ -1869,7 +1871,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Hyrja e mikrofonit kontrollohet nga <ph name="APP_NAME" />}other{Hyrja e mikrofonit kontrollohet nga # aplikacione}}</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
-<translation id="853768060447955562">Tavolina e mëparshme e punës: <ph name="PREVIOUS_DESK_NAME" />, përdor Kërko + Hapësirë ose shkurtoren e tastierës: Shift + Kërko + <ph name="PREVIOUS_DESK_INDEX" /> për ta aktivizuar.</translation>
 <translation id="8541078764854166027">Inkuadrimi i kamerës</translation>
 <translation id="8542053257095774575">Nuk ka asnjë tavolinë pune apo shabllon të ruajtur</translation>
 <translation id="8546059259582788728">Mënyra e renditjes u zhbë me sukses</translation>
@@ -2034,7 +2035,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="925832987464884575">Fshih pamjet paraprake</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kërkon që ta përditësosh menjëherë <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>
-<translation id="943067377221312471">Tavolina e mëparshme e punës: <ph name="PREVIOUS_DESK_NAME" />, përdor Kërko + Hapësirë për ta aktivizuar.</translation>
 <translation id="945383118875625837">Zvarrit lidhjen te shiriti i faqeshënuesve</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="951991426597076286">Refuzo</translation>

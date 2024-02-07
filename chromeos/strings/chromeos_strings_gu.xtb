@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">છબીઓ લોડ કરી શકાઈ નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા છબીઓ ફરી લોડ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1751249301761991853">વ્યક્તિગત</translation>
 <translation id="1753496554272155572">વૉલપેપર પ્રીવ્યૂમાંથી બહાર નીકળો</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> માટે ફેરફાર કરવાનું બટન.</translation>
 <translation id="1755556344721611131">ડાયગ્નોસ્ટિક્સ ઍપ</translation>
 <translation id="175763766237925754">સારું (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android કામ કરી રહ્યું નથી</translation>
 <translation id="551689408806449779">ડિવાઇસ ડિસ્કનેક્ટ કરવામાં આવ્યું છે. પરીક્ષણ માટે ફરી કનેક્ટ કરવાનો પ્રયાસ કરો</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">લૉક છે</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">સૂર્યાસ્ત સમયે ઑટોમૅટિક રીતે ઘેરી થીમ પર સ્વિચ કરો</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">મધ્યમાં</translation>
 <translation id="5703716265115423771">વૉલ્યૂમ ઘટાડો</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> માટે ફેરફાર કરવાનું બટન.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> અપડેટ કરો</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
 <translation id="5757187557809630523">આગલો ટ્રૅક</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">નિષિદ્ધ</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}one{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}other{તમારી ફાઇલો સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> માટે ડિલીટ કરવાનું બટન.</translation>
 <translation id="5931523347251946569">ફાઇલ મળી નથી</translation>
 <translation id="593880865674747800">આ શૈલીમાં વધુ બનાવો</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">નિષ્ફળ રહેલા DNS રિઝોલ્યુશન</translation>
 <translation id="6768237774506518020">DNS રિઝોલ્યુશન નિષ્ફળતાનો ઉચ્ચ રેટ</translation>
 <translation id="6791471867139427246">કીબોર્ડની લાઇટનો રંગ</translation>
+<translation id="6796229976413584781">શૉર્ટકટ ડિલીટ કરવામાં આવ્યો</translation>
 <translation id="6798678288485555829">ટેક્સ્ટ નૅવિગેશન</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">બાહ્ય ડિવાઇસ માટે ફર્મવેયરની અપડેટ</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
+<translation id="7233782086689993269">શૉર્ટકટ રિસ્ટોર કર્યો</translation>
 <translation id="725133483556299729">ઇમેઇલ પસંદ કરો</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="7271932918253517778">જે શૉર્ટકટમાં સૌથી ઉપરની પંક્તિવાળી કી શામેલ હોય, તેમાં <ph name="META_KEY" /> કી શામેલ કરવી જરૂરી છે.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
 <translation id="7656388927906093505">ડિવાઇસ એક માઉસ છે.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">અવતાર બદલો</translation>
 <translation id="7683228889864052081">રંગની છટાવાળું કીબોર્ડ</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">કીબોર્ડની લાઇટ</translation>
 <translation id="7730077286107534951">એકાઉન્ટ અને સિસ્ટમની અમુક માહિતી Googleને મોકલવામાં આવી શકે છે. અમે આ માહિતીનો ઉપયોગ અમારી <ph name="BEGIN_LINK2" />પ્રાઇવસી પૉલિસી<ph name="END_LINK2" /> અને <ph name="BEGIN_LINK3" />સેવાની શરતો<ph name="END_LINK3" />ને આધીન ટેકનિકલ સમસ્યાઓના નિવારણ અને અમારી સેવાઓને બહેતર બનાવવામાં સહાય કરવા માટે કરીએ છીએ. કન્ટેન્ટમાં ફેરફારોની વિનંતી કરવા માટે, <ph name="BEGIN_LINK1" />કાનૂની સહાય<ph name="END_LINK1" /> પર જાઓ.</translation>
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
+<translation id="7746357909584236306">ફેરફાર કરવા યોગ્ય</translation>
 <translation id="7747039790905080783">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="7752963721013053477">ડૉન ટુ ડાર્ક - વિશેષ</translation>
 <translation id="7762130827864645708">પાસવર્ડ બદલવાનું સફળ રહ્યું. કૃપા કરીને હવેથી નવા પાસવર્ડનો ઉપયોગ કરો.</translation>

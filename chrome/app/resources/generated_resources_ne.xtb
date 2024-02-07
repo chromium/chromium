@@ -3999,7 +3999,6 @@
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4031527940632463547">सेन्सरहरूमा रोक लगाइयो</translation>
 <translation id="4033471457476425443">नयाँ फोल्डर थप्नुहोस्</translation>
-<translation id="4033711848170683365">तपाईंले यसो गर्नुभयो भने यो डिभाइसमा भएको ब्राउजिङ डेटा सदाका लागि मेटाइने छ। तपाईंको <ph name="DEVICE_TYPE" /> मा इन्स्टल गरिएका अन्य एपहरूले यो प्रोफाइलमा लिंक गरिएका Google खाताहरू प्रयोग गर्न सक्छन्। तपाईं <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> मा गई यी खाताहरू हटाउन सक्नुहुन्छ।</translation>
 <translation id="4033963223187371752">सुरक्षित साइटहरूले असुरक्षित खालका फोटो वा वेब फ्रेम जस्ता सामग्री इम्बेड गर्न सक्छन्</translation>
 <translation id="4034706080855851454">तपाईंको सङ्गठनले तपाईंको डिभाइसका बारेमा जानकारी प्राप्त गरेपछि मात्र त्यसमा तपाईंको सङ्गठनको प्रोफाइल हालेर उक्त डिभाइस प्रयोग गर्न मिल्छ।
 
@@ -5866,7 +5865,6 @@
 <translation id="5514315914873062345">ट्याब</translation>
 <translation id="5517304475148761050">यो एपलाई Play स्टोरमाथिको पहुँच चाहिन्छ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android फोनका सहायताले सेटअप गर्नुहोस्</translation>
 <translation id="5519053700692355541">तपाईं सिरानको दायाँपट्टि रहेको Chrome मेनुमार्फत साइड प्यानलका अधिकांश सुविधाहरू खोल्न सक्नुहुन्छ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">भरपर्दो पासवर्ड प्रयोग गरी यो खाता सुरक्षित राख्नुहोस्। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
@@ -9671,6 +9669,7 @@
     <ph name="BEGIN_PARAGRAPH2" />तपाईं जुनसुकै बेला आफ्ना बच्चाको ChromeOS डिभाइसका सेटिङमा गई यी रिपोर्ट पठाउने अनुमति दिन वा नदिन सक्नुहुन्छ। तपाईं कुनै डोमेनका एड्मिन हुनुहुन्छ भने तपाईं एड्मिन कन्सोलमा गई यो सेटिङ बदल्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />तपाईंका बच्चाको Google खाताका हकमा "वेब तथा एपसम्बन्धी गतिविधि" सेटिङ अन गरिएको छ भने Android मा भएको तपाईंका बच्चाको डेटा उहाँको Google खातामा सेभ गरिन सक्छ। तपाईं यी सेटिङका बारेमा र यी सेटिङ मिलाउने तरिकाका बारेमा थप जान्न चाहनुहुन्छ भने families.google.com मा जानुहोस्।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">यो फाइलको पासवर्ड हाल्नुहोस्</translation>
+<translation id="8476942730579767658">विन्डो तथा डेस्कहरू</translation>
 <translation id="8477178913400731244">डेटा मेटाउनुहोस्</translation>
 <translation id="8477241577829954800">सुपरसिडेड</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>

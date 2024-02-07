@@ -518,6 +518,19 @@ Jika kebijakan ini disetel ke nonaktif, halaman dengan header <ph name="CACHE_CO
 <translation id="1426170570389588560">Menentukan jangka waktu penyimpanan metadata pekerjaan cetak dalam hari</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1427655258943162134">Alamat atau URL server proxy</translation>
+<translation id="1430811977802269244">Izinkan perangkat yang memenuhi syarat dan akan kehilangan dukungan Android untuk ikut serta dalam
+Perpanjangan Update Otomatis.
+
+Jika kebijakan disetel ke Aktif, perangkat akan menerima Perpanjangan Update Otomatis.
+
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat akan berhenti menerima update
+setelah tanggal Batas Akhir Update Otomatis yang asli.
+
+Kebijakan ini hanya relevan untuk model lama yang tidak otomatis menerima
+perpanjangan update.
+
+Untuk detail selengkapnya, lihat
+https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
 <translation id="1432834104376790711">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Penghemat Baterai.
       Di Chrome, setelan ini membuat kecepatan frame di-throttle agar mengurangi konsumsi daya. Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.
       Di ChromeOS, setelan ini membuat kecepatan frame dan frekuensi CPU di-throttle, lampu latar diredupkan, dan Android disetel ke Mode Penghemat Baterai. Pada perangkat dengan beberapa CPU, sebagian CPU akan dinonaktifkan.
@@ -592,6 +605,7 @@ Jika kebijakan ini disetel ke nonaktif, halaman dengan header <ph name="CACHE_CO
 Jika Anda mengaktifkan atau tidak mengonfigurasi kebijakan ini, scroll halaman web ke fragmen teks tertentu melalui URL akan diaktifkan.
 
 Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks tertentu melalui URL akan dinonaktifkan.</translation>
+<translation id="1468702975912409463">Memungkinkan pengguna akses jarak jauh membuka URL sisi host di browser klien lokal mereka</translation>
 <translation id="1474273443907024088">Nonaktifkan TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
@@ -2258,6 +2272,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
 <translation id="2755847332939882873">Mengizinkan pengumpulan jejak performa di seluruh sistem</translation>
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
+<translation id="2760947619380644513">Mengizinkan pengguna akses jarak jauh untuk membuka URL sisi host di browser klien lokal mereka</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="2764750330785898947">Mengaktifkan dukungan encoding konten <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Mengontrol apakah penampil PDF di <ph name="PRODUCT_NAME" /> dapat menganotasi PDF.
@@ -5241,6 +5256,13 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 <translation id="5238275681097851753">Izinkan konten <ph name="FLASH_PLUGIN_NAME" /> tertentu untuk diblokir</translation>
 <translation id="5238976843489093540">Paksa pengaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="5239277956452384929">Mengizinkan akses ke daftar URL selama autentikasi</translation>
+<translation id="5242361766432467515">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang terhubung ke host akses jarak jauh akan diizinkan membuka URL sisi host di browser klien lokal mereka.
+
+Jika kebijakan disetel ke Nonaktif, host akses jarak jauh tidak akan dapat mengirimkan URL ke klien.
+
+Setelan ini tidak berlaku untuk koneksi bantuan jarak jauh karena fitur ini tidak didukung untuk mode koneksi tersebut.
+
+Catatan: Fitur ini belum tersedia secara umum, sehingga mengaktifkannya tidak berarti bahwa fitur tersebut akan terlihat di UI klien.</translation>
 <translation id="5245647012663146075">Jangan izinkan pengaktifan Phone Hub</translation>
 <translation id="5245671702326993331">Mengizinkan notifikasi native</translation>
 <translation id="524637053580639111">Kebijakan ini dihapus di M82. Sebagai gantinya, gunakan DeviceMinimumVersion.
@@ -5789,6 +5811,7 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
       Kebijakan ini dapat diganti untuk pola URL tertentu menggunakan kebijakan <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> dan <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Kebijakan ini hanya memengaruhi operasi papan klip yang dikontrol oleh izin situs papan klip, dan tidak memengaruhi penulisan papan klip yang dibersihkan atau operasi salin dan tempel tepercaya.</translation>
+<translation id="5650256117857913687">Mencegah pengguna akses jarak jauh membuka URL sisi host di browser klien lokal mereka</translation>
 <translation id="5650716720715977549">Terapkan batasan untuk permintaan ke endpoint jaringan yang lebih pribadi</translation>
 <translation id="5651538748810288218">Jika kebijakan disetel ke 1, situs akan dapat mengakses dan menggunakan sensor seperti sensor gerakan dan cahaya. Jika kebijakan disetel ke 2, akses ke sensor akan ditolak.
 
@@ -7943,6 +7966,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan 
 <translation id="7298197471363105063">Mengganti Set Pihak Pertama.</translation>
 <translation id="7300320787419338290">Setelan F11/F12 menggunakan pintasan yang berisi tombol pengubah ctrl dan shift</translation>
 <translation id="7302043767260300182">Penundaan kunci layar saat menggunakan daya AC</translation>
+<translation id="7302500623317853506">Izinkan perpanjangan update otomatis</translation>
 <translation id="7303655680460311843">Aktifkan keyboard virtual sentuh di layar login</translation>
 <translation id="7303902834678570827">Pengguna Sesi Tamu Terkelola tidak dapat menyimpan setelan tampilan di seluruh perangkat</translation>
 <translation id="7306926210354955892">Menyetel kebijakan akan menentukan tindakan yang akan diambil saat direktori data ARC pengguna dibuat dengan virtio-fs. Aplikasi Android mungkin berjalan lebih lambat di VM ARC, kecuali jika data virtio-fs dimigrasikan ke virtio-blk.
@@ -9798,6 +9822,7 @@ yang jauh lebih rendah, yang akan menurunkan perlindungan.</translation>
 <translation id="8862086508140571198">Dengan kebijakan ini, Anda dapat menetapkan daftar DLC (Konten yang Dapat Didownload) untuk didownload sesegera mungkin. DLC yang telah didownload akan tersedia untuk semua pengguna di perangkat.
 
 Hal ini berguna saat administrator mengetahui bahwa fitur yang memerlukan DLC kemungkinan akan digunakan oleh pengguna perangkat.</translation>
+<translation id="8864727482158496280">Jangan izinkan perpanjangan update otomatis</translation>
 <translation id="8864975621965365890">Menimpa permintaan penghentian yang muncul saat situs dirender oleh <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Gunakan setelan default untuk pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8866430022832109569">Pelaporan inventaris aplikasi</translation>

@@ -4003,7 +4003,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
-<translation id="4033711848170683365">Esta ação elimina permanentemente os dados de navegação deste dispositivo. As Contas Google neste perfil podem ser usadas por outras apps no seu dispositivo <ph name="DEVICE_TYPE" />. Pode remover estas contas em <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Os sites seguros podem incorporar conteúdo como imagens ou frames da Web que não são seguros</translation>
 <translation id="4034706080855851454">Para usar o dispositivo com o perfil da sua organização, esta precisa de informações sobre o dispositivo.
 
@@ -5870,7 +5869,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Esta aplicação precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configurar com telemóvel Android</translation>
 <translation id="5519053700692355541">Pode abrir a maioria das funcionalidades do painel lateral através do menu do Chrome na parte superior direita</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Mantenha esta conta mais segura com uma palavra-passe forte. Vai ser guardada no <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
@@ -9679,6 +9677,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo com ChromeOS da criança. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Se a definição Atividade da Web e de apps estiver ativada para a Conta Google da criança, os dados da criança podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Introduza a palavra-passe do ficheiro</translation>
+<translation id="8476942730579767658">Janelas e espaços de trabalho</translation>
 <translation id="8477178913400731244">Eliminar dados</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>

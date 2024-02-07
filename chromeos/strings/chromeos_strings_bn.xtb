@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">ছবি লোড করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা আবার ছবি লোড করার চেষ্টা করুন।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1753496554272155572">ওয়ালপেপার প্রিভিউ থেকে বেরিয়ে আসুন</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />-এর জন্য এডিট বোতাম।</translation>
 <translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android কাজ করছে না</translation>
 <translation id="551689408806449779">ডিভাইস ডিসকানেক্ট হয়ে গেছে। টেস্টে আবার কানেক্ট করার চেষ্টা করুন</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">লক করা আছে</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">সূর্যাস্তের সময় অটোমেটিক ডার্ক থিমে পাল্টান</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">কেন্দ্র</translation>
 <translation id="5703716265115423771">ভলিউম কমান</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" />নম্বর</translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />-এর জন্য এডিট বোতাম।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডেট করুন</translation>
 <translation id="574392208103952083">মাঝারি</translation>
 <translation id="5757187557809630523">পরবর্তী ট্র্যাক</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}one{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}other{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" />-এর জন্য মুছে ফেলার বোতাম।</translation>
 <translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
 <translation id="593880865674747800">এই স্টাইলে আরও ওয়ালপেপার তৈরি করুন</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
+<translation id="6796229976413584781">শর্টকার্ট মুছে ফেলা হয়েছে</translation>
 <translation id="6798678288485555829">টেক্সট নেভিগেশন</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">নেটওয়ার্কের APN সেটিংস ম্যানেজ করুন। APN মোবাইল নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
+<translation id="7233782086689993269">শর্টকাট ফিরিয়ে আনা হয়েছে</translation>
 <translation id="725133483556299729">ইমেল বেছে নিন</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="7271932918253517778">একেবারে উপরের সারির 'কী' সহ শর্টকাটে <ph name="META_KEY" /> 'কী' অন্তর্ভুক্ত করতে হবে।</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">অবতার পরিবর্তন করুন</translation>
 <translation id="7683228889864052081">কীবোর্ডের রঙ</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">কীবোর্ডের লাইট</translation>
 <translation id="7730077286107534951">অ্যাকাউন্ট ও সিস্টেমের কিছু তথ্য Google-এর কাছে পাঠানো হতে পারে। আমাদের <ph name="BEGIN_LINK2" />গোপনীয়তা নীতি<ph name="END_LINK2" /> ও <ph name="BEGIN_LINK3" />পরিষেবার শর্তাবলী<ph name="END_LINK3" /> অনুযায়ী, এই তথ্য টেকনিক্যাল সমস্যার সমাধানের কাজে এবং আমাদের পরিষেবা আরও ভালো করে তোলার জন্য ব্যবহার করি। কন্টেন্টে পরিবর্তন সম্পর্কে অনুরোধ জানাতে, <ph name="BEGIN_LINK1" />আইনি সহায়তা<ph name="END_LINK1" /> লিঙ্কে যান।</translation>
 <translation id="773153675489693198">সাইকেল কাউন্ট</translation>
+<translation id="7746357909584236306">এডিট করা যায়</translation>
 <translation id="7747039790905080783">আগে থাকতে শেয়ার করা 'কী'</translation>
 <translation id="7752963721013053477">'ডন টু ডার্ক' - এক্সক্লুসিভ</translation>
 <translation id="7762130827864645708">আপনার পাসওয়ার্ড পরিবর্তন করা হয়ে গেছে। এখন থেকে নতুন পাসওয়ার্ড ব্যবহার করুন।</translation>

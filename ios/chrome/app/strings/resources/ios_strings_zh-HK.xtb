@@ -1145,7 +1145,6 @@
 <translation id="681368974849482173">已建立項目</translation>
 <translation id="6822587385560699678">開啟時，密碼將會儲存在 <ph name="ACCOUNT" /> 中。關閉後，密碼只會儲存在此裝置上。</translation>
 <translation id="6831043979455480757">翻譯</translation>
-<translation id="6839843088069935119">{count,plural, =1{已將書籤儲存至「{title}」，且只會儲存至此裝置。}other{已將書籤儲存至「{title}」，且只會儲存至此裝置。}}</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>
 <translation id="6851516051005285358">切換至電腦版網站</translation>
 <translation id="6852222216891664518">關閉固定分頁</translation>

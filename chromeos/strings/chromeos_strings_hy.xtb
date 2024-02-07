@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Չհաջողվեց բեռնել պատկերները։ Ստուգեք ձեր կապը կամ նորից փորձեք բեռնել պատկերները։</translation>
 <translation id="1751249301761991853">Անձնական կարգավորումներ</translation>
 <translation id="1753496554272155572">Փակել պաստառի նախադիտումը</translation>
+<translation id="1754578112426924640">Փոփոխելու կոճակ <ph name="ACCELERATOR_INFO" /> ստեղների համադրության համար։</translation>
 <translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
 <translation id="175763766237925754">Լավ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android-ը չի աշխատում</translation>
 <translation id="551689408806449779">Սարքն անջատվել է։ Նորից միացրեք այն՝ փորձարկելու համար։</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">կողպված է</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Մայրամուտին ավտոմատ միացնել մուգ թեման</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5703716265115423771">իջեցնել ձայնը</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Փոփոխելու կոճակ <ph name="SHORTCUT_DESCRIPTION" /> հրամանի համար։</translation>
 <translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="574392208103952083">Միջին</translation>
 <translation id="5757187557809630523">հաջորդ կատարումը</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Արգելված է</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ձեր ֆայլը սկանավորվեց և պահվեց <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}one{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}other{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}}</translation>
+<translation id="5928411637936685857">Ջնջելու կոճակ <ph name="ACCELERATOR_INFO" /> ստեղների համադրության համար։</translation>
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
 <translation id="593880865674747800">Ստեղծեք պաստառներ այս ոճով</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
+<translation id="6796229976413584781">Դյուրանցումը հեռացվեց</translation>
 <translation id="6798678288485555829">Նավիգացիա տեքստում</translation>
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Կառավարեք ցանցի APN-ի կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ներկառուցված ծրագրաշարի թարմացումներ արտաքին սարքերի համար</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
+<translation id="7233782086689993269">Դյուրանցումը վերականգնվեց</translation>
 <translation id="725133483556299729">Ընտրել էլ․ հասցե</translation>
 <translation id="7271040990581020067">Սկաներն այս պահին օգտագործվում է։ Փորձեք ավելի ուշ։</translation>
 <translation id="7271932918253517778">Վերևի շարքի ստեղներով դյուրանցումը պետք է ներառի «<ph name="META_KEY" />» ստեղնը։</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
 <translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />։</translation>
 <translation id="7665800271478495366">Փոխել ավատարը</translation>
 <translation id="7683228889864052081">ստեղնաշարի լուսավորության երանգ</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">ստեղնաշարի լույս</translation>
 <translation id="7730077286107534951">Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Այդ տեղեկություններն օգտագործվում են տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ մեր <ph name="BEGIN_LINK2" />Գաղտնիության քաղաքականության<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Օգտագործման պայմանների<ph name="END_LINK3" /> համաձայն։ Բովանդակության փոփոխություն պահանջելու համար անցեք <ph name="BEGIN_LINK1" />Իրավական հարցերով օգնության էջ<ph name="END_LINK1" />։</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
+<translation id="7746357909584236306">հնարավոր է փոփոխել</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7752963721013053477">Լուսաբացից մայրամուտ. բացառիկ</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>

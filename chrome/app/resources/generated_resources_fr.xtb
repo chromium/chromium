@@ -1718,6 +1718,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2285109769884538519">{COUNT,plural, =0{Tout ouvrir dans un &amp;nouveau groupe d'onglets}=1{Ouvrir dans un &amp;nouveau groupe d'onglets}one{Tout ouvrir ({COUNT}) dans un &amp;nouveau groupe d'onglets}other{Tout ouvrir ({COUNT}) dans un &amp;nouveau groupe d'onglets}}</translation>
 <translation id="2285942871162473373">Nous ne reconnaissons pas votre empreinte digitale. Réessayez.</translation>
 <translation id="2287617382468007324">Adresse IPP d'impression</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}one{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}other{Pour protéger vos données, les autorisations de sites que vous n'avez pas consultés récemment ont été supprimées}}</translation>
 <translation id="2287944065963043964">Écran de connexion</translation>
 <translation id="2290615375132886363">Boutons de navigation en mode tablette</translation>
 <translation id="2291452790265535215">Essayez d'utiliser le panneau latéral pour accéder aux favoris, parcours, etc.</translation>
@@ -3294,6 +3295,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3497560059572256875">Partager le doodle</translation>
 <translation id="3497915391670770295">Envoyer vers vos &amp;appareils</translation>
 <translation id="3500417806337761827">Échec lors du montage du partage. Un trop grand nombre de partages SMB sont déjà montés.</translation>
+<translation id="3500764001796099683">Activer les applications Web isolées</translation>
 <translation id="350397915809787283">Si vous n'avez pas de compte, sélectionnez la première option pour en créer un.</translation>
 <translation id="3503995387997205657">Vous pouvez restaurer vos précédentes applis</translation>
 <translation id="3505100368357440862">Suggestions d'achat</translation>
@@ -4002,7 +4004,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
-<translation id="4033711848170683365">Cette action supprimera définitivement les données de navigation de cet appareil. Les comptes Google de ce profil pourront être utilisés par d'autres applis sur votre <ph name="DEVICE_TYPE" />. Vous pouvez supprimer ces comptes dans <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Les sites sécurisés peuvent intégrer du contenu tel que des images ou des cadres Web non sécurisés</translation>
 <translation id="4034706080855851454">Vous devez fournir des informations concernant cet appareil pour pouvoir l'utiliser avec le profil de votre organisation.
 
@@ -4302,6 +4303,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4277434192562187284">Source de configuration XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Autorisations supprimées pour 1 site}one{Autorisations supprimées pour {NUM_SITES} site}other{Autorisations supprimées pour {NUM_SITES} sites}}</translation>
 <translation id="4278390842282768270">Autorisé</translation>
 <translation id="4278498748067682896">Vous allez utiliser une mise à niveau Kiosk &amp; Signage qui permet uniquement à l'appareil de s'exécuter en mode kiosque ou signalétique. Si vous voulez que les utilisateurs se connectent à l'appareil, veuillez revenir en arrière et vous enregistrer avec Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Ce processus peut prendre quelques minutes. Téléchargement des fichiers…</translation>
@@ -5869,7 +5871,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5514315914873062345">Tabulation</translation>
 <translation id="5517304475148761050">Cette application a besoin d'accéder au Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configurer avec un téléphone Android</translation>
 <translation id="5519053700692355541">Vous pouvez ouvrir la plupart des fonctionnalités du panneau latéral à l'aide du menu Chrome en haut à droite</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Renforcez la sécurité de ce compte avec un mot de passe sécurisé. Il sera enregistré dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
@@ -7170,6 +7171,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6551508934388063976">Commande indisponible. Appuyez sur CTRL + N pour ouvrir une nouvelle fenêtre.</translation>
 <translation id="6551606359270386381">Outil Ellipse</translation>
 <translation id="6551612971599078809">Le site utilise actuellement un appareil USB</translation>
+<translation id="6551620030439692385">Bloqué. Le fuseau horaire est actuellement défini sur <ph name="TIMEZONE" /> et ne peut être modifié que manuellement.</translation>
 <translation id="6551739526055143276">Géré par Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utilisateurs</translation>
 <translation id="6555432686520421228">Supprime tous les comptes utilisateur et réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> qui devient comme neuf.</translation>
@@ -7240,6 +7242,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6608773371844092260">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale sur le côté droit de ce <ph name="DEVICE_TYPE" />. Les données liées à son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Les données de connexion seront stockées sur l'appareil lorsque vous quitterez le mode navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
+<translation id="6610064275805055636">Gérer les applications Web isolées</translation>
 <translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Recherche de logiciels malveillants…</translation>
@@ -8604,6 +8607,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" souhaite scanner à partir de "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Sélectionnez l'appareil qui a la clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> sur <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Bloqué. Le planning est actuellement défini sur la plage <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />, et ne peut être modifié que manuellement.</translation>
 <translation id="7673313156293624327">Journaux Shill (gestionnaire de connexion) ChromeOS</translation>
 <translation id="7674416868315480713">Désactiver tous les ports transférés dans Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> applis</translation>
@@ -9537,6 +9541,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8376384591331888629">Y compris les cookies tiers de ce site</translation>
 <translation id="8376451933628734023">Si cette appli Web essaie de se faire passer pour une autre, désinstallez-la.</translation>
 <translation id="8376532149031784008">Actualisation de <ph name="DOMAIN" />…</translation>
+<translation id="8376610503048439696">Les extensions installées par votre administrateur peuvent toujours lire et modifier ce site</translation>
 <translation id="8376752431516546391">Panneau latéral de la recherche Google</translation>
 <translation id="8377625247046155446">Elle ne sera enregistrée que sur cet appareil. Elle y restera une fois que vous aurez fermé toutes les fenêtres de navigation privée.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
@@ -9676,6 +9681,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de l'appareil ChromeOS de votre enfant. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si le paramètre "Activité sur le Web et les applications" est activé pour le compte Google de votre enfant, ses données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les ajuster sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Saisissez le mot de passe du fichier</translation>
+<translation id="8476942730579767658">Fenêtres et bureaux</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>

@@ -3999,7 +3999,6 @@
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4031527940632463547">Датчиктер құлыпталды</translation>
 <translation id="4033471457476425443">Жаңа қалта енгізу</translation>
-<translation id="4033711848170683365">Мұндайда осы құрылғыдағы браузерді пайдалану деректері біржола жойылады. Осы профильдегі Google аккаунтарын <ph name="DEVICE_TYPE" /> құрылғысындағы басқа қолданбалар пайдалануы мүмкін. Бұл аккаунттарды <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> бөлімінен өшіре аласыз.</translation>
 <translation id="4033963223187371752">Қорғалған сайттар қауіпсіз емес суреттер немесе веб-кадрлар сияқты контентті ендіруі мүмкін.</translation>
 <translation id="4034706080855851454">Құрылғыңызды ұйымыңыздың профилімен бірге пайдалану үшін ұйымыңызға құрылғы туралы ақпарат қажет.
 
@@ -5866,7 +5865,6 @@
 <translation id="5514315914873062345">Tab пернесі</translation>
 <translation id="5517304475148761050">Қолданбаға Play Store дүкеніне кіру рұқсаты қажет</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android телефонымен реттеу</translation>
 <translation id="5519053700692355541">Бүйірлік панель функцияларының көпшілігін жоғарғы оң жақтағы Chrome мәзірінен ашуға болады</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Бұл аккаунтты күрделі құпия сөзбен қауіпсіз сақтаңыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -9668,6 +9666,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Балаңыздың ChromeOS құрылғысындағы параметрлер арқылы кез келген уақытта мұндай есептерді жіберуге рұқсат бере және тыйым сала аласыз. Егер домен әкімшісі болсаңыз, бұл параметрді әкімші консолі арқылы өзгерте аласыз.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Егер балаңыздың Google аккаунтында Интернет пен қолданбаларды пайдалану тарихы қосулы болса, баланың деректері оның Google аккаунтына сақталуы мүмкін. Бұл параметрлер және оларды реттеу әдістері туралы ақпаратты families.google.com сайтынан біле аласыз.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Файл құпия сөзін енгізіңіз</translation>
+<translation id="8476942730579767658">Терезелер және жұмыс үстелдері</translation>
 <translation id="8477178913400731244">Деректерді жою</translation>
 <translation id="8477241577829954800">Алмастырылған</translation>
 <translation id="8477384620836102176">&amp;Жалпы</translation>

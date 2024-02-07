@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳು ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="3008272652534848354">ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="301521992641321250">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ}}</translation>
 <translation id="310297983047869047">ಹಿಂದಿನ ಸ್ಲೈಡ್</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">ವೆಬ್ ಪುಟಗಳಿಗಾಗಿ ಸರಳೀಕೃತ ವೀಕ್ಷಣೆ</translation>
 <translation id="4151930093518524179">ಡೀಫಾಲ್ಟ್ ಝೂಮ್‌</translation>
 <translation id="4165986682804962316">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> ಮರೆಮಾಡಿ</translation>
 <translation id="4169549551965910670">USB ಸಾಧನವೊಂದಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4194328954146351878">NFC ಸಾಧನಗಳಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ನೋಡಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4200726100658658164">ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> ನಿಂದ <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4226663524361240545">ಪ್ರಕಟಣೆಗಳು ಸಾಧನವನ್ನು ವೈಬ್ರೇಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="4259722352634471385">ನ್ಯಾವಿಗೇಶನ್‌ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -400,9 +403,9 @@
 <translation id="7667547420449112975">ದಿ ವಂಡರ್ಫುಲ್ ವಿಜಾರ್ಡ್ ಆಫ್ ಓಝ್</translation>
 <translation id="7684642910516280563">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7719367874908701697">ಪುಟ ಝೂಮ್</translation>
-<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ಈ ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ}one{ಈ ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ}other{ಈ ಟ್ಯಾಬ್‌ಗಳೊಂದಿಗೆ ಮುಂದುವರಿಯಿರಿ}}</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="7804248752222191302">ಒಂದು ಸೈಟ್ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>

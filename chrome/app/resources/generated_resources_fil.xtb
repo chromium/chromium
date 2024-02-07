@@ -4019,7 +4019,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4031527940632463547">Na-block ang mga sensor</translation>
 <translation id="4033471457476425443">Magdagdag ng bagong folder</translation>
-<translation id="4033711848170683365">Permanente nitong ide-delete ang data mula sa pag-browse sa device na ito. Posibleng ginagamit ng iba pang app sa iyong <ph name="DEVICE_TYPE" /> ang mga Google Account sa profile na ito. Puwede mong alisin ang mga account na ito sa <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Posibleng mag-embed ng content na tulad ng mga imahe o web frame na hindi secure ang mga secure na site</translation>
 <translation id="4034706080855851454">Para magamit ang iyong device gamit ang profile sa organisasyon mo, kailangan ng iyong organisasyon ng impormasyon tungkol sa device.
 
@@ -5888,7 +5887,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Kinakailangan ng app na ito ng access sa Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">I-set up gamit ang Android phone</translation>
 <translation id="5519053700692355541">Puwede mong buksan ang karamihan ng mga feature ng panel sa gilid sa pamamagitan ng Menu ng Chrome sa kanang bahagi sa itaas</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Panatilihing mas secure ang account na ito gamit ang malakas na password. Mase-save ito sa <ph name="GOOGLE_PASSWORD_MANAGER" /> para sa <ph name="EMAIL" />.</translation>
@@ -9699,6 +9697,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihintong payagan ang mga ulat na ito anumang oras sa mga setting ng ChromeOS device ng iyong anak. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Kung naka-on ang setting ng Aktibidad sa Web at App para sa Google Account ng iyong anak, posibleng ma-save ang data ng anak mo sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Ilagay ang password ng file</translation>
+<translation id="8476942730579767658">Mga window at desk</translation>
 <translation id="8477178913400731244">Mag-delete ng data</translation>
 <translation id="8477241577829954800">Humalili</translation>
 <translation id="8477384620836102176">&amp;Pangkalahatan</translation>

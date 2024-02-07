@@ -1142,7 +1142,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6822587385560699678">Si la activas, se guardarán las contraseñas en <ph name="ACCOUNT" />. Cuando está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6839843088069935119">{count,plural, =1{Se guardó el favorito en "{title}". Solo se guarda en este dispositivo.}other{Se guardaron los favoritos en "{title}". Solo se guardan en este dispositivo.}}</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
 <translation id="6851516051005285358">Solicitar versión de escritorio</translation>
 <translation id="6852222216891664518">Cerrar la pestaña fijada</translation>
@@ -1412,6 +1411,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8273982424131314219">Completarás la información en <ph name="URL" /></translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="828291969289324795">{count,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8286036467436129157">Acceder</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>

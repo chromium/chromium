@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Les cookies tiers sont limités</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Vous demander avant d'autoriser les sites à consulter et modifier des informations sur des appareils NFC (recommandé)</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> depuis <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Interdisez à un site d'utiliser des cookies tiers</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
-<translation id="7770832849480336015">Masquer "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuer avec cet onglet}one{Continuer avec cet onglet}other{Continuer avec ces onglets}}</translation>
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7804248752222191302">Un site utilise actuellement votre appareil photo</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>

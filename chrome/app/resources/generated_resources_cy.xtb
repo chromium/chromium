@@ -1735,6 +1735,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2285109769884538519">{COUNT,plural, =0{Agor pob un mewn &amp;grŵp tabiau newydd}=1{Agor mewn &amp;grŵp tabiau newydd}two{Agor pob un ({COUNT}) mewn &amp;grŵp tabiau newydd}few{Agor pob un ({COUNT}) mewn &amp;grŵp tabiau newydd}many{Agor pob un ({COUNT}) mewn &amp;grŵp tabiau newydd}other{Agor pob un ({COUNT}) mewn &amp;grŵp tabiau newydd}}</translation>
 <translation id="2285942871162473373">Ni ellid adnabod eich ôl bys. Rhowch gynnig arall arni.</translation>
 <translation id="2287617382468007324">Argraffu Cyfeiriad IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{I amddiffyn eich data, tynnwyd caniatadau o wefan nad ydych wedi ymweld â hi yn ddiweddar}zero{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}two{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}few{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}many{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}other{I amddiffyn eich data, tynnwyd caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar}}</translation>
 <translation id="2287944065963043964">Sgrîn Mewngofnodi</translation>
 <translation id="2290615375132886363">Botymau llywio llechen</translation>
 <translation id="2291452790265535215">Rhowch gynnig ar ddefnyddio'r panel ochr ar gyfer nodau tudalen, teithiau a rhagor</translation>
@@ -4020,7 +4021,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4031527940632463547">Rhwystrwyd synwyryddion</translation>
 <translation id="4033471457476425443">Ychwanegu ffolder newydd</translation>
-<translation id="4033711848170683365">Bydd hyn yn dileu data pori o'r ddyfais hon yn barhaol. Mae'n bosib y bydd y Cyfrifon Google yn y proffil hwn yn cael eu defnyddio gan apiau eraill ar eich <ph name="DEVICE_TYPE" />. Gallwch dynnu'r cyfrifon hyn yn <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Mae'n bosib y bydd gwefannau diogel yn plannu cynnwys megis lluniau neu fframiau gwe nad ydynt yn ddiogel</translation>
 <translation id="4034706080855851454">Er mwyn defnyddio'ch dyfais gyda phroffil eich sefydliad, mae angen gwybodaeth ar eich sefydliad am y ddyfais.
 
@@ -4320,6 +4320,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4275788652681621337">Cau'r panel ochr</translation>
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4277434192562187284">Ffynhonnell ffurfweddiad XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Caniatadau wedi'u tynnu o 1 wefan}zero{Caniatadau wedi'u tynnu o {NUM_SITES} gwefan}two{Caniatadau wedi'u tynnu o {NUM_SITES} wefan}few{Caniatadau wedi'u tynnu o {NUM_SITES} gwefan}many{Caniatadau wedi'u tynnu o {NUM_SITES} gwefan}other{Caniatadau wedi'u tynnu o {NUM_SITES} gwefan}}</translation>
 <translation id="4278390842282768270">Caniateir</translation>
 <translation id="4278498748067682896">Byddwch yn defnyddio Uwchraddiad Ciosg ac Arwyddion sydd ond yn caniatáu i'r ddyfais redeg yn y modd ciosg neu arwyddion. Os hoffech i ddefnyddwyr fewngofnodi i'r ddyfais, ewch yn ôl a chofrestrwch gan ddefnyddio Uwchraddiad Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Gallai hyn gymryd ychydig funudau. Wrthi'n lawrlwytho ffeiliau.</translation>
@@ -5888,7 +5889,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Mae'r ap hwn yn gofyn am fynediad at y Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Gosod gyda ffôn Android</translation>
 <translation id="5519053700692355541">Gallwch agor y rhan fwyaf o nodweddion panel ochr trwy'r ddewislen Chrome ar yr ochr dde ar frig y dudalen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Cadwch y cyfrif hwn yn fwy diogel gyda chyfrinair cryf. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
@@ -9702,6 +9702,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
     <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer Cyfrif Google eich plentyn, gellir cadw data eich plentyn i'w Gyfrif Google. Gellir dysgu rhagor am y gosodiadau hyn a sut i'w haddasu yn family.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Rhowch gyfrinair y ffeil</translation>
+<translation id="8476942730579767658">Ffenestri a desgiau</translation>
 <translation id="8477178913400731244">Dileu data</translation>
 <translation id="8477241577829954800">Wedi'i ddisodli</translation>
 <translation id="8477384620836102176">&amp;Cyffredinol</translation>

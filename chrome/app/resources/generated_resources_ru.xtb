@@ -4003,7 +4003,6 @@
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4031527940632463547">Использование датчиков запрещено</translation>
 <translation id="4033471457476425443">Новая папка</translation>
-<translation id="4033711848170683365">Все данные о работе в браузере будут навсегда удалены с текущего устройства. Аккаунты Google, связанные с выбранным профилем, могут использоваться другими приложениями на устройстве <ph name="DEVICE_TYPE" />. Чтобы удалить эти аккаунты, выберите <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Безопасные сайты могут содержать небезопасный встроенный контент, например изображения или фреймы.</translation>
 <translation id="4034706080855851454">Чтобы использовать профиль организации на устройстве, предоставьте сведения о нем,
 
@@ -5870,7 +5869,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Этому приложению необходим доступ к Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Настроить с помощью телефона Android</translation>
 <translation id="5519053700692355541">Большинство функций, расположенных на боковой панели, также доступы в меню Google Chrome в правом верхнем углу окна</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Защитите свои данные с помощью надежного пароля. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -9679,6 +9677,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Разрешить или запретить отправку отчетов можно в любое время в настройках устройства ChromeOS вашего ребенка. Администратор домена может менять этот параметр в консоли администратора.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Если в аккаунте Google вашего ребенка включена история приложений и веб-поиска, данные ребенка могут сохраняться в его аккаунте. Узнать больше об этих параметрах и о том, как их настроить, можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Введите пароль файла</translation>
+<translation id="8476942730579767658">Окна и рабочие столы</translation>
 <translation id="8477178913400731244">Удалить данные</translation>
 <translation id="8477241577829954800">Заменен</translation>
 <translation id="8477384620836102176">&amp;Общие</translation>

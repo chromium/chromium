@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Nicht sicher</translation>
 <translation id="1075079914415273530">Land- und Forstwirtschaft</translation>
 <translation id="1075364221219156102">Passkey verwenden</translation>
-<translation id="1078033282564106222">Die Option „Hausnummer“ wurde ausgewählt</translation>
 <translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1081061862829655580">Fach 19</translation>
 <translation id="1082026381988252344">Inhalte im geteilten Tab scrollen und zoomen</translation>
@@ -613,7 +612,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2126374524350484896">PDF-Erstellungsprogramm:</translation>
 <translation id="2130448033692577677">Die von dir angegebenen Vorlagen können nicht angewendet werden, weil die Richtlinie "DnsOverHttpsMode" nicht konfiguriert ist.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Sprachpaket für <ph name="LANGUAGE" /> wird heruntergeladen… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Herrenbekleidung</translation>
 <translation id="2137891579555018930">Berechtigung steht aus…</translation>
 <translation id="213826338245044447">Mobile Lesezeichen</translation>
@@ -1385,7 +1383,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3681007416295224113">Zertifikatinformationen</translation>
 <translation id="3681421644246505351">Chrome nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="3682094733650754138">Die Option „Adresse ausfüllen“ wurde ausgewählt</translation>
-<translation id="3689867156802445220">Hausnummer</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
 <translation id="3698629142018988477">Schaltfläche „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="3701325639446035885">Ticketverkauf</translation>
@@ -1574,6 +1571,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4089152113577680600">Fach 14</translation>
 <translation id="4092349052316400070">Adresse einfügen</translation>
 <translation id="4096237801206588987">11 × 15 Zoll</translation>
+<translation id="4098306082496067348">Tippe auf die Details der virtuellen Karte, um sie während des Bezahlvorgangs hinzuzufügen.</translation>
 <translation id="4098354747657067197">Bei der aufgerufenen Website besteht Phishing-Verdacht!</translation>
 <translation id="4099048595830172239">Gemäß Administratorrichtlinie wird nicht empfohlen, deinen Bildschirm mit <ph name="APPLICATION_TITLE" /> zu teilen, wenn vertrauliche Inhalte zu sehen sind:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>

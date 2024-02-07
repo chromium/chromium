@@ -1142,7 +1142,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
 <translation id="6831043979455480757">Traduire</translation>
-<translation id="6839843088069935119">{count,plural, =1{Favori enregistré dans « {title} ». Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans « {title} ». Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans « {title} ». Il ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6852222216891664518">Fermer l'onglet épinglé</translation>
@@ -1412,6 +1411,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8273982424131314219">Vous remplirez les renseignements dans <ph name="URL" /></translation>
 <translation id="8281781826761538115">Paramètres régionaux par défaut - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorer</translation>
+<translation id="828291969289324795">{count,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8286036467436129157">Se connecter</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>

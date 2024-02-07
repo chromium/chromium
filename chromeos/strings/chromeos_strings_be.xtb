@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Не ўдалося загрузіць відарысы. Праверце падключэнне да сеткі або паспрабуйце загрузіць відарысы зноў.</translation>
 <translation id="1751249301761991853">Персаналізацыя</translation>
 <translation id="1753496554272155572">Выйсці з рэжыму перадпрагляду шпалер</translation>
+<translation id="1754578112426924640">Кнопка "Змяніць" для спалучэння клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Праграма для дыягностыкі</translation>
 <translation id="175763766237925754">Добры (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android не працуе</translation>
 <translation id="551689408806449779">Прылада адключана. Каб працягнуць тэсціраванне, падключыце яе зноў.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">заблакіравана</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Аўтаматычна пераключацца на цёмную тэму на захадзе сонца</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="5703716265115423771">паменшыць гучнасць</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Кнопка "Змяніць" для апісання "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
 <translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5757187557809630523">наступны трэк</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Кнопка "Выдаліць" для спалучэння клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Файл не знойдзены</translation>
 <translation id="593880865674747800">Стварыць больш шпалер у гэтым стылі</translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Збой супастаўленняў імён DNS</translation>
 <translation id="6768237774506518020">Высокі працэнт збояў супастаўленняў імён DNS</translation>
 <translation id="6791471867139427246">колер падсветкі клавіятуры</translation>
+<translation id="6796229976413584781">Спалучэнне клавіш выдалена</translation>
 <translation id="6798678288485555829">Навігацыя па тэксце</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Ёсць інфармацыя, звязаная з вылучаным вамі фрагментам. Каб атрымаць да яе доступ, націсніце стрэлку ўверх.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Абнаўленні ўбудаванага праграмнага забеспячэння для знешніх прылад</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
+<translation id="7233782086689993269">Спалучэнне клавіш адноўлена</translation>
 <translation id="725133483556299729">Выбраць адрас электроннай пошты</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7271932918253517778">Спалучэнні клавіш, у якіх выкарыстоўваюцца клавішы верхняга рада, павінны ўключаць у сябе клавішу "<ph name="META_KEY" />".</translation>
@@ -915,6 +921,7 @@
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="7656388927906093505">Гэта мыш.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Змяніць аватар</translation>
 <translation id="7683228889864052081">адценне клавіятуры</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
@@ -924,6 +931,7 @@
 <translation id="7718231387947923843">падсвятленне клавіятуры</translation>
 <translation id="7730077286107534951">Некаторыя звесткі аб вашым уліковым запісе і сістэме могуць быць адпраўлены ў Google. Мы будзем выкарыстоўваць гэту інфармацыю, каб у адпаведнасці з <ph name="BEGIN_LINK2" />Палітыкай прыватнасці<ph name="END_LINK2" /> і <ph name="BEGIN_LINK3" />Умовамі выкарыстання<ph name="END_LINK3" /> вызначаць тэхнічныя праблемы і ўдасканальваць нашы сэрвісы. Каб адправіць запыт на змяненне змесціва, перайдзіце на старонку <ph name="BEGIN_LINK1" />юрыдычнай даведкі<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Колькасць цыклаў</translation>
+<translation id="7746357909584236306">можна змяніць</translation>
 <translation id="7747039790905080783">Папярэдне абагулены ключ</translation>
 <translation id="7752963721013053477">"Ад відна да цямна" – эксклюзіўна</translation>
 <translation id="7762130827864645708">Пароль зменены. У далейшым выкарыстоўвайце яго.</translation>

@@ -1142,7 +1142,6 @@
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="6831043979455480757">翻译</translation>
-<translation id="6839843088069935119">{count,plural, =1{书签已保存至“{title}”，而且只保存在此设备上。}other{书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
 <translation id="6852222216891664518">关闭固定标签页</translation>
@@ -1412,6 +1411,7 @@
 <translation id="8273982424131314219">您的信息将会自动填充到 <ph name="URL" /> 中</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
+<translation id="828291969289324795">{count,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8286036467436129157">登录</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>

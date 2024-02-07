@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">လုံခြုံမှုမရှိပါ</translation>
 <translation id="1075079914415273530">စိုက်ပျိုးရေးနှင့် သစ်တောပညာ</translation>
 <translation id="1075364221219156102">‘လျှို့ဝှက်ကီး’ သုံးရန်</translation>
-<translation id="1078033282564106222">တိုက်အမှတ် ရွေးစရာ ရွေးထားသည်</translation>
 <translation id="1080116354587839789">အနံ အပြည့်</translation>
 <translation id="1081061862829655580">ဗန်း ၁၉</translation>
 <translation id="1082026381988252344">သင်မျှဝေထားသောတဘ်၏ အကြောင်းအရာများကို လှိမ့်ပြီး ဇူးမ်ဆွဲနိုင်သည်</translation>
@@ -614,7 +613,6 @@
 <translation id="2126374524350484896">PDF ထုတ်လုပ်သူ-</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode မူဝါဒကို ထည့်သွင်းမထားသောကြောင့် သင်သတ်မှတ်ထားသော နမူနာပုံစံများကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> ဘာသာစကားအတွဲကို ဒေါင်းလုဒ်လုပ်နေသည်…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">အမျိုးသား အဝတ်အစား</translation>
 <translation id="2137891579555018930">ခွင့်ပြုချက်ကို စောင့်နေသည်...</translation>
 <translation id="213826338245044447">မိုဘိုင်း စာညှပ်များ</translation>
@@ -1387,7 +1385,6 @@
 <translation id="3681007416295224113">လက်မှတ် အချက်အလက်များ</translation>
 <translation id="3681421644246505351">Chrome သည် မကြာသေးမီက သင်၏ကြည့်ရှုမှုမှတ်တမ်းပေါ် အခြေခံ၍ သင်စိတ်ဝင်စားသည့် အကြောင်းအရာများကို မှတ်သားသည်။</translation>
 <translation id="3682094733650754138">‘လိပ်စာဖြည့်ရန်’ ရွေးစရာကို ရွေးထားသည်</translation>
-<translation id="3689867156802445220">တိုက်အမှတ်</translation>
 <translation id="3693327506115126094">သင်ဖြစ်ကြောင်း အတည်ပြုမည့်နည်းလမ်း ရွေးရန်</translation>
 <translation id="3698629142018988477">Google Sites တွင် Site အသစ် အမြန်ပြုလုပ်ရန် ‘Site ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="3701325639446035885">ပွဲလက်မှတ် ရောင်းချမှု</translation>

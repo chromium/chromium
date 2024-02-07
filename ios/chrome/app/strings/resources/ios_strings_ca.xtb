@@ -1142,7 +1142,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="681368974849482173">S'ha creat un element.</translation>
 <translation id="6822587385560699678">Quan aquesta opció està activada, les contrasenyes es desen a <ph name="ACCOUNT" />. Quan està desactivada, es desen només en aquest dispositiu.</translation>
 <translation id="6831043979455480757">Tradueix</translation>
-<translation id="6839843088069935119">{count,plural, =1{L'adreça d'interès s'ha desat a {title}. Només es desa en aquest dispositiu.}other{Les adreces d'interès s'han desat a {title}. Només es desen en aquest dispositiu.}}</translation>
 <translation id="6842136130964845393">Per assegurar-te de poder accedir a les contrasenyes desades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="6851516051005285358">Sol·licita el lloc web per a ordinadors</translation>
 <translation id="6852222216891664518">Tanca la pestanya fixada</translation>

@@ -75,6 +75,7 @@ Dikkate alınması gereken noktalar:
 <translation id="2689064829982324496">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="2702250627063295552">Okuma Listesi Öğesini Chrome'a Ekle</translation>
+<translation id="2703746758996815929">Faydalı Chrome ipuçları almak için iOS ayarlarınızdan bildirimleri açın.</translation>
 <translation id="2736805085127235148">Chrome bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
 <translation id="2767464022270041271">Kaydedilen şifre yok. Google Şifre Yöneticisi, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="2789947168960170215">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="8865415417596392024">Hesabınızdaki Chrome verileri</translation>
+<translation id="8874688701962049679">Chrome'dan en iyi şekilde yararlanma ipuçları.</translation>
 <translation id="8891935667620843985">Varsayılan tarayıcı uygulamanız yaparak bağlantıları Chrome'da otomatik bir şekilde açabilirsiniz.</translation>
 <translation id="8897749957032330183">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>

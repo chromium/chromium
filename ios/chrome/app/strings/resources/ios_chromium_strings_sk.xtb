@@ -204,6 +204,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
+<translation id="6433172051771630690">Tipy, ako využívať Chromium naplno</translation>
 <translation id="6502321914804101924">Prehliadač Chromium je odhlásený</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Ako Chromium uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
@@ -256,6 +257,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="7990085102929105708">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z prehliadača Chromium sa nebude synchronizovať.
 
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Ak chcete dostávať užitočné tipy pre prehliadač Chromium, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="7995166854192397899">Návrhy sú založené na aktivite prehliadania vo vašich iných zariadeniach. Ak ich chcete dostávať, prihláste sa do prehliadača Chromium v každom z nich.</translation>
 <translation id="800195749539500647">Využívajte Chromium naplno</translation>
 <translation id="8013573822802650211">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa do nich</translation>

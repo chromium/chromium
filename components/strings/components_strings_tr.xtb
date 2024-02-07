@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Güvenli değil</translation>
 <translation id="1075079914415273530">Tarım ve ormancılık</translation>
 <translation id="1075364221219156102">Geçiş Anahtarı Kullanın</translation>
-<translation id="1078033282564106222">Bina numarası seçeneği belirlendi</translation>
 <translation id="1080116354587839789">Genişliğe sığdır</translation>
 <translation id="1081061862829655580">Tepsi 19</translation>
 <translation id="1082026381988252344">Paylaşılan sekmenizin içeriğini kaydırıp yakınlaştırın</translation>
@@ -613,7 +612,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2126374524350484896">PDF üreticisi:</translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> dil paketi indiriliyor...%<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">Erkek giyim</translation>
 <translation id="2137891579555018930">İzin bekleniyor...</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
@@ -1387,7 +1385,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
 <translation id="3681421644246505351">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder.</translation>
 <translation id="3682094733650754138">Adresi doldur seçeneği belirlendi</translation>
-<translation id="3689867156802445220">Bina numarası</translation>
 <translation id="3693327506115126094">Kimliğinizi nasıl doğrulayacağınızı seçin</translation>
 <translation id="3698629142018988477">Site oluştur düğmesi, Google Sites'ta hızlıca yeni bir site oluşturmak için etkinleştirin</translation>
 <translation id="3701325639446035885">Etkinlik Bileti Satışı</translation>

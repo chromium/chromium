@@ -1732,6 +1732,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2285109769884538519">{COUNT,plural, =0{Buka semua di &amp;grup tab baru}=1{Buka di &amp;grup tab baru}other{Buka semua ({COUNT}) di &amp;grup tab baru}}</translation>
 <translation id="2285942871162473373">Sidik jari Anda tidak dapat dikenali. Coba lagi.</translation>
 <translation id="2287617382468007324">Mencetak Alamat IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}}</translation>
 <translation id="2287944065963043964">Layar login</translation>
 <translation id="2290615375132886363">Tombol navigasi tablet</translation>
 <translation id="2291452790265535215">Coba gunakan panel samping untuk bookmark, perjalanan, dan lainnya</translation>
@@ -4017,7 +4018,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4031527940632463547">Sensor diblokir</translation>
 <translation id="4033471457476425443">Tambahkan folder baru</translation>
-<translation id="4033711848170683365">Tindakan ini akan menghapus data penjelajahan dari perangkat ini secara permanen. Akun Google di profil ini dapat digunakan oleh aplikasi lain di <ph name="DEVICE_TYPE" /> Anda. Anda dapat menghapus akun ini di <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Situs aman mungkin menyematkan konten seperti gambar atau bingkai web yang tidak aman</translation>
 <translation id="4034706080855851454">Untuk menggunakan perangkat dengan profil organisasi, organisasi Anda memerlukan informasi tentang perangkat.
 
@@ -4317,6 +4317,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4275788652681621337">Tutup panel samping</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4277434192562187284">Sumber konfigurasi XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Izin dihapus dari 1 situs}other{Izin dihapus dari {NUM_SITES} situs}}</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
 <translation id="4278498748067682896">Anda akan menggunakan Upgrade Kios &amp; Reklame yang hanya mengizinkan perangkat berjalan dalam mode kios dan reklame. Jika Anda ingin pengguna login ke perangkat, kembali dan daftar menggunakan Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Proses ini mungkin memerlukan waktu beberapa menit. Mendownload file.</translation>
@@ -5885,7 +5886,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Aplikasi ini memerlukan akses ke Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Siapkan dengan ponsel Android</translation>
 <translation id="5519053700692355541">Anda dapat membuka sebagian besar fitur panel samping melalui menu Chrome di kanan atas</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Tingkatkan keamanan akun ini dengan sandi kuat. Sandi akan disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
@@ -9692,6 +9692,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS anak Anda. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google anak, data anak mungkin akan disimpan ke Akun Google miliknya. Pelajari setelan ini dan cara menyesuaikannya lebih lanjut di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Masukkan sandi file</translation>
+<translation id="8476942730579767658">Jendela dan desktop</translation>
 <translation id="8477178913400731244">Hapus data</translation>
 <translation id="8477241577829954800">Diganti</translation>
 <translation id="8477384620836102176">&amp;Umum</translation>

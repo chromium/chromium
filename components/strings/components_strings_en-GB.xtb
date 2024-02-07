@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Not secure</translation>
 <translation id="1075079914415273530">Agriculture and forestry</translation>
 <translation id="1075364221219156102">Use a passkey</translation>
-<translation id="1078033282564106222">Building number option selected</translation>
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">Scroll and zoom the contents of your shared tab</translation>
@@ -613,7 +612,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">Downloading <ph name="LANGUAGE" /> language pack…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Men's clothing</translation>
 <translation id="2137891579555018930">Waiting for permission…</translation>
 <translation id="213826338245044447">Mobile Bookmarks</translation>
@@ -1387,7 +1385,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3681421644246505351">Chrome notes topics of interest based on your recent browsing history.</translation>
 <translation id="3682094733650754138">The fill address option was selected</translation>
-<translation id="3689867156802445220">Building number</translation>
 <translation id="3693327506115126094">Choose how you'll verify that it's you</translation>
 <translation id="3698629142018988477">Create site button, activate to quickly create a new site in Google Sites</translation>
 <translation id="3701325639446035885">Event Ticket Sales</translation>
@@ -1576,6 +1573,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4092349052316400070">Fill address</translation>
 <translation id="4096237801206588987">11 in x 15 in</translation>
+<translation id="4098306082496067348">Tap virtual card details to add them to checkout.</translation>
 <translation id="4098354747657067197">Deceptive site ahead</translation>
 <translation id="4099048595830172239">Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE" /> when confidential content is visible:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to customise font sizes and typefaces in Chrome</translation>

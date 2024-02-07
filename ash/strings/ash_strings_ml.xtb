@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
 <translation id="158838227375272121">Google Classroom വെബ്‌സൈറ്റ്</translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
-<translation id="1592682369233288537">അടുത്ത ഡെസ്‌ക്: <ph name="NEXT_DESK_NAME" />, സജീവമാക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1604857178818051494">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1607312127821884567">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">ചിത്രം</translation>
 <translation id="450584155212756404">Dev ചാനൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
-<translation id="4516212064498225455">നിലവിലെ ഡെസ്‌ക്: <ph name="CURRENT_DESK_NAME" />, എല്ലാ ഡെസ്‌ക്കുകളുടെ മെനു തുറക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
 <translation id="4518404433291145981">Chromebook അൺലോക്ക് ചെയ്യാൻ ആദ്യം നിങ്ങളുടെ ഫോൺ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="4533343294786968049">നിങ്ങളുടെ ബാറ്ററി ലൈഫ് വർദ്ധിപ്പിക്കുന്നു. <ph name="FULLY_CHARGE_TIME" /> ആകുമ്പോൾ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ആകും.</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">ടെക്‌സ്‌റ്റ് കാരറ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="5208059991603368177">ഓണാണ്</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> വരെ ഓഫാണ്</translation>
-<translation id="5217646019792206018">അടുത്ത ഡെസ്‌ക്: <ph name="NEXT_DESK_NAME" />, Search+Space അല്ലെങ്കിൽ കീബോഡ് കുറുക്കുവഴി ഉപയോഗിക്കുക: സജീവമാക്കാൻ Shift+Search+<ph name="NEXT_DESK_INDEX" /> അമർത്തുക.</translation>
 <translation id="5218064144558110424">പൂർത്തിയാക്കിയിട്ടില്ലെന്ന് അടയാളപ്പെടുത്തുക</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="5229343007215035173">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാക്കുക/ഓഫാക്കുക</translation>
@@ -1875,7 +1872,6 @@
 <translation id="8517041960877371778">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഓണായിരിക്കുമ്പോൾ അത് ചാർജ്ജാകാതിരിക്കാം.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{മൈക്ക് ഇൻപുട്ട് നിയന്ത്രിക്കുന്നത് <ph name="APP_NAME" /> ആണ്}other{മൈക്ക് ഇൻപുട്ട് നിയന്ത്രിക്കുന്നത് # ആപ്പുകൾ ആണ്}}</translation>
 <translation id="8535393432370007982">നിറം അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
-<translation id="853768060447955562">മുമ്പത്തെ ഡെസ്‌ക്: <ph name="PREVIOUS_DESK_NAME" />, Search+Space അല്ലെങ്കിൽ കീബോഡ് കുറുക്കുവഴി ഉപയോഗിക്കുക: സജീവമാക്കാൻ Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> അമർത്തുക.</translation>
 <translation id="8541078764854166027">ക്യാമറാ ഫ്രെയിമിംഗ്</translation>
 <translation id="8542053257095774575">സംരക്ഷിച്ച ഡെസ്ക്കുകളോ ടെംപ്ലേറ്റുകളോ ഇല്ല</translation>
 <translation id="8546059259582788728">അടുക്കൽ പഴയപടിയാക്കി</translation>
@@ -2040,7 +2036,6 @@
 <translation id="925832987464884575">പ്രിവ്യുകൾ മറയ്‌ക്കുക</translation>
 <translation id="937214777182567951">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉടനടി അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" />ആവശ്യപ്പെടുന്നു</translation>
 <translation id="938963181863597773">എന്റെ കലണ്ടറിൽ എന്താണുള്ളത്?</translation>
-<translation id="943067377221312471">മുമ്പത്തെ ഡെസ്‌ക്: <ph name="PREVIOUS_DESK_NAME" />, സജീവമാക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
 <translation id="945383118875625837">ബുക്ക്‌മാർക്കുകളുടെ ബാറിലേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="951991426597076286">നിരസിക്കുക</translation>

@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="301521992641321250">आपोआप ब्लॉक केलेले</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इनला अनुमती द्या.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{उद्या एक्स्पायर होईल}other{# दिवसांमध्ये एक्स्पायर होईल}}</translation>
 <translation id="310297983047869047">मागील स्लाइड</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">USB डिव्हाइसशी कनेक्ट केले आहे</translation>
 <translation id="4194328954146351878">साइटना NFC डिव्हाइसवरील माहिती पाहू देण्याची किंवा बदलण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="4200726100658658164">स्थान सेटिंग्ज उघडा</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> वरून</translation>
 <translation id="4226663524361240545">सूचनांमुळे डिव्हाइसचे कंपन होऊ शकते</translation>
 <translation id="4259722352634471385">नेव्हिगेशन ब्लॉक केले आहे: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमत</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">द वंडरफुल विझर्ड ऑफ ओझ</translation>
 <translation id="7684642910516280563">साइटला तृतीय पक्ष कुकी वापरण्याची अनुमती देऊ नका</translation>
 <translation id="7719367874908701697">पेज झूम करा</translation>
-<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" लपवा</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7791543448312431591">जोडा</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{या टॅबसह पुढे सुरू ठेवा}other{या टॅबसह पुढे सुरू ठेवा}}</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>

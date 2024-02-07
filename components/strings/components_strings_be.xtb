@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Не абаронена</translation>
 <translation id="1075079914415273530">Сельская і лясная гаспадарка</translation>
 <translation id="1075364221219156102">Скарыстаць ключ доступу</translation>
-<translation id="1078033282564106222">Выбраны варыянт "Нумар дома"</translation>
 <translation id="1080116354587839789">Дапасаваць да шырыні старонкі</translation>
 <translation id="1081061862829655580">Латок 19</translation>
 <translation id="1082026381988252344">Прагортка і маштабаванне змесціва абагуленай укладкі</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Мужчынскае адзенне</translation>
 <translation id="2137891579555018930">Чакаем дазволу...</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
@@ -1384,7 +1382,6 @@
 <translation id="3681007416295224113">Інфармацыя аб сертыфікаце</translation>
 <translation id="3681421644246505351">Chrome вызначае цікавыя для вас тэмы на падставе нядаўняй гісторыі прагляду вамі сайтаў.</translation>
 <translation id="3682094733650754138">Выбраны варыянт "Запоўніць адрас"</translation>
-<translation id="3689867156802445220">Нумар дома</translation>
 <translation id="3693327506115126094">Выберыце спосаб спраўджання асобы</translation>
 <translation id="3698629142018988477">Кнопка "Стварыць сайт". Каб хутка стварыць новы сайт з дапамогай Google Сайтаў, націсніце яе.</translation>
 <translation id="3701325639446035885">Продаж білетаў на мерапрыемствы</translation>
@@ -1573,6 +1570,7 @@
 <translation id="4089152113577680600">Латок 14</translation>
 <translation id="4092349052316400070">Увядзіце адрас</translation>
 <translation id="4096237801206588987">11 x 15 цаляў</translation>
+<translation id="4098306082496067348">Націсніце на рэквізіты віртуальнай карткі, каб дадаць іх для аплаты.</translation>
 <translation id="4098354747657067197">Вы збіраецеся перайсці на сайт, вядомы падманнымі паводзінамі</translation>
 <translation id="4099048595830172239">Палітыка адміністратара не рэкамендуе абагульваць экран з праграмай <ph name="APPLICATION_TITLE" />, калі паказваецца канфідэнцыяльнае змесціва:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць памеры і тыпы шрыфтоў у Chrome, націсніце Tab, затым Enter</translation>

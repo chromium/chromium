@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Pas sécuritaire</translation>
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
-<translation id="1078033282564106222">Option Numéro de bâtiment sélectionnée</translation>
 <translation id="1080116354587839789">Adapter à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1082026381988252344">Faites défiler et zoomer le contenu de votre onglet partagé</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">Outil de conversion en PDF :</translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">Téléchargement du module linguistique <ph name="LANGUAGE" /> en cours… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Vêtements pour hommes</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris d'appareil mobile</translation>
@@ -1387,7 +1385,6 @@
 <translation id="3681007416295224113">Information relative au certificat</translation>
 <translation id="3681421644246505351">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent.</translation>
 <translation id="3682094733650754138">L'option Remplir l'adresse a été sélectionnée</translation>
-<translation id="3689867156802445220">Numéro de bâtiment</translation>
 <translation id="3693327506115126094">Choisissez comment vous souhaitez confirmer qu'il s'agit bien de vous</translation>
 <translation id="3698629142018988477">Bouton Créer un site, activez-le pour créer rapidement un nouveau site dans Google Sites</translation>
 <translation id="3701325639446035885">Vente de billets d'événements</translation>
@@ -1576,6 +1573,7 @@
 <translation id="4089152113577680600">Bac 14</translation>
 <translation id="4092349052316400070">Remplir l'adresse</translation>
 <translation id="4096237801206588987">11 po x 15 po</translation>
+<translation id="4098306082496067348">Touchez les détails de la carte virtuelle pour les ajouter au paiement.</translation>
 <translation id="4098354747657067197">Vous naviguez vers un site Web trompeur</translation>
 <translation id="4099048595830172239">La politique de l'administrateur ne recommande pas de partager votre écran avec <ph name="APPLICATION_TITLE" /> lorsque du contenu confidentiel est visible :</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser la taille des polices et les caractères dans Chrome</translation>

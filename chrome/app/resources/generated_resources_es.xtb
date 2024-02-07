@@ -3294,6 +3294,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3497915391670770295">Enviar a tus &amp;dispositivos</translation>
 <translation id="3500417806337761827">No se ha podido activar el sistema de archivos compartidos. Ya se han activado demasiados sistemas de archivos compartidos SMB.</translation>
+<translation id="3500764001796099683">Habilitar aplicaciones web aisladas</translation>
 <translation id="350397915809787283">Si no tienes una cuenta, selecciona la primera opción para crear una.</translation>
 <translation id="3503995387997205657">Puedes restaurar tus aplicaciones anteriores</translation>
 <translation id="3505100368357440862">Sugerencias de compra</translation>
@@ -4001,7 +4002,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Añadir nueva carpeta</translation>
-<translation id="4033711848170683365">Se eliminarán de forma permanente los datos de navegación de este dispositivo. Las cuentas de Google de este perfil las pueden usar otras aplicaciones de tu <ph name="DEVICE_TYPE" />. Puedes quitar estas cuentas en <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Los sitios seguros podrían insertar contenido que no es seguro, como imágenes o marcos web</translation>
 <translation id="4034706080855851454">Para usar tu dispositivo con el perfil de tu organización, esta necesita información sobre el dispositivo.
 
@@ -5868,7 +5868,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5514315914873062345">Tabulador</translation>
 <translation id="5517304475148761050">Esta aplicación requiere acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configurar con teléfono Android</translation>
 <translation id="5519053700692355541">Puedes abrir la mayoría de las funciones del panel lateral desde el menú de Chrome (arriba a la derecha)</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Protege mejor esta cuenta con una contraseña segura. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
@@ -7168,6 +7167,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6551508934388063976">El comando no está disponible. Pulsa Ctrl+N para abrir una ventana nueva.</translation>
 <translation id="6551606359270386381">Herramienta de elipse</translation>
 <translation id="6551612971599078809">El sitio web está usando un dispositivo USB</translation>
+<translation id="6551620030439692385">Bloqueada. La zona horaria definida actualmente es <ph name="TIMEZONE" /> y solo se puede cambiar manualmente.</translation>
 <translation id="6551739526055143276">Gestionado por Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> usuarios</translation>
 <translation id="6555432686520421228">Elimina todas las cuentas de usuario y restablece tu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> como si lo acabaras de comprar.</translation>
@@ -7236,6 +7236,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6608773371844092260">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en el lado derecho de este <ph name="DEVICE_TYPE" />. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Los datos de inicio de sesión se almacenarán en este dispositivo cuando salgas del modo Incógnito. Podrás volver a iniciar sesión en este sitio web con tu dispositivo más tarde.</translation>
 <translation id="6610002944194042868">Opciones del Traductor</translation>
+<translation id="6610064275805055636">Gestionar aplicaciones web aisladas</translation>
 <translation id="6611972847767394631">Aquí están tus pestañas</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6613267708691765962">Buscando malware...</translation>
@@ -8600,6 +8601,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" quiere escanear desde "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Elige qué dispositivo tiene la llave de acceso de <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> en <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Bloqueada. La programación definida actualmente es <ph name="SUNRISE_TIME" />-<ph name="SUNSET_TIME" /> y solo se puede cambiar manualmente.</translation>
 <translation id="7673313156293624327">Registros de Shill (administrador de conexión) de ChromeOS</translation>
 <translation id="7674416868315480713">Desactivar todos los puertos redireccionados en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicaciones</translation>
@@ -9533,6 +9535,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8376384591331888629">Incluir cookies de terceros en este sitio</translation>
 <translation id="8376451933628734023">Si esta aplicación web intenta hacerte creer que es otra aplicación, desinstálala.</translation>
 <translation id="8376532149031784008">Volviendo a cargar <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Las extensiones instaladas por tu administrador aún pueden leer y modificar este sitio</translation>
 <translation id="8376752431516546391">Panel lateral de la Búsqueda de Google</translation>
 <translation id="8377625247046155446">Esta llave de acceso solo se guardará en este dispositivo. Seguirá en este dispositivo después de cerrar todas las ventanas de Incógnito.</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
@@ -9672,6 +9675,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes del dispositivo ChromeOS de tu hijo/a. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en la cuenta de Google de tu hijo/a, es posible que sus datos se guarden en su cuenta de Google. Consulta más información sobre estos ajustes y cómo configurarlos en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Introduce la contraseña del archivo</translation>
+<translation id="8476942730579767658">Ventanas y escritorios</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>
 <translation id="8477241577829954800">Reemplazado</translation>
 <translation id="8477384620836102176">&amp;General</translation>

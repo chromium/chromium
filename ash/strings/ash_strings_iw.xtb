@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="158838227375272121">‏אתר Google Classroom</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
-<translation id="1592682369233288537">שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + חץ למטה</translation>
 <translation id="1604857178818051494">השהיית המדיה</translation>
 <translation id="1607312127821884567">ביוטול ההגדרה של הצגת האפליקציות שבטלפון</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">תמונה</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">משוב</translation>
-<translation id="4516212064498225455">שולחן העבודה הווירטואלי הנוכחי: <ph name="CURRENT_DESK_NAME" />, אפשר לפתוח את התפריט של כל שולחנות העבודה הווירטואליים בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, קודם צריך לבטל את הנעילה של הטלפון</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="4533343294786968049">אנחנו מאריכים את חיי הסוללה. הסוללה תיטען באופן מלא עד <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5216991270656129561">התכונה כבויה עד <ph name="TIME" /></translation>
-<translation id="5217646019792206018">‏שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח' או מקשי הקיצור Shift+'חיפוש'+<ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5218064144558110424">סימון כמשימה שלא הושלמה</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5229343007215035173">‏הפעלה או השבתה של Privacy Screen</translation>
@@ -1876,7 +1873,6 @@
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{הקלט מהמיקרופון נשלט על ידי <ph name="APP_NAME" />}one{הקלט מהמיקרופון נשלט על ידי # אפליקציות}two{הקלט מהמיקרופון נשלט על ידי # אפליקציות}other{הקלט מהמיקרופון נשלט על ידי # אפליקציות}}</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
-<translation id="853768060447955562">‏שולחן העבודה הווירטואלי הקודם: <ph name="PREVIOUS_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח' או מקשי הקיצור Shift+'חיפוש'+<ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">הפריים במצלמה</translation>
 <translation id="8542053257095774575">אין תבניות או שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="8546059259582788728">הביטול של המיון הצליח</translation>
@@ -2043,7 +2039,6 @@
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
 <translation id="937214777182567951">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> באופן מיידי</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
-<translation id="943067377221312471">שולחן העבודה הקודם: <ph name="PREVIOUS_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="945383118875625837">גרירת הקישור לסרגל הסימניות</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="951991426597076286">דחייה</translation>

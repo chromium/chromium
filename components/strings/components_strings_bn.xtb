@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">সুরক্ষিত নয়</translation>
 <translation id="1075079914415273530">অ্যাগ্রিকালচার ও ফরেস্ট্রি</translation>
 <translation id="1075364221219156102">'পাসকী' ব্যবহার করুন</translation>
-<translation id="1078033282564106222">বিল্ডিং নম্বরের বিকল্প বেছে নেওয়া হয়েছে</translation>
 <translation id="1080116354587839789">প্রস্থের মধ্যে আঁটান</translation>
 <translation id="1081061862829655580">ট্রে ১৯</translation>
 <translation id="1082026381988252344">আপনার শেয়ার করা ট্যাবের কন্টেন্ট স্ক্রল ও জুম করুন</translation>
@@ -614,7 +613,6 @@
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> ভাষা সংক্রান্ত প্যাক ডাউনলোড করা চলছে...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">পুরুষদের পোশাক</translation>
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
@@ -1388,7 +1386,6 @@
 <translation id="3681007416295224113">সার্টিফিকেট তথ্য</translation>
 <translation id="3681421644246505351">Chrome আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে আগ্রহের বিষয়গুলি নোট করে।</translation>
 <translation id="3682094733650754138">ঠিকানা লিখুন বিকল্প বেছে নেওয়া হয়েছে</translation>
-<translation id="3689867156802445220">বিল্ডিং নম্বর</translation>
 <translation id="3693327506115126094">আপনার পরিচয় কীভাবে যাচাই করবেন তা বেছে নিন</translation>
 <translation id="3698629142018988477">'সাইট তৈরি করুন' বোতাম, Google Sites-এ চটপট নতুন সাইট তৈরি করতে এটি ব্যবহার করুন</translation>
 <translation id="3701325639446035885">ইভেন্টের টিকিট বিক্রি</translation>
@@ -1577,6 +1574,7 @@
 <translation id="4089152113577680600">ট্রে ১৪</translation>
 <translation id="4092349052316400070">ঠিকানা লিখুন</translation>
 <translation id="4096237801206588987">১১ x ১৫ ইঞ্চি</translation>
+<translation id="4098306082496067348">ভার্চুয়াল কার্ডের তথ্যে ট্যাপ করে সেটি চেক-আউট প্রসেসে যোগ করুন।</translation>
 <translation id="4098354747657067197">সামনে ধোঁকাবাজ সাইট</translation>
 <translation id="4099048595830172239">গোপনীয় কন্টেন্ট দেখা গেলে, অ্যাডমিনিস্ট্রেটরের নীতি <ph name="APPLICATION_TITLE" />-এর সাথে আপনার স্ক্রিন শেয়ার করার জন্য সাজেস্ট করবে না:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>

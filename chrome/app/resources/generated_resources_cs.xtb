@@ -1719,6 +1719,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2285109769884538519">{COUNT,plural, =0{Otevřít vše v &amp;nové skupině karet}=1{Otevřít v &amp;nové skupině karet}few{Otevřít vše ({COUNT}) v &amp;nové skupině karet}many{Otevřít vše ({COUNT}) v &amp;nové skupině karet}other{Otevřít vše ({COUNT}) v &amp;nové skupině karet}}</translation>
 <translation id="2285942871162473373">Otisk prstu nebyl rozpoznán. Zkuste to znovu.</translation>
 <translation id="2287617382468007324">Tisk adresy IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Z důvodu ochrany vašich dat byla odebrána oprávnění webu, který jste v poslední době nenavštívili}few{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}many{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}other{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}}</translation>
 <translation id="2287944065963043964">Přihlašovací obrazovka</translation>
 <translation id="2290615375132886363">Navigační tlačítka tabletu</translation>
 <translation id="2291452790265535215">Zkuste používat záložky, cesty apod. na bočním panelu</translation>
@@ -4003,7 +4004,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4031527940632463547">Použití senzorů je blokováno</translation>
 <translation id="4033471457476425443">Přidat novou složku</translation>
-<translation id="4033711848170683365">Tímto z tohoto zařízení trvale smažete údaje o prohlížení. Účty Google v tomto profilu mohou být používány v jiných aplikacích v zařízení <ph name="DEVICE_TYPE" />. Tyto účty můžete odstranit v sekci <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Bezpečné weby mohou obsahovat vložený obsah, např. obrázky nebo rámce, které nejsou zabezpečené</translation>
 <translation id="4034706080855851454">Pokud zařízení chcete používat s profilem své organizace, vaše organizace potřebuje informace o zařízení.
 
@@ -4303,6 +4303,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4275788652681621337">Zavřít boční panel</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4277434192562187284">Zdroj konfigurace ve formátu XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Byla odebrána oprávnění 1 webu}few{Byla odebrána oprávnění {NUM_SITES} webům}many{Byla odebrána oprávnění {NUM_SITES} webu}other{Byla odebrána oprávnění {NUM_SITES} webům}}</translation>
 <translation id="4278390842282768270">Povoleno</translation>
 <translation id="4278498748067682896">Budete používat Kiosk &amp; Signage Upgrade, který zařízení umožňuje běžet pouze v režimu veřejného terminálu nebo signalizace. Pokud chcete, aby se uživatelé na zařízení přihlašovali, vraťte se a zaregistrujte zařízení pomocí upgradu Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Tento proces může trvat několik minut. Stahování souborů.</translation>
@@ -5870,7 +5871,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Tato aplikace vyžaduje přístup do Obchodu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Nastavit pomocí telefonu Android</translation>
 <translation id="5519053700692355541">Většinu funkcí bočního panelu lze otevřít prostřednictvím nabídky Chrome vpravo nahoře</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Udržujte tento účet bezpečnější pomocí silného hesla. Uloží se do správce hesel <ph name="GOOGLE_PASSWORD_MANAGER" /> pro <ph name="EMAIL" /></translation>
@@ -9678,6 +9678,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
     <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete v nastavení systému ChromeOS na zařízení dítěte kdykoli povolit nebo zakázat. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Pokud je v účtu dítěte zapnuté nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. Další informace o těchto nastaveních a o tom, jak je upravit, naleznete na stránce families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Zadejte heslo souboru</translation>
+<translation id="8476942730579767658">Okna a plochy</translation>
 <translation id="8477178913400731244">Vymazat data</translation>
 <translation id="8477241577829954800">Nahrazen</translation>
 <translation id="8477384620836102176">&amp;Obecné</translation>

@@ -1142,7 +1142,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="681368974849482173">Elemento creato</translation>
 <translation id="6822587385560699678">Quando l'opzione è attiva, le password vengono salvate nell'account <ph name="ACCOUNT" />. Quando l'opzione non è attiva, le password vengono salvate soltanto su questo dispositivo.</translation>
 <translation id="6831043979455480757">Traduci</translation>
-<translation id="6839843088069935119">{count,plural, =1{Preferito salvato in "{title}". Viene salvato solo su questo dispositivo.}other{Preferiti salvati in "{title}". Vengono salvati solo su questo dispositivo.}}</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>
 <translation id="6852222216891664518">Chiudi scheda bloccata</translation>
@@ -1412,6 +1411,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8273982424131314219">Inserirai i dati su <ph name="URL" /></translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Salta</translation>
+<translation id="828291969289324795">{count,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="8283172974887967105">Imposta…</translation>
 <translation id="8286036467436129157">Accedi</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>

@@ -4015,7 +4015,6 @@
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4031527940632463547">ছেন্সৰ অৱৰোধ কৰা হৈছে</translation>
 <translation id="4033471457476425443">নতুন ফ’ল্ডাৰ যোগ কৰক</translation>
-<translation id="4033711848170683365">এই কাৰ্যই এই ডিভাইচটোৰ পৰা ব্ৰাউজিঙৰ ডেটা স্থায়ীভাৱে মচি পেলাব। এই প্ৰ’ফাইলটোত থকা Google একাউণ্টসমূহ আপোনাৰ <ph name="DEVICE_TYPE" />ৰ অন্য এপে ব্যৱহাৰ কৰিব পাৰে। আপুনি <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />ত এই একাউণ্টসমূহ আঁতৰাব পাৰে।</translation>
 <translation id="4033963223187371752">সুৰক্ষিত ছাইটে প্ৰতিচ্ছবি অথবা ৱেব ফ্ৰে’মৰ দৰে অসুৰক্ষিত সমল এম্বেড কৰিব পাৰে</translation>
 <translation id="4034706080855851454">আপোনাৰ প্ৰতিষ্ঠানৰ প্ৰ’ফাইলৰ জৰিয়তে আপোনাৰ ডিভাইচটো ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানটোক ডিভাইচটোৰ বিষয়ে তথ্যৰ আৱশ্যক।
 
@@ -5884,7 +5883,6 @@
 <translation id="5514315914873062345">টেব</translation>
 <translation id="5517304475148761050">এই এপ্‌টোক Play Storeৰ এক্সেছৰ আৱশ্যক</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android ফ’ন জৰিয়তে ছেট আপ কৰক</translation>
 <translation id="5519053700692355541">আপুনি ওপৰৰ সোঁফালে থকা Chromeৰ মেনুৰ জৰিয়তে বেছিভাগ ছাইডৰ পেনেলৰ সুবিধা খুলিব পাৰে</translation>
 <translation id="5519195206574732858">এলটিই</translation>
 <translation id="5519900055135507385">এটা বিশ্বস্ত পাছৱৰ্ডৰ জৰিয়তে এই একাউণ্টটো অধিক সুৰক্ষিত কৰি ৰাখক। <ph name="EMAIL" />ৰ বাবে এইটো <ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হ’ব।</translation>
@@ -9692,6 +9690,7 @@
     <ph name="BEGIN_PARAGRAPH2" />আপুনি নিজৰ শিশুৰ ChromeOS ডিভাইচৰ ছেটিঙত যিকোনো সময়তে এই ৰিপ’ৰ্টসমূহৰ অনুমতি দিয়া আৰম্ভ অথবা বন্ধ কৰিব পাৰে। আপুনি যদি ড’মেইনৰ প্ৰশাসক, তেন্তে আপুনি প্ৰশাসকৰ কনছ’লত এই ছেটিংটো সলনি কৰিব পাৰে।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />আপোনাৰ শিশুৰ Google একাউণ্টৰ বাবে ৱেব আৰু এপৰ কাৰ্যকলাপৰ ছেটিং অন হৈ থাকিলে আপোনাৰ শিশুৰ ডেটা তেওঁৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। এই ছেটিঙৰ বিষয়ে আৰু সেয়া কেনেদৰে মিলাব লাগে সেই বিষয়ে families.google.comত অধিক জানক।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ফাইলৰ পাছৱৰ্ডটো দিয়ক</translation>
+<translation id="8476942730579767658">ৱিণ্ড’ আৰু ডেস্ক</translation>
 <translation id="8477178913400731244">ডেটা মচক</translation>
 <translation id="8477241577829954800">অপসাৰণ কৰা</translation>
 <translation id="8477384620836102176">&amp;সাধাৰণ</translation>

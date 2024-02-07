@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Tidak aman</translation>
 <translation id="1075079914415273530">Agrikultur &amp; kehutanan</translation>
 <translation id="1075364221219156102">Gunakan Kunci Sandi</translation>
-<translation id="1078033282564106222">Opsi nomor gedung dipilih</translation>
 <translation id="1080116354587839789">Paskan dengan lebar</translation>
 <translation id="1081061862829655580">Baki 19</translation>
 <translation id="1082026381988252344">Scroll dan zoom konten tab yang dibagikan</translation>
@@ -614,7 +613,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2126374524350484896">Pembuat PDF:</translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Mendownload paket bahasa <ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Pakaian pria</translation>
 <translation id="2137891579555018930">Menunggu izin ...</translation>
 <translation id="213826338245044447">Bookmark Seluler</translation>
@@ -1387,7 +1385,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3681007416295224113">Informasi sertifikat</translation>
 <translation id="3681421644246505351">Chrome mencatat topik minat berdasarkan histori penjelajahan terbaru Anda.</translation>
 <translation id="3682094733650754138">Opsi isi alamat dipilih</translation>
-<translation id="3689867156802445220">Nomor gedung</translation>
 <translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
 <translation id="3698629142018988477">Tombol Buat situs, aktifkan untuk membuat situs baru di Google Sites dengan cepat</translation>
 <translation id="3701325639446035885">Penjualan Tiket Acara</translation>
@@ -1576,6 +1573,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4089152113577680600">Baki 14</translation>
 <translation id="4092349052316400070">Isi alamat</translation>
 <translation id="4096237801206588987">11 x 15 inci (27 x 38 cm)</translation>
+<translation id="4098306082496067348">Ketuk detail kartu virtual untuk menambahkannya ke checkout.</translation>
 <translation id="4098354747657067197">Situs yang akan dibuka berisi penipuan</translation>
 <translation id="4099048595830172239">Kebijakan administrator tidak merekomendasikan berbagi layar dengan <ph name="APPLICATION_TITLE" /> saat konten rahasia terlihat:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyesuaikan ukuran font dan rupa huruf di Chrome</translation>

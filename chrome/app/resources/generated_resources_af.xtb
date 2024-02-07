@@ -3308,6 +3308,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3497560059572256875">Deel logoskets</translation>
 <translation id="3497915391670770295">Stuur na jou &amp;toestelle</translation>
 <translation id="3500417806337761827">Kan nie deling monteer nie. Te veel SMB-delings is reeds gemonteer.</translation>
+<translation id="3500764001796099683">Aktiveer geïsoleerde webapps</translation>
 <translation id="350397915809787283">As jy nie ’n rekening het nie, kan jy die eerste opsie kies om een te skep.</translation>
 <translation id="3503995387997205657">Jy kan jou vorige programme terugstel</translation>
 <translation id="3505100368357440862">Inkopievoorstelle</translation>
@@ -4016,7 +4017,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4031527940632463547">Sensors is geblokkeer</translation>
 <translation id="4033471457476425443">Voeg nuwe vouer by</translation>
-<translation id="4033711848170683365">Dit sal blaaierdata op hierdie toestel permanent uitvee. Die Google-rekeninge in hierdie profiel kan deur ander programme op jou <ph name="DEVICE_TYPE" /> gebruik word. Jy kan hierdie rekeninge verwyder in <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Veilige werwe kan dalk inhoud, soos prente en webrame wat nie veilig is nie, inbed</translation>
 <translation id="4034706080855851454">Om jou toestel met jou organisasieprofiel te gebruik, het jou organisasie inligting oor die toestel nodig.
 
@@ -5884,7 +5884,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5514315914873062345">Tab-sleutel</translation>
 <translation id="5517304475148761050">Hierdie program moet toegang tot die Play Winkel hê</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Stel op met Android-foon</translation>
 <translation id="5519053700692355541">Jy kan nou meeste van die kantpaneelkenmerke deur die Chrome-kieslys bo regs oopmaak</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Hou hierdie rekening veiliger met ’n sterk wagwoord. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
@@ -7185,6 +7184,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6551508934388063976">Bevel nie beskikbaar nie. Druk control-N om 'n nuwe venster oop te maak.</translation>
 <translation id="6551606359270386381">Ellipsnutsding</translation>
 <translation id="6551612971599078809">Werf gebruik tans USB</translation>
+<translation id="6551620030439692385">Geblokkeer. Tydsone is tans gestel op <ph name="TIMEZONE" /> en kan net handmatig opgedateer word.</translation>
 <translation id="6551739526055143276">Bestuur deur Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> gebruikers</translation>
 <translation id="6555432686520421228">Verwyder alle gebruikerrekeninge en stel jou <ph name="IDS_SHORT_PRODUCT_NAME" />-toestel terug om soos nuut te wees.</translation>
@@ -7253,6 +7253,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6608773371844092260">Laat jou kind aan die vingerafdruksensor aan die regterkant van hierdie <ph name="DEVICE_TYPE" /> raak om hul vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="6609478180749378879">Aanmelddata sal op hierdie toestel geberg word nadat jy Incognitomodus verlaat het. Jy sal later weer met jou toestel by hierdie werf kan aanmeld.</translation>
 <translation id="6610002944194042868">Vertaalopsies</translation>
+<translation id="6610064275805055636">Bestuur geïsoleerde webapps</translation>
 <translation id="6611972847767394631">Vind jou oortjies hier</translation>
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6613267708691765962">Skandeer tans vir wanware …</translation>
@@ -8616,6 +8617,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7671472752213333268">“<ph name="EXTENSION_NAME" />” wil vanaf “<ph name="SCANNER_NAME" />” skandeer.</translation>
 <translation id="7672504401554182757">Kies watter toestel die toegangsleutel vir <ph name="APP_NAME" /> het</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Geblokkeer. Skedule is tans op <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" /> gestel en kan net handmatig opgedateer word.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (verbindingbestuurder)-loglêers</translation>
 <translation id="7674416868315480713">Deaktiveer alle poorte wat tans in Linux aangestuur word</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> programme</translation>
@@ -9548,6 +9550,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8376384591331888629">Insluitend derdeparty-webkoekies op hierdie werf</translation>
 <translation id="8376451933628734023">Deïnstalleer hierdie webprogram as dit jou probeer mislei om te dink dat dit 'n ander program is.</translation>
 <translation id="8376532149031784008">Herlaai tans <ph name="DOMAIN" /> …</translation>
+<translation id="8376610503048439696">Uitbreidings wat deur jou administrateur geïnstalleer is, kan steeds hierdie werf lees en verander</translation>
 <translation id="8376752431516546391">Google Search-kantpaneel</translation>
 <translation id="8377625247046155446">Hierdie toegangsleutel sal net op hierdie toestel gestoor word. Dit sal op hierdie toestel bly nadat jy alle Incognito-vensters toegemaak het.</translation>
 <translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
@@ -9687,6 +9690,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
     <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in die instellings van jou kind se Chrome-toestel begin of stop. As jy ’n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />As die Web- en Programaktiwiteit-instelling vir jou kind se Google-rekening aangeskakel is, kan jou kind se data ook in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle te verstel.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Voer die lêer se wagwoord in</translation>
+<translation id="8476942730579767658">Vensters en lessenaars</translation>
 <translation id="8477178913400731244">Vee data uit</translation>
 <translation id="8477241577829954800">Oorgeneem</translation>
 <translation id="8477384620836102176">Algemeen</translation>

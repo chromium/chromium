@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Ikke sikker</translation>
 <translation id="1075079914415273530">Jordbruk og skogbruk</translation>
 <translation id="1075364221219156102">Bruk en passnøkkel</translation>
-<translation id="1078033282564106222">Alternativet for bygningsnummer er valgt</translation>
 <translation id="1080116354587839789">Tilpass til vindusbredden</translation>
 <translation id="1081061862829655580">Skuff 19</translation>
 <translation id="1082026381988252344">Rull gjennom og zoom inn på innholdet på den delte fanen</translation>
@@ -613,7 +612,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2126374524350484896">PDF-produsent:</translation>
 <translation id="2130448033692577677">Malene du har angitt, kan ikke tas i bruk fordi DnsOverHttpsMode-regelen ikke er angitt.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Laster ned språkpakke for <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Herreklær</translation>
 <translation id="2137891579555018930">Venter på tillatelse …</translation>
 <translation id="213826338245044447">Bokmerker for mobil</translation>
@@ -1387,7 +1385,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3681007416295224113">Sertifikatinformasjon</translation>
 <translation id="3681421644246505351">Chrome merker seg interessante emner basert på den nylige nettleserloggen din.</translation>
 <translation id="3682094733650754138">Alternativet for utfylling av adresse er valgt</translation>
-<translation id="3689867156802445220">Bygningsnummer</translation>
 <translation id="3693327506115126094">Velg hvordan du vil bekrefte at det er deg</translation>
 <translation id="3698629142018988477">Knappen «Opprett nettsted» – aktiver for å opprette et nytt nettsted i Google Nettsteder raskt</translation>
 <translation id="3701325639446035885">Salg av arrangementsbilletter</translation>
@@ -1576,6 +1573,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4089152113577680600">Skuff 14</translation>
 <translation id="4092349052316400070">Fyll ut adressen</translation>
 <translation id="4096237801206588987">11 x 15 tommer</translation>
+<translation id="4098306082496067348">Trykk på de virtuelle kortopplysningene for å fylle dem ut i kassen.</translation>
 <translation id="4098354747657067197">Villedende nettsted i sikte</translation>
 <translation id="4099048595830172239">Administratorreglene anbefaler ikke at du deler skjermen med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse skriftstørrelser og -typer i Chrome</translation>

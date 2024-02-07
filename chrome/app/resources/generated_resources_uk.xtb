@@ -4020,7 +4020,6 @@
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4031527940632463547">Датчики заблоковано</translation>
 <translation id="4033471457476425443">Додати нову папку</translation>
-<translation id="4033711848170683365">Дані веб-перегляду буде видалено з цього пристрою назавжди. Облікові записи Google із цього профілю можуть використовувати інші додатки на вашому пристрої <ph name="DEVICE_TYPE" />. Ви можете вилучити ці облікові записи в меню <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Безпечні сайти можуть вбудовувати незахищений контент (як-от зображення чи веб-фрейми)</translation>
 <translation id="4034706080855851454">Щоб користуватися пристроєм із профілем вашої організації, надайте організації інформацію про пристрій,
 
@@ -5888,7 +5887,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Цьому додатку потрібен доступ до Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Налаштувати за допомогою телефона Android</translation>
 <translation id="5519053700692355541">Більшість функцій бічної панелі можна відкрити через меню Chrome угорі праворуч</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Захистіть цей обліковий запис за допомогою надійного пароля. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
@@ -9698,6 +9696,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути надсилання цих звітів у налаштуваннях пристрою з ChromeOS дитини. Адміністратори доменів можуть змінювати це налаштування в Консолі адміністратора.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Якщо в обліковому записі Google дитини ввімкнено запис історії додатків і веб-пошуку, її дані можуть зберігатися в ньому. Докладніше про ці налаштування читайте на сторінці families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Введіть пароль файлу</translation>
+<translation id="8476942730579767658">Вікна й робочі столи</translation>
 <translation id="8477178913400731244">Видалити дані</translation>
 <translation id="8477241577829954800">Заміщено</translation>
 <translation id="8477384620836102176">&amp;Загальне</translation>

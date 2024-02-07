@@ -4004,7 +4004,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
 <translation id="4031527940632463547">Bloķēti sensori</translation>
 <translation id="4033471457476425443">Pievienot jaunu mapi</translation>
-<translation id="4033711848170683365">Veicot šo darbību, no šīs ierīces tiks neatgriezeniski izdzēsti pārlūkošanas dati. Šim profilam pievienotos Google kontus, iespējams, izmanto citas lietotnes jūsu ierīcē (<ph name="DEVICE_TYPE" />). Varat noņemt šos kontu šeit: <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Drošās vietnēs var tikt iegults saturs, piemēram, attēli vai tīmekļa ietvari, kas nav droši.</translation>
 <translation id="4034706080855851454">Lai varētu izmantot ierīci ar organizācijas profilu, jūsu organizācijai ir nepieciešama informācija par ierīci.
 
@@ -5871,7 +5870,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5514315914873062345">Tabulēšanas taustiņš</translation>
 <translation id="5517304475148761050">Šai lietotnei ir nepieciešama piekļuve Play veikalam</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> — <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Iestatīt, izmantojot Android tālruni</translation>
 <translation id="5519053700692355541">Lielāko daļu sānu paneļa funkciju varat atvērt Chrome izvēlnē, kas atrodas augšējā labajā stūrī.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Aizsargājiet šo kontu, izmantojot drošu paroli. Tā tiks saglabāta pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" /> kontam <ph name="EMAIL" />.</translation>
@@ -9679,6 +9677,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
     <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot bērna ChromeOS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ja bērna Google kontam ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, bērna dati var tikt saglabāti viņa Google kontā. Plašāku informāciju par šiem iestatījumiem un to pielāgošanu skatiet vietnē families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Ievadiet faila paroli.</translation>
+<translation id="8476942730579767658">Logi un darbvietas</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>
 <translation id="8477241577829954800">Aizvietots</translation>
 <translation id="8477384620836102176">&amp;Vispārīgi</translation>

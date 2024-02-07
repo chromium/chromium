@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Cookies de terceiros são limitados</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
 <translation id="310297983047869047">Slide anterior</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> No dispositivo <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">O Mágico de Oz</translation>
 <translation id="7684642910516280563">Não permitir que um site use cookies de terceiros</translation>
 <translation id="7719367874908701697">Zoom da página:</translation>
-<translation id="7770832849480336015">Ocultar "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuar com esta guia}one{Continuar com esta guia}other{Continuar com estas guias}}</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7804248752222191302">Um site está usando sua câmera</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>

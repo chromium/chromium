@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">주의 요함</translation>
 <translation id="1075079914415273530">농업 및 임업</translation>
 <translation id="1075364221219156102">패스키 사용</translation>
-<translation id="1078033282564106222">건물 번호 옵션 선택됨</translation>
 <translation id="1080116354587839789">너비에 맞춤</translation>
 <translation id="1081061862829655580">트레이 19</translation>
 <translation id="1082026381988252344">공유한 탭의 콘텐츠 스크롤 및 확대/축소</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">PDF 변환 프로그램:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> 언어 팩 다운로드 중…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">남성 의류</translation>
 <translation id="2137891579555018930">권한을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
@@ -1387,7 +1385,6 @@
 <translation id="3681007416295224113">인증서 정보</translation>
 <translation id="3681421644246505351">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악합니다.</translation>
 <translation id="3682094733650754138">주소 입력 옵션이 선택됨</translation>
-<translation id="3689867156802445220">건물 번호</translation>
 <translation id="3693327506115126094">본인 인증 방법 선택</translation>
 <translation id="3698629142018988477">사이트 만들기 버튼, Google Sites에서 빠르게 새 사이트를 만들려면 활성화하세요.</translation>
 <translation id="3701325639446035885">이벤트 티켓 판매</translation>
@@ -1576,6 +1573,7 @@
 <translation id="4089152113577680600">트레이 14</translation>
 <translation id="4092349052316400070">주소 입력</translation>
 <translation id="4096237801206588987">11x15인치</translation>
+<translation id="4098306082496067348">가상 카드 세부정보를 탭하여 결제에 추가합니다.</translation>
 <translation id="4098354747657067197">사기성 사이트 주의</translation>
 <translation id="4099048595830172239">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 <ph name="APPLICATION_TITLE" /> 앱과 화면을 공유하지 않는 것이 좋습니다.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome의 글꼴 크기와 서체 맞춤설정</translation>
@@ -2631,7 +2629,7 @@
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6197648101609735209">89x89mm</translation>
 <translation id="6198480336395236519">풀 컷 탭</translation>
-<translation id="6203231073485539293">인터넷 연결을 확인하세요.</translation>
+<translation id="6203231073485539293">인터넷 연결 확인</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6212314149070368045">미국 Fanfold</translation>
 <translation id="6215936431492593050">금속(새틴)</translation>
@@ -3212,7 +3210,7 @@
 <translation id="7346048084945669753">연결됨:</translation>
 <translation id="7346062987309535530">식기</translation>
 <translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
-<translation id="7352651011704765696">문제가 발생한 경우</translation>
+<translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7354880545102894991">저가 및 잔여 상품 할인 여행</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>

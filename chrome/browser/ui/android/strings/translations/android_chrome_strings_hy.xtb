@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7105047059074518658">Մտեք հաշիվ՝ ձեր բոլոր սարքերում նույն կայքերից հեշտությամբ օգտվելու համար</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
-<translation id="7116588989735740310">Համաժամացրեք ներդիրները և պատմությունը, որպեսզի վերադառնաք կայքեր, որոնք այցելել եք այլ սարքերում</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7140829094791862589">Տեսակավորել ձեռքով</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">Աշխատանքն ավարտեուց հետո անջատեք մալուխը</translation>
 <translation id="7523960634226602883">Որոնել տեսախցիկի միջոցով՝ օգտագործելով Google Տեսապակին</translation>
 <translation id="752731652852882757">Արգելափակել ինկոգնիտո ռեժիմում</translation>
-<translation id="7539698981064401140">Համաժամացրեք ներդիրները և տվյալները</translation>
 <translation id="7562080006725997899">Ջնջվում են զննարկման տվյալները</translation>
 <translation id="756809126120519699">Chrome-ի տվյալները ջնջվեցին</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
@@ -1446,7 +1444,6 @@
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
-<translation id="847433688444405067">Դիտարկեք տարբեր սարքերում</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Բացել պատմության էջը</translation>
 <translation id="8493948351860045254">Ազատել տարածք</translation>
@@ -1496,7 +1493,6 @@
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
 <translation id="8746155870861185046">Կիսվել ընդգծված տեքստով</translation>
-<translation id="874726034427945498">Ավելի լավ առաջարկներ ձեր հասցեագոտում տեսնելու համար համաժամացրեք ձեր ներդիրները և պատմությունը</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8754448020583829686">Պատճենել առանց հղման</translation>
 <translation id="8756969031206844760">Թարմացնե՞լ գաղտնաբառը</translation>
@@ -1538,7 +1534,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>
-<translation id="8987736167266086032">Շարունակեք այնտեղից, որտեղ կանգ էիք առել</translation>
 <translation id="8993760627012879038">Բացել նոր ներդիր ինկոգնիտո ռեժիմում</translation>
 <translation id="8996847606757455498">Ընտրել մեկ այլ մատակարար</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
@@ -1561,7 +1556,6 @@
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Ինկոգնիտո ռեժիմում այցելած կայքերի մասին տեղեկությունները չեն պահվում</translation>
-<translation id="9084103763810123431">Այս սարքում դիտարկումը շարունակելու համար համաժամացրեք ձեր ներդիրները և պատմությունը</translation>
 <translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9086455579313502267">Հնարավոր չէ մուտք գործել ցանց</translation>
 <translation id="9099220545925418560">Ձեր այցելությունների պատմության հիման վրա։ Այս կարգավորումն անջատված է։</translation>

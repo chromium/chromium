@@ -4005,7 +4005,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4031179711345676612">Mikrofondan foydalanish mumkin</translation>
 <translation id="4031527940632463547">Sensorlar bloklandi</translation>
 <translation id="4033471457476425443">Yangi jild qo‘shish</translation>
-<translation id="4033711848170683365">Brauzerning ishlashi haqida axborot ushbu qurilmadan butunlay tozalanadi. Bu profildagi Google hisoblari <ph name="DEVICE_TYPE" /> qurilmangizda boshqa ilovalar tomonidan foydalanilishi mumkin. <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> orqali bu hisoblarni olib tashlashingiz mumkin.</translation>
 <translation id="4033963223187371752">Xavfsiz saytlarda rasmlar yoki freymlar kabi xavfli kontent boʻlishi mumkin.</translation>
 <translation id="4034706080855851454">Qurilmadan tashkilot profili orqali foydalanish uchun tashkilotga qurilma haqida axborot berish lozim.
 
@@ -5874,7 +5873,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Bu ilova Play Marketga kirishni talab etadi</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android telefoni bilan sozlash</translation>
 <translation id="5519053700692355541">Yon panelda joylashgan xususiyatlarning aksariyati yuqori oʻng burchakdagi Chrome menyusida ham mavjud.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Ishonchli parol bilan bu hisobni yanada xavfsiz saqlang. <ph name="EMAIL" /> parollari <ph name="GOOGLE_PASSWORD_MANAGER" /> xotirasida saqlanadi.</translation>
@@ -9679,6 +9677,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
     <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Farzandingizning Google hisobi uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari uning Google hisobida saqlanadi. Bu parametr va uni sozlash haqidagi batafsil axborotni families.google.com sahifasidan olish mumkin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Fayl parolini kiriting</translation>
+<translation id="8476942730579767658">Oynalar va ish stollari</translation>
 <translation id="8477178913400731244">Maʼlumotlarni oʻchirish</translation>
 <translation id="8477241577829954800">Almashtirildi</translation>
 <translation id="8477384620836102176">&amp;Umumiy</translation>

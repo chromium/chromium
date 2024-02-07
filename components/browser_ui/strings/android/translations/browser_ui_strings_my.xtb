@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ကန့်သတ်ထားသည်</translation>
 <translation id="3008272652534848354">ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="301521992641321250">အလိုအလျောက် ပိတ်ထားသည်</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">သတ်မှတ်ဝဘ်ဆိုက်အတွက် ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်းကို ခွင့်ပြုနိုင်သည်။</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{မနက်ဖြန် သက်တမ်းကုန်မည်}other{# ရက်အတွင်း သက်တမ်းကုန်မည်}}</translation>
 <translation id="310297983047869047">ယခင်ဆလိုက်</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">USB ကိရိယာသို့ ချိတ်ဆက်ပြီး</translation>
 <translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> ထံမှ</translation>
 <translation id="4226663524361240545">အကြောင်းကြားချက်သည် စက်ပစ္စည်းကို တုန်ခါစေပါမည်</translation>
 <translation id="4259722352634471385">သွားလာမှုပြလမ်းညွှန်အား ပိတ်ထား၏- <ph name="URL" /></translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Oz ၏အံ့ဖွယ်ဝိဇ္ဇာ</translation>
 <translation id="7684642910516280563">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ သုံးရန် ဝဘ်ဆိုက်ကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="7719367874908701697">စာမျက်နှာဇူးမ်</translation>
-<translation id="7770832849480336015">“<ph name="TITLE_OF_MODULE" />” ဖျောက်ရန်</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ဤတဘ်ဖြင့် ရှေ့ဆက်ရန်}other{ဤတဘ်များဖြင့် ရှေ့ဆက်ရန်}}</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7804248752222191302">ဝဘ်ဆိုက်တစ်ခုက သင့်ကင်မရာကို အသုံးပြုနေသည်</translation>
 <translation id="7807060072011926525">Google က ပံ့ပိုးထားသည်</translation>

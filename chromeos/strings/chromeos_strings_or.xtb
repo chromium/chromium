@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">ଇମେଜଗୁଡ଼ିକୁ ଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ନେଟୱାର୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ପୁଣି ଇମେଜଗୁଡ଼ିକୁ ଲୋଡ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1751249301761991853">ବ୍ୟକ୍ତିଗତ</translation>
 <translation id="1753496554272155572">ୱାଲପେପର ପ୍ରିଭ୍ୟୁରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> ପାଇଁ "ଏଡିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="1755556344721611131">Diagnostics ଆପ</translation>
 <translation id="175763766237925754">ଭଲ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android ଚାଲୁ ନାହିଁ</translation>
 <translation id="551689408806449779">ଡିଭାଇସକୁ ଡିସକନେକ୍ଟ କରାଯାଇଛି। ଟେଷ୍ଟ କରିବା ପାଇଁ ପୁଣି କନେକ୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">ଲକ କରାଯାଇଛି</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ସୂର୍ଯ୍ୟାସ୍ତ ସମୟରେ ସ୍ୱଚାଳିତ ଭାବେ ଡାର୍କ ଥିମକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
 <translation id="5703716265115423771">ଭଲ୍ୟୁମ୍ କମାନ୍ତୁ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ପାଇଁ "ଏଡିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="574392208103952083">ମଧ୍ୟମ</translation>
 <translation id="5757187557809630523">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> ପାଇଁ "ଡିଲିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="593880865674747800">ଏହି ଷ୍ଟାଇଲରେ ଅଧିକ ୱାଲପେପର ତିଆରି କରନ୍ତୁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">ବିଫଳ ହୋଇଥିବା DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6768237774506518020">ଉଚ୍ଚ DNS ରିଜୋଲ୍ୟୁସନ୍ ବିଫଳତା ହାର</translation>
 <translation id="6791471867139427246">କୀ'ବୋର୍ଡ ଲାଇଟ ରଙ୍ଗ</translation>
+<translation id="6796229976413584781">ସର୍ଟକଟ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="6798678288485555829">ଟେକ୍ସଟ ନାଭିଗେସନ</translation>
 <translation id="680983167891198932">କୀ</translation>
 <translation id="6816797338148849397">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ଅଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
+<translation id="7233782086689993269">ସର୍ଟକଟ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="725133483556299729">ଇମେଲ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7271932918253517778">ଶୀର୍ଷ ଧାଡ଼ିର କୀଗୁଡ଼ିକ ଥିବା ସର୍ଟକଟରେ <ph name="META_KEY" /> କୀ'କୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବା ଆବଶ୍ୟକ।</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7656388927906093505">ଡିଭାଇସଟି ଏକ ମାଉସ ଅଟେ।</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />।</translation>
 <translation id="7665800271478495366">ଅବତାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7683228889864052081">କୀବୋର୍ଡକୁ ରଙ୍ଗୀନ କରନ୍ତୁ</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">କୀବୋର୍ଡ ଲାଇଟ</translation>
 <translation id="7730077286107534951">କିଛି ଆକାଉଣ୍ଟ ଏବଂ ସିଷ୍ଟମ ସୂଚନା Googleକୁ ପଠାଯାଇପାରେ। ଆମର <ph name="BEGIN_LINK2" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK2" /> ଏବଂ <ph name="BEGIN_LINK3" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK3" /> ଅନୁସାରେ, ଟେକ୍ନିକାଲ ସମସ୍ୟାର ସମାଧାନ କରିବା ଏବଂ ଆମ ସେବାଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଆମେ ଏହି ସୂଚନାକୁ ବ୍ୟବହାର କରୁ। ବିଷୟବସ୍ତୁ ପରିବର୍ତ୍ତନର ଅନୁରୋଧ କରିବା ପାଇଁ <ph name="BEGIN_LINK1" />ଆଇନଗତ ସହାୟତା<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="773153675489693198">ସାଇକଲ୍ ଗଣନା</translation>
+<translation id="7746357909584236306">ଏଡିଟ କରାଯାଇପାରିବ</translation>
 <translation id="7747039790905080783">ପୂର୍ବରୁ ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="7752963721013053477">ଡନ ଟୁ ଡାର୍କ - ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="7762130827864645708">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ସଫଳ ହୋଇଛି। ଦୟାକରି ବର୍ତ୍ତମାନଠାରୁ ନୂଆ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ।</translation>

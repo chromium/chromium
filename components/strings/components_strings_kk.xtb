@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Қауіпсіз емес</translation>
 <translation id="1075079914415273530">Ауыл және орман шаруашылығы</translation>
 <translation id="1075364221219156102">Кіру кілтін пайдалану</translation>
-<translation id="1078033282564106222">Ғимарат нөмірі опциясы таңдалды</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
 <translation id="1082026381988252344">Ортақ қойынды мазмұнын айналдыру және масштабтау</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">PDF жасаушы:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Тіл бумасы (<ph name="LANGUAGE" />) жүктеп алынып жатыр...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Ерлер киімі</translation>
 <translation id="2137891579555018930">Рұқсат күтілуде…</translation>
 <translation id="213826338245044447">Ұялы телефондағы бетбелгілер</translation>
@@ -1386,7 +1384,6 @@
 <translation id="3681007416295224113">Сертификат ақпараты</translation>
 <translation id="3681421644246505351">Chrome браузерді қолдану тарихы бойынша қызықты тақырыптарды көрсетеді.</translation>
 <translation id="3682094733650754138">Мекенжайды толтыру опциясы таңдалды</translation>
-<translation id="3689867156802445220">Ғимарат нөмірі</translation>
 <translation id="3693327506115126094">Сіз екеніңізді растау әдісін таңдаңыз</translation>
 <translation id="3698629142018988477">"Сайт жасау" түймесі, Google Sites-та жылдам жаңа сайт жасау үшін белсендіріңіз</translation>
 <translation id="3701325639446035885">Іс-шара билеттерін сату</translation>
@@ -1575,6 +1572,7 @@
 <translation id="4089152113577680600">14-науа</translation>
 <translation id="4092349052316400070">Мекежайды енгізіңіз.</translation>
 <translation id="4096237801206588987">11 x 15 дюйм</translation>
+<translation id="4098306082496067348">Виртуалдық картаны төлеу процесіне қосу үшін түртіңіз.</translation>
 <translation id="4098354747657067197">Жалған сайт</translation>
 <translation id="4099048595830172239">Әкімші саясатына сәйкес құпия контент көрініп тұрғанда, экранды <ph name="APPLICATION_TITLE" /> қолданбасымен бөліспеген жөн:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>

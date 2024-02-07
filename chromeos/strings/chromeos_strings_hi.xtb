@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">इमेज लोड नहीं की जा सकीं. अपने इंटरनेट कनेक्शन की जांच करें या इमेज फिर से लोड करके देखें.</translation>
 <translation id="1751249301761991853">मनमुताबिक सेटिंग</translation>
 <translation id="1753496554272155572">वॉलपेपर की झलक से बाहर निकलें</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> के लिए 'बदलाव करें' बटन.</translation>
 <translation id="1755556344721611131">समस्या की जांच के लिए ऐप्लिकेशन</translation>
 <translation id="175763766237925754">सिग्नल अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android नहीं चल रहा है</translation>
 <translation id="551689408806449779">डिवाइस को डिसकनेक्ट कर दिया गया है. टेस्ट करने के लिए, डिवाइस को फिर से कनेक्ट करने की कोशिश करें</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">लॉक है</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">शाम होने पर, अपने-आप गहरे रंग वाली थीम पर स्विच करें</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">मध्य</translation>
 <translation id="5703716265115423771">वॉल्‍यूम कम करें</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> का <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> के लिए 'बदलाव करें' बटन.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> को अपडेट करें</translation>
 <translation id="574392208103952083">मीडियम</translation>
 <translation id="5757187557809630523">अगला ट्रैक</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> के लिए 'मिटाएं' बटन.</translation>
 <translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
 <translation id="593880865674747800">इस स्टाइल में ज़्यादा वॉलपेपर बनाएं</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
 <translation id="6791471867139427246">कीबोर्ड की लाइट का रंग</translation>
+<translation id="6796229976413584781">शॉर्टकट मिटाया गया</translation>
 <translation id="6798678288485555829">टेक्स्ट नेविगेशन</translation>
 <translation id="680983167891198932">कुंजी</translation>
 <translation id="6816797338148849397">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी उपलब्ध है. इसे ऐक्सेस करने के लिए, अप ऐरो बटन इस्तेमाल करें.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाहरी डिवाइसों के लिए फ़र्मवेयर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
+<translation id="7233782086689993269">शॉर्टकट पहले जैसा किया गया</translation>
 <translation id="725133483556299729">ईमेल चुनें</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7271932918253517778">जिस शॉर्टकट में सबसे ऊपर वाली पंक्ति के बटन शामिल हैं उसमें <ph name="META_KEY" /> बटन शामिल करना ज़रूरी है.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">अवतार बदलें</translation>
 <translation id="7683228889864052081">कीबोर्ड की रोशनी का रंग</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">कीबोर्ड की रोशनी</translation>
 <translation id="7730077286107534951">खाते और सिस्टम की कुछ जानकारी Google को भेजी जा सकती है. हम इस जानकारी का इस्तेमाल, तकनीकी समस्याएं हल करने और अपनी सेवाओं को बेहतर बनाने के लिए करते हैं. ऐसा Google की <ph name="BEGIN_LINK2" />निजता नीति<ph name="END_LINK2" /> और <ph name="BEGIN_LINK3" />सेवा की शर्तों<ph name="END_LINK3" /> के मुताबिक किया जाता है. कॉन्टेंट में बदलावों का अनुरोध करने के लिए, <ph name="BEGIN_LINK1" />कानूनी सहायता<ph name="END_LINK1" /> पेज पर जाएं.</translation>
 <translation id="773153675489693198">साइकल काउंट</translation>
+<translation id="7746357909584236306">बदलाव किया जा सकता है</translation>
 <translation id="7747039790905080783">पहले से शेयर की गई कुंजी</translation>
 <translation id="7752963721013053477">डॉन टू डार्क मोड - खास</translation>
 <translation id="7762130827864645708">आपने अपना पासवर्ड बदल लिया है. कृपया अपना नया पासवर्ड इस्तेमाल करना शुरू करें.</translation>

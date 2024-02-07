@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
 <translation id="158838227375272121">Веб-сайт у Google Класі</translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
-<translation id="1592682369233288537">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрілка вниз</translation>
 <translation id="1604857178818051494">Призупинити відтворення медіаконтенту</translation>
 <translation id="1607312127821884567">Відхилити налаштування перегляду додатків на телефоні</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">Зображення</translation>
 <translation id="450584155212756404">Версія для розробників</translation>
 <translation id="4513946894732546136">Відгуки</translation>
-<translation id="4516212064498225455">Поточний робочий стіл: <ph name="CURRENT_DESK_NAME" />. Щоб відкрити меню всіх робочих столів, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="4533343294786968049">Щоб подовжити час роботи акумулятора, пристрій тимчасово утримує заряд на рівні 80%. Акумулятор зарядиться повністю до <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208059991603368177">Увімкнено</translation>
 <translation id="5216991270656129561">Вимкнено до <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл або комбінацію клавіш Shift + клавіша пошуку + <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5218064144558110424">Позначити як невиконане</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
@@ -1874,7 +1871,6 @@
 <translation id="8517041960877371778">Пристрій <ph name="DEVICE_TYPE" /> може не заряджатися, коли він увімкнений.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Входом мікрофона керує додаток <ph name="APP_NAME" />}one{Входом мікрофона керує # додаток}few{Входом мікрофона керують # додатки}many{Входом мікрофона керують # додатків}other{Входом мікрофона керують # додатка}}</translation>
 <translation id="8535393432370007982">Скасувати сортування за кольором</translation>
-<translation id="853768060447955562">Попередній робочий стіл: <ph name="PREVIOUS_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл або комбінацію клавіш Shift + клавіша пошуку + <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Слідкування</translation>
 <translation id="8542053257095774575">Немає збережених робочих столів або шаблонів</translation>
 <translation id="8546059259582788728">Сортування скасовано</translation>
@@ -2039,7 +2035,6 @@
 <translation id="925832987464884575">Вимкнути попередній перегляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Які події заплановано?</translation>
-<translation id="943067377221312471">Попередній робочий стіл: <ph name="PREVIOUS_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="945383118875625837">Перетягнути посилання на панель закладок</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="951991426597076286">Відхилити</translation>

@@ -4016,7 +4016,6 @@
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4031527940632463547">సెన్సార్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="4033471457476425443">కొత్త ఫోల్డర్‌ను జోడించండి</translation>
-<translation id="4033711848170683365">ఇది బ్రౌజింగ్ డేటాను ఈ పరికరం నుండి శాశ్వతంగా తొలగిస్తుంది. ఈ ప్రొఫైల్‌లోని Google ఖాతాలను, మీ <ph name="DEVICE_TYPE" />‌లోని ఇతర యాప్‌లు ఉపయోగించవచ్చు. మీరు ఈ ఖాతాలను <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />‌లో తీసివేయవచ్చు.</translation>
 <translation id="4033963223187371752">సురక్షిత సైట్‌లు సురక్షితం కాని ఇమేజ్‌లు లేదా వెబ్ ఫ్రేమ్‌ల వంటి కంటెంట్‌ను పొందుపరచవచ్చు</translation>
 <translation id="4034706080855851454">మీ సంస్థ ప్రొఫైల్‌తో మీ పరికరాన్ని ఉపయోగించడానికి, మీ సంస్థకు పరికరం గురించిన సమాచారం అవసరం.
 
@@ -5885,7 +5884,6 @@
 <translation id="5514315914873062345">ట్యాబ్</translation>
 <translation id="5517304475148761050">Play Storeను యాక్సెస్ చేయగలిగేలా ఈ యాప్‌ను అనుమతించాలి</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android ఫోన్‌తో సెటప్ చేయండి</translation>
 <translation id="5519053700692355541">మీరు పైన ఎగువున కుడి వైపున ఉన్న Chrome మెనూ ద్వారా చాలా సైడ్ ప్యానెల్ ఫీచర్‌లను తెరవవచ్చు</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">శక్తివంతమైన పాస్‌వర్డ్‌తో ఈ ఖాతాను మరింత సురక్షితంగా ఉంచండి. ఇది <ph name="EMAIL" /> కోసం <ph name="GOOGLE_PASSWORD_MANAGER" />‌కు సేవ్ చేయబడుతుంది.</translation>
@@ -9689,6 +9687,7 @@
     <ph name="BEGIN_PARAGRAPH2" />మీ చిన్నారి ChromeOS పరికర సెట్టింగ్‌లలో ఈ రిపోర్ట్‌లను అనుమతించడాన్ని మీరు ఎప్పుడైనా ప్రారంభించవచ్చు లేదా ఆపివేయవచ్చు. మీరు డొమైన్ అడ్మినిస్ట్రేటర్ అయితే, మీరు ఈ సెట్టింగ్‌ను అడ్మిన్ కన్సోల్‌లో మార్చవచ్చు.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />మీ చిన్నారి Google ఖాతాకు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, మీ చిన్నారి డేటా వారి Google ఖాతాలో సేవ్ చేయబడవచ్చు. ఈ సెట్టింగ్‌ల గురించి, వాటిని ఎలా సర్దుబాటు చేయాలనే దాని గురించి families.google.comలో మరింత తెలుసుకోండి.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ఫైల్ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి</translation>
+<translation id="8476942730579767658">విండోలు, డెస్క్‌లు</translation>
 <translation id="8477178913400731244">డేటాను తొలగించండి</translation>
 <translation id="8477241577829954800">బదులు పెట్టు</translation>
 <translation id="8477384620836102176">&amp;సాధారణ</translation>

@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">सुरक्षित छैन</translation>
 <translation id="1075079914415273530">कृषि तथा वन विज्ञान</translation>
 <translation id="1075364221219156102">कुनै पासकी प्रयोग गर्नुहोस्</translation>
-<translation id="1078033282564106222">बिल्डिङ नम्बरको विकल्प चयन गरिएको छ</translation>
 <translation id="1080116354587839789">चौडाइमा फिट गर्नुहोस्</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
 <translation id="1082026381988252344">स्क्रोल गर्नुहोस् र सेयर गरिएको आफ्नो ट्याबका सामग्री जुम गर्नुहोस्</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">PDF निर्माता:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">पुरुषको पोसाक</translation>
 <translation id="2137891579555018930">अनुमति प्राप्त गर्न बाँकी छ…</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
@@ -1384,7 +1382,6 @@
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3681421644246505351">Chrome ले तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा तपाईंका रुचिका विषयहरू थाहा पाउँछ।</translation>
 <translation id="3682094733650754138">ठेगाना भर्ने विकल्प छनौट गरिएको थियो</translation>
-<translation id="3689867156802445220">बिल्डिङ नम्बर</translation>
 <translation id="3693327506115126094">यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने तरिका छनौट गर्नुहोस्</translation>
 <translation id="3698629142018988477">साइट बनाउने बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="3701325639446035885">कार्यक्रमका टिकटहरूको बिक्री</translation>

@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Ekki öruggt</translation>
 <translation id="1075079914415273530">Landbúnaður og skógrækt</translation>
 <translation id="1075364221219156102">Nota aðgangslykil</translation>
-<translation id="1078033282564106222">Húsnúmersvalkostur valinn</translation>
 <translation id="1080116354587839789">Laga að breidd</translation>
 <translation id="1081061862829655580">Bakki 19</translation>
 <translation id="1082026381988252344">Flettu og stækkaðu/minnkaðu efni á samnýttum flipa</translation>
@@ -613,7 +612,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2126374524350484896">PDF-breytir:</translation>
 <translation id="2130448033692577677">Hugsanlega er ekki hægt að nota sniðmátin sem þú tilgreindir vegna þess að reglan DnsOverHttpsMode hefur ekki verið valin.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Sækir tungumálapakka fyrir „<ph name="LANGUAGE" />“…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Herrafatnaður</translation>
 <translation id="2137891579555018930">Bíður heimildar…</translation>
 <translation id="213826338245044447">Bókamerki fartækis</translation>
@@ -1387,7 +1385,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3681007416295224113">Upplýsingar um vottorð</translation>
 <translation id="3681421644246505351">Chrome skráir áhugasvið í samræmi við nýlegan vafraferil.</translation>
 <translation id="3682094733650754138">Valkosturinn „Fylla út heimilisfang“ var valinn</translation>
-<translation id="3689867156802445220">Húsnúmer</translation>
 <translation id="3693327506115126094">Veldu hvernig þú ætlar að staðfesta hver þú ert</translation>
 <translation id="3698629142018988477">Hnappurinn „Búa til Site“, virkjaðu til að búa til nýtt Site í Google Sites á skjótan hátt</translation>
 <translation id="3701325639446035885">Miðasala á viðburð</translation>
@@ -1576,6 +1573,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4089152113577680600">Bakki 14</translation>
 <translation id="4092349052316400070">Fylla út heimilisfang</translation>
 <translation id="4096237801206588987">11 x 15 to.</translation>
+<translation id="4098306082496067348">Ýttu á upplýsingar um sýndarkort til að bæta þeim við greiðsluupplýsingar.</translation>
 <translation id="4098354747657067197">Villandi vefsvæði framundan</translation>
 <translation id="4099048595830172239">Regla kerfisstjóra ræður gegn því að deila skjánum þínum með <ph name="APPLICATION_TITLE" /> þegar trúnaðarupplýsingar eru sýnlegar:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að sérsníða leturstæðir og leturgerðir í Chrome</translation>

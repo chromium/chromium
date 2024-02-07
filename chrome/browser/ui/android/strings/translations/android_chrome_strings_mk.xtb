@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7105047059074518658">Најавете се за да прелистувате полесно на уредите</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
-<translation id="7116588989735740310">За да се вратите на сајтовите отворени на други уреди, синхронизирајте ги вашите картички и историја</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7140829094791862589">Подреди рачно</translation>
 <translation id="7146622961999026732">Изгледа дека сајтовиве и апликацииве ви се важни:</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">Прекинете ја врската кога ќе завршите</translation>
 <translation id="7523960634226602883">Пребарувајте со камерата со Google Lens</translation>
 <translation id="752731652852882757">Блокирај додека се користи „Инкогнито“</translation>
-<translation id="7539698981064401140">Синхронизирање картички и историја</translation>
 <translation id="7562080006725997899">Чистење податоци од прелистување</translation>
 <translation id="756809126120519699">Податоците на Chrome се исчистени</translation>
 <translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
@@ -1446,7 +1444,6 @@
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
 <translation id="8466613982764129868">Проверете дали <ph name="TARGET_DEVICE_NAME" /> е поврзан на интернет</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
-<translation id="847433688444405067">Прелистување на уредите</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отворете ја страницата „Историја“</translation>
 <translation id="8493948351860045254">Ослободете простор</translation>
@@ -1496,7 +1493,6 @@
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8731268612289859741">Безбедносен код</translation>
 <translation id="8746155870861185046">Споделете го нагласениот текст</translation>
-<translation id="874726034427945498">За да гледате подобри предлози во лентата за адреси, синхронизирајте ги вашите картички и историја</translation>
 <translation id="8748850008226585750">Содржината е скриена</translation>
 <translation id="8754448020583829686">Копирај без линк</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
@@ -1538,7 +1534,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
-<translation id="8987736167266086032">Продолжете каде што сте застанале</translation>
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
@@ -1561,7 +1556,6 @@
 <translation id="9070377983101773829">Започнете гласовно пребарување</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Сајтовите што ги посетувате не се зачувуваат во режимот „Инкогнито“</translation>
-<translation id="9084103763810123431">За да продолжите да прелистувате на друг уред, синхронизирајте ги вашите картички и историја</translation>
 <translation id="9086302186042011942">Синхронизирање</translation>
 <translation id="9086455579313502267">Не може да се пристапи на мрежата</translation>
 <translation id="9099220545925418560">Според вашата историја на прелистувањето. Оваа поставка е исклучена.</translation>

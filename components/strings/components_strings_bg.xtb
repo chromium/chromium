@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Няма защита</translation>
 <translation id="1075079914415273530">Земеделие и гори</translation>
 <translation id="1075364221219156102">Използване на ключ за достъп</translation>
-<translation id="1078033282564106222">Избрана бе опцията за номер на сградата</translation>
 <translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1081061862829655580">Тава 19</translation>
 <translation id="1082026381988252344">Превъртане и промяна на мащаба на съдържанието на споделения раздел</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">PDF файлът е създаден със:</translation>
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">Езиковият пакет за <ph name="LANGUAGE" /> се изтегля... <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Мъжко облекло</translation>
 <translation id="2137891579555018930">Чака се разрешение...</translation>
 <translation id="213826338245044447">Мобилни отметки</translation>
@@ -1387,7 +1385,6 @@
 <translation id="3681007416295224113">Информация за сертификата</translation>
 <translation id="3681421644246505351">Chrome отбелязва темите, които ви интересуват, въз основа на скорошната ви история на сърфиране.</translation>
 <translation id="3682094733650754138">Избрана бе опцията за попълване на адреса</translation>
-<translation id="3689867156802445220">Номер на сградата</translation>
 <translation id="3693327506115126094">Изберете как да потвърдите, че сте вие</translation>
 <translation id="3698629142018988477">Бутон за създаване на сайт. Активирайте, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="3701325639446035885">Продажба на билети за събития</translation>
@@ -1576,6 +1573,7 @@
 <translation id="4089152113577680600">Тава 14</translation>
 <translation id="4092349052316400070">Попълване на адреса</translation>
 <translation id="4096237801206588987">11 x 15 инча</translation>
+<translation id="4098306082496067348">Докоснете данните на виртуалната карта, за да ги добавите към плащането.</translation>
 <translation id="4098354747657067197">Внимание: измамен сайт</translation>
 <translation id="4099048595830172239">Според администраторско правило споделянето на екрана с(ъс) „<ph name="APPLICATION_TITLE" />“, когато се вижда поверително съдържание, не се препоръчва:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да персонализирате шрифтовете в Chrome и размера им</translation>

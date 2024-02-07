@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" />, <ph name="SEPARATOR" />, <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="310297983047869047">Prejšnji diapozitiv</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Povezano z napravo USB</translation>
 <translation id="4194328954146351878">Vprašaj, preden se spletnim mestom dovoli ogled in spreminjanje podatkov v napravah NFC (priporočeno)</translation>
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> iz naprave »<ph name="FROM_DEVICE" />«</translation>
 <translation id="4226663524361240545">Ob prejemanju obvestil naprava morda vibrira</translation>
 <translation id="4259722352634471385">Krmarjenje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Čudoviti čarovnik iz Oza</translation>
 <translation id="7684642910516280563">Spletnemu mestu ne dovoli uporabe piškotkov tretje osebe</translation>
 <translation id="7719367874908701697">Povečava/pomanjšava strani</translation>
-<translation id="7770832849480336015">Skrij »<ph name="TITLE_OF_MODULE" />«</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nadaljuj s tem zavihkom}one{Nadaljuj s temi zavihki}two{Nadaljuj s temi zavihki}few{Nadaljuj s temi zavihki}other{Nadaljuj s temi zavihki}}</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>

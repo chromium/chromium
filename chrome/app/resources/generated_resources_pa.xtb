@@ -4019,7 +4019,6 @@
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4031527940632463547">ਸੈਂਸਰ ਬਲਾਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="4033471457476425443">ਨਵਾਂ ਫੋਲਡਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="4033711848170683365">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਪ੍ਰੋਫਾਈਲ ਵਿਚਲੇ Google ਖਾਤਿਆਂ ਨੂੰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਦੀਆਂ ਹੋਰ ਐਪਾਂ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਖਾਤਿਆਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4033963223187371752">ਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ ਚਿੱਤਰਾਂ ਜਾਂ ਵੈੱਬ ਫ੍ਰੇਮਾਂ ਵਰਗੀ ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨਾਲ ਪਰੋਈਆਂ ਹੋ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4034706080855851454">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੇ ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਡੀਵਾਈਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦੀ ਲੋੜ ਹੈ।
 
@@ -5887,7 +5886,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">ਇਸ ਐਪ ਨੂੰ Play Store ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android ਫ਼ੋਨ ਨਾਲ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="5519053700692355541">ਤੁਸੀਂ ਸਿਖਰ 'ਤੇ ਸੱਜੇ ਪਾਸੇ ਦਿੱਤੇ Chrome ਮੀਨੂ ਰਾਹੀਂ ਜ਼ਿਆਦਾਤਰ ਸਾਈਡ ਪੈਨਲ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਨਾਲ ਇਸ ਖਾਤੇ ਨੂੰ ਹੋਰ ਸੁਰੱਖਿਅਤ ਰੱਖੋ। ਇਸ ਨੂੰ <ph name="EMAIL" /> ਲਈ <ph name="GOOGLE_PASSWORD_MANAGER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -9695,6 +9693,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੇ ਬੱਚੇ ਦੀਆਂ ChromeOS ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਦੀ ਆਗਿਆ ਦੇਣਾ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਦੇ Google ਖਾਤੇ ਲਈ ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ, ਤਾਂ ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਡਾਟਾ ਉਨ੍ਹਾਂ ਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। families.google.com 'ਤੇ ਇਨ੍ਹਾਂ ਸੈਟਿੰਗਾਂ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ਫ਼ਾਈਲ ਦਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="8476942730579767658">ਵਿੰਡੋਆਂ ਅਤੇ ਡੈਸਕ</translation>
 <translation id="8477178913400731244">ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="8477241577829954800">ਛੱਡ ਦਿੱਤਾ</translation>
 <translation id="8477384620836102176">&amp;ਸਧਾਰਨ</translation>

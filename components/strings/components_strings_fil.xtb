@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Hindi secure</translation>
 <translation id="1075079914415273530">Agrikultura at forestry</translation>
 <translation id="1075364221219156102">Gumamit ng Passkey</translation>
-<translation id="1078033282564106222">Napili ang opsyong numero ng gusali</translation>
 <translation id="1080116354587839789">Pagkasyahin sa lapad</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">Mag-scroll at mag-zoom sa mga content ng iyong naka-share na tab</translation>
@@ -613,7 +612,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2126374524350484896">Producer ng PDF:</translation>
 <translation id="2130448033692577677">Posibleng hindi mailapat ang mga template na tinukoy mo dahil hindi naitakda ang patakarang DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Dina-download ang <ph name="LANGUAGE" /> language pack...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Mga panlalaking damit</translation>
 <translation id="2137891579555018930">Naghihintay ng pahintulot...</translation>
 <translation id="213826338245044447">Mga Bookmark sa Mobile</translation>
@@ -1387,7 +1385,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3681007416295224113">Impormasyon sa certificate</translation>
 <translation id="3681421644246505351">Nagtatala ang Chrome ng mga paksa kung saan ka interesado batay sa iyong kamakailang history ng pag-browse.</translation>
 <translation id="3682094733650754138">Napili ang opsyong punan ang address</translation>
-<translation id="3689867156802445220">Numero ng gusali</translation>
 <translation id="3693327506115126094">Piliin kung paano mo ive-verify na ikaw ito</translation>
 <translation id="3698629142018988477">Button na Gumawa ng site, i-activate para mabilis na makagawa ng bagong site sa Google Sites</translation>
 <translation id="3701325639446035885">Mga Pagbebenta ng Ticket ng Event</translation>
@@ -1576,6 +1573,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4092349052316400070">Punan ang address</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
+<translation id="4098306082496067348">I-tap ang mga detalye ng virtual card para idagdag ang mga ito sa pag-checkout.</translation>
 <translation id="4098354747657067197">Mapupunta sa nakakapanlinlang na site</translation>
 <translation id="4099048595830172239">Hindi inirerekomenda ng patakaran ng administrator na ibahagi ang iyong screen sa <ph name="APPLICATION_TITLE" /> kapag nakikita ang kumpidensyal na content:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-customize ang mga laki ng font at typeface sa Chrome</translation>

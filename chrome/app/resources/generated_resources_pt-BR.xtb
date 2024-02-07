@@ -1733,6 +1733,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2285109769884538519">{COUNT,plural, =0{Abrir tudo em &amp;um novo grupo de guias}=1{Abrir em &amp;um novo grupo de guias}one{Abrir tudo ({COUNT}) em &amp;um novo grupo de guias}other{Abrir tudo ({COUNT}) em &amp;um novo grupo de guias}}</translation>
 <translation id="2285942871162473373">Não foi possível reconhecer a impressão digital. Tente novamente.</translation>
 <translation id="2287617382468007324">Como imprimir o endereço IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Para proteger seus dados, as permissões de um site que você não acessou recentemente foram removidas}one{Para proteger seus dados, as permissões de um site que você não acessou recentemente foram removidas}other{Para proteger seus dados, as permissões de sites que você não acessou recentemente foram removidas}}</translation>
 <translation id="2287944065963043964">Tela de login</translation>
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
 <translation id="2291452790265535215">Tente usar o painel lateral para acessar favoritos, jornadas e muito mais</translation>
@@ -4018,7 +4019,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
-<translation id="4033711848170683365">Esta ação vai excluir permanentemente os dados de navegação deste dispositivo. As Contas do Google relacionadas a este perfil ainda podem ser usadas por outros apps no <ph name="DEVICE_TYPE" />. Acesse <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> para remover essas contas.</translation>
 <translation id="4033963223187371752">Sites seguros podem incorporar conteúdo não seguro, como imagens ou frames da Web</translation>
 <translation id="4034706080855851454">Sua organização precisa de informações sobre o dispositivo para que ele possa ser usado com o perfil dela.
 
@@ -4318,6 +4318,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4277434192562187284">Fonte de configuração XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Permissões removidas de 1 site}one{Permissões removidas de {NUM_SITES} site}other{Permissões removidas de {NUM_SITES} sites}}</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="4278498748067682896">Você vai usar um Upgrade de quiosque e sinalização, que permite que o dispositivo funcione apenas em um desses dois modos. Se você quer que os usuários façam login no dispositivo, volte e o registre usando o Upgrade do Chrome Enterprise.</translation>
 <translation id="4278779213160967034">O processo pode levar alguns minutos. Fazendo o download dos arquivos.</translation>
@@ -5886,7 +5887,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Este app precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configurar com um smartphone Android</translation>
 <translation id="5519053700692355541">É possível abrir a maioria dos recursos do painel lateral usando o menu do Google Chrome no canto superior direito</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Deixe esta conta ainda mais segura com uma senha forte. Ela vai ficar salva no <ph name="GOOGLE_PASSWORD_MANAGER" /> da conta <ph name="EMAIL" />.</translation>
@@ -9697,6 +9697,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
     <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" estiver ativada para a Conta do Google da criança, esses dados poderão ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como elas podem ser ajustadas em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Digite a senha do arquivo</translation>
+<translation id="8476942730579767658">Janelas e espaços de trabalho</translation>
 <translation id="8477178913400731244">Excluir dados</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Изображенията не се заредиха. Проверете връзката си с мрежата или ги заредете отново.</translation>
 <translation id="1751249301761991853">Лични</translation>
 <translation id="1753496554272155572">Изход от визуализацията на тапета</translation>
+<translation id="1754578112426924640">Бутон за редактиране на <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Приложение за диагностика</translation>
 <translation id="175763766237925754">Добра (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android не работи</translation>
 <translation id="551689408806449779">Връзката с устройството е прекратена. Свържете се отново, за да тествате</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">заключено</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматично превключване към тъмната тема при залез</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Центриране</translation>
 <translation id="5703716265115423771">намаляване на силата на звука</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Бутон за редактиране на <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Актуализиране на <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5757187557809630523">следващ запис</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Бутон за изтриване на <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="593880865674747800">Създаване на още в този стил</translation>
 <translation id="5939518447894949180">Нулиране</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6791471867139427246">цвят на осветлението на клавиатурата</translation>
+<translation id="6796229976413584781">Клавишната комбинация бе изтрита</translation>
 <translation id="6798678288485555829">Придвижване в текст</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7233782086689993269">Клавишната комбинация бе възстановена</translation>
 <translation id="725133483556299729">Избиране на имейл адрес</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7271932918253517778">Комбинацията с клавиши от най-горния ред трябва да включва клавиша „<ph name="META_KEY" />“.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Промяна на аватара</translation>
 <translation id="7683228889864052081">цвят на клавиатурата</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">осветление на клавиатурата</translation>
 <translation id="7730077286107534951">Част от информацията за профила и системата може да бъде изпратена до Google. Използваме тази информация за отстраняване на технически проблеми и за подобряване на услугите ни в съответствие с <ph name="BEGIN_LINK2" />Декларацията ни за поверителност<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Общите ни условия<ph name="END_LINK3" />. За да заявите промени в съдържанието, отворете <ph name="BEGIN_LINK1" />страницата за правна помощ<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Брой цикли</translation>
+<translation id="7746357909584236306">може да се редактира</translation>
 <translation id="7747039790905080783">Предварително споделен ключ</translation>
 <translation id="7752963721013053477">От зазоряване до здрачаване – специално съдържание</translation>
 <translation id="7762130827864645708">Промяната на паролата ви беше успешна. Моля, използвайте новата парола от сега нататък.</translation>

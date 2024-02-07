@@ -75,6 +75,7 @@ Megjegyzések:
 <translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2702250627063295552">Olvasólista-elem felvétele a Chrome-ba</translation>
+<translation id="2703746758996815929">Ha hasznos tippeket szeretne kapni a Chrome-ra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2789947168960170215">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap.</translation>
 <translation id="8865415417596392024">A fiókjában található Chrome-adatok</translation>
+<translation id="8874688701962049679">Tippek arra vonatkozóan, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="8891935667620843985">Ha szeretné, hogy automatikusan a Chrome nyissa meg a linkeket, állítsa be alapértelmezett böngészőként.</translation>
 <translation id="8897749957032330183">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="8949681853939555434">A Chrome beállítása alapértelmezett böngészőként</translation>

@@ -3309,6 +3309,7 @@
 <translation id="3497560059572256875">ডুডল শেয়ার করুন</translation>
 <translation id="3497915391670770295">আপনার অন্যান্য &amp;ডিভাইসে পাঠান</translation>
 <translation id="3500417806337761827">শেয়ার মাউন্ট করার সময় কোনও সমস্যা হয়েছে। অনেকগুলি SMB শেয়ার আগে থেকেই মাউন্ট করা হয়েছে।</translation>
+<translation id="3500764001796099683">আইসোলেটেড ওয়েব অ্যাপ চালু করুন</translation>
 <translation id="350397915809787283">আপনার অ্যাকাউন্ট না থাকলে, প্রথম বিকল্পটি বেছে নিয়ে একটি অ্যাকাউন্ট তৈরি করুন।</translation>
 <translation id="3503995387997205657">পুরনো অ্যাপ ফিরিয়ে আনতে পারেন</translation>
 <translation id="3505100368357440862">শপিং করার জন্য সাজেশন</translation>
@@ -4016,7 +4017,6 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4031527940632463547">সেন্সরগুলি ব্লক করা হয়েছে</translation>
 <translation id="4033471457476425443">নতুন ফোল্ডার যোগ করুন</translation>
-<translation id="4033711848170683365">এর ফলে এই ডিভাইস থেকে ব্রাউজ করা ডেটা স্থায়ীভাবে মুছে যাবে। আপনার <ph name="DEVICE_TYPE" />-এ এই প্রোফাইলের Google অ্যাকাউন্ট অন্যান্য অ্যাপ ব্যবহার করতে পারে। আপনি <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> বিকল্প থেকে এইসব অ্যাকাউন্ট সরিয়ে দিতে পারবেন।</translation>
 <translation id="4033963223187371752">নিরাপদ সাইট ছবি বা ওয়েব ফ্রেমের মতো এমন কন্টেন্ট এম্বেড করতে পারে যা নিরাপদ নয়</translation>
 <translation id="4034706080855851454">আপনার প্রতিষ্ঠানের প্রোফাইল থেকে ডিভাইসের ব্যবহার করতে, ডিভাইস সম্পর্কে আপনার প্রতিষ্ঠানের তথ্য প্রয়োজন।
 
@@ -5886,7 +5886,6 @@
 <translation id="5514315914873062345">ট্যাব</translation>
 <translation id="5517304475148761050">Play Store অ্যাক্সেস করতে এই অ্যাপকে অনুমতি দিতে হবে</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android ফোন ব্যবহার করে সেট-আপ করুন</translation>
 <translation id="5519053700692355541">একেবারে উপরে ডানদিকের Chrome মেনুর মাধ্যমে আপনি বেশিরভাগ সাইড প্যানেল ফিচার খুলতে পারবেন</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">শক্তিশালী পাসওয়ার্ডের সাহায্যে এই অ্যাকাউন্টটি আরও বেশি সুরক্ষিত করুন। <ph name="EMAIL" />-এর জন্য <ph name="GOOGLE_PASSWORD_MANAGER" />-এ এটি সেভ করা হবে।</translation>
@@ -7188,6 +7187,7 @@
 <translation id="6551508934388063976">কম্যান্ড উপলভ্য নেই৷ একটি নতুন উইন্ডো খুলতে control-N টিপুন৷</translation>
 <translation id="6551606359270386381">উপবৃত্তাকার টুল</translation>
 <translation id="6551612971599078809">সাইট ইউএসবি ব্যবহার করছে</translation>
+<translation id="6551620030439692385">ব্লক করা আছে। টাইমজোন বর্তমানে <ph name="TIMEZONE" />-এ সেট করা রয়েছে এবং শুধু ম্যানুয়ালি তা আপডেট করা যেতে পারে।</translation>
 <translation id="6551739526055143276">Family Link ম্যানেজ করে</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> জন ব্যবহারকারী</translation>
 <translation id="6555432686520421228">নতুনের মত করতে সমস্ত ব্যবহারকারী অ্যাকাউন্টগুলি সরান এবং আপনার <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইস আবার সেট করুন৷</translation>
@@ -7258,6 +7258,7 @@
 <translation id="6608773371844092260">ফিঙ্গারপ্রিন্ট সেট-আপ সেট করার জন্য, আপনার সন্তানকে <ph name="DEVICE_TYPE" />-এর ডানদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="6609478180749378879">আপনি 'ছদ্মবেশী মোড' থেকে বেরিয়ে আসার পরেই সাইন-ইন সংক্রান্ত ডেটা এই ডিভাইসে স্টোর করা হবে। আপনি আবার পরে এই ওয়েবসাইটে আপনার ডিভাইস দিয়ে সাইন-ইন করতে পারবেন।</translation>
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
+<translation id="6610064275805055636">আইসোলেটেড ওয়েব অ্যাপ ম্যানেজ করুন</translation>
 <translation id="6611972847767394631">এখানে আপনার ট্যাবগুলি দেখুন</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6613267708691765962">ম্যালওয়্যারের জন্য স্ক্যান করা হচ্ছে...</translation>
@@ -8622,6 +8623,7 @@
 <translation id="7671472752213333268">"<ph name="SCANNER_NAME" />" থেকে "<ph name="EXTENSION_NAME" />" স্ক্যান করতে চায়।</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" />-এর জন্য কোন ডিভাইসে 'পাসকী' আছে তা বেছে নিন</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> এ।</translation>
+<translation id="7672726198839739113">ব্লক করা আছে। বর্তমানে <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />-এ শিডিউল সেট করা রয়েছে এবং শুধু ম্যানুয়ালি তা আপডেট করা যেতে পারে।</translation>
 <translation id="7673313156293624327">ChromeOS Shill (কানেকশন ম্যানেজার) লগ</translation>
 <translation id="7674416868315480713">ডিঅ্যাক্টিভেট করা সমস্ত পোস্ট Linux-এ ফরওয়ার্ড করা হয়</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" />টি অ্যাপ</translation>
@@ -9554,6 +9556,7 @@
 <translation id="8376384591331888629">এই সাইটে থার্ড-পার্টি কুকি সহ</translation>
 <translation id="8376451933628734023">যদি এই ওয়েব অ্যাপ কৌশলে নিজেকে অন্য অ্যাপ হিসেবে দেখিয়ে আপনাকে প্রতারিত করে, তাহলে এটি আনইনস্টল করুন।</translation>
 <translation id="8376532149031784008">আবার লোড করা হচ্ছে <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">আপনার অ্যাডমিনিস্ট্রেটরের ইনস্টল করা এক্সটেনশন এখনও সাইটের কন্টেন্ট দেখতে এবং পরিবর্তন করতে পারবে</translation>
 <translation id="8376752431516546391">Google Search সাইড প্যানেল</translation>
 <translation id="8377625247046155446">এই ডিভাইসেই শুধু এই 'পাসকী' সেভ করা হবে। আপনি সবকটি ছদ্মবেশী উইন্ডো বন্ধ করে দেওয়ার পর এটি এই ডিভাইসে থেকে যাবে।</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
@@ -9693,6 +9696,7 @@
     <ph name="BEGIN_PARAGRAPH2" />আপনি যেকোনও সময় আপনার সন্তানের ChromeOS ডিভাইস সেটিংস থেকে এই রিপোর্ট পাঠানো শুরু বা বন্ধ করতে পারেন। আপনি ডোমেন অ্যাডমিনিস্ট্রেটর হলে, অ্যাডমিন কনসোল থেকে এই সেটিং পরিবর্তন করতে পারবেন।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />আপনার সন্তানের Google অ্যাকাউন্টের জন্য 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং চালু থাকলে, তার Google অ্যাকাউন্টে ডেটা সেভ করা থাকতে পারে। এই সেটিং এবং এটি কীভাবে অ্যাডজাস্ট করবেন সেই সম্পর্কে families.google.com লিঙ্কে গিয়ে আরও জানুন।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ফাইলের পাসওয়ার্ড লিখুন</translation>
+<translation id="8476942730579767658">উইন্ডো ও ডেস্ক</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>
 <translation id="8477241577829954800">বাতিল করা</translation>
 <translation id="8477384620836102176">&amp;সাধারণ</translation>

@@ -204,6 +204,7 @@
 
 只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
+<translation id="6433172051771630690">有关充分利用 Chromium 的提示。</translation>
 <translation id="6502321914804101924">已退出 Chromium</translation>
 <translation id="6563921047760808519">详细了解 <ph name="BEGIN_LINK" />Chromium 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium 现在支持为您的受管理账号设置用户规范</translation>
@@ -256,6 +257,7 @@
 <translation id="7990085102929105708">Google Pay 中的付款方式和地址不会加密。Chromium 中的浏览记录不会同步。
 
 只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
+<translation id="7994322153108931467">如需获取实用 Chromium 提示，请在 iOS 设置中开启通知。</translation>
 <translation id="7995166854192397899">系统会根据您在其他设备上的浏览活动给出建议。如需获取建议，请在您的所有设备上登录 Chromium。</translation>
 <translation id="800195749539500647">充分利用 Chromium</translation>
 <translation id="8013573822802650211">要查看您在其他设备上用 Chromium 打开的标签页，请在所有设备上登录</translation>

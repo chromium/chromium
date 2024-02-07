@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Imazhet nuk mund të ngarkoheshin. Kontrollo lidhjen e rrjetit ose provo t'i ngarkosh përsëri imazhet.</translation>
 <translation id="1751249301761991853">Personale</translation>
 <translation id="1753496554272155572">Dil nga pamja paraprake e imazhit të sfondit</translation>
+<translation id="1754578112426924640">Butoni i modifikimit për <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacioni i diagnostikimit</translation>
 <translation id="175763766237925754">I mirë (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android nuk po punon</translation>
 <translation id="551689408806449779">Pajisja është shkëputur. Provo të rilidhesh për ta testuar</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">kyçur</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Kalo automatikisht te tema e errët në perëndim të diellit</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Qendër</translation>
 <translation id="5703716265115423771">ul volumin</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Butoni i modifikimit për <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Përditëso <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5757187557809630523">pjesa tjetër muzikore</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Butoni i fshirjes për <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Skedari nuk u gjet</translation>
 <translation id="593880865674747800">Krijo më shumë në këtë stil</translation>
 <translation id="5939518447894949180">Rivendos</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="6791471867139427246">ngjyra e dritës së tastierës</translation>
+<translation id="6796229976413584781">Shkurtoja u fshi</translation>
 <translation id="6798678288485555829">Navigimi në tekst</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
+<translation id="7233782086689993269">Shkurtorja u restaurua</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7271932918253517778">Shkurtorja me tastet e rreshtit të sipërm duhet të përfshijë tastin "<ph name="META_KEY" />".</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
 <translation id="7683228889864052081">nuanca e tastierës</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">drita e tastierës</translation>
 <translation id="7730077286107534951">Disa prej informacioneve të llogarisë dhe sistemit mund të dërgohen te Google. Ne e përdorim këtë informacion për të ndihmuar në zgjidhjen e problemeve teknike dhe për të përmirësuar shërbimet tona, sipas <ph name="BEGIN_LINK2" />Politikës së privatësisë<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />Kushteve të shërbimit<ph name="END_LINK3" />. Për të kërkuar ndryshime të përmbajtjes, shko te <ph name="BEGIN_LINK1" />Ndihma ligjore<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Numri i cikleve</translation>
+<translation id="7746357909584236306">i modifikueshëm</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7752963721013053477">Nga agimi në muzg - ekskluzive</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>

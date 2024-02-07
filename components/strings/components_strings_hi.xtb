@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">सुरक्षित नहीं है</translation>
 <translation id="1075079914415273530">कृषि और वन विज्ञान</translation>
 <translation id="1075364221219156102">पासकी का इस्तेमाल करें</translation>
-<translation id="1078033282564106222">'बिल्डिंग नंबर' विकल्प चुना गया</translation>
 <translation id="1080116354587839789">चौड़ाई में फ़िट करें</translation>
 <translation id="1081061862829655580">ट्रे 19</translation>
 <translation id="1082026381988252344">शेयर किए गए आपके टैब के कॉन्टेंट को स्क्रोल और ज़ूम करें</translation>
@@ -399,6 +398,7 @@
 <translation id="1711528724596764268">मशीन लर्निंग और आर्टिफ़िशियल इंटेलिजेंस</translation>
 <translation id="1712552549805331520"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए डेटा संग्रहित करना चाहता है</translation>
 <translation id="1713628304598226412">ट्रे 2</translation>
+<translation id="1713819065634160212">अपने Google खाते में सेव किए गए पतों का इस्तेमाल करें और उन्हें सेव करें</translation>
 <translation id="1714807406136741351">ब्राउज़ मोड, ग्राफ़ पर कीमत में हुए बदलावों की समीक्षा करने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है. ऐसा करने के लिए फ़ॉर्म मोड का इस्तेमाल करें</translation>
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
@@ -613,7 +613,6 @@
 <translation id="2126374524350484896">पीडीएफ़ प्रोड्यूसर:</translation>
 <translation id="2130448033692577677">आपकी ओर से तय किए गए टेम्प्लेट, DnsOverHttpsMode नीति के सेट न हाेने की वजह से लागू नहीं हो सकते.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> भाषा पैक डाउनलोड हो रहा है...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">पुरुषों के कपड़े</translation>
 <translation id="2137891579555018930">अनुमति मिलने का इंतज़ार किया जा रहा है...</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्क</translation>
@@ -1089,6 +1088,7 @@
 <translation id="3120807611504813890">एन्वेलप (लाइटवेट)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> पर जाएं</translation>
 <translation id="3126023634486644099">लेबल (पर्मानेंट)</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> अब आपका डिफ़ॉल्ट सर्च इंजन है</translation>
 <translation id="3140646734028448730">कारोबारी सेवाएं</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
 <translation id="3141641372357166056">सहमति से जुड़ा कोई फ़ैसला नहीं लिया गया</translation>
@@ -1385,7 +1385,6 @@
 <translation id="3681007416295224113">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="3681421644246505351">Chrome आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों को सेव करता है.</translation>
 <translation id="3682094733650754138">पता भरने का विकल्प चुना गया</translation>
-<translation id="3689867156802445220">बिल्डिंग का नंबर</translation>
 <translation id="3693327506115126094">अपनी पहचान की पुष्टि करने का तरीका चुनें</translation>
 <translation id="3698629142018988477">'साइट बनाएं' बटन, Google Sites में जल्दी से नई साइट बनाने के लिए इसे चालू करें</translation>
 <translation id="3701325639446035885">इवेंट के टिकट की बिक्री</translation>
@@ -1509,6 +1508,7 @@
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3946209740501886391">इस साइट पर हमेशा पूछें</translation>
 <translation id="3948588869002647271">यह ऐप्लिकेशन मौजूद नहीं है या खराब हो गया है</translation>
+<translation id="3949297482798028668">इस कॉन्टेंट को यहां चिपकाने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है.</translation>
 <translation id="3949571496842715403">यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसके सुरक्षा प्रमाणपत्र में विषय के वैकल्पिक नाम नहीं बताए गए हैं. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता की ओर से आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="3949601375789751990">आपका ब्राउज़िंग इतिहास यहां दिखाई देता है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1573,6 +1573,7 @@
 <translation id="4089152113577680600">ट्रे 14</translation>
 <translation id="4092349052316400070">पता डालें</translation>
 <translation id="4096237801206588987">11 x 15 इंच</translation>
+<translation id="4098306082496067348">वर्चुअल कार्ड की जानकारी पर टैप करके उसे चेकआउट में जोड़ें.</translation>
 <translation id="4098354747657067197">आगे भ्रामक साइट है</translation>
 <translation id="4099048595830172239">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति आपको <ph name="APPLICATION_TITLE" /> के साथ अपनी स्क्रीन शेयर करने का सुझाव नहीं देती है:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -1924,6 +1925,7 @@
 <translation id="4764680219299728632">रेंज, कुकटॉप, और अवन</translation>
 <translation id="4764776831041365478"><ph name="URL" /> पर मौजूद वेबपेज संभवतः अस्थायी रूप से बंद है या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया है.</translation>
 <translation id="4766713847338118463">नीचे की ओर ड्युएल स्टेपल</translation>
+<translation id="4768864802656530630">सिस्टम लॉग की ज़्यादा जानकारी. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4771973620359291008">अज्ञात गड़बड़ी आई.</translation>
 <translation id="4774055414220872623">ऑर्ट और क्राफ़्ट का सामान</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पॉप-अप ब्लॉक किया गया}one{# पॉप-अप ब्लॉक किए गए हैं}other{# पॉप-अप ब्लॉक किए गए हैं}}</translation>
@@ -2228,6 +2230,7 @@
 <translation id="5377026284221673050">"आपकी घड़ी पीछे चल रही है" या "आपकी घड़ी आगे चल रही है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5383478552402031184">फ़्लोरिंग</translation>
 <translation id="5385857628869214740">हास्य</translation>
+<translation id="5385966243497224160">बिना एचटीटीपीएस वाले यूआरएल की झलक नहीं दिखाई जा सकती</translation>
 <translation id="5386426401304769735">इस साइट की प्रमाणपत्र शृंखला में, SHA-1 का उपयोग करके हस्ताक्षर किया गया प्रमाणपत्र शामिल है.</translation>
 <translation id="5392506727170022660">मेटल (सेमी-ग्लॉस)</translation>
 <translation id="5396631636586785122">दाईं ओर एज़ स्टिच</translation>
@@ -2450,6 +2453,8 @@
 <translation id="5838732667866024867">ग्राफ़ पर कीमत में हुए बदलावों को देखने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है</translation>
 <translation id="5840318881868981258">अपने Google खाते, <ph name="ACCOUNT" /> में</translation>
 <translation id="5841338463993781099">क्या खाते में सेव करना है?</translation>
+<translation id="5843987376989109187">फ़िलहाल, यह सुविधा इस भाषा में उपलब्ध नहीं है.
+    <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">पावर सप्लाई</translation>
 <translation id="5851548754964597211">टैब सूची</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3658,6 +3663,7 @@
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
 <translation id="8194956568907463262">शूटर गेम</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
+<translation id="8199730148066603000">बिना एचटीटीपीएस वाले यूआरएल की झलक देखने की अनुमति नहीं है.</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>
 <translation id="8202370299023114387">विरोध</translation>
@@ -4094,6 +4100,8 @@
 <translation id="9049981332609050619">आपने <ph name="DOMAIN" /> पर पहुंचने की कोशिश की लेकिन सर्वर ने एक अमान्‍य प्रमाणपत्र पेश किया.</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
 <translation id="9051072642122229460">कॉफ़ी और एस्प्रेसो मेकर</translation>
+<translation id="9051260467258969162">फिर से <ph name="BEGIN_LINK" />साइन इन<ph name="END_LINK" /> 
+    करें. इसके बाद, लिखने में मदद पाने के लिए इस टैब पर वापस आएं</translation>
 <translation id="9053840549256861041">हम विज्ञापन देखने वाले की निजता बनाए रखने से जुड़ी एक नई सुविधा लॉन्च कर रहे हैं. इसका नाम है, विज्ञापन की परफ़ॉर्मेंस का आकलन. Chrome, साइटों के बीच सिर्फ़ कुछ ही जानकारी शेयर करता है. जैसे, आपको कोई विज्ञापन कब दिखाया गया, ताकि साइटों को विज्ञापनों की परफ़ॉर्मेंस का आकलन करने में मदद मिल सके.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">हो सकता है कि फ़ाइल को दूसरी जगह ले जाया गया हो, उसमें बदलाव किया गया हो या उसे मिटा दिया गया हो.</translation>

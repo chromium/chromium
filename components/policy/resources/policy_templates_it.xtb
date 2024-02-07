@@ -1764,6 +1764,7 @@ L'utente può scegliere un'immagine di Google Foto come sfondo se questo criteri
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       La configurazione di <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2) impedisce di applicare al browser tutte le varianti. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
+<translation id="2402537890732357732">Mostra sempre l'etichetta di gestione</translation>
 <translation id="2402547085566757554">Non usare la pagina Nuova scheda come home page</translation>
 <translation id="240713331529749993">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita in un processo dedicato su Android. Il processo di ogni origine denominata potrà contenere solo documenti provenienti da tale origine e i relativi sottodomini. Ad esempio, specificare https://a1.example.com/ consente https://a2.a1.example.com/ nello stesso processo, ma non https://example.com o https://b.example.com. Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> 77 e il criterio estende questa modalità per isolare origini aggiuntive specifiche.
 
@@ -4507,6 +4508,11 @@ Per i dispositivi gestiti, questo criterio è attivo per impostazione predefinit
 Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
+<translation id="4698147321113652592">Questo criterio stabilisce una serie di intervalli settimanali per la pianificazione della sospensione automatica. Quando inizia un intervallo, il dispositivo <ph name="PRODUCT_OS_NAME" /> entra in modalità di sospensione e si riattiva al termine dell'intervallo.
+
+Le pianificazioni con intervalli che si sovrappongono non sono supportate. Questo criterio non avrà alcun effetto se contiene due intervalli che si sovrappongono.
+
+I dispositivi <ph name="PRODUCT_OS_NAME" /> utilizzeranno il fuso orario del sistema per applicare questi intervalli.</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699592681017489215">Questo criterio consente di configurare un'opzione locale che permette di disattivare i controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
@@ -6197,6 +6203,7 @@ Il salvaschermo del dispositivo mostra le immagini a cui fa riferimento il crite
 <translation id="6181783961196084973">Il valore dell'opzione di attivazione/disattivazione della raccolta di attività nelle app. Se il criterio viene impostato su vero, l'attività nelle app dell'utente verrà segnalata al server per poter essere visualizzata nell'app <ph name="PRODUCT_NAME" /> del figlio e del genitore. Se il criterio viene impostato su falso, la funzionalità Limiti di utilizzo per app rimarrà disponibile, ma non verranno segnalati dati al server, che quindi non verranno visualizzati in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Disattiva gli upgrade a HTTPS.</translation>
 <translation id="6182563940865917569">Consenti a Chrome di riprodurre automaticamente i contenuti multimediali</translation>
+<translation id="6187632100458475876">Impostazione dell'etichetta per l'avatar della barra degli strumenti gestita</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
 
@@ -7217,6 +7224,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLIC
 <translation id="6915493311660114995">Se il criterio viene impostato su Enabled, <ph name="PRODUCT_NAME" /> consentirà le richieste di autenticazione web sui siti web che hanno certificati TLS con errori (ad esempio, siti web considerati non sicuri).
 
 Se il criterio viene impostato su Disabled o se non viene configurato, verrà applicato il comportamento predefinito di blocco di queste richieste.</translation>
+<translation id="6915524162137327111">Visualizzazione delle etichette di gestione per 30 secondi</translation>
 <translation id="6919819553978815392">Se il criterio viene impostato su vero o se non viene configurato, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> abilitano gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità di navigazione in incognito.
 
       Se viene impostato su falso, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'avvio dei profili ospite.
@@ -8473,6 +8481,11 @@ Se il criterio <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene impostato su 
           Questo criterio è stato rimosso in Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
+<translation id="797820628785995988">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per <ph name="CHROME_SYNC_NAME" /> sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di <ph name="CHROME_SYNC_NAME" />.
+
+      Attualmente i tipi di dati per questo criterio sono: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls", "wifiConfigurations". Questi nomi sono sensibili alle maiuscole.
+
+      Note: l'aggiornamento dinamico dei criteri è supportato solo in <ph name="PRODUCT_NAME" /> 123 e versioni successive. La disattivazione di "autofill" disattiva anche "payments". "typedUrls" si riferisce all'intera cronologia di navigazione.</translation>
 <translation id="7982057585796399404">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
 
 Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
@@ -8756,6 +8769,10 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
 <translation id="8250048892729838843">Questo criterio è stato ritirato. Se il criterio viene attivato o se non viene configurato, il dispositivo potrà ricevere i controlli di reporting granulare.
       Se viene disattivato, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
+<translation id="8254792295762772851">Se questo criterio non viene configurato o se viene impostato su <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valore 0), accanto all'avatar della barra degli strumenti verrà visualizzata l'etichetta Lavoro o Scuola.
+Queste etichette vengono mostrate solo se l'account a cui è stato eseguito l'accesso è gestito.
+
+Se il criterio viene impostato su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (valore 1), accanto all'avatar della barra degli strumenti verrà visualizzata l'etichetta Lavoro o Scuola per 30 secondi dopo l'apertura del profilo.</translation>
 <translation id="8256006033157034334">Questo criterio è deprecato e non è supportato. Utilizza il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 
@@ -9362,6 +9379,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 
       Se imposti il criterio, gli utenti non possono modificare questa funzione. Se non viene impostato, gli utenti possono cambiare l'impostazione.</translation>
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
+<translation id="8712609946151927008">Pianifica intervalli di sospensione settimanali</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>
 <translation id="8714556680280715750">Un URL che gli utenti possono visitare per saperne di più. Se lo schema non viene configurato,
 nel programma di installazione non verrà visualizzato alcun URL "Scopri di più". Se presente, deve utilizzare

@@ -160,7 +160,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="158838227375272121">Website ng Google Classroom</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
-<translation id="1592682369233288537">Susunod na Desk: <ph name="NEXT_DESK_NAME" />, gamitin ang Search+Space para i-activate.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + pababang arrow</translation>
 <translation id="1604857178818051494">Mag-pause ng media</translation>
 <translation id="1607312127821884567">I-dismiss ang pag-set up sa pagtingin sa mga app ng iyong telepono</translation>
@@ -874,7 +873,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4491109536499578614">Larawan</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516212064498225455">Kasalukuyang Desk: <ph name="CURRENT_DESK_NAME" />, gamitin ang Search+Space para buksan ang menu ng lahat ng desk.</translation>
 <translation id="4518404433291145981">Para i-unlock ang iyong Chromebook, i-unlock muna ang telepono mo</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
 <translation id="4533343294786968049">China-charge ang iyong baterya Magfu-full charge ang baterya bago sumapit ang <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1056,7 +1054,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="5208059991603368177">Naka-on</translation>
 <translation id="5216991270656129561">Naka-off hanggang <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Susunod na Desk: <ph name="NEXT_DESK_NAME" />, gamitin ang Search+Space o keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX" /> para i-activate.</translation>
 <translation id="5218064144558110424">Markahan bilang hindi nakumpleto</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5229343007215035173">I-on/i-off ang privacy screen</translation>
@@ -1873,7 +1870,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Kinokontrol ng <ph name="APP_NAME" /> ang input ng mic}one{Kinokontrol ng # app ang input ng mic}other{Kinokontrol ng # na app ang input ng mic}}</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
-<translation id="853768060447955562">Nakaraang Desk: <ph name="PREVIOUS_DESK_NAME" />, gamitin ang Search+Space o keyboard shortcut: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> para i-activate.</translation>
 <translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">Walang naka-save na desk o template</translation>
 <translation id="8546059259582788728">Na-undo ang pagbubukod-bukod</translation>
@@ -2037,7 +2033,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="925832987464884575">Itago ang mga preview</translation>
 <translation id="937214777182567951">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update kaagad ang <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>
-<translation id="943067377221312471">Nakaraang Desk: <ph name="PREVIOUS_DESK_NAME" />, gamitin ang Search+Space para i-activate.</translation>
 <translation id="945383118875625837">I-drag ang link papunta sa bookmarks bar</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="951991426597076286">Tanggihan</translation>

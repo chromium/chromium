@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Niezabezpieczona</translation>
 <translation id="1075079914415273530">Rolnictwo i leśnictwo</translation>
 <translation id="1075364221219156102">Użyj klucza dostępu</translation>
-<translation id="1078033282564106222">Wybrano opcję numeru budynku</translation>
 <translation id="1080116354587839789">Dopasuj do szerokości</translation>
 <translation id="1081061862829655580">Taca 19</translation>
 <translation id="1082026381988252344">Przewijanie i powiększanie zawartości udostępnionej karty</translation>
@@ -613,7 +612,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2126374524350484896">Źródło pliku PDF:</translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Pobieram pakiet językowy dla języka <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Odzież męska</translation>
 <translation id="2137891579555018930">Czekam na uzyskanie pozwolenia…</translation>
 <translation id="213826338245044447">Zakładki na komórce</translation>
@@ -1387,7 +1385,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3681007416295224113">Informacje o certyfikacie</translation>
 <translation id="3681421644246505351">Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania.</translation>
 <translation id="3682094733650754138">Wybrano opcję wypełnienia adresu</translation>
-<translation id="3689867156802445220">Numer budynku</translation>
 <translation id="3693327506115126094">Wybierz sposób weryfikacji tożsamości</translation>
 <translation id="3698629142018988477">Przycisk Utwórz witrynę; aktywuj, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
 <translation id="3701325639446035885">Sprzedaż biletów na wydarzenia</translation>

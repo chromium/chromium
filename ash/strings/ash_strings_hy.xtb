@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Բարի օր, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն։ Մի հավելվածից մյուսին անցնելու համար օգտագործեք սլաքաստեղները։</translation>
 <translation id="1093645050124056515">ctrl + alt + ներքև սլաք</translation>
+<translation id="1094756674036064790">Անջատե՞լ Bluetooth-ը</translation>
 <translation id="109942774857561566">Ձանձրանում եմ</translation>
 <translation id="1104084341931202936">Ցուցադրել հատուկ գործառույթների կարգավորումները</translation>
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
@@ -159,7 +160,6 @@
 <translation id="1586324912145647027">Անցնել 1–8 աշխատասեղաններին</translation>
 <translation id="158838227375272121">Google Classroom-ի կայք</translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
-<translation id="1592682369233288537">Հաջորդ աշխատասեղանը՝ <ph name="NEXT_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ներքև սլաք</translation>
 <translation id="1604857178818051494">Դադարեցնել</translation>
 <translation id="1607312127821884567">Բաց թողնել հեռախոսի հավելվածների դիտման կարգավորումը</translation>
@@ -660,6 +660,7 @@
 <translation id="3660860940251915011">Միացնել և անջատել «<ph name="FEATURE_NAME" />» գործառույթի բարձր տեսանելիությունը</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
 <translation id="3666266999138159418">Թերթեք՝ սահող պատուհանը թաքցնելու համար</translation>
+<translation id="3673898235958558034">Եթե անջատեք Bluetooth-ը, <ph name="DEVICE_NAME_1" /> և <ph name="DEVICE_NAME_2" /> սարքերը կանջատվեն Chromebook-ից։</translation>
 <translation id="367531336287639526">Ընտրել առաջին տարրը հասցեագոտու ձախ կողմում</translation>
 <translation id="3677931086890821290">Այս կարգավորումը թույլ է տալիս ChromeOS-ին և բոլոր հավելվածներին ու կայքերին, որոնք ունեն տեղորոշման թույլտվություն, օգտագործել Wi-Fi-ի և բջջային ցանցերի տեղադրության մասին տվյալները։</translation>
 <translation id="3679827876008292680">Անցնել պատուհանի վերջին ներդիր</translation>
@@ -872,7 +873,6 @@
 <translation id="4491109536499578614">Պատկեր</translation>
 <translation id="450584155212756404">Մշակողների կապուղի</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
-<translation id="4516212064498225455">Ընթացիկ աշխատասեղանը՝ <ph name="CURRENT_DESK_NAME" />։ Բոլոր աշխատասեղանների ընտրացանկը բացելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="4518404433291145981">Ձեր Chromebook-ն ապակողպելու համար նախ ապակողպեք ձեր հեռախոսը</translation>
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="4533343294786968049">Մարտկոցի աշխատաժամանակը երկարացվում է։ Այն լրիվ կլիցքավորվի մինչև <ph name="FULLY_CHARGE_TIME" />։</translation>
@@ -915,6 +915,7 @@
 <translation id="4666911709726371538">Այլ հավելվածներ</translation>
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Մարտկոցի տնտեսումը միացավ</translation>
+<translation id="4673427585974421255">Ոչ</translation>
 <translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
@@ -1053,7 +1054,6 @@
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208059991603368177">Միացված է</translation>
 <translation id="5216991270656129561">Անջատված կլինի մինչև <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Հաջորդ աշխատասեղանը՝ <ph name="NEXT_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ կամ Shift + «Որոնում» + <ph name="NEXT_DESK_INDEX" />։</translation>
 <translation id="5218064144558110424">Նշել որպես չկատարված</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5229343007215035173">Միացնել/անջատել գաղտնիության էկրանը</translation>
@@ -1215,6 +1215,7 @@
 <translation id="5802516411616338943">Բացել արագ կարգավորումները</translation>
 <translation id="5804651031882187592">Անջատեք SIM քարտի կողպման կարգավորումը</translation>
 <translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
+<translation id="5816222150329690597">Եթե անջատեք Bluetooth-ը, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> սարքերն ու ևս <ph name="DEVICE_COUNT" /> սարք կանջատվեն Chromebook-ից։</translation>
 <translation id="5823239091726045201">Google Tasks-ի առաջադրանքները դիտարկիչում</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
@@ -1395,6 +1396,7 @@
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="6546062506073634094">Պատկերների որոնում ըստ բովանդակության և պատկերի նախադիտման</translation>
+<translation id="6547795021703527064">Եթե անջատեք Bluetooth-ը, <ph name="DEVICE_NAME" /> սարքը կանջատվի Chromebook-ից։</translation>
 <translation id="6555373427270923730">Հասցեագոտում մուտքագրեք վեբ հասցեն, ապա սեղմեք <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
@@ -1869,7 +1871,6 @@
 <translation id="8517041960877371778">Որպեսզի ձեր <ph name="DEVICE_TYPE" /> սարքը լիցքավորվի, անհրաժեշտ է անջատել այն:</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Խոսափողի միացքը կառավարվում է <ph name="APP_NAME" /> հավելվածի կողմից}one{Խոսափողի միացքը կառավարվում է # հավելվածի կողմից}other{Խոսափողի միացքը կառավարվում է # հավելվածի կողմից}}</translation>
 <translation id="8535393432370007982">Ըստ գույնի դասավորումը հետարկվեց</translation>
-<translation id="853768060447955562">Նախորդ աշխատասեղանը՝ <ph name="PREVIOUS_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ կամ Shift + «Որոնում» + <ph name="PREVIOUS_DESK_INDEX" />։</translation>
 <translation id="8541078764854166027">Կադրավորում</translation>
 <translation id="8542053257095774575">Պահված աշխատասեղաններ կամ ձևանմուշներ չկան</translation>
 <translation id="8546059259582788728">Դասավորումը հետարկվեց</translation>
@@ -2034,7 +2035,6 @@
 <translation id="925832987464884575">Անջատել նախադիտումը</translation>
 <translation id="937214777182567951">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ անհապաղ թարմացնեք <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="938963181863597773">Ի՞նչ ունեմ պլանավորած։</translation>
-<translation id="943067377221312471">Նախորդ աշխատասեղանը՝ <ph name="PREVIOUS_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="945383118875625837">Հղումը քաշեք էջանիշների գոտի</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="951991426597076286">Մերժել</translation>

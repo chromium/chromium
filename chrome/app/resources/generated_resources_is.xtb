@@ -4018,7 +4018,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
 <translation id="4031527940632463547">Skynjarar læstir</translation>
 <translation id="4033471457476425443">Bæta nýrri möppu við</translation>
-<translation id="4033711848170683365">Þetta mun eyða vefskoðunargögnum varanlega úr þessu tæki. Hugsanlegt er að önnur forrit í <ph name="DEVICE_TYPE" /> tölvunni þinni noti Google reikningana á þessum prófíl. Þú getur fjarlægt þessa reikninga í <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Örugg vefsvæði gætu innfellt óöruggt efni, t.d. myndir eða veframma</translation>
 <translation id="4034706080855851454">Til að nota tækið með prófíl fyrirtækisins þarf fyrirtækið upplýsingar um tækið.
 
@@ -5886,7 +5885,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Þetta forrit krefst aðgangs að Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Setja upp með Android-síma</translation>
 <translation id="5519053700692355541">Þú getur opnað flesta eiginleika hliðarglugga í gegnum valmynd Chrome efst til hægri</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Gættu betur að öryggi þessa reiknings með traustu aðgangsorði. Það verður vistað í <ph name="GOOGLE_PASSWORD_MANAGER" /> fyrir <ph name="EMAIL" />.</translation>
@@ -9694,6 +9692,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS-tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á vef- og forritavirkni á Google-reikningi barnsins verða gögn barnsins hugsanlega vistuð á Google-reikningi þess. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Sláðu inn aðgangsorð skráarinnar</translation>
+<translation id="8476942730579767658">Gluggar og skrifborð</translation>
 <translation id="8477178913400731244">Eyða gögnum</translation>
 <translation id="8477241577829954800">Leyst af hólmi</translation>
 <translation id="8477384620836102176">Almennt</translation>

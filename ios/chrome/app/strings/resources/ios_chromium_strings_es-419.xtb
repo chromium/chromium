@@ -204,6 +204,7 @@ Aspectos que debes tener en cuenta:
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">¡Chromium mejoró! Hay una nueva versión disponible.</translation>
+<translation id="6433172051771630690">Sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="6502321914804101924">Saliste de Chromium</translation>
 <translation id="6563921047760808519">Más información sobre <ph name="BEGIN_LINK" />cómo Chromium mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium ahora es compatible con las políticas del usuario de tus dispositivos administrados</translation>
@@ -256,6 +257,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7990085102929105708">No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chromium.
 
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Para obtener sugerencias útiles de Chromium, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="7995166854192397899">Las sugerencias se basan en tu actividad de navegación en otros dispositivos. Para obtener sugerencias, accede a Chromium en todos tus dispositivos.</translation>
 <translation id="800195749539500647">Aprovecha Chromium al máximo</translation>
 <translation id="8013573822802650211">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta en todos los dispositivos</translation>

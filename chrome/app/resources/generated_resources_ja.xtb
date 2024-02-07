@@ -1713,6 +1713,7 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{すべてを新しいタブグループで開く(&amp;N)}=1{新しいタブグループで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいタブグループで開く(&amp;N)}}</translation>
 <translation id="2285942871162473373">指紋を認識できませんでした。もう一度お試しください。</translation>
 <translation id="2287617382468007324">印刷の IPP アドレス</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{データ保護のため、最近アクセスしていないサイトから権限を削除しました}other{データ保護のため、最近アクセスしていないサイトから権限を削除しました}}</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
 <translation id="2290615375132886363">タブレットのナビゲーション ボタン</translation>
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
@@ -3995,7 +3996,6 @@
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
-<translation id="4033711848170683365">このデバイスから閲覧データを完全に削除します。このプロフィールの Google アカウントは、<ph name="DEVICE_TYPE" /> の他のアプリで使用されている可能性があります。これらのアカウントは、<ph name="BEGIN_LINK" />[<ph name="SETTING_SECTION" />] &gt; [<ph name="ACCOUNTS_SECTION" />]<ph name="END_LINK" /> で削除できます。</translation>
 <translation id="4033963223187371752">セキュリティで保護されたサイトに、セキュリティで保護されていない画像やウェブフレームなどのコンテンツが埋め込まれている場合があります</translation>
 <translation id="4034706080855851454">組織のプロフィールでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
 
@@ -4295,6 +4295,7 @@
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限が削除されました}other{{NUM_SITES} 件のサイトから権限が削除されました}}</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
@@ -5859,7 +5860,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android スマートフォンで設定</translation>
 <translation id="5519053700692355541">サイドパネルのほとんどの機能は右上の Chrome メニューから開けます</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">安全なパスワードでこのアカウントのセキュリティを強化できます。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
@@ -9663,6 +9663,7 @@
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様のデータがお子様の Google アカウントに保存されることがあります。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ファイルのパスワードを入力してください</translation>
+<translation id="8476942730579767658">ウィンドウとデスク</translation>
 <translation id="8477178913400731244">データを削除</translation>
 <translation id="8477241577829954800">差し替えられた</translation>
 <translation id="8477384620836102176">全般(&amp;G)</translation>

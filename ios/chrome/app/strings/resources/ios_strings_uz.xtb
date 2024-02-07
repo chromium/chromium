@@ -1145,7 +1145,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6822587385560699678">Yoniqligida parollar <ph name="ACCOUNT" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
 <translation id="6831043979455480757">Tarjima</translation>
-<translation id="6839843088069935119">{count,plural, =1{Bukmark “{title}” jildiga saqlandi. U faqat shu qurilmada saqlanadi.}other{Bukmarklar “{title}” jildiga saqlandi. Ular faqat shu qurilmada saqlanadi.}}</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6851516051005285358">Kompyuter versiyasi</translation>
 <translation id="6852222216891664518">Qadalgan varaqni yopish</translation>

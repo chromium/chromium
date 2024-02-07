@@ -4004,7 +4004,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Engadir un cartafol novo</translation>
-<translation id="4033711848170683365">Con esta acción eliminaranse permanentemente os datos de navegación deste dispositivo. É posible que outras aplicacións do dispositivo (<ph name="DEVICE_TYPE" />) usen as Contas de Google deste perfil. Podes quitar esas contas en <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Os sitios seguros poden ter inserido contido non seguro (por exemplo, imaxes ou marcos web)</translation>
 <translation id="4034706080855851454">Para usar o teu dispositivo co perfil da túa organización, esta necesita información sobre o dispositivo.
 
@@ -5871,7 +5870,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5514315914873062345">Tabulador</translation>
 <translation id="5517304475148761050">Esta aplicación require acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configurar cun teléfono Android</translation>
 <translation id="5519053700692355541">Podes abrir a maioría das funcións do panel lateral desde o menú de Chrome, que está na parte superior dereita</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Aumenta a seguranza desta conta cun contrasinal seguro. Gardarase no <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
@@ -9674,6 +9672,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
     <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do dispositivo ChromeOS do teu fillo ou filla. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Se está activada a opción Actividade web e das aplicacións na Conta de Google da túa filla ou fillo, pódense gardar nela os seus datos. Obtén máis información acerca destas opcións de configuración e sobre como axustalas en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Escribe o contrasinal do ficheiro</translation>
+<translation id="8476942730579767658">Ventás e escritorios</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Xeral</translation>

@@ -575,6 +575,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3968505803272650567">Kelola Minat</translation>
 <translation id="3989635538409502728">Logout</translation>
+<translation id="3994422733891749358">Pilih notifikasi yang ingin diterima</translation>
 <translation id="3995521777587992544">Status progres pemuatan halaman, <ph name="EMAIL" /> telah dimuat.</translation>
 <translation id="3997522473364371632">Berbagi sandi dinonaktifkan oleh administrator Anda.</translation>
 <translation id="4002019827078931033">Pindahkan Kolom URL ke Atas</translation>
@@ -684,6 +685,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606247758155004938">Browser dikelola oleh organisasi Anda.</translation>
+<translation id="4607887340472970274">Pemantauan Harga</translation>
 <translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Menelusuri dengan Google</translation>
 <translation id="4616391354457235490">Urungkan</translation>
@@ -724,6 +726,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="478808905805139173">Buka di Samaran?</translation>
 <translation id="4803185665210547709">Dikelola oleh organisasi Anda.
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Berita dan konten berdasarkan minat Anda.</translation>
 <translation id="4805759445554688327">Nomor Kartu Tidak Valid</translation>
 <translation id="4808646838864186379">Pengiriman Anda dibatalkan</translation>
 <translation id="4808744395915275922">Update</translation>
@@ -1142,7 +1145,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6822587385560699678">Jika diaktifkan, sandi akan disimpan di <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan ke perangkat ini.</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
-<translation id="6839843088069935119">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="6842136130964845393">Untuk memastikan Anda selalu dapat mengakses sandi tersimpan, verifikasi diri Anda</translation>
 <translation id="6851516051005285358">Minta Situs Desktop</translation>
 <translation id="6852222216891664518">Tutup Tab Tersemat</translation>
@@ -1238,6 +1240,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikel belum dibaca.</translation>
 <translation id="7412027924265291969">Lanjutkan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7417689656810783109">Ganti Nama Grup</translation>
 <translation id="7418640008860669073">Simpan di...</translation>
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
 <translation id="7431991332293347422">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
@@ -1415,6 +1418,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab ke Grup Baru}other{Tambahkan Tab ke Grup Baru}}</translation>
 <translation id="8283172974887967105">Setel …</translation>
 <translation id="8286036467436129157">Login</translation>
+<translation id="8292843446079898078">Dapatkan notifikasi penurunan harga untuk produk yang Anda pantau.</translation>
 <translation id="8299417921174340354">Untuk menggunakan sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Samaran untuk menjelajahi web secara pribadi.</translation>
 <translation id="8311853334103696030">Sembunyikan Pantau Harga</translation>
@@ -1422,6 +1426,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
 <translation id="834783239627985533">Situs yang Paling Sering Dikunjungi</translation>
+<translation id="8358401059263985056">Aktifkan Notifikasi</translation>
 <translation id="8364841868226993049">Menyimpan gambar di Google Foto untuk <ph name="USER_EMAIL" />...</translation>
 <translation id="8370406443343902172">Buka Setelan...</translation>
 <translation id="8374977641764177587">Aktifkan Notifikasi?</translation>

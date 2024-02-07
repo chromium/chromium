@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Сүрөттөр жүктөлбөй калды. Тармакка туташууну текшериңиз же сүрөттөрдү кайра жүктөп көрүңүз.</translation>
 <translation id="1751249301761991853">Жеке</translation>
 <translation id="1753496554272155572">Тушкагазды алдын ала көрүү режиминен чыгуу</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> үчүн Түзөтүү баскычы.</translation>
 <translation id="1755556344721611131">Мүчүлүштүктөрдү аныктоо колдонмосу</translation>
 <translation id="175763766237925754">Жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android иштеген жок</translation>
 <translation id="551689408806449779">Түзмөк ажыратылды. Сыноо үчүн кайра туташып көрүңүз</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">кулпуланган</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Күн батканда автоматтык түрдө караңгы темага которулуу</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Борбор</translation>
 <translation id="5703716265115423771">акырындатуу</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> үчүн Түзөтүү баскычы.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> түзмөгүн жаңыртыңыз</translation>
 <translation id="574392208103952083">Орточо</translation>
 <translation id="5757187557809630523">кийинки трек</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> үчүн Өчүрүү баскычы.</translation>
 <translation id="5931523347251946569">Файл табылган жок</translation>
 <translation id="593880865674747800">Бул стилде көбүрөөк түзүү</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS резолюциялары орундалган жок</translation>
 <translation id="6768237774506518020">DNS резолюциясынын бузулуу деңгээли жогору</translation>
 <translation id="6791471867139427246">баскычтоптун жарыгынын түсү</translation>
+<translation id="6796229976413584781">Ыкчам баскыч өчүрүлдү</translation>
 <translation id="6798678288485555829">Текстте өтүү</translation>
 <translation id="680983167891198932">Ачкыч</translation>
 <translation id="6816797338148849397">Сиз тандаган нерсеге тиешелүү маалымат бар. Көрүү үчүн Өйдө жебе баскычын басыңыз.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Тармактын APN параметрлерин тескеңиз. APN'дер мобилдик тармак менен Интернеттин ортосундагы байланышты түзүшөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Тышкы түзмөктөр үчүн орнотулган программанын жаңыртуулары</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
+<translation id="7233782086689993269">Ыкчам баскыч калыбына келтирилди</translation>
 <translation id="725133483556299729">Электрондук почта дарегин тандоо</translation>
 <translation id="7271040990581020067">Сканер учурда колдонулуп жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="7271932918253517778">Жогорку катардагы баскычтар менен түзүлгөн ыкчам баскычта <ph name="META_KEY" /> баскычы камтылышы керек.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS күтүү убакыты жогору</translation>
 <translation id="7656388927906093505">Түзмөк — чычкан.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Аватарды өзгөртүү</translation>
 <translation id="7683228889864052081">баскычтоптун түсү</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">баскычтоптун жарыгы</translation>
 <translation id="7730077286107534951">Аккаунт жана тутум жөнүндө айрым маалымат Google'га жөнөтүлүшү мүмкүн. Бул маалыматты <ph name="BEGIN_LINK2" />Купуялык саясаты<ph name="END_LINK2" /> жана <ph name="BEGIN_LINK3" />Тейлөө шарттарына<ph name="END_LINK3" /> ылайык техникалык маселелерди чечүү жана кызматтарыбызды жакшыртуу үчүн колдонобуз. Контентке өзгөртүүлөрдү киргизүүнү сурануу үчүн <ph name="BEGIN_LINK1" />Юридикалык жардам<ph name="END_LINK1" /> барагына өтүңүз.</translation>
 <translation id="773153675489693198">Циклдердин саны</translation>
+<translation id="7746357909584236306">түзөтүүгө болот</translation>
 <translation id="7747039790905080783">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="7752963721013053477">Таңдан караңгыга - эксклюзивдүү</translation>
 <translation id="7762130827864645708">Сырсөзүңүз өзгөрдү. Мындан кийин жаңы сырсөздү колдонуңуз.</translation>

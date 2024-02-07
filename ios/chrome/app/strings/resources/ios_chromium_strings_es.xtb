@@ -204,6 +204,7 @@ Notas importantes:
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium sigue mejorando. Hay una nueva versión disponible.</translation>
+<translation id="6433172051771630690">Consejos para sacar el máximo partido a Chromium.</translation>
 <translation id="6502321914804101924">Se ha cerrado sesión en Chromium</translation>
 <translation id="6563921047760808519">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chromium la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium ahora admite políticas de usuarios para tu cuenta gestionada</translation>
@@ -256,6 +257,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7990085102929105708">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chromium no se sincronizará.
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Para recibir consejos útiles sobre Chromium, activa las notificaciones en los ajustes de iOS.</translation>
 <translation id="7995166854192397899">Las sugerencias se basan en tu actividad de navegación en tus otros dispositivos. Para recibir sugerencias, inicia sesión en Chromium con todos tus dispositivos.</translation>
 <translation id="800195749539500647">Saca el máximo partido a Chromium</translation>
 <translation id="8013573822802650211">Inicia sesión en todos tus dispositivos para ver tus pestañas dondequiera que uses Chromium</translation>

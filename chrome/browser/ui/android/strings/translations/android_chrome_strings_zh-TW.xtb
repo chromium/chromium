@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7105047059074518658">登入即可讓跨裝置瀏覽更順暢</translation>
 <translation id="7106762743910369165">你的瀏覽器是由貴機構管理</translation>
-<translation id="7116588989735740310">如要重新造訪在其他裝置上瀏覽過的網站，可以同步分頁和歷史記錄</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">依手動順序排序</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對你很重要：</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">請在完成後拔除傳輸線</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
 <translation id="752731652852882757">使用無痕模式時封鎖</translation>
-<translation id="7539698981064401140">同步分頁和歷史記錄</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7577900504646297215">管理興趣喜好</translation>
@@ -1446,7 +1444,6 @@
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466613982764129868">請確認「<ph name="TARGET_DEVICE_NAME" />」已連上網際網路</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
-<translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">開啟記錄頁面</translation>
 <translation id="8493948351860045254">釋出空間</translation>
@@ -1496,7 +1493,6 @@
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8731268612289859741">安全碼</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
-<translation id="874726034427945498">如要讓網址列顯示更貼近需求的建議，可以同步分頁和歷史記錄</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8754448020583829686">複製 (不含連結)</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
@@ -1538,7 +1534,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
-<translation id="8987736167266086032">接續上次進度</translation>
 <translation id="8993760627012879038">在無痕模式下開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
@@ -1561,7 +1556,6 @@
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
-<translation id="9084103763810123431">如要在其他裝置上繼續瀏覽，可以同步分頁和歷史記錄</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9086455579313502267">無法存取網路</translation>
 <translation id="9099220545925418560">以你的瀏覽記錄做為依據。這項設定已關閉。</translation>

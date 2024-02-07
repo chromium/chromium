@@ -3291,6 +3291,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3497560059572256875">Ndaje vizatimin Doodle</translation>
 <translation id="3497915391670770295">Dërgo te &amp;pajisjet e tua</translation>
 <translation id="3500417806337761827">Gabim në montimin e ndarjes. Janë montuar tashmë shumë ndarje SMB.</translation>
+<translation id="3500764001796099683">Aktivizo aplikacionet e izoluara të uebit</translation>
 <translation id="350397915809787283">Nëse nuk ke një llogari, zgjidh opsionin e parë për të krijuar një të tillë.</translation>
 <translation id="3503995387997205657">Mund të restaurosh aplikacionet e tua të mëparshme</translation>
 <translation id="3505100368357440862">Sugjerimet për blerje</translation>
@@ -3999,7 +4000,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4031527940632463547">Sensorët u bllokuan</translation>
 <translation id="4033471457476425443">Shto dosje të re</translation>
-<translation id="4033711848170683365">Kjo do të fshijë përgjithmonë të dhënat e shfletimit nga kjo pajisje. "Llogaritë e Google" në këtë profil mund të përdoren nga aplikacionet e tjera në pajisjen tënde <ph name="DEVICE_TYPE" />. Mund t'i heqësh këto llogari te <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Sajtet e sigurta mund të integrojnë përmbajtje si imazhet ose kornizat e uebit që nuk janë të sigurta</translation>
 <translation id="4034706080855851454">Për të përdorur pajisjen tënde me profilin tënd të organizatës, organizata jote ka nevojë për informacione për pajisjen.
 
@@ -5866,7 +5866,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Ky aplikacion kërkon qasje te "Dyqani i Play"</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Konfiguroje me telefonin Android</translation>
 <translation id="5519053700692355541">Mund të hapësh shumicën e veçorive të panelit anësor nëpërmjet menysë së Chrome në krye djathtas</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Mbaje më të sigurt këtë llogari me një fjalëkalim të fortë. Ai do të ruhet te "<ph name="GOOGLE_PASSWORD_MANAGER" />" për <ph name="EMAIL" />.</translation>
@@ -7166,6 +7165,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6551508934388063976">Komanda nuk ofrohet. Shtyp CTRL+N për të hapur një dritare të re.</translation>
 <translation id="6551606359270386381">Vegla e elipsit</translation>
 <translation id="6551612971599078809">Sajti përdor pajisje USB</translation>
+<translation id="6551620030439692385">Bllokuar. Aktualisht, brezi orar është caktuar në <ph name="TIMEZONE" /> dhe mund të përditësohet vetëm manualisht.</translation>
 <translation id="6551739526055143276">Menaxhohet nga Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> përdorues</translation>
 <translation id="6555432686520421228">Hiqi të gjitha llogaritë e përdoruesit dhe rivendos pajisjen tënde <ph name="IDS_SHORT_PRODUCT_NAME" /> për ta bërë si të re.</translation>
@@ -7234,6 +7234,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6608773371844092260">Për të konfiguruar gjurmën e gishtit, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit në anën e djathtë të kësaj pajisjeje <ph name="DEVICE_TYPE" />. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Të dhënat e identifikimit do të ruhen në këtë pajisje pasi të dalësh nga modaliteti "I fshehtë". Do të mund të identifikohesh në këtë faqe interneti me pajisjen tënde përsëri.</translation>
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
+<translation id="6610064275805055636">Menaxho aplikacionet e izoluara të uebit</translation>
 <translation id="6611972847767394631">Gjej skedat e tua këtu</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6613267708691765962">Po skanon për softuerë keqdashës...</translation>
@@ -8597,6 +8598,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" dëshiron të skanojë nga "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Zgjidh se cila pajisje ka çelësin e kalimit për <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> në <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Bllokuar. Aktualisht, orari është caktuar në <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> dhe mund të përditësohet vetëm manualisht.</translation>
 <translation id="7673313156293624327">Evidencat e Shill (Menaxherit të lidhjeve) të ChromeOS</translation>
 <translation id="7674416868315480713">Çaktivizo të gjitha portat që transferohen në Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikacione</translation>
@@ -9528,6 +9530,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="8376451933628734023">Nëse ky aplikacion uebi po përpiqet të ta hedhë që të mendosh se është aplikacion tjetër, çinstaloje.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> po ringarkohet...</translation>
+<translation id="8376610503048439696">Shtesat e instaluara nga administratori yt mund ta lexojnë dhe ta ndryshojnë përsëri këtë sajt</translation>
 <translation id="8376752431516546391">Paneli anësor i "Kërko në Google"</translation>
 <translation id="8377625247046155446">Ky çelës kalimi do të ruhet vetëm në këtë pajisje. Ai do të qëndrojë në këtë pajisje pasi t'i mbyllësh të gjitha dritaret e fshehta.</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
@@ -9667,6 +9670,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
     <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mund të mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin e administratorit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktivizuar për "Llogarinë e Google" të fëmijës tënd, të dhënat e fëmijës mund të ruhen në "Llogarinë e Google" të fëmijës. Mëso më shumë për këto cilësime dhe se si t'i rregullosh ato te families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Fut fjalëkalimin e skedarit</translation>
+<translation id="8476942730579767658">Dritaret dhe tavolinat e punës</translation>
 <translation id="8477178913400731244">Fshi të dhënat</translation>
 <translation id="8477241577829954800">E zëvendësuar</translation>
 <translation id="8477384620836102176">&amp;Të përgjithshme</translation>

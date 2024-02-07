@@ -1142,7 +1142,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="681368974849482173">Element creat</translation>
 <translation id="6822587385560699678">Când opțiunea este activată, parolele se salvează în <ph name="ACCOUNT" />. Când opțiunea este dezactivată, parolele se salvează numai pe acest dispozitiv.</translation>
 <translation id="6831043979455480757">Tradu</translation>
-<translation id="6839843088069935119">{count,plural, =1{Marcaj salvat în {title}. Se salvează numai pe acest dispozitiv.}few{Marcaje salvate în {title}. Se salvează numai pe acest dispozitiv.}other{Marcaje salvate în {title}. Se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
 <translation id="6851516051005285358">Solicită site desktop</translation>
 <translation id="6852222216891664518">Închide fila fixată</translation>

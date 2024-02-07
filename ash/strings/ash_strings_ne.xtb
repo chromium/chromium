@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="158838227375272121">Google Classroom को वेबसाइट</translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
-<translation id="1592682369233288537">अर्को डेस्क: <ph name="NEXT_DESK_NAME" />, एक्टिभेट गर्न Search+Space थिच्नुहोस्।</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + डाउन एरो</translation>
 <translation id="1604857178818051494">मिडिया पज गर्नुहोस्</translation>
 <translation id="1607312127821884567">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">छवि</translation>
 <translation id="450584155212756404">डेभ च्यानल</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
-<translation id="4516212064498225455">हालको डेस्क: <ph name="CURRENT_DESK_NAME" />, सबै डेस्क मेनुहरू खोल्न Search+Space थिच्नुहोस्।</translation>
 <translation id="4518404433291145981">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो फोन अनलक गर्नुहोस्</translation>
 <translation id="4527045527269911712">ब्लुटूथ यन्त्र "<ph name="DEVICE_NAME" />" जोडिनको लागि अनुमति चाहन्छ।</translation>
 <translation id="4533343294786968049">ब्याट्री चार्ज गरिँदै छ। ब्याट्री <ph name="FULLY_CHARGE_TIME" /> सम्ममा फुल चार्ज हुने छ।</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">पाठको क्योरटलाई हाइलाइट</translation>
 <translation id="5208059991603368177">अन छ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> सम्म अफ रहने छ</translation>
-<translation id="5217646019792206018">अर्को डेस्क: <ph name="NEXT_DESK_NAME" />, एक्टिभेट गर्न Search+Space वा किबोर्डमा Shift+Search+<ph name="NEXT_DESK_INDEX" /> थिच्नुहोस्।</translation>
 <translation id="5218064144558110424">पूरा नभएको कार्यका रूपमा चिन्ह लगाइयोस्</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5229343007215035173">प्राइभेसी स्क्रिन अन/अफ गर्नुहोस्</translation>
@@ -1874,7 +1871,6 @@
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ले माइक इनपुट नियन्त्रण गर्दै छ}other{# वटा एपले माइक इनपुट नियन्त्रण गर्दै छन्}}</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
-<translation id="853768060447955562">अघिल्लो डेस्क: <ph name="PREVIOUS_DESK_NAME" />, एक्टिभेट गर्न Search+Space वा किबोर्डमा Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> थिच्नुहोस्।</translation>
 <translation id="8541078764854166027">क्यामेरा फ्रेमिङ</translation>
 <translation id="8542053257095774575">कुनै पनि डेस्क वा टेम्प्लेट सेभ गरिएको छैन</translation>
 <translation id="8546059259582788728">क्रमबद्ध गर्ने कार्य अन्डू गरियो</translation>
@@ -2039,7 +2035,6 @@
 <translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> का अनुसार तपाईंले तुरुन्तै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
-<translation id="943067377221312471">अघिल्लो डेस्क: <ph name="PREVIOUS_DESK_NAME" />, एक्टिभेट गर्न Search+Space थिच्नुहोस्।</translation>
 <translation id="945383118875625837">लिंकलाई ड्र्याग गरी पुस्तक चिन्ह पट्टीमा लैजानुहोस्</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>

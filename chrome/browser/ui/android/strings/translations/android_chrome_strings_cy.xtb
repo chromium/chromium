@@ -1161,7 +1161,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7088681679121566888">Mae Chrome yn gyfoes</translation>
 <translation id="7105047059074518658">Mewngofnodwch i bori'n haws ar draws dyfeisiau</translation>
 <translation id="7106762743910369165">Rheolir eich porwr gan eich sefydliad</translation>
-<translation id="7116588989735740310">I fynd nôl i wefannau rydych wedi ymweld â nhw ar ddyfeisiau eraill, cysonwch eich tabiau a'ch hanes</translation>
 <translation id="7138678301420049075">Arall</translation>
 <translation id="7140829094791862589">Trefnu yn ôl trefn bwrpasol</translation>
 <translation id="7146622961999026732">Mae'r gwefannau a'r apiau hyn yn ymddangos yn bwysig i chi:</translation>
@@ -1251,7 +1250,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="752220631458524187">Datgysylltwch pan fyddwch wedi gorffen</translation>
 <translation id="7523960634226602883">Chwilio gyda'ch camera drwy ddefnyddio Google Lens</translation>
 <translation id="752731652852882757">Rhwystro tra'n defnyddio'r modd Anhysbys</translation>
-<translation id="7539698981064401140">Cysoni eich tabiau a hanes</translation>
 <translation id="7562080006725997899">Clirio data pori</translation>
 <translation id="756809126120519699">Wedi clirio data Chrome</translation>
 <translation id="7577900504646297215">Rheoli diddordebau</translation>
@@ -1446,7 +1444,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8461694314515752532">Amgryptio data sydd wedi'u cysoni gyda'ch cyfrinymadrodd cysoni eich hun</translation>
 <translation id="8466613982764129868">Gwnewch yn siŵr bod <ph name="TARGET_DEVICE_NAME" /> wedi'i gysylltu â'r rhyngrwyd</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
-<translation id="847433688444405067">Pori ar draws dyfeisiau</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Agor y dudalen hanes</translation>
 <translation id="8493948351860045254">Rhyddhau lle storio</translation>
@@ -1496,7 +1493,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8731268612289859741">Cod diogelwch</translation>
 <translation id="8746155870861185046">Rhannu'r testun a amlygir</translation>
-<translation id="874726034427945498">I weld awgrymiadau gwell yn eich bar cyfeiriad, cysonwch eich tabiau a'ch hanes</translation>
 <translation id="8748850008226585750">Mae'r cynnwys wedi'i guddio</translation>
 <translation id="8754448020583829686">Copïo heb ddolen</translation>
 <translation id="8756969031206844760">Diweddaru'r cyfrinair?</translation>
@@ -1538,7 +1534,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="INCOGNITO_TAB_COUNT" /> dab anhysbys a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
 <translation id="8970887620466824814">Aeth rywbeth o'i le.</translation>
 <translation id="8972098258593396643">Lawrlwytho i'r ffolder ddiofyn?</translation>
-<translation id="8987736167266086032">Parhau lle y gwnaethoch adael</translation>
 <translation id="8993760627012879038">Agor tab newydd yn y Modd Anhysbys</translation>
 <translation id="8996847606757455498">Dewiswch ddarparwr arall</translation>
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
@@ -1561,7 +1556,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="9070377983101773829">Dechrau chwilio llais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Nid yw gwefannau rydych yn ymweld â nhw yn cael eu cadw yn y modd Anhysbys</translation>
-<translation id="9084103763810123431">I barhau i bori ar ddyfais arall, cysonwch eich tabiau a hanes</translation>
 <translation id="9086302186042011942">Wrthi’n cysoni</translation>
 <translation id="9086455579313502267">Methu â chyrchu'r rhwydwaith</translation>
 <translation id="9099220545925418560">Yn seiliedig ar eich hanes pori. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>

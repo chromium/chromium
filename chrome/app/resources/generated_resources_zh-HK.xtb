@@ -4016,7 +4016,6 @@
 <translation id="4031179711345676612">已允許使用麥克風</translation>
 <translation id="4031527940632463547">已封鎖感應器</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
-<translation id="4033711848170683365">這會永久刪除此裝置上的瀏覽資料。<ph name="DEVICE_TYPE" /> 上的其他應用程式可能會使用此設定檔中的 Google 帳戶。您可在 <ph name="BEGIN_LINK" />「<ph name="SETTING_SECTION" />」&gt;「<ph name="ACCOUNTS_SECTION" />」<ph name="END_LINK" /> 移除這些帳戶。</translation>
 <translation id="4033963223187371752">即使是安全的網站，仍有可能嵌入不安全的圖片或網站頁框等內容</translation>
 <translation id="4034706080855851454">如要配合機構設定檔使用裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器和裝置作業系統等相關資料。</translation>
 <translation id="4034824040120875894">打印機</translation>
@@ -5883,7 +5882,6 @@
 <translation id="5514315914873062345">Tab 鍵</translation>
 <translation id="5517304475148761050">此應用程式需要存取「Play 商店」才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">透過 Android 手機設定</translation>
 <translation id="5519053700692355541">你可以透過右上方嘅 Chrome 選單開啟大部份側面板功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">透過安全度高的密碼提高此帳戶的安全性。密碼將會儲存至 <ph name="EMAIL" /> 的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
@@ -9688,6 +9686,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />如果您為子女的 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您子女的資料可能會儲存在他們的 Google 帳戶中。您可前往 families.google.com，進一步瞭解這些設定及其調整方式。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">輸入檔案的密碼</translation>
+<translation id="8476942730579767658">視窗和桌面</translation>
 <translation id="8477178913400731244">刪除資料</translation>
 <translation id="8477241577829954800">已取代</translation>
 <translation id="8477384620836102176">一般(&amp;G)</translation>

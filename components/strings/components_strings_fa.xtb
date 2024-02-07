@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">امن نیست</translation>
 <translation id="1075079914415273530">کشاورزی و جنگل‌داری</translation>
 <translation id="1075364221219156102">استفاده از «گذرکلید»</translation>
-<translation id="1078033282564106222">گزینه شماره ساختمان انتخاب شد</translation>
 <translation id="1080116354587839789">متناسب با پهنا</translation>
 <translation id="1081061862829655580">سینی ۱۹</translation>
 <translation id="1082026381988252344">پیمایش و بزرگ‌نمایی محتوای برگه هم‌رسانی‌شده</translation>
@@ -613,7 +612,6 @@
 <translation id="2126374524350484896">‏تولیدکننده PDF:</translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">درحال بارگیری بسته زبان <ph name="LANGUAGE" />…‏<ph name="PERCENT" />٪</translation>
 <translation id="2135799067377889518">لباس مردانه</translation>
 <translation id="2137891579555018930">درانتظار اجازه…</translation>
 <translation id="213826338245044447">نشانک‌های تلفن‌ همراه</translation>
@@ -1387,7 +1385,6 @@
 <translation id="3681007416295224113">اطلاعات گواهی</translation>
 <translation id="3681421644246505351">‏Chrome براساس سابقه مرور اخیرتان موضوع‌های موردعلاقه شما را ثبت می‌کند.</translation>
 <translation id="3682094733650754138">گزینه تکمیل نشانی انتخاب شد</translation>
-<translation id="3689867156802445220">شماره ساختمان</translation>
 <translation id="3693327506115126094">نحوه تأیید هویتتان را انتخاب کنید</translation>
 <translation id="3698629142018988477">‏دکمه ایجاد سایت؛ برای ایجاد سریع سایت جدید در Google Sites، آن را فعال کنید</translation>
 <translation id="3701325639446035885">فروش بلیط رویداد</translation>
@@ -1576,6 +1573,7 @@
 <translation id="4089152113577680600">سینی ۱۴</translation>
 <translation id="4092349052316400070">نشانی را تکمیل کنید</translation>
 <translation id="4096237801206588987">۱۵ × ۱۱ اینچ</translation>
+<translation id="4098306082496067348">روی جزئیات کارت مجازی ضربه بزنید تا به بخش تصفیه‌حساب اضافه شود.</translation>
 <translation id="4098354747657067197">احتیاط، سایت گول‌زننده</translation>
 <translation id="4099048595830172239">سیاست سرپرست توصیه می‌کند هرگاه محتوای محرمانه در صفحه‌نمایش شما نمایان باشد، صفحه را با <ph name="APPLICATION_TITLE" /> هم‌رسانی نکنید:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>

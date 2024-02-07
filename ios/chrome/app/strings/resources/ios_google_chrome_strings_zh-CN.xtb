@@ -73,6 +73,7 @@
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2702250627063295552">将阅读清单项添加到 Chrome</translation>
+<translation id="2703746758996815929">若要获取实用 Chrome 提示，请在 iOS 设置中开启通知。</translation>
 <translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2789947168960170215">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />清除账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -291,6 +292,7 @@
 如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
+<translation id="8874688701962049679">有关充分利用 Chrome 的提示。</translation>
 <translation id="8891935667620843985">只需将 Chrome 设为默认浏览器应用，便可自动在 Chrome 中打开链接。</translation>
 <translation id="8897749957032330183">系统会将密码保存到此设备上的 Google 密码管理工具中。</translation>
 <translation id="8949681853939555434">将 Chrome 设为默认浏览器</translation>

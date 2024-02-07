@@ -1161,7 +1161,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7105047059074518658">Connectez-vous pour naviguer plus facilement d'un appareil à l'autre</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
-<translation id="7116588989735740310">Pour revenir aux sites consultés sur d'autres appareils, synchronisez vos onglets et votre historique</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7140829094791862589">Trier par ordre manuel</translation>
 <translation id="7146622961999026732">Ces sites et applications semblent importants pour vous :</translation>
@@ -1251,7 +1250,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="752220631458524187">Déconnectez l'appareil lorsque vous avez terminé</translation>
 <translation id="7523960634226602883">Faites une recherche avec votre appareil photo via Google Lens</translation>
 <translation id="752731652852882757">Bloquer en mode navigation privée</translation>
-<translation id="7539698981064401140">Synchronisez vos onglets et votre historique</translation>
 <translation id="7562080006725997899">Effacement des données de navigation en cours</translation>
 <translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
@@ -1446,7 +1444,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que l'appareil <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
-<translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ouvrir la page "Historique"</translation>
 <translation id="8493948351860045254">Libérer de l'espace</translation>
@@ -1496,7 +1493,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
-<translation id="874726034427945498">Pour de meilleures suggestions dans la barre d'adresse, synchronisez vos onglets et votre historique</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8754448020583829686">Copier sans le lien</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
@@ -1538,7 +1534,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8972098258593396643">Télécharger dans le dossier par défaut ?</translation>
-<translation id="8987736167266086032">Reprenez là où vous vous étiez arrêté</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
@@ -1561,7 +1556,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9070377983101773829">Démarrer la recherche vocale</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en navigation privée</translation>
-<translation id="9084103763810123431">Pour continuer à naviguer sur un autre appareil, synchronisez vos onglets et votre historique</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9086455579313502267">Impossible d'accéder au réseau.</translation>
 <translation id="9099220545925418560">D'après votre historique de navigation. Ce paramètre est désactivé.</translation>

@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">மதிய வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">உங்கள் <ph name="CATEGORY" />, ஃபைல்கள், ஆப்ஸ் மற்றும் பலவற்றைத் தேடும். ஆப்ஸுக்குச் செல்ல அம்புக்குறி விசைகளைப் பயன்படுத்தவும்.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
+<translation id="1094756674036064790">புளூடூத்தை முடக்கவா?</translation>
 <translation id="109942774857561566">எனக்குப் பொழுதுபோகவில்லை</translation>
 <translation id="1104084341931202936">அணுகல்தன்மை அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="1104621072296271835">இணைத்தால், உங்கள் சாதனங்கள் இன்னும் சிறப்பாக வேலை செய்யும்</translation>
@@ -159,7 +160,6 @@
 <translation id="1586324912145647027">8 டெஸ்க்குகளில் 1வது டெஸ்க்கிற்குச் செல்லும்</translation>
 <translation id="158838227375272121">Google Classroom இணையதளம்</translation>
 <translation id="1589090746204042747">இந்த அமர்விலுள்ள உங்கள் அனைத்துச் செயல்பாடுகளையும் அணுகுதல்</translation>
-<translation id="1592682369233288537">அடுத்த டெஸ்க்: <ph name="NEXT_DESK_NAME" />, செயல்படுத்த Search+Space அழுத்தவும்.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="1604857178818051494">மீடியாவை இடைநிறுத்து</translation>
 <translation id="1607312127821884567">மொபைலில் உள்ள ஆப்ஸைப் பார்க்கும்படி அமைப்பதை நிராகரிக்கும்</translation>
@@ -660,6 +660,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும் அல்லது முடக்கும்</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="3666266999138159418">மிதக்கும் சாளரத்தை மறைக்க ஸ்வைப் செய்யவும்</translation>
+<translation id="3673898235958558034">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ஆகியவையும் உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="367531336287639526">முகவரிப் பட்டியின் இடப்புறத்தில் உள்ள முதல் ஐகானைத் தேர்ந்தெடு</translation>
 <translation id="3677931086890821290">ChromeOS மற்றும் இருப்பிட அனுமதி வழங்கப்பட்டுள்ள அனைத்து ஆப்ஸும் இணையதளங்களும் வைஃபை, மொபைல் நெட்வொர்க் ஆகியவற்றின் இருப்பிடத்தைப் பயன்படுத்த இது அனுமதிக்கும்.</translation>
 <translation id="3679827876008292680">சாளரத்தில் உள்ள கடைசிப் பக்கத்திற்குச் செல்</translation>
@@ -872,7 +873,6 @@
 <translation id="4491109536499578614">படம்</translation>
 <translation id="450584155212756404">டெவ் சேனல்</translation>
 <translation id="4513946894732546136">கருத்து</translation>
-<translation id="4516212064498225455">தற்போதைய டெஸ்க்: <ph name="CURRENT_DESK_NAME" />, அனைத்து டெஸ்க் மெனுக்களையும் திறக்க Search+Space அழுத்தவும்.</translation>
 <translation id="4518404433291145981">Chromebookகை திறக்க உங்கள் ஃபோனை அன்லாக் செய்க</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="4533343294786968049">உங்கள் பேட்டரி சார்ஜ் ஆகிக்கொண்டிருக்கிறது. <ph name="FULLY_CHARGE_TIME" /> மணிக்கு முழுமையாகச் சார்ஜாகும்.</translation>
@@ -915,6 +915,7 @@
 <translation id="4666911709726371538">மேலும் ஆப்ஸ்</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
 <translation id="4672539464599646374">பேட்டரி சேமிப்பு இயக்கப்பட்டுள்ளது</translation>
+<translation id="4673427585974421255">இயக்கத்திலேயே வைத்திரு</translation>
 <translation id="468293128311738995">உங்கள் மொபைலில் உள்ள ஆப்ஸ்</translation>
 <translation id="4690510401873698237">ஷெல்ஃப் கீழே உள்ளது</translation>
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை அன்லாக் செய்தல்</translation>
@@ -1053,7 +1054,6 @@
 <translation id="5207949376430453814">உரைச் சுட்டியைத் தனிப்படுத்து</translation>
 <translation id="5208059991603368177">இயக்கு</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> வரை இயங்காது</translation>
-<translation id="5217646019792206018">அடுத்த டெஸ்க்: <ph name="NEXT_DESK_NAME" />, Search+Space அல்லது கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்: செயல்படுத்த Shift+Search+<ph name="NEXT_DESK_INDEX" /> அழுத்தவும்.</translation>
 <translation id="5218064144558110424">முடிக்கவில்லை என்று குறிக்கும்</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5229343007215035173">தனிப்பட்ட திரையை இயக்கு/முடக்கு</translation>
@@ -1215,6 +1215,7 @@
 <translation id="5802516411616338943">விரைவு அமைப்புகளைத் திற</translation>
 <translation id="5804651031882187592">"சிம்மைப் பூட்டு" அமைப்பை முடக்குதல்</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
+<translation id="5816222150329690597">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ஆகியவையும் வேறு <ph name="DEVICE_COUNT" /> சாதனங்களும் உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="5823239091726045201">இணையத்தில் Google Tasks</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
@@ -1395,6 +1396,7 @@
 <translation id="6539852571005954999">ஸ்கேன் செய்யப்படுகின்ற <ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />க்கு அலைபரப்புகிறது</translation>
 <translation id="6546062506073634094">உள்ளடக்கம் மற்றும் படத்தின் மாதிரிக்காட்சிகளின் அடிப்படையில் படத் தேடல்</translation>
+<translation id="6547795021703527064">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME" />" உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="6555373427270923730">முகவரிப் பட்டியில் வலை முகவரியை டைப் செய்து <ph name="MODIFIER" /><ph name="KEY" /> அழுத்தவும்</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 புதிய நிறுவல்</translation>
@@ -1869,7 +1871,6 @@
 <translation id="8517041960877371778">இயக்கப்பட்டிருக்கும் போது உங்கள் <ph name="DEVICE_TYPE" /> இல் சார்ஜ் ஏறாது.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{மைக் உள்ளீட்டை <ph name="APP_NAME" /> கட்டுப்படுத்துகிறது}other{மைக் உள்ளீட்டை # ஆப்ஸ் கட்டுப்படுத்துகின்றன}}</translation>
 <translation id="8535393432370007982">வண்ணத்தின்படி வரிசைப்படுத்தியதைச் செயல்தவிர்க்கும்</translation>
-<translation id="853768060447955562">முந்தைய டெஸ்க்: <ph name="PREVIOUS_DESK_NAME" />, Search+Space அல்லது கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்: செயல்படுத்த Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> அழுத்தவும்.</translation>
 <translation id="8541078764854166027">கேமரா ஃபிரேமிங்</translation>
 <translation id="8542053257095774575">சேமிக்கப்பட்ட டெஸ்க்குகளோ டெம்ப்ளேட்டுகளோ எதுவுமில்லை</translation>
 <translation id="8546059259582788728">வரிசைப்படுத்துதல் செயல்தவிர்க்கப்பட்டது</translation>
@@ -2034,7 +2035,6 @@
 <translation id="925832987464884575">மாதிரிக்காட்சிகளை மறை</translation>
 <translation id="937214777182567951">உங்கள் <ph name="DEVICE_TYPE" /> ஐ உடனடியாகப் புதுப்பிக்குமாறு <ph name="MANAGER" /> கோருகிறது</translation>
 <translation id="938963181863597773">எனது கேலெண்டரில் என்ன உள்ளது?</translation>
-<translation id="943067377221312471">முந்தைய டெஸ்க்: <ph name="PREVIOUS_DESK_NAME" />, செயல்படுத்த Search+Space அழுத்தவும்.</translation>
 <translation id="945383118875625837">இணைப்பை இழுத்துச் சென்று புக்மார்க் பட்டியில் வைக்கவும்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="951991426597076286">நிராகரி</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Resimler yüklenemedi. Ağ bağlantınızı kontrol edin veya resimleri tekrar yüklemeyi deneyin.</translation>
 <translation id="1751249301761991853">Kişisel</translation>
 <translation id="1753496554272155572">Duvar kağıdı önizlemesinden çık</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> için düzenle düğmesi.</translation>
 <translation id="1755556344721611131">Teşhis Aracı uygulaması</translation>
 <translation id="175763766237925754">İyi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android çalışmıyor</translation>
 <translation id="551689408806449779">Cihazın bağlantısı kesildi. Test etmek için yeniden bağlanmayı deneyin</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">kilitli</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Gün batımında otomatik olarak koyu temaya geç</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Ortala</translation>
 <translation id="5703716265115423771">sesi kıs</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> için düzenle düğmesi.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazı güncelle</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5757187557809630523">sonraki parça</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Yasak</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Dosyanız başarıyla taranarak <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> klasörüne kaydedildi.}other{Dosyalarınız başarıyla taranarak <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> klasörüne kaydedildi.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> için sil düğmesi.</translation>
 <translation id="5931523347251946569">Dosya bulunamadı</translation>
 <translation id="593880865674747800">Bu stilde daha fazla duvar kağıdı oluşturun</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
 <translation id="6791471867139427246">klavye ışığı rengi</translation>
+<translation id="6796229976413584781">Kısayol silindi</translation>
 <translation id="6798678288485555829">Metinde gezinme</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
+<translation id="7233782086689993269">Kısayol geri yüklendi</translation>
 <translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7271932918253517778">Üst sıra tuşlarını kullanan kısayolun <ph name="META_KEY" /> tuşunu içermesi gerekir.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
 <translation id="7656388927906093505">Cihazın türü fare.</translation>
 <translation id="7658239707568436148">İptal</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" /> <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Avatarı değiştir</translation>
 <translation id="7683228889864052081">klavye tonu</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">klavye ışığı</translation>
 <translation id="7730077286107534951">Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bu bilgileri, <ph name="BEGIN_LINK2" />Gizlilik Politikamız<ph name="END_LINK2" /> ve <ph name="BEGIN_LINK3" />Hizmet Şartlarımıza<ph name="END_LINK3" /> uygun olarak teknik sorunları gidermek ve hizmetlerimizi iyileştirmek için kullanırız. İçerik değişikliği talebinde bulunmak için <ph name="BEGIN_LINK1" />Yasal Yardım<ph name="END_LINK1" /> sayfasına gidin.</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
+<translation id="7746357909584236306">düzenlenebilir</translation>
 <translation id="7747039790905080783">Önceden paylaşılan anahtar</translation>
 <translation id="7752963721013053477">Şafaktan geceye - özel</translation>
 <translation id="7762130827864645708">Şifre değişikliğiniz başarıyla tamamlandı. Lütfen bundan sonra yeni şifreyi kullanın.</translation>

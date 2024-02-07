@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1075079914415273530">農業與林業</translation>
 <translation id="1075364221219156102">使用密碼金鑰</translation>
-<translation id="1078033282564106222">已選取「門牌號碼」選項</translation>
 <translation id="1080116354587839789">符合視窗寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
 <translation id="1082026381988252344">捲動及縮放已分享分頁的內容</translation>
@@ -612,7 +611,6 @@
 <translation id="2126374524350484896">PDF 轉換工具：</translation>
 <translation id="2130448033692577677">你並未設定 DnsOverHttpsMode 政策，因此系統無法套用你指定的範本。</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">正在下載<ph name="LANGUAGE" />語言套件…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">男裝</translation>
 <translation id="2137891579555018930">正在等待許可...</translation>
 <translation id="213826338245044447">行動版書籤</translation>
@@ -1385,7 +1383,6 @@
 <translation id="3681007416295224113">憑證資訊</translation>
 <translation id="3681421644246505351">Chrome 會根據你近期的瀏覽記錄，記下你感興趣的主題。</translation>
 <translation id="3682094733650754138">已選取「填入地址」選項</translation>
-<translation id="3689867156802445220">門牌號碼</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
 <translation id="3698629142018988477">「建立網站」按鈕，啟動後即可在 Google 協作平台中快速建立新網站</translation>
 <translation id="3701325639446035885">活動售票</translation>
@@ -1574,6 +1571,7 @@
 <translation id="4089152113577680600">紙匣 14</translation>
 <translation id="4092349052316400070">填入地址</translation>
 <translation id="4096237801206588987">11 x 15 吋</translation>
+<translation id="4098306082496067348">結帳時輕觸虛擬卡片資料即可使用。</translation>
 <translation id="4098354747657067197">你要瀏覽的是詐騙網站</translation>
 <translation id="4099048595830172239">根據管理員政策，當畫面上有機密內容時，不建議你與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂 Chrome 中的字型大小和字體</translation>

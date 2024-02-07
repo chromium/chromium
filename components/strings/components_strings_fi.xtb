@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Ei turvallinen</translation>
 <translation id="1075079914415273530">Maa- ja metsätalous</translation>
 <translation id="1075364221219156102">Käytä avainkoodia</translation>
-<translation id="1078033282564106222">Rakennuksen numero ‐vaihtoehto on valittu</translation>
 <translation id="1080116354587839789">Sovita leveyteen</translation>
 <translation id="1081061862829655580">Lokero 19</translation>
 <translation id="1082026381988252344">Vieritä ja zoomaa jaetun välilehden sisältöä</translation>
@@ -613,7 +612,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2126374524350484896">PDF-luontiohjelma:</translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
-<translation id="2131200882015008178">Ladataan kielipakettia <ph name="LANGUAGE" />…<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Miesten vaatteet</translation>
 <translation id="2137891579555018930">Odotetaan lupaa…</translation>
 <translation id="213826338245044447">Mobiilikirjanmerkit</translation>
@@ -1388,7 +1386,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3681007416295224113">Varmenteen tiedot</translation>
 <translation id="3681421644246505351">Chrome havaitsee viimeaikaisen selaushistoriasi perusteella sinua kiinnostavia aiheita.</translation>
 <translation id="3682094733650754138">Täytä osoite ‑vaihtoehto on valittu</translation>
-<translation id="3689867156802445220">Rakennuksen numero</translation>
 <translation id="3693327506115126094">Valitse henkilöllisyytesi vahvistustapa</translation>
 <translation id="3698629142018988477">Luo sivusto ‑painike, aktivoi luodaksesi uusi sivusto nopeasti Google Sitesissa</translation>
 <translation id="3701325639446035885">Tapahtumien lipunmyynti</translation>

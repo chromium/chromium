@@ -3309,6 +3309,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3497560059572256875">Del doodle</translation>
 <translation id="3497915391670770295">Send til dine enheder</translation>
 <translation id="3500417806337761827">Delingen kunne ikke tilføjes. Der er allerede tilføjet for mange SMB-delinger.</translation>
+<translation id="3500764001796099683">Aktivér isolerede webapps</translation>
 <translation id="350397915809787283">Hvis du ikke har en konto, skal du vælge den første mulighed for at oprette en.</translation>
 <translation id="3503995387997205657">Du kan gendanne dine tidligere apps</translation>
 <translation id="3505100368357440862">Forslag til shopping</translation>
@@ -4017,7 +4018,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4031527940632463547">Der er blokeret for sensorer</translation>
 <translation id="4033471457476425443">Tilføj ny mappe</translation>
-<translation id="4033711848170683365">Denne handling sletter browserdata permanent fra denne enhed. Google-konti, der er tilknyttet denne profil, anvendes muligvis af andre apps på din <ph name="DEVICE_TYPE" />. Du kan fjerne disse konti i <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Sikre websites indlejrer muligvis indhold som f.eks. billeder og webrammer, der ikke er sikre</translation>
 <translation id="4034706080855851454">Din organisation skal have oplysninger om enheden for at kunne bruge din enhed med din organisationsprofil.
 
@@ -5885,7 +5885,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5514315914873062345">Tab-tast</translation>
 <translation id="5517304475148761050">Denne app kræver adgang til Play Butik</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Konfigurer med Android-telefon</translation>
 <translation id="5519053700692355541">Du kan åbne de fleste funktioner i sidepanelet via Chrome-menuen øverst til højre</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Hold denne konto bedre beskyttet med en stærk adgangskode. Den gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" /></translation>
@@ -7185,6 +7184,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6551508934388063976">Kommandoen er utilgængelig. Tryk på Ctrl+N for at åbne et nyt vindue.</translation>
 <translation id="6551606359270386381">Ellipseværktøj</translation>
 <translation id="6551612971599078809">Websitet anvender en USB-enhed</translation>
+<translation id="6551620030439692385">Blokeret. Tidszonen er i øjeblikket indstillet til <ph name="TIMEZONE" /> og kan kun opdateres manuelt.</translation>
 <translation id="6551739526055143276">Administreres af Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> brugere</translation>
 <translation id="6555432686520421228">Fjern alle brugerkonti, og nulstil din <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed, så den er som ny.</translation>
@@ -7255,6 +7255,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6608773371844092260">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren til højre på denne <ph name="DEVICE_TYPE" />. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Dine logindata gemmes på denne enhed, når du afslutter inkognitotilstand. Det betyder, at du kan logge ind på dette website med din enhed igen på et senere tidspunkt.</translation>
 <translation id="6610002944194042868">Valgmuligheder for oversættelse</translation>
+<translation id="6610064275805055636">Administrer isolerede webapps</translation>
 <translation id="6611972847767394631">Find dine faner her</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6613267708691765962">Søger efter malware…</translation>
@@ -8619,6 +8620,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" vil scanne via "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Vælg, hvilken enhed der har adgangsnøglen til <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> på <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blokeret. Tidsplanen er i øjeblikket indstillet til <ph name="SUNRISE_TIME" />-<ph name="SUNSET_TIME" /> og kan kun opdateres manuelt.</translation>
 <translation id="7673313156293624327">ChromeOS Shill-logs (forbindelsesadministrator)</translation>
 <translation id="7674416868315480713">Deaktiver alle porte, som viderestilles i Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> app</translation>
@@ -9551,6 +9553,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>
 <translation id="8376451933628734023">Hvis webappen forsøger at narre dig til at tro, det er en anden app, skal du afinstallere den.</translation>
 <translation id="8376532149031784008">Genindlæser <ph name="DOMAIN" />...</translation>
+<translation id="8376610503048439696">Udvidelser, der er installeret af din administrator, kan stadig læse og ændre dette website</translation>
 <translation id="8376752431516546391">Sidepanel i Google Søgning</translation>
 <translation id="8377625247046155446">Denne adgangsnøgle gemmes kun på denne enhed. Den forbliver på denne enhed, når du har lukket alle inkognitovinduer.</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
@@ -9690,6 +9693,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for afsendelse af disse rapporter i indstillingerne på dit barns ChromeOS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Hvis indstillingen Web- og appaktivitet er aktiveret for dit barns Google-konto, gemmes dit barns data muligvis på barnets Google-konto. Få flere oplysninger om disse indstillinger og om, hvordan du ændrer dem, ved at gå til families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Angiv adgangskoden til filen</translation>
+<translation id="8476942730579767658">Vinduer og skriveborde</translation>
 <translation id="8477178913400731244">Slet data</translation>
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>

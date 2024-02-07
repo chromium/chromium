@@ -75,6 +75,7 @@ Aspetti da considerare:
 <translation id="2689064829982324496">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2702250627063295552">Aggiungi elemento dell'elenco di lettura a Chrome</translation>
+<translation id="2703746758996815929">Per ricevere suggerimenti utili su Chrome, attiva le notifiche nelle impostazioni di iOS.</translation>
 <translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
 <translation id="2789947168960170215">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
+<translation id="8874688701962049679">Suggerimenti per usare al meglio Chrome.</translation>
 <translation id="8891935667620843985">Puoi aprire automaticamente i link in Chrome impostandolo come app browser predefinita.</translation>
 <translation id="8897749957032330183">Le password vengono salvate in Gestore delle password di Google su questo dispositivo.</translation>
 <translation id="8949681853939555434">Imposta Chrome come browser predefinito</translation>

@@ -3290,6 +3290,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3497560059572256875">Doodle teilen</translation>
 <translation id="3497915391670770295">An meine &amp;Geräte senden</translation>
 <translation id="3500417806337761827">Fehler beim Bereitstellen der Freigabe. Es wurden schon zu viele SMB-Freigaben bereitgestellt.</translation>
+<translation id="3500764001796099683">Isolierte Web-Apps aktivieren</translation>
 <translation id="350397915809787283">Wenn Sie noch kein Konto haben, wählen Sie die erste Option aus, um eines zu erstellen.</translation>
 <translation id="3503995387997205657">Du kannst deine vorherigen Apps wiederherstellen</translation>
 <translation id="3505100368357440862">Shopping-Vorschläge</translation>
@@ -3998,7 +3999,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
-<translation id="4033711848170683365">Dadurch werden Browserdaten dauerhaft von diesem Gerät gelöscht. Die Google-Konten in diesem Profil können von anderen Apps auf deinem <ph name="DEVICE_TYPE" /> verwendet werden. Du kannst diese Konten unter <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> entfernen.</translation>
 <translation id="4033963223187371752">Sichere Websites können Inhalte wie Bilder oder Webframes einbetten, die nicht sicher sind</translation>
 <translation id="4034706080855851454">Wenn du dein Gerät mit dem Profil deiner Organisation verwenden möchtest, benötigt deine Organisation Informationen zum Gerät.
 
@@ -5865,7 +5865,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5514315914873062345">Tabulatortaste</translation>
 <translation id="5517304475148761050">Diese App benötigt Zugriff auf den Google Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Mit Android-Smartphone einrichten</translation>
 <translation id="5519053700692355541">Die meisten Funktionen der Seitenleiste kannst du über das Chrome-Menü oben rechts öffnen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Mit einem starken Passwort ist dieses Konto besser geschützt. Das Passwort wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
@@ -7162,6 +7161,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6551508934388063976">Befehl nicht verfügbar. Drücke Strg+N, um ein neues Fenster zu öffnen.</translation>
 <translation id="6551606359270386381">Ellipsentool</translation>
 <translation id="6551612971599078809">Die Website verwendet ein USB-Gerät</translation>
+<translation id="6551620030439692385">Blockiert. Die aktuelle Zeitzone ist <ph name="TIMEZONE" /> und kann nur manuell geändert werden.</translation>
 <translation id="6551739526055143276">Verwaltet über Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> Nutzer</translation>
 <translation id="6555432686520421228">Alle Nutzerkonten entfernen und das <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät auf die Werkseinstellungen zurücksetzen</translation>
@@ -7230,6 +7230,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6608773371844092260">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor rechts an diesem <ph name="DEVICE_TYPE" /> zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="6609478180749378879">Nach dem Verlassen des Inkognitomodus werden Anmeldedaten auf diesem Gerät gespeichert. Du kannst dich später erneut mit deinem Gerät auf dieser Website anmelden.</translation>
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
+<translation id="6610064275805055636">Isolierte Web-Apps verwalten</translation>
 <translation id="6611972847767394631">Hier findest du deine Tabs</translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
 <translation id="6613267708691765962">Nach Malware wird gesucht…</translation>
@@ -8594,6 +8595,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />“ möchte über „<ph name="SCANNER_NAME" />“ scannen.</translation>
 <translation id="7672504401554182757">Wähle das Gerät mit dem Passkey für <ph name="APP_NAME" /> aus</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> auf <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Blockiert. Der aktuelle Zeitplan ist <ph name="SUNRISE_TIME" />–<ph name="SUNSET_TIME" /> und kann nur manuell geändert werden.</translation>
 <translation id="7673313156293624327">Protokolle für ChromeOS Shill (Connection Manager)</translation>
 <translation id="7674416868315480713">Portweiterleitung in Linux für alle Ports deaktivieren</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> Apps</translation>
@@ -9527,6 +9529,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8376384591331888629">Einschließlich Drittanbieter-Cookies auf dieser Website</translation>
 <translation id="8376451933628734023">Wenn diese Web-App vorzutäuschen versucht, eine andere App zu sein, deinstalliere sie.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> wird aktualisiert…</translation>
+<translation id="8376610503048439696">Von deinem Administrator installierte Erweiterungen können diese Website weiterhin lesen und ändern</translation>
 <translation id="8376752431516546391">Seitenleiste der Google Suche</translation>
 <translation id="8377625247046155446">Dieser Passkey wird nur auf diesem Gerät gespeichert. Er verbleibt auf dem Gerät, nachdem du alle Inkognitofenster geschlossen hast.</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
@@ -9666,6 +9669,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen des ChromeOS-Geräts deines Kindes aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ im Google-Konto deines Kindes aktiviert ist, werden die Daten deines Kindes möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Gib das Passwort für diese Datei ein</translation>
+<translation id="8476942730579767658">Fenster und Desktops</translation>
 <translation id="8477178913400731244">Daten löschen</translation>
 <translation id="8477241577829954800">Außer Kraft gesetzt</translation>
 <translation id="8477384620836102176">&amp;Allgemein</translation>

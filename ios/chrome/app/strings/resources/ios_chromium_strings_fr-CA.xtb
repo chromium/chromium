@@ -204,6 +204,7 @@ Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser
 
 Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
+<translation id="6433172051771630690">Conseils pour tirer le meilleur parti de Chromium.</translation>
 <translation id="6502321914804101924">Chromium est déconnecté</translation>
 <translation id="6563921047760808519">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chromium préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium prend désormais en charge les politiques relatives aux utilisateurs pour votre compte géré</translation>
@@ -256,6 +257,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7990085102929105708">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chromium ne se synchronisera pas.
 
 Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par cette dernière. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce réglage, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Pour obtenir des conseils utiles sur Chromium, activez les notifications dans vos réglages iOS.</translation>
 <translation id="7995166854192397899">Les suggestions sont basées sur votre activité de navigation sur vos autres appareils. Pour obtenir des suggestions, connectez-vous à Chromium sur tous vos appareils.</translation>
 <translation id="800195749539500647">Tirez le meilleur parti de Chromium</translation>
 <translation id="8013573822802650211">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous sur tous vos appareils</translation>

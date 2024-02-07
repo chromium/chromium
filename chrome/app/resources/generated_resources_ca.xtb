@@ -4001,7 +4001,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4031527940632463547">Sensors bloquejats</translation>
 <translation id="4033471457476425443">Afegeix una carpeta nova</translation>
-<translation id="4033711848170683365">Amb aquesta acció, les dades de navegació d'aquest dispositiu se suprimiran permanentment. És possible que altres aplicacions del teu <ph name="DEVICE_TYPE" /> utilitzin els Comptes de Google que hi ha en aquest perfil. Pots suprimir aquests comptes a <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Els llocs web segurs poden inserir contingut com ara imatges o marcs web que no siguin segurs</translation>
 <translation id="4034706080855851454">Per utilitzar el dispositiu amb el perfil de l'organització, la teva organització necessita informació sobre el dispositiu,
 
@@ -5869,7 +5868,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5514315914873062345">Tabulador</translation>
 <translation id="5517304475148761050">Aquesta aplicació requereix accés a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configura amb el telèfon Android</translation>
 <translation id="5519053700692355541">Pots obrir la majoria de funcions del tauler lateral des del menú de Chrome a la part superior dreta</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Protegeix millor aquest compte amb una contrasenya segura. Es desarà al <ph name="GOOGLE_PASSWORD_MANAGER" /> per a <ph name="EMAIL" />.</translation>
@@ -9676,6 +9674,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Introdueix la contrasenya del fitxer</translation>
+<translation id="8476942730579767658">Finestres i escriptoris</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>
 <translation id="8477241577829954800">Reemplaçat</translation>
 <translation id="8477384620836102176">&amp;General</translation>

@@ -335,6 +335,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ने आपसे इस वेबसाइट का ऐक्सेस देने का अनुरोध किया है:</translation>
+<translation id="2876194821763651818"><ph name="USERNAME" /> पर सेव किए गए पासवर्ड.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
@@ -675,6 +676,7 @@
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4710167854527459075">नए के क्रम से लगाएं</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
+<translation id="4720556299488643018">बंद करें</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
@@ -1159,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome अप-टू-डेट है</translation>
 <translation id="7105047059074518658">सभी डिवाइसों पर आसानी से ब्राउज़ करने के लिए, साइन इन करें</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
-<translation id="7116588989735740310">अन्य डिवाइसों पर देखी गई साइटों पर वापस जाने के लिए, अपने टैब और इतिहास को सिंक करें</translation>
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7140829094791862589">मैन्युअल क्रम से लगाएं</translation>
 <translation id="7146622961999026732">शायद ये साइटें और ऐप्लिकेशन आपके लिए अहम हैं:</translation>
@@ -1197,6 +1198,7 @@
 <translation id="7313188324932846546">सिंक करने की प्रक्रिया को सेट अप करने के लिए टैप करें</translation>
 <translation id="7324354302972299151">“नज़र न रखें” अनुरोध भेजें</translation>
 <translation id="7332075081379534664">साइन इन हो गया</translation>
+<translation id="7333041109965360609">सूचनाएं पाने की सुविधा बंद की गई</translation>
 <translation id="7333232495927792353">Google से काम का कॉन्टेंट पाने के लिए, सिंक करें</translation>
 <translation id="7339898014177206373">नई विंडो</translation>
 <translation id="7340958967809483333">'डिस्कवर' के लिए विकल्प</translation>
@@ -1248,7 +1250,6 @@
 <translation id="752220631458524187">काम हो जाने के बाद डिसकनेक्ट कर दें</translation>
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>
 <translation id="752731652852882757">गुप्त मोड इस्तेमाल करते समय ब्लॉक करें</translation>
-<translation id="7539698981064401140">अपने टैब और इतिहास को सिंक करें</translation>
 <translation id="7562080006725997899">ब्राउज़िंग डेटा साफ़ हो रहा है</translation>
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
@@ -1443,7 +1444,6 @@
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने सिंक किए गए लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466613982764129868">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
-<translation id="847433688444405067">सभी डिवाइसों पर ब्राउज़ करें</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज खोलें</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
@@ -1455,6 +1455,7 @@
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8505766168025405649">डाउनलोड की स्थिति जानने के लिए सूचना देखें</translation>
 <translation id="8506357771923193001">डाउनलोड की गई फ़ाइलें यहां दिखेंगी</translation>
+<translation id="8512053371384421952">अब आपको <ph name="DOMAIN" /> से सूचनाएं नहीं मिलेंगी.</translation>
 <translation id="8514477925623180633">Chrome के ज़रिए संग्रहित पासवर्ड निर्यात करें</translation>
 <translation id="8516012719330875537">इमेज एडिटर</translation>
 <translation id="8523928698583292556">स्टोर किया गया पासवर्ड मिटाएं</translation>
@@ -1492,7 +1493,6 @@
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
 <translation id="8746155870861185046">हाइलाइट किया गया टेक्स्ट शेयर करें</translation>
-<translation id="874726034427945498">पता बार में बेहतर सुझाव पाने के लिए, अपने टैब और इतिहास को सिंक करें</translation>
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
 <translation id="8754448020583829686">लिंक के बिना कॉपी करें</translation>
 <translation id="8756969031206844760">पासवर्ड अपडेट करें?</translation>
@@ -1534,7 +1534,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8972098258593396643">डिफ़ॉल्ट फ़ोल्डर में डाउनलोड करें?</translation>
-<translation id="8987736167266086032">वहीं से प्रारंभ करें जहां आपने छोड़ा था</translation>
 <translation id="8993760627012879038">गुप्त मोड में नया टैब खोलें</translation>
 <translation id="8996847606757455498">सेवा देने वाली कोई और कंपनी चुनें</translation>
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
@@ -1557,7 +1556,6 @@
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9081543426177426948">जिन साइटों को ब्राउज़ किया जाता है उनकी जानकारी गुप्त मोड में सेव नहीं होती</translation>
-<translation id="9084103763810123431">किसी दूसरे डिवाइस पर ब्राउज़ करना जारी रखने के लिए, अपने टैब और इतिहास को सिंक करें</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9086455579313502267">नेटवर्क की एक्सेस नहीं की जा सकती है.</translation>
 <translation id="9099220545925418560">विज्ञापन के विषय, आपके ब्राउज़िंग इतिहास के आधार पर चुने गए हैं. यह सेटिंग बंद है.</translation>

@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
 <translation id="158838227375272121">Google Classroom වෙබ් අඩවිය</translation>
 <translation id="1589090746204042747">මෙම සැසියෙහි ඔබේ සියලු ක්‍රියාකාරකම්වලට ප්‍රවේශය</translation>
-<translation id="1592682369233288537">මීළඟ මේසය: <ph name="NEXT_DESK_NAME" />, ක්‍රියාත්මක කිරීමට Search+Space භාවිත කරන්න.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + පහළට ඊතලය</translation>
 <translation id="1604857178818051494">මාධ්‍ය විරාම කරන්න</translation>
 <translation id="1607312127821884567">ඔබේ දුරකථනයේ යෙදුම් බැලීම පිහිටුවීම ඉවතලන්න</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">රූපය</translation>
 <translation id="450584155212756404">සංවර්ධක නාලිකාව</translation>
 <translation id="4513946894732546136">ප්‍රතිපෝෂණ</translation>
-<translation id="4516212064498225455">වත්මන් මේසය: <ph name="CURRENT_DESK_NAME" />, සියලුම මේස මෙනුව විවෘත කිරීමට Search+Space භාවිත කරන්න.</translation>
 <translation id="4518404433291145981">ඔබගේ Chromebook අගුලු හැරීමට, පළමුව ඔබගේ දුරකථනය අගුලු හරින්න</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth උපාංගය යුගල වඊමට අවසර ඉල්ලයි.</translation>
 <translation id="4533343294786968049">ඔබේ බැටරි ආයු කාලය දීර්ඝ කිරීම. බැටරිය <ph name="FULLY_CHARGE_TIME" /> වන විට සම්පූර්ණයෙන්ම ආරෝපණය වනු ඇත.</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">පෙළ කාකපාදය උද්දීපනය කරන්න</translation>
 <translation id="5208059991603368177">ක්‍රියාත්මකයි</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> තෙක් ක්‍රියාවිරහිතයි</translation>
-<translation id="5217646019792206018">මීළඟ මේසය: <ph name="NEXT_DESK_NAME" />, ක්‍රියාත්මක කිරීමට සෙවීම+ඉඩ හෝ යතුරුපුවරු කෙටිමං භාවිත කරන්න: Shift+Search+<ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5218064144558110424">අසම්පූර්ණ ලෙස සලකුණු කරන්න</translation>
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="5229343007215035173">රහස්‍යතා තිරය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
@@ -1874,7 +1871,6 @@
 <translation id="8517041960877371778">ඔබගේ <ph name="DEVICE_TYPE" /> සක්‍රියව පවතින විට එය ආරෝපණය නොවනු ඇත.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{මයික් ආදානය <ph name="APP_NAME" /> මගින් පාලනය වේ}one{මයික් ආදානය යෙදුම් #කින් පාලනය වේ}other{මයික් ආදානය යෙදුම් #කින් පාලනය වේ}}</translation>
 <translation id="8535393432370007982">වර්ණය අනුව අනුපිළිවෙලට සැකසීමේ පිළිවෙළ පසුගමනය කරන්න</translation>
-<translation id="853768060447955562">පෙර මේසය: <ph name="PREVIOUS_DESK_NAME" />, ක්‍රියාත්මක කිරීමට Search+Space හෝ යතුරුපුවරු කෙටිමං භාවිත කරන්න: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">කැමරා රාමුව</translation>
 <translation id="8542053257095774575">සුරැකි මේස හෝ අච්චු නැත</translation>
 <translation id="8546059259582788728">අනුපිළිවෙළට සැකසීම පසුගමනය සාර්ථකයි</translation>
@@ -2039,7 +2035,6 @@
 <translation id="925832987464884575">පෙරදසුන් සඟවන්න</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> හට ඔබ වහාම ඔබගේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීම අවශ්‍ය වේ</translation>
 <translation id="938963181863597773">මාගේ දින දර්ශනයෙහි ඇත්තේ කුමක්ද?</translation>
-<translation id="943067377221312471">පෙර මේසය: <ph name="PREVIOUS_DESK_NAME" />, ක්‍රියාත්මක කිරීමට Search+Space භාවිත කරන්න.</translation>
 <translation id="945383118875625837">පොත්සලකුණු තීරුවට සබැඳිය ඇදගෙන යන්න</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="951991426597076286">පිළිකෙව්</translation>

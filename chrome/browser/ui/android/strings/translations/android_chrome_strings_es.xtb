@@ -1161,7 +1161,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7105047059074518658">Inicia sesión para navegar más fácilmente en varios dispositivos</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
-<translation id="7116588989735740310">Para volver a los sitios que has visitado en otros dispositivos, sincroniza tus pestañas y tu historial</translation>
 <translation id="7138678301420049075">Otro</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
 <translation id="7146622961999026732">Parece que estos sitios y estas aplicaciones son importantes para ti:</translation>
@@ -1251,7 +1250,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="752220631458524187">Desconéctalo cuando termines</translation>
 <translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="752731652852882757">Bloquear en modo Incógnito</translation>
-<translation id="7539698981064401140">Sincroniza tus pestañas e historial</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7577900504646297215">Gestionar intereses</translation>
@@ -1446,7 +1444,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8461694314515752532">Cifrar datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466613982764129868">Comprueba que tu <ph name="TARGET_DEVICE_NAME" /> esté conectado a Internet</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
-<translation id="847433688444405067">Navega en diferentes dispositivos</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abre la página Historial</translation>
 <translation id="8493948351860045254">Liberar espacio</translation>
@@ -1496,7 +1493,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8725066075913043281">Reintentar</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>
 <translation id="8746155870861185046">Compartir resaltado</translation>
-<translation id="874726034427945498">Para ver mejores sugerencias en la barra de direcciones, sincroniza tus pestañas y tu historial</translation>
 <translation id="8748850008226585750">Contenidos ocultos</translation>
 <translation id="8754448020583829686">Copiar sin enlace</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
@@ -1538,7 +1534,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_ONE" /> pestaña más}other{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8972098258593396643">¿Quieres descargarlo en la carpeta predeterminada?</translation>
-<translation id="8987736167266086032">Continúa donde lo dejaste</translation>
 <translation id="8993760627012879038">Abre una nueva pestaña en modo Incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998289560386111590">No disponible en tu dispositivo</translation>
@@ -1561,7 +1556,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="9070377983101773829">Iniciar búsqueda por voz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">En incógnito, los sitios que visitas no se guardan</translation>
-<translation id="9084103763810123431">Para seguir navegando en otro dispositivo, sincroniza tus pestañas y tu historial</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9086455579313502267">No ha sido posible acceder a la red</translation>
 <translation id="9099220545925418560">Se basa en tu historial de navegación. Esta opción está desactivada.</translation>

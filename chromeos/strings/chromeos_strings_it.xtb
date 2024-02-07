@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Impossibile caricare le immagini. Controlla la connessione di rete o riprova a caricare le immagini.</translation>
 <translation id="1751249301761991853">Personali</translation>
 <translation id="1753496554272155572">Esci dall'anteprima dello sfondo</translation>
+<translation id="1754578112426924640">Pulsante Modifica per <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnostica</translation>
 <translation id="175763766237925754">Buono (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android non funziona</translation>
 <translation id="551689408806449779">Il dispositivo è stato disconnesso. Prova a riconnetterlo per eseguire il test</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">bloccato</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Passa automaticamente al tema scuro al tramonto</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5703716265115423771">abbassa volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Pulsante Modifica per <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Aggiorna <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5757187557809630523">traccia successiva</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Non consentito</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Pulsante Elimina per <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">File non trovato</translation>
 <translation id="593880865674747800">Crea altri sfondi in questo stile</translation>
 <translation id="5939518447894949180">Reimposta</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
+<translation id="6796229976413584781">Scorciatoia eliminata</translation>
 <translation id="6798678288485555829">Navigazione nel testo</translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e internet. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aggiornamenti del firmware per dispositivi esterni</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
+<translation id="7233782086689993269">Scorciatoia ripristinata</translation>
 <translation id="725133483556299729">Seleziona email</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7271932918253517778">La scorciatoia con tasti della fila superiore deve includere il tasto <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7656388927906093505">Il dispositivo è un mouse.</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Cambia avatar</translation>
 <translation id="7683228889864052081">Tonalità della tastiera</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">Luce della tastiera</translation>
 <translation id="7730077286107534951">Alcune informazioni sull'account e sul sistema potrebbero essere inviate a Google. Usiamo queste informazioni per risolvere problemi tecnici e migliorare i nostri servizi, in conformità con le nostre <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e i nostri <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />. Per richiedere modifiche ai contenuti, visita la <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
+<translation id="7746357909584236306">modificabile</translation>
 <translation id="7747039790905080783">Chiave precondivisa</translation>
 <translation id="7752963721013053477">Dall'alba al tramonto - Esclusiva</translation>
 <translation id="7762130827864645708">La password è stata modificata. Usa la nuova password d'ora in poi.</translation>

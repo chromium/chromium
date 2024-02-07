@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Разрешаване на влизането с профили от трети страни за конкретен сайт.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Изтича утре}other{Изтича след # дни}}</translation>
 <translation id="310297983047869047">Предишният слайд</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">Установена е връзка с USB устройство</translation>
 <translation id="4194328954146351878">Извеждане на запитване, преди да се разреши на сайтовете да четат и променят информация на устройства с NFC (препоръчително)</translation>
 <translation id="4200726100658658164">Отваряне на настройките за местоположението</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> От <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Възможно е устройството да вибрира при известия</translation>
 <translation id="4259722352634471385">Навигирането е блокирано: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Вълшебникът от Оз</translation>
 <translation id="7684642910516280563">Забраняване на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
-<translation id="7770832849480336015">Скриване на „<ph name="TITLE_OF_MODULE" />“</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавяне</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продължаване с този раздел}other{Продължаване с тези раздели}}</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7804248752222191302">Сайт използва камерата ви</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>

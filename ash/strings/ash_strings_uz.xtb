@@ -160,7 +160,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1586324912145647027">1 — 8 ish stollarini ochish</translation>
 <translation id="158838227375272121">Google Classroom sayti</translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
-<translation id="1592682369233288537">Keyingi desktop: <ph name="NEXT_DESK_NAME" />, faollashtirish uchun Search + Space tugmalaridan foydalaning.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + pastga strelka</translation>
 <translation id="1604857178818051494">Media pauzasi</translation>
 <translation id="1607312127821884567">Telefondagi ilovalarni koʻrishni sozlash oynasini yopish</translation>
@@ -874,7 +873,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4491109536499578614">Tasvir</translation>
 <translation id="450584155212756404">Dasturchilar kanali</translation>
 <translation id="4513946894732546136">Fikr-mulohaza</translation>
-<translation id="4516212064498225455">Joriy desktop: <ph name="CURRENT_DESK_NAME" />, barcha desktoplar menyusini ochish uchun Search + Space tugmalarini bosing.</translation>
 <translation id="4518404433291145981">Chromebook qulfini ochish uchun telefon qulfini yeching</translation>
 <translation id="4527045527269911712">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda.</translation>
 <translation id="4533343294786968049">Batareya quvvatini uzaytirish. <ph name="FULLY_CHARGE_TIME" /> gacha batareya toʻliq quvvat oladi.</translation>
@@ -1056,7 +1054,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5207949376430453814">Matn kiritish joyi ajratib ko‘rsatilsin</translation>
 <translation id="5208059991603368177">Yoniq</translation>
 <translation id="5216991270656129561">Oʻchiqlik muddati: <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Keyingi desktop: <ph name="NEXT_DESK_NAME" />, faollashtirish uchun Search + Space yoki tezkor tugmalardan: Shift + Search + <ph name="NEXT_DESK_INDEX" /> ishlating.</translation>
 <translation id="5218064144558110424">Bajarilmagan deb belgilash</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5229343007215035173">Maxfiylik ekranini yoqish/oʻchirish</translation>
@@ -1874,7 +1871,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofon kirishini <ph name="APP_NAME" /> boshqaradi}other{Mikrofon kirishini # ta ilova boshqaradi}}</translation>
 <translation id="8535393432370007982">Rangi asosida saralanishini bekor qilish</translation>
-<translation id="853768060447955562">Avvalgi desktop: <ph name="PREVIOUS_DESK_NAME" />, faollashtirish uchun Search + Space yoki tezkor tugmalardan: Shift + Search + <ph name="PREVIOUS_DESK_INDEX" /> ishlating.</translation>
 <translation id="8541078764854166027">Kamerani freymlash</translation>
 <translation id="8542053257095774575">Saqlangan ish stoli yoki andozalar topilmadi</translation>
 <translation id="8546059259582788728">Saralash bekor qilindi</translation>
@@ -2039,7 +2035,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="925832987464884575">Razm solishni faolsizlantirish</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> tizimini yangilashni talab qilmoqda.</translation>
 <translation id="938963181863597773">Taqvimda nima bor?</translation>
-<translation id="943067377221312471">Avvalgi desktop: <ph name="PREVIOUS_DESK_NAME" />, faollashtirish uchun Search+Space tugmalaridan foydalaning.</translation>
 <translation id="945383118875625837">Havolani xatcho‘plar paneliga sudrash</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="951991426597076286">Rad etish</translation>

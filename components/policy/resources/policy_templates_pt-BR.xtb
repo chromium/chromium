@@ -514,6 +514,19 @@ Se ela for desativada, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STO
 <translation id="1426170570389588560">Define a duração, em dias, do armazenamento de metadados de trabalhos de impressão</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1427655258943162134">Endereço ou URL do servidor proxy</translation>
+<translation id="1430811977802269244">Permite que os dispositivos qualificados que vão perder o suporte do Android ativem as
+atualizações automáticas estendidas.
+
+Se a política for ativada, as atualizações automáticas estendidas serão ativadas no dispositivo.
+
+Se a política for desativada ou deixada sem definição, os dispositivos não vão mais receber atualizações
+após a data original de expiração da atualização automática.
+
+Esta política é relevante apenas para modelos mais antigos que não recebem
+atualizações estendidas automaticamente.
+
+Para mais detalhes, acesse
+https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
 <translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de Economia de bateria.
       No Chrome, essa configuração limita o frame rate para reduzir o consumo de energia. Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.
       No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de Economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
@@ -588,6 +601,7 @@ Se ela for desativada, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STO
 Se você ativar ou não configurar essa política, a rolagem via URL para fragmentos de texto específicos em páginas da Web será ativada.
 
 Se você desativar a política, essa rolagem será desativada.</translation>
+<translation id="1468702975912409463">Permitir que usuários de acesso remoto abram URLs do lado do host no navegador cliente local</translation>
 <translation id="1474273443907024088">Desativar TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Se a política for definida, será configurada uma lista de dispositivos USB que o usuário pode remover do driver de kernel dele para uso pela API chrome.usb diretamente dentro de um app da Web. As entradas são pares de um identificador de fornecedor e um identificador de produto USB para reconhecer um hardware específico.
@@ -2253,6 +2267,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
 <translation id="2755847332939882873">Permite a coleta do rastreamento de desempenho do sistema</translation>
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
+<translation id="2760947619380644513">Permitir que usuários de acesso remoto abram URLs do lado do host no navegador cliente local</translation>
 <translation id="2761483219396643566">Intervalo da advertência de inatividade no funcionamento com energia da bateria</translation>
 <translation id="2764750330785898947">Ativar suporte à codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> pode fazer anotações em PDFs.
@@ -5227,6 +5242,13 @@ Se a política não for definida ou se a lista não tiver referências de imagem
 <translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
 <translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="5239277956452384929">Permitir acesso a uma lista de URLs durante a autenticação</translation>
+<translation id="5242361766432467515">Se a política for ativada ou deixada sem definição, os usuários conectados a um host de acesso remoto poderão abrir URLs do lado do host no navegador cliente local.
+
+Se a política for desativada, o host de acesso remoto não vai enviar URLs ao cliente.
+
+Essa configuração não é válida para conexões de assistência remota, já que esse modo de conexão não tem suporte ao recurso.
+
+Observação: esse recurso ainda não está disponível para o público geral. Portanto, ativá-lo não significa que ele ficará visível na interface do cliente.</translation>
 <translation id="5245647012663146075">Não permitir a ativação do recurso "Seu smartphone"</translation>
 <translation id="5245671702326993331">Permite notificações nativas</translation>
 <translation id="524637053580639111">Esta política foi removida no M82. Use DeviceMinimumVersion.
@@ -5775,6 +5797,7 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
       Esta política pode ser substituída por padrões de URL específicos usando as políticas <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       A política só afeta as operações da área de transferência controladas pela permissão do site para a área de transferência, e não as gravações limpas da área de transferência ou operações de copiar e colar confiáveis.</translation>
+<translation id="5650256117857913687">Impedir que os usuários de acesso remoto abram URLs do lado do host no navegador cliente local</translation>
 <translation id="5650716720715977549">Aplicar restrições a solicitações para endpoints de uma rede mais particular</translation>
 <translation id="5651538748810288218">Se a política for definida como 1, os sites poderão acessar e usar sensores, como os de luz e movimento. Se for definida como 2, o acesso aos sensores será negado.
 
@@ -7918,6 +7941,7 @@ Se esta política for desativada ou não for definida, as configurações de con
 <translation id="7298197471363105063">Substituir o First-Party Sets.</translation>
 <translation id="7300320787419338290">As configurações F11/F12 usam o atalho que contém as teclas modificadoras Ctrl e Shift</translation>
 <translation id="7302043767260300182">Intervalo de bloqueio da tela no funcionamento com alimentação CA</translation>
+<translation id="7302500623317853506">Permitir atualizações automáticas estendidas</translation>
 <translation id="7303655680460311843">Ativar o teclado virtual de toque na tela de login</translation>
 <translation id="7303902834678570827">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo</translation>
 <translation id="7306926210354955892">A definição da política especifica a ação a ser executada quando o diretório de dados ARC do usuário tiver sido criado com virtio-fs. A menos que os dados do virtio-fs sejam migrados para o virtio-blk, os apps Android poderão ficar mais lentos na VM do ARC.
@@ -9779,6 +9803,7 @@ muito menor, o que vai prejudicar a proteção.</translation>
 <translation id="8862086508140571198">Esta política permite configurar uma lista de Conteúdos transferidos por download para download o mais rápido possível. Depois do download, o conteúdo fica disponível para todos os usuários no dispositivo.
 
 Isso é útil quando o administrador sabe que um recurso que exige a presença do Conteúdo transferido por download provavelmente será usado pelos usuários do dispositivo.</translation>
+<translation id="8864727482158496280">Não permitir atualizações automáticas estendidas</translation>
 <translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Aplicar a configuração padrão para a verificação de uso da Chave RSA</translation>
 <translation id="8866430022832109569">Relatórios de inventário do app</translation>

@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Hirugarrenen cookieek murriztapenak dituzte</translation>
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="310297983047869047">Aurreko diapositiba</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">USB bidezko gailu batera konektatuta</translation>
 <translation id="4194328954146351878">Webguneei NFC darabilten gailuetako informazioa ikusi eta aldatzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4200726100658658164">Ireki kokapen-ezarpenak</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Iturburua: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Gailua dardararaz dezakete jakinarazpenek</translation>
 <translation id="4259722352634471385"><ph name="URL" /> orrira joateko aukera blokeatuta dago</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Ozeko azti miragarria</translation>
 <translation id="7684642910516280563">Debekatu hirugarrenen cookieak erabiltzea webgune bati</translation>
 <translation id="7719367874908701697">Orriaren zooma</translation>
-<translation id="7770832849480336015">Ezkutatu "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7791543448312431591">Gehitu</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Egin aurrera fitxa honekin}other{Egin aurrera fitxa hauekin}}</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>

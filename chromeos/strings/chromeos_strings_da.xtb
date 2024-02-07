@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Billederne kunne ikke indlæses. Tjek din netværksforbindelse, eller prøv at indlæse billederne igen.</translation>
 <translation id="1751249301761991853">Personlig</translation>
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
+<translation id="1754578112426924640">Knappen Rediger for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="175763766237925754">Godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android kører ikke</translation>
 <translation id="551689408806449779">Forbindelsen til enheden er blevet afbrudt. Prøv at oprette forbindelse igen for at teste</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">låst</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Skift automatisk til Mørkt tema ved solnedgang</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Centrér</translation>
 <translation id="5703716265115423771">lydstyrke ned</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Knappen Rediger for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Opdater <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Mellem</translation>
 <translation id="5757187557809630523">næste nummer</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Knappen Slet for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="593880865674747800">Opret flere i denne stil</translation>
 <translation id="5939518447894949180">Nulstil</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
 <translation id="6768237774506518020">Høj fejlrate for DNS-opslag</translation>
 <translation id="6791471867139427246">farve på keyboardets lys</translation>
+<translation id="6796229976413584781">Genvejen er slettet</translation>
 <translation id="6798678288485555829">Tekstnavigation</translation>
 <translation id="680983167891198932">Nøgle</translation>
 <translation id="6816797338148849397">Du kan få oplysninger om det, du har markeret. Tryk på pil op for at se oplysningerne.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Administrer indstillinger for APN-netværk. APN'er opretter forbindelse mellem et mobilnetværk og internettet. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Opdateringer af firmware på eksterne enheder</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
+<translation id="7233782086689993269">Genvejen er gendannet</translation>
 <translation id="725133483556299729">Vælg mailadresse</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7271932918253517778">Genvejen med taster i øverste række skal indeholde <ph name="META_KEY" />-tasten.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7656388927906093505">Enheden er en mus.</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Skift avatar</translation>
 <translation id="7683228889864052081">tastaturfarve</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">tastaturlys</translation>
 <translation id="7730077286107534951">Visse konto- og systemoplysninger kan blive sendt til Google. Vi bruger disse oplysninger til at løse tekniske problemer og forbedre vores tjenester i overensstemmelse med vores <ph name="BEGIN_LINK2" />privatlivspolitik<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />servicevilkår<ph name="END_LINK3" />. Hvis du vil anmode om indholdsændringer, kan du gå til <ph name="BEGIN_LINK1" />Hjælp til Juridisk<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Antal gennemførte cyklusser</translation>
+<translation id="7746357909584236306">redigerbar</translation>
 <translation id="7747039790905080783">Forhåndsdelt nøgle</translation>
 <translation id="7752963721013053477">Daggry til mørke – eksklusivt</translation>
 <translation id="7762130827864645708">Din adgangskode er ændret. Brug den nye adgangskode fremover.</translation>

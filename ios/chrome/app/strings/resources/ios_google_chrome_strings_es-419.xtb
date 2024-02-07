@@ -75,6 +75,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2689064829982324496">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2702250627063295552">Agregar el elemento de la Lista de lectura a Chrome</translation>
+<translation id="2703746758996815929">Para obtener sugerencias útiles de Chrome, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2789947168960170215">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
+<translation id="8874688701962049679">Sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="8891935667620843985">Para que los vínculos se abran de forma automática en Chrome, elígelo como app de navegador predeterminada.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo.</translation>
 <translation id="8949681853939555434">Establece Chrome como tu navegador predeterminado</translation>

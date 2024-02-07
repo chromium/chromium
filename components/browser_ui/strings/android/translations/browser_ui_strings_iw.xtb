@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
+<translation id="3025010840409371499">‫<ph name="RECENCY" /> ‏<ph name="SEPARATOR" /> ‏<ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="310297983047869047">לשקף הקודם</translation>
@@ -190,6 +191,7 @@
 <translation id="4169549551965910670">‏מחובר להתקן USB</translation>
 <translation id="4194328954146351878">‏הצגת שאלה לפני מתן הרשאה לאתרים לראות ולשנות מידע במכשירי NFC (מומלץ).</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
+<translation id="4206661981211220935">‫<ph name="RECENCY" /> ‏<ph name="SEPARATOR" /> המקור: <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4278390842282768270">מותר</translation>
@@ -401,9 +403,9 @@
 <translation id="7667547420449112975">הקוסם המופלא מארץ עוץ</translation>
 <translation id="7684642910516280563">‏ביטול האפשרות של אתר להשתמש בקובצי cookie של צדדים שלישיים</translation>
 <translation id="7719367874908701697">מרחק מתצוגה בדף</translation>
-<translation id="7770832849480336015">הסתרה של '<ph name="TITLE_OF_MODULE" />'</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{המשך הגלישה בכרטיסייה הזו}one{המשך הגלישה בכרטיסיות האלה}two{המשך הגלישה בכרטיסיות האלה}other{המשך הגלישה בכרטיסיות האלה}}</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804248752222191302">אתר כלשהו משתמש במצלמה שלך</translation>
 <translation id="7807060072011926525">‏סופק על ידי Google</translation>

@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">无法加载这些图片。请检查您的网络连接状况，或尝试重新加载这些图片。</translation>
 <translation id="1751249301761991853">个人</translation>
 <translation id="1753496554272155572">退出壁纸预览</translation>
+<translation id="1754578112426924640">“<ph name="ACCELERATOR_INFO" />”的修改按钮。</translation>
 <translation id="1755556344721611131">“诊断”应用</translation>
 <translation id="175763766237925754">良好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android 未运行</translation>
 <translation id="551689408806449779">设备已断开连接。请尝试重新连接以进行测试</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">已锁定</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落时自动切换到深色主题</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">居中</translation>
 <translation id="5703716265115423771">调低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">“<ph name="SHORTCUT_DESCRIPTION" />”的修改按钮。</translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5757187557809630523">下一首</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
+<translation id="5928411637936685857">“<ph name="ACCELERATOR_INFO" />”的删除按钮。</translation>
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="593880865674747800">创建更多此风格的壁纸</translation>
 <translation id="5939518447894949180">重置</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6791471867139427246">键盘背光颜色</translation>
+<translation id="6796229976413584781">快捷方式已删除</translation>
 <translation id="6798678288485555829">文字导航</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部设备的固件更新</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
+<translation id="7233782086689993269">快捷方式已恢复</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="7656388927906093505">设备类型是鼠标。</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />，<ph name="ROW_STATUS" />。</translation>
 <translation id="7665800271478495366">更换头像</translation>
 <translation id="7683228889864052081">键盘色调</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">键盘背光</translation>
 <translation id="7730077286107534951">系统可能会将一些账号信息和系统信息发送给 Google。我们会借助这些信息来解决技术问题和提升服务质量，并且会在此过程中严格遵守我们的<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />。如需请求更改内容，请前往<ph name="BEGIN_LINK1" />法律帮助<ph name="END_LINK1" />页面。</translation>
 <translation id="773153675489693198">循环计数</translation>
+<translation id="7746357909584236306">可修改</translation>
 <translation id="7747039790905080783">预共享的密钥</translation>
 <translation id="7752963721013053477">黎明到黄昏 - 专有</translation>
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>

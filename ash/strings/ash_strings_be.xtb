@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Добры дзень, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі. Для пераходу паміж праграмамі выкарыстоўвайце клавішы са стрэлкамі.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + стрэлка ўніз</translation>
+<translation id="1094756674036064790">Выключыць Bluetooth?</translation>
 <translation id="109942774857561566">Мне надакучыла</translation>
 <translation id="1104084341931202936">Паказаць налады спецыяльных магчымасцей</translation>
 <translation id="1104621072296271835">Разам вашы прылады працуюць яшчэ лепей</translation>
@@ -159,7 +160,6 @@
 <translation id="1586324912145647027">Перайсці да аднаго з працоўных сталоў (1-8)</translation>
 <translation id="158838227375272121">Вэб-сайт Google Класа</translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
-<translation id="1592682369233288537">Наступны працоўны стол: <ph name="NEXT_DESK_NAME" />. Каб актываваць яго, націсніце Пошук + Прабел.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз</translation>
 <translation id="1604857178818051494">Прыпыніць медыязмесціва</translation>
 <translation id="1607312127821884567">Не наладжваць прагляд праграм з тэлефона</translation>
@@ -660,6 +660,7 @@
 <translation id="3660860940251915011">Уключыць/выключыць высокую бачнасць для функцыі "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, карыстальнік пад кіраваннем</translation>
 <translation id="3666266999138159418">Каб схаваць плаваючае акно, правядзіце пальцам</translation>
+<translation id="3673898235958558034">Калі выключыць Bluetooth, прылады "<ph name="DEVICE_NAME_1" />" і "<ph name="DEVICE_NAME_2" />" адключацца ад Chromebook.</translation>
 <translation id="367531336287639526">Выбраць першы значок злева ад адраснага радка</translation>
 <translation id="3677931086890821290">Усе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
 <translation id="3679827876008292680">Перайсці на апошнюю ўкладку акна</translation>
@@ -872,7 +873,6 @@
 <translation id="4491109536499578614">Відарыс</translation>
 <translation id="450584155212756404">Версія для распрацоўшчыкаў</translation>
 <translation id="4513946894732546136">Водгук</translation>
-<translation id="4516212064498225455">Бягучы працоўны стол: <ph name="CURRENT_DESK_NAME" />. Каб адкрыць меню ўсіх працоўных сталоў, націсніце Пошук + Прабел.</translation>
 <translation id="4518404433291145981">Каб разблакіраваць Chromebook, спачатку разблакіруйце тэлефон</translation>
 <translation id="4527045527269911712">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне.</translation>
 <translation id="4533343294786968049">Уключаны рэжым, які падаўжае тэрмін службы акумулятара. Акумулятар зарадзіцца поўнасцю к <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -915,6 +915,7 @@
 <translation id="4666911709726371538">Іншыя праграмы</translation>
 <translation id="4667099493359681081">Ідзе спампоўванне файла "<ph name="FILENAME" />"</translation>
 <translation id="4672539464599646374">Рэжым энергазберажэння ўключаны</translation>
+<translation id="4673427585974421255">Не выключаць</translation>
 <translation id="468293128311738995">Праграмы з вашага тэлефона</translation>
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
@@ -1053,7 +1054,6 @@
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="5208059991603368177">Уключана</translation>
 <translation id="5216991270656129561">Выключана да <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Наступны працоўны стол: <ph name="NEXT_DESK_NAME" />. Каб актываваць яго, націсніце Пошук + Прабел або спалучэнне клавіш Shift + Пошук + <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5218064144558110424">Пазначыць як нявыкананае</translation>
 <translation id="5222676887888702881">Выйсці</translation>
 <translation id="5229343007215035173">Уключыць (выключыць) Экран прыватнасці</translation>
@@ -1215,6 +1215,7 @@
 <translation id="5802516411616338943">Адкрыць хуткія налады</translation>
 <translation id="5804651031882187592">Выключыце наладу блакіроўкі SIM-карты</translation>
 <translation id="5805809050170488595">Націсніце, каб актываваць сетку <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Калі выключыць Bluetooth, прылады "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" і яшчэ некалькі (<ph name="DEVICE_COUNT" />) адключацца ад Chromebook.</translation>
 <translation id="5823239091726045201">Google Задачы (вэб-версія)</translation>
 <translation id="5825969630400862129">Налады падключаных прылад</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1396,7 @@
 <translation id="6539852571005954999">Ідзе праверка спампаванага файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Вядзецца трансляцыя на прыладу "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6546062506073634094">Пошук відарысаў па іх апісанні і па перадпраглядах</translation>
+<translation id="6547795021703527064">Калі выключыць Bluetooth, прылада "<ph name="DEVICE_NAME" />" адключыцца ад Chromebook.</translation>
 <translation id="6555373427270923730">Увядзіце вэб-адрас у адрасны радок, затым націсніце <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Усталявана нядаўна</translation>
@@ -1869,7 +1871,6 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Уводам з мікрафона кіруе праграма "<ph name="APP_NAME" />"}one{Уводам з мікрафона кіруе # праграма}few{Уводам з мікрафона кіруюць # праграмы}many{Уводам з мікрафона кіруюць # праграм}other{Уводам з мікрафона кіруюць # праграмы}}</translation>
 <translation id="8535393432370007982">Адрабіць сартаванне па колеры</translation>
-<translation id="853768060447955562">Папярэдні працоўны стол: <ph name="PREVIOUS_DESK_NAME" />. Каб актываваць яго, націсніце Пошук + Прабел або спалучэнне клавіш Shift + Пошук + <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Кадраванне</translation>
 <translation id="8542053257095774575">Няма захаваных працоўных сталоў і шаблонаў</translation>
 <translation id="8546059259582788728">Сартаванне адроблена</translation>
@@ -2034,7 +2035,6 @@
 <translation id="925832987464884575">Выключыць перадпрагляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> патрабуе, каб вы неадкладна абнавілі прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што ў маім календары?</translation>
-<translation id="943067377221312471">Папярэдні працоўны стол: <ph name="PREVIOUS_DESK_NAME" />. Каб актываваць яго, націсніце Пошук + Прабел.</translation>
 <translation id="945383118875625837">Перацягнуць спасылку на панэль закладак</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="951991426597076286">Адхіліць</translation>

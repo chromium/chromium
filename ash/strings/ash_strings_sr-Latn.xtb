@@ -160,7 +160,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="158838227375272121">Veb-sajt Google učionice</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
-<translation id="1592682369233288537">Sledeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite Pretraga + taster za razmak da biste aktivirali.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + strelica nadole</translation>
 <translation id="1604857178818051494">Pauziraj medije</translation>
 <translation id="1607312127821884567">Odbacite podešavanje pregleda aplikacija na telefonu</translation>
@@ -875,7 +874,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4491109536499578614">Slika</translation>
 <translation id="450584155212756404">Programerski kanal</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
-<translation id="4516212064498225455">Aktuelna radna površina: <ph name="CURRENT_DESK_NAME" />, koristite Pretraga + taster za razmak da biste otvorili meni svih radnih površina.</translation>
 <translation id="4518404433291145981">Da biste otključali Chromebook, prvo otključajte telefon</translation>
 <translation id="4527045527269911712">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje.</translation>
 <translation id="4533343294786968049">Produžava se trajanje baterije. Baterija će se napuniti do kraja do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -1057,7 +1055,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Sledeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite Pretraga + taster za razmak ili tastersku prečicu: Shift + Pretraga + <ph name="NEXT_DESK_INDEX" /> da biste aktivirali.</translation>
 <translation id="5218064144558110424">Označite kao nezavršeno</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5229343007215035173">Uključi/isključi ekran za privatnost</translation>
@@ -1876,7 +1873,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Unos preko mikrofona kontroliše <ph name="APP_NAME" />}one{Unos preko mikrofona kontroliše # aplikacija}few{Unos preko mikrofona kontrolišu # aplikacije}other{Unos preko mikrofona kontroliše # aplikacija}}</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
-<translation id="853768060447955562">Prethodna radna površina: <ph name="PREVIOUS_DESK_NAME" />, koristite Pretraga + taster za razmak ili tastersku prečicu: Shift + Pretraga + <ph name="PREVIOUS_DESK_INDEX" /> da biste aktivirali.</translation>
 <translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>
 <translation id="8546059259582788728">Opozvali ste sortiranje</translation>
@@ -2041,7 +2037,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="925832987464884575">Sakrijte preglede</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahteva da odmah ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Šta je u kalendaru?</translation>
-<translation id="943067377221312471">Prethodna radna površina: <ph name="PREVIOUS_DESK_NAME" />, koristite Pretraga + taster za razmak da biste aktivirali.</translation>
 <translation id="945383118875625837">Prevucite link na traku sa obeleživačima</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="951991426597076286">Odbij</translation>

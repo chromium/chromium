@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">Не може да се вчитаат сликите. Проверете ја мрежната врска или вчитајте ги сликите повторно.</translation>
 <translation id="1751249301761991853">Персонализација</translation>
 <translation id="1753496554272155572">Преглед на тапет за излез</translation>
+<translation id="1754578112426924640">Копче за изменување за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Апликација за дијагностика</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android не функционира</translation>
 <translation id="551689408806449779">Прекината е врската на уредот. Поврзете го повторно за тестирање</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">заклучено</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматски префрлете се на темна тема на зајдисонце</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">Центар</translation>
 <translation id="5703716265115423771">намали звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Копче за изменување за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ажурирајте: <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Медиум</translation>
 <translation id="5757187557809630523">следна песна</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">Забранета</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Копче за бришење за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="593880865674747800">Создајте повеќе во овој стил</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">Неуспешни одредувања со DNS</translation>
 <translation id="6768237774506518020">Висока стапка на неуспех на одредување со DNS</translation>
 <translation id="6791471867139427246">боја на светло на тастатурата</translation>
+<translation id="6796229976413584781">Кратенката е избришана</translation>
 <translation id="6798678288485555829">Навигација низ текстот</translation>
 <translation id="680983167891198932">Клуч</translation>
 <translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">Управувајте со поставките за APN на мрежата. Имињата на пристапните точки воспоставуваат врска меѓу мобилната мрежа и интернетот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања на фирмверот за екстерни уреди</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7233782086689993269">Кратенката е вратена</translation>
 <translation id="725133483556299729">Избери е-пошта</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7271932918253517778">Кратенка со копчиња во најгорниот ред треба да го опфаќа копчето за <ph name="META_KEY" />.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="7656388927906093505">Уредот е глувче.</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Променете го аватарот</translation>
 <translation id="7683228889864052081">нијанса на тастатурата</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">светлина на тастатурата</translation>
 <translation id="7730077286107534951">Можно е некои податоци за сметката и системот да се испраќаат до Google. Податоциве ги користиме за да помогнеме во решавањето на техничките проблеми и да ги подобриме нашите услуги, што подлежат на нашите <ph name="BEGIN_LINK2" />Политика за приватност<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Услови за користење<ph name="END_LINK3" />. За да побарате промени на содржините, одете во нашиот <ph name="BEGIN_LINK1" />Центар за правна помош<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Број на циклуси</translation>
+<translation id="7746357909584236306">може да се изменува</translation>
 <translation id="7747039790905080783">Претходно споделен клуч</translation>
 <translation id="7752963721013053477">Dawn to dark - ексклузивно</translation>
 <translation id="7762130827864645708">Успешно ја променивте лозинката. Отсега користете ја новата лозинка.</translation>

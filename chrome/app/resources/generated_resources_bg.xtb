@@ -1728,6 +1728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2285109769884538519">{COUNT,plural, =0{Отваряне на всички в &amp;нова група с раздели}=1{Отваряне в &amp;нова група с раздели}other{Отваряне на всички ({COUNT}) в &amp;нова група с раздели}}</translation>
 <translation id="2285942871162473373">Отпечатъкът ви не бе разпознат. Опитайте отново.</translation>
 <translation id="2287617382468007324">IPP адрес за отпечатване</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{С цел защита на данните ви бяха премахнати разрешенията за сайт, който не сте посещавали наскоро}other{С цел защита на данните ви бяха премахнати разрешенията за сайтовете, които не сте посещавали наскоро}}</translation>
 <translation id="2287944065963043964">Екран за вход</translation>
 <translation id="2290615375132886363">Бутони за навигация в режим на таблет</translation>
 <translation id="2291452790265535215">Опитайте да използвате страничния панел за отметки, пътища и др.</translation>
@@ -3304,6 +3305,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3497560059572256875">Споделяне на драскулката</translation>
 <translation id="3497915391670770295">Изпращане до &amp;устройствата ви</translation>
 <translation id="3500417806337761827">Грешка при свързването с мрежовия дял. Вече са свързани твърде много мрежови дялове през SMB.</translation>
+<translation id="3500764001796099683">Активиране на изолираните уеб приложения</translation>
 <translation id="350397915809787283">Ако нямате профил, изберете първата опция, за да си създадете такъв.</translation>
 <translation id="3503995387997205657">Можете да възстановите предишните си приложения</translation>
 <translation id="3505100368357440862">Предложения за пазаруване</translation>
@@ -4013,7 +4015,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4031527940632463547">Сензорите са блокирани</translation>
 <translation id="4033471457476425443">Добавяне на нова папка</translation>
-<translation id="4033711848170683365">Данните за сърфирането ще се изтрият за постоянно от това устройство. Профилите в Google в този потребителски профил може да се използват от други приложения на вашия <ph name="DEVICE_TYPE" />. Можете да премахнете тези профили от <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">В защитените сайтове може да има незащитено вградено съдържание, например изображения или мрежови рамки</translation>
 <translation id="4034706080855851454">За да използвате устройството си с потребителския профил на организацията си, тя трябва да има информация за съответното устройство.
 
@@ -4313,6 +4314,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4275788652681621337">Затваряне на страничния панел</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277434192562187284">Източник на конфигурацията чрез XML</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Разрешенията са премахнати от 1 сайт}other{Разрешенията са премахнати от {NUM_SITES} сайта}}</translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="4278498748067682896">Ще използвате лиценз Kiosk &amp; Signage Upgrade, който позволява на устройството да работи само в павилионен режим или режим за дигитални знаци и надписи. Ако искате потребителите да влизат в профили на устройството, върнете се назад и го регистрирайте, като използвате Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Този процес може да отнеме няколко минути. Файловете се изтеглят.</translation>
@@ -5881,7 +5883,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Това приложение изисква достъп до Google Play Магазин</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Настройване посредством телефон с Android</translation>
 <translation id="5519053700692355541">Можете да отворите повечето функции на страничния панел от менюто на Chrome горе вдясно</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Повишете сигурността на този профил с помощта на надеждна парола. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -7182,6 +7183,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6551508934388063976">Командата не е налице. Натиснете „control-N“, за да отворите нов прозорец.</translation>
 <translation id="6551606359270386381">Инструмент за елипса</translation>
 <translation id="6551612971599078809">Сайтът използва USB</translation>
+<translation id="6551620030439692385">Блокирано. Понастоящем зададената часова зона е <ph name="TIMEZONE" /> и може да се актуализира само ръчно.</translation>
 <translation id="6551739526055143276">Управлява се чрез Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> потребители</translation>
 <translation id="6555432686520421228">Премахване на всички профили на потребители и възстановяване на устройството ви с <ph name="IDS_SHORT_PRODUCT_NAME" />, така че да бъде като ново.</translation>
@@ -7250,6 +7252,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6608773371844092260">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци от дясната страна на устройството <ph name="DEVICE_TYPE" />. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Данните за вход в профила ще бъдат съхранени на това устройство, след като излезете от режим „инкогнито“. По-късно ще можете отново да влезете в профила си в този уебсайт от устройството си.</translation>
 <translation id="6610002944194042868">Опции за превод</translation>
+<translation id="6610064275805055636">Управление на изолираните уеб приложения</translation>
 <translation id="6611972847767394631">Намирайте разделите си тук</translation>
 <translation id="661266467055912436">Подобрява сигурността за вас и всички потребители в мрежата.</translation>
 <translation id="6613267708691765962">Сканира се за злонамерен софтуер...</translation>
@@ -8614,6 +8617,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> иска да сканира чрез <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Изберете устройството, на което е запазен кодът за достъп за <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, в страницата „<ph name="PAGE_TITLE" />“.</translation>
+<translation id="7672726198839739113">Блокирано. Понастоящем за графика е зададен периодът <ph name="SUNRISE_TIME" /> – <ph name="SUNSET_TIME" /> и може да се актуализира само ръчно.</translation>
 <translation id="7673313156293624327">Регистрационни файлове на Shill (мениджър на връзките) за ChromeOS</translation>
 <translation id="7674416868315480713">Деактивиране на всички портове, пренасочвани към Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> приложения</translation>
@@ -9547,6 +9551,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8376384591331888629">Включително бисквитките на трети страни на този сайт</translation>
 <translation id="8376451933628734023">Ако това уеб приложение се опитва да ви подведе, че е друго приложение, деинсталирайте го.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> се презарежда…</translation>
+<translation id="8376610503048439696">Инсталираните от администратора ви разширения пак могат да четат и променят този сайт</translation>
 <translation id="8376752431516546391">Страничен панел на Google Търсене</translation>
 <translation id="8377625247046155446">Кодът за достъп ще бъде запазен само на това устройство. Той ще остане на устройството, след като затворите всички прозорци в режим „инкогнито“.</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
@@ -9686,6 +9691,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството с ChromeOS на детето си. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ако настройката „Активност в мрежата и приложенията“ е включена за профила в Google на детето ви, данните му може да се запазват в профила му в Google. На адрес families.google.com можете да научите повече за тези настройки и как да ги коригирате.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Въведете паролата за файла</translation>
+<translation id="8476942730579767658">Прозорци и работни кътове</translation>
 <translation id="8477178913400731244">Изтриване на данните</translation>
 <translation id="8477241577829954800">Заменен</translation>
 <translation id="8477384620836102176">&amp;Общи</translation>

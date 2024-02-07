@@ -3293,6 +3293,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3497560059572256875">Condividi doodle</translation>
 <translation id="3497915391670770295">Invia ai tuoi &amp;dispositivi</translation>
 <translation id="3500417806337761827">Errore durante il montaggio della condivisione. Sono già montate troppe condivisioni SMB.</translation>
+<translation id="3500764001796099683">Attiva le app web isolate</translation>
 <translation id="350397915809787283">Se non hai un account, seleziona la prima opzione per crearne uno.</translation>
 <translation id="3503995387997205657">Puoi ripristinare le app precedenti</translation>
 <translation id="3505100368357440862">Suggerimenti per gli acquisti</translation>
@@ -4001,7 +4002,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4031179711345676612">Microfono consentito</translation>
 <translation id="4031527940632463547">Sensori bloccati</translation>
 <translation id="4033471457476425443">Aggiungi nuova cartella</translation>
-<translation id="4033711848170683365">I dati di navigazione verranno eliminati definitivamente da questo dispositivo. Gli Account Google in questo profilo potrebbero essere usati da altre app installate su <ph name="DEVICE_TYPE" />. Puoi rimuoverli in <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">I siti sicuri potrebbero incorporare contenuti come immagini o frame Web non sicuri</translation>
 <translation id="4034706080855851454">Per utilizzare il dispositivo con il profilo della tua organizzazione, quest'ultima ha bisogno di informazioni sul dispositivo.
 
@@ -5868,7 +5868,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">L'app richiede l'accesso al Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Configura con telefono Android</translation>
 <translation id="5519053700692355541">Puoi aprire la maggior parte delle funzionalità del riquadro laterale tramite il menu Chrome in alto a destra</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Proteggi questo account con una password efficace. Verrà salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
@@ -7165,6 +7164,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6551508934388063976">Comando non disponibile. Premi Ctrl+N per aprire una nuova finestra.</translation>
 <translation id="6551606359270386381">Strumento Ellissi</translation>
 <translation id="6551612971599078809">Il sito usa un dispositivo USB</translation>
+<translation id="6551620030439692385">Bloccato. Il fuso orario è attualmente impostato su <ph name="TIMEZONE" /> e può essere aggiornato solo manualmente.</translation>
 <translation id="6551739526055143276">Gestiti da Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utenti</translation>
 <translation id="6555432686520421228">Rimuovi tutti gli account utente e reimposta il tuo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> come se fosse nuovo.</translation>
@@ -7233,6 +7233,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6608773371844092260">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali sul lato destro di questo <ph name="DEVICE_TYPE" />. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità di navigazione in incognito. Potrai accedere di nuovo a questo sito web con il tuo dispositivo in un secondo momento.</translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
+<translation id="6610064275805055636">Gestisci le app web isolate</translation>
 <translation id="6611972847767394631">Trova le tue schede qui</translation>
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
@@ -8597,6 +8598,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" vuole scansionare da "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Scegli quale dispositivo contiene la passkey per <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Bloccato. La pianificazione è attualmente impostata su <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> e può essere aggiornata solo manualmente.</translation>
 <translation id="7673313156293624327">Log di shill ChromeOS (Gestione connessioni)</translation>
 <translation id="7674416868315480713">Disattiva tutte le porte con forwarding attivo in Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> app</translation>
@@ -9530,6 +9532,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8376384591331888629">Inclusi i cookie di terze parti su questo sito</translation>
 <translation id="8376451933628734023">Se questa app web sta cercando di farti credere che si tratta di un'app diversa, disinstallala.</translation>
 <translation id="8376532149031784008">Ricaricamento di <ph name="DOMAIN" /> in corso…</translation>
+<translation id="8376610503048439696">Le estensioni installate dall'amministratore possono comunque leggere e modificare questo sito</translation>
 <translation id="8376752431516546391">Riquadro laterale della Ricerca Google</translation>
 <translation id="8377625247046155446">La passkey verrà salvata solo su questo dispositivo. Rimarrà su questo dispositivo dopo la chiusura di tutte le finestre di navigazione in incognito.</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
@@ -9669,6 +9672,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del dispositivo ChromeOS di tuo figlio. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione Attività web e app è attiva per l'Account Google di tuo figlio, i suoi dati potrebbero essere salvati nel suo account. Scopri di più su queste impostazioni e su come configurarle all'indirizzo families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Inserisci la password del file</translation>
+<translation id="8476942730579767658">Finestre e scrivanie</translation>
 <translation id="8477178913400731244">Elimina i dati</translation>
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>

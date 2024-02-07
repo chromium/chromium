@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">ଶୁଭ ଅପରାହ୍ନ <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ। ଆପଣଙ୍କ ଆପ୍ସକୁ ନାଭିଗେଟ କରିବା ପାଇଁ ତୀର କୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1093645050124056515">ctrl + alt + ଡାଉନ ତୀର</translation>
+<translation id="1094756674036064790">ବ୍ଲୁଟୁଥକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="109942774857561566">ମୁଁ ବିରକ୍ତ ହୋଇଗଲିଣି</translation>
 <translation id="1104084341931202936">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="1104621072296271835">ଏକାଠି ହୋ‍ଇ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆହୁରି ଭଲ କାର୍ଯ୍ୟ କରନ୍ତି</translation>
@@ -159,7 +160,6 @@
 <translation id="1586324912145647027">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଡେସ୍କକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="158838227375272121">Google Classroom ୱେବସାଇଟ</translation>
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
-<translation id="1592682369233288537">ପରବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="NEXT_DESK_NAME" />, ସକ୍ରିୟ କରିବା ପାଇଁ Search+Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ଡାଉନ ତୀର</translation>
 <translation id="1604857178818051494">ମିଡିଆକୁ ବିରତ କରନ୍ତୁ</translation>
 <translation id="1607312127821884567">ଆପଣଙ୍କ ଫୋନର ଆପ୍ସକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
@@ -660,6 +660,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />ର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ପରିଚାଳିତ ୟୁଜର</translation>
 <translation id="3666266999138159418">ଆପଣଙ୍କ ଫ୍ଲୋଟିଂ ୱିଣ୍ଡୋକୁ ଲୁଚାଇବା ପାଇଁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
+<translation id="3673898235958558034">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME_1" />" ଏବଂ "<ph name="DEVICE_NAME_2" />" ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="367531336287639526">ଠିକଣା ବାରର ବାମରେ ଥିବା ପ୍ରଥମ ଆଇକନକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3677931086890821290">ୱାଇ-ଫାଇ ଓ ମୋବାଇଲ ନେଟୱାର୍କ ଲୋକେସନ ବ୍ୟବହର କରିବାକୁ ଏହା ଲୋକେସନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଏବଂ ChromeOSକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="3679827876008292680">ୱିଣ୍ଡୋରେ ଥିବା ଶେଷ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
@@ -872,7 +873,6 @@
 <translation id="4491109536499578614">ଛବି</translation>
 <translation id="450584155212756404">ଡେଭ ଚ୍ୟାନେଲ</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516212064498225455">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="CURRENT_DESK_NAME" />, ସମସ୍ତ ଡେସ୍କ ମେନୁ ଖୋଲିବା ପାଇଁ Search+Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="4518404433291145981">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
 <translation id="4533343294786968049">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଲାଇଫ ବଢ଼ାଯାଉଛି। <ph name="FULLY_CHARGE_TIME" /> ସୁଦ୍ଧା ବ୍ୟାଟେରୀ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଚାର୍ଜ ହେବ।</translation>
@@ -915,6 +915,7 @@
 <translation id="4666911709726371538">ଅଧିକ ଆପ୍</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ଡାଉନଲୋଡ ହେଉଛି</translation>
 <translation id="4672539464599646374">ବ୍ୟାଟେରୀ ସେଭର ଚାଲୁ କରାଯାଇଛି</translation>
+<translation id="4673427585974421255">ଚାଲୁ ରଖ</translation>
 <translation id="468293128311738995">ଆପଣଙ୍କ ଫୋନରୁ ଆପ୍ସ</translation>
 <translation id="4690510401873698237">ତଳ ପଟକୁ ସେଲ୍ଫ</translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
@@ -1053,7 +1054,6 @@
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="5208059991603368177">ଚାଲୁ ଅଛି</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ପର୍ଯ୍ୟନ୍ତ ବନ୍ଦ ଅଛି</translation>
-<translation id="5217646019792206018">ପରବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="NEXT_DESK_NAME" />, Search+Space କିମ୍ବା କୀବୋର୍ଡ ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ: ସକ୍ରିୟ କରିବା ପାଇଁ Shift+Search+<ph name="NEXT_DESK_INDEX" />।</translation>
 <translation id="5218064144558110424">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇନାହିଁ ଭାବେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5229343007215035173">ଗୋପନୀୟତା ସ୍କ୍ରିନକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1215,6 +1215,7 @@
 <translation id="5802516411616338943">କୁଇକ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="5804651031882187592">"SIMକୁ ଲକ କରନ୍ତୁ" ସେଟିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="5816222150329690597">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ଏବଂ ଅନ୍ୟ <ph name="DEVICE_COUNT" /> ଡିଭାଇସ ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="5823239091726045201">ୱେବରେ Google Tasks</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1395,6 +1396,7 @@
 <translation id="6539852571005954999">ଡାଉନଲୋଡ ପାଇଁ <ph name="FILENAME" /> ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="6546062506073634094">ବିଷୟବସ୍ତୁ ଏବଂ ଇମେଜ ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକ ଅନୁସାରେ ଇମେଜ ସର୍ଚ୍ଚ</translation>
+<translation id="6547795021703527064">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME" />" ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="6555373427270923730">ଠିକଣା ବାରରେ ଏକ ୱେବ ଠିକଣା ଟାଇପ କରି <ph name="MODIFIER" /><ph name="KEY" />କୁ ଦବାନ୍ତୁ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />କୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="6559976592393364813">ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କୁ ପଚାରନ୍ତୁ</translation>
@@ -1868,7 +1870,6 @@
 <translation id="8517041960877371778">ଯେତେବେଳେ ଏହା ଚାଲୁ ଅଛି, ସେତେବେଳେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଚାର୍ଜ ହୋ‍ଇନପାରେ।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ଦ୍ୱାରା ମାଇକ ଇନପୁଟକୁ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି}other{#ଟି ଆପ୍ସ ଦ୍ୱାରା ମାଇକ ଇନପୁଟକୁ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି}}</translation>
 <translation id="8535393432370007982">ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
-<translation id="853768060447955562">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="PREVIOUS_DESK_NAME" />, Search+Space କିମ୍ବା କୀବୋର୍ଡ ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ: ସକ୍ରିୟ କରିବା ପାଇଁ Shift+Search+<ph name="PREVIOUS_DESK_INDEX" />।</translation>
 <translation id="8541078764854166027">କେମେରା ଫ୍ରେମିଂ</translation>
 <translation id="8542053257095774575">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ କିମ୍ବା ଟେମ୍ପଲେଟ ନାହିଁ</translation>
 <translation id="8546059259582788728">ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
@@ -2033,7 +2034,6 @@
 <translation id="925832987464884575">ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ତୁରନ୍ତ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="938963181863597773">ମୋ କ୍ୟାଲେଣ୍ଡରରେ କ’ଣ ଅଛି?</translation>
-<translation id="943067377221312471">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="PREVIOUS_DESK_NAME" />, ସକ୍ରିୟ କରିବା ପାଇଁ Search+Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="945383118875625837">ବୁକ୍‌ମାର୍କ ବାର୍‌କୁ ଲିଙ୍କ୍‍ ଟାଣନ୍ତୁ</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="951991426597076286">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>

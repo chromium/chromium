@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="158838227375272121">‏وب‌سایت Google Classroom</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
-<translation id="1592682369233288537">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + پایین‌بر</translation>
 <translation id="1604857178818051494">مکث رسانه</translation>
 <translation id="1607312127821884567">بستن راه‌اندازی مشاهده برنامه‌های تلفن</translation>
@@ -874,7 +873,6 @@
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="450584155212756404">کانال برنامه‌نویس‌ها</translation>
 <translation id="4513946894732546136">بازخورد</translation>
-<translation id="4516212064498225455">میزکار فعلی: <ph name="CURRENT_DESK_NAME" />، برای باز کردن منوِ همه میزکارها از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="4518404433291145981">‏برای باز کردن قفل Chromebook، ابتدا قفل تلفنتان را باز کنید</translation>
 <translation id="4527045527269911712">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد.</translation>
 <translation id="4533343294786968049">عمر باتری شما افزایش می‌یابد. باتری تا <ph name="FULLY_CHARGE_TIME" /> کاملاً شارژ خواهد شد.</translation>
@@ -1056,7 +1054,6 @@
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5216991270656129561">خاموش تا <ph name="TIME" /></translation>
-<translation id="5217646019792206018">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» یا میان‌بر صفحه‌کلید: «تبدیل+جستجو+<ph name="NEXT_DESK_INDEX" />» استفاده کنید.</translation>
 <translation id="5218064144558110424">علامت‌گذاری به‌عنوان تکمیل‌نشده</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
@@ -1874,7 +1871,6 @@
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ورودی میکروفون را <ph name="APP_NAME" /> کنترل می‌کند}one{ورودی میکروفون را # برنامه کنترل می‌کند}other{ورودی میکروفون را # برنامه کنترل می‌کند}}</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
-<translation id="853768060447955562">میزکار قبلی: <ph name="PREVIOUS_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» یا میان‌بر صفحه‌کلید: «تبدیل+جستجو+<ph name="PREVIOUS_DESK_INDEX" />» استفاده کنید.</translation>
 <translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
 <translation id="8546059259582788728">مرتب‌سازی واگرد شد</translation>
@@ -2038,7 +2034,6 @@
 <translation id="925832987464884575">پنهان کردن پیش‌نمایش‌ها</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را فوراً به‌روزرسانی کنید</translation>
 <translation id="938963181863597773">‏?What's on my calendar (در تقویم من چه رویدادی هست؟)</translation>
-<translation id="943067377221312471">میزکار قبلی: <ph name="PREVIOUS_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="945383118875625837">پیوندها را به نوار نشانک‌ها بکشید</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="951991426597076286">رد کردن</translation>

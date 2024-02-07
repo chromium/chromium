@@ -1716,6 +1716,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2285109769884538519">{COUNT,plural, =0{Hamısını &amp;yeni tab qrupunda açın}=1{&amp;Yeni tab qrupunda açın}other{Hamısını ({COUNT}) &amp;yeni tab qrupunda açın}}</translation>
 <translation id="2285942871162473373">Barmaq izinizi tanımaq mümkün olmadı. Təkrar cəhd edin.</translation>
 <translation id="2287617382468007324">Çap IPP ünvanı</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Datanı qorumaq üçün son vaxtlar daxil olmadığınız saytda icazələr silindi}other{Datanı qorumaq üçün son vaxtlar daxil olmadığınız saytlarda icazələr silindi}}</translation>
 <translation id="2287944065963043964">Giriş ekranı</translation>
 <translation id="2290615375132886363">Planşet naviqasiya düymələri</translation>
 <translation id="2291452790265535215">Əlfəcinlər, səyahətlər və s. üçün yan paneldən istifadə etməyə çalışın</translation>
@@ -4001,7 +4002,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4031527940632463547">Sensorlar blok edilib</translation>
 <translation id="4033471457476425443">Yeni qovluq əlavə edin</translation>
-<translation id="4033711848170683365">Bununla baxış datası bu cihazdan həmişəlik siləcək. Bu profildəki Google Hesabları <ph name="DEVICE_TYPE" /> cihazınızdakı digər tətbiqlər tərəfindən istifadə oluna bilər. Bu hesabları <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> bölməsində silə bilərsiniz.</translation>
 <translation id="4033963223187371752">Güvənli saytlar güvənli olmayan şəkillər və ya veb çərçivələr kimi məzmun yerləşdirə bilər</translation>
 <translation id="4034706080855851454">Təşkilat profilində cihazdan istifadə üçün təşkilata cihaz məlumatını verin.
 
@@ -4299,6 +4299,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4275788652681621337">Yan paneli bağlayın</translation>
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277434192562187284">XML konfiqurasiya mənbəyi</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{1 saytdan icazələr silindi}other{{NUM_SITES} saytdan icazələr silindi}}</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="4278498748067682896">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterprise Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="4278779213160967034">Bu, bir neçə dəqiqə çəkə bilər. Fayllar endirilir.</translation>
@@ -5866,7 +5867,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Bu tətbiq Play Marketə giriş tələb edir</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android telefonu ilə ayarlayın</translation>
 <translation id="5519053700692355541">Yuxarı sağ tərəfdə Chrome menyusu vasitəsilə əksər yan panel funksiyalarını aça bilərsiniz</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Güclü parol ilə bu hesabın təhlükəsizliyini artırın. <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanacaq.</translation>
@@ -9670,6 +9670,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
     <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt övladınızın ChromeOS cihaz ayarlarında bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Veb və Tətbiq Fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın datası onun Google Hesabında yadda saxlanıla bilər. families.google.com ünvanında bu ayarlar və onları tənzimləmək haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Fayl parolunu daxil edin</translation>
+<translation id="8476942730579767658">Pəncərə və masalar</translation>
 <translation id="8477178913400731244">Datanı silin</translation>
 <translation id="8477241577829954800">Dəyişdirildi</translation>
 <translation id="8477384620836102176">&amp;Ümumi</translation>

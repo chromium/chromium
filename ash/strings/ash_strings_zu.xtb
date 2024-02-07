@@ -26,6 +26,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1087110696012418426">Sawubona <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Sesha i-<ph name="CATEGORY" />, amafayela, ama-app akho, nokuningi. Sebenzisa okhiye bemicibisholo ukuze ufune kuma-app akho.</translation>
 <translation id="1093645050124056515">ctrl + alt + umcibisholo waphansi</translation>
+<translation id="1094756674036064790">Vala i-Bluetooth?</translation>
 <translation id="109942774857561566">Nginesithukuthezi</translation>
 <translation id="1104084341931202936">Bonisa izilungiselelo zokufinyelela</translation>
 <translation id="1104621072296271835">Amadivayisi akho asebenza kangcono uma ehlangene</translation>
@@ -159,7 +160,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1586324912145647027">Iya etafuleni 1 kuya ku-8</translation>
 <translation id="158838227375272121">Iwebhusayithi ye-Google Classroom</translation>
 <translation id="1589090746204042747">Finyelela kuwo wonke umsebenzi wakho kule seshini</translation>
-<translation id="1592682369233288537">Ideski elilandelayo: <ph name="NEXT_DESK_NAME" />, sebenzisa u-Search+Space ukwenza kusebenze.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + umcibisholo waphansi</translation>
 <translation id="1604857178818051494">Misa imidiya</translation>
 <translation id="1607312127821884567">Yeka ukusetha ukubuka ama-app efoni yakho</translation>
@@ -660,6 +660,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="3660860940251915011">Guqula i-<ph name="FEATURE_NAME" /> ukubonakala kwaphezulu</translation>
 <translation id="366222428570480733">U-<ph name="USER_EMAIL_ADDRESS" /> Yomsebenzisi ophethwe</translation>
 <translation id="3666266999138159418">Swayipha ukuze ufihle iwindi lakho elintantayo</translation>
+<translation id="3673898235958558034">Uma uvala i-Bluetooth, "i-<ph name="DEVICE_NAME_1" />" kanye "ne-<ph name="DEVICE_NAME_2" />" zizonqamuka ku-Chromebook yakho.</translation>
 <translation id="367531336287639526">Khetha isithonjana sokuqala kwesokunxele sebha yekheli</translation>
 <translation id="3677931086890821290">Lokhu kuvumela wonke ama-app namawebhusayithi anemvume yendawo kanye ne-ChromeOS ukusebenzisa i-Wi-Fi nendawo yamanethiwekhi eselula.</translation>
 <translation id="3679827876008292680">Iya kuthebhu yokugcina efasiteleni</translation>
@@ -872,7 +873,6 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4491109536499578614">Isithombe</translation>
 <translation id="450584155212756404">Isiteshi se-Dev</translation>
 <translation id="4513946894732546136">Impendulo</translation>
-<translation id="4516212064498225455">Ideski Lamanje: <ph name="CURRENT_DESK_NAME" />, sebenzisa u-Search+Space ukuze uvule yonke imenyu yamadeski.</translation>
 <translation id="4518404433291145981">Ukuze uvule i-Chromebook yakho, qala uvule ifoni yakho</translation>
 <translation id="4527045527269911712">Idivayisi ye-Bluetooth eyi-"<ph name="DEVICE_NAME" />" ingathanda imvume yokubhanqa.</translation>
 <translation id="4533343294786968049">Inweba impilo yebhethri yakho. Ibhethri lizoshajwa ngokugcwele ngo-<ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -915,6 +915,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4666911709726371538">Izinhlelo zokusebenza eziningi</translation>
 <translation id="4667099493359681081">Idawuniloda i-<ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Isilondolozi Sebhethri sivuliwe</translation>
+<translation id="4673427585974421255">Qhubeka</translation>
 <translation id="468293128311738995">Ama-app asefonini yakho</translation>
 <translation id="4690510401873698237">Ishelufu phansi</translation>
 <translation id="4696813013609194136">Vula idivayisi ngekhodi yomzali</translation>
@@ -1053,7 +1054,6 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="5207949376430453814">Gqamisa ikharethi yombhalo</translation>
 <translation id="5208059991603368177">Vuliwe</translation>
 <translation id="5216991270656129561">Kufaliwe kuze kube ngo-<ph name="TIME" /></translation>
-<translation id="5217646019792206018">Ideski Elilandelayo: <ph name="NEXT_DESK_NAME" />, sebenzisa u-Search+Space noma isinqamuleli sekhibhodi: u-Shift+Search+<ph name="NEXT_DESK_INDEX" /> ukwenza kusebenze.</translation>
 <translation id="5218064144558110424">Maka njengokungaqediwe</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
 <translation id="5229343007215035173">Vula/vala isikrini sobumfihlo</translation>
@@ -1215,6 +1215,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="5802516411616338943">Vula Amasethingi Asheshayo</translation>
 <translation id="5804651031882187592">Vala isethingi elithi "Khiya i-SIM".</translation>
 <translation id="5805809050170488595">Chofoza ukuze usebenzise i-<ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Uma uvala i-Bluetooth, "i-<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" namanye amadivayisi angu-<ph name="DEVICE_COUNT" /> azonqamuka ku-Chromebook yakho.</translation>
 <translation id="5823239091726045201">I-Google tasks kuwebhu</translation>
 <translation id="5825969630400862129">Izilungiselelo zamadivayisi axhunyiwe</translation>
 <translation id="5837036133683224804">Misa i-<ph name="ROUTE_TITLE" /> ku-<ph name="RECEIVER_NAME" /></translation>
@@ -1395,6 +1396,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="6539852571005954999">Ukudawuniloda kuskena i-<ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Ukusakaza ku-<ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Ukusesha isithombe ngokubuka kuqala okuqukethwe nesithombe</translation>
+<translation id="6547795021703527064">Uma uvala i-Bluetooth, "i-<ph name="DEVICE_NAME" />" izonqamuka ku-Chromebook yakho.</translation>
 <translation id="6555373427270923730">Thayipha ikheli lewebhu kwibha yekheli, bese ucindezele okuthi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ukufaka okusha</translation>
@@ -1869,7 +1871,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8517041960877371778">I-<ph name="DEVICE_TYPE" /> yakho ingahle ingashaji ngenkathi ivulekile.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Okokufaka kwe-mic kulawulwa yi-<ph name="APP_NAME" />}one{Okokufaka kwe-mic kulawulwa ngama-app angu-#}other{Okokufaka kwe-mic kulawulwa ngama-app angu-#}}</translation>
 <translation id="8535393432370007982">Hlehlisa i-oda yokuhlunga ngombala</translation>
-<translation id="853768060447955562">Ideski Langaphambilini: <ph name="PREVIOUS_DESK_NAME" />, sebenzisa u-Search+Space noma isinqamuleli sekhibhodi: u-Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> ukwenza kusebenze.</translation>
 <translation id="8541078764854166027">Ukwenza uzimele ikhamera</translation>
 <translation id="8542053257095774575">Awekho amatafula noma izifanekiso ezilondoloziwe</translation>
 <translation id="8546059259582788728">Ukuhlehlisa ukuhlunga kuphumelele</translation>
@@ -2034,7 +2035,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="925832987464884575">Fihla ukubuka kuqala</translation>
 <translation id="937214777182567951">I-<ph name="MANAGER" /> idinga ukuba ubuyekeze i-<ph name="DEVICE_TYPE" /> yakho ngokushesha</translation>
 <translation id="938963181863597773">Yini okukukhalenda yami?</translation>
-<translation id="943067377221312471">Ideski Yangaphambilini: <ph name="PREVIOUS_DESK_NAME" />, sebenzisa u-Search+Space ukwenza kusebenze.</translation>
 <translation id="945383118875625837">Hudula isixhumanisi ukuya kubha yamabhukhimakhi</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="951991426597076286">Yenqaba</translation>

@@ -4008,7 +4008,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4031179711345676612">Mikrofon on lubatud</translation>
 <translation id="4031527940632463547">Andurid on blokeeritud</translation>
 <translation id="4033471457476425443">Uue kausta lisamine</translation>
-<translation id="4033711848170683365">See kustutab sirvimisandmed sellest seadmest jäädavalt. Sellel profiilil olevaid Google'i kontosid võivad kasutada teised teie seadmes <ph name="DEVICE_TYPE" /> olevad rakendused. Saate need kontod eemaldada menüüs <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Turvalised saidid võivad manustada sisu, näiteks pilte või veebiraame, mis pole turvalised</translation>
 <translation id="4034706080855851454">Oma seadme kasutamiseks organisatsiooni profiiliga vajab teie organisatsioon teavet seadme kohta.
 
@@ -5875,7 +5874,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5514315914873062345">Tabulaator</translation>
 <translation id="5517304475148761050">See rakendus nõuab juurdepääsu Play poele</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Seadista Android-telefoniga</translation>
 <translation id="5519053700692355541">Teil on võimalik enamik külgpaneeli funktsioone avada paremas ülaosas oleva Chrome'i menüü kaudu</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Kaitske seda kontot paremine tugeva parooli abil. See salvestatakse konto <ph name="EMAIL" /> puhul teenusesse <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -9683,6 +9681,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
     <ph name="BEGIN_PARAGRAPH2" />Võite oma lapse Chrome OS-i seadme seadetes need aruanded igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Kui teie lapse Google'i kontol on veebi- ja rakendustegevuste seade sisse lülitatud, võidakse teie lapse andmed salvestada tema Google'i kontole. Seadete ja nende kohandamise kohta leiate lisateavet saidilt families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Sisestage faili parool</translation>
+<translation id="8476942730579767658">Aknad ja töölauad</translation>
 <translation id="8477178913400731244">Kustuta andmed</translation>
 <translation id="8477241577829954800">Asendatud</translation>
 <translation id="8477384620836102176">&amp;Üldine</translation>

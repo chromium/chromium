@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Pole turvaline</translation>
 <translation id="1075079914415273530">Põllumajandus ja metsandus</translation>
 <translation id="1075364221219156102">Kasutage pääsuvõtit</translation>
-<translation id="1078033282564106222">Tehti valik Majanumber</translation>
 <translation id="1080116354587839789">Sobita laiusesse</translation>
 <translation id="1081061862829655580">Salv 19</translation>
 <translation id="1082026381988252344">Teie jagatud vahelehe sisu kerimine ja suumimine</translation>
@@ -613,7 +612,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2126374524350484896">PDF-i looja:</translation>
 <translation id="2130448033692577677">Teie määratud malle ei pruugita rakendada, kuna reeglit DnsOverHttpsMode pole määratud.</translation>
 <translation id="2130699163006053678">A3 × 7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> keele paketi allalaadimine... <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Meesteriided</translation>
 <translation id="2137891579555018930">Heakskiidu ootel …</translation>
 <translation id="213826338245044447">Mobiili järjehoidjad</translation>
@@ -1387,7 +1385,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3681007416295224113">Sertifikaadi andmed</translation>
 <translation id="3681421644246505351">Chrome talletab hiljutise sirvimisajaloo alusel teile huvipakkuvad teemad.</translation>
 <translation id="3682094733650754138">Tehti valik Täitke aadressiväli</translation>
-<translation id="3689867156802445220">Majanumber</translation>
 <translation id="3693327506115126094">Valige, kuidas oma isik kinnitada</translation>
 <translation id="3698629142018988477">Nupp Loo sait, aktiveerige nupp, et luua teenuses Google Sites kiiresti uus sait</translation>
 <translation id="3701325639446035885">Sündmuste piletimüük</translation>
@@ -1576,6 +1573,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4089152113577680600">Salv 14</translation>
 <translation id="4092349052316400070">Täitke aadressiväli</translation>
 <translation id="4096237801206588987">11 × 15 tolli</translation>
+<translation id="4098306082496067348">Puudutage virtuaalkaardi üksikasju, et lisada need kassasse</translation>
 <translation id="4098354747657067197">Avatav sait on petturlik</translation>
 <translation id="4099048595830172239">Administraatori reegel ei soovita teil ekraani rakendusega <ph name="APPLICATION_TITLE" /> jagada, kui nähtaval on konfidentsiaalne sisu:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'is fondi suuruste ja kirjatüüpide kohandamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>

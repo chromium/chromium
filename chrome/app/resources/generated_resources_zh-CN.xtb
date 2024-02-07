@@ -3285,6 +3285,7 @@
 <translation id="3497560059572256875">分享涂鸦</translation>
 <translation id="3497915391670770295">发送到您的设备(&amp;D)</translation>
 <translation id="3500417806337761827">装载文件共享时出错。已装载太多 SMB 文件共享。</translation>
+<translation id="3500764001796099683">启用独立式 Web 应用</translation>
 <translation id="350397915809787283">如果您没有账号，请选择第一个选项创建一个。</translation>
 <translation id="3503995387997205657">您可以恢复先前用过的应用</translation>
 <translation id="3505100368357440862">购物建议</translation>
@@ -3992,7 +3993,6 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
-<translation id="4033711848170683365">此操作会将相关浏览数据从该设备上永久删除。这份个人资料名下的 Google 账号可能会被您 <ph name="DEVICE_TYPE" /> 上的其他应用使用。若要移除这些账号，请前往<ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />。</translation>
 <translation id="4033963223187371752">安全网站可能会内嵌不安全的内容，例如图片或 Web 框架</translation>
 <translation id="4034706080855851454">如要通过您在组织中的个人资料使用设备，贵组织需要获取该设备的相关信息。
 
@@ -5859,7 +5859,6 @@
 <translation id="5514315914873062345">Tab 键</translation>
 <translation id="5517304475148761050">此应用需要获得对 Play 商店的访问权限</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">使用 Android 手机进行设置</translation>
 <translation id="5519053700692355541">您可以通过右上角的 Chrome 菜单打开侧边栏的大多数功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">使用安全系数高的密码可增强对此账号的保护力度。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
@@ -7156,6 +7155,7 @@
 <translation id="6551508934388063976">无法使用命令。请按 Ctrl+N 打开一个新窗口。</translation>
 <translation id="6551606359270386381">椭圆形工具</translation>
 <translation id="6551612971599078809">此网站正在使用 USB</translation>
+<translation id="6551620030439692385">已屏蔽。时区当前设为 <ph name="TIMEZONE" />，只能手动更新。</translation>
 <translation id="6551739526055143276">由 Family Link 管理</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位用户</translation>
 <translation id="6555432686520421228">删除所有用户账号并重置您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备，使其焕然一新。</translation>
@@ -7224,6 +7224,7 @@
 <translation id="6608773371844092260">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
 <translation id="6610002944194042868">翻译选项</translation>
+<translation id="6610064275805055636">管理独立式 Web 应用</translation>
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
@@ -8588,6 +8589,7 @@
 <translation id="7671472752213333268">“<ph name="EXTENSION_NAME" />”想从“<ph name="SCANNER_NAME" />”扫描。</translation>
 <translation id="7672504401554182757">选择用于<ph name="APP_NAME" />的通行密钥在哪部设备中</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />（在 <ph name="PAGE_TITLE" /> 中）。</translation>
+<translation id="7672726198839739113">已屏蔽。时间表当前设为<ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" />，只能手动更新。</translation>
 <translation id="7673313156293624327">ChromeOS Shill（连接管理器）日志</translation>
 <translation id="7674416868315480713">停用 Linux 中所有正被转发的端口</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 个应用</translation>
@@ -9521,6 +9523,7 @@
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
 <translation id="8376532149031784008">正在重新加载“<ph name="DOMAIN" />”…</translation>
+<translation id="8376610503048439696">由管理员安装的扩展程序仍能读取和更改此网站的数据</translation>
 <translation id="8376752431516546391">Google 搜索侧边栏</translation>
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
@@ -9660,6 +9663,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 账号开启“网络与应用活动记录”设置，孩子的数据可能会被保存到其 Google 账号中。访问 families.google.com 可详细了解这些设置及调整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">请输入文件的密码</translation>
+<translation id="8476942730579767658">窗口和桌面</translation>
 <translation id="8477178913400731244">删除数据</translation>
 <translation id="8477241577829954800">被取代</translation>
 <translation id="8477384620836102176">基本信息(&amp;G)</translation>

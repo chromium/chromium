@@ -1735,6 +1735,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2285109769884538519">{COUNT,plural, =0{Odprite vse v &amp;novi skupini zavihkov}=1{Odprite v &amp;novi skupini zavihkov}one{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}two{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}few{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}other{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}}</translation>
 <translation id="2285942871162473373">Vašega prstnega odtisa ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="2287617382468007324">Naslov za tiskanje IPP</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletno mesto, ki ga nedavno niste obiskali}one{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih nedavno niste obiskali}two{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih nedavno niste obiskali}few{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih nedavno niste obiskali}other{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih nedavno niste obiskali}}</translation>
 <translation id="2287944065963043964">Zaslon za prijavo</translation>
 <translation id="2290615375132886363">Gumbi za krmarjenje v načinu tabličnega računalnika</translation>
 <translation id="2291452790265535215">Stransko podokno poskusite uporabiti za zaznamke, poti in drugo.</translation>
@@ -4020,7 +4021,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
 <translation id="4031527940632463547">Tipala so blokirana</translation>
 <translation id="4033471457476425443">Dodaj novo mapo</translation>
-<translation id="4033711848170683365">S tem boste iz te naprave trajno izbrisali podatke o brskanju. Račune Google v tem profilu morda uporabljajo druge aplikacije v napravi <ph name="DEVICE_TYPE" />. Te račune lahko odstranite v <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Varna spletna mesta morda vdelajo vsebino, kot so slike ali spletni okvirji, ki niso varni.</translation>
 <translation id="4034706080855851454">Če želite napravo uporabljati s profilom organizacije, potrebuje organizacija podatke o napravi.
 
@@ -4320,6 +4320,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4275788652681621337">Zapiranje stranskega podokna</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4277434192562187284">Vir konfiguracije XML-jev</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{Dovoljenja odstranjena z 1 spletnega mesta}one{Dovoljenja odstranjena z {NUM_SITES} spletnega mesta}two{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}few{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}other{Dovoljenja odstranjena z {NUM_SITES} spletnih mest}}</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="4278498748067682896">Uporabili boste nadgradnjo za kiosk ali reklamne napise, ki napravi dovoli samo izvajanje v načinu za kiosk ali reklamne napise. Če želite, da bi se uporabniki prijavili v napravo, se vrnite in jo včlanite z nadgradnjo za Chrome Enterprise.</translation>
 <translation id="4278779213160967034">To lahko traja nekaj minut. Prenašanje datotek.</translation>
@@ -5888,7 +5889,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5514315914873062345">Tabulatorka</translation>
 <translation id="5517304475148761050">Ta aplikacija zahteva dostop do Trgovine Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Nastavitev s telefonom Android</translation>
 <translation id="5519053700692355541">Večino funkcij stranskega podokna je mogoče odpreti v desnem zgornjem kotu Chromovega menija</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Poskrbite za večjo varnost računa z močnim geslom. Shranjeno bo v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
@@ -9704,6 +9704,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom ChromeOS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Če ste za otrokov račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Več o teh nastavitvah in njihovem prilagajanju lahko preberete na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Vnesite geslo za datoteko</translation>
+<translation id="8476942730579767658">Okna in namizja</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>
 <translation id="8477241577829954800">Zamenjano</translation>
 <translation id="8477384620836102176">&amp;Splošno</translation>

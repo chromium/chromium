@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome അപ് റ്റു ഡേറ്റാണ്</translation>
 <translation id="7105047059074518658">ഉപകരണങ്ങളിൽ ഉടനീളം എളുപ്പം ബ്രൗസ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="7106762743910369165">നിങ്ങളുടെ സ്ഥാപനമാണ് നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്</translation>
-<translation id="7116588989735740310">നിങ്ങൾ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് സന്ദർശിച്ച സൈറ്റുകളിലേക്ക് പോകാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കൂ</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
 <translation id="7140829094791862589">നേരിട്ടുള്ള ക്രമം പ്രകാരമടുക്കൂ</translation>
 <translation id="7146622961999026732">ഈ സൈറ്റുകളും ആപ്പുകളും നിങ്ങൾക്ക് പ്രാധാന്യമുള്ളവയാകാം:</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">പൂർത്തിയാകുമ്പോൾ വിച്ഛേദിക്കുക</translation>
 <translation id="7523960634226602883">Google Lens ഉപയോഗിച്ച് ക്യാമറയുടെ സഹായത്തോടെ തിരയുക</translation>
 <translation id="752731652852882757">അദൃശ്യ മോഡ് ഉപയോഗിക്കുമ്പോൾ ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="7539698981064401140">ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കൂ</translation>
 <translation id="7562080006725997899">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കൽ</translation>
 <translation id="756809126120519699">Chrome ഡാറ്റ മായ്‌ച്ചു</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
@@ -1446,7 +1444,6 @@
 <translation id="8461694314515752532">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="8473863474539038330">വിലാസങ്ങളും മറ്റും</translation>
-<translation id="847433688444405067">ഉപകരണങ്ങളിലുടനീളം ബ്രൗസ് ചെയ്യൂ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ചരിത്ര പേജ് തുറക്കുക</translation>
 <translation id="8493948351860045254">ഇടം സൃഷ്‌ടിക്കുക</translation>
@@ -1496,7 +1493,6 @@
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>
 <translation id="8746155870861185046">ഹൈലൈറ്റ് പങ്കിടുക</translation>
-<translation id="874726034427945498">നിങ്ങളുടെ വിലാസ ബാറിൽ മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ കാണാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കൂ</translation>
 <translation id="8748850008226585750">കോൺടാക്‌റ്റുകൾ മറച്ചു</translation>
 <translation id="8754448020583829686">ലിങ്കില്ലാതെ പകർത്തുക</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
@@ -1538,7 +1534,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_ONE" /> ടാബും കൂടി അടയ്ക്കും}other{<ph name="INCOGNITO_TAB_COUNT" /> അദൃശ്യ ടാബും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും കൂടി അടയ്ക്കും}}</translation>
 <translation id="8970887620466824814">എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="8972098258593396643">ഡിഫോൾട്ട് ഫോൾഡറിലേക്ക് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
-<translation id="8987736167266086032">നിങ്ങൾ അവസാനിപ്പിച്ചയിടത്ത് നിന്ന് തുടരുക</translation>
 <translation id="8993760627012879038">അദൃശ്യ മോഡിൽ പുതിയൊരു വിൻഡോ തുറക്കുക</translation>
 <translation id="8996847606757455498">മറ്റൊരു ദാതാവിനെ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8998289560386111590">നിങ്ങളുടെ ഉപകരണത്തിൽ ലഭ്യമല്ല</translation>
@@ -1561,7 +1556,6 @@
 <translation id="9070377983101773829">ശബ്ദ തിരയൽ ആരംഭിക്കുക</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകൾ അദൃശ്യ മോഡിൽ സംരക്ഷിച്ചിട്ടില്ല</translation>
-<translation id="9084103763810123431">ബ്രൗസ് ചെയ്യുന്നത് മറ്റൊരു ഉപകരണത്തിൽ തുടരാൻ, നിങ്ങളുടെ ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കൂ</translation>
 <translation id="9086302186042011942">സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="9086455579313502267">നെറ്റ്‌വർക്ക് ആക്സസ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="9099220545925418560">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം അടിസ്ഥാനമാക്കി. ഈ ക്രമീകരണം ഓഫാണ്.</translation>

@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Non seguro</translation>
 <translation id="1075079914415273530">Agricultura e enxeñaría forestal</translation>
 <translation id="1075364221219156102">Usa unha clave de acceso</translation>
-<translation id="1078033282564106222">Seleccionouse a opción do número de edificio</translation>
 <translation id="1080116354587839789">Axustar ao ancho</translation>
 <translation id="1081061862829655580">Bandexa 19</translation>
 <translation id="1082026381988252344">Desprazarse polo contido da pestana compartida e facerlle zoom</translation>
@@ -613,7 +612,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2126374524350484896">Produtor do PDF:</translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Descargando paquete de idioma de <ph name="LANGUAGE" />…<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Roupa de home</translation>
 <translation id="2137891579555018930">Agardando polo permiso…</translation>
 <translation id="213826338245044447">Marcadores para móbiles</translation>
@@ -1387,7 +1385,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3681007416295224113">Información do certificado</translation>
 <translation id="3681421644246505351">Chrome rexistra temas de interese en función do teu historial de navegación recente.</translation>
 <translation id="3682094733650754138">Opción de cubrir o enderezo seleccionada</translation>
-<translation id="3689867156802445220">Número de edificio</translation>
 <translation id="3693327506115126094">Elixe como queres que se realice a verificación</translation>
 <translation id="3698629142018988477">Botón para crear un sitio. Actívao para crear rapidamente un sitio en Google Sites</translation>
 <translation id="3701325639446035885">Vendas de entradas para eventos</translation>
@@ -1576,6 +1573,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4089152113577680600">Bandexa 14</translation>
 <translation id="4092349052316400070">Introduce o enderezo</translation>
 <translation id="4096237801206588987">11 x 15 polgadas</translation>
+<translation id="4098306082496067348">Toca os detalles da tarxeta virtual para engadilos á tramitación da compra.</translation>
 <translation id="4098354747657067197">O sitio ao que te dirixes é enganoso</translation>
 <translation id="4099048595830172239">Na política do administrador non se recomenda compartir a pantalla con <ph name="APPLICATION_TITLE" /> cando nela se mostra contido confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar os tamaños e os tipos de letra en Chrome, preme Tabulador e, a continuación, Introducir</translation>

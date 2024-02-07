@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Nem biztonságos</translation>
 <translation id="1075079914415273530">Mezőgazdaság és erdészet</translation>
 <translation id="1075364221219156102">Azonosítókulcs használata</translation>
-<translation id="1078033282564106222">A „Házszám” lehetőség volt kiválasztva</translation>
 <translation id="1080116354587839789">Szélességhez igazítás</translation>
 <translation id="1081061862829655580">19. tálca</translation>
 <translation id="1082026381988252344">A megosztott lap tartalmának görgetése és nagyítása/kicsinyítése</translation>
@@ -613,7 +612,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2126374524350484896">PDF-konvertáló:</translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">A(z) <ph name="LANGUAGE" /> nyelvi csomag letöltése folyamatban van… <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Férfi ruházat</translation>
 <translation id="2137891579555018930">Várakozás az engedélyre…</translation>
 <translation id="213826338245044447">Mobilos könyvjelzők</translation>
@@ -1385,7 +1383,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3681007416295224113">Tanúsítvány adatai</translation>
 <translation id="3681421644246505351">A Chrome feljegyzi az Önt érdeklő témákat a legutóbbi böngészési előzményei alapján.</translation>
 <translation id="3682094733650754138">A „Cím kitöltése” lehetőség volt kiválasztva</translation>
-<translation id="3689867156802445220">Házszám</translation>
 <translation id="3693327506115126094">Válassza ki, hogyan szeretné igazolni személyazonosságát</translation>
 <translation id="3698629142018988477">Webhely létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új webhelyet a Google Webhelyek szolgáltatásban.</translation>
 <translation id="3701325639446035885">Belépőjegy-értékesítés</translation>
@@ -1574,6 +1571,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4089152113577680600">14. tálca</translation>
 <translation id="4092349052316400070">Cím kitöltése</translation>
 <translation id="4096237801206588987">11 × 15 hüvelyk</translation>
+<translation id="4098306082496067348">Koppintson a virtuális kártyája adataira a fizetésnél való használathoz.</translation>
 <translation id="4098354747657067197">Megtévesztő webhely megnyitására készül</translation>
 <translation id="4099048595830172239">A rendszergazda által beállított házirend nem javasolja a képernyő <ph name="APPLICATION_TITLE" /> alkalmazással való megosztását, ha bizalmas tartalom látható a képernyőn:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban megjelenő betűméretek és betűképek személyre szabásához.</translation>

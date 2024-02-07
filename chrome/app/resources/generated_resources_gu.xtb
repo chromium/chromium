@@ -3291,6 +3291,7 @@
 <translation id="3497560059572256875">ડૂડલ શેર કરો</translation>
 <translation id="3497915391670770295">તમારા &amp;ડિવાઇસ પર મોકલો</translation>
 <translation id="3500417806337761827">શેર માઉન્ટ કરવામાં ભૂલ આવી. ખૂબ વધારે SMB શેર પહેલેથી માઉન્ટ કરી લીધા છે.</translation>
+<translation id="3500764001796099683">આઇસોલેટેડ વેબ ઍપના સેટિંગ ચાલુ કરો</translation>
 <translation id="350397915809787283">જો તમારી પાસે એકાઉન્ટ ન હોય, તો એક એકાઉન્ટ બનાવવા માટે પ્રથમ વિકલ્પ પસંદ કરો.</translation>
 <translation id="3503995387997205657">તમે તમારી અગાઉની ઍપ રિસ્ટોર કરી શકો છો</translation>
 <translation id="3505100368357440862">શૉપિંગ માટેના સૂચનો</translation>
@@ -3999,7 +4000,6 @@
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4031527940632463547">સેન્સર બ્લૉક કરેલ છે</translation>
 <translation id="4033471457476425443">નવું ફોલ્ડર ઉમેરો</translation>
-<translation id="4033711848170683365">આને કારણે બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી કાયમી રીતે ડિલીટ થઈ જશે. તમારી <ph name="DEVICE_TYPE" /> પર અન્ય ઍપ દ્વારા કદાચ આ પ્રોફાઇલમાંના Google એકાઉન્ટનો ઉપયોગ કરવામાં આવી શકે. તમે <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />માં જઈને આ એકાઉન્ટ કાઢી નાખી શકો છો.</translation>
 <translation id="4033963223187371752">સુરક્ષિત સાઇટ છબીઓ અથવા વેબ ફ્રેમ જેવું અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે</translation>
 <translation id="4034706080855851454">તમારી સંસ્થાની પ્રોફાઇલ સાથે તમારા ડિવાઇસનો ઉપયોગ કરવા, તમારી સંસ્થાને ડિવાઇસ વિશેની માહિતીની જરૂર છે.
 
@@ -5866,7 +5866,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">આ ઍપ માટે Play સ્ટોરનો ઍક્સેસ આવશ્યક છે</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Android ફોન વડે સેટઅપ કરો</translation>
 <translation id="5519053700692355541">તમે સૌથી ઉપર જમણી બાજુએ આવેલા Chrome મેનૂ મારફતે બાજુની પૅનલવાળી મોટા ભાગની સુવિધાઓ ખોલી શકો છો</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">કોઈ સશક્ત પાસવર્ડ વડે આ એકાઉન્ટને વધુ સુરક્ષિત રાખો. તેને <ph name="EMAIL" /> માટે <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવશે.</translation>
@@ -7168,6 +7167,7 @@ USB ડિવાઇસ</translation>
 <translation id="6551508934388063976">આદેશ અનુપલબ્ધ. એક નવી વિંડોમાં ખોલવા માટે કંટ્રોલ-N દબાવો.</translation>
 <translation id="6551606359270386381">ઇલિપ્સ ટૂલ</translation>
 <translation id="6551612971599078809">સાઇટ USBનો ઉપયોગ કરી રહી છે</translation>
+<translation id="6551620030439692385">બ્લૉક છે. સમય ઝોન હાલમાં <ph name="TIMEZONE" /> પર સેટ છે અને તેને માત્ર મેન્યુઅલી અપડેટ કરી શકાશે.</translation>
 <translation id="6551739526055143276">Family Link દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> વપરાશકર્તાઓ</translation>
 <translation id="6555432686520421228">બધા વપરાશકર્તા એકાઉન્ટ દૂર કરો અને તમારા <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસને નવાની જેમ રીસેટ કરો.</translation>
@@ -7238,6 +7238,7 @@ USB ડિવાઇસ</translation>
 <translation id="6608773371844092260">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને આ <ph name="DEVICE_TYPE" />ની જમણી બાજુના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરવાનું કહો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="6609478180749378879">તમે 'છૂપા મોડ'થી બહાર નીકળો, તે પછી સાઇન-ઇન ડેટા આ ડિવાઇસ પર સ્ટોર કરવામાં આવશે. તમે તમારા ડિવાઇસ વડે આ વેબસાઇટમાં થોડા સમય પછી સાઇન ઇન કરી શકશો.</translation>
 <translation id="6610002944194042868">અનુવાદ માટેના વિકલ્પો</translation>
+<translation id="6610064275805055636">આઇસોલેટેડ વેબ ઍપના સેટિંગ મેનેજ કરો</translation>
 <translation id="6611972847767394631">તમારા ટૅબ અહીં મેળવો</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6613267708691765962">માલવેર માટે સ્કૅન કરી રહ્યાં છીએ...</translation>
@@ -8602,6 +8603,7 @@ USB ડિવાઇસ</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" પરથી સ્કૅન કરવા માગે છે.</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> માટે કયું ડિવાઇસ પાસકી ધરાવે છે, તે પસંદ કરો</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />માં <ph name="HUNG_IFRAME_URL" />.</translation>
+<translation id="7672726198839739113">બ્લૉક છે. શેડ્યૂલ હાલમાં <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> પર સેટ છે અને તેને માત્ર મેન્યુઅલી અપડેટ કરી શકાશે.</translation>
 <translation id="7673313156293624327">ChromeOS Shill (કનેક્શન મેનેજર) લૉગ</translation>
 <translation id="7674416868315480713">Linuxમાં ફૉરવર્ડ કરવામાં આવી રહેતા બધા પોર્ટ નિષ્ક્રિય કરો</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ઍપ</translation>
@@ -9529,6 +9531,7 @@ USB ડિવાઇસ</translation>
 <translation id="8376384591331888629">આ સાઇટ પરની ત્રીજા પક્ષની કુકી શામેલ છે</translation>
 <translation id="8376451933628734023">જો આ વેબ ઍપ તમને તે કોઈ બીજી ઍપ છે તેવું મનાવવાનો છળપૂર્વક પ્રયાસ કરતી હોય, તો તેને અનઇન્સ્ટૉલ કરો.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> ફરીથી લોડ થઇ રહ્યું છે…</translation>
+<translation id="8376610503048439696">તમારા ઍડમિનિસ્ટ્રેટરે ઇન્સ્ટૉલ કરેલા એક્સ્ટેન્શન હજી પણ આ સાઇટ વાંચી શકે છે અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="8376752431516546391">Google Searchની બાજુની પૅનલ</translation>
 <translation id="8377625247046155446">આ પાસકીને માત્ર આ ડિવાઇસ પર સાચવવામાં આવશે. તમે બધી છૂપી વિન્ડો બંધ કરો પછી, તે આ ડિવાઇસ પર જ રહેશે.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
@@ -9668,6 +9671,7 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા બાળકના ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકનો ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. આ સેટિંગ તેમજ તેમને ગોઠવવાની રીત વિશે families.google.com પર વધુ જાણો.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">ફાઇલનો પાસવર્ડ દાખલ કરો</translation>
+<translation id="8476942730579767658">વિન્ડો અને ડેસ્ક</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
 <translation id="8477241577829954800">જૂનું થયેલું</translation>
 <translation id="8477384620836102176">&amp;સામાન્ય</translation>

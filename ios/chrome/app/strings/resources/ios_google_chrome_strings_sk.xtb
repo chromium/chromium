@@ -75,6 +75,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="2689064829982324496">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z Chromu<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="2702250627063295552">Pridať položku čitateľského zoznamu do Chromu</translation>
+<translation id="2703746758996815929">Ak chcete dostávať užitočné tipy pre Chrome, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="2736805085127235148">Upozornenia Chromu sú momentálne v nastaveniach zariadenia vypnuté.</translation>
 <translation id="2767464022270041271">Žiadne uložené heslá. Správca hesiel Google môže kontrolovať heslá, keď ich uložíte.</translation>
 <translation id="2789947168960170215">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
@@ -297,6 +298,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
+<translation id="8874688701962049679">Tipy, ako využívať Chrome naplno</translation>
 <translation id="8891935667620843985">Ak nastavíte Chrome ako predvolený prehliadač, budete v ňom môcť automaticky otvárať odkazy.</translation>
 <translation id="8897749957032330183">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
 <translation id="8949681853939555434">Nastavte si Chrome ako predvolený prehliadač</translation>

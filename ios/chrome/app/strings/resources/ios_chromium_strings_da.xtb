@@ -204,6 +204,7 @@ Vær opmærksom på følgende:
 
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium er lige blevet bedre! Der er en ny tilgængelig version.</translation>
+<translation id="6433172051771630690">Tips til at få mest muligt ud af Chromium.</translation>
 <translation id="6502321914804101924">Du er logget ud af Chromium</translation>
 <translation id="6563921047760808519">Se, <ph name="BEGIN_LINK" />hvordan Chromium beskytter dine data<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium understøtter nu brugerpolitikker for din administrerede konto</translation>
@@ -256,6 +257,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7990085102929105708">Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorikken fra Chromium synkroniseres ikke.
 
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chromium.</translation>
 <translation id="7995166854192397899">Forslagene er baseret på browseraktiviteten på dine andre enheder. Log ind i Chromium på alle dine enheder for at få forslag.</translation>
 <translation id="800195749539500647">Få mest muligt ud af Chromium</translation>
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>

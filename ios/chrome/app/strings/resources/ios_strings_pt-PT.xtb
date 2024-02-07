@@ -1142,7 +1142,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
 <translation id="6831043979455480757">Traduzir</translation>
-<translation id="6839843088069935119">{count,plural, =1{Marcador guardado em "{title}". Só é guardado neste dispositivo.}other{Marcadores guardados em "{title}". Só são guardados neste dispositivo.}}</translation>
 <translation id="6842136130964845393">Para se certificar de que pode sempre aceder às suas palavras-passe guardadas, valide a sua identidade</translation>
 <translation id="6851516051005285358">Pedir site para computador</translation>
 <translation id="6852222216891664518">Fechar separador fixo</translation>

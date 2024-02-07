@@ -3309,6 +3309,7 @@
 <translation id="3497560059572256875">Сподели Doodle</translation>
 <translation id="3497915391670770295">Испратете на вашите уреди</translation>
 <translation id="3500417806337761827">Грешка при прикачување на споделувањето. Веќе се прикачени премногу SMB-споделувања.</translation>
+<translation id="3500764001796099683">Овозможете изолирани веб-апликации</translation>
 <translation id="350397915809787283">Ако немате сметка, изберете ја првата опција за да си создадете.</translation>
 <translation id="3503995387997205657">Може да ги вратите претходните апликации</translation>
 <translation id="3505100368357440862">Предлози за купување</translation>
@@ -4017,7 +4018,6 @@
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4031527940632463547">Сензорите се блокирани</translation>
 <translation id="4033471457476425443">Додај нова папка</translation>
-<translation id="4033711848170683365">Ова трајно ќе ги избрише податоците од прелистувањето на уредов. Сметките на Google во профилов може да се користат од други апликации на вашиот <ph name="DEVICE_TYPE" />. Може да ги отстраните сметкиве во <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Безбедните сајтови може да вметнуваат содржини како слики или веб-рамки што не се безбедни</translation>
 <translation id="4034706080855851454">За да го користите уредот со профилот на вашата организација, на организацијата ѝ се потребни податоци за уредот.
 
@@ -5885,7 +5885,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Апликацијава бара пристап до Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5518949581554491184">Поставете со телефон со Android</translation>
 <translation id="5519053700692355541">Повеќето функции на страничната табла може да ги отворите преку менито на Chrome горе десно</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Заштитете ја сметкава дополнително со силна лозинка. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -7185,6 +7184,7 @@
 <translation id="6551508934388063976">Наредбата е недостапна. Притиснете control-N за да отворите нов прозорец.</translation>
 <translation id="6551606359270386381">Алатка за елипса</translation>
 <translation id="6551612971599078809">Сајтот користи USB</translation>
+<translation id="6551620030439692385">Блокирано. Во моментов, временската зона е поставена на <ph name="TIMEZONE" /> и може да се промени само рачно.</translation>
 <translation id="6551739526055143276">Управувано од Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> корисници</translation>
 <translation id="6555432686520421228">Отстранете ги сите кориснички сметки и ресетирајте го својот уред на <ph name="IDS_SHORT_PRODUCT_NAME" /> да биде исто како нов.</translation>
@@ -7255,6 +7255,7 @@
 <translation id="6608773371844092260">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци најгоре десно на овој <ph name="DEVICE_TYPE" />. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“. Подоцна ќе може повторно да се најавите на овој веб-сајт со уредот.</translation>
 <translation id="6610002944194042868">Опции за „Преведи“</translation>
+<translation id="6610064275805055636">Управувајте со изолираните веб-апликации</translation>
 <translation id="6611972847767394631">Најдете ги вашите картички тука</translation>
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6613267708691765962">Се скенира за злонамерен софтвер…</translation>
@@ -8618,6 +8619,7 @@
 <translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />“ сака да скенира од „<ph name="SCANNER_NAME" />“.</translation>
 <translation id="7672504401554182757">Изберете го уредот каде што се наоѓа криптографскиот клуч за <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, на <ph name="PAGE_TITLE" />.</translation>
+<translation id="7672726198839739113">Блокирано. Во моментов, распоредот е поставен на <ph name="SUNRISE_TIME" /> - <ph name="SUNSET_TIME" /> и може да се промени само рачно.</translation>
 <translation id="7673313156293624327">Евиденција за ChromeOS Shill (Управник со врска)</translation>
 <translation id="7674416868315480713">Деактивирај ги сите порти што се проследени во Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> апликации</translation>
@@ -9553,6 +9555,7 @@
 <translation id="8376384591331888629">Вклучувајќи колачиња од трети страни</translation>
 <translation id="8376451933628734023">Ако веб-апликацијава се обидува да ве измами да мислите дека е друга апликација, деинсталирајте ја.</translation>
 <translation id="8376532149031784008">Се вчитува <ph name="DOMAIN" /> повторно…</translation>
+<translation id="8376610503048439696">Екстензиите што ги инсталирал администраторот сѐ уште може да го читаат и да го променуваат сајтов</translation>
 <translation id="8376752431516546391">Странична табла на „Пребарување на Google“</translation>
 <translation id="8377625247046155446">Криптографскиов клуч ќе се зачува само на уредов. Ќе остане на уредов откако ќе ги затворите сите прозорци „Инкогнито“.</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>
@@ -9692,6 +9695,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со ChromeOS на вашето дете. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google од вашето дете, податоците од детето може да се зачувуваат во неговата сметка на Google. Дознајте повеќе за поставкиве и за тоа како да ги приспособите на families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Внесете ја лозинката на датотеката</translation>
+<translation id="8476942730579767658">Прозорци и работни површини</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>
 <translation id="8477241577829954800">Заменет</translation>
 <translation id="8477384620836102176">&amp;Општи информации</translation>

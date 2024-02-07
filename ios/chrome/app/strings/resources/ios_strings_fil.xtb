@@ -1145,7 +1145,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="681368974849482173">Nagawa ang item</translation>
 <translation id="6822587385560699678">Kapag naka-on, mase-save ang mga password sa <ph name="ACCOUNT" />. Kapag naka-off, mase-save lang ang mga password sa device na ito.</translation>
 <translation id="6831043979455480757">Isalin</translation>
-<translation id="6839843088069935119">{count,plural, =1{Na-save ang bookmark sa "{title}". Ise-save lang ito sa device na ito.}one{Na-save ang mga bookmark sa "{title}". Ise-save lang ito sa device na ito.}other{Na-save ang mga bookmark sa "{title}". Ise-save lang ito sa device na ito.}}</translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>
 <translation id="6851516051005285358">Hilingin ang Site sa Desktop</translation>
 <translation id="6852222216891664518">Isara ang Naka-pin na Tab</translation>

@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Non sécurisé</translation>
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
-<translation id="1078033282564106222">Option "Numéro du bâtiment" sélectionnée</translation>
 <translation id="1080116354587839789">Ajuster à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1082026381988252344">Faire défiler le contenu de l'onglet partagé et faire un zoom dessus</translation>
@@ -613,7 +612,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2126374524350484896">Outil de conversion PDF :</translation>
 <translation id="2130448033692577677">Les modèles que vous avez spécifiés risquent de ne pas être appliqués, car la règle DnsOverHttpsMode n'est pas configurée.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Téléchargement du module linguistique <ph name="LANGUAGE" /> (<ph name="PERCENT" /> %)…</translation>
 <translation id="2135799067377889518">Mode hommes</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris sur mobile</translation>
@@ -1387,7 +1385,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3681421644246505351">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent.</translation>
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
-<translation id="3689867156802445220">Numéro du bâtiment</translation>
 <translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
 <translation id="3698629142018988477">Bouton "Créer un site" à activer pour créer rapidement un site dans Google Sites</translation>
 <translation id="3701325639446035885">Billetterie</translation>

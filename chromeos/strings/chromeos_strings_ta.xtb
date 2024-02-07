@@ -124,6 +124,7 @@
 <translation id="1745577949879301685">படங்களை ஏற்ற முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும் அல்லது மீண்டும் படங்களை ஏற்ற முயலவும்.</translation>
 <translation id="1751249301761991853">தனிப்பட்டவை</translation>
 <translation id="1753496554272155572">வால்பேப்பர் மாதிரிக்காட்சியில் இருந்து வெளியேறும்</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> ஐத் திருத்துவதற்கான பட்டன்.</translation>
 <translation id="1755556344721611131">கண்டறிதல் ஆப்ஸ்</translation>
 <translation id="175763766237925754">நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -625,6 +626,7 @@
 <translation id="5502931783115429516">Android இயங்கவில்லை</translation>
 <translation id="551689408806449779">சாதனம் துண்டிக்கப்பட்டது. சோதனை செய்ய மீண்டும் இணைக்கவும்</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">பூட்டப்பட்டுள்ளது</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">சூரிய அஸ்தமனத்தின்போது தானாகவே டார்க் தீமிற்கு மாறும்</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -645,6 +647,7 @@
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="5703716265115423771">ஒலியளவைக் குறைக்கும்</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ஐத் திருத்துவதற்கான பட்டன்.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கும்</translation>
 <translation id="574392208103952083">நடுநிலை</translation>
 <translation id="5757187557809630523">அடுத்த டிராக் ஐகான்</translation>
@@ -675,6 +678,7 @@
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> ஐ நீக்குவதற்கான பட்டன்.</translation>
 <translation id="5931523347251946569">ஃபைல் இல்லை</translation>
 <translation id="593880865674747800">இதே ஸ்டைலில் மேலும் உருவாக்கு</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
@@ -802,6 +806,7 @@
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
 <translation id="6791471867139427246">கீபோர்டு லைட் கலர்</translation>
+<translation id="6796229976413584781">ஷார்ட்கட் நீக்கப்பட்டது</translation>
 <translation id="6798678288485555829">வார்த்தை வழிசெலுத்தல்</translation>
 <translation id="680983167891198932">குறியீடு</translation>
 <translation id="6816797338148849397">நீங்கள் தேர்ந்தெடுத்தவற்றுடன் தொடர்புடைய தகவல்கள். இவற்றை அணுக மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
@@ -856,6 +861,7 @@
 <translation id="7212547870105584639">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
+<translation id="7233782086689993269">ஷார்ட்கட் மீட்டெடுக்கப்பட்டது</translation>
 <translation id="725133483556299729">மின்னஞ்சல் முகவரியைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7271932918253517778">மேல் வரிசை பட்டன்கள் இருக்கும் ஷார்ட்கட்டில் <ph name="META_KEY" /> பட்டன் இருக்க வேண்டும்.</translation>
@@ -917,6 +923,7 @@
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7656388927906093505">சாதனம் ஒரு மவுஸ்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">தோற்றப் படத்தை மாற்றும்</translation>
 <translation id="7683228889864052081">கீபோர்டு வண்ணச் சாயல்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
@@ -926,6 +933,7 @@
 <translation id="7718231387947923843">கீபோர்டு ஒளி</translation>
 <translation id="7730077286107534951">கணக்கு மற்றும் சிஸ்டம் தகவல்கள் சில Googleளுக்கு அனுப்பப்படலாம். தொழில்நுட்பக் கோளாறுகளைச் சரிசெய்வதற்காகவும் எங்கள் சேவைகளை மேம்படுத்துவதற்காகவும் எங்கள் <ph name="BEGIN_LINK2" />தனியுரிமைக் கொள்கைக்கும்<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />சேவை விதிமுறைகளுக்கும்<ph name="END_LINK3" /> உட்பட்டு இவற்றைப் பயன்படுத்துவோம். சட்டப்பூர்வக் காரணங்களுக்காக உள்ளடக்க மாற்றங்களைக் கேட்க, <ph name="BEGIN_LINK1" />சட்டப்பூர்வ உதவிப் பக்கத்திற்குச்<ph name="END_LINK1" /> செல்லவும்.</translation>
 <translation id="773153675489693198">சுழற்சியின் எண்ணிக்கை</translation>
+<translation id="7746357909584236306">திருத்தக்கூடியது</translation>
 <translation id="7747039790905080783">முன்பே பகிரப்பட்ட குறியீடு</translation>
 <translation id="7752963721013053477">டான் டூ டார்க் - பிரத்தியேகமானது</translation>
 <translation id="7762130827864645708">உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இனி புதிய கடவுச்சொல்லைப் பயன்படுத்தவும்.</translation>
