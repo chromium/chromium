@@ -27,6 +27,7 @@ namespace ash::language_packs {
 // All Language Pack IDs are listed here.
 inline constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
 inline constexpr char kTtsFeatureId[] = "LP_ID_TTS";
+inline constexpr char kFontsFeatureId[] = "LP_ID_FONT";
 
 // Feature IDs.
 // These values are persisted to logs. Entries should not be renumbered and

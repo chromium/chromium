@@ -303,6 +303,9 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kTtsFeatureId, "uk"}, "tts-uk-ua-c"},
           {{kTtsFeatureId, "vi"}, "tts-vi-vn-c"},
           {{kTtsFeatureId, "yue"}, "tts-yue-hk-c"},
+
+          // Fonts.
+          {{kFontsFeatureId, "ja"}, "extrafonts-ja"},
       });
 
   return *all_dlc_ids;
