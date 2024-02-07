@@ -340,13 +340,17 @@ void XboxControllerMac::SetVibration(mojom::GamepadEffectParametersPtr params) {
   double strong_magnitude =
       std::clamp<double>(params->strong_magnitude, 0.0, 1.0);
   double weak_magnitude = std::clamp<double>(params->weak_magnitude, 0.0, 1.0);
+  double left_trigger = std::clamp<double>(params->left_trigger, 0.0, 1.0);
+  double right_trigger = std::clamp<double>(params->right_trigger, 0.0, 1.0);
 
   if (xinput_type_ == kXInputTypeXbox360) {
     WriteXbox360Rumble(static_cast<uint8_t>(strong_magnitude * 255.0),
                        static_cast<uint8_t>(weak_magnitude * 255.0));
   } else if (xinput_type_ == kXInputTypeXboxOne) {
     WriteXboxOneRumble(static_cast<uint8_t>(strong_magnitude * 255.0),
-                       static_cast<uint8_t>(weak_magnitude * 255.0));
+                       static_cast<uint8_t>(weak_magnitude * 255.0),
+                       static_cast<uint8_t>(left_trigger * 255.0),
+                       static_cast<uint8_t>(right_trigger * 255.0));
   }
 }
 
@@ -814,7 +818,9 @@ bool XboxControllerMac::WriteXboxOneInit() {
 }
 
 void XboxControllerMac::WriteXboxOneRumble(uint8_t strong_magnitude,
-                                           uint8_t weak_magnitude) {
+                                           uint8_t weak_magnitude,
+                                           uint8_t left_trigger,
+                                           uint8_t right_trigger) {
   const UInt8 length = sizeof(XboxOneRumbleData);
 
   // This buffer will be released in WriteComplete when WritePipeAsync
@@ -833,8 +839,8 @@ void XboxControllerMac::WriteXboxOneRumble(uint8_t strong_magnitude,
   rumble_data->extra = 0x00;
 
   // Set rumble intensities.
-  rumble_data->trigger_left = 0x00;
-  rumble_data->trigger_right = 0x00;
+  rumble_data->trigger_left = left_trigger;
+  rumble_data->trigger_right = right_trigger;
   rumble_data->strong_magnitude = strong_magnitude;
   rumble_data->weak_magnitude = weak_magnitude;
 

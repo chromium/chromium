@@ -151,35 +151,6 @@ uint32_t GetPaddleNumber(
   return num_paddles;
 }
 
-bool HasTriggerRumbleSupport(GamepadId gamepad_id) {
-  // Xbox One USB
-  return gamepad_id == GamepadId::kMicrosoftProduct02d1 ||
-         // Xbox One USB 2015 Firmware
-         gamepad_id == GamepadId::kMicrosoftProduct02dd ||
-         // Xbox One S Bluetooth 2016 Firmware
-         gamepad_id == GamepadId::kMicrosoftProduct02fd ||
-         // Xbox One S Bluetooth 2021 Firmware
-         gamepad_id == GamepadId::kMicrosoftProduct0b20 ||
-         // Xbox One S USB
-         gamepad_id == GamepadId::kMicrosoftProduct02ea ||
-         // Xbox One S Bluetooth
-         gamepad_id == GamepadId::kMicrosoftProduct02e0 ||
-         // Xbox One S USB
-         gamepad_id == GamepadId::kMicrosoftProduct0b06 ||
-         // Xbox Series X USB
-         gamepad_id == GamepadId::kMicrosoftProduct0b12 ||
-         // Xbox Series X Bluetooth
-         gamepad_id == GamepadId::kMicrosoftProduct0b13 ||
-         // Xbox One Elite USB
-         gamepad_id == GamepadId::kMicrosoftProduct02e3 ||
-         // Xbox One Elite Series 2 USB
-         gamepad_id == GamepadId::kMicrosoftProduct0b00 ||
-         // Xbox One Elite Series 2 Bluetooth
-         gamepad_id == GamepadId::kMicrosoftProduct0b05 ||
-         // Xbox Elite Series 2 Bluetooth 2021 Firmware
-         gamepad_id == GamepadId::kMicrosoftProduct0b22;
-}
-
 }  // namespace
 
 WgiDataFetcherWin::WgiDataFetcherWin() {
@@ -287,7 +258,7 @@ void WgiDataFetcherWin::OnGamepadAdded(
   pad.SetID(BuildGamepadIdString(gamepad_id, display_name, gamepad));
   pad.connected = true;
 
-  if (HasTriggerRumbleSupport(gamepad_id)) {
+  if (GamepadIdList::Get().HasTriggerRumbleSupport(gamepad_id)) {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kTriggerRumble;
   } else {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;

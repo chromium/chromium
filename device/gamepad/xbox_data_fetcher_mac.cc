@@ -315,7 +315,13 @@ void XboxDataFetcher::AddController(XboxControllerMac* controller) {
   state->axis_mask = 0;
   state->button_mask = 0;
 
-  state->data.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
+  if (GamepadIdList::Get().HasTriggerRumbleSupport(controller->gamepad_id())) {
+    state->data.vibration_actuator.type =
+        GamepadHapticActuatorType::kTriggerRumble;
+  } else {
+    state->data.vibration_actuator.type =
+        GamepadHapticActuatorType::kDualRumble;
+  }
   state->data.vibration_actuator.not_null = controller->SupportsVibration();
 }
 
