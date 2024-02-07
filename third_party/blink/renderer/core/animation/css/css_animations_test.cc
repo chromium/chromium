@@ -794,6 +794,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
 
     Animation* animation = GetAnimation();
     EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+    VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
     VerifyCompositorPlaybackRate(1.0);
     VerifyCompositorTimeOffset(0.0);
     VerifyCompositorIterationTime(0);
@@ -803,6 +804,8 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     UpdateAllLifecyclePhasesForTest();
     EXPECT_NEAR(0.5, element_->GetComputedStyle()->Opacity(), kTolerance);
     EXPECT_EQ(compositor_group, animation->CompositorGroup());
+    VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
+                              500);
     VerifyCompositorPlaybackRate(1.0);
     VerifyCompositorTimeOffset(0.0);
     VerifyCompositorIterationTime(500);
@@ -860,6 +863,13 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
                 kTimeToleranceMilliseconds);
   }
 
+  void VerifyCompositorStartTime(double expected_value) {
+    cc::KeyframeModel* keyframe_model = GetCompositorKeyframeForOpacity();
+    EXPECT_NEAR(expected_value,
+                keyframe_model->start_time().since_origin().InMillisecondsF(),
+                kTimeToleranceMilliseconds);
+  }
+
   base::TimeDelta CompositorIterationTime() {
     cc::KeyframeModel* keyframe_model = GetCompositorKeyframeForOpacity();
     return keyframe_model->TrimTimeToCurrentIteration(TimelineTime());
@@ -894,9 +904,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   animation->updatePlaybackRate(0.5, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
-  // Compositor animation needs to restart and will keep its compositor group.
+  // Compositor animation needs to restart and will have a new compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_EQ(compositor_group, post_update_compositor_group);
+  EXPECT_NE(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
   // No jump in opacity after changing the playback rate.
@@ -906,6 +916,8 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   // is calculated as follows:
   // time_offset = current_time / playback_rate = 0.5 / 0.5 = 1.0.
   VerifyCompositorTimeOffset(1000);
+  // Start time must have been reset.
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
   VerifyCompositorIterationTime(500);
   VerifyCompositorOpacity(0.5);
 
@@ -916,6 +928,8 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
   VerifyCompositorTimeOffset(1000);
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
+                            500);
   VerifyCompositorIterationTime(750);
   VerifyCompositorOpacity(0.25);
 }
@@ -934,12 +948,14 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
   // Verify there is no jump in opacity after changing the play direction
   EXPECT_NEAR(0.5, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will keep its compositor group.
+  // Compositor animation needs to restart and will have a new compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_EQ(compositor_group, post_update_compositor_group);
+  EXPECT_NE(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
   // Verify updates to cc Keyframe model.
+  // Start time must have been reset.
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
   VerifyCompositorPlaybackRate(-1.0);
   VerifyCompositorTimeOffset(500);
   VerifyCompositorIterationTime(500);
@@ -951,6 +967,8 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
+                            250);
   VerifyCompositorIterationTime(250);
   VerifyCompositorOpacity(0.75);
 }
@@ -983,6 +1001,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.
+  VerifyCompositorStartTime(new_start_time->GetAsDouble());
   VerifyCompositorPlaybackRate(1.0);
   VerifyCompositorTimeOffset(0.0);
   VerifyCompositorIterationTime(250);
@@ -994,6 +1013,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NEAR(0.5, element_->GetComputedStyle()->Opacity(), kTolerance);
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
+  VerifyCompositorStartTime(new_start_time->GetAsDouble());
   VerifyCompositorIterationTime(500);
   VerifyCompositorOpacity(0.5);
 }
@@ -1021,6 +1041,8 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.
+  // Start time should be set to the recalculated value.
+  VerifyCompositorStartTime(animation->startTime()->GetAsDouble());
   VerifyCompositorPlaybackRate(1.0);
   VerifyCompositorTimeOffset(0.0);
   VerifyCompositorIterationTime(750);
