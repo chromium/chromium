@@ -43,6 +43,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/test/virtual_display_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -56,7 +57,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/nswindow_test_util.h"
-#include "ui/display/mac/test/virtual_display_mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -890,10 +890,13 @@ class TestScreenEnvironment {
     secondary_display_id_ =
         ash::Shell::Get()->display_manager()->GetConnectedDisplayIdList()[1];
 #elif BUILDFLAG(IS_MAC)
-    virtual_display_mac_util_ =
-        std::make_unique<display::test::VirtualDisplayMacUtil>();
-    secondary_display_id_ = virtual_display_mac_util_->AddDisplay(
-        1, display::test::VirtualDisplayMacUtil::k1680x1050);
+    if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
+             display::Screen::GetScreen()))) {
+      secondary_display_id_ = virtual_display_util_->AddDisplay(
+          1, display::test::VirtualDisplayUtil::k1920x1080);
+    } else {
+      GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
+    }
 #else
     screen_.display_list().AddDisplay({2, gfx::Rect(901, 0, 802, 803)},
                                       display::DisplayList::Type::NOT_PRIMARY);
@@ -906,7 +909,7 @@ class TestScreenEnvironment {
   // down.
   void TearDown() {
 #if BUILDFLAG(IS_MAC)
-    virtual_display_mac_util_.reset();
+    virtual_display_util_.reset();
 #endif  // BUILDFLAG(IS_MAC)
   }
 
@@ -915,7 +918,7 @@ class TestScreenEnvironment {
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("100+100-801x802");
 #elif BUILDFLAG(IS_MAC)
-    virtual_display_mac_util_->RemoveDisplay(secondary_display_id_);
+    virtual_display_util_->RemoveDisplay(secondary_display_id_);
 #else
     screen_.display_list().RemoveDisplay(2);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -927,8 +930,7 @@ class TestScreenEnvironment {
   int64_t secondary_display_id_ = display::kInvalidDisplayId;
 #if BUILDFLAG(IS_MAC)
   bool ns_window_faked_for_testing_ = false;
-  std::unique_ptr<display::test::VirtualDisplayMacUtil>
-      virtual_display_mac_util_;
+  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util_;
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
   display::ScreenBase screen_;
 #endif  // BUILDFLAG(IS_MAC)
@@ -950,11 +952,6 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
  public:
   void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
-      GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
-    }
-#endif  // BUILDFLAG(IS_MAC)
     // Set a test Screen instance before the browser `SetUp`.
     test_screen_environment_ = std::make_unique<TestScreenEnvironment>();
     FullscreenControllerInteractiveTest::SetUp();
