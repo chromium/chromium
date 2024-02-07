@@ -192,7 +192,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, InsecureDownloadPrimaryCommand) {
             DownloadCommands::Command::KEEP);
 }
 
-TEST_F(DownloadBubbleRowViewInfoTest, InProgressOrCompletedBubbleUIInfo) {
+TEST_F(DownloadBubbleRowViewInfoTest, InProgressOrCompletedInfo) {
   ON_CALL(item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   item().NotifyObserversDownloadUpdated();
@@ -231,7 +231,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, InProgressOrCompletedBubbleUIInfo) {
   EXPECT_FALSE(info().primary_button_command().has_value());
 }
 
-TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo) {
+TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningInfo) {
   ON_CALL(item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   const struct DangerTypeTestCase {
@@ -264,7 +264,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo) {
   }
 }
 
-TEST_F(DownloadBubbleRowViewInfoTest, InterruptedBubbleUIInfo) {
+TEST_F(DownloadBubbleRowViewInfoTest, InterruptedInfo) {
   std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
       download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
       download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
@@ -346,8 +346,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedBubbleUIInfo) {
   }
 }
 
-TEST_F(DownloadBubbleRowViewInfoTest,
-       GetBubbleUIInfoForTailoredWarning_CookieTheft) {
+TEST_F(DownloadBubbleRowViewInfoTest, GetInfoForTailoredWarning_CookieTheft) {
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
       TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
@@ -359,7 +358,7 @@ TEST_F(DownloadBubbleRowViewInfoTest,
 }
 
 TEST_F(DownloadBubbleRowViewInfoTest,
-       GetBubbleUIInfoForTailoredWarning_SuspiciousArchive) {
+       GetInfoForTailoredWarning_SuspiciousArchive) {
   SetupTailoredWarningForItem(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
                               TailoredVerdict::SUSPICIOUS_ARCHIVE,
                               /*adjustments=*/{});
@@ -371,7 +370,7 @@ TEST_F(DownloadBubbleRowViewInfoTest,
 }
 
 TEST_F(DownloadBubbleRowViewInfoTest,
-       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithAccount) {
+       GetInfoForTailoredWarning_AccountInfoStringWithAccount) {
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
       TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
@@ -387,7 +386,7 @@ TEST_F(DownloadBubbleRowViewInfoTest,
 }
 
 TEST_F(DownloadBubbleRowViewInfoTest,
-       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithoutAccount) {
+       GetInfoForTailoredWarning_AccountInfoStringWithoutAccount) {
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
       TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
@@ -396,6 +395,17 @@ TEST_F(DownloadBubbleRowViewInfoTest,
   // No primary button on download row view. Button only appears on subpage.
   EXPECT_FALSE(info().primary_button_command().has_value());
   EXPECT_TRUE(info().has_subpage());
+}
+
+TEST_F(DownloadBubbleRowViewInfoTest, InsecurePrimaryButtonCommand) {
+  for (const auto& insecure_download_status :
+       {download::DownloadItem::InsecureDownloadStatus::BLOCK,
+        download::DownloadItem::InsecureDownloadStatus::WARN}) {
+    ON_CALL(item(), GetInsecureDownloadStatus())
+        .WillByDefault(Return(insecure_download_status));
+    item().NotifyObserversDownloadUpdated();
+    EXPECT_EQ(info().primary_button_command(), DownloadCommands::Command::KEEP);
+  }
 }
 
 }  // namespace
