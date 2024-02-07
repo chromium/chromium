@@ -2281,6 +2281,11 @@
       'filepath': 'components/arc/common/wallpaper.mojom'\
                   '|ash/wallpaper/'\
     },
+    'wayland': {
+      'filepath': 'ui/ozone/platform/wayland/'\
+                  '|third_party/wayland/'\
+                  '|third_party/wayland-protocols/',
+    },
     'web_applications': {
       'filepath': 'chrome/browser/web_applications'\
                   '|chrome/browser/ui/web_applications',
@@ -3302,6 +3307,7 @@
     'wake_lock': ['mattreynolds+watch@chromium.org',
                   'raphael.kubo.da.costa@intel.com'],
     'wallpapers': ['croissant-eng+reviews@chromium.org'],
+    'wayland': ['max+watch-wayland@igalia.com'],
     'web_applications': ['alancutter+chrome-cls@chromium.org',
                          'cmfcmf+watch@chromium.org',
                          'dibyapal+watch-webapps@chromium.org',
