@@ -336,7 +336,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
-       OutdatedBundleShowsErrorDialog) {
+       OutdatedBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
@@ -361,7 +361,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_CALL(
       view,
       ShowDialog(
-          VariantWith<IsolatedWebAppInstallerModel::BundleOutdatedDialog>(_)));
+          VariantWith<
+              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_)));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 

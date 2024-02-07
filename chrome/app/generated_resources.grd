@@ -16753,15 +16753,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is already installed.">
-      This app is already installed
+      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> is already installed
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is already installed.">
-      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
-    </message>
-    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
-      A newer version of this app is already installed
-    </message>
-    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
       <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
     </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_SUBTITLE" desc="Subtitle of the installing screen of the IWA installer.">

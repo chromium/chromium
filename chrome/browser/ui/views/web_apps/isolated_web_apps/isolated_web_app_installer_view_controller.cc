@@ -126,24 +126,17 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   }
 
   void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
-    // TODO(crbug.com/1479140): In the short term we should add a better
-    // message than "Already Installed", probably saying to uninstall the app
-    // first. Longer term we should add a proper upgrade flow.
     model_->SetDialog(
         IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
             updatable.metadata.app_name(), updatable.installed_version});
   }
 
   void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
-    if (outdated.metadata.version() == outdated.installed_version) {
-      model_->SetDialog(
-          IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
-              outdated.metadata.app_name(), outdated.installed_version});
-    } else {
-      model_->SetDialog(IsolatedWebAppInstallerModel::BundleOutdatedDialog{
-          outdated.metadata.app_name(), outdated.metadata.version(),
-          outdated.installed_version});
-    }
+    // TODO(crbug.com/1479140): Once we have an update flow we should add
+    // more specific error messages for newer vs same version already installed.
+    model_->SetDialog(
+        IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
+            outdated.metadata.app_name(), outdated.installed_version});
   }
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {

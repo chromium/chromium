@@ -13,21 +13,6 @@
 
 namespace web_app {
 
-IsolatedWebAppInstallerModel::BundleOutdatedDialog::BundleOutdatedDialog(
-    const std::u16string& bundle_name,
-    const base::Version& bundle_version,
-    const base::Version& installed_version)
-    : bundle_name(bundle_name),
-      bundle_version(bundle_version),
-      installed_version(installed_version) {}
-IsolatedWebAppInstallerModel::BundleOutdatedDialog::BundleOutdatedDialog(
-    const BundleOutdatedDialog&) = default;
-IsolatedWebAppInstallerModel::BundleOutdatedDialog&
-IsolatedWebAppInstallerModel::BundleOutdatedDialog::operator=(
-    const IsolatedWebAppInstallerModel::BundleOutdatedDialog&) = default;
-IsolatedWebAppInstallerModel::BundleOutdatedDialog::~BundleOutdatedDialog() =
-    default;
-
 IsolatedWebAppInstallerModel::ConfirmInstallationDialog::
     ConfirmInstallationDialog(const base::RepeatingClosure& learn_more_callback)
     : learn_more_callback(learn_more_callback) {}
