@@ -768,6 +768,8 @@ String FragmentItem::ToString() const {
     case FragmentItem::kGeneratedText:
       name.Append(" GeneratedText ");
       name.Append(GeneratedText().EncodeForDebugging());
+      name.Append(" ");
+      name.Append(layout_object_ ? layout_object_->DebugName() : "null");
       break;
     case FragmentItem::kLine:
       name.Append(" Line");
