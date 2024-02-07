@@ -1091,7 +1091,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"description"};
 
     case ax::mojom::Role::kLegend:
-      return {UIALocalizationStrategy::kSupply, UIA_TextControlTypeId,
+      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"description"};
 
     case ax::mojom::Role::kLayoutTable:

@@ -1,7 +1,7 @@
 Document
 ++Group
 ++++Group Name='Browser Engines:'
-++++++Text IsControlElement=false
+++++++Group IsControlElement=false
 ++++++++Text Name='Browser Engines:'
 ++++++Text Name='Browser: '
 ++++++Edit
