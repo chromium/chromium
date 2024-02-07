@@ -49,8 +49,8 @@ class PassKitCoordinatorTest : public PlatformTest {
     test_navigation_manager_ = std::make_unique<web::FakeNavigationManager>();
     web_state->SetNavigationManager(std::move(test_navigation_manager_));
     browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state),
-        WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = browser_->GetWebStateList()->GetActiveWebState();
     handler_ = [[FakeWebContentHandler alloc] init];
 

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
@@ -57,11 +56,10 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     SnapshotTabHelper::CreateForWebState(web_state.get());
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
 
-    WebStateOpener opener;
     WebStateList* web_state_list = browser_->GetWebStateList();
     web_state_list->InsertWebState(
-        web_state_list->count(), std::move(web_state),
-        WebStateList::InsertionFlags::INSERT_ACTIVATE, opener);
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     return web_state_list->GetActiveWebState();
   }
 

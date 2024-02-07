@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -58,15 +57,13 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
     agent_->SetDelegate(delegate_);
-    WebStateOpener opener;
     auto web_state = std::make_unique<web::FakeWebState>();
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state->SetNavigationManager(std::move(navigation_manager));
     browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, /*webState=*/std::move(web_state),
-        /*insertion_flags=*/WebStateList::InsertionFlags::INSERT_ACTIVATE,
-        /*opener=*/opener);
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
  protected:
