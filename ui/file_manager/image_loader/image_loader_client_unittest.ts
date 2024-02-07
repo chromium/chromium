@@ -7,50 +7,34 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 import {ImageLoaderClient} from './image_loader_client.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
-/** @suppress {const|checkTypes} */
 export function setUp() {
   chrome.metricsPrivate = {
     MetricTypeType: {
-      // @ts-ignore: error TS2322: Type '"histogram-linear"' is not assignable
-      // to type 'MetricTypeType.HISTOGRAM_LOG'.
       HISTOGRAM_LOG: 'histogram-log',
-      // @ts-ignore: error TS2322: Type '"histogram-linear"' is not assignable
-      // to type 'MetricTypeType.HISTOGRAM_LINEAR'.
       HISTOGRAM_LINEAR: 'histogram-linear',
     },
     recordPercentage: function() {},
     recordValue: function() {},
-  };
-
-  // @ts-ignore: error TS2339: Property 'i18n' does not exist on type 'typeof
-  // chrome'.
-  chrome.i18n = {
-    getMessage: function() {},
-  };
+  } as any;
 }
 
 /**
  * Lets the client to load URL and returns the local cache (not caches in the
  * image loader extension) is used or not.
  *
- * @param {ImageLoaderClient} client
- * @param {string} url URL
- * @param {boolean} cache Whether to request caching on the request.
- * @return {Promise<boolean>} True if the local cache is used.
+ * @param url URL
+ * @param cache Whether to request caching on the request.
+ * @return True if the local cache is used.
  */
-function loadAndCheckCacheUsed(client, url, cache) {
+function loadAndCheckCacheUsed(
+    client: ImageLoaderClient, url: string, cache: boolean): Promise<boolean> {
   let cacheUsed = true;
 
-  /** @suppress {accessControls} */
-  // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-  // type.
-  ImageLoaderClient.sendMessage_ = function(message, callback) {
+  chrome.runtime.sendMessage = (_id, request, callback) => {
     cacheUsed = false;
-    if (callback) {
-      callback(new LoadImageResponse(
-          LoadImageResponseStatus.SUCCESS, message.taskId || -1,
-          {width: 100, height: 100, ifd: null, data: 'ImageData'}));
-    }
+    callback?.(new LoadImageResponse(
+        LoadImageResponseStatus.SUCCESS, request.taskId || -1,
+        {width: 100, height: 100, ifd: null, data: 'ImageData'}));
   };
 
   const request = LoadImageRequest.createForUrl(url);
