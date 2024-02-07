@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/android-dawn-arm64-rel/gn-args.json"
+        "infra/config/generated/builders/ci/Dawn Android arm64 DEPS Builder/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Android arm64 Builder",
+              "builder": "Dawn Android arm64 DEPS Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -25,8 +25,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "dawn_top_of_tree"
+                  "android"
                 ],
                 "config": "chromium"
               }
@@ -35,7 +34,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Android arm64 Release (Pixel 6)",
+              "builder": "Dawn Android arm64 DEPS Release (Pixel 6)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -51,14 +50,13 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "dawn_top_of_tree"
+                  "android"
                 ],
                 "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "Dawn Android arm64 Builder",
+                "builder": "Dawn Android arm64 DEPS Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true
@@ -69,22 +67,28 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Android arm64 Builder",
+          "builder": "Dawn Android arm64 DEPS Builder",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Dawn Android arm64 Release (Pixel 6)",
+          "builder": "Dawn Android arm64 DEPS Release (Pixel 6)",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "dawn-android-arm64-deps-rel",
+          "group": "tryserver.chromium.dawn"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -92,10 +96,12 @@
     "column_keys": [],
     "grouping_keys": [
       "status",
-      "v.test_suite",
-      "v.gpu"
+      "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.dawn",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.dawn",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "dawn"
+  ]
 }

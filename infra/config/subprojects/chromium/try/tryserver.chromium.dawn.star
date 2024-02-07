@@ -61,9 +61,10 @@ try_.builder(
 try_.builder(
     name = "dawn-android-arm64-deps-rel",
     mirrors = [
+        "ci/Dawn Android arm64 DEPS Builder",
         "ci/Dawn Android arm64 DEPS Release (Pixel 6)",
     ],
-    gn_args = "ci/Dawn Android arm64 DEPS Release (Pixel 6)",
+    gn_args = "ci/Dawn Android arm64 DEPS Builder",
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -257,9 +258,10 @@ try_.builder(
 try_.builder(
     name = "android-dawn-arm64-rel",
     mirrors = [
+        "ci/Dawn Android arm64 Builder",
         "ci/Dawn Android arm64 Release (Pixel 6)",
     ],
-    gn_args = "ci/Dawn Android arm64 Release (Pixel 6)",
+    gn_args = "ci/Dawn Android arm64 Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

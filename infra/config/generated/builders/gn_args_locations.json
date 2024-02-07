@@ -195,8 +195,8 @@
   "chromium.dawn": {
     "Dawn Android arm Builder": "ci/Dawn Android arm Builder/gn-args.json",
     "Dawn Android arm DEPS Builder": "ci/Dawn Android arm DEPS Builder/gn-args.json",
-    "Dawn Android arm64 DEPS Release (Pixel 6)": "ci/Dawn Android arm64 DEPS Release (Pixel 6)/gn-args.json",
-    "Dawn Android arm64 Release (Pixel 6)": "ci/Dawn Android arm64 Release (Pixel 6)/gn-args.json",
+    "Dawn Android arm64 Builder": "ci/Dawn Android arm64 Builder/gn-args.json",
+    "Dawn Android arm64 DEPS Builder": "ci/Dawn Android arm64 DEPS Builder/gn-args.json",
     "Dawn Linux TSAN Release": "ci/Dawn Linux TSAN Release/gn-args.json",
     "Dawn Linux x64 Builder": "ci/Dawn Linux x64 Builder/gn-args.json",
     "Dawn Linux x64 DEPS Builder": "ci/Dawn Linux x64 DEPS Builder/gn-args.json",
