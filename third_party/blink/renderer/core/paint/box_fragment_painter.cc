@@ -1732,6 +1732,12 @@ void BoxFragmentPainter::PaintBoxItem(const FragmentItem& item,
   }
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
+    // Establish a display item fragment scope here, in case there are multiple
+    // fragment items for the same layout object. This is unusual for atomic
+    // inlines, but might happen e.g. if an text-overflow ellipsis is associated
+    // with the layout object.
+    ScopedDisplayItemFragment display_item_fragment(paint_info.context,
+                                                    item.FragmentId());
     PaintFragment(child_fragment, paint_info);
     return;
   }
