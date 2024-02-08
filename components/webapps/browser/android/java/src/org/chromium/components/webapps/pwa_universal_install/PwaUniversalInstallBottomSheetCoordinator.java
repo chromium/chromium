@@ -33,21 +33,30 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     private final PwaUniversalInstallBottomSheetMediator mMediator;
     private final WebContents mWebContents;
 
+    private final Runnable mInstallCallback;
+    private final Runnable mAddShortcutCallback;
+
     /** Constructs the PwaUniversalInstallBottomSheetCoordinator. */
     @MainThread
     public PwaUniversalInstallBottomSheetCoordinator(
             Activity activity,
             WebContents webContents,
+            Runnable installCallback,
+            Runnable addShortcutCallback,
             BottomSheetController bottomSheetController,
             int arrowId) {
         mWebContents = webContents;
         mController = bottomSheetController;
+        mInstallCallback = installCallback;
+        mAddShortcutCallback = addShortcutCallback;
 
         mView = new PwaUniversalInstallBottomSheetView();
         mView.initialize(
                 activity, webContents, sIconCall != null ? sIconCall : this::getIcon, arrowId);
         mContent = new PwaUniversalInstallBottomSheetContent(mView);
-        mMediator = new PwaUniversalInstallBottomSheetMediator(activity);
+        mMediator =
+                new PwaUniversalInstallBottomSheetMediator(
+                        activity, this::onInstallClicked, this::onAddShortcutClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaUniversalInstallBottomSheetViewBinder::bind);
@@ -59,12 +68,22 @@ public class PwaUniversalInstallBottomSheetCoordinator {
      * @return True if showing is successful.
      */
     public boolean show() {
-        return mController.requestShowContent(mContent, true);
+        return mController.requestShowContent(mContent, /* animate= */ true);
     }
 
     private Pair<Bitmap, Boolean> getIcon() {
         AppBannerManager manager = AppBannerManager.forWebContents(mWebContents);
         return manager != null ? manager.getIcon(mWebContents) : null;
+    }
+
+    private void onInstallClicked() {
+        mController.hideContent(mContent, /* animate= */ true);
+        mInstallCallback.run();
+    }
+
+    private void onAddShortcutClicked() {
+        mController.hideContent(mContent, /* animate= */ true);
+        mAddShortcutCallback.run();
     }
 
     public View getBottomSheetViewForTesting() {

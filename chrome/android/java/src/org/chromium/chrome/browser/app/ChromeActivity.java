@@ -3073,6 +3073,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 new PwaUniversalInstallBottomSheetCoordinator(
                         this,
                         currentTab.getWebContents(),
+                        () -> {
+                            doAddToHomescreenOrInstallWebApp(
+                                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+                        },
+                        () -> {
+                            doAddToHomescreenOrInstallWebApp(
+                                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
+                        },
                         controller,
                         R.drawable.ic_forward_arrow_black_24dp);
         if (!pwaUniversalInstallBottomSheetCoordinator.show()) {

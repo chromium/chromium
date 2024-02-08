@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
@@ -42,14 +43,15 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    private void onInstallCalled() {}
+
+    private void onAddShortcutCalled() {}
+
     private Pair<Bitmap, Boolean> constructTestIconData() {
-        Bitmap allBlack2x2 =
-                Bitmap.createBitmap(
-                        new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000},
-                        2,
-                        2,
-                        Bitmap.Config.ARGB_8888);
-        return Pair.create(allBlack2x2, /* maskable= */ false);
+        int size = 48;
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(Color.BLUE);
+        return Pair.create(bitmap, /* maskable= */ false);
     }
 
     @Test
@@ -64,7 +66,12 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         MockWebContents webContents = mock(MockWebContents.class);
         PwaUniversalInstallBottomSheetCoordinator coordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
-                        activity, webContents, mBottomSheetControllerMock, 0);
+                        activity,
+                        webContents,
+                        this::onInstallCalled,
+                        this::onAddShortcutCalled,
+                        mBottomSheetControllerMock,
+                        0);
 
         View view = coordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(

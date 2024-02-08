@@ -537,6 +537,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/webapps/AddToHomescreenCurrentPageVerifierTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/AddToHomescreenInstallTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/PwaRestoreBottomSheetIntegrationTest.java",
+  "javatests/src/org/chromium/chrome/browser/webapps/PwaUniversalInstallBottomSheetIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebApkActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebApkActivityTestRule.java",
   "javatests/src/org/chromium/chrome/browser/webapps/WebApkCurrentPageVerifierTest.java",
