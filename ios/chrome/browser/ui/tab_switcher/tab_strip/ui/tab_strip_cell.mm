@@ -116,6 +116,10 @@ UIImage* DefaultFavicon() {
     contentView.layer.cornerRadius = kCornerSize;
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
+    // Needed for the drop animation.
+    self.layer.cornerRadius = kCornerSize;
+    self.backgroundColor = [UIColor colorNamed:kTabStripBackgroundColor];
+
     _faviconView = [self createFaviconView];
     [contentView addSubview:_faviconView];
 
