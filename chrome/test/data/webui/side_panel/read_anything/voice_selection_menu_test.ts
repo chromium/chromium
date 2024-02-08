@@ -38,7 +38,7 @@ suite('VoiceSelectionMenuElement', () => {
           voiceSelectionMenu.$.voiceSelectionMenu
               .querySelectorAll<HTMLButtonElement>('.dropdown-item');
 
-      assertFalse(isVisible(dropdownItems.item(0)));
+      assertFalse(isPositionedOnPage(dropdownItems.item(0)));
     });
 
     test('it shows dropdown items after button click', () => {
@@ -52,7 +52,7 @@ suite('VoiceSelectionMenuElement', () => {
           voiceSelectionMenu.$.voiceSelectionMenu
               .querySelectorAll<HTMLButtonElement>('.dropdown-item');
 
-      assertTrue(isVisible(dropdownItems.item(0)!));
+      assertTrue(isPositionedOnPage(dropdownItems.item(0)!));
       assertEquals(
           dropdownItems.item(0)!.textContent!.trim(), availableVoices[0]!.name);
     });
@@ -84,14 +84,53 @@ suite('VoiceSelectionMenuElement', () => {
             dropdownItems.item(1)!.textContent!.trim(),
             availableVoices[1]!.name);
         assertEquals(dropdownItems.length, 2);
-        assertTrue(isVisible(dropdownItems.item(0)!));
-        assertTrue(isVisible(dropdownItems.item(1)!));
+        assertTrue(isPositionedOnPage(dropdownItems.item(0)!));
+        assertTrue(isPositionedOnPage(dropdownItems.item(1)!));
       });
+    });
+  });
+
+  suite('with multiple available voices', () => {
+    let selectedVoice: SpeechSynthesisVoice;
+
+    setup(() => {
+      selectedVoice = {name: 'test voice 3'} as SpeechSynthesisVoice;
+      availableVoices = [
+        {name: 'test voice 0'} as SpeechSynthesisVoice,
+        {name: 'test voice 1'} as SpeechSynthesisVoice,
+        {name: 'test voice 2'} as SpeechSynthesisVoice,
+        selectedVoice,
+      ];
+      setAvailableVoices();
+    });
+
+    test('it shows a checkmark for the selected voice', () => {
+      // Bypass Typescript compiler to allow us to set a private readonly
+      // property
+      // @ts-ignore
+      voiceSelectionMenu.selectedVoice = selectedVoice;
+      flush();
+
+      const dropdownItems: NodeListOf<HTMLElement> =
+          voiceSelectionMenu.$.voiceSelectionMenu
+              .querySelectorAll<HTMLButtonElement>('.dropdown-item');
+      const checkMarkVoice0 =
+          dropdownItems.item(0)!.querySelector<HTMLElement>('#check-mark')!;
+      const checkMarkSelectedVoice =
+          dropdownItems.item(3)!.querySelector<HTMLElement>('#check-mark')!;
+
+      assertEquals(dropdownItems.length, 4);
+      assertFalse(isHiddenWithCss(checkMarkSelectedVoice));
+      assertTrue(isHiddenWithCss(checkMarkVoice0));
     });
   });
 });
 
-function isVisible(element: HTMLElement) {
+function isHiddenWithCss(element: HTMLElement): boolean {
+  return window.getComputedStyle(element).visibility === 'hidden';
+}
+
+function isPositionedOnPage(element: HTMLElement) {
   return !!(
       element.offsetWidth || element.offsetHeight ||
       element.getClientRects().length);

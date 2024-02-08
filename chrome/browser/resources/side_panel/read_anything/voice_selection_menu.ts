@@ -38,6 +38,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   // via one way data binding.
   private readonly paused: boolean;
   private readonly availableVoices: SpeechSynthesisVoice[];
+  private readonly selectedVoice: SpeechSynthesisVoice;
 
   private voicePlayingWhenMenuOpened_: boolean = false;
 
