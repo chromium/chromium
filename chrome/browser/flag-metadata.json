@@ -7340,11 +7340,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "share-sheet-migration-android",
-    "owners": [ "wenyufu@chromium.org" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "shared-highlighting-amp",
     "owners": ["cheickcisse@google.com", "sczs@chromium.org"],
     "expiry_milestone": 120

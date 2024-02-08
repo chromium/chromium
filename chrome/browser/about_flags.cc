@@ -5203,11 +5203,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"draw-web-edge-to-edge", flag_descriptions::kDrawWebEdgeToEdgeName,
      flag_descriptions::kDrawWebEdgeToEdgeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDrawWebEdgeToEdge)},
-    {"share-sheet-migration-android",
-     flag_descriptions::kShareSheetMigrationAndroidName,
-     flag_descriptions::kShareSheetMigrationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShareSheetMigrationAndroid)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

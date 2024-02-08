@@ -29,14 +29,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -73,7 +70,6 @@ import java.util.List;
             ShadowAndroidShareSheetController.class,
             ShadowBuildCompatForU.class
         })
-@EnableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
 public class ShareDelegateImplUnitTest {
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -92,13 +88,7 @@ public class ShareDelegateImplUnitTest {
 
     private ShareDelegateImpl mShareDelegate;
 
-    @Before
-    public void setup() {
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
-        AppHooks.setInstanceForTesting(mAppHooks);
-        TrackerFactory.setTrackerForTests(mTracker);
-        Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
-
+    private void createShareDelegate(boolean isCustomTab) {
         mShareDelegate =
                 new ShareDelegateImpl(
                         mBottomSheetController,
@@ -107,7 +97,16 @@ public class ShareDelegateImplUnitTest {
                         (() -> mTabModelSelector),
                         (() -> mProfile),
                         new ShareSheetDelegate(),
-                        false);
+                        isCustomTab);
+    }
+
+    @Before
+    public void setup() {
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
+        AppHooks.setInstanceForTesting(mAppHooks);
+        TrackerFactory.setTrackerForTests(mTracker);
+        Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        createShareDelegate(false);
     }
 
     @After
@@ -119,8 +118,8 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
     public void shareWithSharingHub() {
+        ShadowBuildCompatForU.sIsAtLeastU = false;
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -139,8 +138,8 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
     public void shareLastUsedComponent() {
+        ShadowBuildCompatForU.sIsAtLeastU = false;
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
