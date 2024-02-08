@@ -4,8 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/metrics/attachment_metric_logger.h"
 
+#include <utility>
+
 #include "chrome/browser/nearby_sharing/metrics/metric_common.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace nearby::share::metrics {
 
@@ -25,25 +28,25 @@ void AttachmentMetricLogger::OnTransferCompleted(
   // captured in the overall share metrics logged elsewhere.
 
   for (auto attachment : share_target.file_attachments) {
-    ::metrics::structured::events::v2::nearby_share::FileAttachment()
-        .SetIsReceiving(share_target.is_incoming)
-        .SetPlatform(static_cast<int>(platform))
-        .SetDeviceRelationship(static_cast<int>(relationship))
-        .SetFileType(static_cast<int>(attachment.type()))
-        .SetResult(static_cast<int>(result))
-        .SetSize(attachment.size())
-        .Record();
+    ::metrics::structured::StructuredMetricsClient::Record(std::move(
+        ::metrics::structured::events::v2::nearby_share::FileAttachment()
+            .SetIsReceiving(share_target.is_incoming)
+            .SetPlatform(static_cast<int>(platform))
+            .SetDeviceRelationship(static_cast<int>(relationship))
+            .SetFileType(static_cast<int>(attachment.type()))
+            .SetResult(static_cast<int>(result))
+            .SetSize(attachment.size())));
   }
 
   for (auto attachment : share_target.text_attachments) {
-    ::metrics::structured::events::v2::nearby_share::TextAttachment()
-        .SetIsReceiving(share_target.is_incoming)
-        .SetPlatform(static_cast<int>(platform))
-        .SetDeviceRelationship(static_cast<int>(relationship))
-        .SetTextType(static_cast<int>(attachment.type()))
-        .SetResult(static_cast<int>(result))
-        .SetSize(attachment.size())
-        .Record();
+    ::metrics::structured::StructuredMetricsClient::Record(std::move(
+        ::metrics::structured::events::v2::nearby_share::TextAttachment()
+            .SetIsReceiving(share_target.is_incoming)
+            .SetPlatform(static_cast<int>(platform))
+            .SetDeviceRelationship(static_cast<int>(relationship))
+            .SetTextType(static_cast<int>(attachment.type()))
+            .SetResult(static_cast<int>(result))
+            .SetSize(attachment.size())));
   }
 }
 
