@@ -57,6 +57,7 @@ const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
 const char kProfileManagementEnrollmentToken[] =
     "profile_management_enrollment_token";
+const char kDasherlessManagement[] = "dasherless_management";
 const char kProfileManagementOidcAuthToken[] =
     "profile_management_oidc_auth_token";
 const char kProfileManagementOidcIdToken[] = "profile_management_oidc_id_token";
@@ -480,6 +481,10 @@ bool ProfileAttributesEntry::IsSignedInWithCredentialProvider() const {
   return GetBool(prefs::kSignedInWithCredentialProvider);
 }
 
+bool ProfileAttributesEntry::IsDasherlessManagement() const {
+  return GetBool(kDasherlessManagement);
+}
+
 size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   std::string icon_url = GetString(kAvatarIconKey);
   size_t icon_index = 0;
@@ -672,6 +677,10 @@ void ProfileAttributesEntry::SetLastDownloadedGAIAPictureUrlWithSize(
 
 void ProfileAttributesEntry::SetSignedInWithCredentialProvider(bool value) {
   SetBool(prefs::kSignedInWithCredentialProvider, value);
+}
+
+void ProfileAttributesEntry::SetDasherlessManagement(bool value) {
+  SetBool(kDasherlessManagement, value);
 }
 
 void ProfileAttributesEntry::LockForceSigninProfile(bool is_lock) {
