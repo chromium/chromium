@@ -47,7 +47,6 @@ class IsolateDaemon(AbstractContextManager):
             ScopedFfxConfig('fastboot.flash.timeout_rate', '1'),
             ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'),
             ScopedFfxConfig('fastboot.usb.disabled', 'true'),
-            ScopedFfxConfig('ffx.fastboot.inline_target', 'true'),
             ScopedFfxConfig('log.level', 'debug'),
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'),
         ] + (extra_inits or [])

@@ -83,12 +83,16 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     # This prevents multiple fastboot binaries from flashing concurrently,
     # which should increase the odds of flashing success.
     with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
+        # The ffx.fastboot.inline_target has negative impact when ffx
+        # discovering devices in fastboot, so it's inlined here to limit its
+        # scope. See the discussion in https://fxbug.dev/issues/317228141.
         logging.info(
             'Flash result %s',
             common.run_ffx_command(cmd=('target', 'flash', '-b',
                                         system_image_dir,
                                         '--no-bootloader-reboot'),
                                    target_id=target_id,
+                                   configs=['ffx.fastboot.inline_target=true'],
                                    capture_output=True).stdout)
 
 
