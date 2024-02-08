@@ -102,6 +102,10 @@ void UserCreationScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void UserCreationScreenHandler::SetDefaultStep() {
+  CallExternalAPI("setDefaultStep");
+}
+
 void UserCreationScreenHandler::SetTriageStep() {
   CallExternalAPI("setTriageStep");
 }

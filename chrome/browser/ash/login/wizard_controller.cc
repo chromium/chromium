@@ -2111,6 +2111,9 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       PerformOOBECompletedActions(
           OobeMetricsHelper::CompletedPreLoginOobeFlowType::kAutoEnrollment);
       DCHECK(!prescribed_enrollment_config_.is_forced());
+      // set  the userCreationScreen with the default step creation and
+      // pre-select 'For personal use'.
+      GetScreen<UserCreationScreen>()->SetDefaultStep();
       ShowLoginScreen();
       break;
     case EnrollmentScreen::Result::TPM_ERROR:
