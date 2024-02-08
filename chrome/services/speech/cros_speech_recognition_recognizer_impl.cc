@@ -77,6 +77,28 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
   cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
 }
 
+chromeos::machine_learning::mojom::SodaMultilangConfigPtr
+CrosSpeechRecognitionRecognizerImpl::AddLiveCaptionLanguagesToConfig(
+    const std::string& primary_language_name,
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::vector<std::string>& live_caption_languages) {
+  auto multi_lang_config =
+      chromeos::machine_learning::mojom::SodaMultilangConfig::New();
+
+  for (const auto& config_path : config_paths) {
+    if (config_path.first == primary_language_name) {
+      continue;
+    } else if (!base::Contains(live_caption_languages, config_path.first)) {
+      VLOG(1) << "Skipping multilang on captions of " << config_path.first
+              << " as it is not listed as a live caption language.";
+      continue;
+    }
+    multi_lang_config->locale_to_language_pack_map[config_path.first] =
+        config_path.second.value();
+  }
+  return multi_lang_config;
+}
+
 void CrosSpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
@@ -109,22 +131,9 @@ void CrosSpeechRecognitionRecognizerImpl::
     if (options_->recognition_mode ==
             media::mojom::SpeechRecognitionMode::kCaption &&
         base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-      auto live_caption_languages = speech::GetLiveCaptionEnabledLanguages();
-      auto multi_lang_config =
-          chromeos::machine_learning::mojom::SodaMultilangConfig::New();
-
-      for (const auto& config_path : config_paths()) {
-        if (config_path.first == primary_language_name()) {
-          continue;
-        } else if (!base::Contains(live_caption_languages, config_path.first)) {
-          VLOG(1) << "Skipping multilang on captions of " << config_path.first
-                  << " as it is not listed as a live caption language.";
-          continue;
-        }
-        multi_lang_config->locale_to_language_pack_map[config_path.first] =
-            config_path.second.value();
-      }
-      config->multi_lang_config = std::move(multi_lang_config);
+      config->multi_lang_config = AddLiveCaptionLanguagesToConfig(
+          primary_language_name(), config_paths(),
+          speech::GetLiveCaptionEnabledLanguages());
     }
 
     config->enable_formatting =

@@ -46,6 +46,10 @@ source_set("lib") {
       "cros_speech_recognition_recognizer_impl.cc",
       "cros_speech_recognition_recognizer_impl.h",
     ]
+    deps += [
+        "//chromeos/services/machine_learning/public/mojom",
+    ]
+
   }
 }
 
@@ -53,12 +57,16 @@ if (is_chromeos_ash) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "audio_source_fetcher_unittest.cc" ]
+    sources = [
+      "audio_source_fetcher_unittest.cc",
+      "cros_speech_recognition_recognizer_impl_test.cc",
+    ]
 
     deps = [
       ":lib",
       "//base",
       "//base/test:test_support",
+      "//chromeos/services/machine_learning/public/mojom",
       "//media/mojo/common",
       "//mojo/public/cpp/bindings",
       "//services/audio/public/cpp:test_support",
