@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -78,10 +79,10 @@ std::string GetProcessCpuCgroup(const base::Process& process) {
     return std::string();
   }
 
-  std::vector<base::StringPiece> lines = SplitStringPiece(
+  std::vector<std::string_view> lines = SplitStringPiece(
       proc, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
-    std::vector<base::StringPiece> fields = SplitStringPiece(
+    std::vector<std::string_view> fields = SplitStringPiece(
         line, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
       continue;
