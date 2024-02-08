@@ -7102,11 +7102,11 @@
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
 <translation id="6595322909015878027">不允許自動進入子母畫面</translation>
-<translation id="6595408197871512625">{COUNT,plural, =1{已成功變更遭外洩的密碼。
+<translation id="6595408197871512625">{COUNT,plural, =1{已成功變更外洩的密碼。
 
-你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這組密碼。}other{已成功變更遭外洩的密碼。
+你還有 # 組密碼外洩，Google 密碼管理工具建議你立即變更這組密碼。}other{已成功變更外洩的密碼。
 
-你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這些密碼。}}</translation>
+你還有 # 組密碼外洩，Google 密碼管理工具建議你立即變更這些密碼。}}</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6596916244504302242">重新載入這個頁面，即可將更新後的擴充功能設定套用到此網站</translation>
