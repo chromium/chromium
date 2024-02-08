@@ -38,6 +38,8 @@ extern const CGFloat kSuggestionPeekingHeight;
 extern const CGFloat kIdentityAvatarDimension;
 // Margin around user's identity avatar.
 extern const CGFloat kIdentityAvatarMargin;
+// Padding around user's identity avatar and its margin.
+extern const CGFloat kIdentityAvatarPadding;
 // Dimension of signed-out identity icon.
 extern const CGFloat kSignedOutIdentityIconDimension;
 

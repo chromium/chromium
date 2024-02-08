@@ -446,6 +446,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.identityDiscButton.imageView.layer.cornerRadius =
       self.identityDiscImage.size.width / 2;
   self.identityDiscButton.imageView.layer.masksToBounds = YES;
+  self.identityDiscButton.layer.cornerRadius =
+      self.identityDiscImage.size.width;
+  self.identityDiscButton.clipsToBounds = YES;
 }
 
 - (void)openLens {
