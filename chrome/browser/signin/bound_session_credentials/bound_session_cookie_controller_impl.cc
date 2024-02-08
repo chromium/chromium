@@ -40,11 +40,13 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
     const bound_session_credentials::BoundSessionParams& bound_session_params,
-    Delegate* delegate)
+    Delegate* delegate,
+    bool is_off_the_record_profile)
     : BoundSessionCookieController(bound_session_params, delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
-      network_connection_tracker_(network_connection_tracker) {
+      network_connection_tracker_(network_connection_tracker),
+      is_off_the_record_profile_(is_off_the_record_profile) {
   CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
@@ -176,7 +178,8 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
-                   *session_binding_helper_, url_, std::move(cookie_names))
+                   *session_binding_helper_, url_, std::move(cookie_names),
+                   is_off_the_record_profile_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
                    url_, std::move(cookie_names));

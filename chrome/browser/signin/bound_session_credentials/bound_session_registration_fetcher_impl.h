@@ -53,7 +53,8 @@ class BoundSessionRegistrationFetcherImpl
   BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherParam registration_params,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      unexportable_keys::UnexportableKeyService& key_service);
+      unexportable_keys::UnexportableKeyService& key_service,
+      bool is_off_the_record_profile);
 
   BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherImpl&& other) = delete;
@@ -99,6 +100,7 @@ class BoundSessionRegistrationFetcherImpl
 
   BoundSessionRegistrationFetcherParam registration_params_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
+  const bool is_off_the_record_profile_;
   std::string wrapped_key_str_;
 
   // Non-null after a fetch has started.

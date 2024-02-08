@@ -33,7 +33,8 @@ class BoundSessionRefreshCookieFetcherImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionBindingHelper& session_binding_helper,
       const GURL& cookie_url,
-      base::flat_set<std::string> cookie_names);
+      base::flat_set<std::string> cookie_names,
+      bool is_off_the_record_profile);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
@@ -87,6 +88,10 @@ class BoundSessionRefreshCookieFetcherImpl
   // Otherwise, the request is considered a failure.
   const GURL expected_cookie_domain_;
   const base::flat_set<std::string> expected_cookie_names_;
+
+  // Required to attach X-Client-Data header to cookie rotation request for
+  // GWS-visible Finch experiment.
+  const bool is_off_the_record_profile_;
 
   RefreshCookieCompleteCallback callback_;
 

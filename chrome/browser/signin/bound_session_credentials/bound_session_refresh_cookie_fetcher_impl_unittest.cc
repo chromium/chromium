@@ -28,6 +28,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -103,7 +104,8 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
         test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
         kGairaUrl,
-        base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName});
+        base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
+        /*is_off_the_record_profile=*/false);
     UpdateCookieList();
   }
 
@@ -187,6 +189,8 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
@@ -484,7 +488,8 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
       kGairaUrl,
-      base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName});
+      base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
+      /*is_off_the_record_profile_=*/false);
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 

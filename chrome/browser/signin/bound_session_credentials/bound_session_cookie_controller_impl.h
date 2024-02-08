@@ -39,7 +39,8 @@ class BoundSessionCookieControllerImpl
       content::StoragePartition* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker,
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      Delegate* delegate);
+      Delegate* delegate,
+      bool is_off_the_record_profile);
 
   ~BoundSessionCookieControllerImpl() override;
 
@@ -97,6 +98,8 @@ class BoundSessionCookieControllerImpl
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const bool is_off_the_record_profile_;
+
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>
       bound_cookies_observers_;
 

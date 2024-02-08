@@ -23,6 +23,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "net/http/http_response_headers.h"
@@ -184,7 +185,7 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
             kRegistrationUrl, CreateAlgArray(), std::string(kChallenge));
     return std::make_unique<BoundSessionRegistrationFetcherImpl>(
         std::move(params), url_loader_factory_.GetSafeWeakWrapper(),
-        unexportable_key_service());
+        unexportable_key_service(), /*is_off_the_record_profile=*/false);
   }
 
   void DisableKeyProvider() {
@@ -224,6 +225,8 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   // Provides a mock key provider by default.

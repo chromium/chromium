@@ -51,7 +51,8 @@ class BoundSessionCookieRefreshServiceImpl
       unexportable_keys::UnexportableKeyService& key_service,
       std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
       content::StoragePartition* storage_partition,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      network::NetworkConnectionTracker* network_connection_tracker,
+      bool is_off_the_record_profile);
 
   ~BoundSessionCookieRefreshServiceImpl() override;
 
@@ -118,8 +119,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(
-      const bound_session_credentials::BoundSessionParams&
-          bound_session_params);
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
+      bool is_off_the_record_profile);
   void InitializeBoundSession(
       const bound_session_credentials::BoundSessionParams&
           bound_session_params);
@@ -139,6 +140,9 @@ class BoundSessionCookieRefreshServiceImpl
   const std::unique_ptr<BoundSessionParamsStorage> session_params_storage_;
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  // Required to attach X-Client-Data header to session registration and cookie
+  // rotation requests for GWS-visible Finch experiment.
+  const bool is_off_the_record_profile_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater_;
   base::RepeatingClosure session_updated_callback_for_testing_;

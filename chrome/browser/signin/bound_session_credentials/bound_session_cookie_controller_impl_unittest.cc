@@ -244,7 +244,8 @@ class BoundSessionCookieControllerImplTest
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
             unexportable_key_service_, &storage_partition_,
-            content::GetNetworkConnectionTracker(), bound_session_params, this);
+            content::GetNetworkConnectionTracker(), bound_session_params, this,
+            /*is_off_the_record_profile=*/false);
     bound_session_cookie_controller_
         ->set_refresh_cookie_fetcher_factory_for_testing(
             base::BindRepeating(&BoundSessionCookieControllerImplTest::

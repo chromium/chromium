@@ -86,7 +86,8 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
               *key_service,
               BoundSessionParamsStorage::CreateForProfile(*profile),
               profile->GetDefaultStoragePartition(),
-              content::GetNetworkConnectionTracker());
+              content::GetNetworkConnectionTracker(),
+              profile->IsOffTheRecord());
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }

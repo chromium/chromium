@@ -16,6 +16,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -52,11 +53,13 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionBindingHelper& session_binding_helper,
     const GURL& cookie_url,
-    base::flat_set<std::string> cookie_names)
+    base::flat_set<std::string> cookie_names,
+    bool is_off_the_record_profile)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
       expected_cookie_domain_(cookie_url),
-      expected_cookie_names_(std::move(cookie_names)) {}
+      expected_cookie_names_(std::move(cookie_names)),
+      is_off_the_record_profile_(is_off_the_record_profile) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -144,7 +147,11 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
   request->trusted_params->cookie_observer = std::move(remote);
 
   url_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+      variations::CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
+          std::move(request),
+          is_off_the_record_profile_ ? variations::InIncognito::kYes
+                                     : variations::InIncognito::kNo,
+          traffic_annotation);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   // TODO(b/273920907): Download the response body to support in refresh DBSC
