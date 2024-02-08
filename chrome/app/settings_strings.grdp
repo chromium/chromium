@@ -1215,8 +1215,11 @@
     <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
       Show language options
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Explanatory message about the list of preferred languages.">
-      Websites will show content in your preferred languages, when possible
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_HEADER" desc="Header of the explanatory message about the list of preferred languages.">
+      Websites in your languages
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Description text of the explanatory message about the list of preferred languages.">
+      Let websites know the languages you speak. They'll show content in those languages, when possible.
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE" desc="The label of the check-box that enables the prompt to translate a page.">
       Use Google Translate
