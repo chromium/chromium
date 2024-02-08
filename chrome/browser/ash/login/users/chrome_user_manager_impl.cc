@@ -462,24 +462,20 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     return user_manager::UserList();
   }
 
-  user_manager::UserList result;
-  const user_manager::UserList& users = GetUsers();
-  for (user_manager::UserList::const_iterator it = users.begin();
-       it != users.end(); ++it) {
-    if ((*it)->GetType() == user_manager::UserType::kRegular &&
-        !(*it)->is_logged_in()) {
-      MultiProfileUserController::UserAllowedInSessionReason check;
-      multi_profile_user_controller_.IsUserAllowedInSession(
-          (*it)->GetAccountId().GetUserEmail(), &check);
-      if (check ==
-          MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS) {
-        return user_manager::UserList();
-      }
+  // No user is allowed if the primary user policy forbids it.
+  if (multi_profile_user_controller_.GetPrimaryUserPolicy() ==
+      MultiUserSignInPolicy::kNotAllowed) {
+    return {};
+  }
 
+  user_manager::UserList result;
+  for (user_manager::User* user : GetUsers()) {
+    if (user->GetType() == user_manager::UserType::kRegular &&
+        !user->is_logged_in()) {
       // Users with a policy that prevents them being added to a session will be
       // shown in login UI but will be grayed out.
       // Same applies to owner account (see http://crbug.com/385034).
-      result.push_back(*it);
+      result.push_back(user);
     }
   }
 

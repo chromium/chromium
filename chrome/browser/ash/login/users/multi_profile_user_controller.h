@@ -34,20 +34,6 @@ namespace ash {
 // user login and checks if the meaning of the value is respected.
 class MultiProfileUserController {
  public:
-  // Second return value of IsUserAllowedInSession().
-  enum UserAllowedInSessionReason {
-    // User is allowed in multi-profile session.
-    ALLOWED,
-
-    // Not allowed since primary user policy forbids it to be part of
-    // multi-profiles session.
-    NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
-
-    // Not allowed since user policy forbids this user being part of
-    // multi-profiles session. Either 'primary-only' or 'not-allowed'.
-    NOT_ALLOWED_POLICY_FORBIDS
-  };
-
   MultiProfileUserController(PrefService* local_state,
                              user_manager::UserManager* user_manager);
 
@@ -67,15 +53,13 @@ class MultiProfileUserController {
   user_manager::MultiUserSignInPolicy GetCachedValue(
       std::string_view user_email) const;
 
-  // Returns primary user policy (only ALLOW,
-  // NOT_ALLOWED_PRIMARY_POLICY_CERT_TAINTED,
-  // NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS)
-  UserAllowedInSessionReason GetPrimaryUserPolicy() const;
+  // Returns the primary user's policy. If there's no primary user,
+  // returns std::nullopt.
+  std::optional<user_manager::MultiUserSignInPolicy> GetPrimaryUserPolicy()
+      const;
 
-  // Returns true if user allowed to be in the current session. If `reason` not
-  // null stores UserAllowedInSessionReason enum that describes actual reason.
-  bool IsUserAllowedInSession(const std::string& user_email,
-                              UserAllowedInSessionReason* reason) const;
+  // Returns true if user allowed to be in the current session.
+  bool IsUserAllowedInSession(const std::string& user_email) const;
 
   // Starts to observe the multiprofile user behavior pref of the given user.
   void StartObserving(user_manager::User* user);

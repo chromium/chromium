@@ -444,8 +444,8 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
 
   if (static_cast<ash::ChromeUserManager*>(user_manager)
           ->GetMultiProfileUserController()
-          ->GetPrimaryUserPolicy() !=
-      ash::MultiProfileUserController::ALLOWED) {
+          ->GetPrimaryUserPolicy() ==
+      user_manager::MultiUserSignInPolicy::kNotAllowed) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 

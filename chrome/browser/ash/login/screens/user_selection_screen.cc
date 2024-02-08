@@ -187,15 +187,17 @@ bool CanRemoveUser(const user_manager::User* user) {
   return true;
 }
 
-void GetMultiUserSignInPolicy(const user_manager::User* user,
-                              bool* out_is_allowed,
-                              user_manager::MultiUserSignInPolicy* out_policy) {
+// Returns a pair of 1) whether it is allowed to be part of the current
+// multi user sign-in session, and 2) that policy for the user.
+std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
+    const user_manager::User* user) {
   const std::string& user_id = user->GetAccountId().GetUserEmail();
-  MultiProfileUserController* multi_profile_user_controller =
+  MultiProfileUserController* controller =
       ChromeUserManager::Get()->GetMultiProfileUserController();
-  *out_is_allowed =
-      multi_profile_user_controller->IsUserAllowedInSession(user_id, nullptr);
-  *out_policy = multi_profile_user_controller->GetCachedValue(user_id);
+  return {
+      controller->IsUserAllowedInSession(user_id),
+      controller->GetCachedValue(user_id),
+  };
 }
 
 // Determines if user auth status requires online sign in.
@@ -845,8 +847,9 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     if (!is_signin_to_add) {
       user_info.is_multi_user_sign_in_allowed = true;
     } else {
-      GetMultiUserSignInPolicy(user, &user_info.is_multi_user_sign_in_allowed,
-                               &user_info.multi_user_sign_in_policy);
+      std::tie(user_info.is_multi_user_sign_in_allowed,
+               user_info.multi_user_sign_in_policy) =
+          GetMultiUserSignInPolicy(user);
     }
 
     // Fill public session data.

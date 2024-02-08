@@ -30,19 +30,6 @@ using user_manager::MultiUserSignInPolicy;
 using user_manager::MultiUserSignInPolicyToPrefValue;
 using user_manager::ParseMultiUserSignInPolicyPref;
 
-namespace {
-
-bool SetUserAllowedReason(
-    MultiProfileUserController::UserAllowedInSessionReason* reason,
-    MultiProfileUserController::UserAllowedInSessionReason value) {
-  if (reason) {
-    *reason = value;
-  }
-  return value == MultiProfileUserController::ALLOWED;
-}
-
-}  // namespace
-
 MultiProfileUserController::MultiProfileUserController(
     PrefService* local_state,
     user_manager::UserManager* user_manager)
@@ -73,31 +60,24 @@ void MultiProfileUserController::Shutdown() {
   pref_watchers_.clear();
 }
 
-MultiProfileUserController::UserAllowedInSessionReason
+std::optional<MultiUserSignInPolicy>
 MultiProfileUserController::GetPrimaryUserPolicy() const {
   const user_manager::User* user = user_manager_->GetPrimaryUser();
   if (!user) {
-    return ALLOWED;
+    return std::nullopt;
   }
 
   auto* prefs = user->GetProfilePrefs();
   if (!prefs) {
-    return ALLOWED;
+    return std::nullopt;
   }
 
-  // No user is allowed if the primary user policy forbids it.
-  auto value = ParseMultiUserSignInPolicyPref(
+  return ParseMultiUserSignInPolicyPref(
       prefs->GetString(prefs::kMultiProfileUserBehaviorPref));
-  if (value == MultiUserSignInPolicy::kNotAllowed) {
-    return NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS;
-  }
-
-  return ALLOWED;
 }
 
 bool MultiProfileUserController::IsUserAllowedInSession(
-    const std::string& user_email,
-    MultiProfileUserController::UserAllowedInSessionReason* reason) const {
+    const std::string& user_email) const {
   const user_manager::User* primary_user = user_manager_->GetPrimaryUser();
   std::string primary_user_email;
   if (primary_user) {
@@ -107,20 +87,17 @@ bool MultiProfileUserController::IsUserAllowedInSession(
   // Always allow if there is no primary user or user being checked is the
   // primary user.
   if (primary_user_email.empty() || primary_user_email == user_email) {
-    return SetUserAllowedReason(reason, ALLOWED);
+    return true;
   }
 
-  UserAllowedInSessionReason primary_user_policy = GetPrimaryUserPolicy();
-  if (primary_user_policy != ALLOWED) {
-    return SetUserAllowedReason(reason, primary_user_policy);
+  auto primary_user_policy = GetPrimaryUserPolicy();
+  if (primary_user_policy == MultiUserSignInPolicy::kNotAllowed) {
+    return false;
   }
 
   // The user must have 'unrestricted' policy to be a secondary user.
   const auto policy = GetCachedValue(user_email);
-  return SetUserAllowedReason(reason,
-                              policy == MultiUserSignInPolicy::kUnrestricted
-                                  ? ALLOWED
-                                  : NOT_ALLOWED_POLICY_FORBIDS);
+  return policy == MultiUserSignInPolicy::kUnrestricted;
 }
 
 void MultiProfileUserController::StartObserving(user_manager::User* user) {
@@ -171,7 +148,7 @@ void MultiProfileUserController::SetCachedValue(std::string_view user_email,
 void MultiProfileUserController::CheckSessionUsers() {
   for (const user_manager::User* user : user_manager_->GetLoggedInUsers()) {
     const std::string& user_email = user->GetAccountId().GetUserEmail();
-    if (!IsUserAllowedInSession(user_email, /*reason=*/nullptr)) {
+    if (!IsUserAllowedInSession(user_email)) {
       user_manager_->NotifyUserNotAllowed(user_email);
       return;
     }
