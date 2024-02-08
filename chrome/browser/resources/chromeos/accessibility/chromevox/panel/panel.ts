@@ -43,7 +43,7 @@ export class Panel implements PanelInterface {
   private brailleTableElement_ = $('braille-table') as HTMLTableElement;
   private brailleTableElement2_ = $('braille-table2') as HTMLTableElement;
   private searchContainer_ = $('search-container');
-  private searchInput_: HTMLElement = $('search')!;
+  private searchInput_ = $('search') as HTMLInputElement;
   private speechContainer_ = $('speech-container');
   private speechElement_ = $('speech');
   private tutorialReadyForTesting_ = false;

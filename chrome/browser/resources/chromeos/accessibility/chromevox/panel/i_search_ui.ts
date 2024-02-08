@@ -14,10 +14,16 @@ import {PanelInterface} from './panel_interface.js';
 const Dir = constants.Dir;
 
 export class ISearchUI {
-  /** @param {!Element} input */
-  constructor(input) {
+  static instance?: ISearchUI;
+
+  onKeyDown: (event: KeyboardEvent) => boolean;
+  onTextInput: (event: Event) => boolean;
+
+  private input_: HTMLInputElement | null;
+  private dir_ = Dir.FORWARD;
+
+  constructor(input: HTMLInputElement) {
     this.input_ = input;
-    this.dir_ = Dir.FORWARD;
 
     this.onKeyDown = event => this.onKeyDown_(event);
     this.onTextInput = event => this.onTextInput_(event);
@@ -26,11 +32,7 @@ export class ISearchUI {
     input.addEventListener('textInput', this.onTextInput, false);
   }
 
-  /**
-   * @param {!Element} input
-   * @return {!Promise<ISearchUI>}
-   */
-  static async init(input) {
+  static async init(input: HTMLInputElement): Promise<ISearchUI> {
     if (ISearchUI.instance) {
       ISearchUI.instance.destroy();
     }
@@ -42,13 +44,7 @@ export class ISearchUI {
     return ISearchUI.instance;
   }
 
-  /**
-   * Listens to key down events.
-   * @param {Event} evt
-   * @return {boolean}
-   * @private
-   */
-  onKeyDown_(evt) {
+  private onKeyDown_(evt: KeyboardEvent): boolean {
     switch (evt.key) {
       case 'ArrowUp':
         this.dir_ = Dir.BACKWARD;
@@ -68,34 +64,27 @@ export class ISearchUI {
       default:
         return false;
     }
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     BackgroundBridge.PanelBackground.incrementalSearch(
-        this.input_.value, this.dir_, true);
+        this.input_!.value, this.dir_, true);
     evt.preventDefault();
     evt.stopPropagation();
     return false;
   }
 
-  /**
-   * Listens to text input events.
-   * @param {Event} evt
-   * @return {boolean}
-   * @private
-   */
-  onTextInput_(evt) {
-    const searchStr = evt.target.value + evt.data;
+  private onTextInput_(evt: Event): boolean {
+    const searchStr =
+        (evt.target as HTMLInputElement).value + (evt as InputEvent).data;
     BackgroundBridge.PanelBackground.incrementalSearch(searchStr, this.dir_);
     return true;
   }
 
   /** Unregisters event handlers. */
-  destroy() {
+  destroy(): void {
     BackgroundBridge.PanelBackground.destroyISearch();
     const input = this.input_;
     this.input_ = null;
-    input.removeEventListener('keydown', this.onKeyDown, true);
-    input.removeEventListener('textInput', this.onTextInput, false);
+    input?.removeEventListener('keydown', this.onKeyDown, true);
+    input?.removeEventListener('textInput', this.onTextInput, false);
   }
 }
-
-/** @type {ISearchUI} */
-ISearchUI.instance;

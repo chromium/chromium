@@ -46,7 +46,9 @@ module.exports = {
                       'HTML[A-Za-z]{0,}Element|' +
                       // Exclude native DOM interfaces.
                       'UIEvent|UIEventInit|DOMError|' +
-                      // Exclude the SACache and SACommands classes.
+                      // Exclude ISearchUI.
+                      'ISearchUI|' +
+                      // Exclude the SA* classes.
                       'SACache|SACommands|SAChildNode|SANode|SARootNode)$',
                   match: false,
                 },
