@@ -99,7 +99,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void Activate();
 
   // MessageView:
-  void Layout(PassKey) override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

@@ -630,6 +630,32 @@ void NotificationView::RemoveLayerFromRegions(ui::Layer* layer) {
 void NotificationView::Layout(PassKey) {
   LayoutSuperclass<NotificationViewBase>(this);
 
+  // We need to call IsExpandable() after doing superclass layout, since whether
+  // we should show expand button or not depends on the current view layout.
+  // (e.g. Show expand button when `message_label_` exceeds one line.)
+  SetExpandButtonVisibility(IsExpandable());
+  header_row()->DeprecatedLayoutImmediately();
+
+  // The notification background is rounded in MessageView layout, but we also
+  // have to round the actions row background here.
+  if (actions_row()->GetVisible()) {
+    constexpr SkScalar kCornerRadius = SkIntToScalar(kNotificationCornerRadius);
+
+    // Use vertically larger clip path, so that actions row's top corners will
+    // not be rounded.
+    SkPath path;
+    gfx::Rect bounds = actions_row()->GetLocalBounds();
+    bounds.set_y(bounds.y() - bounds.height());
+    bounds.set_height(bounds.height() * 2);
+    path.addRoundRect(gfx::RectToSkRect(bounds), kCornerRadius, kCornerRadius);
+
+    action_buttons_row()->SetClipPath(path);
+
+    if (inline_reply()) {
+      inline_reply()->SetClipPath(path);
+    }
+  }
+
   // The animation is needed to run inside of the border.
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
