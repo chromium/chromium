@@ -6,15 +6,21 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_WEB_APP_SETTINGS_PAGE_HANDLER_H_
 
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 class Profile;
 
+namespace web_app {
+class WebAppRegistrar;
+}
+
 // PageHandler for the chrome://app-settings page. Connects directly to the
 // WebAppProvider to manage settings for web apps.
-class WebAppSettingsPageHandler : public AppManagementPageHandlerBase {
+class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
+                                  public web_app::WebAppRegistrarObserver {
  public:
   WebAppSettingsPageHandler(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
@@ -44,6 +50,18 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase {
   void OpenStorePage(const std::string& app_id) override;
   void SetAppLocale(const std::string& app_id,
                     const std::string& locale_tag) override;
+
+  // web_app::WebAppRegistrarObserver:
+  void OnAppRegistrarDestroyed() override;
+  void OnWebAppFileHandlerApprovalStateChanged(
+      const webapps::AppId& app_id) override;
+  void OnWebAppUserLinkCapturingPreferencesChanged(const webapps::AppId& app_id,
+                                                   bool is_preferred) override;
+
+ private:
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::WebAppRegistrarObserver>
+      registrar_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_WEB_APP_SETTINGS_PAGE_HANDLER_H_

@@ -440,40 +440,6 @@ void AppManagementPageHandlerBase::SetFileHandlingEnabled(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::OnWebAppFileHandlerApprovalStateChanged(
-    const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
-#endif
-  app_management::mojom::AppPtr app;
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
-        }
-      });
-
-  if (!app) {
-    return;
-  }
-
-  page_->OnAppChanged(std::move(app));
-}
-
-void AppManagementPageHandlerBase::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void AppManagementPageHandlerBase::OnWebAppUserLinkCapturingPreferencesChanged(
-    const webapps::AppId& app_id,
-    bool is_preferred) {
-  OnPreferredAppChanged(app_id, is_preferred);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 AppManagementPageHandlerBase::AppManagementPageHandlerBase(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
@@ -490,14 +456,25 @@ AppManagementPageHandlerBase::AppManagementPageHandlerBase(
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
   preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
+}
 
-  // On Chrome OS, file handler updates are already plumbed through
-  // App Service since the change will also affect the intent filters.
-  // There's no need to update twice.
-#if !BUILDFLAG(IS_CHROMEOS)
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  registrar_observation_.Observe(&provider->registrar_unsafe());
-#endif
+void AppManagementPageHandlerBase::NotifyAppChanged(const std::string& app_id) {
+  app_management::mojom::AppPtr app;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::Readiness::kReady) {
+          app = CreateUIAppPtr(update);
+        }
+      });
+
+  // If an app with this id is not already installed, do nothing.
+  if (!app) {
+    return;
+  }
+
+  page_->OnAppChanged(std::move(app));
 }
 
 app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(

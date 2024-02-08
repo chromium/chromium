@@ -26,7 +26,10 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
                                    profile,
-                                   delegate) {}
+                                   delegate) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  registrar_observation_.Observe(&provider->registrar_unsafe());
+}
 
 WebAppSettingsPageHandler::~WebAppSettingsPageHandler() = default;
 
@@ -97,4 +100,19 @@ void WebAppSettingsPageHandler::OpenStorePage(const std::string& app_id) {
 void WebAppSettingsPageHandler::SetAppLocale(const std::string& app_id,
                                              const std::string& locale_tag) {
   NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
+void WebAppSettingsPageHandler::OnWebAppFileHandlerApprovalStateChanged(
+    const webapps::AppId& app_id) {
+  NotifyAppChanged(app_id);
+}
+
+void WebAppSettingsPageHandler::OnWebAppUserLinkCapturingPreferencesChanged(
+    const webapps::AppId& app_id,
+    bool is_preferred) {
+  NotifyAppChanged(app_id);
 }

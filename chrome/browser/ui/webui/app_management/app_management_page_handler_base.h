@@ -11,8 +11,6 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -34,8 +32,7 @@ class Profile;
 class AppManagementPageHandlerBase
     : public app_management::mojom::PageHandler,
       public apps::AppRegistryCache::Observer,
-      public apps::PreferredAppsListHandle::Observer,
-      public web_app::WebAppRegistrarObserver {
+      public apps::PreferredAppsListHandle::Observer {
  public:
   //  Handles platform specific tasks.
   class Delegate {
@@ -72,26 +69,16 @@ class AppManagementPageHandlerBase
   void UpdateAppSize(const std::string& app_id) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
 
-  // web_app::WebAppRegistrarObserver:
-  void OnWebAppFileHandlerApprovalStateChanged(
-      const webapps::AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
-
-  // The following observers are used for user link capturing on W/M/L platforms
-  // to observe user link capturing preferences being changed
-  // in the registrar, so as to propagate the changes to the app-settings/ page
-  // to change the UI dynamically.
-#if !BUILDFLAG(IS_CHROMEOS)
-  void OnWebAppUserLinkCapturingPreferencesChanged(const webapps::AppId& app_id,
-                                                   bool is_preferred) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
  protected:
   AppManagementPageHandlerBase(
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
       Profile* profile,
       Delegate& delegate);
+
+  // Notify the WebUI frontend that the app with a given `app_id` has changed on
+  // the backend. Will generate a new AppPtr and send it to the frontend.
+  void NotifyAppChanged(const std::string& app_id);
 
   Profile* profile() { return profile_; }
 
@@ -128,10 +115,6 @@ class AppManagementPageHandlerBase
   base::ScopedObservation<apps::PreferredAppsListHandle,
                           apps::PreferredAppsListHandle::Observer>
       preferred_apps_list_handle_observer_{this};
-
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::WebAppRegistrarObserver>
-      registrar_observation_{this};
 
   base::WeakPtrFactory<AppManagementPageHandlerBase> weak_ptr_factory_{this};
 };
