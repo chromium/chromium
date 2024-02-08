@@ -69,10 +69,6 @@ class ChromeUserManagerImpl
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // UserManagerInterface implementation:
-  user_manager::MultiUserSignInPolicyController*
-  GetMultiUserSignInPolicyController() override;
-
   // UserManager implementation:
   void Shutdown() override;
   user_manager::UserList GetUsersAllowedForMultiProfile() const override;
@@ -93,6 +89,8 @@ class ChromeUserManagerImpl
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
+  user_manager::MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;

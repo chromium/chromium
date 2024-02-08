@@ -130,6 +130,8 @@ class FakeChromeUserManager : public ChromeUserManager {
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
   void Initialize() override;
+  user_manager::MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() override;
 
   // user_manager::UserManagerBase override.
   const std::string& GetApplicationLocale() const override;
@@ -142,10 +144,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
   // Just make it public for tests.
   using UserManagerBase::SetOwnerId;
-
-  // UserManagerInterface override.
-  user_manager::MultiUserSignInPolicyController*
-  GetMultiUserSignInPolicyController() override;
 
   // ChromeUserManager override.
   void SetUserAffiliation(

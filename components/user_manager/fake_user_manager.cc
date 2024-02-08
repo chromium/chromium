@@ -388,4 +388,10 @@ bool FakeUserManager::IsValidDefaultUserImageId(int image_index) const {
   return false;
 }
 
+MultiUserSignInPolicyController*
+FakeUserManager::GetMultiUserSignInPolicyController() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 }  // namespace user_manager

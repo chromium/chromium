@@ -125,6 +125,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
+  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
+      override;
 
   // UserManagerBase overrides:
   void SetEphemeralModeConfig(

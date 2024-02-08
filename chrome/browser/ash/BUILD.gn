@@ -2151,7 +2151,6 @@ source_set("ash") {
     "login/users/scoped_test_user_manager.h",
     "login/users/test_users.cc",
     "login/users/test_users.h",
-    "login/users/user_manager_interface.h",
     "login/version_info_updater.cc",
     "login/version_info_updater.h",
     "login/version_updater/update_time_estimator.cc",

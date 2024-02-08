@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/login/users/user_manager_interface.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
@@ -18,8 +17,7 @@
 namespace ash {
 
 // Chrome specific interface of the UserManager.
-class ChromeUserManager : public user_manager::UserManagerBase,
-                          public UserManagerInterface {
+class ChromeUserManager : public user_manager::UserManagerBase {
  public:
   explicit ChromeUserManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
