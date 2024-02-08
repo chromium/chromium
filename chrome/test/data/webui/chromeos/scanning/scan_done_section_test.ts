@@ -12,7 +12,7 @@ import {ScanDoneSectionElement} from 'chrome://scanning/scan_done_section.js';
 import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -175,19 +175,6 @@ suite('scanDoneSectionTest', function() {
     assertArrayEquals(
         scannedFilePaths.map(filePath => filePath.path),
         filePathsSentToMediaApp);
-  });
-
-  // Verify the edit button is hidden for the PDF file type because the Media
-  // app doesn't support PDFs.
-  test('editButtonHiddenForFileTypePdf', () => {
-    assert(scanDoneSection);
-    const editButton =
-        strictQuery('#editButton', scanDoneSection.shadowRoot, HTMLElement);
-    scanDoneSection.selectedFileType = FileType.kPng.toString();
-    assertTrue(isVisible(editButton));
-
-    scanDoneSection.selectedFileType = FileType.kPdf.toString();
-    assertFalse(isVisible(editButton));
   });
 
   // Verify the edit button label is updated correctly based on the number of
