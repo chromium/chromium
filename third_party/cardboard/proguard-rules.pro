@@ -20,3 +20,7 @@
   getDistortionCoefficientsCount();
   getLeftEyeFieldOfViewAngles(int);
 }
+# Prevent native methods which are used from being obfuscated.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class com.google.cardboard.sdk.** {
+  native <methods>;
+}

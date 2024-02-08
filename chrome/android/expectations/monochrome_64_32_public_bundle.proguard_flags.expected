@@ -372,6 +372,10 @@
   getDistortionCoefficientsCount();
   getLeftEyeFieldOfViewAngles(int);
 }
+# Prevent native methods which are used from being obfuscated.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class com.google.cardboard.sdk.** {
+  native <methods>;
+}
 
 # File: ../../android_webview/support_library/boundary_interfaces/proguard.flags
 # Copyright 2018 The Chromium Authors
