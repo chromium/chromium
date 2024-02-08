@@ -46,6 +46,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -175,32 +178,80 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_Default() {
+        when(mHomeModulesConfigManager.getEnabledModuleList())
+                .thenReturn(
+                        new HashSet<>(
+                                List.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_DefaultWithTabResumption() {
+        when(mHomeModulesConfigManager.getEnabledModuleList())
+                .thenReturn(
+                        new HashSet<>(
+                                List.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+    }
+
+    @Test
+    @SmallTest
     public void testGetModuleList() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         when(mHomeModulesConfigManager.getEnabledModuleList())
                 .thenReturn(new HashSet<>(List.of(ModuleType.SINGLE_TAB)));
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         List<Integer> expectedModuleList = List.of(ModuleType.SINGLE_TAB);
-        assertEquals(mCoordinator.getModuleList(), expectedModuleList);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
     }
 
     @Test
     @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
 
         verify(mHomeModulesConfigManager).addListener(mHomeModulesStateListener.capture());
         List<Integer> expectedModuleListBeforeHidingModule =
                 List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(mCoordinator.getModuleList(), expectedModuleListBeforeHidingModule);
+        assertEquals(expectedModuleListBeforeHidingModule, mCoordinator.getModuleList());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, false);
         List<Integer> expectedModuleListAfterHidingModule = List.of(ModuleType.SINGLE_TAB);
-        assertEquals(mCoordinator.getModuleList(), expectedModuleListAfterHidingModule);
+        assertEquals(expectedModuleListAfterHidingModule, mCoordinator.getModuleList());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, true);
-        assertEquals(mCoordinator.getModuleList(), expectedModuleListBeforeHidingModule);
+        assertEquals(expectedModuleListBeforeHidingModule, mCoordinator.getModuleList());
 
         mCoordinator.destroy();
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());

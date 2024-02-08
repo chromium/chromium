@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -351,7 +352,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     List<Integer> getModuleList() {
         // TODO(https://crbug.com/1512962): Gets the modules ranking list using segmentation service
         // API.
-        List<Integer> generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        List<Integer> generalModuleList;
+        if (mModuleDelegateHost.isHomeSurface()) {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        } else if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        } else {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE);
+        }
+
         List<Integer> moduleList = new ArrayList<>();
         for (int i = 0; i < generalModuleList.size(); i++) {
             @ModuleType int currentModuleType = generalModuleList.get(i);

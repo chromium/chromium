@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -63,6 +64,8 @@ public class HomeModulesMetricsUtils {
                 return "SingleTab";
             case (PRICE_CHANGE):
                 return "PriceChange";
+            case (TAB_RESUMPTION):
+                return "TabResumption";
             default:
                 assert false : "Module type not supported!";
                 return null;

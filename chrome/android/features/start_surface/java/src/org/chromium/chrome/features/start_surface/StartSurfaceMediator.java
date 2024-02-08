@@ -1879,6 +1879,11 @@ class StartSurfaceMediator
         return mStartMargin;
     }
 
+    @Override
+    public boolean isHomeSurface() {
+        return true;
+    }
+
     public FeedActionDelegate getFeedActionDelegateForTesting() {
         assert mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) != null;
         return mPropertyModel

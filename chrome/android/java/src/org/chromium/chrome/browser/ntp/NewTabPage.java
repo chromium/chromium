@@ -1438,4 +1438,11 @@ public class NewTabPage
 
         return mMostRecentTabSupplier.get();
     }
+
+    @Override
+    public boolean isHomeSurface() {
+        // Can only show a local tab to resume if we we have a tracked tab. The presence of the
+        // local tab to resume module is effectively what being a home surface is.
+        return mMostRecentTabSupplier.hasValue();
+    }
 }
