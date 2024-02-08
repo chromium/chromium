@@ -42,16 +42,19 @@ bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
     // This build is not eligible for the choice screen.
     return false;
   }
-
+  ChromeBrowserState* original_browser_state =
+      browser_state.GetOriginalChromeBrowserState();
   // Getting data needed to check condition.
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(&browser_state);
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
+          original_browser_state);
   BrowserStatePolicyConnector* policy_connector =
-      browser_state.GetPolicyConnector();
+      original_browser_state->GetPolicyConnector();
   const policy::PolicyService& policy_service =
       *policy_connector->GetPolicyService();
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state);
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          original_browser_state);
 
   // Checking whether the user is eligible for the screen.
   auto condition =
