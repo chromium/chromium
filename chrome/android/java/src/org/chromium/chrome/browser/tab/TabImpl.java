@@ -1046,6 +1046,7 @@ class TabImpl implements Tab {
         setTitle(state.contentsState.getDisplayTitleFromState());
         mTabLaunchTypeAtCreation = state.tabLaunchTypeAtCreation;
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
+        setTabGroupId(state.tabGroupId);
         setUserAgent(state.userAgent);
     }
 
