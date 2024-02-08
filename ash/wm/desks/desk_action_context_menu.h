@@ -52,6 +52,7 @@ class DeskActionContextMenu : public views::ContextMenuController,
     base::RepeatingClosure combine_desks_callback;
 
     // If set, the option to close all windows on the desk is shown.
+    std::optional<std::u16string> close_all_target_name;
     base::RepeatingClosure close_all_callback;
 
     // Optional, invoked when the menu is closed.

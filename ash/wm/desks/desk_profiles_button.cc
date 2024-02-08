@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -61,8 +62,8 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk,
 
   LoadIconForProfile();
 
-  // TODO(shidi):Update the accessible name if get any.
-  SetAccessibleName(u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_PROFILES_BUTTON));
 }
 
 DeskProfilesButton::~DeskProfilesButton() {

@@ -111,6 +111,9 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // its right preview; otherwise it swaps with its left preview.
   void Swap(bool right);
 
+  // Updates accessible name for this desk preview.
+  void UpdateAccessibleName();
+
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout(PassKey) override;

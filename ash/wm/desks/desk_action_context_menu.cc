@@ -133,11 +133,12 @@ DeskActionContextMenu::DeskActionContextMenu(Config config)
                                        ui::kColorAshSystemUIMenuIcon));
   }
 
-  if (config_.close_all_callback) {
+  if (config_.close_all_target_name) {
     maybe_add_separator();
+    const std::u16string close_all_a11y = l10n_util::GetStringFUTF16(
+        IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION, *config_.close_all_target_name);
     context_menu_model_.AddItemWithIcon(
-        CommandId::kCloseAll,
-        l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION),
+        CommandId::kCloseAll, close_all_a11y,
         ui::ImageModel::FromVectorIcon(kMediumOrLargeCloseButtonIcon,
                                        ui::kColorAshSystemUIMenuIcon));
   }

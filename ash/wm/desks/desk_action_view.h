@@ -25,7 +25,8 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
  public:
   METADATA_HEADER(DeskActionView);
 
-  DeskActionView(const std::u16string& initial_combine_desks_target_name,
+  DeskActionView(const std::u16string& combine_desks_target_name,
+                 const std::u16string& close_all_target_name,
                  base::RepeatingClosure combine_desks_callback,
                  base::RepeatingClosure close_all_callback,
                  base::RepeatingClosure focus_change_callback);

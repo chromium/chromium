@@ -328,7 +328,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       new_desk_button->SetBoundsRect(new_desk_button_bounds);
       LayoutDeskIconButtonLabel(bar_view_->new_desk_button_label(),
                                 new_desk_button_bounds, desk_name_view,
-                                IDS_ASH_DESKS_NEW_DESK_BUTTON);
+                                IDS_ASH_DESKS_NEW_DESK_BUTTON_LABEL);
       x +=
           (new_desk_button_size.width() + kDeskBarMiniViewsSpacing) * increment;
     };
@@ -864,12 +864,6 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
 
   auto* name_view = mini_views_[desk_index]->desk_name_view();
   name_view->RequestFocus();
-
-  // Set `name_view`'s accessible name if its text is cleared.
-  if (name_view->GetAccessibleName().empty()) {
-    name_view->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
-  }
 
   if (type_ == Type::kOverview) {
     MoveFocusToView(name_view);

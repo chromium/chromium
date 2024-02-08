@@ -2457,9 +2457,6 @@ Style notes:
       <message name="IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a close-able overview item.">
         Press Ctrl + W to close.
       </message>
-      <message name="IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility text read by screen readers for a closeable desk mini view when the close all feature is enabled.">
-          Press Ctrl + W to combine with <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Press Ctrl + Shift + W to close desk and windows.
-      </message>
        <message name="IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL" desc="The accessible name for the Overview Settings button during faster splitscreen setup.">
         Windows and desks settings
       </message>
@@ -2602,7 +2599,10 @@ Style notes:
       </message>
 
       <!-- Virtual Desks -->
-      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
+      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The new desk button's accessible name">
+        Add new desk
+      </message>
+      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON_LABEL" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
         New desk
       </message>
       <message name="IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE" desc="The label of the first virtual desk thumbnail.">
@@ -2659,23 +2659,20 @@ Style notes:
       <message name="IDS_ASH_DESKS_MIN_NUM_REACHED" desc="Message shown to users when they attempt to remove the last virtual.">
         Last desk can't be removed.
       </message>
-      <message name="IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted active desk mini_view.">
-        active desk
-      </message>
-      <message name="IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted inactive desk mini_view.">
-        inactive desk
-      </message>
       <message name="IDS_ASH_DESKS_DESK_NAME" desc="Alert when highlighting the desk name">
         Desk name
       </message>
-      <message name="IDS_ASH_DESKS_DESK_PREVIEW" desc="The desk preview accessible name">
-        Desk preview
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_ACTIVE" desc="The desk preview's accessible name when active">
+        <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> preview. Active desk.
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_INACTIVE" desc="The desk preview's accessible name when inactive">
+        <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> preview. Inactive desk.
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION" desc="The desk preview's role description">
+        Use tab for more options. Use left and right arrows to access all desks.
       </message>
       <message name="IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME" desc="The full accessible desk name">
         Desk: <ph name="DESK_NAME">$1</ph>
-      </message>
-      <message name="IDS_ASH_DESKS_DESK_PREVIEW_A11Y_NAME" desc="The full accessible desk name">
-        Go to <ph name="ACTIVE_STATE">$1</ph> <ph name="DESK_NAME">$2</ph> button.
       </message>
       <message name="IDS_ASH_DESKS_DESK_NAME_COMMIT" desc="Alert when the desk name is committed">
         Desk name was changed to <ph name="DESK_NAME">$1</ph>
@@ -2684,7 +2681,10 @@ Style notes:
         Combine with <ph name="DESK_NAME">$1</ph>
       </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and all of its windows.">
-        Close desk and windows
+        Close <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> and windows
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PROFILES_BUTTON" desc="The desk profile button's accessible name">
+        Desk profile menu
       </message>
       <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
         Manage profiles
