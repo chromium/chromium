@@ -314,15 +314,12 @@ bool EncryptedReportingClient::GenerationGuidIsRequired() {
 // static
 std::unique_ptr<EncryptedReportingClient> EncryptedReportingClient::Create(
     std::unique_ptr<Delegate> delegate) {
-  return base::WrapUnique(new EncryptedReportingClient(
-      GenerationGuidIsRequired(), std::move(delegate)));
+  return base::WrapUnique(new EncryptedReportingClient(std::move(delegate)));
 }
 
 EncryptedReportingClient::EncryptedReportingClient(
-    bool is_generation_guid_required,
     std::unique_ptr<Delegate> delegate)
-    : is_generation_guid_required_(is_generation_guid_required),
-      delegate_(std::move(delegate)) {}
+    : delegate_(std::move(delegate)) {}
 
 EncryptedReportingClient::~EncryptedReportingClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -367,7 +364,7 @@ void EncryptedReportingClient::UploadReport(
       std::move(callback)));
   base::ThreadPool::PostTask(
       FROM_HERE, {},
-      base::BindOnce(&BuildPayload, is_generation_guid_required_,
+      base::BindOnce(&BuildPayload, GenerationGuidIsRequired(),
                      need_encryption_key, config_file_version,
                      std::move(records), std::move(scoped_reservation),
                      std::move(create_job_cb)));

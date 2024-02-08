@@ -136,8 +136,7 @@ class EncryptedReportingClient {
                      base::UniquePtrComparator>;
 
   // Constructor called by factory only.
-  EncryptedReportingClient(bool is_generation_guid_required,
-                           std::unique_ptr<Delegate> delegate);
+  explicit EncryptedReportingClient(std::unique_ptr<Delegate> delegate);
 
   // Constructs upload job after the data is converted into JSON, assigned to
   // `payload_result` (`nullopt` if there was an error). Calls `callback` once
@@ -183,7 +182,6 @@ class EncryptedReportingClient {
 
   JobSet request_jobs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const bool is_generation_guid_required_;
   const std::unique_ptr<Delegate> delegate_;
 
   // Reports accumulated payload sizes per hour via UMA.
