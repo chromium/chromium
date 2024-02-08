@@ -229,6 +229,8 @@ void LogOneDriveMetricsAfterFallback(
     case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
     case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
     case ash::office_fallback::FallbackReason::kMeteredConnection:
+    case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
+    case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
       NOTREACHED();
       break;
   }
@@ -264,6 +266,15 @@ void LogGoogleDriveMetricsAfterFallback(
     case ash::office_fallback::FallbackReason::kMeteredConnection:
       cloud_open_metrics->LogGoogleDriveOpenError(
           ash::cloud_upload::OfficeDriveOpenErrors::kMeteredConnection);
+      break;
+    case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
+      cloud_open_metrics->LogGoogleDriveOpenError(
+          ash::cloud_upload::OfficeDriveOpenErrors::kDisableDrivePreferenceSet);
+      break;
+    case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
+      cloud_open_metrics->LogGoogleDriveOpenError(
+          ash::cloud_upload::OfficeDriveOpenErrors::
+              kDriveDisabledForAccountType);
       break;
   }
   cloud_open_metrics->LogTaskResult(task_result);

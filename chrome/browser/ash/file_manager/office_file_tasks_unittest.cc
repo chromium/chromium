@@ -383,4 +383,29 @@ TEST_F(FileManagerOfficeFileTasksTest,
       ash::cloud_upload::OfficeDriveOpenErrors::kMeteredConnection, 1);
 }
 
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDisableDrivePreferenceSet) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDisableDrivePreferenceSet, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDriveDisabledForAccountType) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDriveDisabledForAccountType,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDriveDisabledForAccountType,
+      1);
+}
+
 }  // namespace file_manager::file_tasks
