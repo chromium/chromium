@@ -82,7 +82,7 @@ export class ReportingHistoryElement extends PolymerElement {
 
   onFilterChange() {
     const currentSelection: string = this.$.erpTableFilter.value;
-    if (this.selectedOption != currentSelection) {
+    if (this.selectedOption !== currentSelection) {
       this.selectedOption = currentSelection;
       this.updateErpTable();
     }
@@ -100,7 +100,7 @@ export class ReportingHistoryElement extends PolymerElement {
         // For the erp-parameters column we need to extract the information from
         // the bullet lists, for all the other columns we just append the
         // innerHTML directly.
-        if (currentCol.className == 'erp-parameters') {
+        if (currentCol.className === 'erp-parameters') {
           currentCol.querySelectorAll('li').forEach(el => {
             value += el.innerText + ' - ';
           });
@@ -178,10 +178,10 @@ export class ReportingHistoryElement extends PolymerElement {
     }
     // If there are events we filter them by the type of event.
     const filteredEvents = this.currentHistory.events.filter(
-        (event: ErpHistoryEvent) => event.call == this.selectedOption ||
-            this.selectedOption == ReportingHistoryElement.allEvents ||
-            (this.selectedOption == ReportingHistoryElement.allButUploads &&
-             event.call != 'Upload'));
+        (event: ErpHistoryEvent) => event.call === this.selectedOption ||
+            this.selectedOption === ReportingHistoryElement.allEvents ||
+            (this.selectedOption === ReportingHistoryElement.allButUploads &&
+             event.call !== 'Upload'));
 
     // If there are no events after filtering, present the placeholder.
     if (filteredEvents.length === 0) {
