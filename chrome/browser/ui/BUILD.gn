@@ -4426,6 +4426,8 @@ static_library("ui") {
       "cocoa/renderer_context_menu/render_view_context_menu_mac.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.mm",
+      "cocoa/renderer_context_menu/render_view_context_menu_mac_remote_cocoa.h",
+      "cocoa/renderer_context_menu/render_view_context_menu_mac_remote_cocoa.mm",
       "cocoa/scoped_menu_bar_lock.h",
       "cocoa/scoped_menu_bar_lock.mm",
       "cocoa/share_menu_controller.h",

@@ -869,6 +869,11 @@ void RenderWidgetHostViewChildFrame::ShowSharePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {}
+
+uint64_t RenderWidgetHostViewChildFrame::GetNSViewId() const {
+  return 0;
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 void RenderWidgetHostViewChildFrame::CopyFromSurface(

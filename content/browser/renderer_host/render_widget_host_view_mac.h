@@ -122,6 +122,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
+  uint64_t GetNSViewId() const override;
 
   // Implementation of RenderWidgetHostViewBase.
   void InitAsPopup(RenderWidgetHostView* parent_host_view,

@@ -19,14 +19,44 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 
-// Obj-C bridge class that is the target of all items in the context menu.
-// Relies on the tag being set to the command id.
+// macOS implementation of the ToolkitDelegate.
+// This simply (re)delegates calls to RVContextMenuMac.
+class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
+ public:
+  explicit ToolkitDelegateMacCocoa(RenderViewContextMenuMac* context_menu)
+      : context_menu_(context_menu) {}
+
+  ToolkitDelegateMacCocoa(const ToolkitDelegateMacCocoa&) = delete;
+  ToolkitDelegateMacCocoa& operator=(const ToolkitDelegateMacCocoa&) = delete;
+
+  ~ToolkitDelegateMacCocoa() override {}
+
+ private:
+  // ToolkitDelegate:
+  void Init(ui::SimpleMenuModel* menu_model) override {
+    context_menu_->InitToolkitMenu();
+  }
+
+  void Cancel() override { context_menu_->CancelToolkitMenu(); }
+
+  void UpdateMenuItem(int command_id,
+                      bool enabled,
+                      bool hidden,
+                      const std::u16string& title) override {
+    context_menu_->UpdateToolkitMenuItem(command_id, enabled, hidden, title);
+  }
+
+  raw_ptr<RenderViewContextMenuMac> context_menu_;
+};
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
-      text_services_context_menu_(this) {}
+      text_services_context_menu_(this) {
+  auto delegate = std::make_unique<ToolkitDelegateMacCocoa>(this);
+  set_toolkit_delegate(std::move(delegate));
+}
 
 RenderViewContextMenuMac::~RenderViewContextMenuMac() {
 }

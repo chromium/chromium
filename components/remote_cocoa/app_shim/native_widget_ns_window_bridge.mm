@@ -25,6 +25,7 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/certificate_viewer.h"
+#import "components/remote_cocoa/app_shim/context_menu_runner.h"
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -1049,6 +1050,15 @@ void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
 
 void NativeWidgetNSWindowBridge::SetCanGoForward(bool can_go_forward) {
   can_go_forward_ = can_go_forward;
+}
+
+void NativeWidgetNSWindowBridge::DisplayContextMenu(
+    mojom::ContextMenuPtr menu,
+    mojo::PendingRemote<mojom::MenuHost> host,
+    mojo::PendingReceiver<mojom::Menu> receiver) {
+  ContextMenuRunner runner(std::move(host), std::move(receiver));
+  NSView* target_view = GetNSViewFromId(menu->target_view_id);
+  runner.ShowMenu(std::move(menu), GetWindow(), target_view);
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {

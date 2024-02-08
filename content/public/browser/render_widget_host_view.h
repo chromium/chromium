@@ -289,6 +289,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) = 0;
 
+  virtual uint64_t GetNSViewId() const = 0;
 #endif  // BUILDFLAG(IS_MAC)
 
   // Indicates that this view should show the contents of |view| if it doesn't

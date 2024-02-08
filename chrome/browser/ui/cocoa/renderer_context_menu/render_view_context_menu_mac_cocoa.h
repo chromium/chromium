@@ -27,20 +27,16 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
 
   ~RenderViewContextMenuMacCocoa() override;
 
-  // RenderViewContextMenuViewsMac:
+  // RenderViewContextMenu:
   void Show() override;
 
  private:
-  friend class ToolkitDelegateMacCocoa;
-
-  // Cancels the menu.
-  void CancelToolkitMenu();
-
-  // Updates the status and text of the specified context-menu item.
+  // RenderViewContextMenuViewsMac:
+  void CancelToolkitMenu() override;
   void UpdateToolkitMenuItem(int command_id,
                              bool enabled,
                              bool hidden,
-                             const std::u16string& title);
+                             const std::u16string& title) override;
 
   // The Cocoa menu controller for this menu.
   MenuControllerCocoa* __strong menu_controller_;

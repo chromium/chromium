@@ -28,6 +28,7 @@ mojom("mojo") {
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/gfx/geometry/mojom",
+    "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
   ]

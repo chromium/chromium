@@ -17,6 +17,7 @@
 #import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
@@ -51,37 +52,6 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
 
 }  // namespace
 
-// macOS implementation of the ToolkitDelegate.
-// This simply (re)delegates calls to RVContextMenuMac because they do not
-// have to be componentized.
-class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
- public:
-  explicit ToolkitDelegateMacCocoa(RenderViewContextMenuMacCocoa* context_menu)
-      : context_menu_(context_menu) {}
-
-  ToolkitDelegateMacCocoa(const ToolkitDelegateMacCocoa&) = delete;
-  ToolkitDelegateMacCocoa& operator=(const ToolkitDelegateMacCocoa&) = delete;
-
-  ~ToolkitDelegateMacCocoa() override {}
-
- private:
-  // ToolkitDelegate:
-  void Init(ui::SimpleMenuModel* menu_model) override {
-    context_menu_->InitToolkitMenu();
-  }
-
-  void Cancel() override { context_menu_->CancelToolkitMenu(); }
-
-  void UpdateMenuItem(int command_id,
-                      bool enabled,
-                      bool hidden,
-                      const std::u16string& title) override {
-    context_menu_->UpdateToolkitMenuItem(command_id, enabled, hidden, title);
-  }
-
-  raw_ptr<RenderViewContextMenuMacCocoa> context_menu_;
-};
-
 // Obj-C bridge class that is the target of all items in the context menu.
 // Relies on the tag being set to the command id.
 RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
@@ -90,8 +60,6 @@ RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
     NSView* parent_view)
     : RenderViewContextMenuMac(render_frame_host, params),
       parent_view_(parent_view) {
-  auto delegate = std::make_unique<ToolkitDelegateMacCocoa>(this);
-  set_toolkit_delegate(std::move(delegate));
 }
 
 RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
@@ -114,46 +82,15 @@ void RenderViewContextMenuMacCocoa::Show() {
                                         delegate:menu_controller_delegate_
                           useWithPopUpButtonCell:NO];
 
-  // Synthesize an event for the click, as there is no certainty that
-  // [NSApp currentEvent] will return a valid event.
-  NSEvent* currentEvent = [NSApp currentEvent];
-  NSWindow* window = [parent_view_ window];
   NSPoint position =
       NSMakePoint(params_.x, NSHeight(parent_view_.bounds) - params_.y);
   position = [parent_view_ convertPoint:position toView:nil];
-  NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
-                                           location:position
-                                      modifierFlags:0
-                                          timestamp:eventTime
-                                       windowNumber:[window windowNumber]
-                                            context:nil
-                                        eventNumber:0
-                                         clickCount:1
-                                           pressure:1.0];
+  NSEvent* clickEvent = ui::EventForPositioningContextMenuRelativeToWindow(
+      position, [parent_view_ window]);
 
-  {
-    // Make sure events can be pumped while the menu is up.
-    base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
-
-    // Ensure the UI can update while the menu is fading out.
-    base::ScopedPumpMessagesInPrivateModes pump_private;
-
-    // One of the events that could be pumped is |window.close()|.
-    // User-initiated event-tracking loops protect against this by
-    // setting flags in -[CrApplication sendEvent:], but since
-    // web-content menus are initiated by IPC message the setup has to
-    // be done manually.
-    base::mac::ScopedSendingEvent sendingEventScoper;
-
-    NSMenu* const menu = [menu_controller_ menu];
-    ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
-        menu, views::ElementTrackerViews::GetContextForWidget(widget));
-
-    // Show the menu.
-    [NSMenu popUpContextMenu:menu withEvent:clickEvent forView:parent_view_];
-    ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
-  }
+  ui::ShowContextMenu(menu_controller_.menu, clickEvent, parent_view_,
+                      /*allow_nested_tasks=*/true,
+                      views::ElementTrackerViews::GetContextForWidget(widget));
 }
 
 void RenderViewContextMenuMacCocoa::CancelToolkitMenu() {
@@ -171,8 +108,7 @@ void RenderViewContextMenuMacCocoa::UpdateToolkitMenuItem(
     return;
 
   // Update the returned NSMenuItem directly so we can update it immediately.
-  [item setEnabled:enabled];
-  [item setTitle:base::SysUTF16ToNSString(title)];
-  [item setHidden:hidden];
-  [[item menu] itemChanged:item];
+  item.enabled = enabled;
+  item.title = base::SysUTF16ToNSString(title);
+  item.hidden = hidden;
 }
