@@ -85,7 +85,19 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       },
 
       destinationStatusText: String,
+
+      pdfPosinset: Number,
+
+      drivePosinset: Number,
+
+      seeMorePosinset: Number,
     };
+  }
+
+  static get observers() {
+    return [
+      'updateAriaPosinset(itemList, pdfPrinterDisabled, driveDestinationKey)',
+    ];
   }
 
   value: Destination;
@@ -100,6 +112,9 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private isDarkModeActive_: boolean;
   private highlightedIndex_: number;
   private dropdownLength_: number;
+  private pdfPosinset: number;
+  private drivePosinset: number;
+  private seeMorePosinset: number;
 
   private opened_: boolean = false;
   private dropdownRefitPending_: boolean = false;
@@ -349,6 +364,24 @@ export class PrintPreviewDestinationDropdownCrosElement extends
       isEnterprisePrinter: boolean): string {
     return getPrinterStatusIcon(
         printerStatusReason, isEnterprisePrinter, this.isDarkModeActive_);
+  }
+
+  private getPrinterPosinset_(index: number): number {
+    return index + 1;
+  }
+
+  /**
+   * Set the ARIA position in the dropdown based on the visible items.
+   */
+  private updateAriaPosinset(): void {
+    let currentPosition = this.itemList ? this.itemList.length + 1 : 1;
+    if (!this.pdfPrinterDisabled) {
+      this.pdfPosinset = currentPosition++;
+    }
+    if (this.driveDestinationKey) {
+      this.drivePosinset = currentPosition++;
+    }
+    this.seeMorePosinset = currentPosition++;
   }
 }
 
