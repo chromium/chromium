@@ -14,6 +14,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <span>
 #include <type_traits>
 #include <utility>
 
@@ -429,6 +430,33 @@ class GSL_POINTER span {
     std::copy(other.data(), other.data() + other.size(), data());
   }
 
+  // Implicit conversion from std::span<T, N> to base::span<T, N>.
+  //
+  // We get other conversions for free from std::span's constructors, but it
+  // does not deduce N on its range constructor.
+  span(std::span<std::remove_const_t<T>, N> other)
+      :  // SAFETY: std::span contains a valid data pointer and size such
+         // that pointer+size remains valid.
+        UNSAFE_BUFFERS(
+            span(std::ranges::data(other), std::ranges::size(other))) {}
+  span(std::span<T, N> other)
+    requires(std::is_const_v<T>)
+      :  // SAFETY: std::span contains a valid data pointer and size such
+         // that pointer+size remains valid.
+        UNSAFE_BUFFERS(
+            span(std::ranges::data(other), std::ranges::size(other))) {}
+
+  // Implicit conversion from base::span<T, N> to std::span<T, N>.
+  //
+  // We get other conversions for free from std::span's constructors, but it
+  // does not deduce N on its range constructor.
+  operator std::span<T, N>() const { return std::span<T, N>(*this); }
+  operator std::span<const T, N>() const
+    requires(!std::is_const_v<T>)
+  {
+    return std::span<const T, N>(*this);
+  }
+
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
@@ -831,8 +859,8 @@ inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
 //   * |std::size| should be preferred for plain arrays.
 //   * In run-time contexts, functions such as |std::array::size| should be
 //     preferred.
-#define EXTENT(x)                                        \
-  ::base::internal::must_not_be_dynamic_extent<decltype( \
-      ::base::make_span(x))::extent>()
+#define EXTENT(x)                                                          \
+  ::base::internal::must_not_be_dynamic_extent<decltype(::base::make_span( \
+      x))::extent>()
 
 #endif  // BASE_CONTAINERS_SPAN_H_

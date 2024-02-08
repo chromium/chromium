@@ -974,13 +974,15 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      r'/(\babsl::Span\b|#include <span>)',
+      r'/(\babsl::Span\b|#include <span>|\bstd::span\b)',
       (
-        'absl::Span is banned and <span> is not allowed yet ',
+        'absl::Span and std::span are not allowed ',
         '(https://crbug.com/1414652). Use base::span instead.',
       ),
       True,
       [
+        # Included for conversions between base and std.
+        r'base/containers/span.h',
         # Test base::span<> compatibility against std::span<>.
         r'base/containers/span_unittest.cc',
         # Needed to use QUICHE API.
