@@ -182,6 +182,9 @@ void ContentPasswordManagerDriver::FormEligibleForGenerationFound(
 
 void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {
+  // Same check as in PasswordGenerationAgent::GeneratedPasswordAccepted. The
+  // generated password can't be too short.
+  CHECK_LE(4u, password.size());
   GetPasswordGenerationAgent()->GeneratedPasswordAccepted(password);
 }
 
