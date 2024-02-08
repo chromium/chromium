@@ -6,9 +6,12 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -38,9 +41,14 @@
 namespace webui {
 
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
+  std::string scheme =
+      base::StartsWith(source->GetSource(), content::kChromeUIUntrustedScheme)
+          ? content::kChromeUIUntrustedScheme
+          : content::kChromeUIScheme;
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self';");
+      base::StringPrintf("script-src %s://resources %s://webui-test 'self';",
+                         scheme.c_str(), scheme.c_str()));
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
