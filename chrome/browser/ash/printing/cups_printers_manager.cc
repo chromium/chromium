@@ -47,7 +47,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
@@ -113,8 +113,14 @@ using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 using ::printing::PrinterQueryResult;
 
-void OnRemovedPrinter(bool success) {
-  if (success) {
+void OnRemovedPrinter(
+    std::optional<printscanmgr::CupsRemovePrinterResponse> response) {
+  if (!response) {
+    PRINTER_LOG(DEBUG) << "No response to remove printer request.";
+    return;
+  }
+
+  if (response->result()) {
     PRINTER_LOG(DEBUG) << "Printer removal succeeded.";
   } else {
     PRINTER_LOG(DEBUG) << "Printer removal failed.";
@@ -424,8 +430,10 @@ class CupsPrintersManagerImpl
     // Uninstall printer if installed completely.
     if (installed_printer_fingerprints_.erase(printer_id)) {
       // The printer was present in `installed_printer_fingerprints_`.
-      DebugDaemonClient::Get()->CupsRemovePrinter(
-          printer_id, base::BindOnce(&OnRemovedPrinter), base::DoNothing());
+      printscanmgr::CupsRemovePrinterRequest request;
+      request.set_name(printer_id);
+      PrintscanmgrClient::Get()->CupsRemovePrinter(
+          request, base::BindOnce(&OnRemovedPrinter), base::DoNothing());
       return;
     }
 
