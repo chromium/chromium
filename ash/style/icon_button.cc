@@ -339,13 +339,13 @@ IconButton::IconButton(PressedCallback callback,
 IconButton::~IconButton() = default;
 
 void IconButton::SetButtonBehavior(DisabledButtonBehavior button_behavior) {
-  if(button_behavior_ == button_behavior) {
+  if (button_behavior_ == button_behavior) {
     return;
   }
 
   button_behavior_ = button_behavior;
   // Change button behavior may impact the toggled state.
-  if(toggled_ && !GetEnabled()) {
+  if (toggled_ && !GetEnabled()) {
     UpdateVectorIcon();
   }
 }
@@ -546,9 +546,11 @@ void IconButton::UpdateBackground() {
   ColorVariant color_variant =
       is_toggled ? background_toggled_color_ : background_color_;
   if (absl::holds_alternative<SkColor>(color_variant)) {
-    SetBackground(CreateSolidBackground(absl::get<SkColor>(color_variant), type_));
+    SetBackground(
+        CreateSolidBackground(absl::get<SkColor>(color_variant), type_));
   } else {
-    SetBackground(CreateThemedBackground(absl::get<ui::ColorId>(color_variant), type_));
+    SetBackground(
+        CreateThemedBackground(absl::get<ui::ColorId>(color_variant), type_));
   }
 }
 
@@ -575,7 +577,8 @@ void IconButton::UpdateBlurredBackgroundShield() {
   if (absl::holds_alternative<SkColor>(color_variant)) {
     blurred_background_shield_->SetColor(absl::get<SkColor>(color_variant));
   } else {
-    blurred_background_shield_->SetColorId(absl::get<ui::ColorId>(color_variant));
+    blurred_background_shield_->SetColorId(
+        absl::get<ui::ColorId>(color_variant));
   }
 }
 
@@ -645,7 +648,7 @@ bool IconButton::IsToggledOn() const {
               DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
 }
 
-BEGIN_METADATA(IconButton, views::ImageButton)
+BEGIN_METADATA(IconButton)
 END_METADATA
 
 }  // namespace ash

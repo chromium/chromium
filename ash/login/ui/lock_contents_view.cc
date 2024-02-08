@@ -2329,7 +2329,7 @@ void LockContentsView::RecordAndResetPasswordAttempts(
   unlock_attempt_by_user_[account_id] = 0;
 }
 
-BEGIN_METADATA(LockContentsView, NonAccessibleView)
+BEGIN_METADATA(LockContentsView)
 END_METADATA
 
 }  // namespace ash

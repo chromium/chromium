@@ -62,7 +62,7 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
   return section_view;
 }
 
-BEGIN_METADATA(PickerZeroStateView, views::View)
+BEGIN_METADATA(PickerZeroStateView)
 END_METADATA
 
 }  // namespace ash

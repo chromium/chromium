@@ -97,7 +97,7 @@ void PickerGifView::OnFramesFetched(
   UpdateFrame();
 }
 
-BEGIN_METADATA(PickerGifView, views::ImageView)
+BEGIN_METADATA(PickerGifView)
 END_METADATA
 
 }  // namespace ash

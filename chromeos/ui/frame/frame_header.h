@@ -57,8 +57,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   class FrameAnimatorView : public views::View,
                             public views::ViewObserver,
                             public ui::ImplicitAnimationObserver {
+    METADATA_HEADER(FrameAnimatorView, views::View)
+
    public:
-    METADATA_HEADER(FrameAnimatorView);
     explicit FrameAnimatorView(views::View* parent);
     FrameAnimatorView(const FrameAnimatorView&) = delete;
     FrameAnimatorView& operator=(const FrameAnimatorView&) = delete;

@@ -218,7 +218,7 @@ void MicGainSliderView::VisibilityChanged(View* starting_from,
   }
 }
 
-BEGIN_METADATA(MicGainSliderView, views::View)
+BEGIN_METADATA(MicGainSliderView)
 END_METADATA
 
 }  // namespace ash

@@ -15,9 +15,9 @@ namespace ash {
 // View for the main contents of the Picker.
 // Consists of multiple "pages", with at most one page visible at a time.
 class ASH_EXPORT PickerContentsView : public views::View {
- public:
-  METADATA_HEADER(PickerContentsView);
+  METADATA_HEADER(PickerContentsView, views::View)
 
+ public:
   // Creates an empty view with no pages.
   explicit PickerContentsView(PickerView::PickerLayoutType layout_type);
   PickerContentsView(const PickerContentsView&) = delete;

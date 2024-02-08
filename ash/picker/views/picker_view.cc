@@ -334,7 +334,7 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
   contents_view_->SetActivePage(zero_state_view_);
 }
 
-BEGIN_METADATA(PickerView, views::View)
+BEGIN_METADATA(PickerView)
 END_METADATA
 
 }  // namespace ash

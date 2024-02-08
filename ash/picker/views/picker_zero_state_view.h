@@ -22,9 +22,9 @@ namespace ash {
 class PickerSectionView;
 
 class ASH_EXPORT PickerZeroStateView : public views::View {
- public:
-  METADATA_HEADER(PickerZeroStateView);
+  METADATA_HEADER(PickerZeroStateView, views::View)
 
+ public:
   // Indicates the user has selected a category.
   using SelectCategoryCallback =
       base::RepeatingCallback<void(PickerCategory category)>;

@@ -21,9 +21,9 @@ namespace ash {
 // left or right side, check icon on left or right side. It's usually used in
 // the group of radio buttons. Please refer `RadioButtonGroup` for more details.
 class ASH_EXPORT RadioButton : public OptionButtonBase {
- public:
-  METADATA_HEADER(RadioButton);
+  METADATA_HEADER(RadioButton, OptionButtonBase)
 
+ public:
   enum class IconDirection {
     kLeading,
     kFollowing,

@@ -89,7 +89,7 @@ void PickerSearchFieldView::SetPlaceholderText(
   textfield_->SetPlaceholderText(std::u16string(new_placeholder_text));
 }
 
-BEGIN_METADATA(PickerSearchFieldView, views::View)
+BEGIN_METADATA(PickerSearchFieldView)
 END_METADATA
 
 }  // namespace ash

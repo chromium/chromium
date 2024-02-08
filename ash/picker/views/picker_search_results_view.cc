@@ -120,7 +120,7 @@ void PickerSearchResultsView::AddResultToSection(
       result.data());
 }
 
-BEGIN_METADATA(PickerSearchResultsView, views::View)
+BEGIN_METADATA(PickerSearchResultsView)
 END_METADATA
 
 }  // namespace ash

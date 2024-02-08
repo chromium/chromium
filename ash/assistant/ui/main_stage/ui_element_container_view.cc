@@ -47,9 +47,9 @@ constexpr int kScrollIndicatorHeightDip = 1;
 // thickness to 0 with ScrollView::SetCustomOverflowIndicator. This view is not
 // visible.
 class ObservableOverflowIndicator : public views::View {
- public:
-  METADATA_HEADER(ObservableOverflowIndicator);
+  METADATA_HEADER(ObservableOverflowIndicator, views::View)
 
+ public:
   explicit ObservableOverflowIndicator(
       UiElementContainerView* ui_element_container_view)
       : ui_element_container_view_(ui_element_container_view) {}
@@ -67,7 +67,7 @@ class ObservableOverflowIndicator : public views::View {
   raw_ptr<UiElementContainerView> ui_element_container_view_ = nullptr;
 };
 
-BEGIN_METADATA(ObservableOverflowIndicator, views::View)
+BEGIN_METADATA(ObservableOverflowIndicator)
 END_METADATA
 
 // This is views::View. We define InvisibleOverflowIndicator as we can add
@@ -75,11 +75,10 @@ END_METADATA
 // ScrollView::SetCustomOverflowIndicator. The background of this view is NOT
 // transparent, i.e. it becomes visible if you set thickness larger than 0.
 class InvisibleOverflowIndicator : public views::View {
- public:
-  METADATA_HEADER(InvisibleOverflowIndicator);
+  METADATA_HEADER(InvisibleOverflowIndicator, views::View)
 };
 
-BEGIN_METADATA(InvisibleOverflowIndicator, views::View)
+BEGIN_METADATA(InvisibleOverflowIndicator)
 END_METADATA
 
 }  // namespace

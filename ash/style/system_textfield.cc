@@ -357,7 +357,7 @@ void SystemTextfield::UpdateTextColor() {
       placeholder_text_color_id_.value_or(cros_tokens::kCrosSysDisabled)));
 }
 
-BEGIN_METADATA(SystemTextfield, views::Textfield)
+BEGIN_METADATA(SystemTextfield)
 END_METADATA
 
 }  // namespace ash

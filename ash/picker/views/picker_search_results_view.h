@@ -20,9 +20,9 @@ class PickerSearchResult;
 class PickerSectionView;
 
 class ASH_EXPORT PickerSearchResultsView : public views::View {
- public:
-  METADATA_HEADER(PickerSearchResultsView);
+  METADATA_HEADER(PickerSearchResultsView, views::View)
 
+ public:
   // Indicates the user has selected a result.
   using SelectSearchResultCallback =
       base::OnceCallback<void(const PickerSearchResult& result)>;

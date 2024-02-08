@@ -115,7 +115,7 @@ void TabSliderButton::NotifyClick(const ui::Event& event) {
   views::Button::NotifyClick(event);
 }
 
-BEGIN_METADATA(TabSliderButton, views::Button)
+BEGIN_METADATA(TabSliderButton)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ void IconSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawImageInt(img, origin_offset, origin_offset);
 }
 
-BEGIN_METADATA(IconSliderButton, TabSliderButton)
+BEGIN_METADATA(IconSliderButton)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ void LabelSliderButton::StateChanged(ButtonState old_state) {
   UpdateLabelColor();
 }
 
-BEGIN_METADATA(LabelSliderButton, TabSliderButton)
+BEGIN_METADATA(LabelSliderButton)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ void IconLabelSliderButton::OnSelectedChanged() {
   UpdateColors();
 }
 
-BEGIN_METADATA(IconLabelSliderButton, TabSliderButton)
+BEGIN_METADATA(IconLabelSliderButton)
 END_METADATA
 
 }  // namespace ash

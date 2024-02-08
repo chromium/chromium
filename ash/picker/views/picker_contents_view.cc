@@ -99,7 +99,7 @@ void PickerContentsView::SetActivePage(views::View* view) {
   }
 }
 
-BEGIN_METADATA(PickerContentsView, views::View)
+BEGIN_METADATA(PickerContentsView)
 END_METADATA
 
 }  // namespace ash

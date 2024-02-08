@@ -43,7 +43,7 @@ ScalableIphAshNotificationView::GetHeaderRowForTesting() {
   return header_row();
 }
 
-BEGIN_METADATA(ScalableIphAshNotificationView, AshNotificationView)
+BEGIN_METADATA(ScalableIphAshNotificationView)
 END_METADATA
 
 }  // namespace ash

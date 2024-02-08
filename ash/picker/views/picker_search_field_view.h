@@ -25,9 +25,9 @@ namespace ash {
 class ASH_EXPORT PickerSearchFieldView : public views::View,
                                          public views::TextfieldController,
                                          public views::FocusChangeListener {
- public:
-  METADATA_HEADER(PickerSearchFieldView);
+  METADATA_HEADER(PickerSearchFieldView, views::View)
 
+ public:
   using SearchCallback =
       base::RepeatingCallback<void(const std::u16string& query)>;
 

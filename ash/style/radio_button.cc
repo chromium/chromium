@@ -57,7 +57,7 @@ bool RadioButton::IsIconOnTheLeftSide() {
   return icon_direction_ == IconDirection::kLeading;
 }
 
-BEGIN_METADATA(RadioButton, OptionButtonBase)
+BEGIN_METADATA(RadioButton)
 END_METADATA
 
 }  // namespace ash

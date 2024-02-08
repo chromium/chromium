@@ -218,7 +218,7 @@ void TabSlider::OnEnabledStateChanged() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(TabSlider, views::View)
+BEGIN_METADATA(TabSlider)
 END_METADATA
 
 }  // namespace ash

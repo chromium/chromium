@@ -26,9 +26,9 @@ class RoundedImageView;
 // by showing four preview images for wallpaper.
 class ASH_EXPORT WallpaperAshNotificationView
     : public ScalableIphAshNotificationView {
- public:
-  METADATA_HEADER(WallpaperAshNotificationView);
+  METADATA_HEADER(WallpaperAshNotificationView, ScalableIphAshNotificationView)
 
+ public:
   WallpaperAshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
   WallpaperAshNotificationView(const WallpaperAshNotificationView&) = delete;

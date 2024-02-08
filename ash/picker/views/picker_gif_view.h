@@ -23,7 +23,7 @@ struct AnimationFrame;
 }  // namespace image_util
 
 class ASH_EXPORT PickerGifView : public views::ImageView {
-  METADATA_HEADER(PickerGifView, views::View)
+  METADATA_HEADER(PickerGifView, views::ImageView)
 
  public:
   using FramesFetchedCallback =

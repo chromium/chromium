@@ -37,9 +37,9 @@ class BlurredBackgroundShield;
 // this is done to help differentiating focus ring from the content of the
 // button.
 class ASH_EXPORT IconButton : public views::ImageButton {
- public:
-  METADATA_HEADER(IconButton);
+  METADATA_HEADER(IconButton, views::ImageButton)
 
+ public:
   using ColorVariant = absl::variant<SkColor, ui::ColorId>;
 
   enum class Type {

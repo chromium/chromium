@@ -23,9 +23,9 @@ namespace ash {
 // expanded.
 class ASH_EXPORT CloseButton : public views::ImageButton,
                                public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(CloseButton);
+  METADATA_HEADER(CloseButton, views::ImageButton)
 
+ public:
   enum class Type {
     kSmall,
     kMedium,

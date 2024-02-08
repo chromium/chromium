@@ -38,9 +38,9 @@ class SystemShadow;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(PickerView);
+  METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
+ public:
   enum class PickerLayoutType {
     kResultsBelowSearchField,
     kResultsAboveSearchField,

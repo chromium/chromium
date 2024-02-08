@@ -888,7 +888,7 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
   contents_view_->layer()->SetOpacity(1);
 }
 
-BEGIN_METADATA(LockScreenMediaControlsView, views::View)
+BEGIN_METADATA(LockScreenMediaControlsView)
 END_METADATA
 
 }  // namespace ash

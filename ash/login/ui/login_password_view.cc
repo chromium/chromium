@@ -669,7 +669,7 @@ void LoginPasswordView::SetLoginArrowNavigationDelegate(
   arrow_navigation_delegate_ = delegate;
 }
 
-BEGIN_METADATA(LoginPasswordView, views::View)
+BEGIN_METADATA(LoginPasswordView)
 END_METADATA
 
 }  // namespace ash

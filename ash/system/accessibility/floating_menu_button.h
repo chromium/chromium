@@ -22,9 +22,9 @@ namespace ash {
 // Button view that is used in floating menu.
 
 class FloatingMenuButton : public views::ImageButton {
- public:
-  METADATA_HEADER(FloatingMenuButton);
+  METADATA_HEADER(FloatingMenuButton, views::ImageButton)
 
+ public:
   FloatingMenuButton();
   FloatingMenuButton(views::Button::PressedCallback callback,
                      const gfx::VectorIcon& icon,
