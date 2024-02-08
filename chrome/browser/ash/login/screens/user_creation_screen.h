@@ -64,7 +64,6 @@ class UserCreationScreen
       UserCreationScreenExitTestDelegate* test_delegate);
 
   void SetChildSetupStep();
-  void SetDefaultStep();
 
  private:
   // BaseScreen:

@@ -194,7 +194,6 @@ export class UserCreation extends UserCreationScreenElementBase {
       'setIsBackButtonVisible',
       'setTriageStep',
       'setChildSetupStep',
-      'setDefaultStep',
     ];
   }
 
@@ -209,6 +208,7 @@ export class UserCreation extends UserCreationScreenElementBase {
   onBeforeShow(): void {
     if (this.isOobeSoftwareUpdateEnabled_) {
       this.restoreOobeUIState();
+      this.selectedUserType = '';
       if (!loadTimeData.getBoolean('isOobeFlow')) {
         this.titleKey_ = 'userCreationAddPersonUpdatedTitle';
         this.subtitleKey_ = 'userCreationAddPersonUpdatedSubtitle';
@@ -216,6 +216,8 @@ export class UserCreation extends UserCreationScreenElementBase {
         this.titleKey_ = 'userCreationUpdatedTitle';
         this.subtitleKey_ = 'userCreationUpdatedSubtitle';
       }
+      this.selectedEnrollTriageMethod = '';
+      this.selectedChildSetupMethod = '';
 
       return;
     }
@@ -228,14 +230,6 @@ export class UserCreation extends UserCreationScreenElementBase {
       this.titleKey_ = 'userCreationTitle';
       this.subtitleKey_ = 'userCreationSubtitle';
     }
-  }
-
-  setDefaultStep(): void {
-    Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
-    this.setUIStep(UserCreationUIState.CREATE);
-    this.selectedUserType = UserCreationUserType.SELF;
-    this.selectedEnrollTriageMethod = '';
-    this.selectedChildSetupMethod = '';
   }
 
   override ready(): void {

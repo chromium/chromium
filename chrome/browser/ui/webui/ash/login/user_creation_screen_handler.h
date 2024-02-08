@@ -27,7 +27,6 @@ class UserCreationView : public base::SupportsWeakPtr<UserCreationView> {
   virtual void SetIsBackButtonVisible(bool value) = 0;
   virtual void SetTriageStep() = 0;
   virtual void SetChildSetupStep() = 0;
-  virtual void SetDefaultStep() = 0;
 };
 
 class UserCreationScreenHandler : public UserCreationView,
@@ -48,7 +47,6 @@ class UserCreationScreenHandler : public UserCreationView,
   void SetIsBackButtonVisible(bool value) override;
   void SetTriageStep() override;
   void SetChildSetupStep() override;
-  void SetDefaultStep() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
