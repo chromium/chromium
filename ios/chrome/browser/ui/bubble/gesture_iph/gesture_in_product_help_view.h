@@ -29,10 +29,20 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 /// - `direction` also indicates which side of the view the user could perform
 /// the swipe action on. Note that the swipe movement would be toward the
 /// opposite direction.
+/// `voiceOverAnnouncement` provides a message specifically for voice-over
+/// users. This message is both shown visually in a bubble and read aloud. If
+/// value is `nil`, the `text` will be used for voice-over users.
 - (instancetype)initWithText:(NSString*)text
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
               arrowDirection:(BubbleArrowDirection)direction
+       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
     NS_DESIGNATED_INITIALIZER;
+
+/// Convenience initializer that does not provide a way to specify a different
+/// message for voice-over users.
+- (instancetype)initWithText:(NSString*)text
+          bubbleBoundingSize:(CGSize)bubbleBoundingSize
+              arrowDirection:(BubbleArrowDirection)direction;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

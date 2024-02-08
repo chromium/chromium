@@ -1480,12 +1480,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (!self.viewVisible || self.currentPage != TabGridPageRegularTabs) {
     return;
   }
-
-  if (UIAccessibilityIsVoiceOverRunning()) {
-    // TODO(crbug.com/1467873): Add a voiceover announcement to the IPH view
-    // instead of returning.
-    return;
-  }
   // Check whether the user should see the IPH.
   if (![self.delegate tabGridIsUserEligibleForSwipeToIncognitoIPH]) {
     return;
@@ -1505,12 +1499,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   expectedSize.width = regularGridView.bounds.size.width;
   GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
-            initWithText:l10n_util::GetNSString(
-                             UseRTLLayout()
-                                 ? IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH
-                                 : IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH)
-      bubbleBoundingSize:expectedSize
-          arrowDirection:BubbleArrowDirectionLeading];
+               initWithText:l10n_util::GetNSString(
+                                UseRTLLayout()
+                                    ? IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH
+                                    : IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH)
+         bubbleBoundingSize:expectedSize
+             arrowDirection:BubbleArrowDirectionLeading
+      voiceOverAnnouncement:
+          l10n_util::GetNSString(
+              UseRTLLayout() ? IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH_VOICEOVER
+                             : IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER)];
   [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
   // Return if the view does NOT fit in the regular tab grid.
