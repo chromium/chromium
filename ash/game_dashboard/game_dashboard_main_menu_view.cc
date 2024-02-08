@@ -70,8 +70,6 @@ constexpr int kPaddingHeight = 20;
 constexpr int kCenterPadding = 8;
 // Main Menu fixed width.
 constexpr int kMainMenuFixedWidth = 416;
-// Background radius.
-constexpr float kBackgroundRadius = 12;
 // Corner radius for the detail row container.
 constexpr float kDetailRowCornerRadius = 16.0f;
 constexpr gfx::RoundedCornersF kGCDetailRowCorners =
@@ -387,7 +385,6 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/1, kBubbleCornerRadius,
       cros_tokens::kCrosSysSystemHighlight1));
-  set_shadow(views::BubbleBorder::Shadow::DIALOG_SHADOW);
   set_corner_radius(kBubbleCornerRadius);
   set_close_on_deactivate(true);
   set_internal_name("GameDashboardMainMenuView");
@@ -400,7 +397,8 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(kPaddingHeight, kPaddingWidth), kCenterPadding));
+      gfx::Insets::VH(kPaddingHeight, kPaddingWidth),
+      /*between_child_spacing=*/16));
 
   AddShortcutTilesRow();
   AddFeatureDetailsRows();
@@ -639,23 +637,26 @@ void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow(
 }
 
 void GameDashboardMainMenuView::AddUtilityClusterRow() {
-  views::BoxLayoutView* container =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
-  container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  container->SetBetweenChildSpacing(kCenterPadding);
+  auto* container = AddChildView(std::make_unique<views::View>());
+  auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      /*inside_border_insets=*/gfx::Insets(),
+      /*between_child_spacing=*/16));
 
   auto* feedback_button =
-      container->AddChildView(std::make_unique<views::LabelButton>(
+      container->AddChildView(std::make_unique<ash::PillButton>(
           base::BindRepeating(
               &GameDashboardMainMenuView::OnFeedbackButtonPressed,
               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE)));
-  feedback_button->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
   feedback_button->SetID(VIEW_ID_GD_FEEDBACK_BUTTON);
-  feedback_button->SetImageLabelSpacing(kCenterPadding);
-  feedback_button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  // `feedback_button` should be left aligned. Help button and setting button
+  // should be right aligned. So add an empty view to fill the empty space.
+  auto* empty_view = container->AddChildView(std::make_unique<views::View>());
+  layout->SetFlexForView(empty_view, /*flex=*/1);
+
   container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnHelpButtonPressed,
                           base::Unretained(this)),
