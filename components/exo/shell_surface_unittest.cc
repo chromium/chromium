@@ -4499,4 +4499,16 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
   surface2->RemoveSurfaceObserver(&observer2);
 }
 
+TEST_F(ShellSurfaceTest, GetWidgetHitTestMask) {
+  auto shell_surface = test::ShellSurfaceBuilder({256, 256})
+                           .SetOrigin({100, 100})
+                           .BuildShellSurface();
+
+  EXPECT_TRUE(shell_surface->WidgetHasHitTestMask());
+  SkPath mask;
+  shell_surface->GetWidgetHitTestMask(&mask);
+  // Returned HitMask should be in the widget local coordinates.
+  EXPECT_EQ(SkRect::MakeLTRB(0, 0, 256, 256), mask.getBounds());
+}
+
 }  // namespace exo
