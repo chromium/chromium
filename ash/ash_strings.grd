@@ -2686,6 +2686,12 @@ Style notes:
       <message name="IDS_ASH_DESKS_DESK_PROFILES_BUTTON" desc="The desk profile button's accessible name">
         Desk profile menu
       </message>
+      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED" desc="The profile menu item's accessible name">
+        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box checked.
+      </message>
+      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_NOT_CHECKED" desc="The profile menu item's accessible name">
+        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box not checked.
+      </message>
       <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
         Manage profiles
       </message>
