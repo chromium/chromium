@@ -64,7 +64,8 @@ namespace notifications {
     //
     // URLs can be a data URL, a blob URL, or a URL relative to a resource
     // within this extension's .crx file
-    // <em>Required for $(ref:notifications.create)</em> method.
+    // <aside class="note"><b>Note:</b>This value is required for the
+    // $(ref:notifications.create)<code>()</code> method.</aside>
     DOMString? iconUrl;
     [nodoc] NotificationBitmap? iconBitmap;
 
@@ -78,11 +79,13 @@ namespace notifications {
     [nodoc] NotificationBitmap? appIconMaskBitmap;
 
     // Title of the notification (e.g. sender name for email).
-    // <em>Required for $(ref:notifications.create)</em> method.
+    // <aside class="note"><b>Note:</b>This value is required for the
+    // $(ref:notifications.create)<code>()</code> method.</aside>
     DOMString? title;
 
     // Main notification content.
-    // <em>Required for $(ref:notifications.create)</em> method.
+    // <aside class="note"><b>Note:</b>This value is required for the
+    // $(ref:notifications.create)<code>()</code> method.</aside>
     DOMString? message;
 
     // Alternate notification content with a lower-weight font.
