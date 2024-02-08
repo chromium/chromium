@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.webapps;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -10,18 +10,16 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.webapps.WebappDataStorage;
-import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebappsUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/** Record WebAPKs uninstall UMA. */
-public class WebApkUninstallUmaTracker {
+/** Track WebAPKs uninstalls. */
+public class WebApkUninstallTracker {
     /** Makes recordings that were deferred in order to not load native. */
-    public static void recordDeferredUma() {
+    public static void runDeferredTasks() {
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
         Set<String> uninstalledPackages =
                 preferencesManager.readStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES);
@@ -37,6 +35,8 @@ public class WebApkUninstallUmaTracker {
             WebappDataStorage webappDataStorage =
                     WebappRegistry.getInstance().getWebappDataStorage(webApkId);
             if (webappDataStorage != null) {
+                WebApkSyncService.onWebApkUninstalled(webappDataStorage.getWebApkManifestId());
+
                 long uninstallTimestamp = webappDataStorage.getWebApkUninstallTimestamp();
                 if (uninstallTimestamp == 0) {
                     uninstallTimestamp = fallbackUninstallTimestamp;
@@ -51,8 +51,6 @@ public class WebApkUninstallUmaTracker {
         }
         preferencesManager.writeStringSet(
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<String>());
-
-        // TODO(http://crbug.com/1000312): Clear WebappDataStorage for uninstalled WebAPK.
     }
 
     /** Sets WebAPK uninstall to be recorded next time that native is loaded. */
@@ -68,5 +66,5 @@ public class WebApkUninstallUmaTracker {
         }
     }
 
-    private WebApkUninstallUmaTracker() {}
+    private WebApkUninstallTracker() {}
 }

@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/sync/base/features.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
-using base::android::JavaRef;
 
 namespace webapk {
 
@@ -58,6 +58,10 @@ void WebApkSyncService::OnWebApkUsed(
   sync_bridge_->OnWebApkUsed(std::move(app_specifics));
 }
 
+void WebApkSyncService::OnWebApkUninstalled(const std::string& manifest_id) {
+  sync_bridge_->OnWebApkUninstalled(manifest_id);
+}
+
 // static
 static void JNI_WebApkSyncService_OnWebApkUsed(
     JNIEnv* env,
@@ -82,6 +86,22 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
     return;
   }
   WebApkSyncService::GetForProfile(profile)->OnWebApkUsed(std::move(specifics));
+}
+
+static void JNI_WebApkSyncService_OnWebApkUninstalled(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& java_manifest_id) {
+  if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    return;
+  }
+
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  if (profile == nullptr) {
+    return;
+  }
+
+  WebApkSyncService::GetForProfile(profile)->OnWebApkUninstalled(
+      ConvertJavaStringToUTF8(env, java_manifest_id));
 }
 
 }  // namespace webapk

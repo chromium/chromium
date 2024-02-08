@@ -31,6 +31,7 @@ class WebApkSyncService : public KeyedService {
   GetModelTypeControllerDelegate();
 
   void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+  void OnWebApkUninstalled(const std::string& manifest_id);
 
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;

@@ -25,6 +25,10 @@ public class WebApkSyncService {
         }
     }
 
+    static void onWebApkUninstalled(String manifestId) {
+        WebApkSyncServiceJni.get().onWebApkUninstalled(manifestId);
+    }
+
     static WebApkSpecifics getWebApkSpecifics(WebappInfo webApkInfo) {
         if (webApkInfo == null || !webApkInfo.isForWebApk()) {
             return null;
@@ -83,5 +87,7 @@ public class WebApkSyncService {
     @NativeMethods
     interface Natives {
         void onWebApkUsed(byte[] webApkSpecifics);
+
+        void onWebApkUninstalled(String manifestId);
     }
 }

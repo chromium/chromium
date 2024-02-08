@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
-import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
@@ -88,6 +87,7 @@ import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
+import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
@@ -464,7 +464,7 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 ChromeApplicationImpl.getComponent().resolveClearDataDialogResultRecorder()
                         ::makeDeferredRecordings);
-        deferredStartupHandler.addDeferredTask(WebApkUninstallUmaTracker::recordDeferredUma);
+        deferredStartupHandler.addDeferredTask(WebApkUninstallTracker::runDeferredTasks);
 
         deferredStartupHandler.addDeferredTask(
                 () -> IncognitoTabLauncher.updateComponentEnabledState());
