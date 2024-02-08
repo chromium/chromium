@@ -129,10 +129,7 @@ static_library("security_interstitial_page") {
 }
 
 proto_library("proto") {
-  sources = [
-    "cert_logger.proto",
-    "ssl_error_assistant.proto",
-  ]
+  sources = [ "ssl_error_assistant.proto" ]
 }
 
 source_set("unit_tests") {
