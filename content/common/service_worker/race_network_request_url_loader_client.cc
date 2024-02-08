@@ -18,6 +18,7 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -256,14 +257,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If the fetch handler result is a fallback, commit the
       // RaceNetworkRequest response. If the result is not a fallback and the
-      // response is not 200, use the other response from the fetch handler
-      // instead because it may have a response from the cache.
+      // response is not ok status, use the other response from the fetch
+      // handler instead because it may have a response from the cache.
       // TODO(crbug.com/1420517): More comprehensive error handling may be
       // needed, especially the case when HTTP cache hit or redirect happened.
       //
       // When the AutoPreload is enabled, RaceNetworkRequest works just for the
       // dedupe purpose. The fetch handler should always commit the response.
-      if (head_->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
+      if (!network::IsSuccessfulStatus(head_->headers->response_code())) {
         owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       } else {
         owner_->SetCommitResponsibility(
