@@ -45,15 +45,8 @@
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
-  .signin-button {
-    margin-inline-end: 8px;
-    padding: 8px 16px 8px 8px;
-  }
-
-  .signin-icon {
-    background-color: var(--text-color);
-    margin-inline-end: 4px;
-    margin-inline-start: 0;
+  #signinButton > iron-icon {
+    margin-inline-end: 0;
   }
 
   #mac-address-container {
@@ -95,11 +88,11 @@
       </cr-policy-indicator>
     </template>
   </div>
-  <cr-button class="signin-button" id="signinButton" on-click="onSigninClick_"
+  <cr-button id="signinButton" on-click="onSigninClick_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
-    <div class="signin-icon cr-icon icon-external"></div>
-      $i18n{networkButtonSignin}
+    <iron-icon icon="cr:open-in-new" slot="prefix-icon"></iron-icon>
+    $i18n{networkButtonSignin}
   </cr-button>
   <cr-button id="forgetButton" on-click="onForgetClick_"
       hidden$="[[!showForget_(managedProperties_)]]"
