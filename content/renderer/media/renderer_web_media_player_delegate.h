@@ -32,11 +32,10 @@ enum class MediaContentType;
 
 // Standard implementation of WebMediaPlayerDelegate; communicates state to
 // the MediaPlayerDelegateHost.
-class CONTENT_EXPORT RendererWebMediaPlayerDelegate
+class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
     : public content::RenderFrameObserver,
       public blink::WebViewObserver,
-      public blink::WebMediaPlayerDelegate,
-      public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
+      public blink::WebMediaPlayerDelegate {
  public:
   explicit RendererWebMediaPlayerDelegate(content::RenderFrame* render_frame);
 
@@ -152,6 +151,8 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Last page shown/hidden state sent to the player.  Unset if we have not sent
   // any message.  Used to elide duplicates.
   std::optional<bool> is_shown_;
+
+  base::WeakPtrFactory<RendererWebMediaPlayerDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace media
