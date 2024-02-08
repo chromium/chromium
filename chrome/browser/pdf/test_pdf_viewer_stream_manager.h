@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 class NavigationHandle;
@@ -35,14 +36,16 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Wait until the PDF has finished loading. `embedder_host` must be a PDF
-  // embedder host, otherwise this will hang the test.
-  void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host);
+  // Wait until the PDF has finished loading. Returns true if the PDF loads
+  // successfully, false otherwise. The test will hang if `embedder_host` is not
+  // a PDF, or if the PDF frames never finish navigating.
+  [[nodiscard]] testing::AssertionResult WaitUntilPdfLoaded(
+      content::RenderFrameHost* embedder_host);
 
   // Same as `WaitUntilPdfLoaded()`, but the first child of the primary main
   // frame should be the embedder. This is a common case where an HTML page only
   // embeds a single PDF.
-  void WaitUntilPdfLoadedInFirstChild();
+  [[nodiscard]] testing::AssertionResult WaitUntilPdfLoadedInFirstChild();
 
  private:
   base::OnceClosure on_pdf_loaded_;

@@ -584,8 +584,8 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // frame.
     content::RenderFrameHost* frame;
     if (UseOopif()) {
-      GetTestPdfViewerStreamManager(web_contents)
-          ->WaitUntilPdfLoadedInFirstChild();
+      ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                      ->WaitUntilPdfLoadedInFirstChild());
       frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     } else {
       auto* guest_view =

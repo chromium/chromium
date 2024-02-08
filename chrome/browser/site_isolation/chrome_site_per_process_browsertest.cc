@@ -397,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   ASSERT_TRUE(subframe_main_host);
   content::RenderFrameHost* embedder_host = ChildFrameAt(subframe_main_host, 0);
   ASSERT_TRUE(embedder_host);
-  GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host);
+  ASSERT_TRUE(
+      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
 
   // The primary main frame shouldn't be the PDF embedder and shouldn't have a
   // PDF stream.

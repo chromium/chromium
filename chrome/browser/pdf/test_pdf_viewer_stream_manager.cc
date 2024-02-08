@@ -9,11 +9,13 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace pdf {
 
@@ -52,7 +54,7 @@ void TestPdfViewerStreamManager::DidFinishNavigation(
   std::move(on_pdf_loaded_).Run();
 }
 
-void TestPdfViewerStreamManager::WaitUntilPdfLoaded(
+testing::AssertionResult TestPdfViewerStreamManager::WaitUntilPdfLoaded(
     content::RenderFrameHost* embedder_host) {
   // If all of the PDF frames haven't navigated, wait.
   auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
@@ -62,16 +64,16 @@ void TestPdfViewerStreamManager::WaitUntilPdfLoaded(
     run_loop.Run();
   }
 
-  // TODO(crbug.com/1445746): Currently, this only waits until all of the PDF
-  // frames finished navigating. Wait until the PDF extension and content has
-  // finished loading, too.
+  // Wait until the PDF extension and content are loaded.
+  return pdf_extension_test_util::EnsurePDFHasLoaded(embedder_host);
 }
 
-void TestPdfViewerStreamManager::WaitUntilPdfLoadedInFirstChild() {
+testing::AssertionResult
+TestPdfViewerStreamManager::WaitUntilPdfLoadedInFirstChild() {
   content::RenderFrameHost* embedder_host =
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   CHECK(embedder_host);
-  WaitUntilPdfLoaded(embedder_host);
+  return WaitUntilPdfLoaded(embedder_host);
 }
 
 TestPdfViewerStreamManagerFactory::TestPdfViewerStreamManagerFactory() {

@@ -1521,7 +1521,8 @@ class SitePerProcessInteractivePDFTest
 
   void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host) {
     if (UseOopif()) {
-      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host);
+      ASSERT_TRUE(
+          GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
     } else {
       auto* guest_view =
           GetTestGuestViewManager()->WaitForSingleGuestViewCreated();

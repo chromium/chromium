@@ -254,7 +254,9 @@ testing::AssertionResult
 PDFExtensionTestBase::EnsurePDFHasLoadedWithValidFrameTree() {
   content::WebContents* contents = GetActiveWebContents();
   testing::AssertionResult result =
-      pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+      UseOopif() ? GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
+                       contents->GetPrimaryMainFrame())
+                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
 
   // Ensure the frame tree contains a PDF extension host and a PDF plugin frame.
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(contents));

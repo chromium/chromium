@@ -2340,7 +2340,8 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   if (UseOopif()) {
     content::NavigateIframeToURL(web_contents,
                                  /*iframe_id=*/"test", subframe_url);
-    GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild();
+    ASSERT_TRUE(
+        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
@@ -2525,7 +2526,8 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   if (UseOopif()) {
     content::NavigateIframeToURL(web_contents,
                                  /*iframe_id=*/"test", subframe_url);
-    GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild();
+    ASSERT_TRUE(
+        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);

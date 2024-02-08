@@ -3666,8 +3666,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoFullPage) {
   if (UseOopif()) {
     // Verify the pdf has loaded. The test will timeout if the PDF fails to
     // load.
-    GetTestPdfViewerStreamManager(incognito_contents)
-        ->WaitUntilPdfLoaded(incognito_primary_main_frame);
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                    ->WaitUntilPdfLoaded(incognito_primary_main_frame));
   } else {
     ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
         incognito_primary_main_frame));
@@ -3685,8 +3685,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoEmbed) {
   if (UseOopif()) {
     // Verify the pdf has loaded. The test will timeout if the PDF fails to
     // load.
-    GetTestPdfViewerStreamManager(incognito_contents)
-        ->WaitUntilPdfLoadedInFirstChild();
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
   } else {
     ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
         incognito_contents->GetPrimaryMainFrame()));
@@ -3707,8 +3707,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
   // Verify the pdf has loaded. The test will timeout if the PDF fails to
   // load.
   auto* incognito_contents = GetIncognitoActiveWebContents();
-  GetTestPdfViewerStreamManager(incognito_contents)
-      ->WaitUntilPdfLoadedInFirstChild();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                  ->WaitUntilPdfLoadedInFirstChild());
 }
 
 // PDF extension tests for the OOPIF PDF viewer.
@@ -3754,42 +3754,41 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
 // This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                        OopifPdfFindFullPagePdfExtensionHost) {
+  auto* web_contents = GetActiveWebContents();
   {
     // Navigate to a non-PDF page.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/title1.html")));
 
     // Verify that there is no full-page pdf extension host on non-PDF page.
-    EXPECT_FALSE(
-        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 
   {
     // Load page with embedded PDF and make sure it succeeds.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-    GetTestPdfViewerStreamManager(GetActiveWebContents())
-        ->WaitUntilPdfLoadedInFirstChild();
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
 
     // Verify that there is no full-page pdf extension host on embedded PDF.
-    EXPECT_FALSE(
-        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 
   {
     // Load a full-page PDF and make sure it succeeds.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-    GetTestPdfViewerStreamManager(GetActiveWebContents())
-        ->WaitUntilPdfLoaded(GetActiveWebContents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame()));
 
     content::RenderFrameHost* child_frame =
-        content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+        content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
 
     // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
-    EXPECT_EQ(child_frame, pdf_frame_util::FindFullPagePdfExtensionHost(
-                               GetActiveWebContents()));
+    EXPECT_EQ(child_frame,
+              pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 }
 
