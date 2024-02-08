@@ -1298,4 +1298,9 @@ AwContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
   return network::mojom::IpProtectionProxyBypassPolicy::kNone;
 }
 
+bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kWebViewFpsComponent);
+}
+
 }  // namespace android_webview

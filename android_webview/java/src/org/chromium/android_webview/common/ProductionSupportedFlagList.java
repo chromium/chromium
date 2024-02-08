@@ -888,6 +888,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
                 "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
         Flag.baseFeature("SkipUnnecessaryThreadHopsForParseHeaders"),
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_FPS_COMPONENT,
+                "Enables installing the first party sets component to WebViews."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

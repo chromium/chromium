@@ -1,20 +1,19 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
+#include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,8 +47,6 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
   base::test::TaskEnvironment env_;
 
   base::ScopedTempDir component_install_dir_;
-  first_party_sets::ScopedMockFirstPartySetsHandler
-      mock_first_party_sets_handler_;
 };
 
 TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
@@ -58,7 +55,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
           component_install_dir_.GetPath())));
 
   base::test::TestFuture<base::Version, base::File> future;
-  FirstPartySetsComponentInstallerPolicy(future.GetCallback())
+  FirstPartySetsComponentInstallerPolicy(future.GetCallback(),
+                                         base::TaskPriority::USER_BLOCKING)
       .ComponentReadyForTesting(base::Version(),
                                 component_install_dir_.GetPath(),
                                 base::Value::Dict());
@@ -75,7 +73,8 @@ TEST_F(FirstPartySetsComponentInstallerTest,
           component_install_dir_.GetPath())));
 
   base::test::TestFuture<base::Version, base::File> future;
-  FirstPartySetsComponentInstallerPolicy policy(future.GetCallback());
+  FirstPartySetsComponentInstallerPolicy policy(
+      future.GetCallback(), base::TaskPriority::USER_BLOCKING);
   policy.OnRegistrationComplete();
 
   std::tuple<base::Version, base::File> got = future.Take();
@@ -92,7 +91,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   const std::string expectation = "some first party sets";
   base::test::TestFuture<base::Version, base::File> future;
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-      future.GetCallback());
+      future.GetCallback(), base::TaskPriority::USER_BLOCKING);
 
   ASSERT_TRUE(base::WriteFile(
       FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
@@ -114,7 +113,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
 // the OnceCallback.
 TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
   base::test::TestFuture<base::Version, base::File> future;
-  FirstPartySetsComponentInstallerPolicy policy(future.GetCallback());
+  FirstPartySetsComponentInstallerPolicy policy(
+      future.GetCallback(), base::TaskPriority::USER_BLOCKING);
 
   policy.OnRegistrationComplete();
   std::tuple<base::Version, base::File> got = future.Take();
@@ -139,7 +139,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
 // newer versions are installed.
 TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   base::test::TestFuture<base::Version, base::File> future;
-  FirstPartySetsComponentInstallerPolicy policy(future.GetCallback());
+  FirstPartySetsComponentInstallerPolicy policy(
+      future.GetCallback(), base::TaskPriority::USER_BLOCKING);
 
   const base::Version version = base::Version("0.0.1");
   const std::string sets_v1 = "first party sets v1";
@@ -176,7 +177,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
 }
 
 TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes) {
-  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::DoNothing(), base::TaskPriority::USER_BLOCKING);
 
   EXPECT_THAT(policy.GetInstallerAttributesForTesting(), IsEmpty());
 }

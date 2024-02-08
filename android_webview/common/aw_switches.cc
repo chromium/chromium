@@ -84,4 +84,8 @@ const char kWebViewEnableTrustTokensComponent[] =
 // updater downloading service in nonembedded WebView.
 const char kWebViewTpcdMetadaComponent[] = "webview-tpcd-metadata-component";
 
+// Enables downloading FirstPartySetsComponentInstallerPolicy by the component
+// updater downloading service in nonembedded WebView.
+const char kWebViewFpsComponent[] = "webview-fps-component";
+
 }  // namespace switches
