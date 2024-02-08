@@ -1426,9 +1426,20 @@ void ReadAnythingAppModel::ResetReadAloudState() {
 
 bool ReadAnythingAppModel::IsTextForReadAnything(
     ui::AXNodeID ax_node_id) const {
-  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
-  return (GetHtmlTag(ax_node_id).length() == 0);
+  // ListMarkers will have an HTML tag of "::marker," so they won't be
+  // considered text when checking for the length of the html tag. However, in
+  // order to read out loud ordered bullets, nodes that have the kListMarker
+  // role should be included.
+  // Note: This technically will include unordered list markers like bullets,
+  // but these won't be spoken because they will be filtered by the TTS engine.
+  ui::AXNode* node = GetAXNode(ax_node_id);
+  bool is_list_marker = node->GetRole() == ax::mojom::Role::kListMarker;
+
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead of
+  // checking the length of the html tag?
+  return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
 }
+
 bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
   return (c == '(' || c == '{' || c == '[' || c == '<');
 }
