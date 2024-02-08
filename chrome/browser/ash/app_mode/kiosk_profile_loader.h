@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -24,49 +24,66 @@ namespace ash {
 
 class UserContext;
 
-// KioskProfileLoader loads a special profile for a given app. It first
-// attempts to login for the app's generated user id. If the login is
-// successful, it prepares app profile then calls the delegate.
-class KioskProfileLoader {
+// Helper class that implements `LoadProfile()`.
+class KioskProfileLoader : public CancellableJob {
  public:
   using OldEncryptionUserContext = std::unique_ptr<UserContext>;
+  using ErrorResult =
+      std::variant<KioskAppLaunchError::Error, OldEncryptionUserContext>;
+  using Result = base::expected<Profile*, ErrorResult>;
+  using ResultCallback = base::OnceCallback<void(Result result)>;
 
-  class Delegate {
-   public:
-    virtual void OnProfileLoaded(Profile* profile) = 0;
-    virtual void OnProfileLoadFailed(KioskAppLaunchError::Error error) = 0;
-    virtual void OnOldEncryptionDetected(
-        OldEncryptionUserContext user_context) = 0;
+  [[nodiscard]] static std::unique_ptr<CancellableJob> Run(
+      const AccountId& app_account_id,
+      KioskAppType app_type,
+      ResultCallback on_done);
 
-   protected:
-    virtual ~Delegate() = default;
-  };
-
-  KioskProfileLoader(const AccountId& app_account_id,
-                     KioskAppType app_type,
-                     Delegate* delegate);
   KioskProfileLoader(const KioskProfileLoader&) = delete;
   KioskProfileLoader& operator=(const KioskProfileLoader&) = delete;
-  ~KioskProfileLoader();
-
-  // Starts profile load. Calls delegate on success or failure.
-  void Start();
+  ~KioskProfileLoader() override;
 
  private:
+  KioskProfileLoader(const AccountId& app_account_id,
+                     KioskAppType app_type,
+                     ResultCallback on_done);
+
+  void CheckCryptohomeIsNotMounted();
   void LoginAsKioskAccount();
   void PrepareProfile(const UserContext& user_context);
-  void ReportProfileLoaded(Profile& profile);
-  void ReportLaunchResult(KioskAppLaunchError::Error error);
-  void ReportOldEncryptionUserContext(OldEncryptionUserContext user_context);
+  void ReturnSuccess(Profile& profile);
+  void ReturnError(ErrorResult result);
 
   const AccountId account_id_;
   const KioskAppType app_type_;
-  raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   std::unique_ptr<CancellableJob> current_step_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  ResultCallback on_done_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+// Loads the Kiosk profile for a given app.
+//
+// It executes the following steps:
+//
+// 1. Wait for cryptohome and verify cryptohome is not yet mounted.
+// 2. Login with the account generated for the Kiosk app.
+// 3. Prepare a `Profile` for the app.
+//
+// `on_done` will either be called with the resulting profile on success, or
+// with a `KioskProfileLoader::ErrorResult` on error.
+//
+// The returned `unique_ptr` can be destroyed to cancel this task. In that case
+// `on_done` will not be called.
+[[nodiscard]] std::unique_ptr<CancellableJob> LoadProfile(
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    KioskProfileLoader::ResultCallback on_done);
+
+// Convenience define to declare references to `LoadProfile`. Useful for callers
+// to override `LoadProfile` in tests.
+using LoadProfileCallback = base::OnceCallback<decltype(LoadProfile)>;
 
 }  // namespace ash
 
