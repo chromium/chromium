@@ -892,12 +892,14 @@ if (is_win) {
     sources = [
       "$root_out_dir/app_mode_loader",
       "$root_out_dir/chrome_crashpad_handler",
+      "$root_out_dir/web_app_shortcut_copier",
     ]
 
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [
       "//chrome/app_shim:app_mode_loader",
+      "//chrome/browser/web_applications:web_app_shortcut_copier",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
 
