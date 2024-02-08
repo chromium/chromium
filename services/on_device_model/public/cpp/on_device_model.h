@@ -6,6 +6,7 @@
 #define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_ON_DEVICE_MODEL_H_
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace on_device_model {
@@ -30,7 +31,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
         mojo::PendingRemote<mojom::StreamingResponder> response) = 0;
   };
 
-  virtual std::unique_ptr<Session> CreateSession() = 0;
+  virtual std::unique_ptr<Session> CreateSession(
+      std::optional<uint32_t> adaptation_id) = 0;
+  virtual base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
+      mojom::LoadAdaptationParamsPtr params) = 0;
 };
 
 }  // namespace on_device_model

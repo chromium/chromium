@@ -4,6 +4,16 @@
 
 module on_device_model.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Opened file resources needed to define an adaptation.
+struct AdaptationAssets {
+  mojo_base.mojom.ReadOnlyFile? model;
+  // TODO(b/313919363): This should also be a ReadOnlyFile.
+  mojo_base.mojom.File? weights;
+};
+
 // Conveys the result of a language detection attempt on output text.
 struct LanguageDetectionResult {
   // Language code of the detected language. If detection was indeterminate,
@@ -61,6 +71,12 @@ interface ContextClient {
   OnComplete(uint32 tokens_processed);
 };
 
+// Params to describe the adaptation to load.
+struct LoadAdaptationParams {
+  // Assets for an adaptation.
+  AdaptationAssets assets;
+};
+
 // Options to control how the model handles input.
 struct InputOptions {
   // The text for this input.
@@ -112,6 +128,12 @@ interface OnDeviceModel {
   // Starts a session with this model. If a session starts before the previous
   // one has completed, the previous session will be canceled.
   StartSession(pending_receiver<Session> session);
+
+  // Loads an adaptation with the specified params. This will always load the
+  // adaptation on top of the base model.
+  LoadAdaptation(
+      LoadAdaptationParams params,
+      pending_receiver<OnDeviceModel> model) => (LoadModelResult result);
 };
 
 // Classifies the device based on how fast it is estimated to be able to run a

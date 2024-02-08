@@ -23,8 +23,14 @@ mojom("mojom") {
           cpp = "::on_device_model::ModelAssets"
           move_only = true
         },
+        {
+          mojom = "on_device_model.mojom.AdaptationAssets"
+          cpp = "::on_device_model::AdaptationAssets"
+          move_only = true
+        },
       ]
       traits_headers = [
+        "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
       ]
       traits_public_deps =

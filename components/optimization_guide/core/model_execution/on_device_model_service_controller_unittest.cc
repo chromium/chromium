@@ -177,6 +177,13 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
     receivers_.Add(std::make_unique<FakeOnDeviceSession>(), std::move(session));
   }
 
+  void LoadAdaptation(
+      on_device_model::mojom::LoadAdaptationParamsPtr params,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadAdaptationCallback callback) override {
+    std::move(callback).Run(on_device_model::mojom::LoadModelResult::kSuccess);
+  }
+
  private:
   mojo::UniqueReceiverSet<on_device_model::mojom::Session> receivers_;
 };

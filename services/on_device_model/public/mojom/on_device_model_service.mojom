@@ -37,6 +37,9 @@ struct LoadModelParams {
   // The number of scores output by the TS model, an implementation defined
   // default if unspecified.
   uint32? ts_dimension;
+
+  // List of adaptation ranks the model should support.
+  array<uint32> adaptation_ranks;
 };
 
 // A service which allows loading trusted models which are stored on-device and
