@@ -2844,6 +2844,10 @@ bool IsLineHeightPropertyHandle(const PropertyHandle& property) {
   return property == PropertyHandle(GetCSSPropertyLineHeight());
 }
 
+bool IsDisplayPropertyHandle(const PropertyHandle& property) {
+  return property == PropertyHandle(GetCSSPropertyDisplay());
+}
+
 void AdoptActiveAnimationInterpolations(
     EffectStack* effect_stack,
     CSSAnimationUpdate& update,
@@ -3248,6 +3252,13 @@ bool CSSAnimations::IsAnimatingLineHeightProperty(
 bool CSSAnimations::IsAnimatingRevert(
     const ElementAnimations* element_animations) {
   return element_animations && element_animations->GetEffectStack().HasRevert();
+}
+
+bool CSSAnimations::IsAnimatingDisplayProperty(
+    const ElementAnimations* element_animations) {
+  return element_animations &&
+         element_animations->GetEffectStack().AffectsProperties(
+             IsDisplayPropertyHandle);
 }
 
 void CSSAnimations::Trace(Visitor* visitor) const {

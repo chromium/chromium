@@ -85,6 +85,7 @@ class CORE_EXPORT CSSAnimations final {
   static bool IsAnimatingFontAffectingProperties(const ElementAnimations*);
   static bool IsAnimatingLineHeightProperty(const ElementAnimations*);
   static bool IsAnimatingRevert(const ElementAnimations*);
+  static bool IsAnimatingDisplayProperty(const ElementAnimations*);
   static void CalculateTimelineUpdate(CSSAnimationUpdate&,
                                       Element& animating_element,
                                       const ComputedStyleBuilder&);
