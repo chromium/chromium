@@ -397,6 +397,7 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="kWebAppUninstall"/>
   <int value="37" label="kOsIntegrationForceUnregistration"/>
   <int value="38" label="kRemoteDebugging"/>
+  <int value="39" label="kHeadlessCommand"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

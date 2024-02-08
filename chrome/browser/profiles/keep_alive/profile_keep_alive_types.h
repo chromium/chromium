@@ -165,9 +165,13 @@ enum class ProfileKeepAliveOrigin {
   // closed.
   kRemoteDebugging = 38,
 
-  kMaxValue = kRemoteDebugging,
+  // Used by Headless Command Processor to retain the profile used by the
+  // command handler, which does not belong to any window.
+  kHeadlessCommand = 39,
+
+  kMaxValue = kHeadlessCommand,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 
 std::ostream& operator<<(std::ostream& out,
                          const ProfileKeepAliveOrigin& origin);

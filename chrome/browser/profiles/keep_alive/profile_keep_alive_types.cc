@@ -83,6 +83,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kOsIntegrationForceUnregistration";
     case ProfileKeepAliveOrigin::kRemoteDebugging:
       return out << "kRemoteDebugging";
+    case ProfileKeepAliveOrigin::kHeadlessCommand:
+      return out << "kHeadlessCommand";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
