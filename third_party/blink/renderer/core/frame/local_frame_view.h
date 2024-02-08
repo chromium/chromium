@@ -215,11 +215,16 @@ class CORE_EXPORT LocalFrameView final
   enum IntersectionObservationState {
     // The next painting frame does not need an intersection observation.
     kNotNeeded = 0,
-    // The next painting frame needs an intersection observation.
-    kDesired = 1,
+    // The next painting frame needs to update
+    // - intersection observations whose MinScrollDeltaToUpdate is exceeded by
+    //   the accumulated scroll delta in the frame.
+    // - intersection observers that trackVisibility.
+    kScrollAndVisibilityOnly = 1,
+    // The next painting frame needs to update all intersection observations.
+    kDesired = 2,
     // The next painting frame must be generated up to intersection observation
     // (even if frame is throttled).
-    kRequired = 2
+    kRequired = 3
   };
 
   // Sets the internal IntersectionObservationState to the max of the
@@ -230,7 +235,6 @@ class CORE_EXPORT LocalFrameView final
       const {
     return intersection_observation_state_;
   }
-  void InvalidateIntersectionObservations();
 
   // Get the InstersectionObservation::ComputeFlags for target elements in this
   // view.

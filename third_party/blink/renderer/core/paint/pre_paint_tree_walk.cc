@@ -93,11 +93,13 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     if (auto* client = root_frame_view.GetChromeClient()) {
       client->InvalidateContainer();
     }
-    // TODO(wangxianzhu): For now we call this whenever there has been any
-    // paint property change or paint invalidation. If this shows up as a
-    // performance issue, we should exclude scroll, effect and non-layout
-    // paint invalidations for v1 intersection observations.
-    root_frame_view.InvalidateIntersectionObservations();
+    // If any change needs a more significant intersection update in a frame
+    // view, we should have set the state on that frame view during the tree
+    // walk or earlier.
+    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+      root_frame_view.SetIntersectionObservationState(
+          LocalFrameView::kScrollAndVisibilityOnly);
+    }
   }
 }
 

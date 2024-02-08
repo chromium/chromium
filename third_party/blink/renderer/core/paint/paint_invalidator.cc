@@ -260,8 +260,8 @@ bool PaintInvalidator::InvalidatePaint(
     UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
     if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
         object.ShouldCheckLayoutForPaintInvalidation()) {
-      object.GetMutableForPainting()
-          .InvalidateIntersectionObserverCachedRects();
+      object.GetFrameView()->SetIntersectionObservationState(
+          LocalFrameView::kDesired);
     }
   } else {
     context.old_paint_offset = context.fragment_data->PaintOffset();

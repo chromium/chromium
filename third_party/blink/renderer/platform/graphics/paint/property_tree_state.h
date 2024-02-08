@@ -84,8 +84,6 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
   bool ChangedToRoot(PaintPropertyChangeType change) const {
     return Changed(change, Root());
   }
-  bool ChangedExceptScrollAndEffect(PaintPropertyChangeType change,
-                                    const PropertyTreeState& relative_to) const;
 
   String ToString() const;
 #if DCHECK_IS_ON()

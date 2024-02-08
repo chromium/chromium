@@ -530,6 +530,11 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
 
   cached_rects->valid = false;
 
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    // TODO(crbug.com/40883761): Evaluate performance.
+    return;
+  }
+
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
   }
@@ -541,34 +546,21 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
     return;
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // Cached rects can only be used if there are no scrollable objects in the
-    // hierarchy between target and root (a scrollable root is ok). The reason
-    // is that a scroll change in an intermediate scroller would change the
-    // intersection geometry, but we intentionally don't invalidate cached
-    // rects and schedule intersection update to enable the minimul-scroll-
-    // delta-to-update optimization.
-    if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
-        root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
-      return;
-    }
-  } else {
-    if (RootIsImplicit()) {
-      return;
-    }
-    // Cached rects can only be used if there are no scrollable objects in the
-    // hierarchy between target and root (a scrollable root is ok). The reason
-    // is that a scroll change in an intermediate scroller would change the
-    // intersection geometry, but it would not properly trigger an invalidation
-    // of the cached rects.
-    PaintLayer* root_layer = root_and_target.target->View()->Layer();
-    if (!root_layer) {
-      return;
-    }
-    if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
-        root_and_target.root) {
-      return;
-    }
+  if (RootIsImplicit()) {
+    return;
+  }
+  // Cached rects can only be used if there are no scrollable objects in the
+  // hierarchy between target and root (a scrollable root is ok). The reason
+  // is that a scroll change in an intermediate scroller would change the
+  // intersection geometry, but it would not properly trigger an invalidation
+  // of the cached rects.
+  PaintLayer* root_layer = root_and_target.target->View()->Layer();
+  if (!root_layer) {
+    return;
+  }
+  if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
+      root_and_target.root) {
+    return;
   }
 
   flags_ |= kShouldUseCachedRects;
