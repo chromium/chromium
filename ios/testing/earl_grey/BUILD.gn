@@ -66,10 +66,7 @@ source_set("eg_test_support+eg2") {
     "//ui/display",
   ]
 
-  public_deps = [
-    ":launch_configuration",
-    "//ios/third_party/earl_grey2:test_lib",
-  ]
+  public_deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("launch_configuration") {
