@@ -112,4 +112,11 @@ void VendingMutablePtrsFromConstFactoryDisallowed() {
   }
 }
 
+void UnauthorizedBindToCurrentSequenceDisallowed() {
+  Unrelated unrelated;
+  WeakPtrFactory<Unrelated> factory(&unrelated);
+  factory.BindToCurrentSequence(
+      subtle::BindWeakPtrFactoryPassKey());  // expected-error {{calling a private constructor of class 'base::subtle::BindWeakPtrFactoryPassKey'}}
+}
+
 }  // namespace base

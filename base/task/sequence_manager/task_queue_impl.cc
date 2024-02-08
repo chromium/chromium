@@ -35,7 +35,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
-#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1588,7 +1587,8 @@ void TaskQueueImpl::OnQueueEnabledVoteChanged(bool enabled) {
 }
 
 void TaskQueueImpl::CompleteInitializationOnBoundThread() {
-  voter_weak_ptr_factory_.BindToCurrentSequence(PassKey<TaskQueueImpl>());
+  voter_weak_ptr_factory_.BindToCurrentSequence(
+      subtle::BindWeakPtrFactoryPassKey());
 }
 
 TaskQueue::QueuePriority TaskQueueImpl::DefaultPriority() const {
