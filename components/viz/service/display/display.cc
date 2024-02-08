@@ -952,6 +952,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       DCHECK(!disable_image_filtering);
     }
 
+    DBG_LOG("renderer.ptr", "renderer = %p%s", this,
+            renderer_.get() == software_renderer_ ? " (software)" : "");
+
     draw_timer.emplace();
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
     overlay_processor_->SetIsPageFullscreen(frame.page_fullscreen_mode);

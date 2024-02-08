@@ -123,6 +123,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   struct OverlayLock;
   class ScopedSkImageBuilder;
   class ScopedYUVSkImageBuilder;
+  class VizDebuggerLog;
 
   void ClearCanvas(SkColor4f color);
   void ClearFramebuffer();
