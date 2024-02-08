@@ -17,6 +17,7 @@
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -47,6 +48,8 @@ class TabResumptionPageHandler
   // tab_resumption::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
   std::vector<history::mojom::TabPtr> GetForeignTabs();
@@ -63,7 +66,13 @@ class TabResumptionPageHandler
       GetTabsCallback callback,
       const std::vector<history::AnnotatedVisit> annotated_visits);
 
+  void DismissModule(const std::vector<GURL>& urls) override;
+  void RestoreModule() override;
+
  private:
+  // Method to determine if a url is in the list of previously dismissed urls.
+  bool IsNewURL(GURL url);
+
   // The task tracker for the HistoryService callbacks.
   base::CancelableTaskTracker task_tracker_;
 

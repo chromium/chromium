@@ -9,4 +9,10 @@ import "url/mojom/url.mojom";
 interface PageHandler {
   // Queries for tabs.
   GetTabs() => (array<history.mojom.Tab> tabs);
+
+  // Dismisses module until new tabs are found.
+  DismissModule(array<url.mojom.Url> urls);
+
+  // Restores the module immediately.
+  RestoreModule();
 };
