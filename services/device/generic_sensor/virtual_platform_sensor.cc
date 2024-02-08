@@ -15,8 +15,12 @@ VirtualPlatformSensor::VirtualPlatformSensor(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
     PlatformSensorProvider* provider,
-    std::optional<SensorReading> pending_reading)
+    std::optional<SensorReading> pending_reading,
+    const mojom::VirtualSensorMetadata& metadata)
     : PlatformSensor(type, reading_buffer, provider),
+      minimum_supported_frequency_(metadata.minimum_frequency),
+      maximum_supported_frequency_(metadata.maximum_frequency),
+      reporting_mode_(metadata.reporting_mode),
       pending_reading_(std::move(pending_reading)) {}
 
 VirtualPlatformSensor::~VirtualPlatformSensor() = default;

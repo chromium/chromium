@@ -12,6 +12,7 @@
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
+#include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
 
@@ -22,7 +23,8 @@ class VirtualPlatformSensor : public PlatformSensor {
   VirtualPlatformSensor(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
                         PlatformSensorProvider* provider,
-                        std::optional<SensorReading> pending_reading);
+                        std::optional<SensorReading> pending_reading,
+                        const mojom::VirtualSensorMetadata& metadata);
 
   // Simulates the reporting of a new reading by a platform sensor.
   //
@@ -44,17 +46,6 @@ class VirtualPlatformSensor : public PlatformSensor {
   const std::optional<PlatformSensorConfiguration>& optimal_configuration()
       const {
     return optimal_configuration_;
-  }
-
-  void set_minimum_supported_frequency(double frequency) {
-    minimum_supported_frequency_ = frequency;
-  }
-  void set_maximum_supported_frequency(double frequency) {
-    maximum_supported_frequency_ = frequency;
-  }
-
-  void set_reporting_mode(mojom::ReportingMode reporting_mode) {
-    reporting_mode_ = reporting_mode;
   }
 
  protected:
