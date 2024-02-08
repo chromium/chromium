@@ -98,7 +98,7 @@ void TabBasedIPHBrowserAgent::DidStartNavigation(
   // here. In case the user navigates away when `multi_gesture_refresh_` is
   // called, it would be handled by `DidStopLoading`.
   if (!multi_gesture_refresh_) {
-    [HelpHandler() hideAllGestureInProductHelpViews];
+    [HelpHandler() handleTapOutsideOfVisibleGestureInProductHelp];
   }
 }
 
@@ -141,7 +141,10 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;
   back_forward_button_tapped_ = false;
-  [HelpHandler() hideAllGestureInProductHelpViews];
+  // Invocation of this method is usually caused by manually triggered changes
+  // to the web state, which is a result of the user tapping the location bar or
+  // toolbar, both outside of the gestural IPH.
+  [HelpHandler() handleTapOutsideOfVisibleGestureInProductHelp];
 }
 
 id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {

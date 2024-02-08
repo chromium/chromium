@@ -11,10 +11,9 @@
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
 
-// If any gesture IPH visible, remove it; does nothing otherwise. The presenter
-// of any gesture IPH should make sure it's called when the user leaves the
-// refreshed website, especially while the IPH is still visible.
-- (void)hideAllGestureInProductHelpViews;
+// Invoked when a gestural in-product help view is visible but the user has
+// tapped outside of it. Do nothing if invoked when there is no IPH view.
+- (void)handleTapOutsideOfVisibleGestureInProductHelp;
 
 // Shows a help bubble for the share button, if eligible.
 // The eligibility can depend on the UI hierarchy at the moment, the

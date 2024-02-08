@@ -170,15 +170,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [self.parcelTrackingTipBubblePresenter dismissAnimated:NO];
-  [self hideAllGestureInProductHelpViews];
+  [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
+                                                      kUnknown];
 }
 
-- (void)hideAllGestureInProductHelpViews {
-  // TODO(crbug.com/1467873): Add a new reason type and use that.
-  [self.pullToRefreshGestureIPH
-      dismissWithReason:IPHDismissalReasonType::kUnknown];
-  [self.swipeBackForwardGestureIPH
-      dismissWithReason:IPHDismissalReasonType::kUnknown];
+- (void)handleTapOutsideOfVisibleGestureInProductHelp {
+  [self hideAllGestureInProductHelpViewsForReason:
+            IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
 }
 
 - (void)presentShareButtonHelpBubbleIfEligible {
@@ -708,6 +706,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     }
   }
   return presenter;
+}
+
+// If any gesture IPH visible, remove it and log the `reason` why it should be
+// removed on UMA. Otherwise, do nothing. The presenter of any gesture IPH
+// should make sure it's called when the user leaves the refreshed website,
+// especially while the IPH is still visible.
+- (void)hideAllGestureInProductHelpViewsForReason:
+    (IPHDismissalReasonType)reason {
+  [self.pullToRefreshGestureIPH dismissWithReason:reason];
+  [self.swipeBackForwardGestureIPH dismissWithReason:reason];
 }
 
 #pragma mark - Private Utils
