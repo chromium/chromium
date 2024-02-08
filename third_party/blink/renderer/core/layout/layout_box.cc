@@ -1032,8 +1032,9 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
 
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
-  if (StyleRef().HasCustomScrollbarStyle())
+  if (StyleRef().HasCustomScrollbarStyle(GetDocument())) {
     return false;
+  }
   if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
     return true;
   return false;

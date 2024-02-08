@@ -2908,7 +2908,7 @@ void StyleResolver::PropagateStyleToViewport() {
                                        overflow_style->OverscrollBehaviorY())));
       }
 
-      if (overflow_style->HasCustomScrollbarStyle()) {
+      if (overflow_style->HasCustomScrollbarStyle(GetDocument())) {
         update_scrollbar_style = true;
       }
     }

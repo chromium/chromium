@@ -2672,5 +2672,15 @@
     "bases": [
       "external/wpt/custom-elements/state"
     ]
+  },
+  {
+    "prefix": "prefers-default-scrollbar-styles",
+    "platforms": ["Linux"],
+    "exclusive_tests": "ALL",
+    "bases": ["scrollbars/prefers-default-scrollbar-styles"],
+    "args": ["--enable-blink-features=PreferDefaultScrollbarStyles",
+             "--blink-settings=prefersDefaultScrollbarStyles=true"],
+    "expires": "Feb 1, 2025",
+    "owners": ["evelynn.kaplan@microsoft.com", "almaher@microsoft.com"]
   }
 ]

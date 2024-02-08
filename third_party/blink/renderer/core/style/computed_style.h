@@ -712,12 +712,7 @@ class ComputedStyle final : public ComputedStyleBase {
            ScrollbarColor().has_value();
   }
 
-  // Ignore non-standard ::-webkit-scrollbar when standard properties are in
-  // use.
-  bool HasCustomScrollbarStyle() const {
-    return HasPseudoElementStyle(kPseudoIdScrollbar) &&
-           !UsesStandardScrollbarStyle();
-  }
+  bool HasCustomScrollbarStyle(const Document& document) const;
 
   // shape-outside (aka -webkit-shape-outside)
   ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
