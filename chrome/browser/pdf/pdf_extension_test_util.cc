@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -39,6 +41,21 @@ bool IsPluginFrame(content::RenderFrameHost& frame) {
 }
 
 }  // namespace
+
+content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
+    content::RenderFrameHost* embedder_host) {
+  // PDF embedder hosts should have one child, which is the extension host.
+  if (content::ChildFrameAt(embedder_host, 1)) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* child_host =
+      content::ChildFrameAt(embedder_host, 0);
+  return child_host &&
+                 IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())
+             ? child_host
+             : nullptr;
+}
 
 content::RenderFrameHost* GetOnlyPdfExtensionHost(
     content::WebContents* contents) {
@@ -95,26 +112,52 @@ testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
     bool wait_for_hit_test_data,
     const std::string& pdf_element) {
-  bool load_success = content::EvalJs(frame, content::JsReplace(R"(
-            new Promise(resolve => {
-              window.addEventListener('message', event => {
-                if (event.origin !==
-                        'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
-                  return;
-                }
-                if (event.data.type === 'documentLoaded') {
-                  resolve(
-                      event.data.load_state === 'success');
-                } else if (event.data.type === 'passwordPrompted') {
-                  resolve(true);
-                }
-              });
-              document.getElementsByTagName($1)[0].postMessage(
-                {type: 'initialize'});
-            });
-            )",
-                                                                pdf_element))
-                          .ExtractBool();
+  // OOPIF PDF intentionally doesn't support postMessage() API for embedders.
+  // postMessage() can still be used if the script is injected into the
+  // extension frame.
+  static constexpr char kEnsurePdfHasLoadedScript[] = R"(
+    new Promise(resolve => {
+      window.addEventListener('message', event => {
+        if (event.origin !==
+                'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
+          return;
+        }
+        if (event.data.type === 'documentLoaded') {
+          resolve(event.data.load_state === 'success');
+        } else if (event.data.type === 'passwordPrompted') {
+          resolve(true);
+        }
+      });
+      %s.postMessage(
+        {type: 'initialize'});
+    });
+  )";
+
+  static constexpr char kOopifPostMessageTarget[] = "window";
+  static constexpr char kGuestViewPostMessageTarget[] =
+      "document.getElementsByTagName($1)[0]";
+
+  bool use_oopif =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif);
+
+  // For OOPIF PDF viewer, the target frame should be the PDF extension frame.
+  // Otherwise, it should be whatever frame was given.
+  content::RenderFrameHost* frame_rfh = frame.render_frame_host();
+  content::RenderFrameHost* target_frame =
+      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh) : frame_rfh;
+
+  if (use_oopif && !target_frame) {
+    return testing::AssertionFailure() << "Failed to get PDF extension frame.";
+  }
+
+  const std::string post_message_target =
+      use_oopif ? kOopifPostMessageTarget
+                : content::JsReplace(kGuestViewPostMessageTarget, pdf_element);
+  bool load_success =
+      content::EvalJs(target_frame,
+                      base::StringPrintf(kEnsurePdfHasLoadedScript,
+                                         post_message_target.c_str()))
+          .ExtractBool();
 
   if (wait_for_hit_test_data) {
     frame.render_frame_host()->ForEachRenderFrameHost(

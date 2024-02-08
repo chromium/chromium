@@ -3745,8 +3745,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
   // `EnsurePDFHasLoaded()` uses postMessage() to check that the PDF has loaded,
   // so calling it is sufficient to check that a postMessage() connection has
   // been established.
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      GetActiveWebContents()->GetPrimaryMainFrame()));
+  content::RenderFrameHost* embedder_host =
+      ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(embedder_host);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(embedder_host));
 }
 
 // This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
