@@ -126,7 +126,11 @@ enum class EditorStates {
   kPromoCardExplicitDismissal = 40,
   // Increase by 1 when the webui consent screen is shown.
   kConsentScreenImpression = 41,
-  kMaxValue = kConsentScreenImpression,
+  // Increase by 1 when a text insertion has been requested..
+  kTextInsertionRequested = 42,
+  // Increase by 1 when text has been queued for insertion.
+  kTextQueuedForInsertion = 43,
+  kMaxValue = kTextQueuedForInsertion,
 };
 
 }  // namespace ash::input_method

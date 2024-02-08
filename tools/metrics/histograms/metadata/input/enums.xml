@@ -227,6 +227,8 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="PROMO_CARD_IMPRESSION"/>
   <int value="40" label="PROMO_CARD_EXPLICIT_DISMISSAL"/>
   <int value="41" label="CONSENT_SCREEN_IMPRESSION"/>
+  <int value="42" label="TEXT_INSERTION_REQUESTED"/>
+  <int value="43" label="TEXT_QUEUED_FOR_INSERTION"/>
 </enum>
 
 <enum name="IMEGrammarActions">

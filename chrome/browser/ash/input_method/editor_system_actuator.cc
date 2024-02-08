@@ -41,6 +41,8 @@ EditorSystemActuator::EditorSystemActuator(
 EditorSystemActuator::~EditorSystemActuator() = default;
 
 void EditorSystemActuator::InsertText(const std::string& text) {
+  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
+  logger->LogEditorState(EditorStates::kTextInsertionRequested);
   // After making an announcement there needs to be a small delay to ensure any
   // other announcements triggered from a text insertion do not collide with the
   // original announcement.
@@ -110,6 +112,8 @@ void EditorSystemActuator::QueueTextInsertion(const std::string pending_text) {
   // return to the original text input.
   queued_text_insertion_ =
       std::make_unique<EditorTextInsertion>(std::move(pending_text));
+  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
+  logger->LogEditorState(EditorStates::kTextQueuedForInsertion);
   system_->CloseUI();
 }
 
