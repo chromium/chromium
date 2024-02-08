@@ -46,7 +46,6 @@ class IndexedDBBackingStore;
 class IndexedDBBucketContextHandle;
 class IndexedDBDatabase;
 class IndexedDBDataItemReader;
-class IndexedDBFactory;
 class IndexedDBPreCloseTaskQueue;
 
 constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
@@ -56,9 +55,9 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 //
 // IndexedDBBucketContext will keep its backing store around while any of these
 // is true:
-// * There are handles referencing the factory,
+// * There are handles referencing the bucket context,
 // * There are outstanding blob references to this database's blob files, or
-// * The factory is in-memory (i.e. an incognito profile).
+// * The bucket context is in-memory (i.e. an incognito profile).
 //
 // When these qualities are no longer true, `RunTasks()` will invoke
 // `ResetBackingStore()`, which returns `this` to an uninitialized state.
@@ -67,7 +66,7 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // IndexedDB task runner. To facilitate IndexedDB code running on multiple task
 // runners, `IndexedDBBucketContext` is in the process of becoming the single
 // point of communication between classes running on the main task runner, such
-// as `IndexedDBFactory`, and those that pertain to a specific bucket and
+// as `IndexedDBContextImpl`, and those that pertain to a specific bucket and
 // therefore run on a bucket's IDB task runner, such as `IndexedDBDatabase` or
 // `IndexedDBCursor`.
 class CONTENT_EXPORT IndexedDBBucketContext
@@ -312,19 +311,17 @@ class CONTENT_EXPORT IndexedDBBucketContext
   bool force_close_called_for_testing() const { return skip_closing_sequence_; }
 
  private:
-  friend IndexedDBFactory;
   friend IndexedDBBucketContextHandle;
   friend class IndexedDBBackingStoreTest;
   friend class IndexedDBDatabaseTest;
-  friend class IndexedDBFactoryTest;
+  friend class IndexedDBTest;
   friend class IndexedDBTransactionTest;
 
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TombstoneSweeperTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TooLongOrigin);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithStoragePartitioning,
-                           BasicFactoryCreationAndTearDown);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest, BucketSpaceDecay);
 
   // The data structure that stores everything bound to the receiver. This will
@@ -360,8 +357,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   void OnHandleCreated();
   void OnHandleDestruction();
 
-  // Returns true if this factory can be closed (no references, no blobs, and
-  // not persisting for incognito).
+  // Returns true if this bucket context can be closed (no references, no blobs,
+  // and not persisting for incognito).
   bool CanClose();
 
   void MaybeStartClosing();
@@ -448,8 +445,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // have not yet been loaded.
   DBMap databases_;
   // This is the refcount for the number of IndexedDBBucketContextHandle's
-  // given out for this factory using OpenReference. This is used as closing
-  // criteria for this object, see CanClose.
+  // given out for this bucket context using OpenReference. This is used as
+  // closing criteria for this object, see CanClose.
   int64_t open_handles_ = 0;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.

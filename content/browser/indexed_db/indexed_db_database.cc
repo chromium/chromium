@@ -327,8 +327,7 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
       task_state != IndexedDBConnectionCoordinator::ExecuteTaskResult::kError);
   DCHECK(connections_.empty());
   force_closing_ = false;
-  if (CanBeDestroyed())
-    bucket_context_->QueueRunTasks();
+  bucket_context_->QueueRunTasks();
   return status;
 }
 

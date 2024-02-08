@@ -678,7 +678,7 @@ void IndexedDBBucketContext::Open(
         transaction_receiver,
     int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
+  TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::Open");
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
 
@@ -736,7 +736,7 @@ void IndexedDBBucketContext::DeleteDatabase(
     const std::u16string& name,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
+  TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::DeleteDatabase");
 
   {
     leveldb::Status s;
@@ -1292,7 +1292,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
   scoped_refptr<LevelDBState> database_state;
   bool is_disk_full;
   {
-    TRACE_EVENT0("IndexedDB", "IndexedDBFactory::OpenLevelDB");
+    TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
     size_t write_buffer_size = leveldb_env::WriteBufferSize(
         base::SysInfo::AmountOfTotalDiskSpace(database_path));
@@ -1313,7 +1313,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
   // Create the LevelDBScopes wrapper.
   std::unique_ptr<LevelDBScopes> scopes;
   {
-    TRACE_EVENT0("IndexedDB", "IndexedDBFactory::OpenLevelDBScopes");
+    TRACE_EVENT0("IndexedDB", "IndexedDBBucketContext::OpenLevelDBScopes");
     scopes = std::make_unique<LevelDBScopes>(
         ScopesPrefix::Encode(),
         /*max_write_batch_size_bytes=*/1024 * 1024, database_state,
