@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -70,6 +72,9 @@ void SplitViewOverviewSession::Init(std::optional<OverviewStartAction> action,
   OverviewController::Get()->StartOverview(
       action.value_or(OverviewStartAction::kFasterSplitScreenSetup),
       type.value_or(OverviewEnterExitType::kNormal));
+
+  Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
+      AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP);
 }
 
 void SplitViewOverviewSession::RecordSplitViewOverviewSessionExitPointMetrics(

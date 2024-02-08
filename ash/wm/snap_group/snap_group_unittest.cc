@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -1380,6 +1381,19 @@ TEST_F(FasterSplitScreenTest, OverviewStartActionHistogramTest) {
       kOverviewStartActionHistogram,
       OverviewStartAction::kFasterSplitScreenSetup,
       /*expected_count=*/1);
+}
+
+// Tests that a11y alert will be announced upon entering the faster split screen
+// setup session.
+TEST_F(FasterSplitScreenTest, A11yAlertOnEnteringFaterSplitScreenSetup) {
+  TestAccessibilityControllerClient client;
+  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  EXPECT_NE(AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP,
+            client.last_a11y_alert());
+  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP,
+            client.last_a11y_alert());
 }
 
 // -----------------------------------------------------------------------------

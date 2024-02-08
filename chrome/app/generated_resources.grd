@@ -14539,6 +14539,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_A11Y_ALERT_WINDOW_NEEDED" desc="Alert sent to the accessibility api when the user attempts a keyboard command that requires a window to work.">
           Command unavailable. Press control-N to open a new window.
         </message>
+        <message name="IDS_A11Y_ALERT_FASTER_SPLITSCREEN_TOAST" desc="The text for the Faster Splitscreen toast during faster splitscreen setup.">
+        Choose a window for this side
+        </message>
         <message name="IDS_A11Y_ALERT_WINDOW_OVERVIEW_MODE_ENTERED" desc="The accessible text read when the user enters window overview mode in Ash.">
           Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.
         </message>
