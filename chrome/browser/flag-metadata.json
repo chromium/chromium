@@ -497,7 +497,7 @@
   {
     "name": "audio-hfp-offload",
     "owners": [ "johnylin@chromium.org", "jrwu@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "audio-hfp-swb",
