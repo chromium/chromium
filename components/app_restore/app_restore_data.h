@@ -10,19 +10,14 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/uuid.h"
 #include "base/values.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "ui/base/ui_base_types.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace app_restore {
 
 struct AppLaunchInfo;
-struct WindowInfo;
 
 // This is the struct used by RestoreData to save both app launch parameters and
 // app window information. This struct can be converted to JSON format to be
@@ -59,8 +54,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // }
   base::Value ConvertToValue() const;
 
-  // Modifies the window's information based on |window_info|.
-  void ModifyWindowInfo(const WindowInfo& window_info);
+  // Modifies the window's information based on `info`.
+  void ModifyWindowInfo(const WindowInfo& info);
 
   // Modifies the window's theme colors.
   void ModifyThemeColor(uint32_t window_primary_color,
@@ -100,25 +95,9 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   BrowserExtraInfo browser_extra_info;
 
   // Window's information.
-  // TODO(sammiequon): Replace this with a `WindowInfo` object.
-  std::optional<int32_t> activation_index;
-  std::optional<int32_t> desk_id;
-  base::Uuid desk_guid;
-  std::optional<gfx::Rect> current_bounds;
-  std::optional<chromeos::WindowStateType> window_state_type;
-  std::optional<ui::WindowShowState> pre_minimized_show_state_type;
-  // For snapped windows only, this is used to determine the size of a restored
-  // snap window, depending on the snap orientation. For example, a
-  // `snap_percentage` of 60 when the display is in portrait means the height is
-  // 60 percent of the work area height.
-  std::optional<uint32_t> snap_percentage;
-  std::optional<std::u16string> title;
+  WindowInfo window_info;
 
-  // Extra ARC window's information.
-  // TODO(sammiequon): Replace this with a `ArcExtraInfo` object.
-  std::optional<gfx::Size> maximum_size;
-  std::optional<gfx::Size> minimum_size;
-  std::optional<gfx::Rect> bounds_in_root;
+  // Extra ARC window's information not stored in `window_info`.
   std::optional<uint32_t> primary_color;
   std::optional<uint32_t> status_bar_color;
 };

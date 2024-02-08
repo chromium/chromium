@@ -51,10 +51,8 @@ void ApplyProperties(app_restore::WindowInfo* window_info,
   DCHECK(window_info);
   DCHECK(property_handler);
 
-  // Create a clone so `property_handler` can have complete ownership of a copy
-  // of WindowInfo.
-  app_restore::WindowInfo* window_info_clone = window_info->Clone();
-  property_handler->SetProperty(app_restore::kWindowInfoKey, window_info_clone);
+  property_handler->SetProperty(app_restore::kWindowInfoKey,
+                                new WindowInfo(*window_info));
 
   if (window_info->activation_index) {
     const int32_t index = *window_info->activation_index;

@@ -128,13 +128,14 @@ TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
       MergeAdminTemplateWindowUpdate(*admin_template, {.template_rwid = 123}));
 
   // Checks that the original window bounds are present.
-  EXPECT_THAT(app_restore_data->current_bounds,
+  EXPECT_THAT(app_restore_data->window_info.current_bounds,
               Optional(gfx::Rect(100, 50, 640, 480)));
 
   gfx::Rect new_bounds(10, 10, 300, 200);
   EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
       *admin_template, {.template_rwid = 1, .bounds = new_bounds}));
-  EXPECT_THAT(app_restore_data->current_bounds, Optional(new_bounds));
+  EXPECT_THAT(app_restore_data->window_info.current_bounds,
+              Optional(new_bounds));
 
   EXPECT_THAT(app_restore_data->display_id, Eq(std::nullopt));
   EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
@@ -258,13 +259,14 @@ TEST_P(AdminTemplateTest, LaunchTemplate) {
   const auto* app_restore_data = QueryRestoreData(*launched_template, {});
   ASSERT_TRUE(app_restore_data);
 
-  // Verifies that the window has been assigned with bounds.
-  ASSERT_FALSE(app_restore_data->current_bounds->IsEmpty());
   // Verifies that a display id has been assigned.
   EXPECT_THAT(app_restore_data->display_id, Optional(Not(Eq(-1))));
+
   // And window activation index.
-  EXPECT_THAT(app_restore_data->activation_index,
+  EXPECT_THAT(app_restore_data->window_info.activation_index,
               Optional(Le(kTemplateStartingActivationIndex)));
+  // Verifies that the window has been assigned with bounds.
+  ASSERT_FALSE(app_restore_data->window_info.current_bounds->IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

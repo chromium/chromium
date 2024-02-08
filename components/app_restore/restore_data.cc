@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/window_info.h"
 
 namespace app_restore {
 
@@ -84,7 +84,7 @@ RestoreData::RestoreData(base::Value restore_data_value) {
       auto app_restore_data =
           std::make_unique<AppRestoreData>(std::move(*app_restore_data_dict));
       if (removing_desk_guid_.is_valid() &&
-          app_restore_data->desk_guid == removing_desk_guid_) {
+          app_restore_data->window_info.desk_guid == removing_desk_guid_) {
         continue;
       }
 
@@ -219,8 +219,9 @@ void RestoreData::SetNextRestoreWindowIdForChromeApp(
 
   // When a chrome app has multiple windows, all windows will be sent to the
   // background.
-  for (auto& data_it : it->second)
-    data_it.second->activation_index = INT32_MAX;
+  for (auto& [window_id, app_restore_data] : it->second) {
+    app_restore_data->window_info.activation_index = INT32_MAX;
+  }
 }
 
 void RestoreData::RemoveAppRestoreData(const std::string& app_id,
@@ -235,9 +236,9 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
 
 void RestoreData::SendWindowToBackground(const std::string& app_id,
                                          int window_id) {
-  auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id);
-  if (app_restore_data)
-    app_restore_data->activation_index = INT32_MAX;
+  if (auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id)) {
+    app_restore_data->window_info.activation_index = INT32_MAX;
+  }
 }
 
 void RestoreData::RemoveApp(const std::string& app_id) {
@@ -301,7 +302,7 @@ const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
 void RestoreData::SetDeskUuid(const base::Uuid& desk_uuid) {
   for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
     for (auto& [window_id, app_restore_data] : launch_list) {
-      app_restore_data->desk_guid = desk_uuid;
+      app_restore_data->window_info.desk_guid = desk_uuid;
     }
   }
 }

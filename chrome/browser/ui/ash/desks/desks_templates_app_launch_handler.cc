@@ -186,7 +186,7 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       }
 
       const gfx::Rect current_bounds =
-          app_restore_data->current_bounds.value_or(gfx::Rect());
+          app_restore_data->window_info.current_bounds.value_or(gfx::Rect());
       const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
       if (!app_name.empty() && !IsBrowserAppInstalled(app_name)) {
         continue;
@@ -204,8 +204,8 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       create_params.restore_id = window_iter.first;
       create_params.creation_source = Browser::CreationSource::kDeskTemplate;
 
-      std::optional<chromeos::WindowStateType> window_state_type(
-          app_restore_data->window_state_type);
+      const std::optional<chromeos::WindowStateType>& window_state_type =
+          app_restore_data->window_info.window_state_type;
       if (window_state_type) {
         create_params.initial_show_state =
             chromeos::ToWindowShowState(*window_state_type);
@@ -331,10 +331,10 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
           browser_extra_info.urls,
-          app_restore_data->current_bounds.value_or(gfx::Rect()),
+          app_restore_data->window_info.current_bounds.value_or(gfx::Rect()),
           browser_extra_info.tab_group_infos,
           chromeos::ToWindowShowState(
-              app_restore_data->window_state_type.value_or(
+              app_restore_data->window_info.window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
           browser_extra_info.active_tab_index.value_or(0),
           // Values of 0 will be ignored, other type constraints are

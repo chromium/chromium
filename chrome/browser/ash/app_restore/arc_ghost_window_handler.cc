@@ -106,19 +106,21 @@ bool ArcGhostWindowHandler::LaunchArcGhostWindow(
     int32_t session_id,
     app_restore::AppRestoreData* restore_data) {
   DCHECK(restore_data);
-  DCHECK(restore_data->current_bounds.has_value());
   DCHECK(restore_data->display_id.has_value());
 
-  gfx::Rect adjust_bounds = restore_data->current_bounds.value_or(gfx::Rect());
+  const app_restore::WindowInfo& window_info = restore_data->window_info;
+  CHECK(window_info.current_bounds.has_value());
+
+  gfx::Rect adjust_bounds = window_info.current_bounds.value_or(gfx::Rect());
 
   // Replace the screen bounds by root bounds if there is.
-  if (restore_data->bounds_in_root.has_value())
-    adjust_bounds = restore_data->bounds_in_root.value();
-  if (restore_data->window_state_type.has_value() &&
-      (restore_data->window_state_type.value() ==
-           chromeos::WindowStateType::kDefault ||
-       restore_data->window_state_type.value() ==
-           chromeos::WindowStateType::kNormal)) {
+  if (window_info.arc_extra_info &&
+      window_info.arc_extra_info->bounds_in_root) {
+    adjust_bounds = *window_info.arc_extra_info->bounds_in_root;
+  }
+
+  if (window_info.window_state_type &&
+      chromeos::IsNormalWindowStateType(*window_info.window_state_type)) {
     adjust_bounds.Inset(gfx::Insets().set_top(
         views::GetCaptionButtonLayoutSize(
             views::CaptionButtonLayoutSize::kNonBrowserCaption)

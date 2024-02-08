@@ -267,18 +267,25 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   browser_extra_info.lacros_profile_id =
       GetUInt64ValueFromDict(data, kLacrosProfileIdKey);
 
-  activation_index = GetIntValueFromDict(data, kActivationIndexKey);
-  desk_id = GetIntValueFromDict(data, kDeskIdKey);
-  desk_guid = GetGuidValueFromDict(data, kDeskUuidKey);
-  current_bounds = GetBoundsRectFromDict(data, kCurrentBoundsKey);
-  window_state_type = GetWindowStateTypeFromDict(data);
-  pre_minimized_show_state_type = GetPreMinimizedShowStateTypeFromDict(data);
-  snap_percentage = GetUIntValueFromDict(data, kSnapPercentageKey);
-  title = GetU16StringValueFromDict(data, kTitleKey);
+  window_info.activation_index = GetIntValueFromDict(data, kActivationIndexKey);
+  window_info.desk_id = GetIntValueFromDict(data, kDeskIdKey);
+  window_info.desk_guid = GetGuidValueFromDict(data, kDeskUuidKey);
+  window_info.current_bounds = GetBoundsRectFromDict(data, kCurrentBoundsKey);
+  window_info.window_state_type = GetWindowStateTypeFromDict(data);
+  window_info.pre_minimized_show_state_type =
+      GetPreMinimizedShowStateTypeFromDict(data);
+  window_info.snap_percentage = GetUIntValueFromDict(data, kSnapPercentageKey);
+  window_info.app_title = GetU16StringValueFromDict(data, kTitleKey);
 
-  maximum_size = GetSizeFromDict(data, kMaximumSizeKey);
-  minimum_size = GetSizeFromDict(data, kMinimumSizeKey);
-  bounds_in_root = GetBoundsRectFromDict(data, kBoundsInRoot);
+  std::optional<gfx::Size> max_size = GetSizeFromDict(data, kMaximumSizeKey);
+  std::optional<gfx::Size> min_size = GetSizeFromDict(data, kMinimumSizeKey);
+  std::optional<gfx::Rect> bounds_in_root =
+      GetBoundsRectFromDict(data, kBoundsInRoot);
+  if (max_size || min_size || bounds_in_root) {
+    window_info.arc_extra_info = {.maximum_size = max_size,
+                                  .minimum_size = min_size,
+                                  .bounds_in_root = bounds_in_root};
+  }
   primary_color = GetUIntValueFromDict(data, kPrimaryColorKey);
   status_bar_color = GetUIntValueFromDict(data, kStatusBarColorKey);
 }
@@ -317,18 +324,7 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   data->browser_extra_info = browser_extra_info;
 
-  data->activation_index = activation_index;
-  data->desk_id = desk_id;
-  data->desk_guid = desk_guid;
-  data->current_bounds = current_bounds;
-  data->window_state_type = window_state_type;
-  data->pre_minimized_show_state_type = pre_minimized_show_state_type;
-  data->snap_percentage = snap_percentage;
-  data->title = title;
-
-  data->maximum_size = maximum_size;
-  data->minimum_size = minimum_size;
-  data->bounds_in_root = bounds_in_root;
+  data->window_info = window_info;
   data->primary_color = primary_color;
   data->status_bar_color = status_bar_color;
 
@@ -387,49 +383,56 @@ base::Value AppRestoreData::ConvertToValue() const {
         ConvertUint64ToValue(browser_extra_info.lacros_profile_id.value()));
   }
 
-  SetValueIntoDict(activation_index, kActivationIndexKey, launch_info_dict);
-  SetValueIntoDict(desk_id, kDeskIdKey, launch_info_dict);
+  SetValueIntoDict(window_info.activation_index, kActivationIndexKey,
+                   launch_info_dict);
+  SetValueIntoDict(window_info.desk_id, kDeskIdKey, launch_info_dict);
 
-  if (desk_guid.is_valid()) {
-    launch_info_dict.Set(kDeskUuidKey, desk_guid.AsLowercaseString());
+  if (window_info.desk_guid.is_valid()) {
+    launch_info_dict.Set(kDeskUuidKey,
+                         window_info.desk_guid.AsLowercaseString());
   }
 
-  if (current_bounds.has_value()) {
+  if (window_info.current_bounds.has_value()) {
     launch_info_dict.Set(kCurrentBoundsKey,
-                         ConvertRectToList(current_bounds.value()));
+                         ConvertRectToList(window_info.current_bounds.value()));
   }
 
-  if (window_state_type.has_value()) {
-    launch_info_dict.Set(kWindowStateTypeKey,
-                         static_cast<int>(window_state_type.value()));
+  if (window_info.window_state_type.has_value()) {
+    launch_info_dict.Set(
+        kWindowStateTypeKey,
+        static_cast<int>(window_info.window_state_type.value()));
   }
 
-  if (pre_minimized_show_state_type.has_value()) {
+  if (window_info.pre_minimized_show_state_type.has_value()) {
     launch_info_dict.Set(
         kPreMinimizedShowStateTypeKey,
-        static_cast<int>(pre_minimized_show_state_type.value()));
+        static_cast<int>(window_info.pre_minimized_show_state_type.value()));
   }
 
-  if (snap_percentage.has_value()) {
-    launch_info_dict.Set(kSnapPercentageKey,
-                         ConvertUintToValue(snap_percentage.value()));
+  if (window_info.snap_percentage.has_value()) {
+    launch_info_dict.Set(
+        kSnapPercentageKey,
+        ConvertUintToValue(window_info.snap_percentage.value()));
   }
 
-  SetValueIntoDict(title, kTitleKey, launch_info_dict);
+  SetValueIntoDict(window_info.app_title, kTitleKey, launch_info_dict);
 
-  if (maximum_size.has_value()) {
-    launch_info_dict.Set(kMaximumSizeKey,
-                         ConvertSizeToList(maximum_size.value()));
-  }
+  if (window_info.arc_extra_info) {
+    WindowInfo::ArcExtraInfo arc_info = *window_info.arc_extra_info;
+    if (arc_info.maximum_size.has_value()) {
+      launch_info_dict.Set(kMaximumSizeKey,
+                           ConvertSizeToList(arc_info.maximum_size.value()));
+    }
 
-  if (minimum_size.has_value()) {
-    launch_info_dict.Set(kMinimumSizeKey,
-                         ConvertSizeToList(minimum_size.value()));
-  }
+    if (arc_info.minimum_size.has_value()) {
+      launch_info_dict.Set(kMinimumSizeKey,
+                           ConvertSizeToList(arc_info.minimum_size.value()));
+    }
 
-  if (bounds_in_root.has_value()) {
-    launch_info_dict.Set(kBoundsInRoot,
-                         ConvertRectToList(bounds_in_root.value()));
+    if (arc_info.bounds_in_root.has_value()) {
+      launch_info_dict.Set(kBoundsInRoot,
+                           ConvertRectToList(arc_info.bounds_in_root.value()));
+    }
   }
 
   if (primary_color.has_value()) {
@@ -445,41 +448,11 @@ base::Value AppRestoreData::ConvertToValue() const {
   return base::Value(std::move(launch_info_dict));
 }
 
-void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
-  if (window_info.activation_index.has_value())
-    activation_index = window_info.activation_index.value();
+void AppRestoreData::ModifyWindowInfo(const WindowInfo& info) {
+  window_info = info;
 
-  if (window_info.desk_id.has_value())
-    desk_id = window_info.desk_id.value();
-
-  if (window_info.desk_guid.is_valid()) {
-    desk_guid = window_info.desk_guid;
-  }
-
-  if (window_info.current_bounds.has_value())
-    current_bounds = window_info.current_bounds.value();
-
-  if (window_info.window_state_type.has_value())
-    window_state_type = window_info.window_state_type.value();
-
-  if (window_info.pre_minimized_show_state_type.has_value()) {
-    pre_minimized_show_state_type =
-        window_info.pre_minimized_show_state_type.value();
-  }
-
-  if (window_info.snap_percentage.has_value())
-    snap_percentage = window_info.snap_percentage.value();
-
-  if (window_info.display_id.has_value())
-    display_id = window_info.display_id.value();
-
-  if (window_info.app_title.has_value())
-    title = window_info.app_title;
-
-  if (window_info.arc_extra_info.has_value()) {
-    minimum_size = window_info.arc_extra_info->minimum_size;
-    maximum_size = window_info.arc_extra_info->maximum_size;
-    bounds_in_root = window_info.arc_extra_info->bounds_in_root;
+  if (info.display_id) {
+    display_id = info.display_id;
   }
 }
 
@@ -490,17 +463,7 @@ void AppRestoreData::ModifyThemeColor(uint32_t window_primary_color,
 }
 
 void AppRestoreData::ClearWindowInfo() {
-  activation_index.reset();
-  desk_id.reset();
-  desk_guid = base::Uuid();
-  current_bounds.reset();
-  window_state_type.reset();
-  pre_minimized_show_state_type.reset();
-  snap_percentage.reset();
-  minimum_size.reset();
-  maximum_size.reset();
-  title.reset();
-  bounds_in_root.reset();
+  window_info = WindowInfo();
   primary_color.reset();
   status_bar_color.reset();
 }
@@ -525,44 +488,36 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
 }
 
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
-  auto window_info = std::make_unique<WindowInfo>();
-  window_info->activation_index = activation_index;
-  window_info->desk_id = desk_id;
-  window_info->desk_guid = desk_guid;
-  window_info->current_bounds = current_bounds;
-  window_info->window_state_type = window_state_type;
-  window_info->pre_minimized_show_state_type = pre_minimized_show_state_type;
-  window_info->snap_percentage = snap_percentage;
-  window_info->app_title = title;
-
-  if (maximum_size.has_value() || minimum_size.has_value() ||
-      title.has_value() || bounds_in_root.has_value()) {
-    window_info->arc_extra_info = {.maximum_size = maximum_size,
-                                   .minimum_size = minimum_size,
-                                   .bounds_in_root = bounds_in_root};
-  }
+  auto ret_window_info = std::make_unique<WindowInfo>();
+  *ret_window_info = window_info;
 
   // Display id is set as the app launch parameter, so we don't need to return
   // the display id to restore the display id.
-  return window_info;
+  ret_window_info->display_id.reset();
+  return ret_window_info;
 }
 
 apps::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
-  apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
+  auto apps_window_info = std::make_unique<apps::WindowInfo>();
 
-  if (display_id.has_value())
-    window_info->display_id = display_id.value();
-
-  if (bounds_in_root.has_value()) {
-    window_info->bounds = bounds_in_root.value();
-  } else if (current_bounds.has_value()) {
-    window_info->bounds = current_bounds.value();
+  if (display_id.has_value()) {
+    apps_window_info->display_id = display_id.value();
   }
 
-  if (window_state_type.has_value())
-    window_info->state = static_cast<int32_t>(window_state_type.value());
+  if (window_info.arc_extra_info.has_value() &&
+      window_info.arc_extra_info->bounds_in_root.has_value()) {
+    apps_window_info->bounds =
+        window_info.arc_extra_info->bounds_in_root.value();
+  } else if (window_info.current_bounds.has_value()) {
+    apps_window_info->bounds = window_info.current_bounds.value();
+  }
 
-  return window_info;
+  if (window_info.window_state_type.has_value()) {
+    apps_window_info->state =
+        static_cast<int32_t>(window_info.window_state_type.value());
+  }
+
+  return apps_window_info;
 }
 
 std::string AppRestoreData::ToString() const {
@@ -585,15 +540,7 @@ bool AppRestoreData::operator==(const AppRestoreData& other) const {
          override_url == other.override_url && display_id == other.display_id &&
          handler_id == other.handler_id && file_paths == other.file_paths &&
          browser_extra_info == other.browser_extra_info &&
-         activation_index == other.activation_index &&
-         desk_id == other.desk_id && desk_guid == other.desk_guid &&
-         current_bounds == other.current_bounds &&
-         window_state_type == other.window_state_type &&
-         pre_minimized_show_state_type == other.pre_minimized_show_state_type &&
-         snap_percentage == other.snap_percentage &&
-         maximum_size == other.maximum_size &&
-         minimum_size == other.minimum_size &&
-         bounds_in_root == other.bounds_in_root &&
+         window_info == other.window_info &&
          primary_color == other.primary_color &&
          status_bar_color == other.status_bar_color;
 }

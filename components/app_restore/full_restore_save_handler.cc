@@ -368,7 +368,6 @@ void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
     return;
 
   save_running_.insert(profile_path);
-
   BackendTaskRunner(profile_path)
       ->PostTaskAndReply(
           FROM_HERE,

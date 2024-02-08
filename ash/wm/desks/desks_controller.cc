@@ -1360,9 +1360,10 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           existing_app_instance_window)) {
     // The uuid of the target desk is found in `app_restore_data`. If it isn't
     // set, or is invalid, then we default to the rightmost desk.
-    Desk* target_desk = app_restore_data.desk_guid.is_valid()
-                            ? GetDeskByUuid(app_restore_data.desk_guid)
-                            : desks_.back().get();
+    Desk* target_desk = GetDeskByUuid(app_restore_data.window_info.desk_guid);
+    if (!target_desk) {
+      target_desk = desks_.back().get();
+    }
 
     DCHECK(src_desk);
     if (src_desk != target_desk) {
@@ -1387,14 +1388,14 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   }
 
   // Now that the window is on the correct desk, we can apply window properties.
-  if (app_restore_data.current_bounds) {
-    existing_app_instance_window->SetBounds(*app_restore_data.current_bounds);
+  const app_restore::WindowInfo& window_info = app_restore_data.window_info;
+  if (window_info.current_bounds) {
+    existing_app_instance_window->SetBounds(*window_info.current_bounds);
   }
 
   // Handle window state and window bounds.
-  if (app_restore_data.window_state_type) {
-    chromeos::WindowStateType target_state =
-        *app_restore_data.window_state_type;
+  if (window_info.window_state_type) {
+    chromeos::WindowStateType target_state = *window_info.window_state_type;
 
     // Not all window states are supported.
     const bool restoreable_state =
@@ -1457,15 +1458,15 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
       // For states with restore bounds (maximized, snapped, minimized), the
       // restore bounds are stored in `current_bounds`.
       const gfx::Rect restore_bounds =
-          app_restore_data.current_bounds.value_or(gfx::Rect());
+          window_info.current_bounds.value_or(gfx::Rect());
       if (!restore_bounds.IsEmpty())
         window_state->SetRestoreBoundsInScreen(restore_bounds);
     }
   }
 
-  if (app_restore_data.activation_index) {
-    existing_app_instance_window->SetProperty(
-        app_restore::kActivationIndexKey, *app_restore_data.activation_index);
+  if (window_info.activation_index) {
+    existing_app_instance_window->SetProperty(app_restore::kActivationIndexKey,
+                                              *window_info.activation_index);
   }
 
   WindowRestoreController::Get()->StackWindow(existing_app_instance_window);

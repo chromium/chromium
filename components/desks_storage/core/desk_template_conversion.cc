@@ -868,39 +868,46 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.Set(kAppType, app_type);
   }
 
-  if (app->current_bounds.has_value()) {
-    app_data.Set(kWindowBound,
-                 ConvertWindowBoundToValue(app->current_bounds.value()));
+  if (app->window_info.current_bounds.has_value()) {
+    app_data.Set(kWindowBound, ConvertWindowBoundToValue(
+                                   app->window_info.current_bounds.value()));
   }
 
-  if (app->bounds_in_root.has_value()) {
-    app_data.Set(kBoundsInRoot,
-                 ConvertWindowBoundToValue(app->bounds_in_root.value()));
+  const std::optional<app_restore::WindowInfo::ArcExtraInfo>& arc_info =
+      app->window_info.arc_extra_info;
+  if (arc_info) {
+    if (arc_info->bounds_in_root.has_value()) {
+      app_data.Set(kBoundsInRoot,
+                   ConvertWindowBoundToValue(arc_info->bounds_in_root.value()));
+    }
+
+    if (arc_info->minimum_size.has_value()) {
+      app_data.Set(kMinimumSize,
+                   ConvertSizeToValue(arc_info->minimum_size.value()));
+    }
+
+    if (arc_info->maximum_size.has_value()) {
+      app_data.Set(kMaximumSize,
+                   ConvertSizeToValue(arc_info->maximum_size.value()));
+    }
   }
 
-  if (app->minimum_size.has_value()) {
-    app_data.Set(kMinimumSize, ConvertSizeToValue(app->minimum_size.value()));
-  }
-
-  if (app->maximum_size.has_value()) {
-    app_data.Set(kMaximumSize, ConvertSizeToValue(app->maximum_size.value()));
-  }
-
-  if (app->title.has_value()) {
-    app_data.Set(kTitle, base::UTF16ToUTF8(app->title.value()));
+  if (app->window_info.app_title.has_value()) {
+    app_data.Set(kTitle, base::UTF16ToUTF8(app->window_info.app_title.value()));
   }
 
   chromeos::WindowStateType window_state = chromeos::WindowStateType::kDefault;
-  if (app->window_state_type.has_value()) {
-    window_state = app->window_state_type.value();
+  if (app->window_info.window_state_type.has_value()) {
+    window_state = app->window_info.window_state_type.value();
     app_data.Set(kWindowState, ChromeOsWindowStateToString(window_state));
   }
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
   app_data.Set(kEventFlag, 0);
 
-  if (app->activation_index.has_value())
-    app_data.Set(kZIndex, app->activation_index.value());
+  if (app->window_info.activation_index.has_value()) {
+    app_data.Set(kZIndex, app->window_info.activation_index.value());
+  }
 
   if (!app->browser_extra_info.urls.empty()) {
     app_data.Set(
@@ -940,16 +947,16 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.Set(kDisplayId, base::NumberToString(app->display_id.value()));
   }
 
-  if (app->pre_minimized_show_state_type.has_value() &&
+  if (app->window_info.pre_minimized_show_state_type.has_value() &&
       window_state == chromeos::WindowStateType::kMinimized) {
-    app_data.Set(
-        kPreMinimizedWindowState,
-        UiWindowStateToString(app->pre_minimized_show_state_type.value()));
+    app_data.Set(kPreMinimizedWindowState,
+                 UiWindowStateToString(
+                     app->window_info.pre_minimized_show_state_type.value()));
   }
 
-  if (app->snap_percentage.has_value()) {
+  if (app->window_info.snap_percentage.has_value()) {
     app_data.Set(kSnapPercentage,
-                 static_cast<int>(app->snap_percentage.value()));
+                 static_cast<int>(app->window_info.snap_percentage.value()));
   }
 
   if (app->browser_extra_info.app_name.has_value()) {
@@ -1604,9 +1611,10 @@ void FillAppWithAppNameAndTitle(
     out_app->set_app_name(app_name);
   }
 
-  if (app_restore_data->title.has_value() &&
-      !app_restore_data->title.value().empty()) {
-    out_app->set_title(base::UTF16ToUTF8(app_restore_data->title.value()));
+  if (app_restore_data->window_info.app_title.has_value() &&
+      !app_restore_data->window_info.app_title->empty()) {
+    out_app->set_title(
+        base::UTF16ToUTF8(*app_restore_data->window_info.app_title));
   }
 }
 
@@ -1632,16 +1640,22 @@ void FillArcBoundsInRoot(const gfx::Rect& data_rect, WindowBound* out_rect) {
 
 void FillArcApp(const app_restore::AppRestoreData* app_restore_data,
                 ArcApp* out_app) {
-  if (app_restore_data->minimum_size.has_value()) {
-    FillArcAppSize(app_restore_data->minimum_size.value(),
+  const std::optional<app_restore::WindowInfo::ArcExtraInfo>& arc_info =
+      app_restore_data->window_info.arc_extra_info;
+  if (!arc_info) {
+    return;
+  }
+
+  if (arc_info->minimum_size.has_value()) {
+    FillArcAppSize(arc_info->minimum_size.value(),
                    out_app->mutable_minimum_size());
   }
-  if (app_restore_data->maximum_size.has_value()) {
-    FillArcAppSize(app_restore_data->maximum_size.value(),
+  if (arc_info->maximum_size.has_value()) {
+    FillArcAppSize(arc_info->maximum_size.value(),
                    out_app->mutable_maximum_size());
   }
-  if (app_restore_data->bounds_in_root.has_value()) {
-    FillArcBoundsInRoot(app_restore_data->bounds_in_root.value(),
+  if (arc_info->bounds_in_root.has_value()) {
+    FillArcBoundsInRoot(arc_info->bounds_in_root.value(),
                         out_app->mutable_bounds_in_root());
   }
 }

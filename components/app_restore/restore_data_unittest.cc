@@ -280,32 +280,38 @@ class RestoreDataTest : public testing::Test {
                   testing::Optional(first_non_pinned_tab_index));
     }
 
-    EXPECT_THAT(data->activation_index, testing::Optional(activation_index));
-    EXPECT_THAT(data->desk_id, testing::Optional(desk_id));
-    EXPECT_EQ(desk_guid, data->desk_guid);
-    EXPECT_THAT(data->current_bounds, testing::Optional(current_bounds));
-
-    ASSERT_TRUE(data->window_state_type.has_value());
-    EXPECT_EQ(window_state_type, data->window_state_type.value());
+    const WindowInfo window_info = data->window_info;
+    EXPECT_THAT(window_info.activation_index,
+                testing::Optional(activation_index));
+    EXPECT_THAT(window_info.desk_id, testing::Optional(desk_id));
+    EXPECT_EQ(desk_guid, window_info.desk_guid);
+    EXPECT_THAT(window_info.current_bounds, testing::Optional(current_bounds));
+    EXPECT_THAT(window_info.window_state_type,
+                testing::Optional(window_state_type));
 
     // This field should only be written if we are in minimized window state.
-    if (data->window_state_type.value() ==
+    if (window_info.window_state_type.value() ==
         chromeos::WindowStateType::kMinimized) {
-      EXPECT_THAT(data->pre_minimized_show_state_type,
+      EXPECT_THAT(window_info.pre_minimized_show_state_type,
                   testing::Optional(pre_minimized_show_state_type));
     }
 
     // This field should only be written if we are snapped.
-    if (chromeos::IsSnappedWindowStateType(data->window_state_type.value())) {
-      EXPECT_THAT(data->snap_percentage, testing::Optional(snap_percentage));
+    if (chromeos::IsSnappedWindowStateType(
+            window_info.window_state_type.value())) {
+      EXPECT_THAT(window_info.snap_percentage,
+                  testing::Optional(snap_percentage));
     }
 
-    EXPECT_EQ(title, data->title);
+    EXPECT_EQ(title, window_info.app_title);
 
     // Extra ARC window's information.
-    EXPECT_EQ(max_size, data->maximum_size);
-    EXPECT_EQ(min_size, data->minimum_size);
-    EXPECT_EQ(bounds_in_root, data->bounds_in_root);
+    if (max_size || min_size || bounds_in_root) {
+      ASSERT_TRUE(window_info.arc_extra_info.has_value());
+      EXPECT_EQ(max_size, window_info.arc_extra_info->maximum_size);
+      EXPECT_EQ(min_size, window_info.arc_extra_info->minimum_size);
+      EXPECT_EQ(bounds_in_root, window_info.arc_extra_info->bounds_in_root);
+    }
 
     if (primary_color) {
       EXPECT_THAT(data->primary_color, testing::Optional(primary_color));

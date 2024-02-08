@@ -22,7 +22,9 @@ namespace app_restore {
 // or displaying browser info in the pine dialog.
 struct COMPONENT_EXPORT(APP_RESTORE) BrowserExtraInfo {
   BrowserExtraInfo();
+  BrowserExtraInfo(BrowserExtraInfo&&);
   BrowserExtraInfo(const BrowserExtraInfo&);
+  BrowserExtraInfo& operator=(BrowserExtraInfo&&);
   BrowserExtraInfo& operator=(const BrowserExtraInfo&);
   ~BrowserExtraInfo();
 
@@ -50,17 +52,20 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
  public:
   // This struct is the ARC specific window info.
   struct ArcExtraInfo {
+    bool operator==(const ArcExtraInfo& other) const = default;
     std::optional<gfx::Size> maximum_size;
     std::optional<gfx::Size> minimum_size;
     std::optional<gfx::Rect> bounds_in_root;
   };
 
   WindowInfo();
-  WindowInfo(const WindowInfo&) = delete;
-  WindowInfo& operator=(const WindowInfo&) = delete;
+  WindowInfo(WindowInfo&&);
+  WindowInfo(const WindowInfo&);
+  WindowInfo& operator=(WindowInfo&&);
+  WindowInfo& operator=(const WindowInfo&);
   ~WindowInfo();
 
-  WindowInfo* Clone();
+  bool operator==(const WindowInfo& other) const;
 
   raw_ptr<aura::Window, DanglingUntriaged> window;
 

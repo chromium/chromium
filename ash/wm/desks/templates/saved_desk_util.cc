@@ -45,7 +45,7 @@ bool DoesAllWindowsHaveActivationIndices(const DeskTemplate& admin_template) {
       admin_template.desk_restore_data()->app_id_to_launch_list();
   for (auto& [app_id, launch_list] : app_id_to_launch_list) {
     for (auto& [window_id, app_restore_data] : launch_list) {
-      if (!app_restore_data->activation_index.has_value()) {
+      if (!app_restore_data->window_info.activation_index.has_value()) {
         return false;
       }
     }
@@ -139,7 +139,8 @@ void UpdateTemplateActivationIndices(DeskTemplate& saved_desk) {
   // for now, we expect admin templates to only contain a single app.
   for (auto& [app_id, launch_list] : app_id_to_launch_list) {
     for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
-      app_restore_data->activation_index = g_template_next_activation_index--;
+      app_restore_data->window_info.activation_index =
+          g_template_next_activation_index--;
     }
   }
 }
@@ -162,12 +163,14 @@ void UpdateTemplateActivationIndicesRelativeOrder(DeskTemplate& saved_desk) {
   // Sort in descending order so that we maintain the relative window
   // stacking order.
   base::ranges::sort(relative_window_stack_order,
-                     [](auto* window1, auto* window2) {
-                       return window1->activation_index.value_or(0) >
-                              window2->activation_index.value_or(0);
+                     [](app_restore::AppRestoreData* data1,
+                        app_restore::AppRestoreData* data2) {
+                       return data1->window_info.activation_index.value_or(0) >
+                              data2->window_info.activation_index.value_or(0);
                      });
   for (auto* app_restore_data : relative_window_stack_order) {
-    app_restore_data->activation_index = g_template_next_activation_index--;
+    app_restore_data->window_info.activation_index =
+        g_template_next_activation_index--;
   }
 }
 
