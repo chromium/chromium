@@ -236,8 +236,7 @@ void WebRtcEventLogManager::OnPeerConnectionAdded(
     int lid,
     base::ProcessId pid,
     const std::string& url,
-    const std::string& rtc_configuration,
-    const std::string& constraints) {
+    const std::string& rtc_configuration) {
   OnPeerConnectionAdded(frame_id, lid, base::NullCallback());
 }
 

@@ -104,7 +104,7 @@ void PeerConnectionTrackerHost::AddPeerConnection(
 
   for (auto& observer : GetObserverList()) {
     observer.OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_, url,
-                                   info->rtc_configuration, info->constraints);
+                                   info->rtc_configuration);
   }
 }
 

@@ -726,9 +726,6 @@ void PeerConnectionTracker::RegisterPeerConnection(
   info->rtc_configuration =
       SerializeConfiguration(config, pc_handler->encoded_insertable_streams());
 
-  // TODO(https://crbug.com/1318448): Remove this line when mojo is updated.
-  info->constraints = "";
-
   if (frame)
     info->url = frame->GetDocument().Url().GetString();
   else
