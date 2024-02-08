@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/overview_item.h"
@@ -41,6 +42,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
+class FasterSplitView;
 class LegacyDeskBarView;
 class OverviewDropTarget;
 class OverviewGridEventHandler;
@@ -399,6 +401,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
+  FasterSplitView* GetFasterSplitView();
+
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
@@ -467,6 +471,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return save_desk_button_container_widget_.get();
   }
 
+  views::Widget* faster_splitview_widget() {
+    return faster_splitview_widget_.get();
+  }
+
   int num_incognito_windows() const { return num_incognito_windows_; }
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
@@ -474,9 +482,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const gfx::Rect bounds_for_testing() const { return bounds_; }
   float scroll_offset_for_testing() const { return scroll_offset_; }
   views::Widget* pine_widget_for_testing() const { return pine_widget_.get(); }
-  views::Widget* faster_splitview_widget_for_testing() {
-    return faster_splitview_widget_.get();
-  }
 
  private:
   friend class DesksTemplatesTest;

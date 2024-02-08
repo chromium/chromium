@@ -2469,6 +2469,9 @@ Style notes:
       <message name="IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP" desc="The text for the Faster Splitscreen toast skip button.">
         Dismiss
       </message>
+      <message name="IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS" desc="The a11y text for the Faster Splitscreen toast to dismiss window suggestions.">
+        Dismiss window suggestions
+      </message>
       <message name="IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT" desc="The accessibility alert read by screen readers to alert the user that a window in overview mode is closing.">
         Window <ph name="WINDOW_TITILE">$1<ex>1</ex></ph> closed.
       </message>

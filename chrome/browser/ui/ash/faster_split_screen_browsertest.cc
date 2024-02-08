@@ -8,6 +8,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -78,11 +79,9 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_splitview_widget =
-      overview_grid->faster_splitview_widget_for_testing();
-  ASSERT_TRUE(faster_splitview_widget);
-  auto* settings_button = views::AsViewClass<ash::IconButton>(
-      faster_splitview_widget->GetContentsView()->children()[1]);
+  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  ASSERT_TRUE(faster_split_view);
+  auto* settings_button = faster_split_view->settings_button();
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.

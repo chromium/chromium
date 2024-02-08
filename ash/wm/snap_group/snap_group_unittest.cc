@@ -40,6 +40,7 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -178,7 +179,7 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
 
   if (!Shell::Get()->IsInTabletMode() && faster_split_screen_setup) {
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
-    EXPECT_TRUE(overview_grid->faster_splitview_widget_for_testing());
+    EXPECT_TRUE(overview_grid->faster_splitview_widget());
     EXPECT_FALSE(overview_grid->no_windows_widget());
     EXPECT_FALSE(overview_grid->GetSaveDeskButtonContainer());
     EXPECT_FALSE(overview_grid->desks_bar_view());
@@ -251,7 +252,7 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
 
 // Test fixture to verify faster split screen feature.
 
-class FasterSplitScreenTest : public AshTestBase {
+class FasterSplitScreenTest : public OverviewTestBase {
  public:
   FasterSplitScreenTest()
       : scoped_feature_list_(features::kFasterSplitScreenSetup) {}
@@ -261,7 +262,7 @@ class FasterSplitScreenTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    OverviewTestBase::SetUp();
     WindowCycleList::SetDisableInitialDelayForTesting(true);
   }
 
@@ -338,7 +339,7 @@ TEST_F(FasterSplitScreenTest, Basic) {
   ToggleOverview();
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   EXPECT_FALSE(overview_grid->no_windows_widget());
-  EXPECT_FALSE(overview_grid->faster_splitview_widget_for_testing());
+  EXPECT_FALSE(overview_grid->faster_splitview_widget());
 }
 
 // Tests that faster split screen can only start with certain snap action
@@ -638,8 +639,7 @@ TEST_F(FasterSplitScreenTest, SkipPairingToast) {
 
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_splitview_widget =
-      overview_grid->faster_splitview_widget_for_testing();
+  auto* faster_splitview_widget = overview_grid->faster_splitview_widget();
   ASSERT_TRUE(faster_splitview_widget);
   auto* toast_view = views::AsViewClass<SystemToastStyle>(
       faster_splitview_widget->GetContentsView()->children()[0]);
@@ -1041,6 +1041,68 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
           .CenterPoint();
   GetEventGenerator()->GestureTapAt(divider_center);
   GetEventGenerator()->GestureTapAt(divider_center);
+}
+
+TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
+                                     WindowSnapActionSource::kTest);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_event);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Tab until we get to the first overview item.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+      GetOverviewItemsForRoot(0);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+
+  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+
+  // Tab to the toast dismiss button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+            focus_cycler->focused_view()->GetView());
+
+  // Tab to the settings button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
+            focus_cycler->focused_view());
+}
+
+TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
+  auto window1 = CreateTestWindow(gfx::Rect(100, 100));
+  auto window0 = CreateTestWindow(gfx::Rect(100, 100));
+
+  // Snap `window0`, so it is excluded from the overview list.
+  SnapOneTestWindow(window0.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+
+  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
+      GetOverviewSession()->GetOverviewFocusWindow());
+  ASSERT_TRUE(focus_widget);
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  ASSERT_FALSE(grid->desks_widget());
+  ASSERT_FALSE(grid->GetSaveDeskForLaterButton());
+  auto* faster_splitview_widget = grid->faster_splitview_widget();
+  ASSERT_TRUE(faster_splitview_widget);
+
+  // Overview items are in MRU order, so the expected order in the grid list is
+  // the reverse creation order.
+  auto* item_widget1 = GetOverviewItemForWindow(window1.get())->item_widget();
+
+  // Order should be [focus_widget, item_widget1, faster_splitview_widget].
+  CheckA11yOverrides("focus", focus_widget,
+                     /*expected_previous=*/faster_splitview_widget,
+                     /*expected_next=*/item_widget1);
+  CheckA11yOverrides("item1", item_widget1, /*expected_previous=*/focus_widget,
+                     /*expected_next=*/faster_splitview_widget);
+  CheckA11yOverrides("splitview", faster_splitview_widget,
+                     /*expected_previous=*/item_widget1,
+                     /*expected_next=*/focus_widget);
 }
 
 // Tests the histograms for the split view overview session exit points are

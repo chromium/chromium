@@ -24,8 +24,6 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/icon_button.h"
-#include "ash/style/system_toast_style.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
@@ -61,6 +59,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -121,10 +120,6 @@ constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 // Distance from the bottom of the last overview item to the top of the faster
 // splitscreen toast widget.
 constexpr int kFasterSplitScreenToastSpacingDp = 40;
-
-// Distance from the right of the faster splitscreen toast to the left of the
-// settings button.
-constexpr int kSettingsButtonSpacingDp = 8;
 
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
@@ -815,6 +810,8 @@ void OverviewGrid::PositionWindows(
   }
 
   UpdateSaveDeskButtons();
+  // Needed to include the toast when we init the grid.
+  UpdateFasterSplitViewWidget();
 
   // This is a no-op if the feature ContinuousOverviewScrollAnimation is not
   // enabled. Once windows are placed at their final positions, clear transforms
@@ -2307,6 +2304,13 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
              : nullptr;
 }
 
+FasterSplitView* OverviewGrid::GetFasterSplitView() {
+  return faster_splitview_widget_
+             ? views::AsViewClass<FasterSplitView>(
+                   faster_splitview_widget_->GetContentsView())
+             : nullptr;
+}
+
 void OverviewGrid::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {
@@ -2929,33 +2933,11 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
     faster_splitview_widget_ =
         std::make_unique<views::Widget>(std::move(params));
     faster_splitview_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
-    auto* box_layout_view = faster_splitview_widget_->SetContentsView(
-        std::make_unique<views::BoxLayoutView>());
-    box_layout_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    box_layout_view->SetBetweenChildSpacing(kSettingsButtonSpacingDp);
-
-    box_layout_view->AddChildView(std::make_unique<SystemToastStyle>(
+    faster_splitview_widget_->SetContentsView(std::make_unique<FasterSplitView>(
         base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
                             weak_ptr_factory_.GetWeakPtr()),
-        l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP)));
-
-    auto* settings_button =
-        box_layout_view->AddChildView(std::make_unique<IconButton>(
-            base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                                weak_ptr_factory_.GetWeakPtr()),
-            IconButton::Type::kLarge, &kOverviewSettingsIcon,
-            IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL));
-
-    // TODO(b/323199185): Consider refactoring this from `SystemToastStyle`.
-    const int toast_height = settings_button->GetPreferredSize().height();
-    const float toast_corner_radius = toast_height / 2.0f;
-    settings_button->SetBorder(std::make_unique<views::HighlightBorder>(
-        toast_corner_radius,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
-    settings_button->SetBackgroundColor(kColorAshShieldAndBase80);
-
+        base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                            weak_ptr_factory_.GetWeakPtr())));
     faster_splitview_widget_->Show();
   }
 
@@ -2980,7 +2962,7 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
                         kFasterSplitScreenToastSpacingDp);
   faster_splitview_widget_->SetBounds(centered_bounds);
 
-  // TODO(b/323409897): Add a11y focus traversal and Chromevox support.
+  overview_session_->UpdateAccessibilityFocus();
 }
 
 }  // namespace ash
