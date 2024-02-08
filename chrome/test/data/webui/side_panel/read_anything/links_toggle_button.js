@@ -82,8 +82,9 @@
   const buttonIconBefore = 'read-anything:links-enabled';
 
   // HTML After disabling links.
-  const afterHtml = '<div><span>This is a link.' +
-      '</span><span>This is another link.</span></div>';
+  const afterHtml =
+      '<div><span data-link="http://www.google.com">This is a link.' +
+      '</span><span data-link="http://www.youtube.com">This is another link.</span></div>';
   const buttonIconAfter = 'read-anything:links-disabled';
 
   // Get button.

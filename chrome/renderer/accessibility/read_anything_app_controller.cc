@@ -614,7 +614,7 @@ void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
       model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
-    Draw();
+    ExecuteJavaScript("chrome.readingMode.updateLinks();");
   }
 }
 
@@ -636,7 +636,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
       model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
-    Draw();
+    ExecuteJavaScript("chrome.readingMode.updateLinks();");
   }
 }
 
