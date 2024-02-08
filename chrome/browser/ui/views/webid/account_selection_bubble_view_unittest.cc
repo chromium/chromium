@@ -145,13 +145,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
       const content::IdentityProviderMetadata& idp_metadata,
       const std::string& terms_of_service_url,
       bool show_auto_reauthn_checkbox = false,
-      bool exclude_iframe = true) {
+      bool exclude_iframe = true,
+      bool request_permission = true) {
     CreateAccountSelectionBubble(/*exclude_title=*/false, exclude_iframe,
                                  show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, idp_metadata,
         CreateTestClientMetadata(terms_of_service_url), {account},
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+        request_permission, /*has_login_status_mismatch=*/false);
     dialog_->ShowSingleAccountConfirmDialog(
         kTopFrameETLDPlusOne,
         exclude_iframe ? std::nullopt
@@ -653,6 +654,38 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   CreateSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
       /*terms_of_service_url=*/"");
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expected_subtitle=*/std::nullopt,
+                      /*expect_idp_brand_icon_in_header=*/true);
+
+  views::View* single_account_chooser = children[2];
+  std::vector<raw_ptr<views::View, VectorExperimental>> chooser_children =
+      single_account_chooser->children();
+  ASSERT_EQ(chooser_children.size(), 2u);
+  views::View* single_account_row = chooser_children[0];
+
+  CheckAccountRow(single_account_row, kAccountSuffix);
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(chooser_children[1]);
+  EXPECT_EQ(button->GetText(),
+            base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
+                              kAccountSuffix));
+}
+
+TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
+  CreateSingleAccountPicker(
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"", /*show_auto_reauthn_checkbox=*/false,
+      /*exclude_iframe=*/true, /*request_permission=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();

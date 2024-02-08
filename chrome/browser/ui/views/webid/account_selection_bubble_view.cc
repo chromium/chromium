@@ -751,9 +751,12 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     auto_reauthn_checkbox_->SetChecked(true);
   }
 
-  // Do not add disclosure text if this is a sign in.
-  if (account.login_state == Account::LoginState::kSignIn)
+  // Do not add disclosure text if this is a sign in or if we were requested
+  // to skip it.
+  if (account.login_state == Account::LoginState::kSignIn ||
+      !idp_display_data.request_permission) {
     return row;
+  }
 
   // Add disclosure text. It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
