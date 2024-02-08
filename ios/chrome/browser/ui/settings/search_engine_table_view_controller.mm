@@ -740,14 +740,18 @@ const char kUmaSelectDefaultSearchEngine[] =
 - (void)updatePrepopulatedEnginesForEditing:(BOOL)editing {
   if (_settingsAreDismissed)
     return;
-  // All items in the first section should be updated. They are either
-  // a prepopulated search engine or a selected custom search engine.
+  // All prepopulated items in the first section should be updated.
+  // When `_shouldShowEEASettings` is YES, the selected custom item should
+  // be updated since the user is not allowed to remove it.
   NSArray<TableViewItem*>* items = [self.tableViewModel
       itemsInSectionWithIdentifier:SectionIdentifierFirstList];
   for (TableViewItem* item in items) {
     SettingsSearchEngineItem* engineItem =
         base::apple::ObjCCastStrict<SettingsSearchEngineItem>(item);
-    engineItem.enabled = !editing;
+    if (engineItem.type == ItemTypePrepopulatedEngine ||
+        _shouldShowEEASettings) {
+      engineItem.enabled = !editing;
+    }
     if (!editing && [self isItem:engineItem
                         equalForTemplateURL:_templateURLService
                                                 ->GetDefaultSearchProvider()]) {

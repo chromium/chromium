@@ -140,6 +140,20 @@ TEST_F(SearchEngineTableViewControllerEEATest,
 
 // Tests that prepopulated engines are correctly displayed when enabling and
 // disabling edit mode.
+// The scenario:
+// + Add custom search engine C#1 as selected.
+// + Add custom search engine C#0.
+// + Test the custom search engine #1 is selected in section 0, at the top.
+// + Test the add button being enabled.
+// + Select the second search engine from the first section (so the first
+//   prepopulated search engine).
+// + Test the custom search engine #1 has been removed from the first section.
+// + Start edit mode.
+// + Test the 12 prepopulated search engine in the first section (disabled).
+// + Test the 2 custom search engine in the second section (enabled).
+// + Stop edit mode.
+// + Test the 12 prepopulated search engine in the first section (enabled).
+// + Test the 2 custom search engine in the second section (enabled).
 TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
   AddCustomSearchEngine(custom_search_engine_[1],
                         base::Time::Now() - base::Minutes(10),
@@ -151,10 +165,13 @@ TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
   CreateController();
   CheckController();
 
+  // Test that the first search engine of the first section is the custom search
+  // engine #1.
+  CheckCustomItem(custom_search_engine_[1], /*checked=*/true, /*section=*/0,
+                  /*row=*/0, /*enabled=*/true);
+
   SearchEngineTableViewController* searchEngineController =
       static_cast<SearchEngineTableViewController*>(controller());
-  // TODO(b/324052311): Need to add a test when there is only custom search
-  // engine and it is selected, the edit button should be disabled.
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
 
   // Set the first prepopulated engine as default engine using
@@ -189,8 +206,10 @@ TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
     CheckRealItem(urls_for_choice_screen[i].get(), /*checked=*/false,
                   /*section=*/0, /*row=*/i - 1);
   }
-  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, 1, 0);
-  CheckCustomItem(custom_search_engine_[1], /*checked=*/false, 1, 1);
+  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/1,
+                  /*row=*/0, /*enabled=*/true);
+  CheckCustomItem(custom_search_engine_[1], /*checked=*/false, /*section=*/1,
+                  /*row=*/1, /*enabled=*/true);
 }
 
 // Tests that custom search engines can be deleted, except it if is selected as
@@ -253,8 +272,88 @@ TEST_F(SearchEngineTableViewControllerEEATest, DeleteItems) {
       ^{
         return NumberOfSections() == 1;
       }));
-  // TODO(b/324052311): Need to add a check that the edit button is disabled.
   ASSERT_TRUE(NumberOfItemsInSection(0) == number_of_prepopulated_items);
+}
+
+// Tests all prepopulated items and the selected custom search engine are
+// disabled when the table view is in edit mode.
+// Tests that all custom search engines not selected are enabled when the table
+// view is in edit mode.
+// The scenario:
+// + Add custom search engine C#0 and C#1 with C#0 selected.
+// + Test all items in section 0 (C#0 first, and the 12 prepopulated search
+//   engines).
+// + Test the C#1 in section 1.
+// + Start edit mode.
+// + Test all items disabled in section 0.
+// + Test the C#1 disabled in section 1.
+TEST_F(SearchEngineTableViewControllerEEATest,
+       EditModeWithCustomSearchEngineAsDefault) {
+  // Get all prepopulated search engines.
+  std::vector<std::unique_ptr<TemplateURL>> urls_for_choice_screen =
+      template_url_service_->GetTemplateURLsForChoiceScreen();
+  AddCustomSearchEngine(custom_search_engine_[0],
+                        base::Time::Now() - base::Seconds(10),
+                        /*default=*/true);
+  AddCustomSearchEngine(custom_search_engine_[1],
+                        base::Time::Now() - base::Minutes(10),
+                        /*default=*/false);
+  CreateController();
+  CheckController();
+  ASSERT_EQ(13, NumberOfItemsInSection(0));
+  ASSERT_EQ(1, NumberOfItemsInSection(1));
+  CheckCustomItem(custom_search_engine_[0], /*checked=*/true, /*section=*/0,
+                  /*row=*/0, /*enabled=*/true);
+  CheckCustomItem(custom_search_engine_[1], /*checked=*/false, /*section=*/1,
+                  /*row=*/0, /*enabled=*/true);
+  // Start edit mode.
+  [controller() setEditing:YES animated:NO];
+  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/0,
+                  /*row=*/0, /*enabled=*/false);
+  CheckCustomItem(custom_search_engine_[1], /*checked=*/false, /*section=*/1,
+                  /*row=*/0, /*enabled=*/true);
+  for (size_t i = 0; i < urls_for_choice_screen.size(); i++) {
+    // Add +1 to the row, to skip C#0.
+    CheckRealItem(urls_for_choice_screen[i].get(), /*checked=*/false,
+                  /*section=*/0, /*row=*/i + 1, /*enabled=*/false);
+  }
+}
+
+// Test the edit button is disabled when having no custom search engine.
+TEST_F(SearchEngineTableViewControllerEEATest,
+       EditButtonWithNoCustomSearchEngine) {
+  CreateController();
+  CheckController();
+  SearchEngineTableViewController* searchEngineController =
+      static_cast<SearchEngineTableViewController*>(controller());
+  EXPECT_FALSE([searchEngineController editButtonEnabled]);
+}
+
+// Test the edit button is enabled when having one custom search engine.
+TEST_F(SearchEngineTableViewControllerEEATest,
+       EditButtonWithOneCustomSearchEngine) {
+  AddCustomSearchEngine(custom_search_engine_[0],
+                        base::Time::Now() - base::Seconds(10),
+                        /*default=*/false);
+  CreateController();
+  CheckController();
+  SearchEngineTableViewController* searchEngineController =
+      static_cast<SearchEngineTableViewController*>(controller());
+  EXPECT_TRUE([searchEngineController editButtonEnabled]);
+}
+
+// Test the edit button is disabled when having only one custom search engine,
+// and it is selected.
+TEST_F(SearchEngineTableViewControllerEEATest,
+       EditButtonWithSelectedCustomSearchEngine) {
+  AddCustomSearchEngine(custom_search_engine_[0],
+                        base::Time::Now() - base::Seconds(10),
+                        /*default=*/true);
+  CreateController();
+  CheckController();
+  SearchEngineTableViewController* searchEngineController =
+      static_cast<SearchEngineTableViewController*>(controller());
+  EXPECT_FALSE([searchEngineController editButtonEnabled]);
 }
 
 }  // namespace
