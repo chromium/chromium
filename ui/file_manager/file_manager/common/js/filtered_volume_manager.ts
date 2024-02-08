@@ -267,9 +267,7 @@ export class FilteredVolumeManager extends VolumeManager {
     // runtime "The event is already being dispatched." error.
     switch (event.type) {
       case 'drive-connection-changed':
-        if (this.isAllowedVolumeType_(VolumeType.DRIVE)) {
-          this.dispatchEvent(new CustomEvent('drive-connection-changed'));
-        }
+        this.dispatchEvent(new CustomEvent('drive-connection-changed'));
         break;
       case 'externally-unmounted':
         if (this.isAllowedVolume(event.detail)) {
@@ -337,7 +335,7 @@ export class FilteredVolumeManager extends VolumeManager {
    */
   override getDriveConnectionState():
       chrome.fileManagerPrivate.DriveConnectionState {
-    if (!this.isAllowedVolumeType_(VolumeType.DRIVE) || !this.volumeManager_) {
+    if (!this.volumeManager_) {
       return {
         type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
         reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
