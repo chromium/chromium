@@ -17,7 +17,7 @@ SharedDictionaryInfo::SharedDictionaryInfo(
     size_t size,
     const net::SHA256HashValue& hash,
     const base::UnguessableToken& disk_cache_key_token,
-    const absl::optional<int64_t>& primary_key_in_database)
+    const std::optional<int64_t>& primary_key_in_database)
     : url_(url),
       response_time_(response_time),
       expiration_(expiration),

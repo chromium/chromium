@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/socket/socket_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net::android {
 
@@ -90,7 +90,7 @@ NET_EXPORT_PRIVATE void SetWifiEnabledForTesting(bool enabled);
 // Returns the signal strength level (between 0 and 4, both inclusive) of the
 // currently registered Wifi connection. If the value is unavailable, an
 // empty value is returned.
-NET_EXPORT_PRIVATE absl::optional<int32_t> GetWifiSignalLevel();
+NET_EXPORT_PRIVATE std::optional<int32_t> GetWifiSignalLevel();
 
 // Gets the DNS servers for the current default network and puts them in
 // `dns_servers`. Sets `dns_over_tls_active` and `dns_over_tls_hostname` based

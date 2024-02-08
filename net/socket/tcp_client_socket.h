@@ -233,7 +233,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   bool was_disconnected_on_suspend_ = false;
 
   // The time when the latest connect attempt was started.
-  absl::optional<base::TimeTicks> start_connect_attempt_;
+  std::optional<base::TimeTicks> start_connect_attempt_;
 
   // The NetworkQualityEstimator for the context this socket is associated with.
   // Can be nullptr.

@@ -285,9 +285,9 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
     return false;
   }
 
-  absl::optional<bssl::SignatureAlgorithm> cert_algorithm =
+  std::optional<bssl::SignatureAlgorithm> cert_algorithm =
       bssl::ParseSignatureAlgorithm(bssl::der::Input(cert_algorithm_sequence));
-  absl::optional<bssl::SignatureAlgorithm> tbs_algorithm =
+  std::optional<bssl::SignatureAlgorithm> tbs_algorithm =
       bssl::ParseSignatureAlgorithm(bssl::der::Input(tbs_algorithm_sequence));
   if (!cert_algorithm || !tbs_algorithm || *cert_algorithm != *tbs_algorithm) {
     return false;

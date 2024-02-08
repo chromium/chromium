@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -52,7 +53,6 @@
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
@@ -718,7 +718,7 @@ GURL EmbeddedTestServer::GetURL(base::StringPiece hostname,
 }
 
 url::Origin EmbeddedTestServer::GetOrigin(
-    const absl::optional<std::string>& hostname) const {
+    const std::optional<std::string>& hostname) const {
   if (hostname)
     return url::Origin::Create(GetURL(*hostname, "/"));
   return url::Origin::Create(base_url_);

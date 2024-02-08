@@ -90,7 +90,7 @@ class TestDohServer {
   std::unique_ptr<test_server::HttpResponse> HandleRequest(
       const test_server::HttpRequest& request);
 
-  absl::optional<std::string> hostname_;
+  std::optional<std::string> hostname_;
   base::Lock lock_;
   // The following fields are accessed from a background thread and protected by
   // `lock_`.

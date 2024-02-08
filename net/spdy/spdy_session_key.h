@@ -5,6 +5,8 @@
 #ifndef NET_SPDY_SPDY_SESSION_KEY_H_
 #define NET_SPDY_SPDY_SESSION_KEY_H_
 
+#include <optional>
+
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
@@ -13,7 +15,6 @@
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 namespace net {
 
 // SpdySessionKey is used as unique index for SpdySessionPool.

@@ -18,7 +18,7 @@ namespace {
 // Generate a compact representation for |ip_addr|. For IPv4, all 32 bits
 // are used and for IPv6, the first 64 bits are used as the remote host
 // identifier.
-absl::optional<IPHash> CalculateIPHash(const IPAddress& ip_addr) {
+std::optional<IPHash> CalculateIPHash(const IPAddress& ip_addr) {
   IPAddressBytes bytes = ip_addr.bytes();
 
   // For IPv4, the first four bytes are taken. For IPv6, the first 8 bytes are

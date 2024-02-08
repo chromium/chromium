@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <tuple>
 #include <unordered_set>
@@ -42,7 +43,6 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -315,7 +315,7 @@ class SQLitePersistentCookieStore::Backend
   }
 
   // Database upgrade statements.
-  absl::optional<int> DoMigrateDatabaseSchema() override;
+  std::optional<int> DoMigrateDatabaseSchema() override;
 
   class PendingOperation {
    public:
@@ -654,7 +654,7 @@ bool CreateV21Schema(sql::Database* db) {
 
 void SQLitePersistentCookieStore::Backend::Load(
     LoadedCallback loaded_callback) {
-  LoadCookiesForKey(absl::nullopt, std::move(loaded_callback));
+  LoadCookiesForKey(std::nullopt, std::move(loaded_callback));
 }
 
 void SQLitePersistentCookieStore::Backend::LoadCookiesForKey(
@@ -891,7 +891,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
       value = statement.ColumnString(4);
     }
 
-    absl::optional<CookiePartitionKey> cookie_partition_key;
+    std::optional<CookiePartitionKey> cookie_partition_key;
     std::string top_frame_site_key = statement.ColumnString(2);
     // If we can't deserialize a top_frame_site_key, we delete any cookie with
     // that key.
@@ -945,7 +945,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
   return ok;
 }
 
-absl::optional<int>
+std::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
 
@@ -954,17 +954,17 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return absl::nullopt;
+      return std::nullopt;
 
     if (!db()->Execute("DROP TABLE IF EXISTS cookies_old"))
-      return absl::nullopt;
+      return std::nullopt;
     if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
-      return absl::nullopt;
+      return std::nullopt;
     if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index"))
-      return absl::nullopt;
+      return std::nullopt;
 
     if (!CreateV18Schema(db()))
-      return absl::nullopt;
+      return std::nullopt;
     static constexpr char insert_cookies_sql[] =
         "INSERT OR REPLACE INTO cookies "
         "(creation_utc, host_key, top_frame_site_key, name, value, "
@@ -977,16 +977,16 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         "       samesite, source_scheme, source_port, is_same_party, 0 "
         "FROM cookies_old ORDER BY creation_utc ASC";
     if (!db()->Execute(insert_cookies_sql))
-      return absl::nullopt;
+      return std::nullopt;
     if (!db()->Execute("DROP TABLE cookies_old"))
-      return absl::nullopt;
+      return std::nullopt;
 
     ++cur_version;
     if (!meta_table()->SetVersionNumber(cur_version) ||
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
         !transaction.Commit()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -998,19 +998,19 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
                                  "UPDATE cookies SET expires_utc = ? WHERE "
                                  "has_expires = 1 AND expires_utc > ?"));
     if (!update_statement.is_valid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     sql::Transaction transaction(db());
     if (!transaction.Begin()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     base::Time expires_cap = base::Time::Now() + base::Days(400);
     update_statement.BindTime(0, expires_cap);
     update_statement.BindTime(1, expires_cap);
     if (!update_statement.Run()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     ++cur_version;
@@ -1018,7 +1018,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
         !transaction.Commit()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -1027,21 +1027,21 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
     sql::Transaction transaction(db());
     if (!transaction.Begin()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!db()->Execute("DROP TABLE IF EXISTS cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!CreateV20Schema(db())) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     static constexpr char insert_cookies_sql[] =
@@ -1057,10 +1057,10 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         "last_update_utc "
         "FROM cookies_old ORDER BY creation_utc ASC";
     if (!db()->Execute(insert_cookies_sql)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("DROP TABLE cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     ++cur_version;
@@ -1068,7 +1068,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
         !transaction.Commit()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -1077,21 +1077,21 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
     sql::Transaction transaction(db());
     if (!transaction.Begin()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!db()->Execute("DROP TABLE IF EXISTS cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!CreateV21Schema(db())) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     static constexpr char insert_cookies_sql[] =
@@ -1106,10 +1106,10 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         "       samesite, source_scheme, source_port, last_update_utc "
         "FROM cookies_old ORDER BY creation_utc ASC";
     if (!db()->Execute(insert_cookies_sql)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!db()->Execute("DROP TABLE cookies_old")) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     ++cur_version;
@@ -1117,13 +1117,13 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
         !transaction.Commit()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   // Put future migration cases here.
 
-  return absl::make_optional(cur_version);
+  return std::make_optional(cur_version);
 }
 
 void SQLitePersistentCookieStore::Backend::AddCookie(

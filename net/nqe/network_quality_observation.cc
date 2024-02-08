@@ -13,13 +13,13 @@ Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
                          int32_t signal_strength,
                          NetworkQualityObservationSource source)
-    : Observation(value, timestamp, signal_strength, source, absl::nullopt) {}
+    : Observation(value, timestamp, signal_strength, source, std::nullopt) {}
 
 Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
                          int32_t signal_strength,
                          NetworkQualityObservationSource source,
-                         const absl::optional<IPHash>& host)
+                         const std::optional<IPHash>& host)
     : value_(value),
       timestamp_(timestamp),
       signal_strength_(signal_strength),

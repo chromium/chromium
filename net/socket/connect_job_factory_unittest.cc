@@ -5,6 +5,7 @@
 #include "net/socket/connect_job_factory.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -205,7 +205,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJob) {
   const url::SchemeHostPort kEndpoint(url::kHttpScheme, "test", 82);
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
-      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/absl::nullopt,
+      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kHttpAll,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
@@ -226,7 +226,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJobWithoutScheme) {
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       /*using_ssl=*/false, kEndpoint, ProxyChain::Direct(),
-      /*proxy_annotation_tag=*/absl::nullopt,
+      /*proxy_annotation_tag=*/std::nullopt,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
@@ -244,7 +244,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 84);
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
-      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/absl::nullopt,
+      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kHttpAll,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
@@ -280,7 +280,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobForHttp11) {
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 84);
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
-      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/absl::nullopt,
+      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kHttp11Only,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
@@ -317,7 +317,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       /*using_ssl=*/true, kEndpoint, ProxyChain::Direct(),
-      /*proxy_annotation_tag=*/absl::nullopt, /*force_tunnel=*/false,
+      /*proxy_annotation_tag=*/std::nullopt, /*force_tunnel=*/false,
       PrivacyMode::PRIVACY_MODE_DISABLED, OnHostResolutionCallback(),
       DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow, &common_connect_job_params_, &delegate_);
@@ -965,7 +965,7 @@ TEST_F(ConnectJobFactoryTest, CreateWebsocketConnectJob) {
       &websocket_endpoint_lock_manager;
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
-      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/absl::nullopt,
+      kEndpoint, ProxyChain::Direct(), /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kHttpAll,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
@@ -991,7 +991,7 @@ TEST_F(ConnectJobFactoryTest, CreateWebsocketConnectJobWithoutScheme) {
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       /*using_ssl=*/false, kEndpoint, ProxyChain::Direct(),
-      /*proxy_annotation_tag=*/absl::nullopt, /*force_tunnel=*/false,
+      /*proxy_annotation_tag=*/std::nullopt, /*force_tunnel=*/false,
       PrivacyMode::PRIVACY_MODE_DISABLED, OnHostResolutionCallback(),
       DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow, &common_connect_job_params, &delegate_);

@@ -5,9 +5,10 @@
 #ifndef NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
 #define NET_EXTRAS_SHARED_DICTIONARY_SHARED_DICTIONARY_ISOLATION_KEY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -20,15 +21,15 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryIsolationKey {
   // Creates a SharedDictionaryIsolationKey. Returns nullopt when
   // `frame_origin` or `top_frame_origin` of `isolation_info` is not set or
   // opaque, or `nonce` is set.
-  static absl::optional<SharedDictionaryIsolationKey> MaybeCreate(
+  static std::optional<SharedDictionaryIsolationKey> MaybeCreate(
       const net::IsolationInfo& isolation_info);
 
   // Creates a SharedDictionaryIsolationKey. Returns nullopt when
   // `frame_origin` or `top_frame_origin` of `network_isolation_key` is not set
   // or opaque, or `nonce` of `network_isolation_key` is set.
-  static absl::optional<SharedDictionaryIsolationKey> MaybeCreate(
+  static std::optional<SharedDictionaryIsolationKey> MaybeCreate(
       const NetworkIsolationKey& network_isolation_key,
-      const absl::optional<url::Origin>& frame_origin);
+      const std::optional<url::Origin>& frame_origin);
 
   SharedDictionaryIsolationKey() = default;
   SharedDictionaryIsolationKey(const url::Origin& frame_origin,

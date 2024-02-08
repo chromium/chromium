@@ -5,6 +5,7 @@
 #include "net/reporting/reporting_cache_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -30,7 +30,7 @@ ReportingCacheImpl::ReportingCacheImpl(ReportingContext* context)
 ReportingCacheImpl::~ReportingCacheImpl() = default;
 
 void ReportingCacheImpl::AddReport(
-    const absl::optional<base::UnguessableToken>& reporting_source,
+    const std::optional<base::UnguessableToken>& reporting_source,
     const NetworkAnonymizationKey& network_anonymization_key,
     const GURL& url,
     const std::string& user_agent,
@@ -607,7 +607,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
   auto endpoints_it = loaded_endpoints.begin();
   auto endpoint_groups_it = loaded_endpoint_groups.begin();
 
-  absl::optional<Client> client;
+  std::optional<Client> client;
 
   while (endpoint_groups_it != loaded_endpoint_groups.end() &&
          endpoints_it != loaded_endpoints.end()) {
@@ -660,7 +660,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
         EnforcePerClientAndGlobalEndpointLimits(client_it);
       }
       DCHECK(FindClientIt(group_key) == clients_.end());
-      client = absl::make_optional(
+      client = std::make_optional(
           Client(group_key.network_anonymization_key, group_key.origin));
     }
     DCHECK(client.has_value());
@@ -1286,7 +1286,7 @@ void ReportingCacheImpl::RemoveEndpointsInGroupOtherThan(
 
     // This may invalidate |group_it| (and also possibly |client_it|), but only
     // if we are processing the last remaining endpoint in the group.
-    absl::optional<EndpointMap::iterator> next_it =
+    std::optional<EndpointMap::iterator> next_it =
         RemoveEndpointInternal(client_it, group_it, it);
     if (!next_it.has_value())
       return;
@@ -1342,7 +1342,7 @@ void ReportingCacheImpl::MarkEndpointGroupAndClientUsed(
     store()->UpdateReportingEndpointGroupAccessTime(group_it->second);
 }
 
-absl::optional<ReportingCacheImpl::EndpointMap::iterator>
+std::optional<ReportingCacheImpl::EndpointMap::iterator>
 ReportingCacheImpl::RemoveEndpointInternal(ClientMap::iterator client_it,
                                            EndpointGroupMap::iterator group_it,
                                            EndpointMap::iterator endpoint_it) {
@@ -1356,7 +1356,7 @@ ReportingCacheImpl::RemoveEndpointInternal(ClientMap::iterator client_it,
   // be removed if it becomes empty.
   if (endpoints_.count(group_key) == 1) {
     RemoveEndpointGroupInternal(client_it, group_it);
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Otherwise, there are other endpoints in the group, so there is no chance
   // of needing to remove the group/client. Just remove this endpoint and
@@ -1369,7 +1369,7 @@ ReportingCacheImpl::RemoveEndpointInternal(ClientMap::iterator client_it,
   return endpoints_.erase(endpoint_it);
 }
 
-absl::optional<ReportingCacheImpl::EndpointGroupMap::iterator>
+std::optional<ReportingCacheImpl::EndpointGroupMap::iterator>
 ReportingCacheImpl::RemoveEndpointGroupInternal(
     ClientMap::iterator client_it,
     EndpointGroupMap::iterator group_it,
@@ -1411,7 +1411,7 @@ ReportingCacheImpl::RemoveEndpointGroupInternal(
   if (client.endpoint_count == 0) {
     DCHECK(client.endpoint_group_names.empty());
     clients_.erase(client_it);
-    return absl::nullopt;
+    return std::nullopt;
   }
   return rv;
 }

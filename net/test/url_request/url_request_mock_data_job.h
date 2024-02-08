@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "net/url_request/url_request_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -66,7 +66,7 @@ class URLRequestMockDataJob : public URLRequestJob {
 
   void StartAsync();
 
-  absl::optional<std::string> headers_;
+  std::optional<std::string> headers_;
   std::string data_;
   size_t data_offset_ = 0;
   bool request_client_certificate_;

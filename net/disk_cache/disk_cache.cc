@@ -266,7 +266,7 @@ class TrivialFileEnumerator final : public FileEnumerator {
       : enumerator_(path) {}
   ~TrivialFileEnumerator() override = default;
 
-  absl::optional<FileEnumerationEntry> Next() override {
+  std::optional<FileEnumerationEntry> Next() override {
     return enumerator_.Next();
   }
   bool HasError() const override { return enumerator_.HasError(); }
@@ -601,7 +601,7 @@ bool TrivialFileOperations::ReplaceFile(const base::FilePath& from_path,
   return base::ReplaceFile(from_path, to_path, error);
 }
 
-absl::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
+std::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
@@ -611,7 +611,7 @@ absl::optional<base::File::Info> TrivialFileOperations::GetFileInfo(
 
   base::File::Info file_info;
   if (!base::GetFileInfo(path, &file_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return file_info;
 }

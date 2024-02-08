@@ -21,7 +21,7 @@ class FailedWebTransportClient : public WebTransportClient {
                /*safe_to_report_details=*/true),
         visitor_(visitor) {}
   void Connect() override { visitor_->OnConnectionFailed(error_); }
-  void Close(const absl::optional<WebTransportCloseInfo>& close_info) override {
+  void Close(const std::optional<WebTransportCloseInfo>& close_info) override {
     NOTREACHED();
   }
 

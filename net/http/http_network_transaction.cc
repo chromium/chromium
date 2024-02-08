@@ -1695,7 +1695,7 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
 }
 
 // static
-absl::optional<HttpNetworkTransaction::RetryReason>
+std::optional<HttpNetworkTransaction::RetryReason>
 HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
   switch (error) {
     case ERR_CONNECTION_RESET:
@@ -1723,7 +1723,7 @@ HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
     case ERR_QUIC_PROTOCOL_ERROR:
       return RetryReason::kQuicProtocolError;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // This method determines whether it is safe to resend the request after an
@@ -1740,7 +1740,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
   GenerateNetworkErrorLoggingReportIfError(error);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  absl::optional<HttpNetworkTransaction::RetryReason> retry_reason =
+  std::optional<HttpNetworkTransaction::RetryReason> retry_reason =
       GetRetryReasonForIOError(error);
   if (!retry_reason) {
     return error;
@@ -2092,9 +2092,9 @@ void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
   if (!stream_) {
     return;
   }
-  absl::optional<quic::QuicErrorCode> connection_error =
+  std::optional<quic::QuicErrorCode> connection_error =
       stream_->GetQuicErrorCode();
-  absl::optional<quic::QuicRstStreamErrorCode> stream_error =
+  std::optional<quic::QuicRstStreamErrorCode> stream_error =
       stream_->GetQuicRstStreamErrorCode();
   if (!connection_error || !stream_error) {
     return;

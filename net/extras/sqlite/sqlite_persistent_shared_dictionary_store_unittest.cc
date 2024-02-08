@@ -4,6 +4,7 @@
 
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/files/file_util.h"
@@ -26,7 +27,6 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -139,8 +139,7 @@ RegisterDictionaryImpl(SQLitePersistentSharedDictionaryStore* store,
                        SharedDictionaryInfo dictionary_info,
                        uint64_t max_size_per_site = 1000000,
                        uint64_t max_count_per_site = 1000) {
-  absl::optional<
-      SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult>
+  std::optional<SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult>
       result_out;
   base::RunLoop run_loop;
   store->RegisterDictionary(
@@ -180,7 +179,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
                            /*last_used_time*/ now,
                            /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
                            /*disk_cache_key_token=*/token1,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionaryImpl(store, isolation_key, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -193,7 +192,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
                            /*last_used_time*/ now + base::Seconds(1),
                            /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
                            /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionaryImpl(store, isolation_key, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -206,7 +205,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
                            /*last_used_time*/ now + base::Seconds(2),
                            /*size=*/5000, SHA256HashValue({{0x00, 0x03}}),
                            /*disk_cache_key_token=*/token3,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionaryImpl(store, isolation_key, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -219,7 +218,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
                            /*last_used_time*/ now + base::Seconds(3),
                            /*size=*/7000, SHA256HashValue({{0x00, 0x04}}),
                            /*disk_cache_key_token=*/token4,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionaryImpl(store, isolation_key, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 
@@ -240,7 +239,7 @@ RegisterSharedDictionariesForProcessEvictionTest(
 
 SharedDictionaryIsolationKey CreateIsolationKey(
     const std::string& frame_origin_str,
-    const absl::optional<std::string>& top_frame_site_str = absl::nullopt) {
+    const std::optional<std::string>& top_frame_site_str = std::nullopt) {
   return SharedDictionaryIsolationKey(
       url::Origin::Create(GURL(frame_origin_str)),
       top_frame_site_str ? SchemefulSite(GURL(*top_frame_site_str))
@@ -264,7 +263,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
             /*size=*/1000,
             SHA256HashValue({{0x00, 0x01}}),
             /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-            /*primary_key_in_database=*/absl::nullopt) {}
+            /*primary_key_in_database=*/std::nullopt) {}
 
   SQLitePersistentSharedDictionaryStoreTest(
       const SQLitePersistentSharedDictionaryStoreTest&) = delete;
@@ -773,7 +772,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin2.test/dict"),
@@ -783,7 +782,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       /*expect_merged=*/false);
 }
 
@@ -799,7 +798,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
@@ -809,7 +808,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       /*expect_merged=*/false);
 }
 
@@ -825,7 +824,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
@@ -835,7 +834,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       /*expect_merged=*/true);
 }
 
@@ -851,7 +850,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       isolation_key_,
       SharedDictionaryInfo(
           GURL("https://origin.test/dict"),
@@ -861,7 +860,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       /*expect_merged=*/false);
 }
 
@@ -983,7 +982,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(), dictionary_info_.size() + 1,
       SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
 
   // Register the dictionary which size is dictionary_info_.size() + 1.
   base::RunLoop run_loop;
@@ -1025,7 +1024,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
           /*last_used_time*/ base::Time::Now(),
           /*size=*/max_size_per_site + 1, SHA256HashValue({{0x00, 0x01}}),
           /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-          /*primary_key_in_database=*/absl::nullopt),
+          /*primary_key_in_database=*/std::nullopt),
       max_size_per_site,
       /*max_count_per_site=*/1000,
       base::BindLambdaForTesting(
@@ -1058,7 +1057,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/max_size_per_site, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionaryImpl(store_.get(), isolation_key1, dict1,
                                         max_size_per_site, max_count_per_site);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
@@ -1078,7 +1077,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/max_size_per_site / 2, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict2,
                                         max_size_per_site, max_count_per_site);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
@@ -1097,7 +1096,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/max_size_per_site / 2, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict3,
                                         max_size_per_site, max_count_per_site);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
@@ -1121,7 +1120,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/1, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionaryImpl(store_.get(), isolation_key3, dict4,
                                         max_size_per_site, max_count_per_site);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
@@ -1154,7 +1153,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/100, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionaryImpl(store_.get(), isolation_key1, dict1,
                                         max_size_per_site, max_count_per_site);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
@@ -1174,7 +1173,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/200, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict2,
                                         max_size_per_site, max_count_per_site);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
@@ -1193,7 +1192,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/400, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict3,
                                         max_size_per_site, max_count_per_site);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
@@ -1217,7 +1216,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/800, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionaryImpl(store_.get(), isolation_key3, dict4,
                                         max_size_per_site, max_count_per_site);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
@@ -1251,7 +1250,7 @@ TEST_F(
       /*last_used_time*/ base::Time::Now(),
       /*size=*/100, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionaryImpl(store_.get(), isolation_key1, dict1,
                                         max_size_per_site, max_count_per_site);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
@@ -1271,7 +1270,7 @@ TEST_F(
       /*last_used_time*/ base::Time::Now(),
       /*size=*/200, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict2,
                                         max_size_per_site, max_count_per_site);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
@@ -1290,7 +1289,7 @@ TEST_F(
       /*last_used_time*/ base::Time::Now(),
       /*size=*/400, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict3,
                                         max_size_per_site, max_count_per_site);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
@@ -1314,7 +1313,7 @@ TEST_F(
       /*last_used_time*/ base::Time::Now(),
       /*size=*/800, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionaryImpl(store_.get(), isolation_key3, dict4,
                                         max_size_per_site, max_count_per_site);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
@@ -1347,7 +1346,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/100, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionaryImpl(store_.get(), isolation_key1, dict1,
                                         max_size_per_site, max_count_per_site);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
@@ -1367,7 +1366,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/200, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict2,
                                         max_size_per_site, max_count_per_site);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
@@ -1386,7 +1385,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/400, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionaryImpl(store_.get(), isolation_key2, dict3,
                                         max_size_per_site, max_count_per_site);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
@@ -1410,7 +1409,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/800, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/base::UnguessableToken::Create(),
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionaryImpl(store_.get(), isolation_key3, dict4,
                                         max_size_per_site, max_count_per_site);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
@@ -2077,7 +2076,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/token1,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2090,7 +2089,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/token2,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2103,7 +2102,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/5000, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/token3,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -2116,7 +2115,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/7000, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/token4,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 
@@ -2157,7 +2156,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/token1,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key1, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2172,7 +2171,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/token2,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key2, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2187,7 +2186,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/5000, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/token3,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionary(isolation_key3, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -2202,7 +2201,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/7000, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/token4,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionary(isolation_key4, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 
@@ -2273,7 +2272,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
                            /*disk_cache_key_token=*/token1,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key1, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2289,7 +2288,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
                            /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key2, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2305,7 +2304,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/4000, SHA256HashValue({{0x00, 0x03}}),
                            /*disk_cache_key_token=*/token3,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionary(isolation_key3, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -2321,7 +2320,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/8000, SHA256HashValue({{0x00, 0x04}}),
                            /*disk_cache_key_token=*/token4,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionary(isolation_key4, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 
@@ -2356,7 +2355,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
                            /*disk_cache_key_token=*/token1_1,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1_1 = RegisterDictionary(isolation_key1, dict1_1);
   dict1_1.set_primary_key_in_database(result1_1.primary_key_in_database());
 
@@ -2369,7 +2368,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/2000, SHA256HashValue({{0x00, 0x02}}),
                            /*disk_cache_key_token=*/token1_2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1_2 = RegisterDictionary(isolation_key1, dict1_2);
   dict1_2.set_primary_key_in_database(result1_2.primary_key_in_database());
 
@@ -2383,7 +2382,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                            /*last_used_time*/ base::Time::Now(),
                            /*size=*/4000, SHA256HashValue({{0x00, 0x03}}),
                            /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key2, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2411,7 +2410,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*last_used_time*/ now,
                            /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
                            /*disk_cache_key_token=*/token1,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2424,7 +2423,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*last_used_time*/ now,
                            /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
                            /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2437,7 +2436,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*last_used_time*/ now,
                            /*size=*/5000, SHA256HashValue({{0x00, 0x03}}),
                            /*disk_cache_key_token=*/token3,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -2450,7 +2449,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*last_used_time*/ now,
                            /*size=*/7000, SHA256HashValue({{0x00, 0x04}}),
                            /*disk_cache_key_token=*/token4,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 
@@ -2638,7 +2637,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
                            /*last_used_time*/ now,
                            /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
                            /*disk_cache_key_token=*/token1,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2651,7 +2650,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
                            /*last_used_time*/ now + base::Seconds(1),
                            /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
                            /*disk_cache_key_token=*/token2,
-                           /*primary_key_in_database=*/absl::nullopt);
+                           /*primary_key_in_database=*/std::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
 
@@ -2682,7 +2681,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/token1,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   RegisterDictionary(isolation_key_, dict1);
 
   EXPECT_THAT(GetAllDiskCacheKeyTokens(), ElementsAreArray({token1}));
@@ -2696,7 +2695,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
       /*last_used_time*/ base::Time::Now(),
       /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/token2,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   RegisterDictionary(isolation_key_, dict2);
 
   EXPECT_THAT(GetAllDiskCacheKeyTokens(),
@@ -2717,7 +2716,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/1000, SHA256HashValue({{0x00, 0x01}}),
       /*disk_cache_key_token=*/token1,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
@@ -2732,7 +2731,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/3000, SHA256HashValue({{0x00, 0x02}}),
       /*disk_cache_key_token=*/token2,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   RegisterDictionary(isolation_key_, dict2);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
   dict2.set_primary_key_in_database(result2.primary_key_in_database());
@@ -2746,7 +2745,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/5000, SHA256HashValue({{0x00, 0x03}}),
       /*disk_cache_key_token=*/token3,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
   dict3.set_primary_key_in_database(result3.primary_key_in_database());
 
@@ -2759,7 +2758,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*last_used_time*/ base::Time::Now(),
       /*size=*/7000, SHA256HashValue({{0x00, 0x04}}),
       /*disk_cache_key_token=*/token4,
-      /*primary_key_in_database=*/absl::nullopt);
+      /*primary_key_in_database=*/std::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
   dict4.set_primary_key_in_database(result4.primary_key_in_database());
 

@@ -2388,8 +2388,8 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
 
   EXPECT_EQ(1, delegate.received_redirect_count());
 
-  request->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
-                                  absl::nullopt /* modified_headers */);
+  request->FollowDeferredRedirect(std::nullopt /* removed_headers */,
+                                  std::nullopt /* modified_headers */);
   delegate.RunUntilComplete();
 
   EXPECT_EQ(1, delegate.response_started_count());
@@ -3518,7 +3518,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
                                    NetLogEventPhase::NONE);
   ASSERT_TRUE(entries[pos].HasParams());
   // END_STREAM is not set on the HEADERS frame, so `fin` is false.
-  absl::optional<bool> fin = entries[pos].params.FindBool("fin");
+  std::optional<bool> fin = entries[pos].params.FindBool("fin");
   ASSERT_TRUE(fin.has_value());
   EXPECT_FALSE(*fin);
 
@@ -3527,7 +3527,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
                                    NetLogEventType::HTTP2_SESSION_RECV_DATA,
                                    NetLogEventPhase::NONE);
   ASSERT_TRUE(entries[pos].HasParams());
-  absl::optional<int> size = entries[pos].params.FindInt("size");
+  std::optional<int> size = entries[pos].params.FindInt("size");
   ASSERT_TRUE(size.has_value());
   EXPECT_EQ(static_cast<int>(strlen("hello!")), *size);
   // END_STREAM is set on the DATA frame, so `fin` is true.
@@ -3567,7 +3567,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLogForResponseWithNoBody) {
       NetLogEventPhase::NONE);
   ASSERT_TRUE(entries[pos].HasParams());
   // END_STREAM is set on the HEADERS frame, so `fin` is true.
-  absl::optional<bool> fin = entries[pos].params.FindBool("fin");
+  std::optional<bool> fin = entries[pos].params.FindBool("fin");
   ASSERT_TRUE(fin.has_value());
   EXPECT_TRUE(*fin);
 
@@ -5233,7 +5233,7 @@ TEST_P(SpdyNetworkTransactionTest, SpdyBasicAuth) {
   ASSERT_TRUE(response_start->headers);
   EXPECT_EQ(401, response_start->headers->response_code());
   EXPECT_TRUE(response_start->was_fetched_via_spdy);
-  const absl::optional<AuthChallengeInfo>& auth_challenge =
+  const std::optional<AuthChallengeInfo>& auth_challenge =
       response_start->auth_challenge;
   ASSERT_TRUE(auth_challenge);
   EXPECT_FALSE(auth_challenge->is_proxy);
@@ -8553,7 +8553,7 @@ TEST_P(SpdyNetworkTransactionTest,
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = false;
 
@@ -8596,7 +8596,7 @@ TEST_P(SpdyNetworkTransactionTest, GreaseFrameTypeWithGetRequest) {
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = true;
 
@@ -8658,7 +8658,7 @@ TEST_P(SpdyNetworkTransactionTest,
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = true;
 
@@ -8718,7 +8718,7 @@ TEST_P(SpdyNetworkTransactionTest,
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = true;
 
@@ -8779,7 +8779,7 @@ TEST_P(SpdyNetworkTransactionTest, DoNotGreaseFrameTypeWithConnect) {
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = true;
 
@@ -8860,7 +8860,7 @@ TEST_P(SpdyNetworkTransactionTest, OnDataSentDoesNotCrashWithGreasedFrameType) {
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps->greased_http2_frame =
-      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      std::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
   session_deps->http2_end_stream_with_data_frame = true;
 

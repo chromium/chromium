@@ -64,7 +64,7 @@ std::shared_ptr<const bssl::ParsedCertificate> GetASSLTrustedBuiltinRoot() {
       x509_util::DefaultParseCertificateOptions(), &parsing_errors);
 }
 
-absl::optional<unsigned> GetNSSTrustForCert(
+std::optional<unsigned> GetNSSTrustForCert(
     const bssl::ParsedCertificate* cert) {
   SECItem der_cert;
   der_cert.data = const_cast<uint8_t*>(cert->der_cert().data());
@@ -73,12 +73,12 @@ absl::optional<unsigned> GetNSSTrustForCert(
   ScopedCERTCertificate nss_cert(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
   if (!nss_cert) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CERTCertTrust nss_cert_trust;
   if (CERT_GetCertTrust(nss_cert.get(), &nss_cert_trust) != SECSuccess) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return SEC_GET_TRUST_FLAGS(&nss_cert_trust, trustSSL);

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -37,7 +38,6 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -127,7 +127,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
   // The same frame will be sent out on all connections to prevent the retry
   // logic from hiding broken servers.
-  absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+  std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   // If set, the HEADERS frame carrying a request without body will not have
   // the END_STREAM flag set.  The stream will be closed by a subsequent empty
   // DATA frame with END_STREAM.  Does not affect bidirectional or proxy

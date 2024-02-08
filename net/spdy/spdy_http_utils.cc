@@ -161,7 +161,7 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
     //    Set-Cookie: bar\0
     size_t start = 0;
     size_t end = 0;
-    absl::optional<base::StringPiece> location_value;
+    std::optional<base::StringPiece> location_value;
     do {
       end = value.find('\0', start);
       base::StringPiece tval;
@@ -194,7 +194,7 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
 }
 
 void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
-                                      absl::optional<RequestPriority> priority,
+                                      std::optional<RequestPriority> priority,
                                       const HttpRequestHeaders& request_headers,
                                       spdy::Http2HeaderBlock* headers) {
   headers->insert({spdy::kHttp2MethodHeader, info.method});

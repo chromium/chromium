@@ -59,7 +59,7 @@ base::FilePath GetTempCacheName(const base::FilePath& dirname,
 
 void CleanupTemporaryDirectories(const base::FilePath& path) {
   const base::FilePath dirname = path.DirName();
-  const absl::optional<base::SafeBaseName> basename =
+  const std::optional<base::SafeBaseName> basename =
       base::SafeBaseName::Create(path);
   if (!basename.has_value()) {
     return;
@@ -72,7 +72,7 @@ void CleanupTemporaryDirectories(const base::FilePath& path) {
 
 bool MoveDirectoryToTemporaryDirectory(const base::FilePath& path) {
   const base::FilePath dirname = path.DirName();
-  const absl::optional<base::SafeBaseName> basename =
+  const std::optional<base::SafeBaseName> basename =
       base::SafeBaseName::Create(path);
   if (!basename.has_value()) {
     return false;

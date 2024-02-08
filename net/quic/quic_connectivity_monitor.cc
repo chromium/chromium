@@ -149,7 +149,7 @@ void QuicConnectivityMonitor::OnSessionResumedPostPathDegrading(
 
   num_all_degraded_sessions_ = 0u;
   num_sessions_active_during_current_speculative_connectivity_failure_ =
-      absl::nullopt;
+      std::nullopt;
 }
 
 void QuicConnectivityMonitor::OnSessionEncounteringWriteError(
@@ -229,7 +229,7 @@ void QuicConnectivityMonitor::OnDefaultNetworkUpdated(
   active_sessions_.clear();
   degrading_sessions_.clear();
   num_sessions_active_during_current_speculative_connectivity_failure_ =
-      absl::nullopt;
+      std::nullopt;
   write_error_map_.clear();
   quic_error_map_.clear();
 }

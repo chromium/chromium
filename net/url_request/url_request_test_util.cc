@@ -357,7 +357,7 @@ int TestNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url) {
   EXPECT_FALSE(preserve_fragment_on_redirect_url->has_value());
   int req_id = GetRequestId(request);
   bool is_first_response =
@@ -385,7 +385,7 @@ int TestNetworkDelegate::OnHeadersReceived(
 
     redirect_on_headers_received_url_ = GURL();
 
-    // Since both values are absl::optionals, can just copy this over.
+    // Since both values are std::optionals, can just copy this over.
     *preserve_fragment_on_redirect_url = preserve_fragment_on_redirect_url_;
   } else if (add_header_to_first_response_ && is_first_response) {
     *override_response_headers = base::MakeRefCounted<HttpResponseHeaders>(

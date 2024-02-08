@@ -274,7 +274,7 @@ int SSLConnectJob::DoTransportConnect() {
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   // If this is an ECH retry, connect to the same server as before.
-  absl::optional<TransportConnectJob::EndpointResultOverride>
+  std::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
   if (ech_retry_configs_) {
     DCHECK(ssl_client_context()->config().ech_enabled);

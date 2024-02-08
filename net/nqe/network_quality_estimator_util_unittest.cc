@@ -5,6 +5,7 @@
 #include "net/nqe/network_quality_estimator_util.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,7 +21,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net::nqe::internal {
@@ -49,13 +49,13 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHost) {
   EXPECT_EQ(0u, mock_host_resolver.num_resolve());
 
   // Load hostnames into HostResolver cache.
-  int rv = mock_host_resolver.LoadIntoCache(HostPortPair("example1.com", 443),
-                                            NetworkAnonymizationKey(),
-                                            absl::nullopt);
+  int rv =
+      mock_host_resolver.LoadIntoCache(HostPortPair("example1.com", 443),
+                                       NetworkAnonymizationKey(), std::nullopt);
   EXPECT_EQ(OK, rv);
-  rv = mock_host_resolver.LoadIntoCache(HostPortPair("example2.com", 443),
-                                        NetworkAnonymizationKey(),
-                                        absl::nullopt);
+  rv =
+      mock_host_resolver.LoadIntoCache(HostPortPair("example2.com", 443),
+                                       NetworkAnonymizationKey(), std::nullopt);
   EXPECT_EQ(OK, rv);
 
   EXPECT_EQ(2u, mock_host_resolver.num_non_local_resolves());
@@ -109,9 +109,9 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
                                        NetworkAnonymizationKey()));
   EXPECT_EQ(0u, mock_host_resolver.num_non_local_resolves());
 
-  int rv = mock_host_resolver.LoadIntoCache(HostPortPair("example3.com", 443),
-                                            NetworkAnonymizationKey(),
-                                            absl::nullopt);
+  int rv =
+      mock_host_resolver.LoadIntoCache(HostPortPair("example3.com", 443),
+                                       NetworkAnonymizationKey(), std::nullopt);
   EXPECT_EQ(OK, rv);
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 
@@ -159,7 +159,7 @@ TEST(NetworkQualityEstimatorUtilTest,
 
   int rv =
       mock_host_resolver.LoadIntoCache(HostPortPair("example3.com", 443),
-                                       kNetworkAnonymizationKey, absl::nullopt);
+                                       kNetworkAnonymizationKey, std::nullopt);
   EXPECT_EQ(OK, rv);
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 

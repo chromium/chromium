@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "net/test/key_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/pki/certificate_policies.h"
@@ -260,13 +260,13 @@ std::array<std::unique_ptr<CertBuilder>, 2> CertBuilder::CreateSimpleChain2() {
 }
 
 // static
-absl::optional<bssl::SignatureAlgorithm>
+std::optional<bssl::SignatureAlgorithm>
 CertBuilder::DefaultSignatureAlgorithmForKey(EVP_PKEY* key) {
   if (EVP_PKEY_id(key) == EVP_PKEY_RSA)
     return bssl::SignatureAlgorithm::kRsaPkcs1Sha256;
   if (EVP_PKEY_id(key) == EVP_PKEY_EC)
     return bssl::SignatureAlgorithm::kEcdsaSha256;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -592,7 +592,7 @@ void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
 
 void CertBuilder::SetIssuerTLV(base::span<const uint8_t> issuer_tlv) {
   if (issuer_tlv.empty())
-    issuer_tlv_ = absl::nullopt;
+    issuer_tlv_ = std::nullopt;
   else
     issuer_tlv_ = std::string(issuer_tlv.begin(), issuer_tlv.end());
   Invalidate();
@@ -795,8 +795,8 @@ void CertBuilder::SetPolicyMappings(
 }
 
 void CertBuilder::SetPolicyConstraints(
-    absl::optional<uint64_t> require_explicit_policy,
-    absl::optional<uint64_t> inhibit_policy_mapping) {
+    std::optional<uint64_t> require_explicit_policy,
+    std::optional<uint64_t> inhibit_policy_mapping) {
   if (!require_explicit_policy.has_value() &&
       !inhibit_policy_mapping.has_value()) {
     EraseExtension(bssl::der::Input(bssl::kPolicyConstraintsOid));
@@ -1222,7 +1222,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
       bssl::der::ContextSpecificPrimitive(2), &unused));
 
   // extensions
-  absl::optional<bssl::der::Input> extensions_tlv;
+  std::optional<bssl::der::Input> extensions_tlv;
   ASSERT_TRUE(tbs_certificate.ReadOptionalTag(
       bssl::der::ContextSpecificConstructed(3), &extensions_tlv));
   if (extensions_tlv) {
@@ -1362,7 +1362,7 @@ void CertBuilder::BuildSctListExtension(const std::string& pre_tbs_certificate,
 void CertBuilder::GenerateCertificate() {
   ASSERT_FALSE(cert_);
 
-  absl::optional<bssl::SignatureAlgorithm> signature_algorithm =
+  std::optional<bssl::SignatureAlgorithm> signature_algorithm =
       signature_algorithm_;
   if (!signature_algorithm)
     signature_algorithm = DefaultSignatureAlgorithmForKey(issuer_->GetKey());

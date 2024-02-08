@@ -81,7 +81,7 @@ std::string GetSpawnerUrlBase() {
   if (!ReadFileToString(config_path, &config_json))
     LOG(FATAL) << "Failed to read " << config_path.value();
 
-  absl::optional<base::Value> config = base::JSONReader::Read(config_json);
+  std::optional<base::Value> config = base::JSONReader::Read(config_json);
   if (!config)
     LOG(FATAL) << "Failed to parse " << config_path.value();
 
@@ -119,7 +119,7 @@ bool RemoteTestServer::StartInBackground() {
   DCHECK(!started());
   DCHECK(!start_request_);
 
-  absl::optional<base::Value::Dict> arguments_dict = GenerateArguments();
+  std::optional<base::Value::Dict> arguments_dict = GenerateArguments();
   if (!arguments_dict)
     return false;
 

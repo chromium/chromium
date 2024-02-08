@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -28,7 +29,6 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -44,7 +44,7 @@ class ReportingCacheImpl : public ReportingCache {
   ~ReportingCacheImpl() override;
 
   // ReportingCache implementation
-  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+  void AddReport(const std::optional<base::UnguessableToken>& reporting_source,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& user_agent,
@@ -276,10 +276,10 @@ class ReportingCacheImpl : public ReportingCache {
   // Also takes iterators to the client and endpoint group to avoid repeated
   // lookups. May cause the client and/or group to be removed if they become
   // empty, which would invalidate those iterators.
-  // Returns the iterator following the endpoint removed, or absl::nullopt if
+  // Returns the iterator following the endpoint removed, or std::nullopt if
   // either of |group_it| or |client_it| were invalidated. (If |client_it| is
   // invalidated, then so must |group_it|).
-  absl::optional<EndpointMap::iterator> RemoveEndpointInternal(
+  std::optional<EndpointMap::iterator> RemoveEndpointInternal(
       ClientMap::iterator client_it,
       EndpointGroupMap::iterator group_it,
       EndpointMap::iterator endpoint_it);
@@ -290,9 +290,9 @@ class ReportingCacheImpl : public ReportingCache {
   // invalidate |client_it|. If |num_endpoints_removed| is not null, then
   // |*num_endpoints_removed| is incremented by the number of endpoints
   // removed.
-  // Returns the iterator following the endpoint group removed, or absl::nullopt
+  // Returns the iterator following the endpoint group removed, or std::nullopt
   // if |client_it| was invalidated.
-  absl::optional<EndpointGroupMap::iterator> RemoveEndpointGroupInternal(
+  std::optional<EndpointGroupMap::iterator> RemoveEndpointGroupInternal(
       ClientMap::iterator client_it,
       EndpointGroupMap::iterator group_it,
       size_t* num_endpoints_removed = nullptr);

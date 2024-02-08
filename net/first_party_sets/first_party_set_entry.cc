@@ -39,7 +39,7 @@ FirstPartySetEntry::FirstPartySetEntry() = default;
 FirstPartySetEntry::FirstPartySetEntry(
     SchemefulSite primary,
     SiteType site_type,
-    absl::optional<FirstPartySetEntry::SiteIndex> site_index)
+    std::optional<FirstPartySetEntry::SiteIndex> site_index)
     : primary_(primary), site_type_(site_type), site_index_(site_index) {
   switch (site_type_) {
     case SiteType::kPrimary:
@@ -57,7 +57,7 @@ FirstPartySetEntry::FirstPartySetEntry(SchemefulSite primary,
     : FirstPartySetEntry(
           primary,
           site_type,
-          absl::make_optional(FirstPartySetEntry::SiteIndex(site_index))) {}
+          std::make_optional(FirstPartySetEntry::SiteIndex(site_index))) {}
 
 FirstPartySetEntry::FirstPartySetEntry(const FirstPartySetEntry&) = default;
 FirstPartySetEntry& FirstPartySetEntry::operator=(const FirstPartySetEntry&) =
@@ -75,7 +75,7 @@ bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const =
     default;
 
 // static
-absl::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
+std::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
     int value) {
   switch (value) {
     case static_cast<int>(net::SiteType::kPrimary):
@@ -87,7 +87,7 @@ absl::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
     default:
       NOTREACHED() << "Unknown SiteType: " << value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string FirstPartySetEntry::GetDebugString() const {

@@ -281,8 +281,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   GURL CreateAndServeCrl(EmbeddedTestServer* test_server,
                          CertBuilder* crl_issuer,
                          const std::vector<uint64_t>& revoked_serials,
-                         absl::optional<bssl::SignatureAlgorithm>
-                             signature_algorithm = absl::nullopt) {
+                         std::optional<bssl::SignatureAlgorithm>
+                             signature_algorithm = std::nullopt) {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
                                revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");

@@ -190,7 +190,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");
   }
 
-  absl::optional<std::string> name = dns_names_util::NetworkToDottedName(
+  std::optional<std::string> name = dns_names_util::NetworkToDottedName(
       dns_query.qname(), /*require_complete=*/true);
   if (!name) {
     DnsResponse response(dns_query.id(), /*is_authoritative=*/false,

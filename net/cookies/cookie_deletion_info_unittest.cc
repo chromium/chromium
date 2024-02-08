@@ -500,8 +500,8 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   // Cookie with unspecified SameSite.
   auto cookie = CanonicalCookie::Create(GURL("https://www.example.com"),
                                         "cookie=1", base::Time::Now(),
-                                        /*server_time=*/absl::nullopt,
-                                        /*cookie_partition_key=*/absl::nullopt);
+                                        /*server_time=*/std::nullopt,
+                                        /*cookie_partition_key=*/std::nullopt);
 
   CookieDeletionInfo delete_info;
   delete_info.url = GURL("https://www.example.com/path");
@@ -530,24 +530,24 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
       {kPartitionKey, kOtherPartitionKey});
   const CookiePartitionKeyCollection kAllKeysKeychain =
       CookiePartitionKeyCollection::ContainsAll();
-  const absl::optional<CookiePartitionKey> kPartitionKeyOpt =
-      absl::make_optional(kPartitionKey);
+  const std::optional<CookiePartitionKey> kPartitionKeyOpt =
+      std::make_optional(kPartitionKey);
   const CookiePartitionKeyCollection kOtherKeySingletonKeychain(
       kOtherPartitionKey);
 
   struct TestCase {
     const std::string desc;
     const CookiePartitionKeyCollection filter_cookie_partition_key_collection;
-    const absl::optional<CookiePartitionKey> cookie_partition_key;
+    const std::optional<CookiePartitionKey> cookie_partition_key;
     bool expects_match;
   } test_cases[] = {
       // Unpartitioned cookie always matches
-      {"Unpartitioned empty keychain", kEmptyKeychain, absl::nullopt, true},
-      {"Unpartitioned singleton keychain", kSingletonKeychain, absl::nullopt,
+      {"Unpartitioned empty keychain", kEmptyKeychain, std::nullopt, true},
+      {"Unpartitioned singleton keychain", kSingletonKeychain, std::nullopt,
        true},
-      {"Unpartitioned multiple keys", kMultipleKeysKeychain, absl::nullopt,
+      {"Unpartitioned multiple keys", kMultipleKeysKeychain, std::nullopt,
        true},
-      {"Unpartitioned all keys", kAllKeysKeychain, absl::nullopt, true},
+      {"Unpartitioned all keys", kAllKeysKeychain, std::nullopt, true},
       // Partitioned cookie only matches keychains which contain its partition
       // key.
       {"Partitioned empty keychain", kEmptyKeychain, kPartitionKeyOpt, false},
@@ -565,7 +565,7 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
     auto cookie = CanonicalCookie::Create(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
-        /*server_time=*/absl::nullopt, test_case.cookie_partition_key);
+        /*server_time=*/std::nullopt, test_case.cookie_partition_key);
     CookieDeletionInfo delete_info;
     delete_info.cookie_partition_key_collection =
         test_case.filter_cookie_partition_key_collection;
@@ -580,12 +580,12 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
 TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
   struct TestCase {
     const std::string desc;
-    const absl::optional<CookiePartitionKey> cookie_partition_key;
+    const std::optional<CookiePartitionKey> cookie_partition_key;
     bool partitioned_state_only;
     bool expects_match;
   } test_cases[] = {
-      {"Unpartitioned cookie not excluded", absl::nullopt, false, true},
-      {"Unpartitioned cookie excluded", absl::nullopt, true, false},
+      {"Unpartitioned cookie not excluded", std::nullopt, false, true},
+      {"Unpartitioned cookie excluded", std::nullopt, true, false},
       {"Partitioned cookie when unpartitioned not excluded",
        CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")), false,
        true},
@@ -607,7 +607,7 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
     auto cookie = CanonicalCookie::Create(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
-        /*server_time=*/absl::nullopt, test_case.cookie_partition_key);
+        /*server_time=*/std::nullopt, test_case.cookie_partition_key);
     CookieDeletionInfo delete_info;
     delete_info.partitioned_state_only = test_case.partitioned_state_only;
     EXPECT_EQ(test_case.expects_match,

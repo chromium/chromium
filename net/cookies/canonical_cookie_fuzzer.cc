@@ -57,7 +57,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           CookiePriority::COOKIE_PRIORITY_HIGH,
       });
 
-  const auto partition_key = absl::make_optional<CookiePartitionKey>(
+  const auto partition_key = std::make_optional<CookiePartitionKey>(
       CookiePartitionKey::FromURLForTesting(
           GURL(data_provider.ConsumeRandomLengthString(800))));
 

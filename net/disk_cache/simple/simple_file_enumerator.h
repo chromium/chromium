@@ -6,13 +6,13 @@
 #define NET_DISK_CACHE_SIMPLE_SIMPLE_FILE_ENUMERATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <dirent.h>
@@ -38,7 +38,7 @@ class NET_EXPORT SimpleFileEnumerator final {
 
   // Returns the next item, or nullopt if there are no more results (including
   // the error case).
-  absl::optional<Entry> Next();
+  std::optional<Entry> Next();
 
  private:
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

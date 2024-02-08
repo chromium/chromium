@@ -193,7 +193,7 @@ void VerifyEventsInLog(const ParsedNetLog* log,
 
     size_t expected_source_id = num_events_emitted - num_events_saved + i;
 
-    absl::optional<int> id_value = event->FindIntByDottedPath("source.id");
+    std::optional<int> id_value = event->FindIntByDottedPath("source.id");
     ASSERT_EQ(static_cast<int>(expected_source_id), id_value);
   }
 }

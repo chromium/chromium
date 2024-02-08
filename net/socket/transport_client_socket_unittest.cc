@@ -82,7 +82,7 @@ void TransportClientSocketTest::SetUp() {
   listen_sock_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
   IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
   ASSERT_THAT(
-      listen_sock_->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
+      listen_sock_->Listen(local_address, 1, /*ipv6_only=*/std::nullopt),
       IsOk());
   // Get the server's address (including the actual port number).
   ASSERT_THAT(listen_sock_->GetLocalAddress(&local_address), IsOk());

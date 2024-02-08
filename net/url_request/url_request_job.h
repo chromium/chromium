@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -196,8 +196,8 @@ class NET_EXPORT URLRequestJob {
   virtual void ContinueDespiteLastError();
 
   void FollowDeferredRedirect(
-      const absl::optional<std::vector<std::string>>& removed_headers,
-      const absl::optional<net::HttpRequestHeaders>& modified_headers);
+      const std::optional<std::vector<std::string>>& removed_headers,
+      const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Returns true if the Job is done producing response data and has called
   // NotifyDone on the request.
@@ -360,7 +360,7 @@ class NET_EXPORT URLRequestJob {
   // On return, |this| may be deleted.
   void ReadRawDataComplete(int bytes_read);
 
-  const absl::optional<net::SchemefulSite>& request_initiator_site() const {
+  const std::optional<net::SchemefulSite>& request_initiator_site() const {
     return request_initiator_site_;
   }
 
@@ -390,8 +390,8 @@ class NET_EXPORT URLRequestJob {
   // given redirect destination.
   void FollowRedirect(
       const RedirectInfo& redirect_info,
-      const absl::optional<std::vector<std::string>>& removed_headers,
-      const absl::optional<net::HttpRequestHeaders>& modified_headers);
+      const std::optional<std::vector<std::string>>& removed_headers,
+      const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Called after every raw read. If |bytes_read| is > 0, this indicates
   // a successful read of |bytes_read| unfiltered bytes. If |bytes_read|
@@ -448,12 +448,12 @@ class NET_EXPORT URLRequestJob {
 
   // Set when a redirect is deferred. Redirects are deferred after validity
   // checks are performed, so this field must not be modified.
-  absl::optional<RedirectInfo> deferred_redirect_info_;
+  std::optional<RedirectInfo> deferred_redirect_info_;
 
   // The request's initiator never changes, so we store it in format of
   // SchemefulSite so that we don't recompute (including looking up the
   // registrable domain) it during every redirect.
-  absl::optional<net::SchemefulSite> request_initiator_site_;
+  std::optional<net::SchemefulSite> request_initiator_site_;
 
   // Non-null if ReadRawData() returned ERR_IO_PENDING, and the read has not
   // completed.

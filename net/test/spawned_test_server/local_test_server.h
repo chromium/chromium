@@ -5,6 +5,7 @@
 #ifndef NET_TEST_SPAWNED_TEST_SERVER_LOCAL_TEST_SERVER_H_
 #define NET_TEST_SPAWNED_TEST_SERVER_LOCAL_TEST_SERVER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -12,7 +13,6 @@
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/test/spawned_test_server/base_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
@@ -51,7 +51,7 @@ class LocalTestServer : public BaseTestServer {
   bool Stop();
 
   // Returns the directories to use as the PYTHONPATH, or nullopt on error.
-  virtual absl::optional<std::vector<base::FilePath>> GetPythonPath() const;
+  virtual std::optional<std::vector<base::FilePath>> GetPythonPath() const;
 
   // Returns true if the base::FilePath for the testserver python script is
   // successfully stored  in |*testserver_path|.

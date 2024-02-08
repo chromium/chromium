@@ -35,7 +35,7 @@ TCPServerSocket::~TCPServerSocket() = default;
 
 int TCPServerSocket::Listen(const IPEndPoint& address,
                             int backlog,
-                            absl::optional<bool> ipv6_only) {
+                            std::optional<bool> ipv6_only) {
   int result = OK;
   if (!adopted_opened_socket_) {
     result = socket_->Open(address.GetFamily());

@@ -547,10 +547,10 @@ NextProto SSLClientSocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
 }
 
-absl::optional<base::StringPiece>
+std::optional<base::StringPiece>
 SSLClientSocketImpl::GetPeerApplicationSettings() const {
   if (!SSL_has_application_settings(ssl_.get())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const uint8_t* out_data;
@@ -751,7 +751,7 @@ int SSLClientSocketImpl::Init() {
   if (IsCachingEnabled()) {
     bssl::UniquePtr<SSL_SESSION> session =
         context_->ssl_client_session_cache()->Lookup(
-            GetSessionCacheKey(/*dest_ip_addr=*/absl::nullopt));
+            GetSessionCacheKey(/*dest_ip_addr=*/std::nullopt));
     if (!session) {
       // If a previous session negotiated an RSA cipher suite then it may have
       // been inserted into the cache keyed by both hostname and resolved IP
@@ -1531,7 +1531,7 @@ void SSLClientSocketImpl::DoPeek() {
     if (err == ERR_EARLY_DATA_REJECTED ||
         err == ERR_WRONG_VERSION_ON_EARLY_DATA) {
       context_->ssl_client_session_cache()->ClearEarlyData(
-          GetSessionCacheKey(absl::nullopt));
+          GetSessionCacheKey(std::nullopt));
     }
 
     handled_early_data_result_ = true;
@@ -1654,7 +1654,7 @@ int SSLClientSocketImpl::NewSessionCallback(SSL_SESSION* session) {
   if (!IsCachingEnabled())
     return 0;
 
-  absl::optional<IPAddress> ip_addr;
+  std::optional<IPAddress> ip_addr;
   if (SSL_CIPHER_get_kx_nid(SSL_SESSION_get0_cipher(session)) == NID_kx_rsa) {
     // If RSA key exchange was used, additionally key the cache with the
     // destination IP address. Of course, if a proxy is being used, the
@@ -1675,7 +1675,7 @@ int SSLClientSocketImpl::NewSessionCallback(SSL_SESSION* session) {
 }
 
 SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
-    absl::optional<IPAddress> dest_ip_addr) const {
+    std::optional<IPAddress> dest_ip_addr) const {
   SSLClientSessionCache::Key key;
   key.server = host_and_port_;
   key.dest_ip_addr = dest_ip_addr;

@@ -4,12 +4,13 @@
 
 #include "net/first_party_sets/sets_mutation.h"
 
+#include <optional>
+
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ::testing::Pair;
@@ -28,13 +29,13 @@ TEST(SetsMutationTest, Valid) {
       {
           {
               {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
               {associated1,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
           },
           {
               {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
               {associated2,
                FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
           },
@@ -46,13 +47,13 @@ TEST(SetsMutationTest, Valid) {
       /*addition_sets=*/{
           {
               {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
               {associated1,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
           },
           {
               {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
               {associated2,
                FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
           },
@@ -63,7 +64,7 @@ TEST(SetsMutationTest, Valid) {
       {
           {
               {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
               {associated1,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
           },
@@ -71,7 +72,7 @@ TEST(SetsMutationTest, Valid) {
       /*addition_sets=*/{
           {
               {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, absl::nullopt)},
+               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
               {associated2,
                FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
           },
@@ -92,13 +93,13 @@ TEST(SetsMutationTest, Nondisjoint_death) {
             {
                 {
                     {primary1, FirstPartySetEntry(primary1, SiteType::kPrimary,
-                                                  absl::nullopt)},
+                                                  std::nullopt)},
                     {associated1,
                      FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
                 },
                 {
                     {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary,
-                                                  absl::nullopt)},
+                                                  std::nullopt)},
                     {associated1,
                      FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
                     {associated2,

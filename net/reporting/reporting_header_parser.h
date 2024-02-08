@@ -6,12 +6,12 @@
 #define NET_REPORTING_REPORTING_HEADER_PARSER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,8 +25,8 @@ class ReportingContext;
 // failed and the header should be ignored; otherwise returns a (possibly
 // empty) mapping of endpoint names to URLs.
 NET_EXPORT
-absl::optional<base::flat_map<std::string, std::string>>
-ParseReportingEndpoints(const std::string& header);
+std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
+    const std::string& header);
 
 class NET_EXPORT ReportingHeaderParser {
  public:

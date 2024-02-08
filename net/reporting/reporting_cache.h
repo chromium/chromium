@@ -6,6 +6,7 @@
 #define NET_REPORTING_REPORTING_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -68,7 +68,7 @@ class NET_EXPORT ReportingCache {
   // All other parameters correspond to the desired values for the relevant
   // fields in ReportingReport.
   virtual void AddReport(
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,

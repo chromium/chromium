@@ -131,7 +131,7 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
 
 NetLogWithSource CreateNetLogWithSource(
     NetLog* net_log,
-    absl::optional<net::NetLogSource> net_log_source) {
+    std::optional<net::NetLogSource> net_log_source) {
   if (net_log_source) {
     return NetLogWithSource::Make(net_log, net_log_source.value());
   }
@@ -378,7 +378,7 @@ HttpResponseHeaders* URLRequest::response_headers() const {
   return response_info_.headers.get();
 }
 
-const absl::optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
+const std::optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
     const {
   return response_info_.auth_challenge;
 }
@@ -484,7 +484,7 @@ void URLRequest::set_first_party_url_policy(
   first_party_url_policy_ = first_party_url_policy;
 }
 
-void URLRequest::set_initiator(const absl::optional<url::Origin>& initiator) {
+void URLRequest::set_initiator(const std::optional<url::Origin>& initiator) {
   DCHECK(!is_pending_);
   DCHECK(!initiator.has_value() || initiator.value().opaque() ||
          initiator.value().GetURL().is_valid());
@@ -577,7 +577,7 @@ URLRequest::URLRequest(base::PassKey<URLRequestContext> pass_key,
                        const URLRequestContext* context,
                        NetworkTrafficAnnotationTag traffic_annotation,
                        bool is_for_websockets,
-                       absl::optional<net::NetLogSource> net_log_source)
+                       std::optional<net::NetLogSource> net_log_source)
     : context_(context),
       net_log_(CreateNetLogWithSource(context->net_log(), net_log_source)),
       url_chain_(1, url),
@@ -861,8 +861,8 @@ void URLRequest::NotifyResponseStarted(int net_error) {
 }
 
 void URLRequest::FollowDeferredRedirect(
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   DCHECK(job_.get());
   DCHECK_EQ(OK, status_);
 
@@ -946,8 +946,8 @@ void URLRequest::PrepareToRestart() {
 
 void URLRequest::Redirect(
     const RedirectInfo& redirect_info,
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   // This method always succeeds. Whether |job_| is allowed to redirect to
   // |redirect_info| is checked in URLRequestJob::CanFollowRedirect, before
   // NotifyReceivedRedirect. This means the delegate can assume that, if it
@@ -1197,7 +1197,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
   url::Origin top_frame_origin =
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
-  absl::optional<url::Origin> frame_origin;
+  std::optional<url::Origin> frame_origin;
   if (network_anonymization_key.IsCrossSite()) {
     // If we know that the origin is cross site to the top level site, create an
     // empty origin to use as the frame origin for the isolation info. This

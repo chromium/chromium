@@ -17,14 +17,14 @@ namespace net {
 
 namespace {
 // Tries to parse a list of ParameterizedItem as a list of strings.
-// Returns absl::nullopt if unsuccessful.
-absl::optional<std::vector<std::string>> ParseStringList(
+// Returns std::nullopt if unsuccessful.
+std::optional<std::vector<std::string>> ParseStringList(
     const std::vector<structured_headers::ParameterizedItem>& items) {
   std::vector<std::string> keys;
   keys.reserve(items.size());
   for (const auto& item : items) {
     if (!item.item.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     keys.push_back(UnescapePercentEncodedUrl(item.item.GetString()));
   }

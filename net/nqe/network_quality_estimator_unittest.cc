@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,7 +50,6 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -510,10 +510,10 @@ TEST_F(NetworkQualityEstimatorTest, QuicObservations) {
   TestNetworkQualityEstimator estimator(variation_params);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_TCP, base::Milliseconds(10),
-      absl::nullopt);
+      std::nullopt);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC, base::Milliseconds(10),
-      absl::nullopt);
+      std::nullopt);
   histogram_tester.ExpectBucketCount("NQE.RTT.ObservationSource",
                                      NETWORK_QUALITY_OBSERVATION_SOURCE_TCP, 1);
   histogram_tester.ExpectBucketCount(
@@ -536,7 +536,7 @@ TEST_F(NetworkQualityEstimatorTest,
   TestNetworkQualityEstimator estimator(variation_params);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC, base::Milliseconds(10),
-      absl::nullopt);
+      std::nullopt);
   histogram_tester.ExpectBucketCount(
       "NQE.RTT.ObservationSource", NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC, 1);
   histogram_tester.ExpectTotalCount("NQE.RTT.ObservationSource", 1);

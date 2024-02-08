@@ -23,7 +23,7 @@ int ServerSocket::ListenWithAddressAndPort(const std::string& address_string,
   }
 
   return Listen(IPEndPoint(ip_address, port), backlog,
-                /*ipv6_only=*/absl::nullopt);
+                /*ipv6_only=*/std::nullopt);
 }
 
 int ServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,

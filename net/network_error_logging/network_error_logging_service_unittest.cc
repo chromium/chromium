@@ -222,7 +222,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 void ExpectDictDoubleValue(double expected_value,
                            const base::Value::Dict& value,
                            const std::string& key) {
-  absl::optional<double> double_value = value.FindDouble(key);
+  std::optional<double> double_value = value.FindDouble(key);
   ASSERT_TRUE(double_value) << key;
   EXPECT_DOUBLE_EQ(expected_value, *double_value) << key;
 }

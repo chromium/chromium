@@ -5,6 +5,7 @@
 #include "net/reporting/reporting_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -29,7 +30,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -53,7 +53,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const std::string kGroup_ = "group";
   const std::string kGroup2_ = "group2";
   const std::string kType_ = "type";
-  const absl::optional<base::UnguessableToken> kReportingSource_ =
+  const std::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_ =
       NetworkAnonymizationKey::CreateSameSite(SchemefulSite(kOrigin_));

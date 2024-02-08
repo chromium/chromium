@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class SchemeHostPort;
@@ -238,7 +238,7 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
       std::unique_ptr<HttpAuthHandler>* handler) override;
 
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
-  absl::optional<std::string> GetNegotiateLibraryNameForTesting() const;
+  std::optional<std::string> GetNegotiateLibraryNameForTesting() const;
 #endif
 
   // Returns true if the scheme is allowed to be used for all origins. An auth

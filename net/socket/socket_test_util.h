@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +43,6 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -286,7 +286,7 @@ class SocketDataProvider {
   }
   bool set_keep_alive_result() const { return set_keep_alive_result_; }
 
-  const absl::optional<AddressList>& expected_addresses() const {
+  const std::optional<AddressList>& expected_addresses() const {
     return expected_addresses_;
   }
   void set_expected_addresses(net::AddressList addresses) {
@@ -331,7 +331,7 @@ class SocketDataProvider {
   int set_send_buffer_size_result_ = net::OK;
   bool set_no_delay_result_ = true;
   bool set_keep_alive_result_ = true;
-  absl::optional<AddressList> expected_addresses_;
+  std::optional<AddressList> expected_addresses_;
 };
 
 // The AsyncSocket is an interface used by the SocketDataProvider to
@@ -486,7 +486,7 @@ struct SSLSocketDataProvider {
   NextProto next_proto = kProtoUnknown;
 
   // Result for GetPeerApplicationSettings().
-  absl::optional<std::string> peer_application_settings;
+  std::optional<std::string> peer_application_settings;
 
   // Result for GetSSLInfo().
   SSLInfo ssl_info;
@@ -497,19 +497,19 @@ struct SSLSocketDataProvider {
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
 
-  absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
-  absl::optional<SSLConfig::ApplicationSettings> expected_application_settings;
+  std::optional<NextProtoVector> next_protos_expected_in_ssl_config;
+  std::optional<SSLConfig::ApplicationSettings> expected_application_settings;
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
-  absl::optional<bool> expected_early_data_enabled;
-  absl::optional<bool> expected_send_client_cert;
+  std::optional<bool> expected_early_data_enabled;
+  std::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
-  absl::optional<HostPortPair> expected_host_and_port;
-  absl::optional<bool> expected_ignore_certificate_errors;
-  absl::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
-  absl::optional<bool> expected_disable_sha1_server_signatures;
-  absl::optional<std::vector<uint8_t>> expected_ech_config_list;
+  std::optional<HostPortPair> expected_host_and_port;
+  std::optional<bool> expected_ignore_certificate_errors;
+  std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
+  std::optional<bool> expected_disable_sha1_server_signatures;
+  std::optional<std::vector<uint8_t>> expected_ech_config_list;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;
@@ -902,7 +902,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   int GetPeerAddress(IPEndPoint* address) const override;
   int GetLocalAddress(IPEndPoint* address) const override;
   NextProto GetNegotiatedProtocol() const override;
-  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
@@ -1115,7 +1115,7 @@ class ClientSocketPoolTest {
         new TestSocketRequest(&request_order_, &completion_count_));
     requests_.push_back(base::WrapUnique(request));
     int rv = request->handle()->Init(
-        group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
+        group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
         priority, SocketTag(), respect_limits, request->callback(),
         ClientSocketPool::ProxyAuthCallback(), socket_pool, NetLogWithSource());
     if (rv != ERR_IO_PENDING)
@@ -1223,7 +1223,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,

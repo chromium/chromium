@@ -27,12 +27,12 @@ FirstPartySetsContextConfig FirstPartySetsContextConfig::Clone() const {
 bool FirstPartySetsContextConfig::operator==(
     const FirstPartySetsContextConfig& other) const = default;
 
-absl::optional<FirstPartySetEntryOverride>
+std::optional<FirstPartySetEntryOverride>
 FirstPartySetsContextConfig::FindOverride(const SchemefulSite& site) const {
   if (const auto it = customizations_.find(site); it != customizations_.end()) {
     return it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool FirstPartySetsContextConfig::Contains(const SchemefulSite& site) const {

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_throttler_entry_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void OnReadCompleted(int result);
   void NotifyBeforeStartTransactionCallback(
       int result,
-      const absl::optional<HttpRequestHeaders>& headers);
+      const std::optional<HttpRequestHeaders>& headers);
   // This just forwards the call to URLRequestJob::NotifyConnected().
   // We need it because that method is protected and cannot be bound in a
   // callback in this class.
@@ -195,7 +195,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   // Another Cookie Monster callback
   void OnSetCookieResult(const CookieOptions& options,
-                         absl::optional<CanonicalCookie> cookie,
+                         std::optional<CanonicalCookie> cookie,
                          std::string cookie_string,
                          CookieAccessResult access_result);
   int num_cookie_lines_left_ = 0;
@@ -274,12 +274,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // Ordinarily the original URL's fragment is copied during redirects, unless
   // the destination URL already has one. However, the NetworkDelegate can
   // override this behavior by setting |preserve_fragment_on_redirect_url_|:
-  // * If set to absl::nullopt, the default behavior is used.
+  // * If set to std::nullopt, the default behavior is used.
   // * If the final URL in the redirect chain matches
   //     |preserve_fragment_on_redirect_url_|, its fragment unchanged. So this
   //     is basically a way for the embedder to force a redirect not to copy the
   //     original URL's fragment when the original URL had one.
-  absl::optional<GURL> preserve_fragment_on_redirect_url_;
+  std::optional<GURL> preserve_fragment_on_redirect_url_;
 
   // Flag used to verify that |this| is not deleted while we are awaiting
   // a callback from the NetworkDelegate. Used as a fail-fast mechanism.

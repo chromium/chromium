@@ -119,7 +119,7 @@ void RecordNetLogQuicSessionClientStateChanged(
     NetLogWithSource& net_log,
     WebTransportState last_state,
     WebTransportState next_state,
-    const absl::optional<WebTransportError>& error) {
+    const std::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
         auto dict = base::Value::Dict()
@@ -239,11 +239,10 @@ class DedicatedWebTransportHttp3ClientSession
     return stream_ptr;
   }
 
-  void OnDatagramProcessed(
-      absl::optional<quic::MessageStatus> status) override {
+  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override {
     client_->OnDatagramProcessed(
-        status.has_value() ? absl::optional<quic::MessageStatus>(*status)
-                           : absl::optional<quic::MessageStatus>());
+        status.has_value() ? std::optional<quic::MessageStatus>(*status)
+                           : std::optional<quic::MessageStatus>());
   }
 
  private:
@@ -414,7 +413,7 @@ void DedicatedWebTransportHttp3Client::Connect() {
 }
 
 void DedicatedWebTransportHttp3Client::Close(
-    const absl::optional<WebTransportCloseInfo>& close_info) {
+    const std::optional<WebTransportCloseInfo>& close_info) {
   CHECK(session());
   base::TimeDelta probe_timeout = base::Microseconds(
       connection_->sent_packet_manager().GetPtoDelay().ToMicroseconds());
@@ -549,7 +548,7 @@ int DedicatedWebTransportHttp3Client::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      url::SchemeHostPort(url_), anonymization_key_, net_log_, absl::nullopt);
+      url::SchemeHostPort(url_), anonymization_key_, net_log_, std::nullopt);
   return resolve_host_request_->Start(base::BindOnce(
       &DedicatedWebTransportHttp3Client::DoLoop, base::Unretained(this)));
 }
@@ -972,7 +971,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
-    absl::optional<quic::MessageStatus> status) {
+    std::optional<quic::MessageStatus> status) {
   visitor_->OnDatagramProcessed(status);
 }
 

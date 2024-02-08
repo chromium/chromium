@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_header_parser.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -188,8 +188,7 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
   void ParseHeader(const NetworkAnonymizationKey& network_anonymization_key,
                    const url::Origin& origin,
                    const std::string& json) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read("[" + json + "]");
+    std::optional<base::Value> value = base::JSONReader::Read("[" + json + "]");
     if (value) {
       ReportingHeaderParser::ParseReportToHeader(
           context(), network_anonymization_key, origin, value->GetList());
@@ -1784,7 +1783,7 @@ class ReportingHeaderParserStructuredHeaderTest
                    const IsolationInfo& isolation_info,
                    const url::Origin& origin,
                    const std::string& header_string) {
-    absl::optional<base::flat_map<std::string, std::string>> header_map =
+    std::optional<base::flat_map<std::string, std::string>> header_map =
         ParseReportingEndpoints(header_string);
 
     if (header_map) {
@@ -1797,7 +1796,7 @@ class ReportingHeaderParserStructuredHeaderTest
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
       const url::Origin& origin,
-      const absl::optional<base::flat_map<std::string, std::string>>&
+      const std::optional<base::flat_map<std::string, std::string>>&
           header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
         context(), reporting_source, isolation_info,

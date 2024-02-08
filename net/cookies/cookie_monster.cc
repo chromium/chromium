@@ -46,6 +46,7 @@
 
 #include <functional>
 #include <numeric>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -81,7 +82,6 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -427,7 +427,7 @@ void CookieMonster::SetCanonicalCookieAsync(
     const GURL& source_url,
     const CookieOptions& options,
     SetCookiesCallback callback,
-    absl::optional<CookieAccessResult> cookie_access_result) {
+    std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK(cookie->IsCanonical());
 
   std::string domain = cookie->Domain();
@@ -1011,7 +1011,7 @@ void CookieMonster::EnsureCookiesMapIsValid() {
 
     // Ensure no equivalent cookies for this host.
     TrimDuplicateCookiesForKey(key, cur_range_begin, cur_range_end,
-                               absl::nullopt);
+                               std::nullopt);
   }
 
   for (auto cookie_partition_it = partitioned_cookies_.begin();
@@ -1030,7 +1030,7 @@ void CookieMonster::EnsureCookiesMapIsValid() {
 
       // Ensure no equivalent cookies for this host and cookie partition key.
       TrimDuplicateCookiesForKey(key, cur_range_begin, cur_range_end,
-                                 absl::make_optional(cur_cookie_partition_it));
+                                 std::make_optional(cur_cookie_partition_it));
     }
   }
 }
@@ -1045,7 +1045,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     const std::string& key,
     CookieMap::iterator begin,
     CookieMap::iterator end,
-    absl::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
+    std::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Set of cookies ordered by creation time.
@@ -1389,7 +1389,7 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     bool already_expired,
     base::Time* creation_date_to_inherit,
     CookieInclusionStatus* status,
-    absl::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
+    std::optional<PartitionedCookieMap::iterator> cookie_partition_it) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!status->HasExclusionReason(
       CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE));
@@ -1622,7 +1622,7 @@ void CookieMonster::SetCanonicalCookie(
     const GURL& source_url,
     const CookieOptions& options,
     SetCookiesCallback callback,
-    absl::optional<CookieAccessResult> cookie_access_result) {
+    std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool delegate_treats_url_as_trustworthy =
@@ -1646,7 +1646,7 @@ void CookieMonster::SetCanonicalCookie(
 
   base::Time creation_date_to_inherit;
 
-  absl::optional<PartitionedCookieMap::iterator> cookie_partition_it;
+  std::optional<PartitionedCookieMap::iterator> cookie_partition_it;
   bool should_try_to_delete_duplicates = true;
 
   if (cc->IsPartitioned()) {
@@ -1656,7 +1656,7 @@ void CookieMonster::SetCanonicalCookie(
       // duplicates.
       should_try_to_delete_duplicates = false;
     } else {
-      cookie_partition_it = absl::make_optional(it);
+      cookie_partition_it = std::make_optional(it);
     }
   }
 
@@ -1695,8 +1695,7 @@ void CookieMonster::SetCanonicalCookie(
       }
     }
 
-    absl::optional<CookiePartitionKey> cookie_partition_key =
-        cc->PartitionKey();
+    std::optional<CookiePartitionKey> cookie_partition_key = cc->PartitionKey();
     CHECK_EQ(cc->IsPartitioned(), cookie_partition_key.has_value());
 
     // Realize that we might be setting an expired cookie, and the only point
@@ -2426,7 +2425,7 @@ bool CookieMonster::DoRecordPeriodicStats() {
             GURL(base::StrCat({url::kHttpsScheme, "://", domain})));
       }
     }
-    absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+    std::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
         maybe_sets = cookie_access_delegate()->FindFirstPartySetEntries(
             sites,
             base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
@@ -2621,19 +2620,19 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
   return CookieSentToSamePort::kNo;
 }
 
-absl::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
+std::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
     const net::SchemefulSite& site,
-    const absl::optional<CookiePartitionKey>& partition_key) const {
+    const std::optional<CookiePartitionKey>& partition_key) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // If the partition key is null, it implies the partitioned cookies feature is
   // not enabled.
   if (!partition_key)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string domain = site.GetURL().host();
   if (store_ && !finished_fetching_all_cookies_ &&
       !keys_loaded_.count(domain)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (const auto& it : partitioned_cookies_) {

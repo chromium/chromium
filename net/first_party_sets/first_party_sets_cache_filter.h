@@ -5,10 +5,11 @@
 #ifndef NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CACHE_FILTER_H_
 #define NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CACHE_FILTER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 template <typename DataViewType, typename T>
@@ -33,10 +34,10 @@ class NET_EXPORT FirstPartySetsCacheFilter {
 
     // Stores the ID used to check whether cache should be bypassed. Only not
     // null if the request site matches the filter; nullopt if don't match.
-    absl::optional<int64_t> clear_at_run_id;
+    std::optional<int64_t> clear_at_run_id;
     // The ID used to mark the new cache. It should be either a positive number
     // or nullopt.
-    absl::optional<int64_t> browser_run_id;
+    std::optional<int64_t> browser_run_id;
   };
 
   // The default cache filter is no-op.

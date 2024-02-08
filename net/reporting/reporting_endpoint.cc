@@ -21,13 +21,13 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const url::Origin& origin,
     const std::string& group_name)
     : ReportingEndpointGroupKey(network_anonymization_key,
-                                absl::nullopt,
+                                std::nullopt,
                                 origin,
                                 group_name) {}
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const NetworkAnonymizationKey& network_anonymization_key,
-    absl::optional<base::UnguessableToken> reporting_source,
+    std::optional<base::UnguessableToken> reporting_source,
     const url::Origin& origin,
     const std::string& group_name)
     : network_anonymization_key(network_anonymization_key),
@@ -41,7 +41,7 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const ReportingEndpointGroupKey& other,
-    const absl::optional<base::UnguessableToken>& reporting_source)
+    const std::optional<base::UnguessableToken>& reporting_source)
     : ReportingEndpointGroupKey(other.network_anonymization_key,
                                 reporting_source,
                                 other.origin,

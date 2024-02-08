@@ -154,13 +154,13 @@ void ConnectJob::set_done_closure(base::OnceClosure done_closure) {
   done_closure_ = base::ScopedClosureRunner(std::move(done_closure));
 }
 
-absl::optional<HostResolverEndpointResult>
+std::optional<HostResolverEndpointResult>
 ConnectJob::GetHostResolverEndpointResult() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
-                           absl::optional<std::set<std::string>> dns_aliases) {
+                           std::optional<std::set<std::string>> dns_aliases) {
   if (socket) {
     net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
                                         socket->NetLog().source());
@@ -212,7 +212,7 @@ void ConnectJob::LogConnectCompletion(int net_error) {
 
 void ConnectJob::OnTimeout() {
   // Make sure the socket is NULL before calling into |delegate|.
-  SetSocket(nullptr, absl::nullopt /* dns_aliases */);
+  SetSocket(nullptr, std::nullopt /* dns_aliases */);
 
   OnTimedOutInternal();
 

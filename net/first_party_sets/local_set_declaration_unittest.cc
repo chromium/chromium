@@ -4,12 +4,13 @@
 
 #include "net/first_party_sets/local_set_declaration.h"
 
+#include <optional>
+
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
@@ -27,14 +28,14 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
   SchemefulSite associated(GURL("https://associated.test"));
 
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries({
-      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)},
+      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
       {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
   });
 
   EXPECT_THAT(LocalSetDeclaration(entries, /*aliases=*/{}).entries(),
               UnorderedElementsAre(
                   Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                                   absl::nullopt)),
+                                                   std::nullopt)),
                   Pair(associated,
                        FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
 }
@@ -46,7 +47,7 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   SchemefulSite associated_cctld(GURL("https://associated.cctld"));
 
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries({
-      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, absl::nullopt)},
+      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
       {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
   });
 
@@ -60,7 +61,7 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   EXPECT_THAT(local_set.entries(),
               UnorderedElementsAre(
                   Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                                   absl::nullopt)),
+                                                   std::nullopt)),
                   Pair(associated,
                        FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
 

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_store.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -184,8 +184,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      absl::optional<CookieAccessResult> cookie_access_result =
-          absl::nullopt) override;
+      std::optional<CookieAccessResult> cookie_access_result =
+          std::nullopt) override;
   void GetCookieListWithOptionsAsync(const GURL& url,
                                      const CookieOptions& options,
                                      const CookiePartitionKeyCollection& s,
@@ -208,9 +208,9 @@ class NET_EXPORT CookieMonster : public CookieStore {
   CookieChangeDispatcher& GetChangeDispatcher() override;
   void SetCookieableSchemes(const std::vector<std::string>& schemes,
                             SetCookieableSchemesCallback callback) override;
-  absl::optional<bool> SiteHasCookieInOtherPartition(
+  std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
-      const absl::optional<CookiePartitionKey>& partition_key) const override;
+      const std::optional<CookiePartitionKey>& partition_key) const override;
 
   // Enables writing session cookies into the cookie database. If this this
   // method is called, it must be called before first use of the instance
@@ -401,7 +401,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      absl::optional<CookieAccessResult> cookie_access_result = absl::nullopt);
+      std::optional<CookieAccessResult> cookie_access_result = std::nullopt);
 
   void GetAllCookies(GetAllCookiesCallback callback);
 
@@ -480,7 +480,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const std::string& key,
       CookieMap::iterator begin,
       CookieMap::iterator end,
-      absl::optional<PartitionedCookieMap::iterator> cookie_partition_it);
+      std::optional<PartitionedCookieMap::iterator> cookie_partition_it);
 
   void SetDefaultCookieableSchemes();
 
@@ -536,7 +536,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       bool already_expired,
       base::Time* creation_date_to_inherit,
       CookieInclusionStatus* status,
-      absl::optional<PartitionedCookieMap::iterator> cookie_partition_it);
+      std::optional<PartitionedCookieMap::iterator> cookie_partition_it);
 
   // Inserts `cc` into cookies_. Returns an iterator that points to the inserted
   // cookie in `cookies_`. Guarantee: all iterators to `cookies_` remain valid.

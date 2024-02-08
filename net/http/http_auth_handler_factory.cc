@@ -4,6 +4,7 @@
 
 #include "net/http/http_auth_handler_factory.h"
 
+#include <optional>
 #include <set>
 
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "net/log/net_log_values.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(USE_KERBEROS)
@@ -36,7 +36,7 @@ base::Value::Dict NetLogParamsForCreateAuth(
     const std::string& challenge,
     const int net_error,
     const url::SchemeHostPort& scheme_host_port,
-    const absl::optional<bool>& allows_default_credentials,
+    const std::optional<bool>& allows_default_credentials,
     net::NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("scheme", net::NetLogStringValue(scheme));
@@ -233,8 +233,8 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
         return NetLogParamsForCreateAuth(
             scheme, challenge->challenge_text(), net_error, scheme_host_port,
             *handler
-                ? absl::make_optional((*handler)->AllowsDefaultCredentials())
-                : absl::nullopt,
+                ? std::make_optional((*handler)->AllowsDefaultCredentials())
+                : std::nullopt,
             capture_mode);
       });
   return net_error;
@@ -255,10 +255,10 @@ bool HttpAuthHandlerRegistryFactory::IsSchemeAllowed(
 }
 
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
-absl::optional<std::string>
+std::optional<std::string>
 HttpAuthHandlerRegistryFactory::GetNegotiateLibraryNameForTesting() const {
   if (!IsSchemeAllowed(kNegotiateAuthScheme))
-    return absl::nullopt;
+    return std::nullopt;
 
   return reinterpret_cast<net::HttpAuthHandlerNegotiate::Factory*>(
              GetSchemeFactory(net::kNegotiateAuthScheme))

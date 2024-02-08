@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_garbage_collector.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -30,7 +30,7 @@ class ReportingGarbageCollectorTest : public ReportingTestBase {
     return reports.size();
   }
 
-  const absl::optional<base::UnguessableToken> kReportingSource_ =
+  const std::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_;
   const IsolationInfo kIsolationInfo_;
@@ -49,7 +49,7 @@ TEST_F(ReportingGarbageCollectorTest, Created) {
 TEST_F(ReportingGarbageCollectorTest, Timer) {
   EXPECT_FALSE(garbage_collection_timer()->IsRunning());
 
-  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
 
   EXPECT_TRUE(garbage_collection_timer()->IsRunning());
@@ -60,7 +60,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, Report) {
-  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
   garbage_collection_timer()->Fire();
 
@@ -68,7 +68,7 @@ TEST_F(ReportingGarbageCollectorTest, Report) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
-  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
   tick_clock()->Advance(2 * policy().max_report_age);
   garbage_collection_timer()->Fire();
@@ -77,7 +77,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, FailedReport) {
-  cache()->AddReport(absl::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
+  cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
                      base::Value::Dict(), 0, tick_clock()->NowTicks(), 0);
 
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;

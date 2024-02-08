@@ -60,7 +60,7 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
   // ServerSocket implementation.
   int Listen(const IPEndPoint& address,
              int backlog,
-             absl::optional<bool> ipv6_only) override;
+             std::optional<bool> ipv6_only) override;
   int ListenWithAddressAndPort(const std::string& address_string,
                                uint16_t port,
                                int backlog) override;

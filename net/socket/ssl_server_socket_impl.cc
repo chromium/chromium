@@ -5,6 +5,7 @@
 #include "net/socket/ssl_server_socket_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -92,7 +92,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
   NextProto GetNegotiatedProtocol() const override;
-  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
@@ -545,10 +545,10 @@ NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
 }
 
-absl::optional<base::StringPiece>
+std::optional<base::StringPiece>
 SSLServerContextImpl::SocketImpl::GetPeerApplicationSettings() const {
   if (!SSL_has_application_settings(ssl_.get())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const uint8_t* out_data;

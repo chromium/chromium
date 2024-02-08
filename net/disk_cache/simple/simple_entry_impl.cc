@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/zlib.h"
 
 namespace disk_cache {

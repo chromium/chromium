@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_job.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -25,7 +26,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 using net::test::IsError;
@@ -120,8 +120,8 @@ const MockTransaction kNoFilterTransaction = {
     base::Time(),
     "hello",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -144,8 +144,8 @@ const MockTransaction kNoFilterTransactionWithInvalidLength = {
     base::Time(),
     "hello",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -169,8 +169,8 @@ const MockTransaction kGZipTransaction = {
     base::Time(),
     "",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     base::BindRepeating(&GZipServer),
     MockTransactionReadHandler(),
@@ -194,8 +194,8 @@ const MockTransaction kGzipSlowTransaction = {
     base::Time(),
     "",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_SLOW_READ,
     base::BindRepeating(&GZipHelloServer),
     MockTransactionReadHandler(),
@@ -220,8 +220,8 @@ const MockTransaction kRedirectTransaction = {
     base::Time(),
     "hello",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -244,8 +244,8 @@ const MockTransaction kEmptyBodyGzipTransaction = {
     base::Time(),
     "",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -269,8 +269,8 @@ const MockTransaction kInvalidContentGZipTransaction = {
     base::Time(),
     "not a valid gzip body",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -295,8 +295,8 @@ const MockTransaction kBrotliSlowTransaction = {
     base::Time(),
     "",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_SLOW_READ,
     base::BindRepeating(&BrotliHelloServer),
     MockTransactionReadHandler(),

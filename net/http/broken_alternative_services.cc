@@ -315,8 +315,8 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
 }
 
 void BrokenAlternativeServices::SetDelayParams(
-    absl::optional<base::TimeDelta> initial_delay,
-    absl::optional<bool> exponential_backoff_on_initial_delay) {
+    std::optional<base::TimeDelta> initial_delay,
+    std::optional<bool> exponential_backoff_on_initial_delay) {
   if (initial_delay.has_value()) {
     initial_delay_ = initial_delay.value();
   }

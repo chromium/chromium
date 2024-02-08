@@ -5,6 +5,7 @@
 #include "net/network_error_logging/network_error_logging_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/reporting/reporting_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -475,7 +475,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     }
 
     bool success = (type == OK) && !IsHttpError(details);
-    const absl::optional<double> sampling_fraction =
+    const std::optional<double> sampling_fraction =
         SampleAndReturnFraction(*policy, success);
     if (!sampling_fraction.has_value())
       return;
@@ -488,7 +488,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // A null reporting source token is used since this report is not associated
     // with any particular document.
     reporting_service_->QueueReport(
-        details.uri, absl::nullopt, details.network_anonymization_key,
+        details.uri, std::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
@@ -526,7 +526,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
           RequestOutcome::kDiscardedIPAddressMismatch);
       return;
     }
-    const absl::optional<double> sampling_fraction =
+    const std::optional<double> sampling_fraction =
         SampleAndReturnFraction(*policy, details.success);
     if (!sampling_fraction.has_value()) {
       RecordSignedExchangeRequestOutcome(
@@ -538,7 +538,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // A null reporting source token is used since this report is not associated
     // with any particular document.
     reporting_service_->QueueReport(
-        details.outer_url, absl::nullopt, details.network_anonymization_key,
+        details.outer_url, std::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
         0 /* depth */);
@@ -586,7 +586,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (json_value.size() > kMaxJsonSize)
       return false;
 
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(json_value, base::JSON_PARSE_RFC, kMaxJsonDepth);
     if (!value)
       return false;
@@ -825,20 +825,20 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   // Returns a valid value of matching fraction iff the event should be sampled.
-  absl::optional<double> SampleAndReturnFraction(const NelPolicy& policy,
-                                                 bool success) const {
+  std::optional<double> SampleAndReturnFraction(const NelPolicy& policy,
+                                                bool success) const {
     const double sampling_fraction =
         success ? policy.success_fraction : policy.failure_fraction;
 
     // Sampling fractions are often either 0.0 or 1.0, so in those cases we
     // can avoid having to call RandDouble().
     if (sampling_fraction <= 0.0)
-      return absl::nullopt;
+      return std::nullopt;
     if (sampling_fraction >= 1.0)
       return sampling_fraction;
 
     if (base::RandDouble() >= sampling_fraction)
-      return absl::nullopt;
+      return std::nullopt;
     return sampling_fraction;
   }
 

@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_UTIL_H_
 #define NET_COOKIES_COOKIE_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -198,7 +198,7 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 // `initiator` is the origin ultimately responsible for getting the request
 // issued. It may be different from `site_for_cookies`.
 //
-// absl::nullopt for `initiator` denotes that the navigation was initiated by
+// std::nullopt for `initiator` denotes that the navigation was initiated by
 // the user directly interacting with the browser UI, e.g. entering a URL
 // or selecting a bookmark.
 //
@@ -223,7 +223,7 @@ NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForRequest(const std::string& http_method,
                                  const std::vector<GURL>& url_chain,
                                  const SiteForCookies& site_for_cookies,
-                                 const absl::optional<url::Origin>& initiator,
+                                 const std::optional<url::Origin>& initiator,
                                  bool is_main_frame_navigation,
                                  bool force_ignore_site_for_cookies);
 
@@ -233,7 +233,7 @@ ComputeSameSiteContextForRequest(const std::string& http_method,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const absl::optional<url::Origin>& initiator,
+                                   const std::optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies);
 
 // Determines which of the cookies for the request URL can be set from a network
@@ -251,7 +251,7 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForResponse(const std::vector<GURL>& url_chain,
                                   const SiteForCookies& site_for_cookies,
-                                  const absl::optional<url::Origin>& initiator,
+                                  const std::optional<url::Origin>& initiator,
                                   bool is_main_frame_navigation,
                                   bool force_ignore_site_for_cookies);
 
@@ -290,7 +290,7 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 // asynchronously with the result. The callback will be invoked iff the return
 // value is nullopt; i.e. a result will be provided via return value or
 // callback, but not both, and not neither.
-[[nodiscard]] NET_EXPORT absl::optional<
+[[nodiscard]] NET_EXPORT std::optional<
     std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
 ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,

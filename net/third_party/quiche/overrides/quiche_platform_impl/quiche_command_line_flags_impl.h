@@ -5,6 +5,7 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_COMMAND_LINE_FLAGS_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_COMMAND_LINE_FLAGS_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "net/third_party/quiche/src/quiche/common/platform/api/quiche_export.h"
 #include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {
 
@@ -135,7 +135,7 @@ struct QuicheParseCommandLineFlagsResult {
   ~QuicheParseCommandLineFlagsResult();
 
   std::vector<std::string> non_flag_args;
-  absl::optional<int> exit_status;
+  std::optional<int> exit_status;
 };
 
 QuicheParseCommandLineFlagsResult QuicheParseCommandLineFlagsHelper(

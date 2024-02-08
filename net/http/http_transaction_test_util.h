@@ -5,17 +5,16 @@
 #ifndef NET_HTTP_HTTP_TRANSACTION_TEST_UTIL_H_
 #define NET_HTTP_HTTP_TRANSACTION_TEST_UTIL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "net/http/http_transaction.h"
-
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -33,9 +32,9 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_transaction.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/connection_attempts.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -92,8 +91,8 @@ struct MockTransaction {
   // known aliases, e.g. from A, AAAA, or HTTPS, not just from the address used
   // for the connection, in no particular order.
   std::set<std::string> dns_aliases;
-  absl::optional<int64_t> fps_cache_filter;
-  absl::optional<int64_t> browser_run_id;
+  std::optional<int64_t> fps_cache_filter;
+  std::optional<int64_t> browser_run_id;
   int test_mode;
   MockTransactionHandler handler;
   MockTransactionReadHandler read_handler;

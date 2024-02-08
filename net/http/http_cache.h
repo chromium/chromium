@@ -17,6 +17,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -39,7 +40,6 @@
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -259,13 +259,13 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // configured to be split by the NetworkIsolationKey, and the
   // NetworkIsolationKey is transient, in which case nothing should generally be
   // stored to disk.
-  static absl::optional<std::string> GenerateCacheKey(
+  static std::optional<std::string> GenerateCacheKey(
       const GURL& url,
       int load_flags,
       const NetworkIsolationKey& network_isolation_key,
       int64_t upload_data_identifier,
       bool is_subframe_document_resource);
-  static absl::optional<std::string> GenerateCacheKeyForRequest(
+  static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
 
   // Enable split cache feature if not already overridden in the feature list.

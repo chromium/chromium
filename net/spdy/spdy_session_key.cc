@@ -4,6 +4,7 @@
 
 #include "net/spdy/spdy_session_key.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/feature_list.h"
@@ -15,7 +16,6 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 

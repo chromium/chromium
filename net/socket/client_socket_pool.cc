@@ -177,7 +177,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     GroupId group_id,
     scoped_refptr<SocketParams> socket_params,
     const ProxyChain& proxy_chain,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority request_priority,
     SocketTag socket_tag,
     ConnectJob::Delegate* delegate) {

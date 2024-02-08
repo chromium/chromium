@@ -96,7 +96,7 @@ class Delivery {
            const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
-           const absl::optional<base::UnguessableToken> reporting_source)
+           const std::optional<base::UnguessableToken> reporting_source)
         : isolation_info(isolation_info),
           network_anonymization_key(network_anonymization_key),
           origin(origin),
@@ -123,7 +123,7 @@ class Delivery {
     NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     GURL endpoint_url;
-    absl::optional<base::UnguessableToken> reporting_source;
+    std::optional<base::UnguessableToken> reporting_source;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}

@@ -27,9 +27,9 @@ bool SimpleFileEnumerator::HasError() const {
   return has_error_;
 }
 
-absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
+std::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
   if (!dir_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   while (true) {
     // errno must be set to 0 before every readdir() call to detect errors.
@@ -43,7 +43,7 @@ absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
         PLOG(ERROR) << "readdir " << path_;
         has_error_ = true;
         dir_ = nullptr;
-        return absl::nullopt;
+        return std::nullopt;
       }
       break;
     }
@@ -61,12 +61,12 @@ absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
     if (file_info.is_directory) {
       continue;
     }
-    return absl::make_optional<Entry>(std::move(path), file_info.size,
-                                      file_info.last_accessed,
-                                      file_info.last_modified);
+    return std::make_optional<Entry>(std::move(path), file_info.size,
+                                     file_info.last_accessed,
+                                     file_info.last_modified);
   }
   dir_ = nullptr;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #else
@@ -80,15 +80,15 @@ bool SimpleFileEnumerator::HasError() const {
   return enumerator_.GetError() != base::File::FILE_OK;
 }
 
-absl::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
+std::optional<SimpleFileEnumerator::Entry> SimpleFileEnumerator::Next() {
   base::FilePath path = enumerator_.Next();
   if (path.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::FileEnumerator::FileInfo info = enumerator_.GetInfo();
-  return absl::make_optional<Entry>(std::move(path), info.GetSize(),
-                                    /*last_accessed=*/base::Time(),
-                                    info.GetLastModifiedTime());
+  return std::make_optional<Entry>(std::move(path), info.GetSize(),
+                                   /*last_accessed=*/base::Time(),
+                                   info.GetLastModifiedTime());
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 

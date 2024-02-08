@@ -114,7 +114,7 @@ class CertBuilder {
   static std::array<std::unique_ptr<CertBuilder>, 2> CreateSimpleChain2();
 
   // Returns a compatible signature algorithm for |key|.
-  static absl::optional<bssl::SignatureAlgorithm>
+  static std::optional<bssl::SignatureAlgorithm>
   DefaultSignatureAlgorithmForKey(EVP_PKEY* key);
 
   // Signs |tbs_data| with |key| using |signature_algorithm| appending the
@@ -231,8 +231,8 @@ class CertBuilder {
   // Sets the PolicyConstraints extension. If both |require_explicit_policy|
   // and |inhibit_policy_mapping| are nullopt, the PolicyConstraints extension
   // will removed.
-  void SetPolicyConstraints(absl::optional<uint64_t> require_explicit_policy,
-                            absl::optional<uint64_t> inhibit_policy_mapping);
+  void SetPolicyConstraints(std::optional<uint64_t> require_explicit_policy,
+                            std::optional<uint64_t> inhibit_policy_mapping);
 
   // Sets the inhibitAnyPolicy extension.
   void SetInhibitAnyPolicy(uint64_t skip_certs);
@@ -418,9 +418,9 @@ class CertBuilder {
 
   bssl::CertificateVersion version_ = bssl::CertificateVersion::V3;
   std::string validity_tlv_;
-  absl::optional<std::string> issuer_tlv_;
+  std::optional<std::string> issuer_tlv_;
   std::string subject_tlv_;
-  absl::optional<bssl::SignatureAlgorithm> signature_algorithm_;
+  std::optional<bssl::SignatureAlgorithm> signature_algorithm_;
   std::string outer_signature_algorithm_tlv_;
   std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;

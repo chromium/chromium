@@ -5,6 +5,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
 #include "third_party/boringssl/src/pki/common_cert_errors.h"
@@ -768,7 +768,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
       digest_policy, flags, trust_store, ocsp_response, sct_list, ev_metadata,
       checked_revocation, deadline, net_log);
 
-  absl::optional<CertIssuerSourceAia> aia_cert_issuer_source;
+  std::optional<CertIssuerSourceAia> aia_cert_issuer_source;
 
   // Initialize the path builder.
   bssl::CertPathBuilder path_builder(

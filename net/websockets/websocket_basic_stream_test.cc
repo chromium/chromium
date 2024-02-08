@@ -13,6 +13,7 @@
 #include <string.h>  // for memcpy() and memset().
 
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -36,7 +37,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -166,7 +166,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
     transport_socket->Init(
-        group_id, null_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
+        group_id, null_params, std::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
         NetLogWithSource());

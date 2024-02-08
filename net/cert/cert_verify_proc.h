@@ -92,7 +92,7 @@ class NET_EXPORT CertVerifyProc
     std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
     scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    absl::optional<net::ChromeRootStoreData> root_store_data;
+    std::optional<net::ChromeRootStoreData> root_store_data;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     bool use_chrome_root_store;

@@ -41,7 +41,7 @@ void QuicSimpleServerPacketWriter::SetWritable() {
   write_blocked_ = false;
 }
 
-absl::optional<int> QuicSimpleServerPacketWriter::MessageTooBigErrorCode()
+std::optional<int> QuicSimpleServerPacketWriter::MessageTooBigErrorCode()
     const {
   return ERR_MSG_TOO_BIG;
 }

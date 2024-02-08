@@ -45,6 +45,7 @@
 #include "net/cookies/canonical_cookie.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -67,7 +68,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/http/http_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -393,7 +393,7 @@ CanonicalCookie::CanonicalCookie(
     bool httponly,
     CookieSameSite same_site,
     CookiePriority priority,
-    absl::optional<CookiePartitionKey> partition_key,
+    std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port)
     : name_(std::move(name)),
@@ -556,8 +556,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const GURL& url,
     const std::string& cookie_line,
     const base::Time& creation_time,
-    absl::optional<base::Time> server_time,
-    absl::optional<CookiePartitionKey> cookie_partition_key,
+    std::optional<base::Time> server_time,
+    std::optional<CookiePartitionKey> cookie_partition_key,
     bool block_truncated,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
@@ -655,7 +655,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     if (!partition_has_nonce)
       UMA_HISTOGRAM_BOOLEAN("Cookie.IsPartitionedValid", is_partitioned_valid);
   } else if (!partition_has_nonce) {
-    cookie_partition_key = absl::nullopt;
+    cookie_partition_key = std::nullopt;
   }
 
   if (!status->IsInclude())
@@ -762,7 +762,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     bool http_only,
     CookieSameSite same_site,
     CookiePriority priority,
-    absl::optional<CookiePartitionKey> partition_key,
+    std::optional<CookiePartitionKey> partition_key,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -951,7 +951,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     bool httponly,
     CookieSameSite same_site,
     CookiePriority priority,
-    absl::optional<CookiePartitionKey> partition_key,
+    std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
   // We check source_port here because it could have concievably been
@@ -996,7 +996,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     bool httponly,
     CookieSameSite same_site,
     CookiePriority priority,
-    absl::optional<CookiePartitionKey> partition_key,
+    std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
   return std::make_unique<CanonicalCookie>(
@@ -1025,13 +1025,13 @@ void CanonicalCookie::SetSourcePort(int port) {
 }
 
 CanonicalCookie::UniqueCookieKey CanonicalCookie::UniqueKey() const {
-  absl::optional<CookieSourceScheme> source_scheme =
+  std::optional<CookieSourceScheme> source_scheme =
       cookie_util::IsSchemeBoundCookiesEnabled()
-          ? absl::make_optional(source_scheme_)
-          : absl::nullopt;
-  absl::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
-                                        ? absl::make_optional(source_port_)
-                                        : absl::nullopt;
+          ? std::make_optional(source_scheme_)
+          : std::nullopt;
+  std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                       ? std::make_optional(source_port_)
+                                       : std::nullopt;
 
   return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme,
                          source_port);
@@ -1039,10 +1039,10 @@ CanonicalCookie::UniqueCookieKey CanonicalCookie::UniqueKey() const {
 
 CanonicalCookie::UniqueDomainCookieKey CanonicalCookie::UniqueDomainKey()
     const {
-  absl::optional<CookieSourceScheme> source_scheme =
+  std::optional<CookieSourceScheme> source_scheme =
       cookie_util::IsSchemeBoundCookiesEnabled()
-          ? absl::make_optional(source_scheme_)
-          : absl::nullopt;
+          ? std::make_optional(source_scheme_)
+          : std::nullopt;
 
   return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme);
 }
@@ -1313,7 +1313,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const CookieOptions& options,
     const CookieAccessParams& params,
     const std::vector<std::string>& cookieable_schemes,
-    const absl::optional<CookieAccessResult>& cookie_access_result) const {
+    const std::optional<CookieAccessResult>& cookie_access_result) const {
   CookieAccessResult access_result;
   if (cookie_access_result) {
     access_result = *cookie_access_result;
@@ -1815,7 +1815,7 @@ bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult() = default;
 
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult(
-    absl::optional<CanonicalCookie> cookie,
+    std::optional<CanonicalCookie> cookie,
     std::string cookie_string,
     CookieAccessResult access_result)
     : cookie(std::move(cookie)),

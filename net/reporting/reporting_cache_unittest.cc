@@ -123,9 +123,8 @@ class ReportingCacheTest : public ReportingTestBase,
     // in test cases, so I've optimized for readability over execution speed.
     std::vector<raw_ptr<const ReportingReport, VectorExperimental>> before;
     cache()->GetReports(&before);
-    cache()->AddReport(absl::nullopt, network_anonymization_key, url,
-                       user_agent, group, type, std::move(body), depth, queued,
-                       attempts);
+    cache()->AddReport(std::nullopt, network_anonymization_key, url, user_agent,
+                       group, type, std::move(body), depth, queued, attempts);
     std::vector<raw_ptr<const ReportingReport, VectorExperimental>> after;
     cache()->GetReports(&after);
 
@@ -183,7 +182,7 @@ class ReportingCacheTest : public ReportingTestBase,
   const GURL kUrl2_ = GURL("https://origin2/path");
   const url::Origin kOrigin1_ = url::Origin::Create(GURL("https://origin1/"));
   const url::Origin kOrigin2_ = url::Origin::Create(GURL("https://origin2/"));
-  const absl::optional<base::UnguessableToken> kReportingSource_ =
+  const std::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_;
   const NetworkAnonymizationKey kOtherNak_ =
@@ -502,8 +501,8 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
                      base::Value::Dict(), 0, kNowTicks_, 0);
   cache()->AddReport(source2, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
                      base::Value::Dict(), 0, kNowTicks_, 0);
-  cache()->AddReport(absl::nullopt, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_, 0);
+  cache()->AddReport(std::nullopt, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
+                     base::Value::Dict(), 0, kNowTicks_, 0);
   EXPECT_EQ(3, observer()->cached_reports_update_count());
 
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
@@ -516,7 +515,7 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   const auto report2 =
       base::ranges::find(reports, source2, &ReportingReport::reporting_source);
   DCHECK(report2 != reports.end());
-  const auto report3 = base::ranges::find(reports, absl::nullopt,
+  const auto report3 = base::ranges::find(reports, std::nullopt,
                                           &ReportingReport::reporting_source);
   DCHECK(report3 != reports.end());
 
@@ -1133,7 +1132,7 @@ TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDocumentForNetworkReports) {
   SetV1EndpointInCache(kDocumentGroupKey, reporting_source, kIsolationInfo1_,
                        kEndpoint1_);
   const ReportingEndpointGroupKey kNetworkReportGroupKey =
-      ReportingEndpointGroupKey(network_anonymization_key, absl::nullopt,
+      ReportingEndpointGroupKey(network_anonymization_key, std::nullopt,
                                 kOrigin1_, kGroup1_);
   std::vector<ReportingEndpoint> candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(kNetworkReportGroupKey);
@@ -1211,7 +1210,7 @@ TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
   // returned.
   candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(ReportingEndpointGroupKey(
-          network_anonymization_key1, absl::nullopt, kOrigin1_, kGroup1_));
+          network_anonymization_key1, std::nullopt, kOrigin1_, kGroup1_));
   ASSERT_EQ(2u, candidate_endpoints.size());
   EXPECT_EQ(group_key_11, candidate_endpoints[0].group_key);
   EXPECT_EQ(group_key_11, candidate_endpoints[1].group_key);

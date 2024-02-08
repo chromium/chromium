@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -127,7 +128,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -704,7 +704,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       ClientSocketPool::RespectLimits respect_limits,
@@ -745,7 +745,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
 // Helper functions for validating that AuthChallengeInfo's are correctly
 // configured for common cases.
 bool CheckBasicServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -757,7 +757,7 @@ bool CheckBasicServerAuth(
 }
 
 bool CheckBasicSecureServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -769,7 +769,7 @@ bool CheckBasicSecureServerAuth(
 }
 
 bool CheckBasicProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -781,7 +781,7 @@ bool CheckBasicProxyAuth(
 }
 
 bool CheckBasicSecureProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -793,7 +793,7 @@ bool CheckBasicSecureProxyAuth(
 }
 
 bool CheckDigestServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -806,7 +806,7 @@ bool CheckDigestServerAuth(
 
 #if defined(NTLM_PORTABLE)
 bool CheckNTLMServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -818,7 +818,7 @@ bool CheckNTLMServerAuth(
 }
 
 bool CheckNTLMProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -13650,7 +13650,7 @@ TEST_P(HttpNetworkTransactionTest, ResetStateForRestart) {
 
   // Setup state in response_
   HttpResponseInfo* response = &trans.response_;
-  response->auth_challenge = absl::nullopt;
+  response->auth_challenge = std::nullopt;
   response->ssl_info.cert_status = static_cast<CertStatus>(-1);  // Nonsensical.
   response->response_time = base::Time::Now();
   response->was_cached = true;  // (Wouldn't ever actually be true...)
@@ -15906,7 +15906,7 @@ TEST_P(HttpNetworkTransactionTest, ChangeAuthRealms) {
   EXPECT_THAT(rv, IsOk());
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  absl::optional<AuthChallengeInfo> challenge = response->auth_challenge;
+  std::optional<AuthChallengeInfo> challenge = response->auth_challenge;
   ASSERT_TRUE(challenge);
   EXPECT_FALSE(challenge->is_proxy);
   EXPECT_EQ("http://www.example.org", challenge->challenger.Serialize());
@@ -19556,8 +19556,8 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
         StaticSocketDataProvider data1;
         session_deps_.socket_factory->AddSocketDataProvider(&data1);
 
-        absl::optional<SSLSocketDataProvider> ssl_data2;
-        absl::optional<StaticSocketDataProvider> data2;
+        std::optional<SSLSocketDataProvider> ssl_data2;
+        std::optional<StaticSocketDataProvider> data2;
         MockRead error_in_read[] = {MockRead(ASYNC, reject_error)};
         if (reject_in_connect) {
           ssl_data2.emplace(ASYNC, reject_error);
@@ -19579,8 +19579,8 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
 
         // If the handshake returns ERR_SSL_PROTOCOL_ERROR, we attempt to
         // connect twice.
-        absl::optional<SSLSocketDataProvider> ssl_data3;
-        absl::optional<StaticSocketDataProvider> data3;
+        std::optional<SSLSocketDataProvider> ssl_data3;
+        std::optional<StaticSocketDataProvider> data3;
         if (reject_in_connect && reject_error == ERR_SSL_PROTOCOL_ERROR) {
           ssl_data3.emplace(ASYNC, reject_error);
           data3.emplace();  // There are no reads or writes.
@@ -19789,7 +19789,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   // Preload mail.example.com into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request2;
@@ -20569,7 +20569,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;
@@ -20697,7 +20697,7 @@ TEST_P(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;
@@ -20973,7 +20973,7 @@ TEST_P(HttpNetworkTransactionTest,
   // Preload cache entries into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request2;
@@ -24244,7 +24244,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;

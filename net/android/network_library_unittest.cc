@@ -24,7 +24,7 @@ TEST(NetworkLibraryTest, CaptivePortal) {
 }
 
 TEST(NetworkLibraryTest, GetWifiSignalLevel) {
-  absl::optional<int32_t> signal_strength = android::GetWifiSignalLevel();
+  std::optional<int32_t> signal_strength = android::GetWifiSignalLevel();
   if (!signal_strength.has_value())
     return;
   EXPECT_LE(0, signal_strength.value());

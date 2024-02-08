@@ -97,7 +97,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     return true;
   }
   bool OnAckFrameEnd(QuicPacketNumber start,
-                     const absl::optional<QuicEcnCounts>& ecn_counts) override {
+                     const std::optional<QuicEcnCounts>& ecn_counts) override {
     *output_ << "OnAckFrameEnd, start: " << start << ", "
              << ecn_counts.value_or(QuicEcnCounts()).ToString() << "\n";
     return true;

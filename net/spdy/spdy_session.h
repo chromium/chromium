@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -53,7 +54,6 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -338,7 +338,7 @@ class NET_EXPORT SpdySession
               int session_max_queued_capped_frames,
               const spdy::SettingsMap& initial_settings,
               bool enable_http2_settings_grease,
-              const absl::optional<SpdySessionPool::GreasedHttp2Frame>&
+              const std::optional<SpdySessionPool::GreasedHttp2Frame>&
                   greased_http2_frame,
               bool http2_end_stream_with_data_frame,
               bool enable_priority_update,
@@ -1109,7 +1109,7 @@ class NET_EXPORT SpdySession
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame. See
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-  const absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
+  const std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
 
   // If set, the HEADERS frame carrying a request without body will not have the
   // END_STREAM flag set.  The stream will be closed by a subsequent empty DATA

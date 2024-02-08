@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -75,7 +76,6 @@
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using net::test::IsError;
@@ -371,8 +371,8 @@ const MockTransaction kFastNoStoreGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_SYNC_NET_START,
     base::BindRepeating(&FastTransactionServer::FastNoStoreHandler),
     MockTransactionReadHandler(),
@@ -576,8 +576,8 @@ const MockTransaction kRangeGET_TransactionOK = {
     base::Time(),
     "rg: 40-49 ",
     {},
-    absl::nullopt,
-    absl::nullopt,
+    std::nullopt,
+    std::nullopt,
     TEST_MODE_NORMAL,
     base::BindRepeating(&RangeTransactionServer::RangeHandler),
     MockTransactionReadHandler(),
@@ -11424,7 +11424,7 @@ TEST_P(HttpCacheTest_SplitCacheFeatureEnabled,
       net::NetworkAnonymizationKey::CreateCrossSite(site_b);
   switch (GetParam()) {
     case SplitCacheTestCase::kSplitCacheNikFrameSiteEnabled:
-      EXPECT_EQ(absl::nullopt,
+      EXPECT_EQ(std::nullopt,
                 trans_info.network_isolation_key.ToCacheKeyString());
       break;
     case SplitCacheTestCase::kSplitCacheNikCrossSiteFlagEnabled:
@@ -11682,7 +11682,7 @@ TEST_P(HttpCacheTest_SplitCacheFeatureEnabled, SplitCache) {
   trans_info.network_isolation_key = NetworkIsolationKey(site_data, site_data);
   trans_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateSameSite(site_data);
-  EXPECT_EQ(absl::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
+  EXPECT_EQ(std::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);

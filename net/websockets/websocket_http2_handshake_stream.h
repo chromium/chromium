@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 absl::optional<int> response_code);
+                 std::optional<int> response_code);
 
   HandshakeResult result_ = HandshakeResult::HTTP2_INCOMPLETE;
 

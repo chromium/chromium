@@ -6,6 +6,7 @@
 #define NET_SOCKET_TRANSPORT_CONNECT_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -135,8 +135,8 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
                       const scoped_refptr<TransportSocketParams>& params,
                       Delegate* delegate,
                       const NetLogWithSource* net_log,
-                      absl::optional<EndpointResultOverride>
-                          endpoint_result_override = absl::nullopt);
+                      std::optional<EndpointResultOverride>
+                          endpoint_result_override = std::nullopt);
 
   TransportConnectJob(const TransportConnectJob&) = delete;
   TransportConnectJob& operator=(const TransportConnectJob&) = delete;
@@ -148,7 +148,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   bool HasEstablishedConnection() const override;
   ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
-  absl::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
+  std::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
       const override;
 
   static base::TimeDelta ConnectionTimeout();

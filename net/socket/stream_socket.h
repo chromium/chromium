@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -116,7 +117,7 @@ class NET_EXPORT StreamSocket : public Socket {
   // Get data received from peer in ALPS TLS extension.
   // Returns a (possibly empty) value if a TLS version supporting ALPS was used
   // and ALPS was negotiated, nullopt otherwise.
-  virtual absl::optional<base::StringPiece> GetPeerApplicationSettings() const;
+  virtual std::optional<base::StringPiece> GetPeerApplicationSettings() const;
 
   // Gets the SSL connection information of the socket.  Returns false if
   // SSL was not used by this socket.

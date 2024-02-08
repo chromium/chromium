@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
                        size_t size,
                        const net::SHA256HashValue& hash,
                        const base::UnguessableToken& disk_cache_key_token,
-                       const absl::optional<int64_t>& primary_key_in_database);
+                       const std::optional<int64_t>& primary_key_in_database);
 
   SharedDictionaryInfo(const SharedDictionaryInfo&);
   SharedDictionaryInfo& operator=(const SharedDictionaryInfo&);
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
     return disk_cache_key_token_;
   }
 
-  const absl::optional<int64_t>& primary_key_in_database() const {
+  const std::optional<int64_t>& primary_key_in_database() const {
     return primary_key_in_database_;
   }
   void set_primary_key_in_database(int64_t primary_key_in_database) {
@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryInfo {
   base::UnguessableToken disk_cache_key_token_;
   // The primary key in SQLite database. This is nullopt until it is stored to
   // the database.
-  absl::optional<int64_t> primary_key_in_database_;
+  std::optional<int64_t> primary_key_in_database_;
 };
 
 }  // namespace net

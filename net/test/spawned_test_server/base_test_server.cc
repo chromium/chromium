@@ -284,7 +284,7 @@ bool BaseTestServer::SetAndParseServerData(const std::string& server_data,
     return false;
   }
 
-  absl::optional<int> port_value = parsed_json->GetDict().FindInt("port");
+  std::optional<int> port_value = parsed_json->GetDict().FindInt("port");
   if (!port_value) {
     LOG(ERROR) << "Could not find port value";
     return false;
@@ -320,7 +320,7 @@ void BaseTestServer::CleanUpWhenStoppingServer() {
   started_ = false;
 }
 
-absl::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
+std::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
   base::Value::Dict arguments;
   arguments.Set("host", host_port_pair_.host());
   arguments.Set("port", host_port_pair_.port());
@@ -349,7 +349,7 @@ absl::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
           !base::PathExists(certificate_path)) {
         LOG(ERROR) << "Certificate path " << certificate_path.value()
                    << " doesn't exist. Can't launch https server.";
-        return absl::nullopt;
+        return std::nullopt;
       }
       arguments.Set("cert-and-key-file", certificate_path.AsUTF8Unsafe());
     }
@@ -366,7 +366,7 @@ absl::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
       if (it->IsAbsolute() && !base::PathExists(*it)) {
         LOG(ERROR) << "Client authority path " << it->value()
                    << " doesn't exist. Can't launch https server.";
-        return absl::nullopt;
+        return std::nullopt;
       }
       ssl_client_certs.Append(it->AsUTF8Unsafe());
     }
@@ -376,7 +376,7 @@ absl::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
     }
   }
 
-  return absl::make_optional(std::move(arguments));
+  return std::make_optional(std::move(arguments));
 }
 
 }  // namespace net

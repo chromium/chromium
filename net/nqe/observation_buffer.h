@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/network_quality_observation.h"
 #include "net/nqe/network_quality_observation_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -75,10 +75,10 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // signal strength. |result| must not be null. If |observations_count| is not
   // null, then it is set to the number of observations that were available
   // in the observation buffer for computing the percentile.
-  absl::optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
-                                        int32_t current_signal_strength,
-                                        int percentile,
-                                        size_t* observations_count) const;
+  std::optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
+                                       int32_t current_signal_strength,
+                                       int percentile,
+                                       size_t* observations_count) const;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;

@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_AUTH_PREFERENCES_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class SchemeHostPort;
@@ -92,12 +92,12 @@ class NET_EXPORT HttpAuthPreferences {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-  const absl::optional<std::set<std::string>>& allowed_schemes() const {
+  const std::optional<std::set<std::string>>& allowed_schemes() const {
     return allowed_schemes_;
   }
 
   void set_allowed_schemes(
-      const absl::optional<std::set<std::string>>& allowed_schemes) {
+      const std::optional<std::set<std::string>>& allowed_schemes) {
     allowed_schemes_ = allowed_schemes;
   }
 
@@ -141,7 +141,7 @@ class NET_EXPORT HttpAuthPreferences {
   bool allow_gssapi_library_load_ = true;
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
-  absl::optional<std::set<std::string>> allowed_schemes_;
+  std::optional<std::set<std::string>> allowed_schemes_;
   std::unique_ptr<URLSecurityManager> security_manager_;
   base::RepeatingCallback<bool(const url::SchemeHostPort&)>
       http_auth_scheme_filter_ =

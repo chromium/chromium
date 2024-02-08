@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/abseil-cpp/absl/strings/str_replace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
@@ -41,7 +41,7 @@ bool ExpandURITemplateImpl(
   return result;
 }
 
-absl::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
+std::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
   url::RawCanonOutputW<1024> canon_output;
   url::DecodeURLEscapeSequences(input, url::DecodeURLMode::kUTF8,
                                 &canon_output);
@@ -49,7 +49,7 @@ absl::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
   output.reserve(canon_output.length());
   for (uint16_t c : canon_output.view()) {
     if (c > std::numeric_limits<signed char>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     output += static_cast<char>(c);
   }

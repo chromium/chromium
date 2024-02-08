@@ -11,6 +11,7 @@
 #define NET_HTTP_HTTP_REQUEST_HEADERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "net/base/net_export.h"
 #include "net/filter/source_stream.h"
 #include "net/log/net_log_capture_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -196,7 +196,7 @@ class NET_EXPORT HttpRequestHeaders {
   // it does not exist. "br" is appended only when `enable_brotli` is true.
   void SetAcceptEncodingIfMissing(
       const GURL& url,
-      const absl::optional<base::flat_set<SourceStream::SourceType>>&
+      const std::optional<base::flat_set<SourceStream::SourceType>>&
           accepted_stream_types,
       bool enable_brotli,
       bool enable_zstd);

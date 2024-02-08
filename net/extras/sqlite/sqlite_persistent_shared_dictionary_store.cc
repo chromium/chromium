@@ -123,18 +123,18 @@ bool CreateV2Schema(sql::Database* db, sql::MetaTable* meta_table) {
   return true;
 }
 
-absl::optional<SHA256HashValue> ToSHA256HashValue(
+std::optional<SHA256HashValue> ToSHA256HashValue(
     base::span<const uint8_t> sha256_bytes) {
   SHA256HashValue sha256_hash;
   if (sha256_bytes.size() != sizeof(sha256_hash.data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   memcpy(sha256_hash.data, sha256_bytes.data(), sha256_bytes.size());
   return sha256_hash;
 }
 
-absl::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
-                                                          int64_t token_low) {
+std::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
+                                                         int64_t token_low) {
   // There is no `sql::Statement::ColumnUint64()` method. So we cast to
   // uint64_t.
   return base::UnguessableToken::Deserialize(static_cast<uint64_t>(token_high),
@@ -178,7 +178,7 @@ void RecordErrorHistogram(
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
     RegisterDictionaryResult(
         int64_t primary_key_in_database,
-        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::optional<base::UnguessableToken> replaced_disk_cache_key_token,
         std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
         uint64_t total_dictionary_size,
         uint64_t total_dictionary_count)
@@ -305,7 +305,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const std::string& match,
       const std::string& match_dest,
       int64_t* size_out,
-      absl::optional<base::UnguessableToken>* disk_cache_key_out);
+      std::optional<base::UnguessableToken>* disk_cache_key_out);
 
   // Updates the total dictionary size in MetaTable by `size_delta` and returns
   // the updated total dictionary size.
@@ -318,7 +318,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
   // SQLitePersistentStoreBackendBase implementation
   bool CreateDatabaseSchema() override;
-  absl::optional<int> DoMigrateDatabaseSchema() override;
+  std::optional<int> DoMigrateDatabaseSchema() override;
   void DoCommit() override;
 
   // Commits the last used time update.
@@ -397,7 +397,7 @@ bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
   return true;
 }
 
-absl::optional<int>
+std::optional<int>
 SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
   if (cur_version == 1) {
@@ -405,7 +405,7 @@ SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
     if (!transaction.Begin() ||
         !db()->Execute("DROP TABLE IF EXISTS dictionaries") ||
         !meta_table()->DeleteKey(kTotalDictSizeKey)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     // The version 1 is used during the Origin Trial period (M119-M122).
     // We don't need to migrate the data from version 1.
@@ -414,13 +414,13 @@ SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
         !transaction.Commit()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   // Future database upgrade statements go here.
 
-  return absl::make_optional(cur_version);
+  return std::make_optional(cur_version);
 }
 
 void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
@@ -512,7 +512,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   }
 
   int64_t size_of_removed_dict = 0;
-  absl::optional<base::UnguessableToken> replaced_disk_cache_key_token;
+  std::optional<base::UnguessableToken> replaced_disk_cache_key_token;
   int64_t size_delta = dictionary_info.size();
   if (GetExistingDictionarySizeAndDiskCacheKeyToken(
           isolation_key, url::SchemeHostPort(dictionary_info.url()),
@@ -696,7 +696,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -820,13 +820,13 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
     const base::Time last_used_time = statement.ColumnTime(7);
     const size_t size = statement.ColumnInt64(8);
 
-    absl::optional<SHA256HashValue> sha256_hash =
+    std::optional<SHA256HashValue> sha256_hash =
         ToSHA256HashValue(statement.ColumnBlob(9));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(statement.ColumnInt64(10),
                            statement.ColumnInt64(11));
     if (!disk_cache_key_token) {
@@ -889,14 +889,14 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     const base::Time last_used_time = statement.ColumnTime(9);
     const size_t size = statement.ColumnInt64(10);
 
-    absl::optional<SHA256HashValue> sha256_hash =
+    std::optional<SHA256HashValue> sha256_hash =
         ToSHA256HashValue(statement.ColumnBlob(11));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(statement.ColumnInt64(12),
                            statement.ColumnInt64(13));
     if (!disk_cache_key_token) {
@@ -1020,7 +1020,7 @@ SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionariesImpl() {
   while (statement.Step()) {
     const int64_t token_high = statement.ColumnInt64(0);
     const int64_t token_low = statement.ColumnInt64(1);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       continue;
@@ -1121,7 +1121,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectMatchingDictionaries(
     const size_t size = statement.ColumnInt64(1);
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1182,7 +1182,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
         !url_matcher.Run(GURL(host))) {
       continue;
     }
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1233,7 +1233,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
 
     checked_total_size += size;
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       continue;
@@ -1289,7 +1289,7 @@ SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
 
     checked_total_size += size;
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1404,7 +1404,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     const size_t size = statement.ColumnInt64(1);
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1545,7 +1545,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDiskCacheKeyTokensImpl() {
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
   std::vector<base::UnguessableToken> tokens;
   while (statement.Step()) {
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1609,7 +1609,7 @@ bool SQLitePersistentSharedDictionaryStore::Backend::
         const std::string& match,
         const std::string& match_dest,
         int64_t* size_out,
-        absl::optional<base::UnguessableToken>* disk_cache_key_out) {
+        std::optional<base::UnguessableToken>* disk_cache_key_out) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   static constexpr char kQuery[] =

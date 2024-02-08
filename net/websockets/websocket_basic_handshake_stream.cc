@@ -491,7 +491,7 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
         // helpful, so use a different error message.
         if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
           OnFailure("Error during WebSocket handshake: Invalid status line",
-                    ERR_FAILED, absl::nullopt);
+                    ERR_FAILED, std::nullopt);
         } else {
           OnFailure(base::StringPrintf("Error during WebSocket handshake: "
                                        "Unexpected response code: %d",
@@ -504,13 +504,13 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
   } else {
     if (rv == ERR_EMPTY_RESPONSE) {
       OnFailure("Connection closed before receiving a handshake response", rv,
-                absl::nullopt);
+                std::nullopt);
       result_ = HandshakeResult::EMPTY_RESPONSE;
       return rv;
     }
     OnFailure(
         base::StrCat({"Error during WebSocket handshake: ", ErrorToString(rv)}),
-        rv, absl::nullopt);
+        rv, std::nullopt);
     // Some error codes (for example ERR_CONNECTION_CLOSED) get changed to OK at
     // higher levels. To prevent an unvalidated connection getting erroneously
     // upgraded, don't pass through the status code unchanged if it is
@@ -550,14 +550,14 @@ int WebSocketBasicHandshakeStream::ValidateUpgradeResponse(
     return OK;
   }
   OnFailure("Error during WebSocket handshake: " + failure_message, ERR_FAILED,
-            absl::nullopt);
+            std::nullopt);
   return ERR_INVALID_RESPONSE;
 }
 
 void WebSocketBasicHandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_UPGRADE_FAILURE,
                     [&] { return NetLogFailureParam(net_error, message); });
   // Avoid connection reuse if auth did not happen.

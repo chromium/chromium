@@ -34,12 +34,12 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
 TEST_P(CookiePartitionKeyTest, Serialization) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   struct {
-    absl::optional<CookiePartitionKey> input;
+    std::optional<CookiePartitionKey> input;
     bool expected_ret;
     std::string expected_output;
   } cases[] = {
       // No partition key
-      {absl::nullopt, true, kEmptyCookiePartitionKey},
+      {std::nullopt, true, kEmptyCookiePartitionKey},
       // Partition key present
       {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
        true, "https://toplevelsite.com"},
@@ -58,7 +58,7 @@ TEST_P(CookiePartitionKeyTest, Serialization) {
            SchemefulSite(GURL("https://cookiesite.com")), nonce)),
        false, ""},
       // Invalid partition key
-      {absl::make_optional(
+      {std::make_optional(
            CookiePartitionKey::FromURLForTesting(GURL("abc123foobar!!"))),
        false, ""},
   };
@@ -81,16 +81,16 @@ TEST_P(CookiePartitionKeyTest, Deserialization) {
   struct {
     std::string input;
     bool expected_ret;
-    absl::optional<CookiePartitionKey> expected_output;
+    std::optional<CookiePartitionKey> expected_output;
   } cases[] = {
-      {kEmptyCookiePartitionKey, true, absl::nullopt},
+      {kEmptyCookiePartitionKey, true, std::nullopt},
       {"https://toplevelsite.com", true,
        CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
-      {"abc123foobar!!", false, absl::nullopt},
+      {"abc123foobar!!", false, std::nullopt},
   };
 
   for (const auto& tc : cases) {
-    absl::optional<CookiePartitionKey> got;
+    std::optional<CookiePartitionKey> got;
     if (PartitionedCookiesEnabled()) {
       EXPECT_EQ(tc.expected_ret,
                 CookiePartitionKey::Deserialize(tc.input, got));
@@ -119,12 +119,12 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
   struct TestCase {
     const std::string desc;
     const NetworkIsolationKey network_isolation_key;
-    const absl::optional<CookiePartitionKey> expected;
+    const std::optional<CookiePartitionKey> expected;
   } test_cases[] = {
       {
           "Empty",
           NetworkIsolationKey(),
-          absl::nullopt,
+          std::nullopt,
       },
       {
           "WithTopLevelSite",
@@ -151,7 +151,7 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
     }
     feature_list.InitWithFeatures(enabled_features, disabled_features);
 
-    absl::optional<CookiePartitionKey> got =
+    std::optional<CookiePartitionKey> got =
         CookiePartitionKey::FromNetworkIsolationKey(
             test_case.network_isolation_key);
 
@@ -169,12 +169,12 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
 TEST_P(CookiePartitionKeyTest, FromWire) {
   struct TestCase {
     const GURL url;
-    const absl::optional<base::UnguessableToken> nonce;
+    const std::optional<base::UnguessableToken> nonce;
   } test_cases[] = {
-      {GURL("https://foo.com"), absl::nullopt},
-      {GURL(), absl::nullopt},
+      {GURL("https://foo.com"), std::nullopt},
+      {GURL(), std::nullopt},
       {GURL("https://foo.com"),
-       absl::make_optional(base::UnguessableToken::Create())},
+       std::make_optional(base::UnguessableToken::Create())},
   };
 
   for (const auto& test_case : test_cases) {
@@ -189,7 +189,7 @@ TEST_P(CookiePartitionKeyTest, FromWire) {
 TEST_P(CookiePartitionKeyTest, FromStorageKeyComponents) {
   struct TestCase {
     const GURL url;
-    const absl::optional<base::UnguessableToken> nonce = absl::nullopt;
+    const std::optional<base::UnguessableToken> nonce = std::nullopt;
   } test_cases[] = {
       {GURL("https://foo.com")},
       {GURL()},
@@ -199,7 +199,7 @@ TEST_P(CookiePartitionKeyTest, FromStorageKeyComponents) {
   for (const auto& test_case : test_cases) {
     auto want =
         CookiePartitionKey::FromURLForTesting(test_case.url, test_case.nonce);
-    absl::optional<CookiePartitionKey> got =
+    std::optional<CookiePartitionKey> got =
         CookiePartitionKey::FromStorageKeyComponents(want.site(), want.nonce());
     if (PartitionedCookiesEnabled()) {
       EXPECT_EQ(got, want);

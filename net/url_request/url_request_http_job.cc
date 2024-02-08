@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -95,7 +96,6 @@
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -125,7 +125,7 @@ base::Value::Dict FirstPartySetMetadataNetLogParams(
     const int64_t* const fps_cache_filter) {
   base::Value::Dict dict;
   auto entry_or_empty =
-      [](const absl::optional<net::FirstPartySetEntry>& entry) -> std::string {
+      [](const std::optional<net::FirstPartySetEntry>& entry) -> std::string {
     return entry.has_value() ? entry->GetDebugString() : "none";
   };
 
@@ -389,7 +389,7 @@ void URLRequestHttpJob::Start() {
 
   request_->net_log().BeginEvent(NetLogEventType::FIRST_PARTY_SETS_METADATA);
 
-  absl::optional<
+  std::optional<
       std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
       maybe_metadata = cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           SchemefulSite(request()->url()), request()->isolation_info(),
@@ -589,7 +589,7 @@ void URLRequestHttpJob::StartTransaction() {
 
 void URLRequestHttpJob::NotifyBeforeStartTransactionCallback(
     int result,
-    const absl::optional<HttpRequestHeaders>& headers) {
+    const std::optional<HttpRequestHeaders>& headers) {
   // The request should not have been cancelled or have already completed.
   DCHECK(!is_done());
 
@@ -942,9 +942,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   }
 
   base::Time response_date;
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   if (GetResponseHeaders()->GetDateValue(&response_date))
-    server_time = absl::make_optional(response_date);
+    server_time = std::make_optional(response_date);
 
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();
@@ -998,7 +998,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
         request_->cookie_partition_key(), /*block_truncated=*/true,
         &returned_status);
 
-    absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
+    std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
     if (returned_status.IsInclude()) {
       DCHECK(cookie);
       // Make a copy of the cookie if we successfully made one.
@@ -1041,11 +1041,10 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     NotifyHeadersComplete();
 }
 
-void URLRequestHttpJob::OnSetCookieResult(
-    const CookieOptions& options,
-    absl::optional<CanonicalCookie> cookie,
-    std::string cookie_string,
-    CookieAccessResult access_result) {
+void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
+                                          std::optional<CanonicalCookie> cookie,
+                                          std::string cookie_string,
+                                          CookieAccessResult access_result) {
   if (request_->net_log().IsCapturing()) {
     request_->net_log().AddEvent(NetLogEventType::COOKIE_INCLUSION_STATUS,
                                  [&](NetLogCaptureMode capture_mode) {
@@ -1131,7 +1130,7 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
       // |URLRequestHttpJob::OnHeadersReceivedCallback()| or
       // |NetworkDelegate::URLRequestDestroyed()| has been called.
       OnCallToDelegate(NetLogEventType::NETWORK_DELEGATE_HEADERS_RECEIVED);
-      preserve_fragment_on_redirect_url_ = absl::nullopt;
+      preserve_fragment_on_redirect_url_ = std::nullopt;
       IPEndPoint endpoint;
       if (transaction_)
         transaction_->GetRemoteEndpoint(&endpoint);

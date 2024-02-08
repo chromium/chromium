@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/queue.h"
@@ -26,7 +27,6 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -96,7 +96,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // CompletionOnceCallback.
   net::Error DoomEntry(CompletionOnceCallback callback);
 
-  const absl::optional<std::string>& key() const { return key_; }
+  const std::optional<std::string>& key() const { return key_; }
   uint64_t entry_hash() const { return entry_hash_; }
 
   // The key is not a constructor parameter to the SimpleEntryImpl, because
@@ -376,7 +376,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   const base::FilePath path_;
   const uint64_t entry_hash_;
   const bool use_optimistic_operations_;
-  absl::optional<std::string> key_;
+  std::optional<std::string> key_;
 
   // |last_used_|, |last_modified_| and |data_size_| are copied from the
   // synchronous entry at the completion of each item of asynchronous IO.

@@ -4980,7 +4980,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
     url::SchemeHostPort scheme_host_port(
         url::kHttpsScheme,
         alt_destination ? "alt.example.org" : "www.example.org", 443);
-    absl::optional<int> quic_request_result;
+    std::optional<int> quic_request_result;
 
     CHECK_EQ(ERR_IO_PENDING,
              quic_request.Request(
