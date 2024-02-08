@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 
 class Profile;
@@ -120,6 +121,16 @@ bool ExecuteOpenInOfficeTask(
 // Executes QuickOffice file handler for each element of |file_urls|.
 void LaunchQuickOffice(Profile* profile,
                        const std::vector<storage::FileSystemURL>& file_urls);
+
+void LogOneDriveMetricsAfterFallback(
+    ash::office_fallback::FallbackReason fallback_reason,
+    ash::cloud_upload::OfficeTaskResult task_result,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
+
+void LogGoogleDriveMetricsAfterFallback(
+    ash::office_fallback::FallbackReason fallback_reason,
+    ash::cloud_upload::OfficeTaskResult task_result,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics);
 
 // Executes appropriate task to open the selected `file_urls`.
 // If user's `choice` is `kDialogChoiceQuickOffice`, launch QuickOffice.
