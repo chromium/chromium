@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -111,9 +110,8 @@ CertVerifier::RequestParams::RequestParams(
   SHA256_Update(&ctx, &flags, sizeof(flags));
   Sha256UpdateLengthPrefixed(&ctx, base::as_byte_span(ocsp_response));
   Sha256UpdateLengthPrefixed(&ctx, base::as_byte_span(sct_list));
-  SHA256_Final(reinterpret_cast<uint8_t*>(
-                   base::WriteInto(&key_, SHA256_DIGEST_LENGTH + 1)),
-               &ctx);
+  key_.resize(SHA256_DIGEST_LENGTH);
+  SHA256_Final(reinterpret_cast<uint8_t*>(key_.data()), &ctx);
 }
 
 CertVerifier::RequestParams::RequestParams(const RequestParams& other) =
