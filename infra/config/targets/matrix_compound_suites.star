@@ -1447,6 +1447,7 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "AMD_RADEON_RX_5500_XT",
                 "INTEL_UHD_630",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
     },

@@ -996,6 +996,13 @@
       ],
     },
   },
+  'nvidia_geforce_gtx_1660': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '10de:2184-31.0.15.4601',
+      },
+    },
+  },
   'oreo-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/generic_android26.textpb',

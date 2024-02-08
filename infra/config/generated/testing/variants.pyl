@@ -407,6 +407,12 @@
       'Chrome.exe',
     ],
   },
+  'NVIDIA_GEFORCE_GTX_1660': {
+    'identifier': 'NVIDIA GeForce GTX 1660',
+    'mixins': [
+      'nvidia_geforce_gtx_1660',
+    ],
+  },
   'SIM_IPAD_10TH_GEN_16_4': {
     'identifier': 'iPad (10th generation) 16.4',
     'args': [
