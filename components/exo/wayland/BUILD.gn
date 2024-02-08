@@ -312,6 +312,7 @@ source_set("unit_tests") {
     "wayland_positioner_unittest.cc",
     "wl_data_device_manager_unittest.cc",
     "zaura_output_manager_unittest.cc",
+    "zaura_output_manager_v2_unittest.cc",
     "zaura_shell_unittest.cc",
     "zcr_remote_shell_impl_unittest.cc",
     "zcr_remote_shell_unittest.cc",

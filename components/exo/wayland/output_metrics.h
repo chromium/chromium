@@ -24,6 +24,8 @@ namespace exo::wayland {
 // Metrics for wl_output and supported extensions.
 struct OutputMetrics {
   explicit OutputMetrics(const display::Display& display);
+  OutputMetrics(const OutputMetrics&);
+  OutputMetrics& operator=(const OutputMetrics&);
   virtual ~OutputMetrics();
 
   //////////////////////////////////////////////////////////////////////////////
