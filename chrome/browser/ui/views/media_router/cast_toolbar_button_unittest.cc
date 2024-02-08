@@ -114,21 +114,12 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
         browser_.get(), media_router_, std::move(context_menu)));
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
-    idle_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterIdleIcon,
-        color_provider->GetColor(kColorToolbarButtonIcon)));
     idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterIdleChromeRefreshIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
-    warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterWarningIcon,
-        color_provider->GetColor(kColorMediaRouterIconWarning)));
     warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningChromeRefreshIcon,
         color_provider->GetColor(kColorToolbarButtonIcon)));
-    active_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterActiveIcon,
-        color_provider->GetColor(kColorMediaRouterIconActive)));
     active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveChromeRefreshIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
@@ -161,11 +152,8 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   raw_ptr<MockMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   std::unique_ptr<MirroringMediaControllerHostImpl> mirroring_controller_host_;
 
-  gfx::Image idle_icon_;
   gfx::Image idle_chrome_refresh_icon_;
-  gfx::Image warning_icon_;
   gfx::Image warning_chrome_refresh_icon_;
-  gfx::Image active_icon_;
   gfx::Image active_chrome_refresh_icon_;
   gfx::Image paused_icon_;
 
@@ -181,22 +169,6 @@ TEST_F(CastToolbarButtonTest, ShowAndHideButton) {
   EXPECT_TRUE(button_->GetVisible());
   button_->HideIcon();
   EXPECT_FALSE(button_->GetVisible());
-}
-
-TEST_F(CastToolbarButtonTest, UpdateIssues) {
-  button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
-
-  button_->OnIssue(Issue(IssueInfo(
-      "title notification", IssueInfo::Severity::NOTIFICATION, "sinkId1")));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
-
-  button_->OnIssue(Issue(
-      IssueInfo("title warning", IssueInfo::Severity::WARNING, "sinkId1")));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(warning_icon_, GetIcon()));
-
-  button_->OnIssuesCleared();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 }
 
 TEST_F(CastToolbarButtonTest, UpdateIssuesChromeResfresh) {
@@ -218,22 +190,6 @@ TEST_F(CastToolbarButtonTest, UpdateIssuesChromeResfresh) {
 
   button_->OnIssuesCleared();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
-}
-
-TEST_F(CastToolbarButtonTest, UpdateRoutes) {
-  button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
-
-  button_->OnRoutesUpdated(local_display_route_list_);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(active_icon_, GetIcon()));
-
-  // The idle icon should be shown when we only have non-local and/or
-  // non-display routes.
-  button_->OnRoutesUpdated(non_local_display_route_list_);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
-
-  button_->OnRoutesUpdated({});
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 }
 
 TEST_F(CastToolbarButtonTest, UpdateRoutesChromeRefresh) {

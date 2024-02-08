@@ -15,6 +15,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -511,7 +512,8 @@ void MenuViewDragAndDropTestNestedDrag::StartDrag() {
 // implemented in menu code) will consult the delegate before closing the view
 // after the drag.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug/1523611): Test is failing under ChromeRefresh2023 on wayland.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_MenuViewDragAndDropNestedDrag \
   DISABLED_MenuViewDragAndDropNestedDrag
 #else

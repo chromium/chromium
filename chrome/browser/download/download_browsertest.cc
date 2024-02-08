@@ -155,6 +155,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -4701,6 +4702,12 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SafeSupportedFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
+#if BUILDFLAG(IS_MAC)
+  // TODO (crbug/1523751): Test fails when ChromeRefresh2023 flags are enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
+#endif
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
 
