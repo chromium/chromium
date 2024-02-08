@@ -4,14 +4,14 @@
         margin-bottom: var(--cr-section-vertical-padding);
       }
     </style>
-    <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
+    <template is="dom-if" if="[[!isCookiesUiV2_]]">
       <settings-toggle-button id="toggle" class="hr" label="$i18n{doNotTrack}"
         pref="{{prefs.enable_do_not_track}}"
         on-settings-boolean-control-change="onToggleChange_"
         no-set-pref>
       </settings-toggle-button>
     </template>
-    <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
+    <template is="dom-if" if="[[isCookiesUiV2_]]">
       <settings-toggle-button id="toggle" class="toggle"
         label="$i18n{doNotTrack}"
         pref="{{prefs.enable_do_not_track}}"
