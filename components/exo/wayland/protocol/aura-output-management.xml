@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="aura_output_management">
+
+  <copyright>
+    Copyright 2024 The Chromium Authors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zaura_output_manager_v2" version="1">
+    <description summary="aura output manager singleton">
+      A global responsible for propagating atomic output configuration changes
+      to clients. An output configuration is a union of added / removed outputs
+      and updated output metrics.
+
+      Added outputs arrive at the client as wl_registry.global events, removed
+      outputs as wl_registry.global_remove events and updated output metrics as
+      a sequence of events defined on the zaura_output_manager_v2 interface.
+      This is followed by the manager's done event which signals the end of the
+      transaction.
+
+      The change should be processed by clients in a way that transitions from
+      one output configuration state to another without exposing the
+      intermediate output state to the rest of the application.
+
+      Participating servers should emit the zaura_output_manager_v2 global
+      before any wl_output globals in the sequence of wl_registry.global events.
+
+      Participating clients should bind the zaura_output_manager_v2 before any
+      wl_output globals. This ordering is required to ensure clients receive all
+      necessary output configuration information before receiving any further
+      server events that may reference bound wl_outputs.
+
+      Clients can expect that all events comprising a configuration change are
+      sent synchronously, one after the other, before any other server events
+      that leverage the output as an event param.
+    </description>
+
+    <event name="done" since="1">
+      <description
+          summary="sent all information about the output configuration change">
+        This event is sent after all added, changed and removed output events
+        for a given wl_output have been dispatched to the client.
+      </description>
+    </event>
+
+    <event name="display_id" since="1">
+      <description summary="advertise the output's display id">
+        This event describes the 64bit display id assigned to each display by
+        ChromeOS. The value is opaque and should not be interpreted.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="display_id_hi" type="uint" />
+      <arg name="display_id_lo" type="uint" />
+    </event>
+
+    <event name="logical_position" since="1">
+      <description
+          summary="position of the output within the global compositor space">
+        The position event describes the location of the wl_output within the
+        global compositor space.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="x" type="int"
+          summary="x position within the global compositor space" />
+      <arg name="y" type="int"
+          summary="y position within the global compositor space" />
+    </event>
+
+    <event name="logical_size" since="1">
+      <description summary="size of the output in the global compositor space">
+        The logical_size event describes the logical size of the output in the
+        global compositor space.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="width" type="int" summary="width in global compositor space" />
+      <arg name="height" type="int"
+          summary="height in global compositor space" />
+    </event>
+
+    <event name="physical_size" since="1">
+      <description summary="size of the output in pixels">
+        The physical resolution of the display in pixels. The value should not
+        include any overscan insets or display rotation, except for any panel
+        orientation adjustment.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="width" type="int"
+          summary="width in global compositor space" />
+      <arg name="height" type="int"
+          summary="height in global compositor space" />
+    </event>
+
+    <event name="work_area_insets" since="1">
+      <description summary="advertise the work area insets for the output">
+        This event describes the work area insets for the output in logical
+        screen coordinates, from which the work area can be calculated.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="top" type="int" />
+      <arg name="left" type="int" />
+      <arg name="bottom" type="int" />
+      <arg name="right" type="int" />
+    </event>
+
+    <event name="device_scale_factor" since="1">
+      <description summary="advertise device scale factor for the output">
+        The scale factor of the output device. We reinterpret_cast the float
+        scale factor into a 32-bit uint and later cast back into a float. This
+        is because wayland does not support native transport of floats. As
+        different CPU architectures may use different endian representations for
+        IEEE 754 floats, this protocol implicitly assumes that the caller and
+        receiver are the same machine.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="device_scale_factor" type="uint"
+          summary="display scale factor, in float format" />
+    </event>
+
+    <event name="logical_transform" since="1">
+      <description summary="logical transform of the output">
+        This event describes the logical transform for the output. Whereas
+        panel transform corresponds to the display's panel rotation, the logical
+        transform corresponds to the display's logical rotation.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="transform" type="int" enum="wl_output.transform"
+        summary="transform that maps framebuffer to output" />
+    </event>
+
+    <event name="panel_transform" since="1">
+      <description summary="panel transform of the output">
+        This event describes the panel transform for the output, which is the
+        associated display's panel rotation.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="transform" type="int" enum="wl_output.transform"
+        summary="transform that maps framebuffer to output" />
+    </event>
+
+    <event name="name" since="1">
+      <description summary="human-readable name of this output">
+        The name is a UTF-8 string with no convention defined for its contents.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="name" type="string" summary="output name" />
+    </event>
+
+    <event name="description" since="1">
+      <description summary="human-readable description of this output">
+        The description is a UTF-8 string with no convention defined for its
+        contents.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="description" type="string" summary="output description" />
+    </event>
+
+    <event name="overscan_insets" since="1">
+      <description summary="advertise the overscan insets for the output">
+        This event describes the overscan insets for the output in physical
+        pixels.
+
+        The event is sent immediately after the wl_registry.global event for the
+        output and subsequently in latter display configuration changes.
+      </description>
+      <arg name="output_name" type="uint" />
+      <arg name="top" type="int" />
+      <arg name="left" type="int" />
+      <arg name="bottom" type="int" />
+      <arg name="right" type="int" />
+    </event>
+
+    <event name="activated" since="1">
+      <description summary="target display for new windows">
+        Notifies that this output is now active output. It is typically used as
+        a target when a new window is created without specific bounds.
+      </description>
+      <arg name="output_name" type="uint" />
+    </event>
+  </interface>
+</protocol>

@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_WAYLAND_CLIENTS_CLIENT_HELPER_H_
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <aura-output-management-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
@@ -86,6 +87,7 @@ DEFAULT_DELETER_FDECL(wl_output)
 DEFAULT_DELETER_FDECL(wp_presentation)
 DEFAULT_DELETER_FDECL(struct wp_presentation_feedback)
 DEFAULT_DELETER_FDECL(zaura_output_manager)
+DEFAULT_DELETER_FDECL(zaura_output_manager_v2)
 DEFAULT_DELETER_FDECL(zaura_shell)
 DEFAULT_DELETER_FDECL(zaura_surface)
 DEFAULT_DELETER_FDECL(zaura_toplevel)

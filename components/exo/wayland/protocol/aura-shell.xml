@@ -1471,6 +1471,9 @@
 
   <interface name="zaura_output_manager" version="3">
     <description summary="aura shell interface to the output manager">
+      [Deprecated] Deprecated since M122. See the zaura_output_manager_v2
+      interface.
+
       A global responsible for ensuring clients have a complete view of a given
       output's state immediately following the bind of wl_output, and
       subsequently as needed.

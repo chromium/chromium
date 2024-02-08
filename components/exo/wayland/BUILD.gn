@@ -21,6 +21,8 @@ source_set("wayland") {
     "client_tracker.h",
     "content_type.cc",
     "content_type.h",
+    "output_configuration_change.cc",
+    "output_configuration_change.h",
     "output_controller.cc",
     "output_controller.h",
     "output_metrics.cc",
@@ -82,6 +84,8 @@ source_set("wayland") {
     "xdg_shell.h",
     "zaura_output_manager.cc",
     "zaura_output_manager.h",
+    "zaura_output_manager_v2.cc",
+    "zaura_output_manager_v2.h",
     "zaura_shell.cc",
     "zaura_shell.h",
     "zcr_alpha_compositing.cc",
@@ -152,6 +156,7 @@ source_set("wayland") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/exo",
+    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
@@ -324,6 +329,7 @@ source_set("unit_tests") {
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/wayland/fuzzer:unit_tests",
+    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
@@ -373,6 +379,7 @@ source_set("client_support") {
   ]
 
   public_deps = [
+    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
