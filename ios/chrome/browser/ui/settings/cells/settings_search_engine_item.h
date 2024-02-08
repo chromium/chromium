@@ -11,6 +11,7 @@
 
 @class FaviconAttributes;
 @class FaviconView;
+class TemplateURL;
 
 // SettingsSearchEngineItem contains the model data for a TableViewURLCell.
 @interface SettingsSearchEngineItem : TableViewItem
@@ -24,6 +25,8 @@
 @property(nonatomic, readwrite, copy) NSString* detailText;
 // Sets the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
+// Template URL.
+@property(nonatomic, assign) const TemplateURL* templateURL;
 
 @end
 

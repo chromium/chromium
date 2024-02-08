@@ -89,13 +89,13 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<TemplateURL*> _firstList;
+  std::vector<raw_ptr<TemplateURL>> _firstList;
   // The second list in the page which contains all remaining custom search
   // engines.
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<TemplateURL*> _secondList;
+  std::vector<raw_ptr<TemplateURL>> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -576,6 +576,7 @@ const char kUmaSelectDefaultSearchEngine[] =
           [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
         });
   }
+  item.templateURL = templateURL;
   item.text = base::SysUTF16ToNSString(templateURL->short_name());
   item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
   if ([self isItem:item
@@ -608,6 +609,7 @@ const char kUmaSelectDefaultSearchEngine[] =
           [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
         });
   }
+  item.templateURL = templateURL;
   item.text = base::SysUTF16ToNSString(templateURL->short_name());
   item.detailText = base::SysUTF16ToNSString(templateURL->keyword());
   if ([self isItem:item
@@ -645,7 +647,6 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
   // Update `_templateURLService`, `_firstList` and `_secondList`.
   _updatingBackend = YES;
-  size_t removedItemsInSecondList = 0;
   NSInteger firstSection = [self.tableViewModel
       sectionForSectionIdentifier:SectionIdentifierFirstList];
   bool resetDefaultEngine = false;
@@ -653,9 +654,10 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Remove search engines from `_firstList`, `_secondList` and
   // `_templateURLService`.
   for (NSIndexPath* path : indexPaths) {
-    TemplateURL* engine = nullptr;
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
+    SettingsSearchEngineItem* engineItem =
+        base::apple::ObjCCastStrict<SettingsSearchEngineItem>(item);
     if (path.section == firstSection) {
-      TableViewItem* item = [self.tableViewModel itemAtIndexPath:path];
       // Only custom search engine can be deleted.
       CHECK(item.type == ItemTypeCustomEngine, base::NotFatalUntil::M124);
       // It should not be possible to remove a search engine from the first
@@ -665,41 +667,20 @@ const char kUmaSelectDefaultSearchEngine[] =
       CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M124);
       // The custom search engine in the first section should be the last one.
       DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
-      engine = _firstList.back();
-      _firstList.pop_back();
+      std::erase(_firstList, engineItem.templateURL);
     } else {
-      DCHECK(path.row < static_cast<int>(_secondList.size()));
-
-      engine = _secondList[path.row];
-      // Mark as deleted by setting to nullptr.
-      _secondList[path.row] = nullptr;
-      ++removedItemsInSecondList;
+      std::erase(_secondList, engineItem.templateURL);
     }
     // If `engine` is selected as default search engine, reset the default
     // engine to the first prepopulated engine.
-    if (engine == _templateURLService->GetDefaultSearchProvider()) {
+    if (engineItem.templateURL ==
+        _templateURLService->GetDefaultSearchProvider()) {
       CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M124);
       DCHECK(_firstList.size() > 0);
       _templateURLService->SetUserSelectedDefaultSearchProvider(_firstList[0]);
       resetDefaultEngine = true;
     }
-    _templateURLService->Remove(engine);
-  }
-
-  // Clean up the second list.
-  if (removedItemsInSecondList > 0) {
-    if (removedItemsInSecondList == _secondList.size()) {
-      _secondList.clear();
-    } else {
-      std::vector<TemplateURL*> newList(
-          _secondList.size() - removedItemsInSecondList, nullptr);
-      for (size_t i = 0, added = 0; i < _secondList.size(); ++i) {
-        if (_secondList[i]) {
-          newList[added++] = _secondList[i];
-        }
-      }
-      _secondList = std::move(newList);
-    }
+    _templateURLService->Remove(engineItem.templateURL);
   }
 
   // Update UI.

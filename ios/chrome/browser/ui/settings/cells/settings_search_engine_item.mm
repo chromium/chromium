@@ -28,7 +28,9 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
 
 }  // namespace
 
-@implementation SettingsSearchEngineItem
+@implementation SettingsSearchEngineItem {
+  raw_ptr<const TemplateURL> _templateURL;
+}
 
 @synthesize enabled = _enabled;
 @synthesize text = _text;
@@ -65,6 +67,14 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
     cell.textLabel.textColor = styler.cellTitleColor;
   }
   cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+}
+
+- (void)setTemplateURL:(const TemplateURL*)templateURL {
+  _templateURL = templateURL;
+}
+
+- (const TemplateURL*)templateURL {
+  return _templateURL;
 }
 
 @end
