@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
