@@ -20,8 +20,16 @@ class Embedding {
   Embedding(Embedding&&);
   Embedding(const Embedding&) = delete;
 
+  // The number of elements in the data vector.
+  size_t Dimensions() const;
+
+  // The length of the vector.
   float Magnitude() const;
+
+  // Scale the vector to unit length.
   void Normalize();
+
+  // Compares one embedding with another and returns a similarity measure.
   float ScoreWith(const Embedding& other) const;
 
  private:
