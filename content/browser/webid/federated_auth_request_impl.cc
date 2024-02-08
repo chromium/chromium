@@ -601,10 +601,10 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
       permission_context, identity_registry, std::move(receiver));
 }
 
-std::vector<blink::mojom::IdentityProviderPtr>
+std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>
 FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
-    std::vector<blink::mojom::IdentityProviderPtr>& providers) {
-  std::vector<blink::mojom::IdentityProviderPtr> result;
+    std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers) {
+  std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> result;
 
   std::vector<GURL> registered_config_urls =
       permission_delegate_->GetRegisteredIdPs();
@@ -617,16 +617,15 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
   std::reverse(registered_config_urls.begin(), registered_config_urls.end());
 
   for (auto& provider : providers) {
-    if (!provider->is_federated() ||
-        !provider->get_federated()->config->use_registered_config_urls) {
+    if (!provider->config->use_registered_config_urls) {
       result.emplace_back(provider->Clone());
       continue;
     }
 
     for (auto& configURL : registered_config_urls) {
-      blink::mojom::IdentityProviderPtr idp = provider->Clone();
-      idp->get_federated()->config->use_registered_config_urls = false;
-      idp->get_federated()->config->config_url = configURL;
+      blink::mojom::IdentityProviderRequestOptionsPtr idp = provider->Clone();
+      idp->config->use_registered_config_urls = false;
+      idp->config->config_url = configURL;
       result.emplace_back(std::move(idp));
     }
   }
@@ -645,7 +644,7 @@ void FederatedAuthRequestImpl::RequestToken(
   // Expand the providers list with registered providers.
   if (IsFedCmIdPRegistrationEnabled()) {
     for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-      std::vector<blink::mojom::IdentityProviderPtr> providers =
+      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers =
           MaybeAddRegisteredProviders(idp_get_params_ptr->providers);
       idp_get_params_ptr->providers = std::move(providers);
     }
@@ -733,7 +732,6 @@ void FederatedAuthRequestImpl::RequestToken(
     fedcm_metrics_ =
         CreateFedCmMetrics(idp_get_params_ptrs[0]
                                ->providers[0]
-                               ->get_federated()
                                ->config->config_url,
                            render_frame_host().GetPageUkmSourceId(),
                            /*is_disabled=*/idp_get_params_ptrs.size() > 1);
@@ -821,8 +819,7 @@ void FederatedAuthRequestImpl::RequestToken(
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       // Throw an error if duplicate IDPs are specified.
       const bool is_unique_idp =
-          unique_idps.insert(idp_ptr->get_federated()->config->config_url)
-              .second;
+          unique_idps.insert(idp_ptr->config->config_url).second;
       if (!is_unique_idp) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  /*token_status=*/std::nullopt,
@@ -831,8 +828,7 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
-      url::Origin idp_origin =
-          url::Origin::Create(idp_ptr->get_federated()->config->config_url);
+      url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
       if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kIdpNotPotentiallyTrustworthy,
@@ -845,15 +841,14 @@ void FederatedAuthRequestImpl::RequestToken(
 
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
-      idp_order_.push_back(idp_ptr->get_federated()->config->config_url);
+      idp_order_.push_back(idp_ptr->config->config_url);
 
       bool has_failing_idp_signin_status =
           webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-              render_frame_host(), idp_ptr->get_federated()->config->config_url,
+              render_frame_host(), idp_ptr->config->config_url,
               permission_delegate_);
 
-      url::Origin idp_origin =
-          url::Origin::Create(idp_ptr->get_federated()->config->config_url);
+      url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
       if (has_failing_idp_signin_status &&
           webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
               FedCmIdpSigninStatusMode::ENABLED) {
@@ -862,7 +857,7 @@ void FederatedAuthRequestImpl::RequestToken(
             // In the multi IDP case, we do not want to complete the request
             // right away as there are other IDPs which may be logged in. But we
             // also do not want to fetch this IDP.
-            unique_idps.erase(idp_ptr->get_federated()->config->config_url);
+            unique_idps.erase(idp_ptr->config->config_url);
             continue;
           }
           // If the user is known to be signed-out and the RP is request
@@ -892,13 +887,12 @@ void FederatedAuthRequestImpl::RequestToken(
           }
         }
       }
-      if (ShouldFailBeforeFetchingAccounts(
-              idp_ptr->get_federated()->config->config_url)) {
+      if (ShouldFailBeforeFetchingAccounts(idp_ptr->config->config_url)) {
         if (IsFedCmMultipleIdentityProvidersEnabled()) {
           // In the multi IDP case, we do not want to complete the request right
           // away as there are other IDPs which may be logged in. But we also do
           // not want to fetch this IDP.
-          unique_idps.erase(idp_ptr->get_federated()->config->config_url);
+          unique_idps.erase(idp_ptr->config->config_url);
           continue;
         }
         CompleteRequestWithError(
@@ -911,11 +905,10 @@ void FederatedAuthRequestImpl::RequestToken(
 
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
       blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
-      const GURL& idp_config_url = idp_ptr->get_federated()->config->config_url;
+      const GURL& idp_config_url = idp_ptr->config->config_url;
       token_request_get_infos_.emplace(
           idp_config_url,
-          IdentityProviderGetInfo(std::move(idp_ptr->get_federated()),
-                                  rp_context, rp_mode));
+          IdentityProviderGetInfo(std::move(idp_ptr), rp_context, rp_mode));
     }
   }
 

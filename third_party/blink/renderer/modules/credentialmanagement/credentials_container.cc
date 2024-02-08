@@ -2100,7 +2100,8 @@ ScriptPromise CredentialsContainer::GetForIdentity(
                       WebFeature::kFedCmIdpSigninStatusApi);
   }
   int provider_index = 0;
-  Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
+  Vector<mojom::blink::IdentityProviderRequestOptionsPtr>
+      identity_provider_ptrs;
   for (const auto& provider : identity_options.providers()) {
     if (provider->hasLoginHint()) {
       UseCounter::Count(resolver->GetExecutionContext(),
@@ -2114,8 +2115,8 @@ ScriptPromise CredentialsContainer::GetForIdentity(
 
     if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
         provider->hasConfigURL() && provider->configURL() == "any") {
-      mojom::blink::IdentityProviderPtr identity_provider =
-          blink::mojom::blink::IdentityProvider::From(*provider);
+      mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
+          blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
       identity_provider_ptrs.push_back(std::move(identity_provider));
       continue;
     }
@@ -2154,8 +2155,8 @@ ScriptPromise CredentialsContainer::GetForIdentity(
       return promise;
     }
 
-    mojom::blink::IdentityProviderPtr identity_provider =
-        blink::mojom::blink::IdentityProvider::From(*provider);
+    mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
+        blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
     identity_provider_ptrs.push_back(std::move(identity_provider));
   }
 

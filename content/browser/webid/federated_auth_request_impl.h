@@ -245,8 +245,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // dialog we show to the user.
   void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 
-  std::vector<blink::mojom::IdentityProviderPtr> MaybeAddRegisteredProviders(
-      std::vector<blink::mojom::IdentityProviderPtr>& providers);
+  std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>
+  MaybeAddRegisteredProviders(
+      std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers);
 
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& idp_config_url, const GURL& url_to_show);

@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -224,13 +225,6 @@ template <>
 struct TypeConverter<blink::mojom::blink::IdentityProviderRequestOptionsPtr,
                      blink::IdentityProviderRequestOptions> {
   static blink::mojom::blink::IdentityProviderRequestOptionsPtr Convert(
-      const blink::IdentityProviderRequestOptions&);
-};
-
-template <>
-struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
-                     blink::IdentityProviderRequestOptions> {
-  static blink::mojom::blink::IdentityProviderPtr Convert(
       const blink::IdentityProviderRequestOptions&);
 };
 

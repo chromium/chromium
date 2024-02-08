@@ -15,8 +15,6 @@
 
 #include <jni.h>
 
-using blink::mojom::DigitalCredentialFieldRequirementPtr;
-
 namespace content {
 
 class WebContents;

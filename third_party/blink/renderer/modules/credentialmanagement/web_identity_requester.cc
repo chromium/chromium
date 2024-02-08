@@ -110,7 +110,7 @@ void WebIdentityRequester::AppendGetCall(
     return;
   }
 
-  Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
+  Vector<mojom::blink::IdentityProviderRequestOptionsPtr> idp_ptrs;
   Vector<KURL> idp_urls;
   for (const auto& provider : providers) {
     mojom::blink::IdentityProviderRequestOptionsPtr options =
@@ -126,9 +126,7 @@ void WebIdentityRequester::AppendGetCall(
       }
     }
     idp_urls.push_back(options->config->config_url);
-    mojom::blink::IdentityProviderPtr idp =
-        mojom::blink::IdentityProvider::NewFederated(std::move(options));
-    idp_ptrs.push_back(std::move(idp));
+    idp_ptrs.push_back(std::move(options));
   }
 
   resolvers_and_providers_.emplace_back(

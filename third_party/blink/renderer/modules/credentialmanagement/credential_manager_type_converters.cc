@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -76,10 +77,8 @@ using blink::mojom::blink::DigitalCredentialSelectorPtr;
 using blink::mojom::blink::Hint;
 using blink::mojom::blink::IdentityCredentialDisconnectOptions;
 using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
-using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
-using blink::mojom::blink::IdentityProviderPtr;
 using blink::mojom::blink::IdentityProviderRequestOptions;
 using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
@@ -895,22 +894,6 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   }
 
   return mojo_options;
-}
-
-// static
-IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
-    Convert(const blink::IdentityProviderRequestOptions& provider) {
-  if (provider.hasHolder() &&
-      // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
-      // works well with the Multiple IdP API.
-      !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    auto mojo_provider = DigitalCredentialProvider::From(*provider.holder());
-    return IdentityProvider::NewHolder(std::move(mojo_provider));
-  } else {
-    auto config = IdentityProviderRequestOptions::From(provider);
-    return IdentityProvider::NewFederated(std::move(config));
-  }
 }
 
 // static

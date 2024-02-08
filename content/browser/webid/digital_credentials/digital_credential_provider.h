@@ -11,12 +11,9 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
 
 #include <string>
-
-using blink::mojom::DigitalCredentialFieldRequirementPtr;
 
 namespace content {
 

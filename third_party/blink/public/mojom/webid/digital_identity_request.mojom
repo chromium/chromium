@@ -4,14 +4,34 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/webid/federated_auth_request.mojom";
-
 // Implementation of the proposed Digital Identity Credential API.
 //
 // Proposal: https://wicg.github.io/digital-identities
 
-// TODO(crbug.com/324115589) Move DigitalCredentialProvider from
-// federated_auth_request.mojom here.
+// The specification of the query to digital credentials.
+struct DigitalCredentialProvider {
+  map<string, string>? params;
+  DigitalCredentialSelector? selector;
+  string? protocol;
+  string? request;
+  string? publicKey;
+};
+
+// The requirements of the credentials that are being requested.
+struct DigitalCredentialSelector {
+  array<string> format;
+  string? doctype;
+  array<DigitalCredentialFieldRequirement> fields;
+};
+
+// The requirements that the verifier needs on specific fields.
+struct DigitalCredentialFieldRequirement {
+  // The name of the field (e.g. "org.iso.18013.5.1.family_name").
+  string name;
+
+  // Optionally, whether the field's value is equal to a specific value or not.
+  string? equals;
+};
 
 // Represents the fetch result from a digital identity request. It is
 // used to determine whether a JavaScript exception should be thrown, and what
