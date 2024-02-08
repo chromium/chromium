@@ -44,6 +44,15 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 }
 #endif
 
+// ------ CalculationExpressionSizingKeywordNode ------
+
+float CalculationExpressionSizingKeywordNode::Evaluate(
+    float max_value,
+    const Length::AnchorEvaluator*) const {
+  // TODO(https://crbug.com/313072): Write this.
+  return 0.0f;
+}
+
 // ------ CalculationExpressionPixelsAndPercentNode ------
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(

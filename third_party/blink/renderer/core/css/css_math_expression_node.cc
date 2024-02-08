@@ -1012,6 +1012,84 @@ CSSMathExpressionIdentifierLiteral::ToCalculationExpression(
 
 // ------ End of CSSMathExpressionIdentifierLiteral member functions ----
 
+// ------ Start of CSSMathExpressionSizingKeywordLiteral member functions -
+
+namespace {
+
+CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
+    CSSValueID keyword) {
+  // The keywords supported here should be the ones supported in
+  // css_parsing_utils::ValidWidthOrHeightKeyword plus 'any', 'auto' and 'size'.
+
+  // This should also match SizingKeywordToCSSValueID below.
+  switch (keyword) {
+#define KEYWORD_CASE(kw) \
+  case CSSValueID::kw:   \
+    return CalculationExpressionSizingKeywordNode::Keyword::kw;
+
+    KEYWORD_CASE(kAny)
+    KEYWORD_CASE(kSize)
+    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    KEYWORD_CASE(kMinContent)
+    KEYWORD_CASE(kWebkitMinContent)
+    KEYWORD_CASE(kMaxContent)
+    KEYWORD_CASE(kWebkitMaxContent)
+    KEYWORD_CASE(kFitContent)
+    KEYWORD_CASE(kWebkitFitContent)
+    KEYWORD_CASE(kWebkitFillAvailable)
+
+#undef KEYWORD_CASE
+
+    default:
+      break;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+CSSValueID SizingKeywordToCSSValueID(
+    CalculationExpressionSizingKeywordNode::Keyword keyword) {
+  // This should match CSSValueIDToSizingKeyword above.
+  switch (keyword) {
+#define KEYWORD_CASE(kw)                                    \
+  case CalculationExpressionSizingKeywordNode::Keyword::kw: \
+    return CSSValueID::kw;
+
+    KEYWORD_CASE(kAny)
+    KEYWORD_CASE(kSize)
+    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    KEYWORD_CASE(kMinContent)
+    KEYWORD_CASE(kWebkitMinContent)
+    KEYWORD_CASE(kMaxContent)
+    KEYWORD_CASE(kWebkitMaxContent)
+    KEYWORD_CASE(kFitContent)
+    KEYWORD_CASE(kWebkitFitContent)
+    KEYWORD_CASE(kWebkitFillAvailable)
+
+#undef KEYWORD_CASE
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
+CSSMathExpressionSizingKeywordLiteral::CSSMathExpressionSizingKeywordLiteral(
+    CSSValueID keyword)
+    : CSSMathExpressionNode(kCalcPercentLength,
+                            false /* has_comparisons*/,
+                            false /* needs_tree_scope_population*/),
+      keyword_(keyword) {}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionSizingKeywordLiteral::ToCalculationExpression(
+    const CSSLengthResolver&) const {
+  return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+      CSSValueIDToSizingKeyword(keyword_));
+}
+
+// ------ End of CSSMathExpressionSizingKeywordLiteral member functions ----
+
 // ------ Start of CSSMathExpressionOperation member functions ------
 
 bool CSSMathExpressionOperation::AllOperandsAreNumeric() const {
@@ -3159,6 +3237,12 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
   if (node.IsIdentifier()) {
     return CSSMathExpressionIdentifierLiteral::Create(
         To<CalculationExpressionIdentifierNode>(node).Value());
+  }
+
+  if (node.IsSizingKeyword()) {
+    return CSSMathExpressionSizingKeywordLiteral::Create(
+        SizingKeywordToCSSValueID(
+            To<CalculationExpressionSizingKeywordNode>(node).Value()));
   }
 
   if (node.IsNumber()) {

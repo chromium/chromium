@@ -6181,6 +6181,9 @@ bool ConsumeFromColumnOrPageBreakInside(CSSParserTokenRange& range,
 }
 
 bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
+  // The keywords supported here should be kept in sync with
+  // CalculationExpressionSizingKeywordNode::Keyword and the things that use
+  // it.
   if (id == CSSValueID::kWebkitMinContent ||
       id == CSSValueID::kWebkitMaxContent ||
       id == CSSValueID::kWebkitFillAvailable ||

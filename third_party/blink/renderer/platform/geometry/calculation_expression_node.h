@@ -55,6 +55,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
+  virtual bool IsSizingKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
@@ -153,6 +154,66 @@ template <>
 struct DowncastTraits<CalculationExpressionIdentifierNode> {
   static bool AllowFrom(const CalculationExpressionNode& node) {
     return node.IsIdentifier();
+  }
+};
+
+class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
+    : public CalculationExpressionNode {
+ public:
+  enum class Keyword : uint8_t {
+    kSize,
+    kAny,
+    // TODO(https://crbug.com/313072): Add support for 'auto'.
+
+    // The keywords below should match those accepted by
+    // css_parsing_utils::ValidWidthOrHeightKeyword.
+    kMinContent,
+    kWebkitMinContent,
+    kMaxContent,
+    kWebkitMaxContent,
+    kFitContent,
+    kWebkitFitContent,
+    kWebkitFillAvailable,
+  };
+
+  explicit CalculationExpressionSizingKeywordNode(Keyword keyword)
+      : keyword_(keyword) {
+#if DCHECK_IS_ON()
+    result_type_ = ResultType::kPixelsAndPercent;
+#endif
+  }
+
+  Keyword Value() const { return keyword_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
+  bool Equals(const CalculationExpressionNode& other) const final {
+    return other.IsSizingKeyword() &&
+           DynamicTo<CalculationExpressionSizingKeywordNode>(other)->Value() ==
+               Value();
+  }
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final {
+    // TODO(https://crbug.com/313072): Is this correct, or do we need to
+    // adjust for zoom?
+    return this;
+  }
+  bool IsSizingKeyword() const final { return true; }
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final {
+    return ResultType::kPixelsAndPercent;
+  }
+#endif
+
+ private:
+  Keyword keyword_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionSizingKeywordNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsSizingKeyword();
   }
 };
 

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -105,6 +106,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
   virtual bool IsIdentifierLiteral() const { return false; }
+  virtual bool IsSizingKeywordLiteral() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -352,6 +354,87 @@ template <>
 struct DowncastTraits<CSSMathExpressionIdentifierLiteral> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsIdentifierLiteral();
+  }
+};
+
+// Used for size keyword and intrinsic size keywords in calc-size().
+class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
+    : public CSSMathExpressionNode {
+ public:
+  static CSSMathExpressionSizingKeywordLiteral* Create(CSSValueID keyword) {
+    return MakeGarbageCollected<CSSMathExpressionSizingKeywordLiteral>(keyword);
+  }
+
+  explicit CSSMathExpressionSizingKeywordLiteral(CSSValueID keyword);
+
+  CSSMathExpressionNode* Copy() const final { return Create(keyword_); }
+
+  CSSValueID GetValue() const { return keyword_; }
+
+  bool IsSizingKeywordLiteral() const final { return true; }
+
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope* tree_scope) const final {
+    NOTREACHED();
+    return *this;
+  }
+
+  bool IsZero() const final { return false; }
+  String CustomCSSText() const final { return getValueName(keyword_); }
+  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+      const CSSLengthResolver&) const final;
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final {
+    return std::nullopt;
+  }
+  double DoubleValue() const final {
+    NOTREACHED();
+    return 0;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
+  }
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+    return 0;
+  }
+  bool AccumulateLengthArray(CSSLengthArray& length_array,
+                             double multiplier) const final {
+    return false;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+  bool IsComputationallyIndependent() const final { return true; }
+  bool operator==(const CSSMathExpressionNode& other) const final {
+    return other.IsSizingKeywordLiteral() &&
+           DynamicTo<CSSMathExpressionSizingKeywordLiteral>(other)
+                   ->GetValue() == GetValue();
+  }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kIdent;
+  }
+  void Trace(Visitor* visitor) const final {
+    CSSMathExpressionNode::Trace(visitor);
+  }
+
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final { return false; }
+#endif
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+    return 0;
+  }
+
+ private:
+  CSSValueID keyword_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionSizingKeywordLiteral> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsSizingKeywordLiteral();
   }
 };
 
