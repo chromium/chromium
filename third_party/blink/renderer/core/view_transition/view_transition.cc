@@ -530,6 +530,14 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         ResumeRendering();
+
+        // Animation and subsequent steps require us to have a view. If after
+        // running the callbacks, we don't have a view, skip the transition.
+        if (!document_->View()) {
+          SkipTransition();
+          break;
+        }
+
         process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
         DCHECK(process_next_state);
         break;
