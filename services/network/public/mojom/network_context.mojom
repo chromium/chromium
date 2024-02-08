@@ -431,13 +431,22 @@ struct NetworkContextParams {
   [EnableIf=is_win]
   SocketBrokerRemotes? socket_brokers;
 
-  // A service to fetch blind-signed auth tokens for IP protection. If this
-  // is not set, then no tokens are available.
+  // A service to fetch blind-signed auth tokens and proxy configuration info
+  // for IP protection. If this is not set, then either this NetworkContext
+  // doesn't have its traffic proxied by IP Protection or the feature has been
+  // disabled (and can't be re-enabled until the browser is restarted).
   pending_remote<IpProtectionConfigGetter>? ip_protection_config_getter;
 
-  // A receiver for notifications from the browser to the IP Protection
-  // ProxyDelegate.
+  // A receiver for sending notifications from the browser process to the IP
+  // Protection ProxyDelegate in the network service. This is set in the same
+  // cases as `ip_protection_config_getter`.
   pending_receiver<IpProtectionProxyDelegate>? ip_protection_proxy_delegate;
+
+  // Whether the IP Protection feature is enabled via user prefs at the time the
+  // NetworkContext is created. This setting can change via the
+  // `SetIpProtectionEnabled` method of the `IpProtectionProxyDelegate`
+  // interface.
+  bool enable_ip_protection = false;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
@@ -969,6 +978,15 @@ interface IpProtectionProxyDelegate {
   // response to user account status changes that allow IP Protection to start
   // working as expected).
   InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+
+  // Indicates that the state of the IP Protection feature has changed and the
+  // network service should update it's state accordingly (including tearing
+  // down existing proxied connections, if `value` is false).
+  SetIpProtectionEnabled(bool value);
+
+  // Returns the Network Service's state regarding whether IP Protection is
+  // enabled, for testing.
+  IsIpProtectionEnabledForTesting() => (bool value);
 };
 
 // Represents a distinct context for making network requests, with its own

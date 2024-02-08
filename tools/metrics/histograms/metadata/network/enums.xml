@@ -601,6 +601,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed - BSA Error Other"/>
   <int value="8" label="Transient OAuth Token Failure"/>
   <int value="9" label="Persistent OAuth Token Failure"/>
+  <int value="10" label="Disabled by User"/>
 </enum>
 
 <enum name="ManagedApnMigrationType">

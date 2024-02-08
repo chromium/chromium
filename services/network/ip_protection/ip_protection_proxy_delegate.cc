@@ -53,9 +53,11 @@ IpProtectionProxyChainId ChainIdToEnum(int chain_id) {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     NetworkServiceProxyAllowList* network_service_proxy_allow_list,
-    std::unique_ptr<IpProtectionConfigCache> ipp_config_cache)
+    std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
+    bool is_ip_protection_enabled)
     : network_service_proxy_allow_list_(network_service_proxy_allow_list),
-      ipp_config_cache_(std::move(ipp_config_cache)) {
+      ipp_config_cache_(std::move(ipp_config_cache)),
+      is_ip_protection_enabled_(is_ip_protection_enabled) {
   CHECK(network_service_proxy_allow_list_);
   CHECK(network_service_proxy_allow_list_->IsEnabled());
   CHECK(ipp_config_cache_);
@@ -90,6 +92,8 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   // - The token cache does not have tokens.
   // - No proxy list is available.
   // - `kEnableIpProtection` is `false`.
+  // - `is_ip_protection_enabled_` is `false` (in other words, the user has
+  //   disabled IP Protection via user settings).
   // - `kIpPrivacyDirectOnly` is `true`.
   const ProtectionEligibility eligibility =
       CheckEligibility(url, network_anonymization_key);
@@ -102,7 +106,12 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   result->set_is_mdl_match(true);
 
   if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
-    dvlog("ip protection proxy not enabled");
+    dvlog("ip protection proxy cannot be enabled");
+    return;
+  }
+
+  if (!is_ip_protection_enabled_) {
+    dvlog("ip protection proxy is not currently enabled");
     return;
   }
   const bool available = CheckAvailability(url, network_anonymization_key);
@@ -323,6 +332,28 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
                              OnIpProtectionConfigAvailableForTesting,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
   ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+}
+
+void IpProtectionProxyDelegate::SetIpProtectionEnabled(bool enabled) {
+  is_ip_protection_enabled_ = enabled;
+  // TODO(https://crbug.com/1521138): Tear down all existing proxied
+  // HTTP/SPDY/QUIC sessions if the settings goes from being enabled to being
+  // disabled. For HTTP and SPDY we could just simulate an IP address change and
+  // tear down all connections rather easily, but for QUIC it's more complicated
+  // because with network change session migration the connections might still
+  // persist. More investigation is needed here.
+  // TODO(https://crbug.com/1521138): Propagate this change to the config cache,
+  // proxy list manager, and token cache manager to cancel further requests or
+  // reschedule them. Note that as currently implemented, the token cache
+  // manager will already stop requesting tokens soon after IP Protection is
+  // disabled via the try again after time returned by the next TryGetAuthToken
+  // call, but the GetProxyConfig calls will continue and receive failures until
+  // the feature is re-enabled.
+}
+
+void IpProtectionProxyDelegate::IsIpProtectionEnabledForTesting(
+    IsIpProtectionEnabledForTestingCallback callback) {
+  std::move(callback).Run(is_ip_protection_enabled_);
 }
 
 void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(

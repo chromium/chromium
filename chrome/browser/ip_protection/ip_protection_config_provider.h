@@ -39,7 +39,8 @@ struct BlindSignToken;
 // The result of a fetch of tokens from the IP Protection auth token server.
 //
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep this in sync with
+// IpProtectionTokenBatchRequestResult in enums.xml.
 enum class IpProtectionTryGetAuthTokensResult {
   // The request was successful and resulted in new tokens.
   kSuccess = 0,
@@ -65,7 +66,11 @@ enum class IpProtectionTryGetAuthTokensResult {
   // account.
   kFailedOAuthTokenPersistent = 9,
 
-  kMaxValue = kFailedOAuthTokenPersistent,
+  // The attempt to request tokens failed because IP Protection was disabled by
+  // the user.
+  kFailedDisabledByUser = 10,
+
+  kMaxValue = kFailedDisabledByUser,
 };
 
 // Fetches IP protection tokens on demand for the network service.
@@ -82,6 +87,7 @@ class IpProtectionConfigProvider
   IpProtectionConfigProvider(
       signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      PrefService* pref_service,
       Profile* profile);
 
   ~IpProtectionConfigProvider() override;
@@ -101,6 +107,9 @@ class IpProtectionConfigProvider
   void Shutdown() override;
 
   static IpProtectionConfigProvider* Get(Profile* profile);
+
+  static bool CanIpProtectionBeEnabled();
+  bool IsIpProtectionEnabled();
 
   // Add bidirectional pipes to a new network service.
   void AddNetworkService(
@@ -135,6 +144,8 @@ class IpProtectionConfigProvider
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderBrowserTest,
                            BackoffTimeResetAfterProfileAvailabilityChange);
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderUserSettingBrowserTest,
+                           OnIpProtectionEnabledChanged);
 
   // Set up `ip_protection_config_http_` and `bsa_`, if not already initialized.
   // This accomplishes lazy loading of these components to break dependency
@@ -203,6 +214,9 @@ class IpProtectionConfigProvider
   // is called, but will otherwise be non-null.
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  // Used to request the state of the IP Protection user setting. Will be set to
+  // nullptr after `Shutdown()` is called.
+  raw_ptr<PrefService> pref_service_;
   // The `Profile` object associated with this
   // `IpProtectionConfigProvider()`. Will be reset to nullptr after
   // `Shutdown()` is called.

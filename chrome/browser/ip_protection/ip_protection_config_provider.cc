@@ -8,12 +8,17 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
+#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,9 +38,11 @@
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    PrefService* pref_service,
     Profile* profile)
     : identity_manager_(identity_manager),
       tracking_protection_settings_(tracking_protection_settings),
+      pref_service_(pref_service),
       profile_(profile) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
@@ -101,6 +108,17 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
     return;
   }
 
+  // If IP Protection is disabled via user settings then don't attempt to fetch
+  // tokens.
+  if (!IsIpProtectionEnabled()) {
+    TryGetAuthTokensComplete(
+        std::nullopt, std::move(callback),
+        IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser);
+    return;
+  }
+
+  // If we are in a state where the OAuth token has persistent errors then don't
+  // try to request tokens.
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
     TryGetAuthTokensComplete(
@@ -130,6 +148,22 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
+
+  // If IP Protection is disabled via user settings then don't attempt to get a
+  // proxy list.
+  // TODO(https://crbug.com/1521138): We don't currently prevent GetProxyList
+  // calls from being made from the network service once the user has disabled
+  // the feature, so for now we will fail all of these requests here (and rely
+  // on rate-limiting by the network service to prevent the browser process from
+  // being flooded with messages). We are currently planning to move the
+  // GetProxyList calls to be made in the network service directly, so once that
+  // happens it should obviate the need for a long-term solution here. If that
+  // plan changes, though, we should implement a way for these requests to stop
+  // being made.
+  if (!IsIpProtectionEnabled()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   // This feature flag is false by default.
   if (!net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
@@ -461,6 +495,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNoAccount:
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent:
+    case IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser:
       backoff = base::TimeDelta::Max();
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNotEligible:
@@ -541,6 +576,7 @@ void IpProtectionConfigProvider::Shutdown() {
   CHECK(tracking_protection_settings_);
   tracking_protection_settings_->RemoveObserver(this);
   tracking_protection_settings_ = nullptr;
+  pref_service_ = nullptr;
   profile_ = nullptr;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
@@ -632,7 +668,38 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
+// static
+bool IpProtectionConfigProvider::CanIpProtectionBeEnabled() {
+  return base::FeatureList::IsEnabled(
+             net::features::kEnableIpProtectionProxy) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableIpProtectionProxy);
+}
+
+bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
+  // TODO(https://crbug.com/1521138): We should ultimately use
+  // `tracking_protection_settings_->IsIpProtectionEnabled()` but we can't yet
+  // because it would prevent us from being able to do experiments via Finch
+  // without showing the user setting.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1)) {
+    // If the preference isn't visible to users then IP Protection is enabled
+    // via other means like via Finch experiment.
+    return true;
+  }
+  if (!pref_service_) {
+    return false;
+  }
+  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+}
+
 void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
-  // TODO(https://crbug.com/1521138): Update IP protection state based on user
-  // settings.
+  if (is_shutting_down_) {
+    return;
+  }
+
+  ClearOAuthTokenProblemBackoff();
+
+  for (auto& ipp_proxy_delegate : remotes_) {
+    ipp_proxy_delegate->SetIpProtectionEnabled(IsIpProtectionEnabled());
+  }
 }

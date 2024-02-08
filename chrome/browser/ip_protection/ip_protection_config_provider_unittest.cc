@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -189,7 +190,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
             prefs(), /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     getter_ = std::make_unique<IpProtectionConfigProvider>(
-        IdentityManager(), tracking_protection_settings_.get(),
+        IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
@@ -614,6 +615,26 @@ TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
+// TryGetAuthTokens() fails because IP Protection is disabled by user settings.
+TEST_F(IpProtectionConfigProviderTest, TryGetAuthTokens_IpProtectionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+
+  primary_account_behavior_ = PrimaryAccountBehavior::kNone;
+
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+
+  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+  EXPECT_FALSE(bsa_->get_tokens_called_);
+  ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser, 1);
+  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
 // No primary account initially but this changes when the account status
 // changes.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -862,6 +883,26 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
+}
+
+TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
+  chain->set_chain_id(1);
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
   EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
 }

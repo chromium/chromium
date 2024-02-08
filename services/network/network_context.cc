@@ -2355,7 +2355,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
 
         std::make_unique<IpProtectionProxyDelegate>(
-            nspal, std::move(ipp_config_cache));
+            nspal, std::move(ipp_config_cache), params_->enable_ip_protection);
     proxy_delegate->SetReceiver(
         std::move(params_->ip_protection_proxy_delegate));
     proxy_delegate_ = proxy_delegate.get();

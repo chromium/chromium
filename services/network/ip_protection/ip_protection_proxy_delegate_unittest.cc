@@ -186,7 +186,8 @@ class IpProtectionProxyDelegateTest : public testing::Test {
       NetworkServiceProxyAllowList* network_service_proxy_allow_list,
       std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
     return std::make_unique<IpProtectionProxyDelegate>(
-        network_service_proxy_allow_list, std::move(ipp_config_cache));
+        network_service_proxy_allow_list, std::move(ipp_config_cache),
+        /*is_ip_protection_enabled=*/true);
   }
 
   std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
@@ -539,6 +540,36 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoProxyList) {
   histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, false,
                                        1);
   histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, false, 1);
+}
+
+TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_IpProtectionDisabled) {
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_config_cache->SetProxyList({MakeChain({"proxy"})});
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
+
+  delegate->SetIpProtectionEnabled(false);
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+  histogram_tester_.ExpectUniqueSample(
+      kEligibilityHistogram,
+      IpProtectionProxyDelegate::ProtectionEligibility::kEligible, 1);
+  histogram_tester_.ExpectTotalCount(kAreAuthTokensAvailableHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kIsProxyListAvailableHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kAvailabilityHistogram, 0);
 }
 
 // When URLs do not match the allow list, the result is direct and not flagged
