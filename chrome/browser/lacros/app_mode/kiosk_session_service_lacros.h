@@ -54,7 +54,7 @@ class KioskSessionServiceLacros {
   // Initialize the current Chrome Kiosk session with the `app_id`.
   void InitChromeKioskSession(Profile* profile, const std::string& app_id);
 
-  void SetInstallUrl(const GURL install_url);
+  void SetInstallUrl(const GURL& install_url);
 
   // Get install URL for Web Kiosk session.
   const GURL& GetInstallURL() const { return install_url_; }

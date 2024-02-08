@@ -94,12 +94,16 @@ KioskSessionServiceLacros::KioskSessionServiceLacros()
   if (IsWebKioskSession()) {
     new_browser_observer_ =
         std::make_unique<NewBrowserObserver>(base::BindRepeating(
-            [](KioskSessionServiceLacros* kiosk_service, Browser* browser) {
+            [](base::WeakPtr<KioskSessionServiceLacros> kiosk_service,
+               Browser* browser) {
+              if (!kiosk_service) {
+                return;
+              }
               kiosk_service->KioskSessionServiceLacros::InitWebKioskSession(
                   CHECK_DEREF(browser));
               kiosk_service->new_browser_observer_.reset();
             },
-            weak_factory_.GetWeakPtr().get()));
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -134,7 +138,7 @@ void KioskSessionServiceLacros::InitWebKioskSession(Browser& browser) {
   }
 }
 
-void KioskSessionServiceLacros::SetInstallUrl(const GURL install_url) {
+void KioskSessionServiceLacros::SetInstallUrl(const GURL& install_url) {
   // `SetInstallUrl` should be called once, but if it is called second time,
   // the url should be the same.
   CHECK(install_url_.is_empty() || install_url_ == install_url)
