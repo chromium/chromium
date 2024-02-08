@@ -204,7 +204,8 @@ def __run(ctx, args):
     files_to_instrument = []
     if instrument_file:
         files_to_instrument = str(ctx.fs.read(ctx.fs.canonpath(instrument_file))).splitlines()
-        files_to_instrument = [ctx.fs.canonpath(f) for f in files_to_instrument]
+        # strip() is for removing '\r' on Windows.
+        files_to_instrument = [ctx.fs.canonpath(f).strip() for f in files_to_instrument]
 
     should_remove_flags = False
     if compile_source_file not in force_list:
@@ -215,6 +216,7 @@ def __run(ctx, args):
 
     if should_remove_flags:
         return _remove_flags_from_command(compile_command)
+    print("Keeping code coverage flags for %s" % compile_source_file)
     return compile_command
 
 clang_code_coverage_wrapper = module(
