@@ -268,7 +268,9 @@ TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForHideAnimation) {
 
 // Tests that the smoothness metric for the "hide" animation is still recorded
 // even when the "hide" animation interrupts the "show" animation.
-TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
+// TODO(b/41496872): Re-enable flaky test.
+TEST_F(TrayItemViewTest,
+       DISABLED_HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
   // Start with the tray item hidden. Note that animations still complete
   // immediately in this part of the test, so no smoothness metrics are emitted.
   tray_item()->SetVisible(false);
