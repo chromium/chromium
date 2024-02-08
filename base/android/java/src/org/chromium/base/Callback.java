@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
+import java.util.Optional;
+
 /**
  * A simple single-argument callback to handle the result of a computation.
  *
@@ -51,6 +53,13 @@ public interface Callback<T> {
         @CalledByNative("Helper")
         static void onObjectResultFromNative(Callback callback, Object result) {
             callback.onResult(result);
+        }
+
+        @SuppressWarnings("unchecked")
+        @CalledByNative("Helper")
+        static void onOptionalStringResultFromNative(
+                Callback<Optional<String>> callback, boolean hasValue, String result) {
+            callback.onResult(hasValue ? Optional.of(result) : Optional.empty());
         }
 
         @SuppressWarnings("unchecked")

@@ -344,6 +344,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/commerce/price_tracking/proto:proto_java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/consent_auditor/android:java",
+      "//chrome/browser/content_extraction/android:java",
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/creator/android:java",
       "//chrome/browser/data_sharing:factory_java",
