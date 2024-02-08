@@ -21,16 +21,6 @@ Vector<char> ChooserResourceLoader::GetSuggestionPickerStyleSheet() {
 #endif
 }
 
-Vector<char> ChooserResourceLoader::GetSuggestionPickerDarkModeStyleSheet() {
-  CHECK(RuntimeEnabledFeatures::SuggestionPickerDarkModeSupportEnabled());
-#if !BUILDFLAG(IS_ANDROID)
-  return UncompressResourceAsBinary(IDR_SUGGESTION_PICKER_DARK_CSS);
-#else
-  NOTREACHED();
-  return Vector<char>();
-#endif
-}
-
 Vector<char> ChooserResourceLoader::GetSuggestionPickerJS() {
 #if !BUILDFLAG(IS_ANDROID)
   return UncompressResourceAsBinary(IDR_SUGGESTION_PICKER_JS);

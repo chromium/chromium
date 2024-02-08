@@ -23,9 +23,6 @@ class ChooserResourceLoader {
   // Returns the suggestion picker stylesheet as a string.
   static Vector<char> GetSuggestionPickerStyleSheet();
 
-  // Returns the suggestion picker dark mode stylesheet as a string.
-  static Vector<char> GetSuggestionPickerDarkModeStyleSheet();
-
   // Returns the suggestion picker javascript as a string.
   static Vector<char> GetSuggestionPickerJS();
 
