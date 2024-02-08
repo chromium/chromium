@@ -325,6 +325,8 @@ std::string ConvertToString(message_center::NotificationType type) {
       return "progress";
     case message_center::NOTIFICATION_TYPE_CUSTOM:
       return "custom";
+    case message_center::NOTIFICATION_TYPE_CONVERSATION:
+      return "conversation";
   }
   return "unknown";
 }
