@@ -64,7 +64,8 @@ constexpr int kOverflowMinElements = kMaxItems + 1;
 constexpr int kOverflowMinThreshold = kMaxItems - 1;
 constexpr int kOverflowMaxElements = 7;
 constexpr int kOverflowMaxThreshold = kOverflowMaxElements - 1;
-constexpr int kOverflowTablePadding = 2;
+constexpr int kOverflowTriangleElements = 6;
+constexpr int kOverflowIconSpacing = 2;
 constexpr int kOverflowTableSize = 20;
 constexpr int kOverflowBackgroundRounding = 20;
 constexpr int kOverflowCountBackgroundRounding = 9;
@@ -206,6 +207,8 @@ END_METADATA
 
 // An alternative to `PineItemView` when there are more than four windows in
 // `apps` and the remaining information needs to be condensed.
+// TODO(hewer): Fix the styling to make the background smaller than the
+// contents.
 class PineItemsOverflowView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineItemsOverflowView);
@@ -213,8 +216,6 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GE(elements, kOverflowMinElements);
-    // TODO(http://b/322361588): Remove after the 3-window case is added.
-    CHECK_NE(elements, 3);
 
     // TODO(hewer): Fix margins so the icons and text are aligned with
     // `PineItemView` elements.
@@ -222,86 +223,92 @@ class PineItemsOverflowView : public views::BoxLayoutView {
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-    // TODO(hewer): Fix the styling to make the background smaller than the
-    // contents.
-    views::Builder<views::TableLayoutView> table_builder;
-    table_builder
-        .SetBackground(views::CreateRoundedRectBackground(
-            SK_ColorLTGRAY, kOverflowBackgroundRounding))
-        .AddColumn(
-            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
-            views::TableLayout::kFixedSize,
-            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kOverflowTablePadding)
-        .AddColumn(
-            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
-            views::TableLayout::kFixedSize,
-            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0);
-    if (elements >= kOverflowMaxElements) {
-      // Create a 2x2 table view to display the icons for 4 or more windows, or
-      // the count of the remaining windows, rather than a single icon.
-      table_builder
-          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
-          .AddPaddingRow(views::TableLayout::kFixedSize, kOverflowTablePadding)
-          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize);
-    } else if (elements == kOverflowMinElements) {
-      // Create a 1x2 table view to display the icons for 2 windows, centered
-      // vertically.
-      table_builder
-          .AddPaddingRow(views::TableLayout::kFixedSize,
-                         kOverflowTwoWindowPadding)
-          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
-          .AddPaddingRow(views::TableLayout::kFixedSize,
-                         kOverflowTwoWindowPadding);
-    }
-    views::TableLayoutView* table_layout_view =
-        AddChildView(std::move(table_builder).Build());
-
     // TODO(sammiequon): Handle case where the app is not ready or installed.
     auto* delegate = Shell::Get()->saved_desk_delegate();
 
-    // Add the overflow apps to the table.
-    // TODO(http://b/322361588): Handle case where there are 3 overflow windows.
-    for (int i = kOverflowMinThreshold; i < elements; ++i) {
-      // If there are 5 or more overflow windows, save the last spot in the
-      // table to count the remaining windows.
-      if (elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
-        views::Label* count_label;
-        table_layout_view->AddChildView(
-            views::Builder<views::Label>()
-                .CopyAddressTo(&count_label)
-                // TODO(hewer): Cut off the maximum number of digits to display.
-                .SetText(base::FormatNumber(elements - kOverflowMaxThreshold))
-                .SetPreferredSize(kOverflowCountPreferredSize)
-                .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
-                .SetBackground(views::CreateThemedRoundedRectBackground(
-                    cros_tokens::kCrosSysPrimaryContainer,
-                    kOverflowCountBackgroundRounding))
+    // TODO(http://b/324318784): Clean up "table" usage in comments when
+    // BoxLayout is implemented.
+    // If we have three overflow elements (six windows total), we need to make a
+    // special view to handle the triangular shape. Otherwise, we will have some
+    // form of a table view with one or two rows.
+    if (elements == kOverflowTriangleElements) {
+      // Create a triangular container, and pass the child views so we can fill
+      // them with icons later.
+      views::BoxLayoutView* top_row_view = nullptr;
+      views::BoxLayoutView* bottom_row_view = nullptr;
+      AddChildView(CreateBaseTriangleView(&top_row_view, &bottom_row_view));
+      CHECK(top_row_view);
+      CHECK(bottom_row_view);
+
+      // Add the overflow apps to the table.
+      for (int i = kOverflowMinThreshold; i < elements; ++i) {
+        // Add the image view to the table (the top view has already been
+        // added).
+        views::BoxLayoutView* row_view =
+            i == kOverflowMinThreshold ? top_row_view : bottom_row_view;
+        views::ImageView* image_view = row_view->AddChildView(
+            views::Builder<views::ImageView>()
+                .SetImageSize(kOverflowIconPreferredSize)
+                .SetPreferredSize(kOverflowIconPreferredSize)
                 .Build());
-        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
-                                              *count_label);
-        break;
+
+        // Insert `image_view` into a map so it can be retrieved in a callback.
+        image_view_map_[i] = image_view;
+
+        // The callback may be called synchronously.
+        const auto& [app_id, favicons] = apps[i];
+        delegate->GetIconForAppId(
+            app_id, kAppIdImageSize,
+            base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
+                           weak_ptr_factory_.GetWeakPtr(), i));
       }
+    } else {
+      views::TableLayoutView* table_layout_view =
+          AddChildView(CreateBaseTableView(elements));
 
-      const auto& [app_id, favicons] = apps[i];
+      // Add the overflow apps to the table.
+      for (int i = kOverflowMinThreshold; i < elements; ++i) {
+        // If there are 5 or more overflow windows, save the last spot in the
+        // table to count the remaining windows.
+        if (elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
+          views::Label* count_label;
+          table_layout_view->AddChildView(
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&count_label)
+                  // TODO(hewer): Cut off the maximum number of digits to
+                  // display.
+                  .SetText(base::FormatNumber(elements - kOverflowMaxThreshold))
+                  .SetPreferredSize(kOverflowCountPreferredSize)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                      cros_tokens::kCrosSysPrimaryContainer,
+                      kOverflowCountBackgroundRounding))
+                  .Build());
+          TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
+                                                *count_label);
+          break;
+        }
 
-      // Add the icon to the table.
-      views::ImageView* image_view = table_layout_view->AddChildView(
-          views::Builder<views::ImageView>()
-              .SetImageSize(kOverflowIconPreferredSize)
-              .SetPreferredSize(kOverflowIconPreferredSize)
-              .Build());
+        // Add the image view to the table.
+        views::ImageView* image_view = table_layout_view->AddChildView(
+            views::Builder<views::ImageView>()
+                .SetImageSize(kOverflowIconPreferredSize)
+                .SetPreferredSize(kOverflowIconPreferredSize)
+                .Build());
 
-      // Insert `image_view` into a map so it can be retrieved in a callback.
-      image_view_map_[i] = image_view;
+        // Insert `image_view` into a map so it can be retrieved in a callback.
+        image_view_map_[i] = image_view;
 
-      // The callback may be called synchronously.
-      delegate->GetIconForAppId(
-          app_id, kAppIdImageSize,
-          base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
-                         weak_ptr_factory_.GetWeakPtr(), i));
+        // The callback may be called synchronously.
+        const auto& [app_id, favicons] = apps[i];
+        delegate->GetIconForAppId(
+            app_id, kAppIdImageSize,
+            base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
+                           weak_ptr_factory_.GetWeakPtr(), i));
+      }
     }
 
+    // Add a text label displaying the count of the remaining windows.
     views::Label* remaining_windows_label;
     AddChildView(views::Builder<views::Label>()
                      .CopyAddressTo(&remaining_windows_label)
@@ -328,6 +335,76 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   }
 
  private:
+  // TODO(http://b/324318784): Unify the CreateBase*View() functions to both use
+  // BoxLayoutView rather than TableLayoutView.
+  // Creates a triangular view to populate with window favicons (one on the
+  // top, two on the bottom).
+  std::unique_ptr<views::BoxLayoutView> CreateBaseTriangleView(
+      views::BoxLayoutView** top_row_view,
+      views::BoxLayoutView** bottom_row_view) {
+    return views::Builder<views::BoxLayoutView>()
+        .SetBackground(views::CreateRoundedRectBackground(
+            SK_ColorLTGRAY, kOverflowBackgroundRounding))
+        .SetOrientation(views::BoxLayout::Orientation::kVertical)
+        .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+        .AddChildren(
+            views::Builder<views::BoxLayoutView>()
+                .CopyAddressTo(top_row_view)
+                .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                .SetMainAxisAlignment(
+                    views::BoxLayout::MainAxisAlignment::kCenter)
+                .SetCrossAxisAlignment(
+                    views::BoxLayout::CrossAxisAlignment::kCenter)
+                .SetBetweenChildSpacing(kOverflowIconSpacing),
+            views::Builder<views::BoxLayoutView>()
+                .CopyAddressTo(bottom_row_view)
+                .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                .SetMainAxisAlignment(
+                    views::BoxLayout::MainAxisAlignment::kCenter)
+                .SetCrossAxisAlignment(
+                    views::BoxLayout::CrossAxisAlignment::kCenter)
+                .SetBetweenChildSpacing(kOverflowIconSpacing))
+        .Build();
+  }
+
+  // Creates either a one-row or two-row table view to populate with window
+  // favicons.
+  std::unique_ptr<views::TableLayoutView> CreateBaseTableView(
+      const int elements) {
+    views::Builder<views::TableLayoutView> table_builder;
+    table_builder
+        .SetBackground(views::CreateRoundedRectBackground(
+            SK_ColorLTGRAY, kOverflowBackgroundRounding))
+        .AddColumn(
+            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+            views::TableLayout::kFixedSize,
+            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize, kOverflowIconSpacing)
+        .AddColumn(
+            views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+            views::TableLayout::kFixedSize,
+            views::TableLayout::ColumnSize::kFixed, kOverflowTableSize, 0);
+
+    if (elements >= kOverflowMaxElements) {
+      // Create a 2x2 table view to display the icons for 4 or more windows,
+      // or the count of the remaining windows, rather than a single icon.
+      table_builder
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+          .AddPaddingRow(views::TableLayout::kFixedSize, kOverflowIconSpacing)
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize);
+    } else if (elements == kOverflowMinElements) {
+      // Create a 1x2 table view to display the icons for 2 windows, centered
+      // vertically.
+      table_builder
+          .AddPaddingRow(views::TableLayout::kFixedSize,
+                         kOverflowTwoWindowPadding)
+          .AddRows(1, views::TableLayout::kFixedSize, kOverflowTableSize)
+          .AddPaddingRow(views::TableLayout::kFixedSize,
+                         kOverflowTwoWindowPadding);
+    }
+    return std::move(table_builder).Build();
+  }
+
   base::flat_map<int, views::ImageView*> image_view_map_;
   base::WeakPtrFactory<PineItemsOverflowView> weak_ptr_factory_{this};
 };
@@ -335,9 +412,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
 BEGIN_METADATA(PineItemsOverflowView, views::BoxLayoutView)
 END_METADATA
 
-// The right side contents (in LTR) of the `PineContentsView`. It is a vertical
-// list of `PineItemView`, with each view representing an app. Shows a maximum
-// of `kMaxItems` items.
+// The right side contents (in LTR) of the `PineContentsView`. It is a
+// vertical list of `PineItemView`, with each view representing an app. Shows
+// a maximum of `kMaxItems` items.
 class PineItemsContainerView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineItemsContainerView);
@@ -369,8 +446,8 @@ class PineItemsContainerView : public views::BoxLayoutView {
       }
 
       std::string title;
-      // `cache` might be null in a test environment. In that case, we will use
-      // an empty title.
+      // `cache` might be null in a test environment. In that case, we will
+      // use an empty title.
       if (cache) {
         cache->ForOneApp(app_id, [&title](const apps::AppUpdate& update) {
           title = update.Name();
@@ -479,6 +556,8 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
         {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
         {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
         {"oabkinaljpjeilageghcdlnekhphhphl", {}},  // Calculator
+        {"mgndgikekgjfcpckkfioiadnlibdjbkf",       // Chrome
+         {"https://www.google.com/maps/"}},
     };
     PineItemsContainerView* container_view = AddChildView(
         std::make_unique<PineItemsContainerView>(kTestingAppsData));
