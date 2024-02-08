@@ -28,10 +28,8 @@ class TestWebUIController : public ui::MojoBubbleWebUIController {
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 template <>
-class BubbleContentsWrapperT<TestWebUIController>
-    : public BubbleContentsWrapper,
-      public base::SupportsWeakPtr<
-          BubbleContentsWrapperT<TestWebUIController>> {
+class BubbleContentsWrapperT<TestWebUIController> final
+    : public BubbleContentsWrapper {
  public:
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
@@ -46,8 +44,11 @@ class BubbleContentsWrapperT<TestWebUIController>
                               "Test") {}
   void ReloadWebContents() override {}
   base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
-    return AsWeakPtr();
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+ private:
+  base::WeakPtrFactory<BubbleContentsWrapper> weak_ptr_factory_{this};
 };
 
 class WebUIBubbleManagerTest : public ChromeViewsTestBase {

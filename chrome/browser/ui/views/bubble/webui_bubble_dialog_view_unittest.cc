@@ -18,17 +18,18 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
-class TestBubbleContentsWrapper
-    : public BubbleContentsWrapper,
-      public base::SupportsWeakPtr<TestBubbleContentsWrapper> {
+class TestBubbleContentsWrapper final : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
       : BubbleContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
   void ReloadWebContents() override {}
 
   base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
-    return AsWeakPtr();
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+ private:
+  base::WeakPtrFactory<TestBubbleContentsWrapper> weak_ptr_factory_{this};
 };
 }  // namespace
 
