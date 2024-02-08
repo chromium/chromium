@@ -43,9 +43,7 @@ enum ScreenMode {
 interface AccountInfo {
   src: string;
   showEnterpriseBadge: boolean;
-  screenMode: ScreenMode;
 }
-
 
 const SyncConfirmationAppElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
@@ -106,9 +104,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
       /** Determines the screen mode. */
       screenMode_: {
         type: ScreenMode,
-        value() {
-          return loadTimeData.getInteger('screenMode') as ScreenMode;
-        },
+        value: ScreenMode.PENDING,
       },
     };
   }
@@ -129,11 +125,9 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
 
     this.addWebUiListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
+    this.addWebUiListener(
+        'screen-mode-changed', this.handleScreenModeChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
-
-    setTimeout(() => {
-      this.defaultToRestrictedModeIfStillPending();
-    }, /*delay in ms=*/ 2000);
   }
 
   private onConfirm_(e: Event) {
@@ -193,17 +187,10 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
     this.accountImageSrc_ = accountInfo.src;
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
-
-    // Only allow this change once, from PENDING mode to (UN)RESTRICTED.
-    if (this.screenMode_ === ScreenMode.PENDING) {
-      this.screenMode_ = accountInfo.screenMode as ScreenMode;
-    }
   }
 
-  private defaultToRestrictedModeIfStillPending() {
-    if (this.screenMode_ === ScreenMode.PENDING) {
-      this.screenMode_ = ScreenMode.RESTRICTED;
-    }
+  private handleScreenModeChanged_(screenMode: ScreenMode) {
+    this.screenMode_ = screenMode;
   }
 
   private getConfirmButtonClass_(screenMode: ScreenMode) {

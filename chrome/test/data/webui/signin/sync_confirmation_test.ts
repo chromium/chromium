@@ -43,11 +43,16 @@ suite(`SigninSyncConfirmationTest`, function() {
     await browserProxy.whenCalled('requestAccountInfo');
   });
 
-  // Tests that no DCHECKS are thrown during initialization of the UI.
+  // Tests that the buttons are initially hidden, pending minor-mode compliance
+  // configuration.
   test('LoadPage', function() {
     const cancelButton =
         app.shadowRoot!.querySelector<HTMLElement>('#notNowButton');
-    assertFalse(cancelButton!.hidden);
+    assertTrue(cancelButton!.hidden);
+
+    const confirmButton =
+        app.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+    assertTrue(confirmButton!.hidden);
   });
 
   // Tests clicking on confirm button.

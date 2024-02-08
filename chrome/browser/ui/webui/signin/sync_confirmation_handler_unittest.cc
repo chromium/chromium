@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
@@ -34,15 +35,38 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+
+namespace {
 
 const int kExpectedProfileImageSize = 128;
 
 // The dialog needs to be initialized with a height but the actual value doesn't
 // really matter in unit tests.
 const double kDefaultDialogHeight = 350.0;
+
+using MinorModeRestrictionsEnabled =
+    base::StrongAlias<class MinorModeRestrictionsEnabledTag, bool>;
+
+void ConfigureMinorModeRestrictionFeature(
+    MinorModeRestrictionsEnabled minor_mode_restrictions_enabled,
+    base::test::ScopedFeatureList& feature_flag_) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  if (minor_mode_restrictions_enabled.value()) {
+    feature_flag_.InitAndEnableFeature(
+        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+  } else {
+    feature_flag_.InitAndDisableFeature(
+        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+  }
+#else
+  CHECK(!minor_mode_restrictions_enabled.value())
+      << "This feature can be only enabled for selected platforms.";
+#endif
+}
 
 class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
  public:
@@ -68,8 +92,10 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
   using SyncConfirmationHandler::RecordConsent;
 };
 
-class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
-                                    public LoginUIService::Observer {
+class SyncConfirmationHandlerTest
+    : public BrowserWithTestWindowTest,
+      public LoginUIService::Observer,
+      public ::testing::WithParamInterface<MinorModeRestrictionsEnabled> {
  public:
   static const char kConsentText1[];
   static const char kConsentText2[];
@@ -77,11 +103,26 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   static const char kConsentText4[];
   static const char kConsentText5[];
 
+  static MinorModeRestrictionsEnabled IsMinorModeRequested() {
+    return GetParam();
+  }
+
+  static bool IsMinorModeEnabled() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    return IsMinorModeRequested().value();
+#else
+    return false;
+#endif
+  }
+
   SyncConfirmationHandlerTest()
       : did_user_explicitly_interact_(false),
         on_sync_confirmation_ui_closed_called_(false),
         sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
-        web_ui_(new content::TestWebUI) {}
+        web_ui_(new content::TestWebUI) {
+    ConfigureMinorModeRestrictionFeature(IsMinorModeRequested(),
+                                         scoped_feature_list_);
+  }
 
   SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
   SyncConfirmationHandlerTest& operator=(const SyncConfirmationHandlerTest&) =
@@ -196,6 +237,17 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
     EXPECT_EQ(primary_account.IsManaged(), show_enterprise_badge.value());
   }
 
+  SyncConfirmationScreenMode GetScreenMode(
+      const content::TestWebUI::CallData& call_data) {
+    CHECK(call_data.arg1()->is_string())
+        << "arg1 should be string (callback name)";
+    CHECK(call_data.arg1()->GetString() == "screen-mode-changed")
+        << "Wrong callback name";
+
+    CHECK(call_data.arg2()->is_int()) << "arg2 should be int";
+    return static_cast<SyncConfirmationScreenMode>(call_data.arg2()->GetInt());
+  }
+
  protected:
   bool did_user_explicitly_interact_;
   bool on_sync_confirmation_ui_closed_called_;
@@ -216,6 +268,9 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 const char SyncConfirmationHandlerTest::kConsentText1[] = "consentText1";
@@ -224,8 +279,7 @@ const char SyncConfirmationHandlerTest::kConsentText3[] = "consentText3";
 const char SyncConfirmationHandlerTest::kConsentText4[] = "consentText4";
 const char SyncConfirmationHandlerTest::kConsentText5[] = "consentText5";
 
-TEST_F(SyncConfirmationHandlerTest,
-       TestAccountInfoAloneIsNotEnoughToTriggerAccountInfoChange) {
+TEST_P(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
       account_info_.account_id, account_info_.email, account_info_.gaia, "",
       "full_name", "given_name", "locale",
@@ -235,84 +289,22 @@ TEST_F(SyncConfirmationHandlerTest,
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
-  EXPECT_EQ(0U, web_ui()->call_data().size());
-}
-
-TEST_F(SyncConfirmationHandlerTest,
-       TestSetAccountInfoIfPrimaryAccountAndCapabilitiesReady) {
-  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
-
-  // Both account info and capability are required to trigger SetAccountInfo.
-  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      true);
-  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
-
-  base::Value::List args;
-  args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(args);
-
-  ASSERT_EQ(1U, web_ui()->call_data().size());
+  ASSERT_GE(web_ui()->call_data().size(), 1U);
   ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
+
+  if (IsMinorModeEnabled()) {
+    // When minor mode is effective, screen mode is only sent when the
+    // capability is available.
+    EXPECT_EQ(1U, web_ui()->call_data().size());
+  } else {
+    // Without experiment, expect defaulting to kUnrestricted
+    ASSERT_EQ(2U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[1]));
+  }
 }
 
-TEST_F(SyncConfirmationHandlerTest,
-       TestSetAccountInfoIfPrimaryAccountReadyLater) {
-  base::Value::List args;
-  args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(args);
-
-  // No callback called when there's no account image available.
-  ASSERT_EQ(0U, web_ui()->call_data().size());
-
-  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
-
-  ASSERT_EQ(1U, web_ui()->call_data().size());
-  ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
-}
-
-TEST_F(SyncConfirmationHandlerTest,
-       TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
-  base::Value::List args;
-  args.Append(kDefaultDialogHeight);
-  handler()->HandleInitializedWithSize(args);
-  EXPECT_EQ(0U, web_ui()->call_data().size());
-
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("bar@example.com");
-  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info.account_id, account_info.email, account_info.gaia, "",
-      "bar_full_name", "bar_given_name", "bar_locale",
-      "http://picture.example.com/bar_picture.jpg");
-
-  // Updating the account info of a secondary account should not update the
-  // image of the sync confirmation dialog.
-  EXPECT_EQ(0U, web_ui()->call_data().size());
-
-  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
-
-  // Updating the account info of the primary account should update the
-  // image of the sync confirmation dialog.
-  ASSERT_EQ(1U, web_ui()->call_data().size());
-  ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
-}
-
-TEST_F(SyncConfirmationHandlerTest,
-       TestSetAccountInfoManagedIfPrimaryAccountAndCapabilitiesReady) {
-  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia,
-      "google.com", "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
-
+TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangedWhenCapabilityReady) {
   // Both account info and capability are required to trigger SetAccountInfo.
   AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
@@ -323,11 +315,142 @@ TEST_F(SyncConfirmationHandlerTest,
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
-  ASSERT_EQ(1U, web_ui()->call_data().size());
-  ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
+  if (IsMinorModeEnabled()) {
+    // In minor mode, capability was set to false, which means restricting.
+    ASSERT_EQ(1U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kRestricted,
+              GetScreenMode(*web_ui()->call_data()[0]));
+  } else {
+    // Without experiment, expect defaulting to kUnrestricted
+    ASSERT_EQ(1U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[0]));
+  }
 }
 
-TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
+TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
+  // Both account info and capability are required to trigger SetAccountInfo.
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  if (IsMinorModeEnabled()) {
+    // In minor mode, capability was set to false, which means restricting.
+    ASSERT_EQ(1U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kRestricted,
+              GetScreenMode(*web_ui()->call_data()[0]));
+  } else {
+    // Without experiment, expect defaulting to kUnrestricted
+    ASSERT_EQ(1U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[0]));
+  }
+
+  // Now attempt flipping capability
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
+
+  // The number of calls stays unchanged.
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+}
+
+TEST_P(SyncConfirmationHandlerTest,
+       TestAvatarChangeWhenPrimaryAccountReadyLater) {
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  // Tracks the number of calls which is variable due to minor-mode flag
+  // possibly enabled.
+  unsigned call_count = 0;
+
+  if (!IsMinorModeEnabled()) {
+    // The only callback here is defaulting screen mode to kUnrestricted.
+    ASSERT_EQ(++call_count, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[call_count - 1]));
+  }
+
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info_.account_id, account_info_.email, account_info_.gaia, "",
+      "full_name", "given_name", "locale",
+      "http://picture.example.com/picture.jpg");
+
+  // AccountInfo proper is being changed
+  ASSERT_EQ(++call_count, web_ui()->call_data().size());
+  ExpectAccountInfoChanged(*web_ui()->call_data()[call_count - 1]);
+}
+
+TEST_P(SyncConfirmationHandlerTest,
+       TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  // Tracks the number of calls which is variable due to minor-mode flag
+  // possibly enabled.
+  unsigned call_count = 0;
+
+  if (!IsMinorModeEnabled()) {
+    // The only callback here is defaulting screen mode to kUnrestricted.
+    ASSERT_EQ(++call_count, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[call_count - 1]));
+  }
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("bar@example.com");
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info.account_id, account_info.email, account_info.gaia, "",
+      "bar_full_name", "bar_given_name", "bar_locale",
+      "http://picture.example.com/bar_picture.jpg");
+
+  // Account update was ignored so number of calls is unchanged.
+  ASSERT_EQ(call_count, web_ui()->call_data().size());
+
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info_.account_id, account_info_.email, account_info_.gaia, "",
+      "full_name", "given_name", "locale",
+      "http://picture.example.com/picture.jpg");
+
+  // Updating the account info of the primary account should update the
+  // image of the sync confirmation dialog.
+  ASSERT_EQ(++call_count, web_ui()->call_data().size());
+  ExpectAccountInfoChanged(*web_ui()->call_data()[call_count - 1]);
+}
+
+TEST_P(SyncConfirmationHandlerTest,
+       TestAvatarChangeManagedWhenPrimaryAccountReady) {
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info_.account_id, account_info_.email, account_info_.gaia,
+      "google.com", "full_name", "given_name", "locale",
+      "http://picture.example.com/picture.jpg");
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  ASSERT_GE(web_ui()->call_data().size(), 1U);
+  ExpectAccountInfoChanged(*web_ui()->call_data()[0]);
+
+  if (IsMinorModeEnabled()) {
+    // When minor mode is effective, screen mode is only sent when the
+    // capability is available.
+    ASSERT_EQ(1U, web_ui()->call_data().size());
+  } else {
+    ASSERT_EQ(2U, web_ui()->call_data().size());
+    EXPECT_EQ(SyncConfirmationScreenMode::kUnrestricted,
+              GetScreenMode(*web_ui()->call_data()[1]));
+  }
+}
+
+TEST_P(SyncConfirmationHandlerTest, TestHandleUndo) {
   handler()->HandleUndo(base::Value::List());
   did_user_explicitly_interact_ = true;
 
@@ -340,7 +463,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
       "Signin_Signin_WithAdvancedSyncSettings"));
 }
 
-TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
+TEST_P(SyncConfirmationHandlerTest, TestHandleConfirm) {
   // The consent description consists of strings 1, 2, and 4.
   base::Value::List consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText1);
@@ -378,7 +501,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
 }
 
-TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
+TEST_P(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   // The consent description consists of strings 2, 3, and 5.
   base::Value::List consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
@@ -414,3 +537,19 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
 
   EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SyncConfirmationHandlerTest,
+                         testing::Values(MinorModeRestrictionsEnabled(false)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+                                             ,
+                                         MinorModeRestrictionsEnabled(true)
+#endif
+                                             ),
+                         [](const auto& info) {
+                           return base::StringPrintf(
+                               "%sMinorModeRestrictions",
+                               info.param.value() ? "With" : "Without");
+                         });
+
+}  // namespace

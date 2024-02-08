@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -26,6 +27,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/web_contents.h"
@@ -43,6 +45,19 @@ using signin::ConsentLevel;
 
 namespace {
 const int kProfileImageSize = 128;
+
+// Derives screen mode of sync opt in screen from the
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
+bool UseMinorModeRestrictions() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // ChromeOS handles minor modes separately.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+#endif
+}
+
 }  // namespace
 
 SyncConfirmationScreenMode GetScreenMode(
@@ -139,12 +154,11 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
-  // Fire the "account-info-changed" listener from |SetAccountInfo()|.
+  // Fire the "account-info-changed" and "screen-mode-changed" listeners.
   // Note: If the account info is not available yet in the
-  // IdentityManager, i.e. account_info is empty, the listener will be
-  // fired again through |OnAccountUpdated()|.
-  if (primary_account_info.IsValid())
-    SetAccountInfo(primary_account_info);
+  // IdentityManager, i.e. account_info is empty or capabilities are not ready
+  // yet, the listener will be fired again through `OnAccountUpdated()`.
+  DispatchAccountInfoUpdate(primary_account_info);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -193,13 +207,9 @@ void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {
       sync_consent);
 }
 
-void SyncConfirmationHandler::SetAccountInfo(const AccountInfo& info) {
+void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
   DCHECK(info.IsValid());
-  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
-    // The sync disabled confirmation handler does not present the user image.
-    // Avoid updating the image URL in this case.
-    return;
-  }
+  avatar_notified_ = true;
 
   GURL picture_gurl(info.picture_url);
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
@@ -208,31 +218,73 @@ void SyncConfirmationHandler::SetAccountInfo(const AccountInfo& info) {
   base::Value::Dict value;
   value.Set("src", picture_gurl_with_options.spec());
   value.Set("showEnterpriseBadge", info.IsManaged());
-  value.Set("screenMode", static_cast<int>(GetScreenMode(info.capabilities)));
-
-  AllowJavascript();
   FireWebUIListener("account-info-changed", value);
 }
 
-void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
+void SyncConfirmationHandler::OnScreenModeChanged(
+    SyncConfirmationScreenMode mode) {
+  DCHECK(mode != SyncConfirmationScreenMode::kPending);
+  DCHECK(!screen_mode_notified_) << "Must be called only once";
+  screen_mode_notified_ = true;
+  screen_mode_deadline_.Stop();
+  FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
+}
+
+void SyncConfirmationHandler::OnDeadline() {
+  if (!screen_mode_notified_) {
+    OnScreenModeChanged(SyncConfirmationScreenMode::kRestricted);
+  }
+}
+
+void SyncConfirmationHandler::DispatchAccountInfoUpdate(
     const AccountInfo& info) {
-  if (!info.IsValid())
+  if (info.IsEmpty()) {
+    // No account is signed in, so there is nothing to be displayed in the sync
+    // confirmation dialog.
     return;
+  }
+
+  if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
+    // The sync disabled confirmation handler does not present the user image.
+    // Avoid updating the image URL in this case.
+    return;
+  }
 
   if (info.account_id !=
       identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin)) {
     return;
   }
 
-  if (GetScreenMode(info.capabilities) !=
-      SyncConfirmationScreenMode::kPending) {
-    // AccountCapabilities are fetched asynchronously, so stop observing changes
-    // only after the screen mode derived from the capability is not pending
-    // anymore.
-    identity_manager_observation_.Reset();
+  AllowJavascript();
+
+  if (info.IsValid() && !avatar_notified_) {
+    OnAvatarChanged(info);
   }
 
-  SetAccountInfo(info);
+  if (screen_mode_notified_) {
+    // Screen mode must be changed only once.
+    return;
+  }
+
+  if (UseMinorModeRestrictions()) {
+    if (SyncConfirmationScreenMode mode = GetScreenMode(info.capabilities);
+        mode != SyncConfirmationScreenMode::kPending) {
+      OnScreenModeChanged(mode);
+    }
+  } else {
+    OnScreenModeChanged(SyncConfirmationScreenMode::kUnrestricted);
+  }
+}
+
+void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  DispatchAccountInfoUpdate(info);
+
+  if (avatar_notified_ && screen_mode_notified_) {
+    // IdentityManager emitted both avatar and screen mode information and its
+    // function is done.
+    identity_manager_observation_.Reset();
+  }
 }
 
 void SyncConfirmationHandler::CloseModalSigninWindow(
@@ -259,8 +311,6 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
 
 void SyncConfirmationHandler::HandleInitializedWithSize(
     const base::Value::List& args) {
-  AllowJavascript();
-
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (primary_account_info.IsEmpty()) {
@@ -269,12 +319,18 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     return;
   }
 
-  if (!(primary_account_info.IsValid() &&
-        GetScreenMode(primary_account_info.capabilities) !=
-            SyncConfirmationScreenMode::kPending)) {
+  DispatchAccountInfoUpdate(primary_account_info);
+
+  if (!avatar_notified_ ||
+      (!screen_mode_notified_ && UseMinorModeRestrictions())) {
+    // IdentityManager emits both avatar and screen mode information.
     identity_manager_observation_.Observe(identity_manager_);
-  } else {
-    SetAccountInfo(primary_account_info);
+  }
+
+  if (!screen_mode_notified_ && UseMinorModeRestrictions()) {
+    // Deadline timer for the case when screen mode doesn't arrive in time.
+    screen_mode_deadline_.Start(FROM_HERE, base::Seconds(2), this,
+                                &SyncConfirmationHandler::OnDeadline);
   }
 
   if (browser_)
