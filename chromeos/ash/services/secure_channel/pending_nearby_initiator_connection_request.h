@@ -73,6 +73,8 @@ class PendingNearbyInitiatorConnectionRequest
   void HandleNearbyConnectionChange(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;
+  void HandleSecureChannelChanged(
+      mojom::SecureChannelState secure_channel_state) override;
 
   // device::BluetoothAdapter::Observer:
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,

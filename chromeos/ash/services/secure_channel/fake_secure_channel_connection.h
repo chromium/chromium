@@ -58,6 +58,8 @@ class FakeSecureChannelConnection : public SecureChannel {
   void ChangeNearbyConnectionState(
       mojom::NearbyConnectionStep nearby_connection_step,
       mojom::NearbyConnectionStepResult result);
+  void ChangeSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_authentication_state);
 
   std::vector<raw_ptr<Observer, VectorExperimental>> observers() {
     return observers_;

@@ -90,6 +90,14 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
       it_copy->second->HandleNearbyConnectionChange(step, result);
     }
   }
+  void OnSecureChannelStateChanged(
+      mojom::SecureChannelState secure_channel_state) {
+    for (auto it = id_to_request_map_.begin();
+         it != id_to_request_map_.end();) {
+      auto it_copy = it++;
+      it_copy->second->HandleSecureChannelChanged(secure_channel_state);
+    }
+  }
 
  private:
   // ConnectionAttempt<FailureDetailType>:

@@ -68,6 +68,8 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   void UpdateNearbyConnectionState(
       mojom::NearbyConnectionStep nearby_connection_step,
       mojom::NearbyConnectionStepResult result) override;
+  void UpdateSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_state) override;
 
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
@@ -84,6 +86,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   absl::optional<mojom::DiscoveryErrorCode> potential_ble_discovery_error_code_;
   mojom::NearbyConnectionStep nearby_connection_step_;
   mojom::NearbyConnectionStepResult nearby_connection_step_result_;
+  mojom::SecureChannelState secure_channel_state_;
 
   mojo::Remote<mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;

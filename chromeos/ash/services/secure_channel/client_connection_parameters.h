@@ -67,6 +67,8 @@ class ClientConnectionParameters {
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
   void SetNearbyConnectionState(mojom::NearbyConnectionStep step,
                                 mojom::NearbyConnectionStepResult result);
+  void SetSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_state);
 
   bool operator==(const ClientConnectionParameters& other) const;
   bool operator<(const ClientConnectionParameters& other) const;
@@ -85,6 +87,8 @@ class ClientConnectionParameters {
   virtual void UpdateNearbyConnectionState(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) = 0;
+  virtual void UpdateSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_state) = 0;
 
   void NotifyConnectionRequestCanceled();
 

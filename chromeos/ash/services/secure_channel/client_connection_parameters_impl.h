@@ -70,6 +70,8 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
   void UpdateNearbyConnectionState(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;
+  void UpdateSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_state) override;
 
   void OnConnectionDelegateRemoteDisconnected();
 

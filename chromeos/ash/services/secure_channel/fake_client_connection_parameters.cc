@@ -62,6 +62,10 @@ void FakeClientConnectionParameters::UpdateNearbyConnectionState(
   nearby_connection_step_ = nearby_connection_step;
   nearby_connection_step_result_ = result;
 }
+void FakeClientConnectionParameters::UpdateSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  secure_channel_state_ = secure_channel_state;
+}
 
 void FakeClientConnectionParameters::OnChannelDisconnected(
     uint32_t disconnection_reason,

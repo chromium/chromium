@@ -42,6 +42,8 @@ class NearbyConnectionManager {
   using NearbyConnectionStateChangeCallback =
       base::RepeatingCallback<void(mojom::NearbyConnectionStep,
                                    mojom::NearbyConnectionStepResult)>;
+  using SecureChannelStateChangeCallback =
+      base::RepeatingCallback<void(mojom::SecureChannelState)>;
   using ConnectionSuccessCallback =
       base::OnceCallback<void(std::unique_ptr<AuthenticatedChannel>)>;
   using FailureCallback =
@@ -55,6 +57,7 @@ class NearbyConnectionManager {
           ble_discovery_state_change_callback,
       const NearbyConnectionStateChangeCallback&
           nearby_connection_change_callback,
+      const SecureChannelStateChangeCallback& secure_channel_change_callback,
       ConnectionSuccessCallback success_callback,
       const FailureCallback& failure_callback);
 
@@ -91,6 +94,9 @@ class NearbyConnectionManager {
       const DeviceIdPair& device_id_pair,
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result);
+  void NotifySecureChannelAuthenticationStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::SecureChannelState secure_channel_authentication_state);
 
  private:
   struct InitiatorConnectionAttemptMetadata {
@@ -99,12 +105,14 @@ class NearbyConnectionManager {
             ble_discovery_state_change_callback,
         const NearbyConnectionStateChangeCallback&
             nearby_connection_change_callback,
+        const SecureChannelStateChangeCallback& secure_channel_change_callback,
         ConnectionSuccessCallback success_callback,
         const FailureCallback& failure_callback);
     ~InitiatorConnectionAttemptMetadata();
 
     BleDiscoveryStateChangeCallback ble_discovery_state_change_callback;
     NearbyConnectionStateChangeCallback nearby_connection_change_callback;
+    SecureChannelStateChangeCallback secure_channel_change_callback;
     ConnectionSuccessCallback success_callback;
     FailureCallback failure_callback;
   };

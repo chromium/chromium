@@ -91,6 +91,12 @@ class PendingConnectionRequestBase
     client_connection_parameters_->SetNearbyConnectionState(step, result);
   }
 
+  void UpdateSecureChannelChange(
+      mojom::SecureChannelState secure_channel_state) {
+    client_connection_parameters_->SetSecureChannelAuthenticationState(
+        secure_channel_state);
+  }
+
  private:
   // Make NotifyRequestFinishedWithoutConnection() inaccessible to derived
   // types, which should use StopRequestDueToConnectionFailures() instead.

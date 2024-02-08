@@ -64,6 +64,9 @@ NearbyInitiatorConnectionAttempt::CreateConnectToDeviceOperation(
       base::BindRepeating(
           &NearbyInitiatorConnectionAttempt::OnNearbyConnectionStateChanged,
           weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &NearbyInitiatorConnectionAttempt::OnSecureChannelStateChanged,
+          weak_ptr_factory_.GetWeakPtr()),
       device_id_pair, connection_priority);
 }
 

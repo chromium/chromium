@@ -80,6 +80,10 @@ void PendingNearbyInitiatorConnectionRequest::HandleNearbyConnectionChange(
     mojom::NearbyConnectionStepResult result) {
   UpdateNearbyConnectionChange(step, result);
 }
+void PendingNearbyInitiatorConnectionRequest::HandleSecureChannelChanged(
+    mojom::SecureChannelState secure_channel_state) {
+  UpdateSecureChannelChange(secure_channel_state);
+}
 
 void PendingNearbyInitiatorConnectionRequest::HandleConnectionFailure(
     NearbyInitiatorFailureType failure_detail) {

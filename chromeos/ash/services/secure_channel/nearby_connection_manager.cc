@@ -19,10 +19,12 @@ NearbyConnectionManager::InitiatorConnectionAttemptMetadata::
             ble_discovery_state_change_callback,
         const NearbyConnectionStateChangeCallback&
             nearby_connection_change_callback,
+        const SecureChannelStateChangeCallback& secure_channel_change_callback,
         ConnectionSuccessCallback success_callback,
         const FailureCallback& failure_callback)
     : ble_discovery_state_change_callback(ble_discovery_state_change_callback),
       nearby_connection_change_callback(nearby_connection_change_callback),
+      secure_channel_change_callback(secure_channel_change_callback),
       success_callback(std::move(success_callback)),
       failure_callback(failure_callback) {}
 
@@ -50,6 +52,7 @@ void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
     const BleDiscoveryStateChangeCallback& ble_discovery_state_change_callback,
     const NearbyConnectionStateChangeCallback&
         nearby_connection_change_callback,
+    const SecureChannelStateChangeCallback& secure_channel_change_callback,
     ConnectionSuccessCallback success_callback,
     const FailureCallback& failure_callback) {
   if (base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
@@ -60,10 +63,11 @@ void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
   }
 
   id_pair_to_initiator_metadata_map_.emplace(std::make_pair(
-      device_id_pair, std::make_unique<InitiatorConnectionAttemptMetadata>(
-                          ble_discovery_state_change_callback,
-                          nearby_connection_change_callback,
-                          std::move(success_callback), failure_callback)));
+      device_id_pair,
+      std::make_unique<InitiatorConnectionAttemptMetadata>(
+          ble_discovery_state_change_callback,
+          nearby_connection_change_callback, secure_channel_change_callback,
+          std::move(success_callback), failure_callback)));
   remote_device_id_to_id_pair_map_[device_id_pair.remote_device_id()].insert(
       device_id_pair);
 
@@ -137,6 +141,13 @@ void NearbyConnectionManager::NotifyNearbyConnectionStateChanged(
   NearbyConnectionStateChangeCallback nearby_connection_state_changed_callback =
       GetInitiatorEntry(device_id_pair).nearby_connection_change_callback;
   std::move(nearby_connection_state_changed_callback).Run(step, result);
+}
+
+void NearbyConnectionManager::NotifySecureChannelAuthenticationStateChanged(
+    const DeviceIdPair& device_id_pair,
+    mojom::SecureChannelState secure_channel_authentication_state) {
+  GetInitiatorEntry(device_id_pair)
+      .secure_channel_change_callback.Run(secure_channel_authentication_state);
 }
 
 NearbyConnectionManager::InitiatorConnectionAttemptMetadata&

@@ -137,7 +137,16 @@ enum SecureChannelState {
   kValidatedResponderAuth,
   kSentInitiatorAuth,
   kAuthenticationSuccess,
-  kAuthenticationFailure
+  kFailureNotConnectedToRemoteDevice,
+  kFailedToGenerateSessionKeys,
+  kFailedToGenerateHelloMessage,
+  kFailedToSendHelloMessage,
+  kFailedToWaitForResponderAuth,
+  kReceivedUnexpectedMessage,
+  kFailedToValidateReponderAuth,
+  kFailedToGenerateInitiatorAuth,
+  kFailedToSendInitiatorAuth,
+  kFailureDisconnectDuringAuthentication
 };
 
 struct BluetoothConnectionMetadata {

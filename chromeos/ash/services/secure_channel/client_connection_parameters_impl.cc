@@ -92,4 +92,10 @@ void ClientConnectionParametersImpl::UpdateNearbyConnectionState(
       step, result);
 }
 
+void ClientConnectionParametersImpl::UpdateSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  secure_channel_structured_metrics_logger_remote_->LogSecureChannelState(
+      secure_channel_state);
+}
+
 }  // namespace ash::secure_channel

@@ -59,6 +59,11 @@ void ClientConnectionParameters::SetNearbyConnectionState(
   UpdateNearbyConnectionState(step, result);
 }
 
+void ClientConnectionParameters::SetSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  UpdateSecureChannelAuthenticationState(secure_channel_state);
+}
+
 bool ClientConnectionParameters::operator==(
     const ClientConnectionParameters& other) const {
   return id() == other.id();

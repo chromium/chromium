@@ -81,6 +81,9 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
       SecureChannel* secure_channel,
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;
+  void OnSecureChannelAuthenticationStateChanged(
+      SecureChannel* secure_channel,
+      mojom::SecureChannelState secure_channel_state) override;
 
   // Returns whether a channel exists connecting to |remote_device_id|,
   // regardless of the local device ID used to create the connection.

@@ -248,6 +248,14 @@ void SecureChannel::OnNearbyConnectionStateChagned(
   }
 }
 
+void SecureChannel::OnAuthenticationStateChanged(
+    mojom::SecureChannelState secure_channel_state) {
+  for (auto& observer : observer_list_) {
+    observer.OnSecureChannelAuthenticationStateChanged(this,
+                                                       secure_channel_state);
+  }
+}
+
 void SecureChannel::TransitionToStatus(const Status& new_status) {
   if (new_status == status_) {
     // Only report changes to state.
@@ -268,6 +276,7 @@ void SecureChannel::Authenticate() {
   authenticator_ = DeviceToDeviceAuthenticator::Factory::Create(
       connection_.get(),
       multidevice::SecureMessageDelegateImpl::Factory::Create());
+  authenticator_->AddObserver(this);
   authenticator_->Authenticate(base::BindOnce(
       &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 
@@ -323,6 +332,7 @@ void SecureChannel::OnAuthenticationResult(
   DCHECK(status_ == Status::AUTHENTICATING);
 
   // The authenticator is no longer needed, so release it.
+  authenticator_->RemoveObserver(this);
   authenticator_.reset();
 
   if (result != Authenticator::Result::SUCCESS) {

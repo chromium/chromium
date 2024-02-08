@@ -56,6 +56,8 @@ class PendingConnectionRequest {
   virtual void HandleNearbyConnectionChange(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) {}
+  virtual void HandleSecureChannelChanged(
+      mojom::SecureChannelState secure_channel_state) {}
 
   virtual const base::UnguessableToken& GetRequestId() const = 0;
 
