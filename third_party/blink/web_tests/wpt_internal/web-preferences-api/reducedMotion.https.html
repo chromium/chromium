@@ -20,7 +20,7 @@
       test(() => {
         assert_true('validValues' in navigator.preferences.reducedMotion, 'navigator.preferences.reducedMotion.validValues defined');
         assert_true(navigator.preferences.reducedMotion.validValues.includes('reduce'), 'navigator.preferences.reducedMotion.validValues includes "reduce"');
-        assert_false(navigator.preferences.reducedMotion.validValues.includes('no-preference'), 'navigator.preferences.reducedMotion.validValues excludes "no-preference"');
+        assert_true(navigator.preferences.reducedMotion.validValues.includes('no-preference'), 'navigator.preferences.reducedMotion.validValues includes "no-preference"');
       }, "navigator.preferences.reducedMotion.validValues supported");
       promise_test((t) => {
         return navigator.preferences.reducedMotion.requestOverride('this-is-an-invalid-value')
@@ -33,17 +33,6 @@
             t.done();
           });
       }, "navigator.preferences.reducedMotion.requestOverride() with invalid value throws");
-      promise_test((t) => {
-        return navigator.preferences.reducedMotion.requestOverride('no-preference')
-          .then(() => {
-            assert_not_reached('requestOverride with invalid value should not resolve');
-          })
-          .catch((e) => {
-            assert_true(e instanceof DOMException);
-            assert_equals(navigator.preferences.reducedMotion.override, null);
-            t.done();
-          });
-      }, "navigator.preferences.reducedMotion.requestOverride('no-preference') throws");
       promise_test(async (t) => {
         await navigator.preferences.reducedMotion.requestOverride('reduce');
         assert_equals(navigator.preferences.reducedMotion.override, 'reduce');
@@ -66,6 +55,8 @@
         t.done();
       }, "navigator.preferences.reducedMotion.requestOverride('') works like clearOverride()");
       promise_test(async (t) => {
+        await navigator.preferences.reducedMotion.requestOverride('no-preference');
+        assert_true(window.matchMedia('(prefers-reduced-motion: no-preference)').matches, '(prefers-reduced-motion: no-preference) matches');
         await navigator.preferences.reducedMotion.requestOverride('reduce');
         assert_true(window.matchMedia('(prefers-reduced-motion: reduce)').matches, '(prefers-reduced-motion: reduce) matches');
         navigator.preferences.reducedMotion.clearOverride();
