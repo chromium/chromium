@@ -6548,14 +6548,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "print-management-jelly",
-    "owners": [
-      "//ash/webui/print_management/OWNERS",
-      "cros-peripherals@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "print-management-setup-assistance",
     "owners": [
       "//ash/webui/print_management/OWNERS"

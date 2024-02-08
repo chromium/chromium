@@ -6994,12 +6994,6 @@ const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "
     "is loaded when matching PPD files during printer setup.";
 
-const char kPrintManagementJellyName[] =
-    "Enable jelly colors for the Print Management App";
-const char kPrintManagementJellyDescription[] =
-    "Enable jelly colors for the Print Management App. Requires "
-    "jelly-colors flag to be enabled.";
-
 const char kPrintManagementSetupAssistanceName[] =
     "Enable improved printer setup experience for the Print Management App";
 const char kPrintManagementSetupAssistanceDescription[] =

@@ -4020,9 +4020,6 @@ extern const char kPrintPreviewDiscoveredPrintersDescription[];
 extern const char kPrintingPpdChannelName[];
 extern const char kPrintingPpdChannelDescription[];
 
-extern const char kPrintManagementJellyName[];
-extern const char kPrintManagementJellyDescription[];
-
 extern const char kPrintManagementSetupAssistanceName[];
 extern const char kPrintManagementSetupAssistanceDescription[];
 

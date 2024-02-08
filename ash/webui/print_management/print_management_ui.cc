@@ -42,8 +42,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddBoolean("isJellyEnabledForPrintManagement",
-                     ash::features::IsJellyEnabledForPrintManagement());
   source->AddBoolean("isSetupAssistanceEnabled",
                      base::FeatureList::IsEnabled(
                          ash::features::kPrintManagementSetupAssistance));

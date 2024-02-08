@@ -2242,12 +2242,6 @@ BASE_FEATURE(kPreferConstantFrameRate,
              "PreferConstantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the jelly colors will be used in the print management app.
-// Requires jelly-colors flag to also be enabled.
-BASE_FEATURE(kPrintManagementJelly,
-             "PrintManagementJelly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, ChromeOS print preview app is available. Enabling does not
 // replace the existing Chrome print preview UI, and will require an additional
 // flag and pref configured to facilitate. See b/323421684 for more information.
@@ -3688,11 +3682,6 @@ bool IsJellyEnabledForDiagnosticsApp() {
 bool IsJellyEnabledForOsFeedback() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kOsFeedbackJelly);
-}
-
-bool IsJellyEnabledForPrintManagement() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kPrintManagementJelly);
 }
 
 bool IsJellyEnabledForScanningApp() {
