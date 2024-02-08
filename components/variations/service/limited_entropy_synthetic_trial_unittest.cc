@@ -4,6 +4,8 @@
 
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 
+#include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +20,7 @@ class LimitedEntropySyntheticTrialTest : public ::testing::Test {
 
  protected:
   TestingPrefServiceSimple local_state_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(LimitedEntropySyntheticTrialTest, RandomizesWithExistingSeed_Enabled) {
@@ -62,4 +65,42 @@ TEST_F(LimitedEntropySyntheticTrialTest, GeneratesAndRandomizesWithNewSeed) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(LimitedEntropySyntheticTrialTest, TestSetSeedFromAsh) {
+  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
+  LimitedEntropySyntheticTrial trial(&local_state_);
+
+  EXPECT_EQ(42u, trial.GetRandomizationSeed(&local_state_));
+  histogram_tester_.ExpectUniqueSample(
+      kIsLimitedEntropySyntheticTrialSeedValidHistogram, true, 1);
+}
+
+TEST_F(LimitedEntropySyntheticTrialTest,
+       TestSetSeedFromAsh_ExpectCheckIFailureIfRandomizedBeforeSyncingSeed) {
+  LimitedEntropySyntheticTrial trial(&local_state_);
+  EXPECT_CHECK_DEATH(
+      LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u));
+}
+
+TEST_F(
+    LimitedEntropySyntheticTrialTest,
+    TestSetSeedFromAsh_ExpectCheckIFailureIfSettingSeedAgainAfterRandomization) {
+  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
+  LimitedEntropySyntheticTrial trial(&local_state_);
+  EXPECT_CHECK_DEATH(
+      LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 62u));
+  histogram_tester_.ExpectUniqueSample(
+      kIsLimitedEntropySyntheticTrialSeedValidHistogram, true, 1);
+}
+
+TEST_F(LimitedEntropySyntheticTrialTest,
+       TestSetSeedFromAsh_SyncingInvalidSeed) {
+  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 999u);
+  LimitedEntropySyntheticTrial trial(&local_state_);
+  EXPECT_NE(999u, trial.GetRandomizationSeed(&local_state_));
+  histogram_tester_.ExpectUniqueSample(
+      kIsLimitedEntropySyntheticTrialSeedValidHistogram, false, 1);
+}
+
+#endif
 }  // namespace variations

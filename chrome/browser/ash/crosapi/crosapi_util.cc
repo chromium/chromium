@@ -169,6 +169,7 @@
 #include "components/ukm/ukm_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -560,6 +561,15 @@ void InjectBrowserInitParams(
 
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
+
+  // Syncing the randomization seed ensures that the group membership of the
+  // limited entropy synthetic trial will be the same between Ash Chrome and
+  // Lacros.
+  // TODO(crbug.com/1508150): Remove after completing the trial.
+  params->limited_entropy_synthetic_trial_seed =
+      variations::LimitedEntropySyntheticTrial::GetRandomizationSeed(
+          local_state);
+
   // |metrics_service| could be nullptr in tests.
   if (auto* metrics_service = g_browser_process->metrics_service()) {
     // Send metrics service client id to Lacros if it's present.

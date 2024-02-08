@@ -77,6 +77,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   const std::optional<std::string>& MetricsServiceClientId() const;
 
+  uint64_t LimitedEntropySyntheticTrialSeed() const;
+
   const crosapi::mojom::EntropySourcePtr& EntropySource() const;
 
   uint64_t UkmClientId() const;

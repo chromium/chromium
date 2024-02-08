@@ -2357,6 +2357,7 @@ if (!is_android) {
       "../browser/metrics/variations/variations_http_headers_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc",
+      "../browser/metrics/variations/variations_service_browsertest.cc",
       "../browser/navigation_predictor/anchor_element_preloader_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
@@ -4284,6 +4285,7 @@ if (!is_android) {
         "//components/supervised_user/core/browser/proto",
         "//components/supervised_user/core/common",
         "//components/supervised_user/core/common:test_utils",
+        "//components/variations/service",
       ]
     }
 

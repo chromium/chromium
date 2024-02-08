@@ -1129,8 +1129,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 75
-// Next id: 75
+// Next version: 77
+// Next id: 77
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1574,6 +1574,12 @@ struct BrowserInitParams {
   // If true, "Compose" will be disabled. Only applies on chromeos devices.
   [MinVersion=75]
   bool should_disable_chrome_compose_on_chromeos@75;
+
+  // The seed that is used to randomize the limited entropy synthetic trial. The
+  // group assignment of this trial needs to be the same between Lacros and ash
+  // chrome.
+  [MinVersion=76]
+  uint64 limited_entropy_synthetic_trial_seed@76;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

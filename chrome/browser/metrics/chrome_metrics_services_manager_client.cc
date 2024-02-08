@@ -33,6 +33,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
@@ -303,6 +304,12 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     auto* init_params = chromeos::BrowserParamsProxy::Get();
     if (init_params->MetricsServiceClientId().has_value())
       client_id = init_params->MetricsServiceClientId().value();
+
+    // Sync the randomization seed from Ash Chrome so that the group assignment
+    // is the same on Lacros.
+    variations::LimitedEntropySyntheticTrial::SetSeedFromAsh(
+        local_state_, init_params->LimitedEntropySyntheticTrialSeed());
+
     // Beginning M120 this should always be there. Note:
     // The LES numbers are kept stable over the lifetime of the session.
     // They get read when the system is statrting up in Ash. So they do not

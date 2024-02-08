@@ -162,6 +162,10 @@ const crosapi::mojom::EntropySourcePtr& BrowserParamsProxy::EntropySource()
   return BrowserInitParams::Get()->entropy_source;
 }
 
+uint64_t BrowserParamsProxy::LimitedEntropySyntheticTrialSeed() const {
+  return BrowserInitParams::Get()->limited_entropy_synthetic_trial_seed;
+}
+
 uint64_t BrowserParamsProxy::UkmClientId() const {
   return BrowserInitParams::Get()->ukm_client_id;
 }
