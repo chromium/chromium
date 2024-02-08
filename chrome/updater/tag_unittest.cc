@@ -820,6 +820,15 @@ TEST(TagParserTest, BrandCodeValid) {
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
           .WithBrandCode("GOOG")
           .Build());
+  VerifyTagParseSuccess(
+      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
+      "brand=GOOGLE",
+      std::nullopt,
+      TagArgsBuilder()
+          .WithApp(
+              AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
+          .WithBrandCode("GOOGLE")
+          .Build());
 }
 
 TEST(TagParserTest, ClientIdValid) {

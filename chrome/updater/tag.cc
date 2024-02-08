@@ -51,10 +51,9 @@ constexpr base::StringPiece kTagArgUsageStats = "usagestats";
 // progress from the website to installation completion.
 constexpr base::StringPiece kTagArgInstallationId = "iid";
 
-// The Brand Code used for branding.
-// If a brand value already exists on the system, it should be ignored.
-// This value is used to set the initial brand for the updater and the client
-// app.
+// The brand code used for branding. This value sets the initial brand for the
+// updater and the client app. If a brand value already exists on the system,
+// the new brand value is ignored.
 constexpr base::StringPiece kTagArgBrandCode = "brand";
 
 // The Client ID used for branding.
