@@ -191,9 +191,8 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
   }
 }
 
-TEST_F(
-    RealTimePolicyEngineTest,
-    TestCanPerformFullURLLookup_EnabledMainFrameOnlyForSubresourceDisabledUser) {
+TEST_F(RealTimePolicyEngineTest,
+       TestCanPerformFullURLLookup_EnabledMainFrameOnly) {
   for (int i = 0;
        i <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
        i++) {
@@ -201,34 +200,9 @@ TEST_F(
         static_cast<network::mojom::RequestDestination>(i);
     bool enabled =
         RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-            request_destination, /*can_urt_check_subresource_url=*/false);
+            request_destination);
     switch (request_destination) {
       case network::mojom::RequestDestination::kDocument:
-        EXPECT_TRUE(enabled);
-        break;
-      default:
-        EXPECT_FALSE(enabled);
-        break;
-    }
-  }
-}
-
-TEST_F(
-    RealTimePolicyEngineTest,
-    TestCanPerformFullURLLookup_EnabledNonMainFrameForSubresourceEnabledUser) {
-  for (int i = 0;
-       i <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
-       i++) {
-    network::mojom::RequestDestination request_destination =
-        static_cast<network::mojom::RequestDestination>(i);
-    bool enabled =
-        RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-            request_destination, /*can_urt_check_subresource_url=*/true);
-    switch (request_destination) {
-      case network::mojom::RequestDestination::kDocument:
-      case network::mojom::RequestDestination::kIframe:
-      case network::mojom::RequestDestination::kFrame:
-      case network::mojom::RequestDestination::kFencedframe:
         EXPECT_TRUE(enabled);
         break;
       default:

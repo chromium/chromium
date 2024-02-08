@@ -418,7 +418,7 @@ TEST_F(SafeBrowsingServiceTest,
   client.CheckUrl(safe_url);
   client.WaitForResult();
 
-  // Opt into real-time checks and also does real-time checks for subframe url.
+  // Opt into real-time checks.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 
   MarkUrlAsRealTimeSafe(safe_url);
@@ -443,25 +443,18 @@ TEST_F(SafeBrowsingServiceTest,
   EXPECT_FALSE(client.result_pending());
   EXPECT_TRUE(client.url_is_unsafe());
 
+  // Subframe URL should not be checked.
   MarkUrlAsRealTimeUnsafe(unsafe_url);
   client.CheckSubFrameUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
-  EXPECT_TRUE(client.url_is_unsafe());
+  EXPECT_FALSE(client.url_is_unsafe());
 
   // Opt out of real-time checks, and ensure that unsafe URLs are no longer
   // flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
-  EXPECT_FALSE(client.result_pending());
-  EXPECT_FALSE(client.url_is_unsafe());
-
-  client.CheckSubFrameUrl(unsafe_url);
   if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();

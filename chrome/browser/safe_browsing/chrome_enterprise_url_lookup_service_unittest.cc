@@ -225,8 +225,6 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
-  GURL last_committed_url_ = GURL("http://lastcommitted.test");
-  bool is_mainframe_ = true;
 };
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -241,8 +239,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   base::MockCallback<network::TestURLLoaderFactory::Interceptor>
       request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
-                                       response_callback.Get(),
+  enterprise_rt_service()->StartLookup(url, response_callback.Get(),
                                        content::GetIOThreadTaskRunner({}));
 
   test_url_loader_factory_.SetInterceptor(request_callback.Get());
@@ -268,8 +265,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                       Return(ReferrerChainProvider::SUCCESS)));
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
-                                       response_callback.Get(),
+  enterprise_rt_service()->StartLookup(url, response_callback.Get(),
                                        content::GetIOThreadTaskRunner({}));
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,

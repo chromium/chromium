@@ -3721,7 +3721,6 @@ chromium-metrics-reviews@google.com.
       label="Records metrics for consumer real time URL lookup service."/>
   <suffix name="Enterprise"
       label="Records metrics for enterprise real time URL lookup service."/>
-  <affected-histogram name="SafeBrowsing.PageLoadToken.RealTimeCheckHasToken"/>
   <affected-histogram name="SafeBrowsing.RT.BackoffState"/>
   <affected-histogram name="SafeBrowsing.RT.GetCache.Time"/>
   <affected-histogram name="SafeBrowsing.RT.GetCacheResult"/>

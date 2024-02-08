@@ -103,13 +103,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Start the full URL lookup for |url| and call |response_callback|
   // on |callback_task_runner| when response is received.
-  // |last_committed_url| and |is_mainframe| are for obtaining page
-  // load token for the request.
   // This function is overridden in unit tests.
   virtual void StartLookup(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
@@ -117,8 +113,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // but to send Protego sampled request specifically.
   virtual void SendSampledRequest(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
   // Helper function to return a weak pointer.
@@ -129,8 +123,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // record profile and the finch flag.
   virtual bool CanPerformFullURLLookup() const = 0;
 
-  // Returns true if this profile has opted-in to check subresource URLs.
-  virtual bool CanCheckSubresourceURL() const = 0;
+  // Returns true if this profile has opted-in to include subframe URLs in
+  // referrer chain.
+  virtual bool CanIncludeSubframeUrlInReferrerChain() const = 0;
 
   // Returns whether safe browsing database can be checked when real time URL
   // check is enabled.
@@ -161,8 +156,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // It also attached an auth header if |access_token_string| is non-empty.
   void SendRequest(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       const std::string& access_token_string,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -199,8 +192,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // true.
   virtual void GetAccessToken(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
 
@@ -275,8 +266,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Fills in fields in |RTLookupRequest|.
   std::unique_ptr<RTLookupRequest> FillRequestProto(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       bool is_sampled_report);
 
   // Logs |request| and |oauth_token| on any open

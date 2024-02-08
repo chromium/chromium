@@ -35,12 +35,11 @@ class RealTimePolicyEngine {
   using ClientConfiguredForTokenFetchesCallback =
       base::OnceCallback<bool(bool user_has_enabled_enhanced_protection)>;
 
-  // Return true if full URL lookups are enabled for |request_destination|. If
-  // |can_urt_check_subresource_url| is set to false, return true only if
-  // |request_destination| is |kDocument|.
+  // Return true if full URL lookups are enabled for |request_destination|.
+  // TODO(crbug.com/324108312): Remove this function as part of the cleanup
+  // after subresource checks are disabled.
   static bool CanPerformFullURLLookupForRequestDestination(
-      network::mojom::RequestDestination request_destination,
-      bool can_urt_check_subresource_url);
+      network::mojom::RequestDestination request_destination);
 
   // Return true if the profile is not Incognito and real-time fetches are
   // available in the user's country, and the user has opted in to ESB or MBB.

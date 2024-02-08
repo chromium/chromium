@@ -116,11 +116,9 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     UnsafeResource::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     bool url_real_time_lookup_enabled,
-    bool can_urt_check_subresource_url,
     bool can_check_db,
     bool can_check_high_confidence_allowlist,
     std::string url_lookup_service_metric_suffix,
-    GURL last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
@@ -139,17 +137,14 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       url_checker_delegate_(std::move(url_checker_delegate)),
       database_manager_(url_checker_delegate_->GetDatabaseManager()),
       url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
-      can_urt_check_subresource_url_(can_urt_check_subresource_url),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
-      last_committed_url_(last_committed_url),
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       hash_realtime_selection_(hash_realtime_selection),
       is_async_check_(is_async_check) {
-  DCHECK(!can_urt_check_subresource_url_ || url_real_time_lookup_enabled_);
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 
   // This object is used exclusively on the IO thread but may be constructed on
@@ -466,10 +461,14 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   DCHECK(!lookup_mechanism_runner_);
   if (CanPerformFullURLLookup(url)) {
     performed_check = PerformedCheck::kUrlRealTimeCheck;
+    // TODO(crbug.com/324108312): Remove this CHECK after we remove subresource
+    // support in this class.
+    CHECK(request_destination_ ==
+          network::mojom::RequestDestination::kDocument);
     lookup_mechanism = std::make_unique<UrlRealTimeMechanism>(
-        url, url_checker_delegate_->GetThreatTypes(), request_destination_,
-        database_manager_, can_check_db_, can_check_high_confidence_allowlist_,
-        url_lookup_service_metric_suffix_, last_committed_url_, ui_task_runner_,
+        url, url_checker_delegate_->GetThreatTypes(), database_manager_,
+        can_check_db_, can_check_high_confidence_allowlist_,
+        url_lookup_service_metric_suffix_, ui_task_runner_,
         url_lookup_service_on_ui_, url_checker_delegate_, web_contents_getter_);
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
@@ -584,7 +583,7 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
 bool SafeBrowsingUrlCheckerImpl::CanPerformFullURLLookup(const GURL& url) {
   return url_real_time_lookup_enabled_ &&
          RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-             request_destination_, can_urt_check_subresource_url_) &&
+             request_destination_) &&
          RealTimeUrlLookupServiceBase::CanCheckUrl(url);
 }
 

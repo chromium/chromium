@@ -87,7 +87,6 @@ class UrlCheckerOnSB final {
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
       bool url_real_time_lookup_enabled,
-      bool can_urt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
@@ -154,12 +153,10 @@ class UrlCheckerOnSB final {
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
   bool url_real_time_lookup_enabled_ = false;
-  bool can_urt_check_subresource_url_ = false;
   bool can_check_db_ = true;
   bool can_check_high_confidence_allowlist_ = true;
   size_t pending_checks_ = 0;
   std::string url_lookup_service_metric_suffix_;
-  GURL last_committed_url_;
   // A list of URLs that are checked by |url_checker_|.
   std::vector<GURL> redirect_chain_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;

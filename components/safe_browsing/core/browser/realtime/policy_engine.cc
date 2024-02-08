@@ -120,18 +120,10 @@ bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
 
 // static
 bool RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-    network::mojom::RequestDestination request_destination,
-    bool can_urt_check_subresource_url) {
+    network::mojom::RequestDestination request_destination) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Requested",
                             request_destination);
-  if (request_destination == network::mojom::RequestDestination::kDocument) {
-    return true;
-  }
-  if (network::IsRequestDestinationEmbeddedFrame(request_destination) &&
-      can_urt_check_subresource_url) {
-    return true;
-  }
-  return false;
+  return request_destination == network::mojom::RequestDestination::kDocument;
 }
 
 }  // namespace safe_browsing

@@ -1766,16 +1766,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.PageLoadToken.RealTimeCheckHasToken"
-    enum="BooleanExists" expires_after="2024-04-28">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a page load token is found before real time URL check
-    request is sent. Logged only when the check is on a subframe URL.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.PageLoadToken.TokenCount" units="entries"
     expires_after="2024-08-04">
   <owner>xinghuilu@chromium.org</owner>
@@ -2167,24 +2157,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}{UserCategory}"
+<histogram name="SafeBrowsing.RT.LocalMatch.Result.{UserCategory}"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-07-14">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the result of checking the {IsMainframe} URL against the local Safe
-    Browsing high confidence allowlist for {UserCategory} real time URL check
-    request. Logged each time a top frame URL navigation happens for users who
-    have the real time URL lookups enabled. It can also be logged for
-    non-mainframe URL hits for EnhancedProtection users.
+    Logs the result of checking the URL against the local Safe Browsing high
+    confidence allowlist for {UserCategory} real time URL check request. Logged
+    each time a top frame URL navigation happens for users who have the real
+    time URL lookups enabled. It can also be logged for non-mainframe URL hits
+    for EnhancedProtection users.
 
     Until M117, this was being logged twice each time for iOS. Bucket ratios
     were still correct, just not total counts.
   </summary>
-  <token key="IsMainframe">
-    <variant name="Mainframe" summary="mainframe"/>
-    <variant name="NonMainframe" summary="non mainframe"/>
-  </token>
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
@@ -2275,17 +2261,6 @@ chromium-metrics-reviews@google.com.
     Logs the user population that was checked by Safe Browsing real time URL
     lookup. Logged on each resource check for which a lookup request is sent to
     the server.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.RT.RequestDestinations.Checked"
-    enum="RequestDestination" expires_after="2024-07-21">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the request destination that was checked by Safe Browsing real time URL
-    lookup. Logged on each resource check that is eligible for real time URL
-    checks.
   </summary>
 </histogram>
 

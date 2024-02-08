@@ -31,11 +31,6 @@ class WebApiHandshakeChecker::CheckerOnSB {
     DCHECK(handshake_checker_);
     DCHECK(delegate_getter_);
     DCHECK(web_contents_getter_);
-
-    content::WebContents* contents = web_contents_getter_.Run();
-    if (!!contents) {
-      last_committed_url_ = contents->GetLastCommittedURL();
-    }
   }
 
   void Check(const GURL& url) {
@@ -78,9 +73,8 @@ class WebApiHandshakeChecker::CheckerOnSB {
         /*render_frame_token=*/std::nullopt, frame_tree_node_id_,
         /*navigation_id=*/std::nullopt,
         /*url_real_time_lookup_enabled=*/false,
-        /*can_urt_check_subresource_url=*/false,
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
-        /*url_lookup_service_metric_suffix=*/".None", last_committed_url_,
+        /*url_lookup_service_metric_suffix=*/".None",
         content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr,
         /*hash_realtime_service_on_ui=*/nullptr,
@@ -141,7 +135,6 @@ class WebApiHandshakeChecker::CheckerOnSB {
   GetDelegateCallback delegate_getter_;
   GetWebContentsCallback web_contents_getter_;
   const int frame_tree_node_id_;
-  GURL last_committed_url_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   base::WeakPtrFactory<CheckerOnSB> weak_factory_{this};
 };

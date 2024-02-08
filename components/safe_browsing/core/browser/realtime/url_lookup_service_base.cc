@@ -296,13 +296,11 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 
 void RealTimeUrlLookupServiceBase::SendSampledRequest(
     const GURL& url,
-    const GURL& last_committed_url,
-    bool is_mainframe,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
-  SendRequest(url, last_committed_url, is_mainframe,
+  SendRequest(url,
               /* access_token_string */ std::string(),
               /* response_callback */ base::NullCallback(),
               std::move(callback_task_runner), /* is_sampled_report */ true);
@@ -310,8 +308,6 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
 
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
-    const GURL& last_committed_url,
-    bool is_mainframe,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -339,11 +335,10 @@ void RealTimeUrlLookupServiceBase::StartLookup(
   }
 
   if (CanPerformFullURLLookupWithToken()) {
-    GetAccessToken(url, last_committed_url, is_mainframe,
-                   std::move(response_callback),
+    GetAccessToken(url, std::move(response_callback),
                    std::move(callback_task_runner));
   } else {
-    SendRequest(url, last_committed_url, is_mainframe,
+    SendRequest(url,
                 /* access_token_string */ std::string(),
                 std::move(response_callback), std::move(callback_task_runner),
                 /* is_sampled_report */ false);
@@ -352,15 +347,13 @@ void RealTimeUrlLookupServiceBase::StartLookup(
 
 void RealTimeUrlLookupServiceBase::SendRequest(
     const GURL& url,
-    const GURL& last_committed_url,
-    bool is_mainframe,
     const std::string& access_token_string,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     bool is_sampled_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<RTLookupRequest> request = FillRequestProto(
-      url, last_committed_url, is_mainframe, is_sampled_report);
+  std::unique_ptr<RTLookupRequest> request =
+      FillRequestProto(url, is_sampled_report);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
@@ -541,8 +534,6 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
 
 std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     const GURL& url,
-    const GURL& last_committed_url,
-    bool is_mainframe,
     bool is_sampled_report) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(SanitizeURL(url).spec());
@@ -551,8 +542,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   request->set_os_type(GetRTLookupRequestOSType());
   request->set_report_type(is_sampled_report ? RTLookupRequest::SAMPLED_REPORT
                                              : RTLookupRequest::FULL_REPORT);
-  request->set_frame_type(is_mainframe ? RTLookupRequest::MAIN_FRAME
-                                       : RTLookupRequest::SUB_FRAME);
+  request->set_frame_type(RTLookupRequest::MAIN_FRAME);
   std::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());
@@ -563,34 +553,15 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
         SanitizeURL(url), GetReferrerUserGestureLimit(),
         request->mutable_referrer_chain());
-    SanitizeReferrerChainEntries(
-        request->mutable_referrer_chain(),
-        GetMinAllowedTimestampForReferrerChains(),
-        /*should_remove_subresource_url=*/!CanCheckSubresourceURL());
+    SanitizeReferrerChainEntries(request->mutable_referrer_chain(),
+                                 GetMinAllowedTimestampForReferrerChains(),
+                                 /*should_remove_subresource_url=*/
+                                 !CanIncludeSubframeUrlInReferrerChain());
   }
 
   if (CanSendPageLoadToken() && cache_manager_) {
     ChromeUserPopulation::PageLoadToken token;
-    if (is_mainframe) {
-      // If the current check is for a mainframe URL, the token must be
-      // refreshed.
-      token = cache_manager_->CreatePageLoadToken(url);
-    } else {
-      // If the current check is for a subframe URL, use |last_committed_url| to
-      // get the page load token. |last_committed_url| is used as a proxy for
-      // the current mainframe URL, because the mainframe URL has to be
-      // committed before subframe navigation starts.
-      token = cache_manager_->GetPageLoadToken(last_committed_url);
-      RecordBooleanWithAndWithoutSuffix(
-          "SafeBrowsing.PageLoadToken.RealTimeCheckHasToken", GetMetricSuffix(),
-          token.has_token_value());
-      // It's possible that the token is not found because the last committed
-      // URL is not checked by real time URL check. Create a new page load token
-      // in this case.
-      if (!token.has_token_value()) {
-        token = cache_manager_->CreatePageLoadToken(last_committed_url);
-      }
-    }
+    token = cache_manager_->CreatePageLoadToken(url);
     request->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
         &token);
   }

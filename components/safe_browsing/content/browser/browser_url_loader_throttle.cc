@@ -214,8 +214,6 @@ void BrowserURLLoaderThrottle::WillStartRequest(
       url_lookup_service_
           ? url_lookup_service_->CanCheckSafeBrowsingHighConfidenceAllowlist()
           : true;
-  bool can_urt_check_subresource_url =
-      url_lookup_service_ && url_lookup_service_->CanCheckSubresourceURL();
 
   if (async_check_tracker_ && navigation_id_.has_value() &&
       // Once |kSafeBrowsingSkipSubresources| is deprecated, the |kDocument|
@@ -234,8 +232,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
                             weak_factory_.GetWeakPtr()),
-        /*url_real_time_lookup_enabled=*/false,
-        /*can_urt_check_subresource_url=*/false, can_check_db,
+        /*url_real_time_lookup_enabled=*/false, can_check_db,
         /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/kNoRealTimeURLLookupService,
         /*url_lookup_service=*/nullptr,
@@ -249,10 +246,9 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteAsyncCheck,
                             weak_factory_.GetWeakPtr()),
-        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
-        can_check_db, can_check_high_confidence_allowlist,
-        url_lookup_service_metric_suffix_, url_lookup_service_,
-        hash_realtime_service_, hash_realtime_selection_,
+        url_real_time_lookup_enabled_, can_check_db,
+        can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
+        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         /*is_async_check=*/true);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
@@ -267,10 +263,9 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
                             weak_factory_.GetWeakPtr()),
-        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
-        can_check_db, can_check_high_confidence_allowlist,
-        url_lookup_service_metric_suffix_, url_lookup_service_,
-        hash_realtime_service_, hash_realtime_selection_,
+        url_real_time_lookup_enabled_, can_check_db,
+        can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
+        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         /*is_async_check=*/false);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
