@@ -187,6 +187,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -334,6 +335,10 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -917,8 +922,19 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
+
+  views::View* watermark_view = nullptr;
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
+    watermark_view = contents_container->AddChildView(
+        std::make_unique<enterprise_watermark::WatermarkView>(
+            "Private! Confidential!"));
+  }
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_));
+      devtools_web_view_, contents_web_view_, watermark_view));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
