@@ -69,8 +69,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_fatal_error = base::BindRepeating(
-        &IndexedDBDatabaseTest::OnFatalError, weak_factory_.GetWeakPtr());
     delegate.on_ready_for_destruction = base::BindRepeating(
         &IndexedDBDatabaseTest::OnBucketContextReadyForDestruction,
         weak_factory_.GetWeakPtr());
@@ -90,10 +88,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 
   void TearDown() override { db_ = nullptr; }
 
-  void OnFatalError(leveldb::Status s, const std::string& error_message) {
-    error_called_ = true;
-  }
-
   void OnBucketContextReadyForDestruction() { bucket_context_.reset(); }
 
   void RunPostedTasks() {
@@ -111,12 +105,10 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
-  // As `this` is owned by `bucket_context_`, tests that cause the database to
+  // As this is owned by `bucket_context_`, tests that cause the database to
   // be destroyed must manually reset this to null to avoid triggering dangling
   // pointer warnings.
   raw_ptr<IndexedDBDatabase> db_ = nullptr;
-
-  bool error_called_ = false;
 
   base::WeakPtrFactory<IndexedDBDatabaseTest> weak_factory_{this};
 };
@@ -517,7 +509,7 @@ TEST_F(IndexedDBDatabaseOperationTest, CreateObjectStore) {
   EXPECT_TRUE(s.ok());
   transaction_->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_FALSE(error_called_);
+  EXPECT_TRUE(bucket_context_);
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
 }
 
@@ -539,7 +531,7 @@ TEST_F(IndexedDBDatabaseOperationTest, CreateIndex) {
       db_->metadata().object_stores.find(store_id)->second.indexes.size());
   transaction_->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_FALSE(error_called_);
+  EXPECT_TRUE(bucket_context_);
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
   EXPECT_EQ(
       1ULL,
@@ -567,9 +559,11 @@ TEST_F(IndexedDBDatabaseOperationAbortTest, CreateObjectStore) {
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
+  db_ = nullptr;
   transaction_->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
+  // A transaction error results in a deleted db.
+  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
 }
 
 TEST_F(IndexedDBDatabaseOperationAbortTest, CreateIndex) {
@@ -588,11 +582,11 @@ TEST_F(IndexedDBDatabaseOperationAbortTest, CreateIndex) {
   EXPECT_EQ(
       1ULL,
       db_->metadata().object_stores.find(store_id)->second.indexes.size());
+  db_ = nullptr;
   transaction_->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_TRUE(error_called_);
-  EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
-  db_ = nullptr;
+  // A transaction error results in a deleted db.
+  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
 }
 
 TEST_F(IndexedDBDatabaseOperationTest, CreatePutDelete) {
@@ -628,11 +622,11 @@ TEST_F(IndexedDBDatabaseOperationTest, CreatePutDelete) {
   EXPECT_TRUE(s.ok());
 
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
-  db_ = nullptr;
 
   transaction_->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_FALSE(error_called_);
+  // A transaction error would have resulted in a deleted db.
+  EXPECT_FALSE(bucket_context_->GetDatabasesForTesting().empty());
   EXPECT_TRUE(s.ok());
 }
 

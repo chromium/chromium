@@ -71,8 +71,6 @@ class IndexedDBTransactionTest : public testing::Test {
         /*special_storage_policy=*/nullptr);
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_fatal_error = base::BindRepeating(
-        &IndexedDBTransactionTest::OnFatalError, base::Unretained(this));
     delegate.on_ready_for_destruction =
         base::BindRepeating(&IndexedDBTransactionTest::OnDbReadyForDestruction,
                             base::Unretained(this));
@@ -91,10 +89,6 @@ class IndexedDBTransactionTest : public testing::Test {
   }
 
   void TearDown() override { db_ = nullptr; }
-
-  void OnFatalError(leveldb::Status s, const std::string& /*error_message*/) {
-    error_called_ = true;
-  }
 
   void OnDbReadyForDestruction() { bucket_context_.reset(); }
 
@@ -133,8 +127,6 @@ class IndexedDBTransactionTest : public testing::Test {
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   raw_ptr<IndexedDBDatabase> db_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-
-  bool error_called_ = false;
 };
 
 class IndexedDBTransactionTestMode
@@ -358,6 +350,7 @@ TEST_P(IndexedDBTransactionTestMode, TaskFails) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   db_->RegisterAndScheduleTransaction(transaction);
+  db_ = nullptr;
 
   EXPECT_FALSE(transaction->HasPendingTasks());
   EXPECT_TRUE(transaction->IsTaskQueueEmpty());
@@ -385,15 +378,14 @@ TEST_P(IndexedDBTransactionTestMode, TaskFails) {
   EXPECT_TRUE(transaction->IsTaskQueueEmpty());
   EXPECT_TRUE(transaction->task_queue_.empty());
   EXPECT_TRUE(transaction->preemptive_task_queue_.empty());
-  EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
+  /// Transaction aborted due to the error.
+  EXPECT_EQ(IndexedDBTransaction::FINISHED, transaction->state());
+  transaction->SetCommitFlag();
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
 
-  EXPECT_TRUE(error_called_);
-
-  transaction->SetCommitFlag();
-  RunPostedTasks();
-  EXPECT_EQ(0UL, connection->transactions().size());
+  // An error was reported which deletes the bucket context.
+  EXPECT_FALSE(bucket_context_);
 }
 
 TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
@@ -414,6 +406,7 @@ TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
   EXPECT_EQ(0, transaction->diagnostics().tasks_completed);
 
   db_->RegisterAndScheduleTransaction(transaction);
+  db_ = nullptr;
 
   EXPECT_FALSE(transaction->HasPendingTasks());
   EXPECT_TRUE(transaction->IsTaskQueueEmpty());
@@ -445,7 +438,7 @@ TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
   transaction->DidCompletePreemptiveEvent();
   transaction->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_TRUE(error_called_);
+  EXPECT_TRUE(bucket_context_->force_close_called_for_testing());
 }
 
 TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
@@ -457,6 +450,7 @@ TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
       mojo::NullAssociatedReceiver(), id, scope, GetParam(),
       new FakeTransaction(commit_failure));
   db_->RegisterAndScheduleTransaction(transaction);
+  db_ = nullptr;
 
   AbortObserver observer;
   transaction->ScheduleTask(
@@ -471,7 +465,8 @@ TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
   transaction->SetCommitFlag();
   RunPostedTasks();
   EXPECT_TRUE(observer.abort_task_called());
-  EXPECT_TRUE(error_called_);
+  // An error was reported which deletes the databases.
+  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
 }
 
 TEST_P(IndexedDBTransactionTestMode, AbortPreemptive) {

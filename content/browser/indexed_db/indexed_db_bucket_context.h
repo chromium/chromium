@@ -135,16 +135,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    // Called when a fatal error has occurred that should result in tearing down
-    // the backing store. `IndexedDBBucketContext` *may* be synchronously
-    // destroyed after this is invoked. The string, if non-empty, is used as an
-    // error message.
-    base::RepeatingCallback<void(leveldb::Status, const std::string&)>
-        on_fatal_error;
-
-    // Called when the backing store has been corrupted.
-    base::RepeatingCallback<void(const IndexedDBDatabaseError&)> on_corruption;
-
     // Called when the bucket context is ready to be destroyed.
     base::RepeatingCallback<void()> on_ready_for_destruction;
 
@@ -156,11 +146,10 @@ class CONTENT_EXPORT IndexedDBBucketContext
                                  const std::u16string& /*object_store_name*/)>
         on_content_changed;
 
-    // Called to inform the quota system that a transaction which may have
-    // updated the amount of disk space used has completed. The parameter is
-    // true for transactions that caused the backing store to flush.
-    base::RepeatingCallback<void(bool /*did_sync*/)>
-        on_writing_transaction_complete;
+    // Called to inform the quota system that an action which may have updated
+    // the amount of disk space used has completed. The parameter is true for
+    // transactions that caused the backing store to flush.
+    base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
 
     // Called to run a given callback on every bucket context (including the one
     // in the current sequence and those in other sequences/associated with
@@ -307,9 +296,20 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
   void CompactBackingStoreForTesting();
 
+  // Called when a fatal error has occurred that should result in tearing down
+  // the backing store. `IndexedDBBucketContext` *may* be synchronously
+  // destroyed after this is invoked. The string, if non-empty, is used as an
+  // error message.
+  void OnDatabaseError(leveldb::Status status, const std::string& message);
+
+  // Called when the backing store has been corrupted.
+  void HandleBackingStoreCorruption(const IndexedDBDatabaseError& error);
+
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  bool force_close_called_for_testing() const { return skip_closing_sequence_; }
 
  private:
   friend IndexedDBFactory;

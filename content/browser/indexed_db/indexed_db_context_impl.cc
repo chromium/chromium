@@ -287,8 +287,6 @@ void IndexedDBContextImpl::DoDeleteBucketData(
 void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
                                       storage::mojom::ForceCloseReason reason,
                                       base::OnceClosure closure) {
-  base::UmaHistogramEnumeration("WebCore.IndexedDB.Context.ForceCloseReason",
-                                reason);
   if (!LookUpBucket(bucket_id)) {
     std::move(closure).Run();
     return;
@@ -727,16 +725,7 @@ const base::FilePath IndexedDBContextImpl::GetFirstPartyDataPathForTesting()
   return GetLegacyDataPath();
 }
 
-void IndexedDBContextImpl::FactoryOpened(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (bucket_set_.insert(bucket_locator).second) {
-    // A newly created db, notify the quota system.
-    NotifyOfBucketModification(bucket_locator);
-  }
-}
-
-void IndexedDBContextImpl::WritingTransactionComplete(
+void IndexedDBContextImpl::OnFilesWritten(
     const storage::BucketLocator& bucket_locator,
     bool flushed) {
   bucket_set_.insert(bucket_locator);
@@ -745,24 +734,6 @@ void IndexedDBContextImpl::WritingTransactionComplete(
     // A negative value indicates "not cached, and LevelDB file write is
     // potentially in progress". See `bucket_size_map_` docs.
     bucket_size_map_[bucket_locator] = -1;
-  }
-}
-
-void IndexedDBContextImpl::DatabaseDeleted(
-    const storage::BucketLocator& bucket_locator) {
-  bucket_set_.insert(bucket_locator);
-  NotifyOfBucketModification(bucket_locator);
-}
-
-void IndexedDBContextImpl::BlobFilesCleaned(
-    const storage::BucketLocator& bucket_locator) {
-  NotifyOfBucketModification(bucket_locator);
-}
-
-void IndexedDBContextImpl::NotifyIndexedDBListChanged(
-    const storage::BucketLocator& bucket_locator) {
-  for (auto& observer : observers_) {
-    observer->OnIndexedDBListChanged(bucket_locator);
   }
 }
 
@@ -899,7 +870,9 @@ void IndexedDBContextImpl::NotifyOfBucketModification(
       storage::QuotaClientType::kIndexedDatabase, bucket_locator,
       /*delta=*/std::nullopt, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
-  NotifyIndexedDBListChanged(bucket_locator);
+  for (auto& observer : observers_) {
+    observer->OnIndexedDBListChanged(bucket_locator);
+  }
 }
 
 void IndexedDBContextImpl::InitializeFromFilesIfNeeded(

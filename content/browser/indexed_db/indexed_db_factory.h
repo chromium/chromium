@@ -124,30 +124,8 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
       const storage::BucketInfo& bucket,
       const base::FilePath& data_directory);
 
-  void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
-
-  //////////////////////////////////////////////////////
-  // Callbacks passed to bucket-sequence classes.
-
   // Applies the given `callback` to all bucket contexts.
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
-
-  // Used to report fatal database errors.
-  void OnDatabaseError(const storage::BucketLocator& bucket_locator,
-                       leveldb::Status s,
-                       const std::string& message);
-
-  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
-                                    const IndexedDBDatabaseError& error);
-
-  void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
-
-  // Passed to IndexedDBBackingStore when blob files have been cleaned.
-  void BlobFilesCleaned(const storage::BucketLocator& bucket_locator);
-
-  // Furnished to the IndexedDBActiveBlobRegistry as a callback.
-  void ReportOutstandingBlobs(const storage::BucketLocator& bucket_locator,
-                              bool blobs_outstanding);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

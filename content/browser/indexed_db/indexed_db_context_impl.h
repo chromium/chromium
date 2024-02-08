@@ -151,18 +151,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
     return io_task_runner_;
   }
 
-  // Methods called by IndexedDBFactory or IndexedDBDispatcherHost for
-  // quota support.
-  void FactoryOpened(const storage::BucketLocator& bucket_locator);
-  // Called when a transaction has completed for the given bucket. `flushed` is
-  // set to true if the transaction had strict durability (i.e. changes are
-  // flushed/synced to disk).
-  void WritingTransactionComplete(const storage::BucketLocator& bucket_locator,
-                                  bool flushed);
-  void DatabaseDeleted(const storage::BucketLocator& bucket_locator);
-
-  // Called when blob files have been cleaned (an aggregated delayed task).
-  void BlobFilesCleaned(const storage::BucketLocator& bucket_locator);
+  // Called when files for the given bucket have been written. `flushed` is set
+  // to true if the writes were flushed to disk already, as with a transaction
+  // that has strict durability.
+  void OnFilesWritten(const storage::BucketLocator& bucket_locator,
+                      bool flushed);
 
   // Will be null in unit tests.
   const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
@@ -196,7 +189,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
                                        : nullptr;
   }
 
-  void NotifyIndexedDBListChanged(const storage::BucketLocator& bucket_locator);
   void NotifyIndexedDBContentChanged(
       const storage::BucketLocator& bucket_locator,
       const std::u16string& database_name,

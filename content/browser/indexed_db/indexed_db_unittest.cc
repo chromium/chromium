@@ -532,8 +532,7 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
       base::BindOnce(
           [](IndexedDBFactory* factory, storage::BucketInfo* bucket_info) {
             factory->GetBucketContextForTesting(bucket_info->id)
-                ->delegate()
-                .on_fatal_error.Run(
+                ->OnDatabaseError(
                     leveldb::Status::NotSupported("operation not supported"),
                     {});
           },

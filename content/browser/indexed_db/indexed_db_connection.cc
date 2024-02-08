@@ -92,7 +92,7 @@ IndexedDBConnection::AbortTransactionsAndClose(
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
   if (!status.ok()) {
-    bucket_context_handle_->delegate().on_fatal_error.Run(status, {});
+    bucket_context_handle_->OnDatabaseError(status, {});
   }
   bucket_context_handle_.Release();
   return callbacks;
@@ -154,8 +154,9 @@ void IndexedDBConnection::AbortTransactionAndTearDownOnError(
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)", "txn.id",
                transaction->id());
   leveldb::Status status = transaction->Abort(error);
-  if (!status.ok())
-    bucket_context_handle_->delegate().on_fatal_error.Run(status, {});
+  if (!status.ok()) {
+    bucket_context_handle_->OnDatabaseError(status, {});
+  }
 }
 
 leveldb::Status IndexedDBConnection::AbortAllTransactions(

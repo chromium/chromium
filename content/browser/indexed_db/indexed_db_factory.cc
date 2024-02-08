@@ -156,45 +156,6 @@ void IndexedDBFactory::DeleteDatabase(
                                       u"Internal error."));
 }
 
-void IndexedDBFactory::HandleBackingStoreFailure(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // nullptr after ContextDestroyed() called, and in some unit tests.
-  if (!context_) {
-    return;
-  }
-  context_->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
-      base::DoNothing());
-}
-
-void IndexedDBFactory::HandleBackingStoreCorruption(
-    storage::BucketLocator bucket_locator,
-    const IndexedDBDatabaseError& error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context_);
-  const base::FilePath path_base = context_->GetDataPath(bucket_locator);
-
-  // The message may contain the database path, which may be considered
-  // sensitive data, and those strings are passed to the extension, so strip it.
-  std::string sanitized_message = base::UTF16ToUTF8(error.message());
-  base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
-                                     path_base.AsUTF8Unsafe(), "...");
-  IndexedDBBackingStore::RecordCorruptionInfo(path_base, bucket_locator,
-                                              sanitized_message);
-  HandleBackingStoreFailure(bucket_locator);
-  // Note: DestroyLevelDB only deletes LevelDB files, leaving all others,
-  //       so our corruption info file will remain.
-  //       The blob directory will be deleted when the database is recreated
-  //       the next time it is opened.
-  const base::FilePath file_path =
-      path_base.Append(indexed_db::GetLevelDBFileName(bucket_locator));
-  leveldb::Status s =
-      IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(file_path);
-  DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
-}
-
 void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
                                   bool will_be_deleted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -219,29 +180,6 @@ void IndexedDBFactory::ContextDestroyed() {
     pair.second->ForceClose(/*doom=*/false);
   }
   bucket_contexts_.clear();
-}
-
-void IndexedDBFactory::ReportOutstandingBlobs(
-    const storage::BucketLocator& bucket_locator,
-    bool blobs_outstanding) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_) {
-    return;
-  }
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  CHECK(it != bucket_contexts_.end());
-
-  it->second->ReportOutstandingBlobs(blobs_outstanding);
-}
-
-void IndexedDBFactory::BlobFilesCleaned(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // nullptr after ContextDestroyed() called, and in some unit tests.
-  if (!context_) {
-    return;
-  }
-  context_->BlobFilesCleaned(bucket_locator);
 }
 
 void IndexedDBFactory::ForEachBucketContext(
@@ -324,24 +262,6 @@ IndexedDBBucketContext& IndexedDBFactory::GetOrCreateBucketContext(
 
   const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   IndexedDBBucketContext::Delegate bucket_delegate;
-  bucket_delegate.on_fatal_error = base::BindRepeating(
-      [](const storage::BucketLocator& bucket_locator,
-         base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s,
-         const std::string& error_message) {
-        if (factory) {
-          factory->OnDatabaseError(bucket_locator, s, error_message);
-        }
-      },
-      bucket_locator, weak_factory_.GetWeakPtr());
-  bucket_delegate.on_corruption = base::BindRepeating(
-      [](const storage::BucketLocator& bucket_locator,
-         base::WeakPtr<IndexedDBFactory> factory,
-         const IndexedDBDatabaseError& error) {
-        if (factory) {
-          factory->HandleBackingStoreCorruption(bucket_locator, error);
-        }
-      },
-      bucket_locator, weak_factory_.GetWeakPtr());
   bucket_delegate.on_ready_for_destruction = base::BindRepeating(
       [](const storage::BucketLocator& bucket_locator,
          base::WeakPtr<IndexedDBFactory> factory) {
@@ -361,12 +281,11 @@ IndexedDBBucketContext& IndexedDBFactory::GetOrCreateBucketContext(
         }
       },
       idb_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
-  bucket_delegate.on_writing_transaction_complete = base::BindRepeating(
+  bucket_delegate.on_files_written = base::BindRepeating(
       [](base::WeakPtr<IndexedDBFactory> factory,
          storage::BucketLocator bucket_locator, bool did_sync) {
         if (factory) {
-          factory->context_->WritingTransactionComplete(bucket_locator,
-                                                        did_sync);
+          factory->context_->OnFilesWritten(bucket_locator, did_sync);
         }
       },
       idb_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
@@ -396,35 +315,6 @@ IndexedDBBucketContext& IndexedDBFactory::GetOrCreateBucketContext(
   it = bucket_contexts_.emplace(bucket_locator.id, std::move(bucket_context))
            .first;
   return *it->second;
-}
-
-void IndexedDBFactory::OnDatabaseError(
-    const storage::BucketLocator& bucket_locator,
-    leveldb::Status status,
-    const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!status.ok());
-  if (status.IsCorruption()) {
-    IndexedDBDatabaseError error(
-        blink::mojom::IDBException::kUnknownError,
-        base::ASCIIToUTF16(message.empty() ? status.ToString() : message));
-    HandleBackingStoreCorruption(bucket_locator, error);
-    return;
-  }
-  if (status.IsIOError()) {
-    context_->quota_manager_proxy()->OnClientWriteFailed(
-        bucket_locator.storage_key);
-  }
-  HandleBackingStoreFailure(bucket_locator);
-}
-
-void IndexedDBFactory::OnDatabaseDeleted(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_) {
-    return;
-  }
-  context_->DatabaseDeleted(bucket_locator);
 }
 
 }  // namespace content
