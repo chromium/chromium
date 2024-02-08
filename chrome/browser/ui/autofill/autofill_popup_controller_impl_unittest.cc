@@ -197,7 +197,15 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
             element_bounds,
             base::i18n::UNKNOWN_DIRECTION,
             std::move(show_pwd_migration_warning_callback),
-            parent) {}
+            parent) {
+    // This is done in order to set the callback to
+    // `TestAutofillPopupController::Hide` (which is mocked below). Otherwise,
+    // it would be set to `AutofillPopupController::Hide()`, which is not
+    // mocked.
+    CreatePopupHideHelper(
+        web_contents, base::BindRepeating(&TestAutofillPopupController::Hide,
+                                          base::Unretained(this)));
+  }
   ~TestAutofillPopupController() override = default;
 
   // Making protected functions public for testing
@@ -1632,9 +1640,11 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   // Triggered by OnZoomChanged().
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kContentAreaMoved));
-  // Triggered by PrimaryMainFrameWasResized().
+  // Override the default ON_CALL behavior to do nothing to avoid destroying the
+  // hide helper. We want to test ZoomObserver events explicitly.
   EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kWidgetChanged));
+              Hide(PopupHidingReason::kWidgetChanged))
+      .WillOnce(Return());
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
   zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
   // Verify and clear before TearDown() closes the popup.

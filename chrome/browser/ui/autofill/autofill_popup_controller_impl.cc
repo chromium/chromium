@@ -143,48 +143,24 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
   CHECK(picture_in_picture_window_manager);
   picture_in_picture_window_observation_.Observe(
       picture_in_picture_window_manager);
-#if !BUILDFLAG(IS_ANDROID)
-  // There may not always be a ZoomController, e.g., in tests.
-  if (auto* zoom_controller =
-          zoom::ZoomController::FromWebContents(web_contents)) {
-    zoom_observation_.Observe(zoom_controller);
-  }
-#endif
+  // The hide helper is destroyed on hide, so it cannot outlive the popup
+  // controller.
+  // TODO(b/320632147): Move this into show and remove the call to
+  // `CreatePopupHideHelper()` from tests.
+  CreatePopupHideHelper(web_contents,
+                        base::BindRepeating(&AutofillPopupControllerImpl::Hide,
+                                            base::Unretained(this)));
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
-void AutofillPopupControllerImpl::WebContentsDestroyed() {
-  Hide(PopupHidingReason::kTabGone);
+void AutofillPopupControllerImpl::CreatePopupHideHelper(
+    content::WebContents* web_contents,
+    AutofillPopupHideHelper::HidingCallback hiding_callback) {
+  popup_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+      web_contents, AutofillPopupHideHelper::HidingParams{},
+      std::move(hiding_callback));
 }
-
-void AutofillPopupControllerImpl::OnWebContentsLostFocus(
-    content::RenderWidgetHost* render_widget_host) {
-  Hide(PopupHidingReason::kFocusChanged);
-}
-
-void AutofillPopupControllerImpl::PrimaryMainFrameWasResized(
-    bool width_changed) {
-#if BUILDFLAG(IS_ANDROID)
-  // Ignore virtual keyboard showing and hiding a strip of suggestions.
-  if (!width_changed) {
-    return;
-  }
-#endif
-  Hide(PopupHidingReason::kWidgetChanged);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-void AutofillPopupControllerImpl::OnZoomControllerDestroyed(
-    zoom::ZoomController* source) {
-  zoom_observation_.Reset();
-}
-
-void AutofillPopupControllerImpl::OnZoomChanged(
-    const zoom::ZoomController::ZoomChangedEventData& data) {
-  Hide(PopupHidingReason::kContentAreaMoved);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AutofillPopupControllerImpl::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
@@ -204,13 +180,6 @@ void AutofillPopupControllerImpl::DidFinishNavigation(
           navigation_handle->GetPreviousRenderFrameHostId()) &&
       !navigation_handle->IsSameDocument()) {
     Hide(PopupHidingReason::kNavigation);
-  }
-}
-
-void AutofillPopupControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
-    Hide(PopupHidingReason::kTabGone);
   }
 }
 
@@ -386,6 +355,7 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   key_press_observer_.Reset();
   autofill_managers_observation_.Reset();
+  popup_hide_helper_.reset();
   AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
 }

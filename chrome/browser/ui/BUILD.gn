@@ -53,6 +53,8 @@ static_library("ui") {
     "autofill/autofill_popup_controller.h",
     "autofill/autofill_popup_controller_impl.cc",
     "autofill/autofill_popup_controller_impl.h",
+    "autofill/autofill_popup_hide_helper.cc",
+    "autofill/autofill_popup_hide_helper.h",
     "autofill/autofill_popup_view.h",
     "autofill/autofill_popup_view_delegate.h",
     "autofill/chrome_autofill_client.cc",
