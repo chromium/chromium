@@ -338,6 +338,15 @@ void UserManagerBase::RemoveUserFromListForRecreation(
                          /*trigger_cryptohome_removal=*/false);
 }
 
+void UserManagerBase::CleanStaleUserInformationFor(
+    const AccountId& account_id) {
+  KnownUser known_user(local_state_);
+  if (known_user.UserExists(account_id)) {
+    known_user.RemovePrefs(account_id);
+    known_user.SaveKnownUser(account_id);
+  }
+}
+
 void UserManagerBase::RemoveUserFromListImpl(
     const AccountId& account_id,
     std::optional<UserRemovalReason> reason,

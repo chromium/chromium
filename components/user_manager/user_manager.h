@@ -267,6 +267,16 @@ class USER_MANAGER_EXPORT UserManager {
   // better solution.
   virtual void RemoveUserFromListForRecreation(const AccountId& account_id) = 0;
 
+  // Removes the user from the device in case when user's cryptohome is lost
+  // for some reason to ensure that user is correctly re-created.
+  // Does not trigger user removal notification.
+  // This method is similar to `RemoveUserFromListForRecreation`, but is
+  // triggered at different stage of login process, and when absence of user
+  // directory is not anticipated by the flow. This removes the user from the
+  // list synchronously, so the following function calls should have updated
+  // users.
+  virtual void CleanStaleUserInformationFor(const AccountId& account_id) = 0;
+
   // Returns true if a user with the given account id is found in the persistent
   // list or currently logged in as ephemeral.
   virtual bool IsKnownUser(const AccountId& account_id) const = 0;
