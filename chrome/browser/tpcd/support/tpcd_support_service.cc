@@ -14,8 +14,6 @@
 #include "components/origin_trials/browser/origin_trials.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -30,7 +28,6 @@ const char kTrialName[] = "Tpcd";
 TpcdTrialService::TpcdTrialService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   ot_controller_ = browser_context->GetOriginTrialsControllerDelegate();
-
   if (ot_controller_) {
     ot_controller_->AddObserver(this);
   }
