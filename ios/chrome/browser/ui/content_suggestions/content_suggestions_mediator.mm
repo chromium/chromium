@@ -329,8 +329,7 @@ using RequestSource = SearchTermsData::RequestSource;
   for (NSUInteger index = 0; index < [_latestMagicStackOrder count]; index++) {
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[_latestMagicStackOrder[index] intValue];
-    if (type == ContentSuggestionsModuleType::kParcelTracking ||
-        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
+    if (type == ContentSuggestionsModuleType::kParcelTracking) {
       MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
       change.new_module = type;
       change.index = index;
@@ -346,8 +345,7 @@ using RequestSource = SearchTermsData::RequestSource;
   for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[_latestMagicStackOrder[i] intValue];
-    if (type == ContentSuggestionsModuleType::kParcelTracking ||
-        type == ContentSuggestionsModuleType::kParcelTrackingSeeMore) {
+    if (type == ContentSuggestionsModuleType::kParcelTracking) {
       MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
       change.old_module = type;
       change.index = [self indexForMagicStackModule:type];
@@ -511,18 +509,12 @@ using RequestSource = SearchTermsData::RequestSource;
 
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
-    if ([[self parcelTrackingItems] firstObject].shouldShowSeeMore) {
-      [magicStackModules
-          addObject:@(int(
-                        ContentSuggestionsModuleType::kParcelTrackingSeeMore))];
-    } else {
       for (NSUInteger i = 0; i < [[self parcelTrackingItems] count]; i++) {
         // Magic Stack will show up to two modules to match the number of
         // parcels tracked.
         [magicStackModules
             addObject:@(int(ContentSuggestionsModuleType::kParcelTracking))];
       }
-    }
   }
 
   return magicStackModules;
@@ -561,8 +553,6 @@ using RequestSource = SearchTermsData::RequestSource;
         [magicStackOrder addObject:moduleNumber];
         break;
       case ContentSuggestionsModuleType::kSafetyCheck:
-      case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-      case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
         if (!IsSafetyCheckMagicStackEnabled() ||
             safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
                 _localState)) {
@@ -581,17 +571,12 @@ using RequestSource = SearchTermsData::RequestSource;
         if (IsIOSParcelTrackingEnabled() &&
             !IsParcelTrackingDisabled(
                 GetApplicationContext()->GetLocalState())) {
-          if ([[self parcelTrackingItems] firstObject].shouldShowSeeMore) {
-            [magicStackOrder addObject:@(int(ContentSuggestionsModuleType::
-                                                 kParcelTrackingSeeMore))];
-          } else {
             for (NSUInteger i = 0; i < [[self parcelTrackingItems] count];
                  i++) {
               // Magic Stack will show up to two modules to match the number of
               // parcels tracked.
               [magicStackOrder addObject:moduleNumber];
             }
-          }
         }
         break;
       default:
@@ -700,18 +685,7 @@ using RequestSource = SearchTermsData::RequestSource;
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  int checkIssuesCount =
-      CheckIssuesCount(self.safetyCheckMediator.safetyCheckState);
-
-  if (checkIssuesCount > 2) {
-    [order addObject:@(int(ContentSuggestionsModuleType::
-                               kSafetyCheckMultiRowOverflow))];
-  } else if (checkIssuesCount > 1) {
-    [order
-        addObject:@(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow))];
-  } else {
     [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
-  }
 }
 
 // Returns YES if the conditions are right to display the Set Up List.

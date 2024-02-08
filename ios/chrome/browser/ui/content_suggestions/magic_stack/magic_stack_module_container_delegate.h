@@ -28,9 +28,6 @@ enum class ContentSuggestionsModuleType;
 // notifications.
 - (void)enableNotifications:(ContentSuggestionsModuleType)type;
 
-// Returns the subtitle string for the module `type`.
-- (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MAGIC_STACK_MODULE_CONTAINER_DELEGATE_H_

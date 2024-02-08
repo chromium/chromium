@@ -46,9 +46,6 @@ bool InvalidPasswordState(PasswordSafetyCheckState state);
 // check in the Safety Check (Magic Stack) module.
 bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state);
 
-// Returns the number of check issues found given `state`.
-int CheckIssuesCount(SafetyCheckState* state);
-
 // Returns true if the Safety Check can be run given `last_run_time`.
 bool CanRunSafetyCheck(std::optional<base::Time> last_run_time);
 

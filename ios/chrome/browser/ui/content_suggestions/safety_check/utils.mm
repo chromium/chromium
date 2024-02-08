@@ -137,24 +137,6 @@ bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state) {
   return state == SafeBrowsingSafetyCheckState::kUnsafe;
 }
 
-int CheckIssuesCount(SafetyCheckState* state) {
-  int invalid_check_count = 0;
-
-  if (InvalidUpdateChromeState(state.updateChromeState)) {
-    invalid_check_count++;
-  }
-
-  if (InvalidPasswordState(state.passwordState)) {
-    invalid_check_count++;
-  }
-
-  if (InvalidSafeBrowsingState(state.safeBrowsingState)) {
-    invalid_check_count++;
-  }
-
-  return invalid_check_count;
-}
-
 bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
   // The Safety Check should be run if it's never been run before.
   if (!last_run_time.has_value()) {

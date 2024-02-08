@@ -136,7 +136,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 - (void)runningStateChanged:(RunningSafetyCheckState)state {
   _safetyCheckState.runningState = state;
-  _safetyCheckState.shouldShowSeeMore = CheckIssuesCount(_safetyCheckState) > 2;
+  _safetyCheckState.shouldShowSeeMore = [_safetyCheckState numberOfIssues] > 2;
 
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
     // Safety Check can be disabled by long-pressing the module, so

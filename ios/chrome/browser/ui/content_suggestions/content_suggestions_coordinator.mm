@@ -414,8 +414,6 @@
       [self.contentSuggestionsMediator disableTabResumption];
       break;
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       [self.contentSuggestionsMediator disableSafetyCheck:type];
       break;
     case ContentSuggestionsModuleType::kSetUpListSync:
@@ -425,8 +423,7 @@
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self.contentSuggestionsMediator disableSetUpList];
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+    case ContentSuggestionsModuleType::kParcelTracking: {
       [self presentParcelTrackingAlertCoordinator];
       break;
     }

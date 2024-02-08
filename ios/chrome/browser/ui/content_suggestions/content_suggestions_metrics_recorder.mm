@@ -74,9 +74,7 @@ const float kMaxModuleEngagementIndex = 50;
       break;
     }
 
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+    case ContentSuggestionsModuleType::kSafetyCheck: {
       // Increment freshness pref since it is an impression of
       // the latest Safety Check results as the top module.
       int freshness_impression_count = _localState->GetInteger(
@@ -99,8 +97,7 @@ const float kMaxModuleEngagementIndex = 50;
           freshness_impression_count + 1);
       break;
     }
-    case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+    case ContentSuggestionsModuleType::kParcelTracking: {
       // Increment freshness pref since it is an impression of
       // the latest Tab Resumption results as the top module.
       int freshness_impression_count = _localState->GetInteger(
@@ -140,8 +137,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementSafetyCheckIndexHistogram, index,
           kMaxModuleEngagementIndex);
@@ -152,7 +147,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
           kMaxModuleEngagementIndex);

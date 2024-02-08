@@ -95,7 +95,7 @@
     return;
   }
 
-  int checkIssuesCount = CheckIssuesCount(_state);
+  int checkIssuesCount = [_state numberOfIssues];
 
   // Show the "All Safe" state if there are no check issues.
   if (checkIssuesCount == 0) {
