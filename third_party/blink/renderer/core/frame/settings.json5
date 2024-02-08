@@ -1015,35 +1015,35 @@
       initial: true,
     },
     //
-    // Lazy frame loading distance-from-viewport thresholds for different effective connection types.
+    // Lazy loading frame margins (distance from viewport) for different effective connection types.
     //
     {
-      name: "lazyFrameLoadingDistanceThresholdPxUnknown",
+      name: "lazyLoadingFrameMarginPxUnknown",
       initial: 4000,
       type: "int",
     },
     {
-      name: "lazyFrameLoadingDistanceThresholdPxOffline",
+      name: "lazyLoadingFrameMarginPxOffline",
       initial: 8000,
       type: "int",
     },
     {
-      name: "lazyFrameLoadingDistanceThresholdPxSlow2G",
+      name: "lazyLoadingFrameMarginPxSlow2G",
       initial: 8000,
       type: "int",
     },
     {
-      name: "lazyFrameLoadingDistanceThresholdPx2G",
+      name: "lazyLoadingFrameMarginPx2G",
       initial: 6000,
       type: "int",
     },
     {
-      name: "lazyFrameLoadingDistanceThresholdPx3G",
+      name: "lazyLoadingFrameMarginPx3G",
       initial: 3500,
       type: "int",
     },
     {
-      name: "lazyFrameLoadingDistanceThresholdPx4G",
+      name: "lazyLoadingFrameMarginPx4G",
       initial: 2500,
       type: "int",
     },

@@ -381,8 +381,7 @@ class LazyLoadImagesTest : public SimTest {
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetLazyLoadingImageMarginPx4G(kLoadingDistanceThreshold);
-    settings.SetLazyFrameLoadingDistanceThresholdPx4G(
-        kLoadingDistanceThreshold);
+    settings.SetLazyLoadingFrameMarginPx4G(kLoadingDistanceThreshold);
   }
 
   String MakeMainResourceString(const char* image_attributes) {

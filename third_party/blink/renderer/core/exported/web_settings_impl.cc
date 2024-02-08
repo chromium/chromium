@@ -701,34 +701,28 @@ void WebSettingsImpl::SetLazyLoadEnabled(bool enabled) {
   settings_->SetLazyLoadEnabled(enabled);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPxUnknown(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPxUnknown(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPxUnknown(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPxUnknown(distance_px);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPxOffline(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPxOffline(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPxOffline(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPxOffline(distance_px);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPxSlow2G(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPxSlow2G(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPxSlow2G(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPxSlow2G(distance_px);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPx2G(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPx2G(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPx2G(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPx2G(distance_px);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPx3G(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPx3G(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPx3G(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPx3G(distance_px);
 }
 
-void WebSettingsImpl::SetLazyFrameLoadingDistanceThresholdPx4G(
-    int distance_px) {
-  settings_->SetLazyFrameLoadingDistanceThresholdPx4G(distance_px);
+void WebSettingsImpl::SetLazyLoadingFrameMarginPx4G(int distance_px) {
+  settings_->SetLazyLoadingFrameMarginPx4G(distance_px);
 }
 
 void WebSettingsImpl::SetLazyLoadingImageMarginPxUnknown(int distance_px) {
