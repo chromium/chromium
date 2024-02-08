@@ -944,10 +944,10 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
     scroll->SetPreferredSize(gfx::Size(600, height));
     scroll->SetContents(base::WrapUnique(content));
     scroll->SetBackgroundColor(std::nullopt);
-    scroll->SetVerticalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(false));
-    scroll->SetHorizontalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(true));
+    scroll->SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+        views::ScrollBar::Orientation::kVertical));
+    scroll->SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
+        views::ScrollBar::Orientation::kHorizontal));
     return scroll;
   };
   container_->AddChildView(make_scroll(global_action_view_container_, 110));

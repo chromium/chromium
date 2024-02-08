@@ -17,7 +17,7 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
   METADATA_HEADER(OverlayScrollBar, ScrollBar)
 
  public:
-  explicit OverlayScrollBar(bool horizontal);
+  explicit OverlayScrollBar(Orientation orientation);
 
   OverlayScrollBar(const OverlayScrollBar&) = delete;
   OverlayScrollBar& operator=(const OverlayScrollBar&) = delete;

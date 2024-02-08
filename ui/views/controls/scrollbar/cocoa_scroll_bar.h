@@ -24,7 +24,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   METADATA_HEADER(CocoaScrollBar, ScrollBar)
 
  public:
-  explicit CocoaScrollBar(bool horizontal);
+  explicit CocoaScrollBar(ScrollBar::Orientation orientation);
 
   CocoaScrollBar(const CocoaScrollBar&) = delete;
   CocoaScrollBar& operator=(const CocoaScrollBar&) = delete;

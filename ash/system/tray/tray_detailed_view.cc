@@ -172,7 +172,7 @@ void TrayDetailedView::CreateScrollableList() {
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
 
   auto vertical_scroll = std::make_unique<RoundedScrollBar>(
-      /*horizontal=*/false);
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kScrollBarInsets);
   scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
   scroller_->SetProperty(views::kMarginsKey, delegate_->GetScrollViewMargin());

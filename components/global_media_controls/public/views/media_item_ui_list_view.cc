@@ -49,10 +49,10 @@ MediaItemUIListView::MediaItemUIListView(
   ClipHeightTo(0, should_clip_height ? kMediaListMaxHeight
                                      : std::numeric_limits<int>::max());
 
-  SetVerticalScrollBar(
-      std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));
-  SetHorizontalScrollBar(
-      std::make_unique<views::OverlayScrollBar>(/*horizontal=*/true));
+  SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+      views::ScrollBar::Orientation::kVertical));
+  SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
+      views::ScrollBar::Orientation::kHorizontal));
 }
 
 MediaItemUIListView::~MediaItemUIListView() = default;

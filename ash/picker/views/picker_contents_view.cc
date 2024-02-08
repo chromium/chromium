@@ -80,8 +80,8 @@ PickerContentsView::PickerContentsView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto* scroll_view = AddChildView(std::make_unique<PickerScrollView>());
-  auto vertical_scroll_bar =
-      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  auto vertical_scroll_bar = std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll_bar));
 

@@ -55,8 +55,9 @@ const Button::KeyClickAction PlatformStyle::kKeyClickActionOnSpace =
 const bool PlatformStyle::kReturnClicksFocusedControl = false;
 
 // static
-std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {
-  return std::make_unique<CocoaScrollBar>(is_horizontal);
+std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
+    ScrollBar::Orientation orientation) {
+  return std::make_unique<CocoaScrollBar>(orientation);
 }
 
 // static

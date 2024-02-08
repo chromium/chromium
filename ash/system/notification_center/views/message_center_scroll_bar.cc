@@ -46,7 +46,7 @@ BEGIN_METADATA(MessageCenterScrollBar, RoundedScrollBar)
 END_METADATA
 
 MessageCenterScrollBar::MessageCenterScrollBar()
-    : RoundedScrollBar(/*horizontal=*/false) {
+    : RoundedScrollBar(views::ScrollBar::Orientation::kVertical) {
   GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
   GetThumb()->layer()->CompleteAllAnimations();
 }

@@ -93,13 +93,18 @@ class VIEWS_EXPORT ScrollBar : public View,
     kNextPage,
   };
 
+  // Whether the scrollbar is horizontal or vertical.
+  enum class Orientation : bool {
+    kHorizontal,
+    kVertical,
+  };
+
   ScrollBar(const ScrollBar&) = delete;
   ScrollBar& operator=(const ScrollBar&) = delete;
 
   ~ScrollBar() override;
 
-  // Returns whether this scrollbar is horizontal.
-  bool IsHorizontal() const;
+  Orientation GetOrientation() const;
 
   void set_controller(ScrollBarController* controller) {
     controller_ = controller;
@@ -187,7 +192,7 @@ class VIEWS_EXPORT ScrollBar : public View,
   // Create new scrollbar, either horizontal or vertical. These are protected
   // since you need to be creating either a NativeScrollBar or a
   // ImageScrollBar.
-  explicit ScrollBar(bool is_horiz);
+  explicit ScrollBar(Orientation orientation);
 
   BaseScrollBarThumb* GetThumb() const;
 
@@ -264,7 +269,7 @@ class VIEWS_EXPORT ScrollBar : public View,
   // was invoked.
   int context_menu_mouse_position_ = 0;
 
-  const bool is_horiz_;
+  const Orientation orientation_;
 
   raw_ptr<BaseScrollBarThumb> thumb_ = nullptr;
 

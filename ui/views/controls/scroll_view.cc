@@ -285,8 +285,10 @@ ScrollView::ScrollView()
                      : ScrollWithLayers::kDisabled) {}
 
 ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
-    : horiz_sb_(AddChildView(PlatformStyle::CreateScrollBar(true))),
-      vert_sb_(AddChildView(PlatformStyle::CreateScrollBar(false))),
+    : horiz_sb_(AddChildView(
+          PlatformStyle::CreateScrollBar(ScrollBar::Orientation::kHorizontal))),
+      vert_sb_(AddChildView(
+          PlatformStyle::CreateScrollBar(ScrollBar::Orientation::kVertical))),
       corner_view_(std::make_unique<ScrollCornerView>()),
       scroll_with_layers_enabled_(scroll_with_layers ==
                                   ScrollWithLayers::kEnabled) {
@@ -1029,7 +1031,8 @@ void ScrollView::ScrollToPosition(ScrollBar* source, int position) {
 int ScrollView::GetScrollIncrement(ScrollBar* source,
                                    bool is_page,
                                    bool is_positive) {
-  bool is_horizontal = source->IsHorizontal();
+  bool is_horizontal =
+      source->GetOrientation() == ScrollBar::Orientation::kHorizontal;
   if (is_page) {
     return is_horizontal ? contents_viewport_->width()
                          : contents_viewport_->height();

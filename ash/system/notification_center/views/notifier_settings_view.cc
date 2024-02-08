@@ -661,7 +661,8 @@ NotifierSettingsView::NotifierSettingsView() {
     auto scroller = std::make_unique<views::ScrollView>();
     scroller->SetBackgroundColor(std::nullopt);
     scroll_bar_ = scroller->SetVerticalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));
+        std::make_unique<views::OverlayScrollBar>(
+            views::ScrollBar::Orientation::kVertical));
     scroller->SetDrawOverflowIndicator(false);
     scroller_ = AddChildView(std::move(scroller));
 

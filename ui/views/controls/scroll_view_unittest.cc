@@ -251,8 +251,8 @@ class TestScrollBar : public ScrollBar {
   METADATA_HEADER(TestScrollBar, ScrollBar)
 
  public:
-  TestScrollBar(bool horizontal, bool overlaps_content, int thickness)
-      : ScrollBar(horizontal),
+  TestScrollBar(Orientation orientation, bool overlaps_content, int thickness)
+      : ScrollBar(orientation),
         overlaps_content_(overlaps_content),
         thickness_(thickness) {
     SetThumb(new TestScrollBarThumb(this));
@@ -2137,11 +2137,13 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledHorizontalScroll) {
 
   constexpr int kThickness = 1;
   // Assume horizontal scroll bar is the default and is overlapping.
-  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/true, /*overlaps_content=*/true, kThickness));
+  scroll_view_->SetHorizontalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kHorizontal,
+                                      /*overlaps_content=*/true, kThickness));
   // Assume vertical scroll bar is custom and it we want it to not overlap.
-  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/false, /*overlaps_content=*/false, kThickness));
+  scroll_view_->SetVerticalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kVertical,
+                                      /*overlaps_content=*/false, kThickness));
 
   // Also, let's turn off horizontal scroll bar.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -2163,11 +2165,13 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenHorizontalScroll) {
 
   constexpr int kThickness = 1;
   // Assume horizontal scroll bar is the default and is overlapping.
-  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/true, /*overlaps_content=*/true, kThickness));
+  scroll_view_->SetHorizontalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kHorizontal,
+                                      /*overlaps_content=*/true, kThickness));
   // Assume vertical scroll bar is custom and it we want it to not overlap.
-  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/false, /*overlaps_content=*/false, kThickness));
+  scroll_view_->SetVerticalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kVertical,
+                                      /*overlaps_content=*/false, kThickness));
 
   // Also, let's turn off horizontal scroll bar.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -2189,11 +2193,13 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledVerticalScroll) {
 
   constexpr int kThickness = 1;
   // Assume horizontal scroll bar is custom and it we want it to not overlap.
-  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/true, /*overlaps_content=*/false, kThickness));
+  scroll_view_->SetHorizontalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kHorizontal,
+                                      /*overlaps_content=*/false, kThickness));
   // Assume vertical scroll bar is the default and is overlapping.
-  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/false, /*overlaps_content=*/true, kThickness));
+  scroll_view_->SetVerticalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kVertical,
+                                      /*overlaps_content=*/true, kThickness));
 
   // Also, let's turn off horizontal scroll bar.
   scroll_view_->SetVerticalScrollBarMode(ScrollView::ScrollBarMode::kDisabled);
@@ -2214,11 +2220,13 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenVerticalScroll) {
 
   constexpr int kThickness = 1;
   // Assume horizontal scroll bar is custom and it we want it to not overlap.
-  scroll_view_->SetHorizontalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/true, /*overlaps_content=*/false, kThickness));
+  scroll_view_->SetHorizontalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kHorizontal,
+                                      /*overlaps_content=*/false, kThickness));
   // Assume vertical scroll bar is the default and is overlapping.
-  scroll_view_->SetVerticalScrollBar(std::make_unique<TestScrollBar>(
-      /*horizontal=*/false, /*overlaps_content=*/true, kThickness));
+  scroll_view_->SetVerticalScrollBar(
+      std::make_unique<TestScrollBar>(ScrollBar::Orientation::kVertical,
+                                      /*overlaps_content=*/true, kThickness));
 
   // Also, let's turn off horizontal scroll bar.
   scroll_view_->SetVerticalScrollBarMode(

@@ -223,10 +223,12 @@ ScrollableUsersListView::ScrollableUsersListView(
   SetBackgroundColor(std::nullopt);
   SetDrawOverflowIndicator(false);
 
-  auto vertical_scroll = std::make_unique<RoundedScrollBar>(false);
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kVerticalScrollInsets);
   SetVerticalScrollBar(std::move(vertical_scroll));
-  SetHorizontalScrollBar(std::make_unique<RoundedScrollBar>(true));
+  SetHorizontalScrollBar(std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kHorizontal));
 
   observation_.Observe(Shell::Get()->wallpaper_controller());
 }
