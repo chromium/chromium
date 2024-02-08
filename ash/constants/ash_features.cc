@@ -1143,12 +1143,6 @@ BASE_FEATURE(kFilesTrashDrive,
              "FilesTrashDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the jelly colors will be used in the firmware update app.
-// Requires jelly-colors flag to also be enabled.
-BASE_FEATURE(kFirmwareUpdateJelly,
-             "FirmwareUpdateJelly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the v2 version of the Firmware Updates app.
 BASE_FEATURE(kFirmwareUpdateUIV2,
              "FirmwareUpdateUIV2",
@@ -3689,11 +3683,6 @@ bool IsIppClientInfoEnabled() {
 bool IsJellyEnabledForDiagnosticsApp() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kDiagnosticsAppJelly);
-}
-
-bool IsJellyEnabledForFirmwareUpdate() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kFirmwareUpdateJelly);
 }
 
 bool IsJellyEnabledForOsFeedback() {

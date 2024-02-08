@@ -6540,12 +6540,6 @@ const char kFileSystemProviderContentCacheDescription[] =
     "Enable the ability for individual FileSystemProvider extensions to "
     "leverage a content cache.";
 
-const char kFirmwareUpdateJellyName[] =
-    "Enable jelly colors for the Firmware Update App";
-const char kFirmwareUpdateJellyDescription[] =
-    "Enable jelly colors for the Firmware Update App. Requires "
-    "jelly-colors flag to be enabled.";
-
 const char kFirmwareUpdateUIV2Name[] =
     "Enables the v2 version of the Firmware Updates app";
 const char kFirmwareUpdateUIV2Description[] =

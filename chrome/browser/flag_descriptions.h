@@ -3768,9 +3768,6 @@ extern const char kFilesTrashDriveDescription[];
 extern const char kFileSystemProviderContentCacheName[];
 extern const char kFileSystemProviderContentCacheDescription[];
 
-extern const char kFirmwareUpdateJellyName[];
-extern const char kFirmwareUpdateJellyDescription[];
-
 extern const char kFirmwareUpdateUIV2Name[];
 extern const char kFirmwareUpdateUIV2Description[];
 
