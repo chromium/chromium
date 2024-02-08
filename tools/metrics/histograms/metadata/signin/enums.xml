@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Avatar bubble sign in"/>
   <int value="11" label="Profile picker"/>
   <int value="12" label="Devices page"/>
-  <int value="13" label="Cloud print"/>
+  <int value="13" label="(obsolete) Cloud print"/>
   <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Signin promo"/>
   <int value="16" label="Recent tabs"/>

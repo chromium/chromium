@@ -26,7 +26,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
     AccessPoint::ACCESS_POINT_USER_MANAGER,
     AccessPoint::ACCESS_POINT_DEVICES_PAGE,
-    AccessPoint::ACCESS_POINT_CLOUD_PRINT,
     AccessPoint::ACCESS_POINT_SIGNIN_PROMO,
     AccessPoint::ACCESS_POINT_RECENT_TABS,
     AccessPoint::ACCESS_POINT_UNKNOWN,
@@ -58,7 +57,6 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
     AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
     AccessPoint::ACCESS_POINT_DEVICES_PAGE,
-    AccessPoint::ACCESS_POINT_CLOUD_PRINT,
     AccessPoint::ACCESS_POINT_SIGNIN_PROMO,
     AccessPoint::ACCESS_POINT_RECENT_TABS,
     AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
@@ -104,8 +102,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "UserManager";
       case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
         return "DevicesPage";
-      case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-        return "CloudPrint";
       case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
         return "SigninPromo";
       case AccessPoint::ACCESS_POINT_RECENT_TABS:
