@@ -560,6 +560,11 @@ bool AppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
                            GetCurrentTime())) {
     return false;
   }
+  // If the manifest_id isn't valid, then we don't have enough information to
+  // show any banner for this page yet.
+  if (!manifest_id_.is_valid()) {
+    return false;
+  }
   auto a2hs_params = AppBannerManagerAndroid::CreateAddToHomescreenParams(
       GetCurrentInstallBannerConfig(), native_java_app_data_, install_source);
   return PwaBottomSheetController::MaybeShow(
