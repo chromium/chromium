@@ -46,11 +46,14 @@ class AshEventStorageTest : public testing::Test {
   }
 
   std::unique_ptr<AshEventStorage> BuildTestStorage() {
-    return std::make_unique<AshEventStorage>(
+    auto storage = std::make_unique<AshEventStorage>(
         /*write_delay=*/base::Seconds(0),
         GetTestDirectory()
             .Append(FILE_PATH_LITERAL("structured_metrics"))
             .Append(FILE_PATH_LITERAL("events")));
+    // Wait for the device events to be loaded.
+    Wait();
+    return storage;
   }
 
   StructuredDataProto GetReport(AshEventStorage* storage) {

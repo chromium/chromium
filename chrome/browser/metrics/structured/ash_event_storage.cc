@@ -208,8 +208,11 @@ void AshEventStorage::OnProfileReady() {
     }
   }
 
-  (*pre_user_events_)->Clear();
-  pre_user_events_->QueueWrite();
+  // Regardless of if there are any events cleanup the storage.
+  if (pre_user_events()) {
+    (*pre_user_events_)->Clear();
+    pre_user_events_->QueueWrite();
+  }
 
   // The write is fine because it will add to a task that is not tied to the
   // lifetime of |pre_user_events_|.
