@@ -989,7 +989,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
         # Not an error in third_party folders.
-        _THIRD_PARTY_EXCEPT_BLINK
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # //base/numerics can't use base or absl.
+        r'base/numerics/.*'
       ],
     ),
     BanRule(
@@ -1212,7 +1214,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'standard C++ casting when pointers are involved.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+      [
+        # Don't warn in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # //base/numerics can't use base or absl.
+        r'base/numerics/.*'
+      ],
     ),
     BanRule(
       r'/\bstd::(c8rtomb|mbrtoc8)\b',
