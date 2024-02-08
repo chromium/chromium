@@ -82,12 +82,14 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/update.js';
 
-export type ScreensList = Array<{
-  tag: string,
-  id: string,
-  condition?: string,
-  extra_classes?: string[],
-}>;
+//TODO(b/324392321) Move type definition to oobe_types after its TS migration
+export interface OobeScreen {
+  tag: string;
+  id: string;
+  condition?: string;
+  extra_classes?: string[];
+}
+export interface ScreensList extends Array<OobeScreen>{}
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
