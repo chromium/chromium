@@ -69,6 +69,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     kNotSupported,
     kSupported
   };
+  enum class BluetoothRole { kCentral = 0, kPeripheral, kCentralPeripheral };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Interface for observing changes from bluetooth adapters.
@@ -769,6 +770,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
+
+  // Returns a list of all the roles that are supported by the adapter.
+  virtual std::vector<BluetoothRole> GetSupportedRoles() = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

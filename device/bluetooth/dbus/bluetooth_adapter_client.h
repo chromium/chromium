@@ -111,6 +111,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
     // Local Device ID information in Linux kernel modalias format. Read-only.
     dbus::Property<std::string> modalias;
 
+    // List of roles supported by the adapter. Read-only.
+    dbus::Property<std::vector<std::string>> roles;
+
     Properties(dbus::ObjectProxy* object_proxy,
                const std::string& interface_name,
                const PropertyChangedCallback& callback);

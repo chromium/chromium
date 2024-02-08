@@ -135,6 +135,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothLowEnergyScanSession>(
           std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
           base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
+  MOCK_METHOD0(GetSupportedRoles, std::vector<BluetoothRole>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

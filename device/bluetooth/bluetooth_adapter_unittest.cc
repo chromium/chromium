@@ -166,6 +166,10 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       override {
     return nullptr;
   }
+
+  std::vector<BluetoothRole> GetSupportedRoles() override {
+    return std::vector<BluetoothRole>{};
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1732,6 +1732,35 @@ BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
              ? LowEnergyScanSessionHardwareOffloadingStatus::kSupported
              : LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
+
+std::vector<BluetoothAdapter::BluetoothRole>
+BluetoothAdapterBlueZ::GetSupportedRoles() {
+  std::vector<BluetoothAdapter::BluetoothRole> roles;
+
+  if (!IsPresent()) {
+    return roles;
+  }
+
+  bluez::BluetoothAdapterClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothAdapterClient()
+          ->GetProperties(object_path_);
+  DCHECK(properties);
+
+  for (auto role : properties->roles.value()) {
+    if (role == "central") {
+      roles.push_back(BluetoothAdapter::BluetoothRole::kCentral);
+    } else if (role == "peripheral") {
+      roles.push_back(BluetoothAdapter::BluetoothRole::kPeripheral);
+    } else if (role == "central-peripheral") {
+      roles.push_back(BluetoothAdapter::BluetoothRole::kCentralPeripheral);
+    } else {
+      BLUETOOTH_LOG(EVENT) << __func__ << ": Unknown role: " << role;
+    }
+  }
+
+  return roles;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

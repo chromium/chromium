@@ -99,6 +99,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   // Set discoverable timeout
   void SetDiscoverableTimeout(base::TimeDelta timeout);
 
+  // Set adapter roles
+  void SetRoles(const std::vector<std::string>& roles);
+
   // Object path, name and addresses of the adapters we emulate.
   static const char kAdapterPath[];
   static const char kAdapterName[];

@@ -647,6 +647,12 @@ device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
   return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
+
+std::vector<device::BluetoothAdapter::BluetoothRole>
+FakeCentral::GetSupportedRoles() {
+  NOTREACHED();
+  return std::vector<device::BluetoothAdapter::BluetoothRole>{};
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

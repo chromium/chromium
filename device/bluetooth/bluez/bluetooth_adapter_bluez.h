@@ -193,6 +193,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
+
+  std::vector<BluetoothRole> GetSupportedRoles() override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

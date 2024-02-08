@@ -1529,6 +1529,12 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
              : device::BluetoothAdapter::
                    LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
+
+std::vector<device::BluetoothAdapter::BluetoothRole>
+BluetoothAdapterFloss::GetSupportedRoles() {
+  // TODO(b/310995348) - wire to Floss
+  return std::vector<device::BluetoothAdapter::BluetoothRole>{};
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

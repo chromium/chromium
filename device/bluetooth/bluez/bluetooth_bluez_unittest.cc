@@ -5327,6 +5327,37 @@ TEST_F(BluetoothBlueZTest, IsExtendedAdvertisementsAvailable) {
   // TODO(b/310269227): update test logic once BlueZ extension is ready.
   EXPECT_EQ(false, adapter_bluez->IsExtendedAdvertisementsAvailable());
 }
+
+TEST_F(BluetoothBlueZTest, GetSupportedRoles) {
+  std::vector<std::string> adapter_roles;
+  GetAdapter();
+
+  ASSERT_TRUE(adapter_->GetSupportedRoles().empty());
+
+  // An unknown role should be ignored
+  adapter_roles.push_back("unknown-role");
+  fake_bluetooth_adapter_client_->SetRoles(adapter_roles);
+  ASSERT_TRUE(adapter_->GetSupportedRoles().empty());
+
+  adapter_roles.push_back("central");
+  fake_bluetooth_adapter_client_->SetRoles(adapter_roles);
+  EXPECT_EQ(1u, adapter_->GetSupportedRoles().size());
+  ASSERT_TRUE(base::Contains(adapter_->GetSupportedRoles(),
+                             BluetoothAdapter::BluetoothRole::kCentral));
+
+  adapter_roles.push_back("peripheral");
+  fake_bluetooth_adapter_client_->SetRoles(adapter_roles);
+  EXPECT_EQ(2u, adapter_->GetSupportedRoles().size());
+  ASSERT_TRUE(base::Contains(adapter_->GetSupportedRoles(),
+                             BluetoothAdapter::BluetoothRole::kPeripheral));
+
+  adapter_roles.push_back("central-peripheral");
+  fake_bluetooth_adapter_client_->SetRoles(adapter_roles);
+  EXPECT_EQ(3u, adapter_->GetSupportedRoles().size());
+  ASSERT_TRUE(
+      base::Contains(adapter_->GetSupportedRoles(),
+                     BluetoothAdapter::BluetoothRole::kCentralPeripheral));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace bluez

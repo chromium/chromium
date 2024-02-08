@@ -187,6 +187,7 @@ BluetoothAdapterClient::Properties::Properties(
   RegisterProperty(bluetooth_adapter::kDiscoveringProperty, &discovering);
   RegisterProperty(bluetooth_adapter::kUUIDsProperty, &uuids);
   RegisterProperty(bluetooth_adapter::kModaliasProperty, &modalias);
+  RegisterProperty(bluetooth_adapter::kRolesProperty, &roles);
 }
 
 BluetoothAdapterClient::Properties::~Properties() = default;

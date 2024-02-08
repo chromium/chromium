@@ -352,6 +352,11 @@ void FakeBluetoothAdapterClient::SetDiscoverableTimeout(
   properties_->discoverable_timeout.ReplaceValue(timeout.InSeconds());
 }
 
+void FakeBluetoothAdapterClient::SetRoles(
+    const std::vector<std::string>& roles) {
+  properties_->roles.ReplaceValue(roles);
+}
+
 void FakeBluetoothAdapterClient::OnPropertyChanged(
     const std::string& property_name) {
   if (property_name == properties_->powered.name() &&
