@@ -162,6 +162,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let isPreviousCellSelected = (indexPath.item - 1) == selectedIndexPath?.item
     cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable
 
+    if UIAccessibility.isVoiceOverRunning {
+      // Prevent frame resizing while VoiceOver is active.
+      // This ensures swiping right/left goes to the next cell.
+      return layoutAttributes
+    }
+
     /// Recalculate the cell width and origin when it intersects with the left
     /// collection view's bounds. The cell should collapse within the collection
     /// view's bounds until its width reaches 0. Its `separatorHeight` is also

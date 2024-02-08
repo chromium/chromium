@@ -13,6 +13,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -170,8 +172,9 @@ UIImage* DefaultFavicon() {
 }
 
 - (void)setTitle:(NSString*)title {
-  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
+  self.accessibilityLabel = title;
 
+  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
   [self updateTitleGradientViewConstraints];
@@ -254,6 +257,9 @@ UIImage* DefaultFavicon() {
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
+  self.accessibilityTraits =
+      selected ? UIAccessibilityTraitSelected : UIAccessibilityTraitNone;
+
   if (selected) {
     /// The cell attributes is updated just after the cell selection.
     /// Hide separtors to avoid an animation glitch when selecting/inserting.
@@ -325,6 +331,21 @@ UIImage* DefaultFavicon() {
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   [self updateColors];
+}
+
+#pragma mark - UIAccessibility
+
+- (BOOL)isAccessibilityElement {
+  // This makes the whole cell tappable in VoiceOver rather than the individual
+  // title and close button.
+  return YES;
+}
+
+- (NSArray*)accessibilityCustomActions {
+  return @[ [[UIAccessibilityCustomAction alloc]
+      initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_TAB)
+            target:self
+          selector:@selector(closeButtonTapped:)] ];
 }
 
 #pragma mark - UIPointerInteractionDelegate
