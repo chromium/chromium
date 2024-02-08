@@ -3211,6 +3211,8 @@ source_set("browser") {
       "memory/swap_metrics_driver_impl_linux.h",
       "navigation_transitions/back_forward_transition_animation_manager_android.cc",
       "navigation_transitions/back_forward_transition_animation_manager_android.h",
+      "navigation_transitions/back_forward_transition_animator.cc",
+      "navigation_transitions/back_forward_transition_animator.h",
       "navigation_transitions/physics_model.cc",
       "navigation_transitions/physics_model.h",
       "renderer_host/compositor_dependencies_android.cc",
