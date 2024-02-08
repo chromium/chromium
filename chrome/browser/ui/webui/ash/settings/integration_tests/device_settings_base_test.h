@@ -58,6 +58,14 @@ class DeviceSettingsBaseTest : public InteractiveAshTest {
   void SetPointingStickDevices(
       const std::vector<ui::InputDevice>& pointing_sticks);
 
+  // Enters lower-case text into the focused html input element.
+  ui::test::InteractiveTestApi::StepBuilder EnterLowerCaseText(
+      const std::string& text);
+
+  ui::test::InteractiveTestApi::StepBuilder SendKeyPressEvent(
+      ui::KeyboardCode key,
+      int modifier = ui::EF_NONE);
+
   // Query to pierce through Shadow DOM to find the keyboard.
   const DeepQuery kKeyboardNameQuery{
       "os-settings-ui",

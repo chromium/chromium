@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
-#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
 
 namespace {
 
-class DeviceSettingsSixPackKeysTest : public DeviceSettingsBaseTest {
+class DeviceKeyboardModifierRemappingTest : public DeviceSettingsBaseTest {
  public:
   // Query to pierce through Shadow DOM to find the touchpad row.
   const DeepQuery kKeyboardRowQuery{
@@ -37,11 +34,10 @@ class DeviceSettingsSixPackKeysTest : public DeviceSettingsBaseTest {
       ".remap-keyboard-keys-row-internal",
   };
 
-  const DeepQuery kDeleteDropdownQuery{
-      "os-settings-ui",      "os-settings-main",
-      "main-page-container", "settings-device-page",
-      "#remap-keys",         "keyboard-six-pack-key-row:nth-child(1)",
-      "#keyDropdown",        "#dropdownMenu",
+  const DeepQuery kCtrlDropdownQuery{
+      "os-settings-ui",       "os-settings-main", "main-page-container",
+      "settings-device-page", "#remap-keys",      "#ctrlKey",
+      "#keyDropdown",         "#dropdownMenu",
   };
 
   auto WaitForSearchboxContainsText(const std::string& text) {
@@ -57,7 +53,8 @@ class DeviceSettingsSixPackKeysTest : public DeviceSettingsBaseTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsSixPackKeysTest, SixPackKeys) {
+IN_PROC_BROWSER_TEST_F(DeviceKeyboardModifierRemappingTest,
+                       KeyboardModifierRemapping) {
   RunTestSequence(
       Log("Adding a fake internal keyboard"), SetupInternalKeyboard(),
       LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
@@ -66,19 +63,17 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsSixPackKeysTest, SixPackKeys) {
       WaitForElementTextContains(webcontents_id_, kKeyboardNameQuery,
                                  "Built-in Keyboard"),
       ClickElement(webcontents_id_, kCustomizeKeyboardKeysInternalQuery),
-      Log("Remapping the 'Delete' action to 'Alt + Backspace'"),
-      ExecuteJsAt(webcontents_id_, kDeleteDropdownQuery,
-                  "(el) => {el.selectedIndex = 0; el.dispatchEvent(new "
+      Log("Remapping the 'Ctrl' key to 'Backspace'"),
+      ExecuteJsAt(webcontents_id_, kCtrlDropdownQuery,
+                  "(el) => {el.selectedIndex = 5; el.dispatchEvent(new "
                   "Event('change'));}"),
       ExecuteJsAt(webcontents_id_, kSearchboxQuery,
                   "(el) => { el.focus(); el.select(); }"),
       Log("Entering 'redo' into the Settings search box"),
       EnterLowerCaseText("redo"), WaitForSearchboxContainsText("redo"),
-      Log("Pressing the 'Left' key"),
-      SendKeyPressEvent(ui::KeyboardCode::VKEY_LEFT),
-      Log("Pressing 'Alt + Backspace' to generate the 'Delete' action"),
-      SendKeyPressEvent(ui::KeyboardCode::VKEY_BACK, ui::EF_ALT_DOWN),
-      Log("Verifying that the 'Delete' action was performed and the search "
+      Log("Pressing the 'Ctrl' key"),
+      SendKeyPressEvent(ui::KeyboardCode::VKEY_CONTROL),
+      Log("Verifying that the 'Backspace' action was performed and the search "
           "box now contains the text 'red'"),
       WaitForSearchboxContainsText("red"));
 }

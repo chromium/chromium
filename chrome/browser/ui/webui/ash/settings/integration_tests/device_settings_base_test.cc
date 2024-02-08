@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
 #include "base/run_loop.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -75,6 +76,26 @@ DeviceSettingsBaseTest::LaunchSettingsApp(const std::string& subpage) {
       Log("Waiting for OS settings audio settings page to load"),
       WaitForWebContentsReady(webcontents_id_,
                               chrome::GetOSSettingsUrl(subpage)));
+}
+
+// Enters lower-case text into the focused html input element.
+ui::test::InteractiveTestApi::StepBuilder
+DeviceSettingsBaseTest::EnterLowerCaseText(const std::string& text) {
+  return Do([&]() {
+    for (char c : text) {
+      ui::test::EventGenerator(Shell::GetPrimaryRootWindow())
+          .PressKey(static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a')),
+                    ui::EF_NONE, kDeviceId1);
+    }
+  });
+}
+
+ui::test::InteractiveTestApi::StepBuilder
+DeviceSettingsBaseTest::SendKeyPressEvent(ui::KeyboardCode key, int modifier) {
+  return Do([key, modifier]() {
+    ui::test::EventGenerator(Shell::GetPrimaryRootWindow())
+        .PressKey(key, modifier, kDeviceId1);
+  });
 }
 
 void DeviceSettingsBaseTest::SetUpOnMainThread() {
