@@ -12784,6 +12784,21 @@
             ]
         }
     ],
+    "OmniboxShortcutsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxShortcutsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxTextAndAnimationOptimizations": [
         {
             "platforms": [
