@@ -8,11 +8,11 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,21 +49,19 @@ void GarbageCollectStoragePartitionsCommand::StartWithLock(
 }
 
 void GarbageCollectStoragePartitionsCommand::ResetStorageGarbageCollectPref() {
-  base::OnceClosure callback =
-      base::BindOnce(&GarbageCollectStoragePartitionsCommand::OnPrefReset,
-                     weak_factory_.GetWeakPtr());
-
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(2, std::move(callback));
-
+  base::ConcurrentClosures concurrent;
   // TODO(crbug.com/1477027): change this pref to be stateful instead of
   // resetting to false early.
   profile_->GetPrefs()->SetBoolean(
       prefs::kShouldGarbageCollectStoragePartitions, false);
   // Waits for both prefs to be written to disk before proceeding to prevent
   // repeating crashes.
-  lock_->extensions_manager().ResetStorageGarbageCollectPref(barrier_closure);
-  profile_->GetPrefs()->CommitPendingWrite(barrier_closure);
+  lock_->extensions_manager().ResetStorageGarbageCollectPref(
+      concurrent.CreateClosure());
+  profile_->GetPrefs()->CommitPendingWrite(concurrent.CreateClosure());
+  std::move(concurrent)
+      .Done(base::BindOnce(&GarbageCollectStoragePartitionsCommand::OnPrefReset,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void GarbageCollectStoragePartitionsCommand::OnPrefReset() {

@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -373,6 +373,12 @@ void WebAppShortcutManager::GetShortcutInfoForApp(
                      std::move(callback)));
 }
 
+base::OnceClosure&
+WebAppShortcutManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
 void WebAppShortcutManager::OnIconsRead(
     const webapps::AppId& app_id,
     GetShortcutInfoCallback callback,
@@ -496,25 +502,25 @@ void WebAppShortcutManager::UpdateShortcutsForAllAppsNow() {
   if (suppress_shortcuts_for_testing_)
     return;
 
-  std::vector<webapps::AppId> app_ids =
-      provider_->registrar_unsafe().GetAppIds();
-  auto done_callback = base::BarrierClosure(
-      app_ids.size() + 1,
-      base::BindOnce(&WebAppShortcutManager::SetCurrentAppShortcutsVersion,
-                     weak_ptr_factory_.GetWeakPtr()));
+  base::ConcurrentClosures concurrent;
 
-  for (const auto& app_id : app_ids) {
+  for (const auto& app_id : provider_->registrar_unsafe().GetAppIds()) {
     UpdateShortcuts(app_id, /*old_name=*/{},
-                    base::IgnoreArgs<Result>(done_callback));
+                    base::IgnoreArgs<Result>(concurrent.CreateClosure()));
   }
 
   UpdateShortcutsForAllAppsCallback update_callback =
       GetUpdateShortcutsForAllAppsCallback();
   if (update_callback) {
-    update_callback.Run(profile_, done_callback);
+    update_callback.Run(profile_, concurrent.CreateClosure());
   } else {
-    done_callback.Run();
+    concurrent.CreateClosure().Run();
   }
+
+  std::move(concurrent)
+      .Done(
+          base::BindOnce(&WebAppShortcutManager::SetCurrentAppShortcutsVersion,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppShortcutManager::SetCurrentAppShortcutsVersion() {
@@ -522,6 +528,11 @@ void WebAppShortcutManager::SetCurrentAppShortcutsVersion() {
                                    kCurrentAppShortcutsVersion);
   profile_->GetPrefs()->SetString(prefs::kAppShortcutsArch,
                                   CurrentAppShortcutsArch());
+
+  if (base::OnceClosure& callback =
+          OnSetCurrentAppShortcutsVersionCallbackForTesting()) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace web_app

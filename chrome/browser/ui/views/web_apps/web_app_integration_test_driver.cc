@@ -1557,6 +1557,11 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
+  base::RunLoop run_loop;
+  WebAppProvider::GetForTest(profile())
+      ->policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          run_loop.QuitClosure());
   GURL url = GetUrlForSite(site);
   {
     ScopedListPrefUpdate update_list(profile()->GetPrefs(),
@@ -1565,6 +1570,7 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
       return *item.GetDict().FindString(kManifestId) == url.spec();
     });
   }
+  run_loop.Run();
   AfterStateChangeAction();
 }
 
@@ -4185,6 +4191,11 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
 
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
                                                           const char* policy) {
+  base::RunLoop run_loop;
+  WebAppProvider::GetForTest(profile())
+      ->policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          run_loop.QuitClosure());
   GURL url = GetUrlForSite(site);
   {
     ScopedListPrefUpdate update(profile()->GetPrefs(), prefs::kWebAppSettings);
@@ -4199,6 +4210,7 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
 
     update_list.Append(std::move(dict_item));
   }
+  run_loop.Run();
 }
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(

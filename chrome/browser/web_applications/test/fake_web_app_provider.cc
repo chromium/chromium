@@ -327,6 +327,7 @@ void FakeWebAppProvider::Shutdown() {
   }
   if (install_manager_)
     install_manager_->Shutdown();
+  web_app_policy_manager_->Shutdown();
   if (icon_manager_)
     icon_manager_->Shutdown();
   if (install_finalizer_)

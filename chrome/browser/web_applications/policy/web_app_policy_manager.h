@@ -72,6 +72,7 @@ class WebAppPolicyManager {
   // `policy_settings_and_force_installs_applied_` waits for the first
   // `SynchronizeInstalledApps` to finish if it's triggered on `Start`.
   void Start(base::OnceClosure policy_settings_and_force_installs_applied);
+  void Shutdown();
 
   void ReinstallPlaceholderAppIfNecessary(
       const GURL& url,

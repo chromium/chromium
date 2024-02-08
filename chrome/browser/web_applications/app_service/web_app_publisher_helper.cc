@@ -15,7 +15,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
@@ -29,6 +28,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -1946,28 +1946,20 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
   // system apps.
   const WebApp* web_app = GetWebApp(params.app_id);
   bool can_multilaunch = !(web_app && web_app->IsSystemApp());
+  base::ConcurrentCallbacks<content::WebContents*> concurrent;
 
-  size_t num_launches = 1;
-  WebAppFileHandlerManager::LaunchInfos file_launch_infos;
   if (can_multilaunch) {
-    file_launch_infos =
+    WebAppFileHandlerManager::LaunchInfos file_launch_infos =
         provider_->os_integration_manager()
             .file_handler_manager()
             .GetMatchingFileHandlerUrls(app_id, params.launch_files);
-    num_launches = file_launch_infos.size();
-  }
-
-  auto launch_complete_barrier = base::BarrierCallback<content::WebContents*>(
-      num_launches, std::move(callback));
-
-  if (can_multilaunch) {
     for (const auto& [url, files] : file_launch_infos) {
       apps::AppLaunchParams params_for_file_launch(
           app_id, params.container, params.disposition, params.launch_source,
           params.display_id, files, nullptr);
       params_for_file_launch.override_url = url;
       LaunchAppWithParams(std::move(params_for_file_launch),
-                          launch_complete_barrier);
+                          concurrent.CreateCallback());
     }
   } else {
     apps::AppLaunchParams params_for_file_launch(
@@ -1981,8 +1973,10 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
       params_for_file_launch.override_url = GURL(*params.intent->activity_name);
     }
     LaunchAppWithParams(std::move(params_for_file_launch),
-                        launch_complete_barrier);
+                        concurrent.CreateCallback());
   }
+
+  std::move(concurrent).Done(std::move(callback));
 }
 
 void WebAppPublisherHelper::OnLaunchCompleted(

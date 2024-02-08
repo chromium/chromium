@@ -1342,11 +1342,13 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   MockAppRegistrarObserver mock_observer;
   app_registrar().AddObserver(&mock_observer);
 
-  base::RunLoop loop;
-  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
-      loop.QuitClosure());
-  SetWebAppSettingsListPref(profile(), kWebAppSettingInitialConfiguration);
-  loop.Run();
+  {
+    base::RunLoop loop;
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+        loop.QuitClosure());
+    SetWebAppSettingsListPref(profile(), kWebAppSettingInitialConfiguration);
+    loop.Run();
+  }
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kBlocked);
@@ -1355,7 +1357,14 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(1, mock_observer.GetOnWebAppSettingsPolicyChangedCalledCount());
 
-  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
+  {
+    base::RunLoop loop;
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+        loop.QuitClosure());
+    SetWebAppSettingsListPref(profile(),
+                              kWebAppSettingWithDefaultConfiguration);
+    loop.Run();
+  }
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
@@ -1415,11 +1424,14 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   MockAppRegistrarObserver mock_observer;
   app_registrar().AddObserver(&mock_observer);
 
-  base::RunLoop settings_loop;
-  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
-      settings_loop.QuitClosure());
-  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
-  settings_loop.Run();
+  {
+    base::RunLoop settings_loop;
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+        settings_loop.QuitClosure());
+    SetWebAppSettingsListPref(profile(),
+                              kWebAppSettingWithDefaultConfiguration);
+    settings_loop.Run();
+  }
 
   EXPECT_EQ(1, mock_observer.GetOnWebAppSettingsPolicyChangedCalledCount());
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
@@ -1430,14 +1442,18 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy("http://foo.example"),
             RunOnOsLoginPolicy::kBlocked);
 
-  // Now add two sites, one that opens in a window and one that opens in a tab.
-  base::Value::List list;
-  list.Append(GetWindowedItem());
-  list.Append(GetTabbedItem());
-
-  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                 std::move(list));
-  WaitForAppsToSynchronize();
+  {
+    base::RunLoop loop;
+    policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+        loop.QuitClosure());
+    // Now add two sites, one that opens in a window and one that opens in a
+    // tab.
+    profile()->GetPrefs()->SetList(
+        prefs::kWebAppInstallForceList,
+        base::Value::List().Append(GetWindowedItem()).Append(GetTabbedItem()));
+    loop.Run();
+  }
+  // WaitForAppsToSynchronize();
 
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 
