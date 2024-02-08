@@ -41,7 +41,8 @@ BoundSessionCookieRefreshServiceFactory::
           "BoundSessionCookieRefreshService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
+              // Only an OTR profile is used for browsing in the Guest Session.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(UnexportableKeyServiceFactory::GetInstance());
   DependsOn(AccountConsistencyModeManagerFactory::GetInstance());

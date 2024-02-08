@@ -5417,6 +5417,24 @@
             ]
         }
     ],
+    "DbscPhase1aStudy": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "dice-support": "enabled"
+                    },
+                    "enable_features": [
+                        "EnableBoundSessionCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
     "DecodedImageWorkingSetBudget": [
         {
             "platforms": [
