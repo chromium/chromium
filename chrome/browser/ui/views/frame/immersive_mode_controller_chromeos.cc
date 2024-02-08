@@ -200,7 +200,11 @@ void ImmersiveModeControllerChromeos::OnImmersiveRevealEnded() {
     observer.OnImmersiveRevealEnded();
 }
 
-void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {}
+void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
+  for (Observer& observer : observers_) {
+    observer.OnImmersiveFullscreenEntered();
+  }
+}
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenExited() {
   browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);

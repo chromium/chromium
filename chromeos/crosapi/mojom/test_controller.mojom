@@ -322,11 +322,17 @@ enum AssistiveTechnologyType {
   [MinVersion=1] kFocusHighlight = 4,
 };
 
+[Stable, Extensible]
+enum SnapPosition {
+  [Default] kPrimary = 0,
+  kSecondary = 1,
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 32
-// Next method id: 46
+// Next version: 33
+// Next method id: 48
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -574,4 +580,12 @@ interface TestController {
   // Checks if a toast with a given `toast_id` is shown.
   [MinVersion=31]
   IsToastShown@45(string toast_id) => (bool toast_shown);
+
+  // Snaps the given window to the given position.
+  [MinVersion=32]
+  SnapWindow@46(string window_id, SnapPosition position) => ();
+
+  // Checks whether the shelf is currently visible.
+  [MinVersion=32]
+  IsShelfVisible@47() => (bool visible);
 };

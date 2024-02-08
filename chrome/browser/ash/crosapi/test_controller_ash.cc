@@ -13,6 +13,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_test_api.h"
+#include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
@@ -66,6 +68,7 @@
 #include "content/public/browser/tts_utterance.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -91,6 +94,20 @@
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #endif  // BUILDFLAG(USE_CUPS)
+
+namespace mojo {
+// static
+ash::SnapPosition
+TypeConverter<ash::SnapPosition, crosapi::mojom::SnapPosition>::Convert(
+    crosapi::mojom::SnapPosition position) {
+  switch (position) {
+    case crosapi::mojom::SnapPosition::kPrimary:
+      return ash::SnapPosition::kPrimary;
+    case crosapi::mojom::SnapPosition::kSecondary:
+      return ash::SnapPosition::kSecondary;
+  }
+}
+}  // namespace mojo
 
 namespace crosapi {
 
@@ -960,6 +977,20 @@ void TestControllerAsh::IsToastShown(const std::string& toast_id,
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
   // Delete the utterance event delegate object when the utterance is finished.
   ash_utterance_event_delegates_.erase(utterance_id);
+}
+
+void TestControllerAsh::SnapWindow(const std::string& window_id,
+                                   mojom::SnapPosition position,
+                                   SnapWindowCallback callback) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  CHECK(window);
+  ash::SplitViewTestApi().SnapWindow(
+      window, mojo::ConvertTo<ash::SnapPosition>(position));
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::IsShelfVisible(IsShelfVisibleCallback callback) {
+  std::move(callback).Run(ash::ShelfTestApi().IsVisible());
 }
 
 // This class waits for overview mode to either enter or exit and fires a
