@@ -91,11 +91,13 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<PhoneHubUiReadinessRecorder>(
               feature_status_provider_.get(),
               connection_manager_.get())),
-      message_receiver_(
-          std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
+      message_receiver_(std::make_unique<MessageReceiverImpl>(
+          connection_manager_.get(),
+          phone_hub_structured_metrics_logger_.get())),
       message_sender_(std::make_unique<MessageSenderImpl>(
           connection_manager_.get(),
-          phone_hub_ui_readiness_recorder_.get())),
+          phone_hub_ui_readiness_recorder_.get(),
+          phone_hub_structured_metrics_logger_.get())),
       phone_model_(std::make_unique<MutablePhoneModel>()),
       cros_state_sender_(std::make_unique<CrosStateSender>(
           message_sender_.get(),

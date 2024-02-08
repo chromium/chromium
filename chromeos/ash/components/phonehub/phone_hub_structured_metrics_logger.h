@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
@@ -18,6 +19,8 @@ namespace ash::phonehub {
 enum class DiscoveryEntryPoint {
   kUserSignIn = 0,
   kChromebookUnlock = 1,
+  // TODO(b/324320785): Record attempt times with entrypoint instead of
+  // recording retry as separate entrypoints.
   kAutomaticConnectionRetry = 2,
   kManualConnectionRetry = 3,
   kConnectionRetryAfterConnected = 4,
@@ -26,6 +29,17 @@ enum class DiscoveryEntryPoint {
   kBluetoothEnabled = 7,
   kUserEnabledFeature = 8,
   kUserOnboardedToFeature = 9
+};
+
+enum class PhoneHubMessageDirection {
+  kPhoneToChromebook = 0,
+  kChromebookToPhone = 1
+};
+
+enum class PhoneHubUiState {
+  kDisconnected = 0,
+  kConnecting = 1,
+  kConnected = 2
 };
 
 class PhoneHubStructuredMetricsLogger
@@ -51,6 +65,10 @@ class PhoneHubStructuredMetricsLogger
       secure_channel::mojom::NearbyConnectionStepResult result) override;
   void LogSecureChannelState(
       secure_channel::mojom::SecureChannelState state) override;
+
+  void LogPhoneHubMessageEvent(proto::MessageType message_type,
+                               PhoneHubMessageDirection message_direction);
+  void LogPhoneHubUiStateUpdated(PhoneHubUiState ui_state);
 };
 
 }  // namespace ash::phonehub

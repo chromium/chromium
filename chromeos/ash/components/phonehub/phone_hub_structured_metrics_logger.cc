@@ -32,4 +32,16 @@ void PhoneHubStructuredMetricsLogger::LogSecureChannelState(
     secure_channel::mojom::SecureChannelState state) {
   NOTIMPLEMENTED();
 }
+
+void PhoneHubStructuredMetricsLogger::LogPhoneHubMessageEvent(
+    proto::MessageType message_type,
+    PhoneHubMessageDirection message_direction) {
+  NOTIMPLEMENTED();
+}
+
+void PhoneHubStructuredMetricsLogger::LogPhoneHubUiStateUpdated(
+    PhoneHubUiState ui_state) {
+  std::string state;
+  NOTIMPLEMENTED();
+}
 }  // namespace ash::phonehub

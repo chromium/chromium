@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
 
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
@@ -19,7 +20,8 @@ class MessageReceiverImpl : public MessageReceiver,
                             public secure_channel::ConnectionManager::Observer {
  public:
   explicit MessageReceiverImpl(
-      secure_channel::ConnectionManager* connection_manager);
+      secure_channel::ConnectionManager* connection_manager,
+      PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger);
   ~MessageReceiverImpl() override;
 
  private:
@@ -27,6 +29,7 @@ class MessageReceiverImpl : public MessageReceiver,
   void OnMessageReceived(const std::string& payload) override;
 
   raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
 };
 
 }  // namespace phonehub

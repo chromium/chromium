@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
@@ -37,8 +38,11 @@ class MessageSenderImplTest : public testing::Test {
         std::make_unique<PhoneHubUiReadinessRecorder>(
             fake_feature_status_provider_.get(),
             fake_connection_manager_.get());
+    phone_hub_structured_metrics_logger_ =
+        std::make_unique<PhoneHubStructuredMetricsLogger>();
     message_sender_ = std::make_unique<MessageSenderImpl>(
-        fake_connection_manager_.get(), phone_hub_ui_readiness_recorder_.get());
+        fake_connection_manager_.get(), phone_hub_ui_readiness_recorder_.get(),
+        phone_hub_structured_metrics_logger_.get());
   }
 
   void VerifyMessage(proto::MessageType expected_message_type,
@@ -68,6 +72,8 @@ class MessageSenderImplTest : public testing::Test {
       fake_connection_manager_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
   std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
+  std::unique_ptr<PhoneHubStructuredMetricsLogger>
+      phone_hub_structured_metrics_logger_;
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 
