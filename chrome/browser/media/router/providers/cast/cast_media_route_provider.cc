@@ -362,7 +362,6 @@ void CastMediaRouteProvider::OnSinkQueryUpdated(
       mojom::MediaRouteProviderId::CAST, source_id,
       GetRemotePlaybackMediaSourceCompatibleSinks(media_source, sinks),
       GetOrigins(source_id));
-  LOG(ERROR) << "sent sink updates";
 }
 
 }  // namespace media_router
