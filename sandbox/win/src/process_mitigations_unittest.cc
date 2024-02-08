@@ -717,9 +717,10 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccessDelayed) {
 
 // This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
 // mitigation enables the setting on a process when non-delayed.
-
-// Disabled due to crbug.com/1081080
-TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
+  // AllowExtraDlls shims may run before ASAN has a chance to initialize its
+  // internal state, namely __asan_shadow_memory_dynamic_address.
+#if !defined(ADDRESS_SANITIZER)
   if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
@@ -749,6 +750,96 @@ TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
 #endif  // defined(COMPONENT_BUILD)
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+#endif  // !defined(ADDRESS_SANITIZER)
+}
+
+// This test attempts to load an unsigned dll, which should succeed only if
+// allowed by the CIG shims, and validate that the MicrosoftSignedOnly CIG
+// mitigation is applied.
+SBOX_TESTS_COMMAND int TestMsSignedLoadUnsignedDll(int argc, wchar_t** argv) {
+  PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY policy = {};
+  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                    ProcessSignaturePolicy, &policy,
+                                    sizeof(policy))) {
+    return SBOX_TEST_NOT_FOUND;
+  }
+  if (!policy.MicrosoftSignedOnly) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+
+  base::FilePath hook_dll_path(hooking_dll::g_hook_dll_file);
+  base::ScopedNativeLibrary dll(hook_dll_path);
+  if (!dll.is_valid()) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+
+  return SBOX_TEST_SUCCEEDED;
+}
+
+// This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
+// mitigation enables the setting on a process when non-delayed, and that
+// process fails load a dll not signed by Microsoft.
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadFailure) {
+  // AllowExtraDlls shims may run before ASAN has a chance to initialize its
+  // internal state, namely __asan_shadow_memory_dynamic_address.
+  // With component build we would have to allow all DLLs to load, which
+  // invalidates the test.
+#if !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
+    return;
+  }
+
+  std::wstring test_command = L"TestMsSignedLoadUnsignedDll";
+
+  TestRunner runner;
+  // After the sandbox is applied, the sandbox will prevent DLL loads. CIG
+  // should prevent the DLL load as well.
+  runner.SetTestState(BEFORE_REVERT);
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+
+  EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(test_command.c_str()));
+#endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
+}
+
+// This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
+// mitigation enables the setting on a process when non-delayed, and that
+// process can load a dll.
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
+  // AllowExtraDlls shims may run before ASAN has a chance to initialize its
+  // internal state, namely __asan_shadow_memory_dynamic_address.
+#if !defined(ADDRESS_SANITIZER)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
+    return;
+  }
+
+  std::wstring test_command = L"TestMsSignedLoadUnsignedDll";
+
+  TestRunner runner;
+  // After the sandbox is applied, the sandbox will prevent DLL loads. Validate
+  // we can load a DLL specified in AllowExtraDlls before sandbox is applied.
+  runner.SetTestState(BEFORE_REVERT);
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  // In a component build, allow all *.dll in current directory to load. On a
+  // release build, specify the name of the hooking dll that the test tries to
+  // load.
+  base::FilePath exe_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  EXPECT_EQ(sandbox::SBOX_ALL_OK,
+            config->AllowExtraDlls(
+#if defined(COMPONENT_BUILD)
+                exe_path.DirName().AppendASCII("*.dll").value().c_str()));
+#else
+                exe_path.Append(hooking_dll::g_hook_dll_file).value().c_str()));
+#endif
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+#endif  // !defined(ADDRESS_SANITIZER)
 }
 
 //------------------------------------------------------------------------------
