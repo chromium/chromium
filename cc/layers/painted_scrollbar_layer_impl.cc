@@ -102,12 +102,15 @@ void PaintedScrollbarLayerImpl::AppendQuads(
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
+
+  // The thumb sqs must be non-opaque so that the track will not be occluded in
+  // viz by the thumb's 'quad_layer_rect'.
+  constexpr bool kContentsOpaque = false;
   PopulateScaledSharedQuadState(shared_quad_state, internal_contents_scale_,
-                                contents_opaque());
+                                kContentsOpaque);
 
   AppendDebugBorderQuad(render_pass, gfx::Rect(internal_content_bounds_),
                         shared_quad_state, append_quads_data);
-
   gfx::Rect thumb_quad_rect = ComputeThumbQuadRect();
   gfx::Rect scaled_thumb_quad_rect =
       gfx::ScaleToEnclosingRect(thumb_quad_rect, internal_contents_scale_);
@@ -121,6 +124,8 @@ void PaintedScrollbarLayerImpl::AppendQuads(
 
   if (thumb_resource_id && !visible_thumb_quad_rect.IsEmpty()) {
     bool needs_blending = true;
+
+    shared_quad_state->opacity *= painted_opacity_;
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
     quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                  scaled_visible_thumb_quad_rect, needs_blending,
@@ -128,9 +133,6 @@ void PaintedScrollbarLayerImpl::AppendQuads(
                  uv_bottom_right, SkColors::kTransparent, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
-    // TODO(crbug.com/1501833): Remove per vertex opacity and manage thumb's
-    // opacity via SharedQuadState.
-    quad->set_vertex_opacity(painted_opacity_);
     ValidateQuadResources(quad);
   }
 
@@ -148,7 +150,10 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       layer_tree_impl()->ResourceIdForUIResource(track_ui_resource_id_);
 
   if (track_resource_id && !visible_track_quad_rect.IsEmpty()) {
-    viz::SharedQuadState* track_shared_quad_state = shared_quad_state;
+    viz::SharedQuadState* track_shared_quad_state =
+        render_pass->CreateAndAppendSharedQuadState();
+    PopulateScaledSharedQuadState(track_shared_quad_state,
+                                  internal_contents_scale_, contents_opaque());
     if (IsFluentOverlayScrollbarEnabled()) {
       // Scale the opacity value linearly in function of the current thumb
       // thickness. When thickness scale factor is kIdleThickness, then the
@@ -160,14 +165,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       const float scaled_opacity =
           (thumb_thickness_scale_factor() - GetIdleThicknessScale()) /
           (1.f - GetIdleThicknessScale());
-      if (scaled_opacity != painted_opacity_) {
-        // To manage the track's quad opacity independently from the layer's
-        // opacity, a new SharedQuadState must be created and the opacity set in
-        // it.
-        track_shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
-        *track_shared_quad_state = *shared_quad_state;
-        track_shared_quad_state->opacity = scaled_opacity;
-      }
+      track_shared_quad_state->opacity *= scaled_opacity;
     }
     gfx::Rect scaled_track_quad_rect(internal_content_bounds_);
     gfx::Rect scaled_visible_track_quad_rect = gfx::ScaleToEnclosingRect(

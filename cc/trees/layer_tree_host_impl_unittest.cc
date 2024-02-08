@@ -13917,6 +13917,7 @@ TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
        PaintedOverlayScrollbarTrackOpacityTest) {
   auto* scrollbar = CreateAndRegisterPaintedScrollbarLayer();
 
+  scrollbar->draw_properties().opacity = 1;
   int const step = GetParam();
   float const thickness_scale_step =
       (1 - scrollbar->GetIdleThicknessScale()) / kParamSteps;
