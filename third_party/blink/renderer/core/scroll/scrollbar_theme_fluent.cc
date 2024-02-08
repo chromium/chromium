@@ -128,6 +128,13 @@ base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDuration() const {
   return style_.fade_out_duration;
 }
 
+ScrollbarPart ScrollbarThemeFluent::PartsToInvalidateOnThumbPositionChange(
+    const Scrollbar& scrollbar,
+    float old_position,
+    float new_position) const {
+  return ScrollbarPart::kNoPart;
+}
+
 int ScrollbarThemeFluent::ThumbThickness(
     const float scale_from_dip,
     const EScrollbarWidth scrollbar_width) const {

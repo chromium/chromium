@@ -19,7 +19,7 @@
 
 namespace blink {
 
-using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace {
 
@@ -62,7 +62,8 @@ class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(::features::kFluentScrollbar);
     ScrollbarThemeSettings::SetFluentScrollbarsEnabled(true);
-    mock_scrollable_area_ = MakeGarbageCollected<MockScrollableArea>();
+    mock_scrollable_area_ = MakeGarbageCollected<MockScrollableArea>(
+        /*maximum_scroll_offset=*/ScrollOffset(0, 1000));
     mock_scrollable_area_->SetScaleFromDIP(GetParam());
     // ScrollbarThemeFluent Needs to be instantiated after feature flag and
     // scrollbar settings have been set.
@@ -177,6 +178,39 @@ TEST_P(ScrollbarThemeFluentTest, HorizontalScrollbarPartsSizes) {
   const gfx::Size button_size = theme_->ButtonSize(*horizontal_scrollbar);
   EXPECT_EQ(button_size, gfx::Size(theme_->ButtonLength(*horizontal_scrollbar),
                                    scrollbar_thickness));
+}
+
+// The test verifies that the track/buttons paint is not invalidated when
+// the thumb position changes. Aura scrollbars change arrow buttons color
+// when the scroll offset changes from and to the min/max scroll offset.
+// Fluent scrollbars do not change the arrow buttons color in this case.
+TEST_P(ScrollbarThemeFluentTest, ScrollbarTrackPartInvalidationTest) {
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  ON_CALL(*mock_scrollable_area(), VerticalScrollbar())
+      .WillByDefault(Return(scrollbar));
+
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, ScrollbarThickness(), kScrollbarLength));
+  scrollbar->ClearTrackNeedsRepaint();
+
+  // Verifies that when the thumb position changes from min offset, the track
+  // invalidation is not triggered.
+  mock_scrollable_area()->SetScrollOffset(
+      ScrollOffset(0, 10), mojom::blink::ScrollType::kCompositor);
+  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+
+  // Verifies that when the thumb position changes from a non-zero offset,
+  // the track invalidation is not triggered.
+  mock_scrollable_area()->SetScrollOffset(
+      ScrollOffset(0, 20), mojom::blink::ScrollType::kCompositor);
+  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+
+  // Verifies that when the thumb position changes back to 0 (min) offset,
+  // the track invalidation is not triggered.
+  mock_scrollable_area()->SetScrollOffset(
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kCompositor);
+  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
 }
 
 // Test that Scrollbar objects are correctly sized with Overlay Fluent theme

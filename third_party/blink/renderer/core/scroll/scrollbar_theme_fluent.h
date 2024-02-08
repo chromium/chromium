@@ -51,6 +51,11 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
+  ScrollbarPart PartsToInvalidateOnThumbPositionChange(
+      const Scrollbar&,
+      float old_position,
+      float new_position) const override;
+
  private:
   friend class ScrollbarThemeFluentMock;
 
