@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -390,9 +391,20 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
                        self.sectionInsets);
   }
-  if (sectionIndex == 1) {
-    return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    if (sectionIndex == 1) {
+      return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
+                         self.sectionInsets);
+    }
+    if (sectionIndex == 2) {
+      return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
+    }
+  } else {
+    if (sectionIndex == 1) {
+      return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
+    }
   }
+
   NOTREACHED_NORETURN();
 }
 

@@ -74,6 +74,8 @@ NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 namespace {
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
+NSString* const kGridTabGroupsSectionIdentifier =
+    @"GridTabGroupsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
 
@@ -561,6 +563,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     gridHeader.value =
         l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                 base::SysNSStringToUTF16(resultsCount));
+  } else if (base::FeatureList::IsEnabled(kTabGroupsInGrid) &&
+             [sectionIdentifier
+                 isEqualToString:kGridTabGroupsSectionIdentifier]) {
+    gridHeader.title = l10n_util::GetNSString(
+        IDS_IOS_TABS_SEARCH_TAB_GROUPS_SECTION_HEADER_TITLE);
+    // TODO(crbug.com/1501837): Add the right number of found tabs.
+    gridHeader.value = l10n_util::GetNSStringF(
+        IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT, base::SysNSStringToUTF16(@"0"));
   } else if ([sectionIdentifier
                  isEqualToString:kSuggestedActionsSectionIdentifier]) {
     gridHeader.title =
@@ -1081,6 +1091,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
+    if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+      [snapshot
+          appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+    }
+
     [snapshot
         appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
     GridItemIdentifier* itemIdentifier =
@@ -1285,16 +1300,25 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   if (self.mode == TabGridModeSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
+      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+        [snapshot
+            appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+      }
       [snapshot appendSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
       GridItemIdentifier* itemIdentifier =
           [GridItemIdentifier suggestedActionsIdentifier];
       [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
+
       self.showingSuggestedActions = YES;
     }
   } else {
     if (self.showingSuggestedActions) {
+      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+        [snapshot
+            deleteSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+      }
       [snapshot deleteSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
