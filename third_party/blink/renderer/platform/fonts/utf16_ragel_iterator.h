@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -32,7 +33,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
       : buffer_(buffer),
         buffer_size_(buffer_size),
         cursor_(cursor),
-        cached_category_(kMaxEmojiScannerCategory) {
+        cached_category_(EmojiSegmentationCategory::kMaxCategory) {
     UpdateCachedCategory();
   }
 
@@ -105,7 +106,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
     return ret;
   }
 
-  UChar32 operator*() {
+  EmojiSegmentationCategory operator*() {
     CHECK(buffer_size_);
     return cached_category_;
   }
@@ -118,29 +119,6 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   bool operator!=(const UTF16RagelIterator& other) const {
     return !(*this == other);
   }
-
-  // Must match the categories defined in third-party/emoji-segmenter/.
-  // TODO(drott): Add static asserts once emoji-segmenter is imported to
-  // third-party.
-  enum EmojiScannerCharacterClass {
-    EMOJI = 0,
-    EMOJI_TEXT_PRESENTATION = 1,
-    EMOJI_EMOJI_PRESENTATION = 2,
-    EMOJI_MODIFIER_BASE = 3,
-    EMOJI_MODIFIER = 4,
-    EMOJI_VS_BASE = 5,
-    REGIONAL_INDICATOR = 6,
-    KEYCAP_BASE = 7,
-    COMBINING_ENCLOSING_KEYCAP = 8,
-    COMBINING_ENCLOSING_CIRCLE_BACKSLASH = 9,
-    ZWJ = 10,
-    VS15 = 11,
-    VS16 = 12,
-    TAG_BASE = 13,
-    TAG_SEQUENCE = 14,
-    TAG_TERM = 15,
-    kMaxEmojiScannerCategory = 16
-  };
 
  private:
   UChar32 Codepoint() const {
@@ -155,7 +133,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   const UChar* buffer_;
   unsigned buffer_size_;
   unsigned cursor_;
-  unsigned char cached_category_;
+  EmojiSegmentationCategory cached_category_;
 };
 
 }  // namespace blink

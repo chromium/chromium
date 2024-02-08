@@ -1408,6 +1408,8 @@ component("platform") {
     "text/date_time_format.cc",
     "text/date_time_format.h",
     "text/decode_escape_sequences.h",
+    "text/emoji_segmentation_category.h",
+    "text/emoji_segmentation_category_inline_header.h",
     "text/han_kerning_char_type.h",
     "text/hyphenation.cc",
     "text/hyphenation.h",
