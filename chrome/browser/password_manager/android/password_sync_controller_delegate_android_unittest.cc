@@ -35,10 +35,9 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
  protected:
   PasswordSyncControllerDelegateAndroidTest() {
     sync_controller_delegate_ =
-        std::make_unique<PasswordSyncControllerDelegateAndroid>(
-            CreateBridge(), base::DoNothing());
-    sync_controller_delegate_->SetPwdSyncStateChangedCallback(
-        mock_sync_state_changed_callback_.Get());
+        std::make_unique<PasswordSyncControllerDelegateAndroid>(CreateBridge());
+    sync_controller_delegate_->SetSyncObserverCallbacks(
+        mock_sync_state_changed_callback_.Get(), base::DoNothing());
   }
 
   ~PasswordSyncControllerDelegateAndroidTest() override {
@@ -267,8 +266,9 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncShutdown) {
   base::MockCallback<base::OnceClosure> mock_shutdown_callback;
   auto sync_controller =
-      std::make_unique<PasswordSyncControllerDelegateAndroid>(
-          CreateBridge(), mock_shutdown_callback.Get());
+      std::make_unique<PasswordSyncControllerDelegateAndroid>(CreateBridge());
+  sync_controller->SetSyncObserverCallbacks(base::DoNothing(),
+                                            mock_shutdown_callback.Get());
   syncer::TestSyncService sync_service;
 
   EXPECT_CALL(mock_shutdown_callback, Run);

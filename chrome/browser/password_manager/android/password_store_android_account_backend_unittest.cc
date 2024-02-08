@@ -254,8 +254,7 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   CreatePasswordSyncControllerDelegate() {
     auto unique_delegate = std::make_unique<
         PasswordSyncControllerDelegateAndroid>(
-        std::make_unique<NiceMock<MockPasswordSyncControllerDelegateBridge>>(),
-        base::DoNothing());
+        std::make_unique<NiceMock<MockPasswordSyncControllerDelegateBridge>>());
     sync_controller_delegate_ = unique_delegate.get();
     return unique_delegate;
   }
@@ -1116,6 +1115,72 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
+       PostedDelayedRetryCancelledOnSyncShutdown) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EnableSyncForTestAccount();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  // GetAllLogins will be called once with a retriable error.
+  const JobId kFailedJobId{1};
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kFailedJobId));
+
+  base::Time before_call_time = task_environment_.GetMockClock()->Now();
+
+  // Initiating the first call.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Answering the call with an error.
+  consumer().OnError(kFailedJobId, CreateNetworkError());
+  RunUntilIdle();
+
+  sync_service()->Shutdown();
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  RunUntilIdle();
+
+  // Since the retry was cancelled, nothing should happen after the retry
+  // timeout
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  base::Time after_retry_time = task_environment_.GetMockClock()->Now();
+  EXPECT_GE(after_retry_time - before_call_time, base::Seconds(1));
+
+  // Per-operation retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  // "Attempt" is recorder when the method call attempt ends.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 1, 1);
+  // "CancelledAtAttempt", records the attempt that was ongoing when the
+  // sync status changes.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kRetryHistogramBase, ".GetAllLoginsAsync.CancelledAtAttempt"}),
+      2, 1);
+
+  // Aggregated retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), 2, 1);
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
        OnExternalAuthErrorNotCausingExperimentUnenrollmentButSuspendsSaving) {
   base::HistogramTester histogram_tester;
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
@@ -1451,6 +1516,38 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   DisableSyncFeature();
   sync_service()->FireStateChanged();
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kBackendErrorCodeMetric,
+      AndroidBackendErrorType::kCancelledPwdSyncStateChanged, 1);
+  histogram_tester.ExpectTotalCount(kDurationMetric, 0);
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       CancelPendingJobsOnSyncShutdown) {
+  const std::string kSuccessMetric = SuccessMetricName("GetAllLoginsAsync");
+  const std::string kDurationMetric = DurationMetricName("GetAllLoginsAsync");
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        /*remote_form_changes_received=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+                        /*completion=*/base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EnableSyncForTestAccount();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+
+  // This call will queue the job.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized,
       PasswordStoreBackendErrorRecoveryType::kRecoverable};

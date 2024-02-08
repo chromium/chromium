@@ -33,9 +33,9 @@ class PasswordSyncControllerDelegateAndroid
  public:
   using IsPwdSyncEnabled = base::StrongAlias<struct IsPwdSyncEnabledTag, bool>;
 
-  PasswordSyncControllerDelegateAndroid(
-      std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
-      base::OnceClosure on_sync_shutdown);
+  explicit PasswordSyncControllerDelegateAndroid(
+      std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge);
+
   PasswordSyncControllerDelegateAndroid(
       const PasswordSyncControllerDelegateAndroid&) = delete;
   PasswordSyncControllerDelegateAndroid(
@@ -46,9 +46,14 @@ class PasswordSyncControllerDelegateAndroid
       PasswordSyncControllerDelegateAndroid&&) = delete;
   ~PasswordSyncControllerDelegateAndroid() override;
 
-  // Sets a callback to be called when password sync turns on or off.
-  void SetPwdSyncStateChangedCallback(
-      base::RepeatingClosure on_pwd_sync_state_changed);
+  // Sets callbacks to be called when the passwords sync state changes or the
+  // service is being shut down.
+  void SetSyncObserverCallbacks(
+      base::RepeatingClosure on_pwd_sync_state_changed,
+      base::OnceClosure on_sync_shutdown);
+
+  // Sets a callback to be called when the sync service is being shut down.
+  void SetSyncShutdownCallback(base::OnceClosure(on_sync_shutdown));
 
   // syncer::ModelTypeControllerDelegate implementation
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,

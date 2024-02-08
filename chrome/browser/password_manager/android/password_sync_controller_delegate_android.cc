@@ -33,10 +33,8 @@ std::string BuildCredentialManagerNotificationMetricName(
 }  // namespace
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
-    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
-    base::OnceClosure on_sync_shutdown)
-    : bridge_(std::move(bridge)),
-      on_sync_shutdown_(std::move(on_sync_shutdown)) {
+    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge)
+    : bridge_(std::move(bridge)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -44,9 +42,11 @@ PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
 PasswordSyncControllerDelegateAndroid::
     ~PasswordSyncControllerDelegateAndroid() = default;
 
-void PasswordSyncControllerDelegateAndroid::SetPwdSyncStateChangedCallback(
-    base::RepeatingClosure on_pwd_sync_state_changed) {
+void PasswordSyncControllerDelegateAndroid::SetSyncObserverCallbacks(
+    base::RepeatingClosure on_pwd_sync_state_changed,
+    base::OnceClosure on_sync_shutdown) {
   on_pwd_sync_state_changed_ = std::move(on_pwd_sync_state_changed);
+  on_sync_shutdown_ = std::move(on_sync_shutdown);
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
