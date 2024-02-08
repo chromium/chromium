@@ -889,7 +889,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // so temporarily set the |mAccessibilityEnabledOverride| flag to true, then disable it.
         mAccessibilityEnabledOverride = true;
         String returnString =
-                AccessibilityNodeInfoUtils.toString(createAccessibilityNodeInfo(virtualViewId));
+                AccessibilityNodeInfoUtils.toString(
+                        createAccessibilityNodeInfo(virtualViewId), true);
         mAccessibilityEnabledOverride = false;
         return returnString;
     }

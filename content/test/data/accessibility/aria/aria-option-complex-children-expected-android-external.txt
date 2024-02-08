@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++ListView clickable CollectionInfo:[rows=2, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", roleDescription="list box"]
 ++++View text:"label-WAI-ARIA 1.1" viewIdResName:"opt1" focusable selected CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
 ++++++View text:"null" hint:"title-WAI-ARIA 1.1" contentDescription:"href-WAI-ARIA 1.1" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", hint="title-WAI-ARIA 1.1", roleDescription="link", targetUrl="https://www.w3.org/TR/wai-aria-practices-1.1/"]

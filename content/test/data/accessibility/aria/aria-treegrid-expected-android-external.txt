@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++GridView clickable CollectionInfo:[rows=3, cols=2] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="treeGrid", roleDescription="tree grid"]
 ++++View text:"Cell 1, row 1, level 1 Cell 2, row 1, level 1" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="row"]
 ++++++View text:"Cell 1, row 1, level 1" CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
