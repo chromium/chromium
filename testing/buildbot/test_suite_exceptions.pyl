@@ -21,7 +21,7 @@
 # "ios_chrome_ui_eg2tests_module_iPhone 6s 14.0"
 
 # The goal is to drive the number of exceptions to zero, to make all
-# the bots behave similarly.
+# the bots behave similarly. whitespace
 {
   'accessibility_unittests': {
     'modifications': {
