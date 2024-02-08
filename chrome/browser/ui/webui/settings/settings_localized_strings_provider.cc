@@ -1165,6 +1165,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
       {"cvcTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
+      {"benefitsAvailableTagForCreditCardListEntry",
+       IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_AVAILABLE_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
+      {"benefitsTermsTagForCreditCardListEntry",
+       IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
       {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
       {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
@@ -1231,6 +1235,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           CheckDeviceAuthAvailability(web_contents));
 
   html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
+
+  html_source->AddBoolean("autofillCardBenefitsAvailable",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillEnableCardBenefits));
 
   html_source->AddBoolean(
       "autofillEnablePaymentsMandatoryReauth",

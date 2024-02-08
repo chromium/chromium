@@ -180,6 +180,7 @@ declare global {
         network?: string;
         imageSrc?: string;
         cvc?: string;
+        productTermsUrl?: string;
         metadata?: AutofillMetadata;
       }
 

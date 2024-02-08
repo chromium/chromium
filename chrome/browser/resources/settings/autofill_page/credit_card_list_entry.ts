@@ -23,10 +23,14 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './credit_card_list_entry.html.js';
 
 const enum CardSummarySublabelType {
-  VIRTUAL_CARD,
-  VIRTUAL_CARD_WITH_CVC_TAG,
   EXPIRATION_DATE,
+  EXPIRATION_DATE_WITH_BENEFITS_TAG,
   EXPIRATION_DATE_WITH_CVC_TAG,
+  EXPIRATION_DATE_WITH_CVC_AND_BENEFITS_TAG,
+  VIRTUAL_CARD,
+  VIRTUAL_CARD_WITH_BENEFITS_TAG,
+  VIRTUAL_CARD_WITH_CVC_TAG,
+  VIRTUAL_CARD_WITH_CVC_AND_BENEFITS_TAG,
 }
 
 const SettingsCreditCardListEntryElementBase = I18nMixin(PolymerElement);
@@ -143,54 +147,67 @@ export class SettingsCreditCardListEntryElement extends
 
   private getCardSublabelType(): CardSummarySublabelType {
     if (this.isVirtualCardEnrolled_()) {
-      if (loadTimeData.getBoolean('cvcStorageAvailable') &&
-          !!this.creditCard.cvc) {
-        return CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG;
+      if (this.isCardCvcAvailable_()) {
+        return this.isCardBenefitsProductUrlAvailable_() ?
+            CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_AND_BENEFITS_TAG :
+            CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG;
       }
-      return CardSummarySublabelType.VIRTUAL_CARD;
+      return this.isCardBenefitsProductUrlAvailable_() ?
+          CardSummarySublabelType.VIRTUAL_CARD_WITH_BENEFITS_TAG :
+          CardSummarySublabelType.VIRTUAL_CARD;
     }
-    if (loadTimeData.getBoolean('cvcStorageAvailable') &&
-        !!this.creditCard.cvc) {
-      return CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG;
+    if (this.isCardCvcAvailable_()) {
+      return this.isCardBenefitsProductUrlAvailable_() ?
+          CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_AND_BENEFITS_TAG :
+          CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG;
     }
-    return CardSummarySublabelType.EXPIRATION_DATE;
+    return this.isCardBenefitsProductUrlAvailable_() ?
+        CardSummarySublabelType.EXPIRATION_DATE_WITH_BENEFITS_TAG :
+        CardSummarySublabelType.EXPIRATION_DATE;
   }
 
   /**
    * Returns one of the following sublabels, based on the card's status:
-   *    Virtual card metadata if card is eligible for enrollment or has already
-   * enrolled
-   *    Expiration date tag (MM/YY)
-   *    'CVC saved' tag
-   *
+   *   Virtual card enrollment tag
+   *   Expiration date tag (MM/YY)
+   *   'CVC saved' tag
+   *   Benefit tag (Place the benefit tag last because it includes a link to
+   *                product terms.)
    * e.g., one of the following:
-   *    11/23
-   *    11/23 | CVC saved
-   *    Virtual card turned on
-   *    Virtual card turned on | CVC saved
+   *   11/23
+   *   11/23 | CVC saved
+   *   11/23 | Card benefits available (terms apply)
+   *   11/23 | CVC saved | Card benefits available (terms apply)
+   *   Virtual card turned on
+   *   Virtual card turned on | CVC saved
+   *   Virtual card turned on | Card benefits available (terms apply)
+   *   Virtual card turned on | CVC saved | Card benefits available (terms
+   *     apply)
    */
   private getSummarySublabel_(): string {
-    switch (this.getCardSublabelType()) {
-      case CardSummarySublabelType.VIRTUAL_CARD:
-        return this.i18n('virtualCardTurnedOn');
-      case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
-        return this.i18n('virtualCardTurnedOn') + ' | ' +
-            this.i18n('cvcTagForCreditCardListEntry');
-      case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
-        return this.getCardExpiryDate_() + ' | ' +
-            this.i18n('cvcTagForCreditCardListEntry');
-      case CardSummarySublabelType.EXPIRATION_DATE:
-        return this.getCardExpiryDate_();
-      default:
-        assertNotReached();
+    const separator = ' | ';
+    let summarySublabel = this.isVirtualCardEnrolled_() ?
+        this.i18n('virtualCardTurnedOn') :
+        this.getCardExpiryDate_();
+    if (this.isCardCvcAvailable_()) {
+      summarySublabel += separator + this.i18n('cvcTagForCreditCardListEntry');
     }
+    if (this.isCardBenefitsProductUrlAvailable_()) {
+      summarySublabel +=
+          separator + this.i18n('benefitsAvailableTagForCreditCardListEntry');
+    }
+    return summarySublabel;
   }
 
   private getSummaryAriaSublabel_(): string {
     switch (this.getCardSublabelType()) {
-      case CardSummarySublabelType.VIRTUAL_CARD:
+      case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_AND_BENEFITS_TAG:
+      case CardSummarySublabelType.VIRTUAL_CARD_WITH_BENEFITS_TAG:
       case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
+      case CardSummarySublabelType.VIRTUAL_CARD:
         return this.getSummarySublabel_();
+      case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_AND_BENEFITS_TAG:
+      case CardSummarySublabelType.EXPIRATION_DATE_WITH_BENEFITS_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE_WITH_CVC_TAG:
       case CardSummarySublabelType.EXPIRATION_DATE:
         return this.i18n(
@@ -215,6 +232,20 @@ export class SettingsCreditCardListEntryElement extends
       return this.i18n('googlePaymentsCached');
     }
     return this.i18n('googlePayments');
+  }
+
+  private isCardCvcAvailable_(): boolean {
+    return loadTimeData.getBoolean('cvcStorageAvailable') &&
+        !!this.creditCard.cvc;
+  }
+
+  private isCardBenefitsProductUrlAvailable_(): boolean {
+    return loadTimeData.getBoolean('autofillCardBenefitsAvailable') &&
+        !!this.creditCard.productTermsUrl;
+  }
+
+  private getCardBenefitsProductUrl_(): string {
+    return this.creditCard.productTermsUrl || '';
   }
 }
 

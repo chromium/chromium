@@ -273,6 +273,9 @@ namespace autofillPrivate {
     // Credit card's masked cvc.
     DOMString? cvc;
 
+    // Credit card's product terms URL.
+    DOMString? productTermsUrl;
+
     AutofillMetadata? metadata;
   };
 
