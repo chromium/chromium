@@ -673,6 +673,11 @@ void ManagePasswordsUIController::OnBubbleHidden() {
       GetState() == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
     update_icon = true;
+  } else if (GetState() ==
+             password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE) {
+    passwords_data_.TransitionToState(
+        password_manager::ui::PENDING_PASSWORD_STATE);
+    update_icon = true;
   }
   if (update_icon)
     UpdateBubbleAndIconVisibility();
