@@ -4320,6 +4320,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "file-system-provider-cloud-file-system",
+    "owners": [ "benreich@chromium.org", "cassycc@chromium.org", "simmonsjosh@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "file-system-provider-content-cache",
     "owners": [ "benreich@chromium.org", "cassycc@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 130

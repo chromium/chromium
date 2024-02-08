@@ -33,10 +33,13 @@ class OperationRequestManager;
 namespace ash::file_system_provider {
 
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
-// currently this is hidden behind the `FileSystemProviderContentCache` feature
-// flag.
+// currently this is hidden behind the `FileSystemProviderCloudFileSystem`
+// feature flag.
 class CloudFileSystem : public ProvidedFileSystemInterface {
  public:
+  explicit CloudFileSystem(
+      std::unique_ptr<ProvidedFileSystemInterface> file_system);
+
   CloudFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
                    ContentCache* content_cache);
 

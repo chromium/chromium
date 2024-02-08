@@ -220,7 +220,12 @@ BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a content cache for FileSystemProvider extensions.
+// Enables CloudFileSystem for FileSystemProvider extensions.
+BASE_FEATURE(kFileSystemProviderCloudFileSystem,
+             "FileSystemProviderCloudFileSystem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a content cache in CloudFileSystem for FileSystemProvider extensions.
 BASE_FEATURE(kFileSystemProviderContentCache,
              "FileSystemProviderContentCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -312,8 +317,15 @@ bool IsEssentialSearchEnabled() {
   return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
+bool IsFileSystemProviderCloudFileSystemEnabled() {
+  return base::FeatureList::IsEnabled(kFileSystemProviderCloudFileSystem);
+}
+
 bool IsFileSystemProviderContentCacheEnabled() {
-  return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+  // The `ContentCache` will be owned by the `CloudFileSystem`. Thus, the
+  // `FileSystemProviderCloudFileSystem` flag has to be enabled too.
+  return IsFileSystemProviderCloudFileSystemEnabled() &&
+         base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
 }
 
 bool IsIWAForTelemetryExtensionAPIEnabled() {

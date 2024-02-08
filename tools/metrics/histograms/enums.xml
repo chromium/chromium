@@ -20817,6 +20817,7 @@ from previous Chrome versions.
   <int value="56900498" label="OmniboxOneClickUnelide:enabled"/>
   <int value="57255632" label="site-isolation-for-password-sites:disabled"/>
   <int value="57639188" label="SoundContentSetting:disabled"/>
+  <int value="57730593" label="FileSystemProviderCloudFileSystem:enabled"/>
   <int value="57791920" label="MemoryCoordinator:enabled"/>
   <int value="57874550"
       label="AutofillOfferToSaveCardWithSameLastFour:disabled"/>
@@ -24409,6 +24410,7 @@ from previous Chrome versions.
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>
   <int value="1718421370" label="SharingHubLinkToggle:enabled"/>
+  <int value="1719019077" label="FileSystemProviderCloudFileSystem:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>

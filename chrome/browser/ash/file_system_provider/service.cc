@@ -124,8 +124,8 @@ base::File::Error Service::MountFileSystemInternal(
       util::GetMountPath(profile_, provider_id, options.file_system_id);
   const std::string mount_point_name = mount_path.BaseName().AsUTF8Unsafe();
 
-  // The content cache is an experimentation on ODFS behind a feature flag, only
-  // pass it through if those conditions are met.
+  // The content cache is an experimentation on ODFS behind two feature flags,
+  // only pass it through if those conditions are met.
   // TODO(b/317137739): This logic should be moved to a capability in the
   // manifest.json.
   const bool is_content_cache_enabled_and_odfs =

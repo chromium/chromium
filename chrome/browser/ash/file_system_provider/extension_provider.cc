@@ -99,16 +99,27 @@ ExtensionProvider::CreateProvidedFileSystem(
     const ProvidedFileSystemInfo& file_system_info,
     ContentCache* content_cache) {
   DCHECK(profile);
-  // Cache type is only set when `FileSystemProviderContentCache` feature flag
-  // is enabled and the provider is ODFS.
+  if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
+    return std::make_unique<ThrottledFileSystem>(
+        std::make_unique<ProvidedFileSystem>(profile, file_system_info));
+  }
+  // TODO(b/317137739): Check the file system has a CLOUD source before
+  // creating a CloudFileSystem.
+  // Cache type is only set when the
+  // `FileSystemProviderCloudFileSystemEnabled` and
+  // `FileSystemProviderContentCache` feature flags are enabled and the
+  // provider is ODFS.
   if (file_system_info.cache_type() != CacheType::NONE) {
+    // CloudFileSystem with cache.
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<CloudFileSystem>(
             std::make_unique<ProvidedFileSystem>(profile, file_system_info),
             content_cache));
   }
+  // CloudFileSystem without cache.
   return std::make_unique<ThrottledFileSystem>(
-      std::make_unique<ProvidedFileSystem>(profile, file_system_info));
+      std::make_unique<CloudFileSystem>(
+          std::make_unique<ProvidedFileSystem>(profile, file_system_info)));
 }
 
 const Capabilities& ExtensionProvider::GetCapabilities() const {

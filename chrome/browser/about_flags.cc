@@ -5825,6 +5825,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"files-trash-drive", flag_descriptions::kFilesTrashDriveName,
      flag_descriptions::kFilesTrashDriveDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesTrashDrive)},
+    {"file-system-provider-cloud-file-system",
+     flag_descriptions::kFileSystemProviderCloudFileSystemName,
+     flag_descriptions::kFileSystemProviderCloudFileSystemDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kFileSystemProviderCloudFileSystem)},
     {"file-system-provider-content-cache",
      flag_descriptions::kFileSystemProviderContentCacheName,
      flag_descriptions::kFileSystemProviderContentCacheDescription, kOsCrOS,

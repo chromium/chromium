@@ -6534,11 +6534,17 @@ const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 const char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
 
+const char kFileSystemProviderCloudFileSystemName[] =
+    "Enable CloudFileSystem for FileSystemProvider extensions.";
+const char kFileSystemProviderCloudFileSystemDescription[] =
+    "Enable the ability for individual FileSystemProvider extensions to "
+    "be serviced by a CloudFileSystem.";
+
 const char kFileSystemProviderContentCacheName[] =
     "Enable content caching for FileSystemProvider extensions.";
 const char kFileSystemProviderContentCacheDescription[] =
-    "Enable the ability for individual FileSystemProvider extensions to "
-    "leverage a content cache.";
+    "Enable the ability for individual FileSystemProvider extensions being "
+    "serviced by CloudFileSystem to leverage a content cache.";
 
 const char kFirmwareUpdateUIV2Name[] =
     "Enables the v2 version of the Firmware Updates app";

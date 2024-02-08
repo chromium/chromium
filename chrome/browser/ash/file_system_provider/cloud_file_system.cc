@@ -77,6 +77,10 @@ std::ostream& operator<<(std::ostream& out,
 }  // namespace
 
 CloudFileSystem::CloudFileSystem(
+    std::unique_ptr<ProvidedFileSystemInterface> file_system)
+    : CloudFileSystem(std::move(file_system), nullptr) {}
+
+CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system,
     ContentCache* content_cache)
     : file_system_(std::move(file_system)), content_cache_(content_cache) {}

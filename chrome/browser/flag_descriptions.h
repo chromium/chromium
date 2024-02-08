@@ -3765,6 +3765,9 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesTrashDriveName[];
 extern const char kFilesTrashDriveDescription[];
 
+extern const char kFileSystemProviderCloudFileSystemName[];
+extern const char kFileSystemProviderCloudFileSystemDescription[];
+
 extern const char kFileSystemProviderContentCacheName[];
 extern const char kFileSystemProviderContentCacheDescription[];
 
