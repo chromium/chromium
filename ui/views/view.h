@@ -255,16 +255,17 @@ enum class ViewLayer {
 //
 //   For Views that expose properties which are intended to be dynamically
 //   discoverable by other subsystems, each View and its descendants must
-//   include metadata. These other subsystems, such as dev tools or a delarative
-//   layout system, can then enumerate the properties on any given instance or
-//   class. Using the enumerated information, the actual values of the
-//   properties can be read or written. This will be done by getting and setting
-//   the values using string representations. The metadata can also be used to
-//   instantiate and initialize a View (or descendant) class from a declarative
-//   "script".
+//   include metadata. These other subsystems, such as dev tools or a
+//   declarative layout system, can then enumerate the properties on any given
+//   instance or class. Using the enumerated information, the actual values of
+//   the properties can be read or written. This will be done by getting and
+//   setting the values using string representations. The metadata can also be
+//   used to instantiate and initialize a View (or descendant) class from a
+//   declarative "script".
 //
 //   For each View class in their respective header declaration, place the macro
-//   METADATA_HEADER(<classname>, <view ancestor class>) in the public section.
+//   METADATA_HEADER(<classname>, <view ancestor class>) in the initial private
+//   section.
 //
 //   In the implementing .cc file, add the following macros to the same
 //   namespace in which the class resides.
