@@ -6952,13 +6952,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240202",
                     "params": {
                         "OneTapForMapsConsentModeParam": "iph"
                     },
                     "enable_features": [
                         "EnableOneTapForMaps"
-                    ]
+                    ],
+                    "disable_features": [
+                        "EnableExpKitTextClassifier"
+                    ],
+                    "min_os_version": "16.4.0"
+                },
+                {
+                    "name": "EnabledWithTC_20240202",
+                    "params": {
+                        "OneTapForMapsConsentModeParam": "iph",
+                        "onetap": "true"
+                    },
+                    "enable_features": [
+                        "EnableExpKitTextClassifier",
+                        "EnableOneTapForMaps"
+                    ],
+                    "min_os_version": "16.4.0"
                 }
             ]
         }
@@ -9296,22 +9312,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableViewportIntents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSExpKitCalendarTextClassifier": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableExpKitCalendarTextClassifier",
-                        "EnableExpKitTextClassifier"
                     ]
                 }
             ]
