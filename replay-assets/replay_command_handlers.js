@@ -460,10 +460,11 @@ function Target_getCurrentNetworkStreamData(params) {
 
 function Target_topFrameLocation() {
   try {
-    const { location } = sendCDPMessage("Debugger.getTopFrameLocation");
-    if (!location) {
+    const rv = sendCDPMessage("Debugger.getTopFrameLocation");
+    if (!rv || !rv.location) {
       return {};
     }
+    return { location: createProtocolLocation(rv.location)[0] };
   } catch (e) {
     if (e instanceof CDPMessageError) {
       // No available context group; this can happen, so just return nothing.
@@ -474,8 +475,6 @@ function Target_topFrameLocation() {
     }
     throw e;
   }
-
-  return { location: createProtocolLocation(location)[0] };
 }
 
 /**
