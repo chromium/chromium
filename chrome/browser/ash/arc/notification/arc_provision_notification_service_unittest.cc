@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,8 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace arc {
@@ -43,9 +40,7 @@ const char kArcManagedProvisionNotificationId[] = "arc_managed_provision";
 
 class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
  protected:
-  ArcProvisionNotificationServiceTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
-
+  ArcProvisionNotificationServiceTest() = default;
   ArcProvisionNotificationServiceTest(
       const ArcProvisionNotificationServiceTest&) = delete;
   ArcProvisionNotificationServiceTest& operator=(
@@ -84,11 +79,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
 
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
     arc::StabilityMetricsManager::Initialize(&local_state_);
-
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "1234567890"));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
   }
 
   void TearDown() override {
@@ -112,8 +102,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   raw_ptr<session_manager::SessionManager> session_manager_;
 
  private:
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   TestingPrefServiceSimple local_state_;
 };
 

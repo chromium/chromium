@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/lock_screen_apps/state_observer.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -45,7 +44,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
@@ -379,13 +377,9 @@ class TestAppWindow : public content::WebContentsObserver {
 
 class LockScreenAppStateTest : public BrowserWithTestWindowTest {
  public:
-  LockScreenAppStateTest()
-      : fake_user_manager_(new ash::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
-
+  LockScreenAppStateTest() = default;
   LockScreenAppStateTest(const LockScreenAppStateTest&) = delete;
   LockScreenAppStateTest& operator=(const LockScreenAppStateTest&) = delete;
-
   ~LockScreenAppStateTest() override = default;
 
   void SetUp() override {
@@ -458,20 +452,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     command_line_.reset();
     ash::ConciergeClient::Shutdown();
-  }
-
-  // BrowserWithTestWindow:
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    AddTestUser(account_id);
-    fake_user_manager()->LoginUser(account_id);
-  }
-
-  // Adds test user for the primary profile - virtual so test fixture can
-  // override the test user type.
-  virtual void AddTestUser(const AccountId& account_id) {
-    fake_user_manager()->AddUser(account_id);
   }
 
   // Exposed so test fixtures can override default (empty) command line.
@@ -629,8 +609,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     lock_screen_profile_creator_->CreateProfile();
   }
 
-  ash::FakeChromeUserManager* fake_user_manager() { return fake_user_manager_; }
-
   Profile* LockScreenProfile() {
     return lock_screen_profile_creator_->lock_screen_profile();
   }
@@ -670,9 +648,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   bool is_first_app_run_test_ = false;
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
-
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 
   // Run loop used to throttle test until async state controller initialization
   // is fully complete. The quit closure for this run loop will be passed to
@@ -717,8 +692,16 @@ class LockScreenAppStateKioskUserTest : public LockScreenAppStateTest {
 
   ~LockScreenAppStateKioskUserTest() override {}
 
-  void AddTestUser(const AccountId& account_id) override {
-    fake_user_manager()->AddKioskAppUser(account_id);
+  // BrowserWithTestWindow:
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    // Log in as a kiosk user.
+    user_manager()->AddKioskAppUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 };
 

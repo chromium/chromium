@@ -39,13 +39,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -56,11 +54,6 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kFakeUserName[] = "test@example.com";
-constexpr char kFakeGaiaId[] = "1234567890";
-#endif
 
 const char kFirstTestFeatureId[] = "feature-1";
 const char kTestFeatureWithVariationId[] = "feature-2";
@@ -107,10 +100,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   ChromeLabsCoordinatorTest()
       : TestWithBrowserView(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
-#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         channel_override_(chrome::ScopedChannelOverride(
             chrome::ScopedChannelOverride::Channel::kDev)),
@@ -136,13 +125,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
-#endif
-
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kChromeLabs,
         {{features::kChromeLabsActivationPercentage.name, "100"}});
@@ -183,11 +165,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
-#endif
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   chrome::ScopedChannelOverride channel_override_;
 #endif
@@ -252,10 +229,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   ChromeLabsViewControllerTest()
       : TestWithBrowserView(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
-#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         channel_override_(chrome::ScopedChannelOverride(
             chrome::ScopedChannelOverride::Channel::kDev)),
@@ -281,13 +254,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
-#endif
-
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kChromeLabs,
         {{features::kChromeLabsActivationPercentage.name, "100"}});
@@ -400,10 +366,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
-#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   chrome::ScopedChannelOverride channel_override_;
 #endif
@@ -481,21 +443,10 @@ namespace ash {
 
 class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
  public:
-  ChromeLabsAshFeatureTest()
-      : ChromeLabsFeatureTest(),
-        user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {
+  ChromeLabsAshFeatureTest() {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
   }
-
- private:
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 TEST_P(ChromeLabsAshFeatureTest, ChangeSelectedOption) {

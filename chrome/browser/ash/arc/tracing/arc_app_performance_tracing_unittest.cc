@@ -144,17 +144,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-    AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUser(account_id);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
     auto* user = user_manager()->FindUserAndModify(

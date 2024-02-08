@@ -1459,7 +1459,18 @@ TEST_F(SessionServiceTest, DisableSaving) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(SessionServiceTest, OpenedWindowNotRestoredInKiosk) {
+class SessionServiceKioskTest : public SessionServiceTest {
+ public:
+  void LogIn(const std::string& email) override {
+    chromeos::SetUpFakeKioskSession(email);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        email, user_manager::UserType::kKioskApp);
+#endif
+  }
+};
+
+TEST_F(SessionServiceTest, OpenedWindowNotRestored) {
   // These preparation is necessary for `ShouldRestore` function to return true
   // in the regular user session.
   helper_.SetHasOpenTrackableBrowsers(false);
@@ -1467,8 +1478,13 @@ TEST_F(SessionServiceTest, OpenedWindowNotRestoredInKiosk) {
   service()->WindowClosed(window_id);
   // Make sure `ShouldRestore` returns true for the regular user session.
   EXPECT_TRUE(session_service_->ShouldRestore(browser()));
+}
 
-  chromeos::SetUpFakeKioskSession();
+TEST_F(SessionServiceKioskTest, OpenedWindowNotRestored) {
+  helper_.SetHasOpenTrackableBrowsers(false);
+  service()->WindowClosing(window_id);
+  service()->WindowClosed(window_id);
+  // Make sure `ShouldRestore` returns true for the kiosk user session.
   EXPECT_FALSE(session_service_->ShouldRestore(browser()));
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)

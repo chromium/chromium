@@ -11,13 +11,12 @@
 #include "ash/shell.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/test_util.h"
@@ -45,41 +44,22 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
       delete;
   ~CalendarKeyedServiceTest() override = default;
 
+  void SetUp() override {
+    ProfileHelper::SetProfileToUserForTestingEnabled(true);
+    BrowserWithTestWindowTest::SetUp();
+  }
+
+  void TearDown() override {
+    BrowserWithTestWindowTest::TearDown();
+    ProfileHelper::SetProfileToUserForTestingEnabled(false);
+  }
+
   std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
 
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(email);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
   TestingProfile* CreateSecondaryProfile() {
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(
-        kSecondaryProfileName,
-        std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        u"Test profile",
-        /*avatar_id=*/1,
-        /*testing_factories=*/{});
+    LogIn(kSecondaryProfileName);
+    return CreateProfile(kSecondaryProfileName);
   }
-
-  void ActivateSecondaryProfile() {
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    GetSessionControllerClient()->AddUserSession(kSecondaryProfileName);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
-  TestSessionControllerClient* GetSessionControllerClient() {
-    return ash_test_helper()->test_session_controller_client();
-  }
-
- private:
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
 };
 
 class CalendarKeyedServiceIOTest : public testing::Test {
@@ -197,7 +177,7 @@ TEST_F(CalendarKeyedServiceTest, SecondaryUserProfile) {
 
   // Switching the active user should change the active client (multi-user
   // support).
-  ActivateSecondaryProfile();
+  SwitchActiveUser(kSecondaryProfileName);
   EXPECT_EQ(ash::Shell::Get()->calendar_controller()->GetClient(),
             secondary_calendar_service->client());
 }

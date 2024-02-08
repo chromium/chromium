@@ -20,13 +20,13 @@
 
 namespace chromeos {
 
-void SetUpFakeKioskSession() {
+void SetUpFakeKioskSession(const std::string& email) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(user_manager::UserManager::Get());
 
   auto* user_manager = static_cast<user_manager::UserManagerBase*>(
       user_manager::UserManager::Get());
-  auto account_id = AccountId::FromUserEmail("example@example.com");
+  auto account_id = AccountId::FromUserEmail(email);
   auto* user = user_manager->AddKioskAppUserForTesting(
       account_id,
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));

@@ -77,12 +77,6 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     AddTab(browser(), url);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_user_manager_->AddUserWithAffiliation(
-        AccountId::FromUserEmail(profile()->GetProfileUserName()),
-        /*is_affiliated=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     presenter_ = std::make_unique<PageInfo>(
         std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
         url);
@@ -95,6 +89,19 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
     content_view_.reset();
     TestWithBrowserView::TearDown();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+#endif
 
   PageInfoCookiesContentView* content_view() { return content_view_.get(); }
 
@@ -146,11 +153,6 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PageInfo> presenter_;
   std::unique_ptr<PageInfoCookiesContentView> content_view_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-#endif
 };
 
 class PageInfoCookiesContentViewPre3pcdTest

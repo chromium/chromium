@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -69,11 +70,8 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized()) {
-    auto user_manager = std::make_unique<user_manager::FakeUserManager>(
-        g_browser_process->local_state());
-    user_manager_ = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+        g_browser_process->local_state()));
   }
   ash_test_helper_.SetUp();
 #endif
@@ -106,6 +104,9 @@ void BrowserWithTestWindowTest::SetUp() {
   std::string profile_name = GetDefaultProfileName();
 #if BUILDFLAG(IS_CHROMEOS)
   LogIn(profile_name);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SwitchActiveUser(profile_name);
+#endif
 #endif
   profile_ = CreateProfile(profile_name);
 
@@ -155,7 +156,7 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash_test_helper_.TearDown();
   test_views_delegate_.reset();
-  user_manager_ = nullptr;
+  user_manager_.Reset();
 #elif defined(TOOLKIT_VIEWS)
   views_test_helper_.reset();
 #endif
@@ -221,9 +222,13 @@ std::string BrowserWithTestWindowTest::GetDefaultProfileName() {
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile(
     const std::string& profile_name) {
-  return profile_manager_->CreateTestingProfile(
+  auto* profile = profile_manager_->CreateTestingProfile(
       profile_name, /*prefs=*/nullptr, /*user_name=*/std::u16string(),
       /*avatar_id=*/0, GetTestingFactories());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  OnUserProfileCreated(profile_name, profile);
+#endif
+  return profile;
 }
 
 void BrowserWithTestWindowTest::DeleteProfile(const std::string& profile_name) {
@@ -268,11 +273,51 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void BrowserWithTestWindowTest::LogIn(const std::string& email) {
-  // TODO(crbug/1494005): Log in a regular user by default.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const AccountId account_id = AccountId::FromUserEmail(email);
+  user_manager_->AddUser(account_id);
+  ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+  user_manager_->UserLoggedIn(
+      account_id,
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+      /*browser_restart=*/false,
+      /*is_child=*/false);
+#endif
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
+                                                     Profile* profile) {
+  AccountId account_id = AccountId::FromUserEmail(email);
+  ash::AnnotatedAccountId::Set(profile, account_id);
+  // Do not use the member directly, because another UserManager instance
+  // may be injected.
+  auto* user_manager = user_manager::UserManager::Get();
+  user_manager->OnUserProfileCreated(account_id, profile->GetPrefs());
+  auto observation =
+      std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(this);
+  observation->Observe(profile);
+  profile_observations_.push_back(std::move(observation));
+}
+
+void BrowserWithTestWindowTest::SwitchActiveUser(const std::string& email) {
+  ash_test_helper()->test_session_controller_client()->SwitchActiveUser(
+      AccountId::FromUserEmail(email));
+}
+
+void BrowserWithTestWindowTest::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK(
+      base::EraseIf(profile_observations_, [profile](const auto& observation) {
+        return observation->IsObservingSource(profile);
+      }));
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
+  CHECK(account_id);
+  // Do not use the member directly, because another UserManager instance
+  // may be injected.
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(*account_id);
+}
+
 ash::ScopedCrosSettingsTestHelper*
 BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;

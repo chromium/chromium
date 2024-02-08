@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/fake_user_private_token_kpm_service.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
@@ -29,7 +28,6 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension_builder.h"
@@ -61,10 +59,7 @@ void FakeRunCheckNotRegister(::attestation::VerifiedAccessFlow flow_type,
 
 class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
  protected:
-  EPKChallengeKeyTestBase()
-      : extension_(ExtensionBuilder("Test").Build()),
-        fake_user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
+  EPKChallengeKeyTestBase() : extension_(ExtensionBuilder("Test").Build()) {
     stub_install_attributes_.SetCloudManaged("google.com", "device_id");
   }
 
@@ -114,9 +109,9 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   void LogIn(const std::string& email) override {
     const AccountId account_id = AccountId::FromUserEmail(email);
-    fake_user_manager_->AddUserWithAffiliation(account_id,
-                                               /*is_affiliated=*/true);
-    fake_user_manager_->UserLoggedIn(
+    user_manager()->AddUserWithAffiliation(account_id,
+                                           /*is_affiliated=*/true);
+    user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
         /*browser_restart=*/false,
@@ -178,10 +173,6 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   scoped_refptr<const extensions::Extension> extension_;
   ash::StubInstallAttributes stub_install_attributes_;
-  // fake_user_manager_ is owned by user_manager_enabler_.
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  user_manager::ScopedUserManager user_manager_enabler_;
   ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
   raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
   raw_ptr<ash::attestation::MockTpmChallengeKey, DanglingUntriaged>

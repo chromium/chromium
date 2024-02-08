@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
@@ -54,7 +53,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -83,8 +81,6 @@ const base::StringPiece TestTypeStr(TestType type) {
 }
 
 constexpr char kTestUserEmail[] = "testuser@gmail.com";
-constexpr char kTestUserGaiaId[] = "9876543210";
-constexpr char kTestUserEmailHash[] = "testuser@gmail.com-hash";
 constexpr char kInvalidToken[] = "invalid";
 constexpr char kValidPassword[] = "valid";
 constexpr char kInvalidPassword[] = "invalid";
@@ -185,7 +181,7 @@ class QuickUnlockPrivateUnitTest
 
     const cryptohome::AccountIdentifier account_id =
         cryptohome::CreateAccountIdentifierFromAccountId(
-            AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId));
+            AccountId::FromUserEmail(kTestUserEmail));
 
     ash::Key key{kValidPassword};
     key.Transform(ash::Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
@@ -201,10 +197,6 @@ class QuickUnlockPrivateUnitTest
 
     ash::SystemSaltGetter::Initialize();
 
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
     auth_parts_ = ash::AuthPartsImpl::CreateTestInstance();
     auth_parts_->SetAuthSessionStorage(
         std::make_unique<ash::AuthSessionStorageImpl>(
@@ -231,13 +223,6 @@ class QuickUnlockPrivateUnitTest
 
   std::string GetDefaultProfileName() override { return kTestUserEmail; }
 
-  void LogIn(const std::string& email) override {
-    auto test_account = AccountId::FromUserEmailGaiaId(email, kTestUserGaiaId);
-    fake_user_manager_->AddUser(test_account);
-    fake_user_manager_->UserLoggedIn(test_account, kTestUserEmailHash, false,
-                                     false);
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto pref_service =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -247,28 +232,26 @@ class QuickUnlockPrivateUnitTest
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(pref_service), u"Test profile",
         1 /* avatar_id */, GetTestingFactories());
+    OnUserProfileCreated(profile_name, profile);
 
     // Setup a primary user.
-    auto test_account =
-        AccountId::FromUserEmailGaiaId(profile_name, kTestUserGaiaId);
-    fake_user_manager_->SimulateUserProfileLoad(test_account);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        fake_user_manager_->GetPrimaryUser(), profile);
+        user_manager()->GetPrimaryUser(), profile);
 
     // Generate an auth token.
-    auth_token_user_context_.SetAccountId(test_account);
-    auth_token_user_context_.SetUserIDHash(kTestUserEmailHash);
+    AccountId account_id = AccountId::FromUserEmail(profile_name);
+    auth_token_user_context_.SetAccountId(account_id);
+    auth_token_user_context_.SetUserIDHash(
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
     auth_token_user_context_.SetSessionLifetime(
         base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
     if (std::get<0>(GetParam()) == TestType::kCryptohome) {
       auto* fake_userdataauth_client_testapi =
           ash::FakeUserDataAuthClient::TestApi::Get();
 
-      const cryptohome::AccountIdentifier account_id =
-          cryptohome::CreateAccountIdentifierFromAccountId(
-              AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId));
       auto session_ids = fake_userdataauth_client_testapi->AddSession(
-          account_id, /*authenticated=*/true);
+          cryptohome::CreateAccountIdentifierFromAccountId(account_id),
+          /*authenticated=*/true);
       auth_token_user_context_.SetAuthSessionIds(session_ids.first,
                                                  session_ids.second);
       // Technically configuration should contain password as factor, but
@@ -290,8 +273,6 @@ class QuickUnlockPrivateUnitTest
 
     ExtensionApiUnittest::TearDown();
 
-    fake_user_manager_ = nullptr;
-    scoped_user_manager_.reset();
     test_api_.reset();
 
     ash::SystemSaltGetter::Shutdown();
@@ -523,8 +504,7 @@ class QuickUnlockPrivateUnitTest
 
   // Returns if the pin is set in the backend.
   bool IsPinSetInBackend() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
 
     base::test::TestFuture<bool> is_pin_set_future;
     ash::quick_unlock::PinBackend::GetInstance()->IsSet(
@@ -546,43 +526,37 @@ class QuickUnlockPrivateUnitTest
   }
 
   int GetExposedPinLength() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     return user_manager::KnownUser(g_browser_process->local_state())
         .GetUserPinLength(account_id);
   }
 
   void ClearExposedPinLength() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     user_manager::KnownUser(g_browser_process->local_state())
         .SetUserPinLength(account_id, 0);
   }
 
   bool IsBackfillNeeded() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     return user_manager::KnownUser(g_browser_process->local_state())
         .PinAutosubmitIsBackfillNeeded(account_id);
   }
 
   void SetBackfillNotNeeded() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     user_manager::KnownUser(g_browser_process->local_state())
         .PinAutosubmitSetBackfillNotNeeded(account_id);
   }
 
   void SetBackfillNeededForTests() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     user_manager::KnownUser(g_browser_process->local_state())
         .PinAutosubmitSetBackfillNeededForTests(account_id);
   }
 
   void OnUpdateUserPods() {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     ash::quick_unlock::PinBackend::GetInstance()->GetExposedPinLength(
         account_id);
   }
@@ -612,8 +586,7 @@ class QuickUnlockPrivateUnitTest
 
   // Run an authentication attempt with the plain-text |password|.
   bool TryAuthenticate(const std::string& password) {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     auto user_context = std::make_unique<ash::UserContext>(
         user_manager::UserType::kRegular, account_id);
     user_context->SetIsUsingPin(true);
@@ -629,8 +602,7 @@ class QuickUnlockPrivateUnitTest
   }
 
   bool SetPinAutosubmitEnabled(const std::string& pin, const bool enabled) {
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    const AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     base::test::TestFuture<bool> set_pin_future;
     ash::quick_unlock::PinBackend::GetInstance()->SetPinAutoSubmitEnabled(
         account_id, pin, enabled, set_pin_future.GetCallback());
@@ -685,8 +657,6 @@ class QuickUnlockPrivateUnitTest
   }
 
   std::unique_ptr<ash::AuthPartsImpl> auth_parts_;
-  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   QuickUnlockPrivateSetModesFunction::ModesChangedEventHandler
       modes_changed_handler_;
   bool expect_modes_changed_ = false;

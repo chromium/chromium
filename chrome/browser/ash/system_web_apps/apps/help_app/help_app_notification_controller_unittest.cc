@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -26,10 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -42,41 +38,25 @@ namespace ash {
 
 class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
  public:
-  HelpAppNotificationControllerTest()
-      : user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(
-            std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
+  HelpAppNotificationControllerTest() = default;
   ~HelpAppNotificationControllerTest() override = default;
 
-  std::unique_ptr<TestingProfile> CreateRegularProfile() {
-    AccountId account_id_ =
-        AccountId::FromUserEmailGaiaId("user@gmail.com", "12345");
-    user_manager_->AddUser(account_id_);
-    TestingProfile::Builder builder;
-    builder.SetProfileName("user@gmail.com");
-    std::unique_ptr<TestingProfile> profile = builder.Build();
+  TestingProfile* CreateRegularProfile() {
+    constexpr char kEmail[] = "user@gmail.com";
+    LogIn(kEmail);
+    auto* profile = CreateProfile(kEmail);
     // Set profile creation version, otherwise it defaults to 1.0.0.0.
     ChromeVersionService::SetVersion(
         profile->GetPrefs(), std::string(version_info::GetVersionNumber()));
     return profile;
   }
 
-  std::unique_ptr<TestingProfile> CreateChildProfile() {
-    std::unique_ptr<TestingProfile> profile = CreateRegularProfile();
+  TestingProfile* CreateChildProfile() {
+    TestingProfile* profile = CreateRegularProfile();
     ChromeVersionService::SetVersion(
         profile->GetPrefs(), std::string(version_info::GetVersionNumber()));
     profile->SetIsSupervisedProfile();
     return profile;
-  }
-
-  // Creates a PrefService and registers Autofill prefs.
-  std::unique_ptr<PrefService> CreatePrefServiceAndRegisterPrefs() {
-    scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-        new user_prefs::PrefRegistrySyncable());
-    HelpAppNotificationController::RegisterProfilePrefs(registry.get());
-    PrefServiceFactory factory;
-    factory.set_user_prefs(base::MakeRefCounted<TestingPrefStore>());
-    return factory.Create(registry);
   }
 
   void SetUp() override {
@@ -95,7 +75,6 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
-    pref_service_ = CreatePrefServiceAndRegisterPrefs();
   }
 
   void TearDown() override {
@@ -131,24 +110,19 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         .value();
   }
 
-  PrefService* pref_service() { return pref_service_.get(); }
-
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   int notification_count_ = 0;
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<PrefService> pref_service_;
 };
 
 // Tests for regular profiles.
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowAnyNotificationIfNewRegularProfile) {
-  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  Profile* profile = CreateRegularProfile();
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowReleaseNotesNotification();
 
@@ -163,11 +137,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        ShowsReleaseNotesNotificationIfShownInOlderMilestone) {
-  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  Profile* profile = CreateRegularProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   20);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowReleaseNotesNotification();
 
@@ -180,11 +154,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowReleaseNotificationIfAlreadyShownInCurrentMilestone) {
-  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  Profile* profile = CreateRegularProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   CurrentMilestone());
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowReleaseNotesNotification();
 
@@ -194,9 +168,9 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfNotChildProfile) {
-  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  Profile* profile = CreateRegularProfile();
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   20);
 
@@ -209,9 +183,9 @@ TEST_F(HelpAppNotificationControllerTest,
 // Tests for Child profile.
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowAnyNotificationIfNewChildProfile) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
+  Profile* profile = CreateChildProfile();
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowReleaseNotesNotification();
 
@@ -227,12 +201,12 @@ TEST_F(HelpAppNotificationControllerTest,
 // TODO(b/187774783): Remove this when discover tab is supported in all locales.
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfSystemLanguageNotEnglish) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
+  Profile* profile = CreateChildProfile();
   g_browser_process->SetApplicationLocale("fr");
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   20);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowDiscoverNotification();
 
@@ -242,11 +216,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        ShowsDiscoverNotificationIfShownInPreviousMilestone) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
+  Profile* profile = CreateChildProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   91);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowDiscoverNotification();
 
@@ -259,11 +233,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowMoreThanOneNotificationPerMilestone) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
+  Profile* profile = CreateChildProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   91);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   controller->MaybeShowDiscoverNotification();
 
@@ -279,11 +253,11 @@ TEST_F(HelpAppNotificationControllerTest,
 // Tests for suggestion chips.
 TEST_F(HelpAppNotificationControllerTest,
        UpdatesReleaseNotesChipPrefWhenReleaseNotesNotificationShown) {
-  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  Profile* profile = CreateRegularProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   20);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
@@ -296,11 +270,11 @@ TEST_F(HelpAppNotificationControllerTest,
 
 TEST_F(HelpAppNotificationControllerTest,
        UpdatesDiscoverTabChipPrefWhenDiscoverTabNotificationShown) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
+  Profile* profile = CreateChildProfile();
   profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
                                   20);
   std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
+      std::make_unique<HelpAppNotificationController>(profile);
 
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));

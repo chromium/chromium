@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -49,11 +48,6 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
     GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
                                         true);
-
-    auto user_manager = std::make_unique<user_manager::FakeUserManager>();
-    user_manager_ = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -86,9 +80,6 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
   void OnNotificationAdded() { notification_count_++; }
 
  protected:
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   int notification_count_;
@@ -142,9 +133,9 @@ TEST_F(LowDiskNotificationTest, MediumNotificationsAreNotShownAfterThrottling) {
 }
 
 TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
-  user_manager_->AddUser(
+  user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("test_user1@example.com", "1234567891"));
-  user_manager_->AddUser(
+  user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
 
   SetNotificationThrottlingInterval(-1);
@@ -153,9 +144,9 @@ TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
 }
 
 TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
-  user_manager_->AddUser(
+  user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("test_user1@example.com", "1234567891"));
-  user_manager_->AddUser(
+  user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
 
   GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,

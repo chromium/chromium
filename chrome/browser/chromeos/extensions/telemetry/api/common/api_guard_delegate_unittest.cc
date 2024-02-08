@@ -136,13 +136,6 @@ class ApiGuardDelegateTest
     // Make sure device manufacturer is allowlisted.
     SetDeviceManufacturer(manufacturer());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-    AddUserAndLogIn();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->is_current_user_device_owner = true;
@@ -153,21 +146,9 @@ class ApiGuardDelegateTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-  void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Explicitly removing the user is required; otherwise ProfileHelper keeps a
-    // dangling pointer to the User.
-    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
-    // destructor of ash::FakeChromeUserManager.
-    if (GetFakeUserManager().GetActiveUser()) {
-      GetFakeUserManager().RemoveUserFromList(
-          GetFakeUserManager().GetActiveUser()->GetAccountId());
-    }
-    scoped_user_manager_.reset();
+  std::string GetDefaultProfileName() override { return kUserEmail; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    BrowserWithTestWindowTest::TearDown();
-  }
 
  protected:
   extensions::ExtensionId extension_id() const {
@@ -183,25 +164,10 @@ class ApiGuardDelegateTest
   const extensions::Extension* extension() { return extension_.get(); }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager& GetFakeUserManager() {
-    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get()));
-  }
-
-  virtual void AddUserAndLogIn() {
-    auto& user_manager = GetFakeUserManager();
-    // Make sure the current user is affiliated.
-    const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    user_manager.AddUser(account_id);
-    user_manager.LoginUser(account_id);
-    user_manager.SwitchActiveUser(account_id);
-  }
-
   void SetUserAsOwner() {
-    auto& user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    user_manager.SetOwnerId(account_id);
+    user_manager()->SetOwnerId(account_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -248,18 +214,13 @@ class ApiGuardDelegateTest
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<HardwareInfoDelegate::Factory>
       hardware_info_delegate_factory_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto& user_manager = GetFakeUserManager();
   // Make sure the current user is not the device owner.
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager.SetOwnerId(regular_user);
+  user_manager()->SetOwnerId(regular_user);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -430,13 +391,15 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void AddUserAndLogIn() override {
-    auto& user_manager = GetFakeUserManager();
+  void LogIn(const std::string& email) override {
     // Make sure the current user is affiliated.
-    const AccountId account_id = AccountId::FromUserEmail("user@example.com");
-    user_manager.AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    user_manager.LoginUser(account_id);
-    user_manager.SwitchActiveUser(account_id);
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
@@ -643,10 +606,11 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     return ash::kShimlessRmaAppBrowserContextBaseName;
   }
 
-  // ApiGuardDelegateTest overrides.
-  void AddUserAndLogIn() override {
-    // No user is logged in during Shimless RMA.
-  }
+  // Do nothing for special profile for shimless RMA App.
+  void LogIn(const std::string& email) override {}
+  void SwitchActiveUser(const std::string& email) override {}
+  void OnUserProfileCreated(const std::string& email,
+                            Profile* profile) override {}
 
  private:
   base::test::ScopedFeatureList feature_list_;

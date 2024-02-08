@@ -128,6 +128,16 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::ChunneldClient::Shutdown();
   }
 
+  // BrowserWithTestWindowTest:
+  // Override to do nothing to inject this test's specific behavior.
+  // TODO(b/40286020): Consider migrating into BrowserWithTestWindowTest
+  // in better way. Current test implementation is different from
+  // what we're seeing in production.
+  void LogIn(const std::string& email) override {}
+  void OnUserProfileCreated(const std::string& email,
+                            Profile* profile) override {}
+  void SwitchActiveUser(const std::string& email) override {}
+
   void LogInUser(bool is_affiliated) {
     base::RunLoop run_loop;
     const AccountId account_id(AccountId::FromUserEmailGaiaId(

@@ -15,13 +15,11 @@
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -233,9 +231,7 @@ class TempFileSystem {
 
 class FileChangeServiceTest : public BrowserWithTestWindowTest {
  public:
-  FileChangeServiceTest()
-      : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
+  FileChangeServiceTest() = default;
 
   FileChangeServiceTest(const FileChangeServiceTest& other) = delete;
   FileChangeServiceTest& operator=(const FileChangeServiceTest& other) = delete;
@@ -252,15 +248,6 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
   std::string GetDefaultProfileName() override {
     return "promary_profile@test";
   }
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-  }
-
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 }  // namespace

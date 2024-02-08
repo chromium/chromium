@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -25,7 +24,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,8 +51,6 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     // Required to initialize TokenHandleUtil.
     ash::UserDataAuthClient::InitializeFake();
-
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     SigninErrorNotifierFactory::GetForProfile(GetProfile());
     display_service_ =
@@ -90,8 +86,6 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 };

@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -40,9 +39,8 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace arc {
@@ -63,8 +61,7 @@ MATCHER_P(VerifyCaptionColor, color, "") {
 
 class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
  public:
-  ArcSettingsServiceTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+  ArcSettingsServiceTest() = default;
   ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
   ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
   ~ArcSettingsServiceTest() override = default;
@@ -100,11 +97,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
               return arc::GetHistogramNameByUserTypeForPrimaryProfile(
                   base_name);
             }));
-
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "1234567890"));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
 
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
@@ -177,8 +169,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
