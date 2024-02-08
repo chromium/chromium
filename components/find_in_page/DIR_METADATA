@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "UI>Browser>FindInPage"
+}
+buganizer_public: {
+  component_id: 1457177
 }
