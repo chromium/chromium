@@ -13,6 +13,7 @@ namespace ash {
 // Used to group related categories together.
 enum class ASH_EXPORT PickerCategoryType {
   kExpressions,
+  kLinks,
 };
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category);

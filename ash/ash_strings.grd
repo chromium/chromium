@@ -6945,6 +6945,15 @@ New install
       <message name="IDS_PICKER_GIFS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show gif results.">
         Gifs
       </message>
+      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show open tab results.">
+        Open tabs
+      </message>
+      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show browsing history results.">
+        Browsing history
+      </message>
+      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show bookmark results.">
+        Bookmarks
+      </message>
       <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
       </message>
@@ -6960,8 +6969,20 @@ New install
       <message name="IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the gifs category is selected.">
         Search Gifs
       </message>
+      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the open tabs category is selected.">
+        Search Open Tabs
+      </message>
+      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
+        Search Browsing History
+      </message>
+      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the bookmarks category is selected.">
+        Search Bookmarks
+      </message>
       <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains expression categories, i.e. emojis, symbols, emoticons and gifs.">
         Expressions
+      </message>
+      <message name="IDS_PICKER_LINKS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains link categories, e.g. browsing history, open tabs, bookmarks.">
+        Links
       </message>
 
       <!-- WM -->

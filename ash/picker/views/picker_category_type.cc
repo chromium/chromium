@@ -15,6 +15,10 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kEmoticons:
     case PickerCategory::kGifs:
       return PickerCategoryType::kExpressions;
+    case PickerCategory::kOpenTabs:
+    case PickerCategory::kBrowsingHistory:
+    case PickerCategory::kBookmarks:
+      return PickerCategoryType::kLinks;
   }
 }
 

@@ -11,6 +11,7 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
+#include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -555,7 +556,7 @@ TEST_F(PickerViewTest, ResultsBelowSearchFieldNearTopOfScreen) {
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
-  EXPECT_GE(view->zero_state_view_for_testing().GetBoundsInScreen().y(),
+  EXPECT_GE(view->contents_view_for_testing().GetBoundsInScreen().y(),
             view->search_field_view_for_testing().GetBoundsInScreen().bottom());
 }
 
@@ -571,7 +572,7 @@ TEST_F(PickerViewTest, ResultsAboveSearchFieldNearBottomOfScreen) {
   widget->Show();
 
   PickerView* view = GetPickerViewFromWidget(*widget);
-  EXPECT_LE(view->zero_state_view_for_testing().GetBoundsInScreen().bottom(),
+  EXPECT_LE(view->contents_view_for_testing().GetBoundsInScreen().bottom(),
             view->search_field_view_for_testing().GetBoundsInScreen().y());
 }
 

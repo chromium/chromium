@@ -84,6 +84,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
+  PickerContentsView& contents_view_for_testing() { return *contents_view_; }
   PickerSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }

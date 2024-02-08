@@ -22,6 +22,7 @@ namespace ash {
 namespace {
 
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Not;
@@ -30,11 +31,12 @@ constexpr int kPickerWidth = 320;
 
 using PickerZeroStateViewTest = AshTestBase;
 
-TEST_F(PickerZeroStateViewTest, CreatesExpressionsSection) {
+TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   PickerZeroStateView view(kPickerWidth, base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
-              Contains(Key(PickerCategoryType::kExpressions)));
+              ElementsAre(Key(PickerCategoryType::kExpressions),
+                          Key(PickerCategoryType::kLinks)));
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {

@@ -22,6 +22,12 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       return kPickerEmoticonIcon;
     case PickerCategory::kGifs:
       return kPickerGifIcon;
+    case PickerCategory::kOpenTabs:
+      return kPickerOpenTabIcon;
+    case PickerCategory::kBrowsingHistory:
+      return kPickerBrowsingHistoryIcon;
+    case PickerCategory::kBookmarks:
+      return kPickerBookmarkIcon;
   }
 }
 

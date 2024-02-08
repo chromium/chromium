@@ -15,6 +15,9 @@ enum class ASH_EXPORT PickerCategory {
   kSymbols,
   kEmoticons,
   kGifs,
+  kOpenTabs,
+  kBrowsingHistory,
+  kBookmarks,
 };
 
 }  // namespace ash
