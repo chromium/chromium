@@ -5,6 +5,8 @@
 #ifndef UI_BASE_TEST_VIEW_TREE_VALIDATOR_H_
 #define UI_BASE_TEST_VIEW_TREE_VALIDATOR_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSView;

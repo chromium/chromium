@@ -5,6 +5,8 @@
 #ifndef UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 #define UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol NSAccessibility;
