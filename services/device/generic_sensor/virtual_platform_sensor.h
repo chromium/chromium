@@ -18,6 +18,14 @@ namespace device {
 
 // OS-agnostic PlatformSensor implementation used in (web) tests. New instances
 // are created by VirtualPlatformSensorProvider via GetSensor() calls.
+//
+// A VirtualPlatformSensor respects two invariants when it comes to readings
+// added in the constructor or with AddReading():
+// 1. Once a reading is set, it will remain set until it is replaced with
+//    another reading.
+// 2. Said reading will be added to the shared buffer (which may choose to
+//    ignore it) and, on success, clients will be notified whenever the sensor
+//    is activated (i.e. StartSensor() is called).
 class VirtualPlatformSensor : public PlatformSensor {
  public:
   VirtualPlatformSensor(mojom::SensorType type,
@@ -69,7 +77,14 @@ class VirtualPlatformSensor : public PlatformSensor {
   std::optional<PlatformSensorConfiguration> optimal_configuration_;
   std::optional<mojom::ReportingMode> reporting_mode_;
 
-  std::optional<SensorReading> pending_reading_;
+  // The latest reading passed to this sensor by either the constructor or
+  // AddReading().
+  //
+  // It may or may not be stored into the shared buffer by
+  // PlatformSensor depending on e.g. whether the sensor is active,
+  // rounding/threshold checks etc. Nonetheless, it remains saved and will be
+  // added again once StartSensor() is called.
+  std::optional<SensorReading> current_reading_;
 
   base::WeakPtrFactory<VirtualPlatformSensor> weak_ptr_factory_{this};
 };

@@ -110,11 +110,8 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
     return;
   }
 
-  std::optional<SensorReading> pending_reading;
-  metadata->pending_reading.swap(pending_reading);
-
   auto sensor = base::MakeRefCounted<VirtualPlatformSensor>(
-      type, reading_buffer, this, std::move(pending_reading),
+      type, reading_buffer, this, metadata->pending_reading,
       *metadata->mojo_metadata);
   std::move(callback).Run(std::move(sensor));
 }
