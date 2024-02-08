@@ -338,6 +338,63 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     session->connection()->OnNewConnectionIdFrame(new_cid_frame);
   }
 
+  // Helper for building requests and invoking `QuicSessionRequest::Request`.
+  // This `Request` method has lots of arguments, most of which are always at
+  // their default values, so this helper supports specifying only the
+  // non-default arguments relevant to a specific test.
+  struct RequestBuilder {
+    RequestBuilder(QuicSessionPoolTestBase* test, QuicSessionPool* pool)
+        : destination(test->scheme_host_port_),
+          quic_version(test->version_),
+          privacy_mode(test->privacy_mode_),
+          url(test->url_),
+          net_log(test->net_log_),
+          failed_on_default_network_callback(
+              test->failed_on_default_network_callback_),
+          callback(test->callback_.callback()),
+          request(pool) {}
+    explicit RequestBuilder(QuicSessionPoolTestBase* test)
+        : RequestBuilder(test, test->factory_.get()) {}
+
+    RequestBuilder(const RequestBuilder&) = delete;
+    RequestBuilder& operator=(const RequestBuilder&) = delete;
+
+    // Call the request's `Request` method with the parameters in the builder.
+    // The builder becomes invalid after this call.
+    int CallRequest() {
+      return request.Request(
+          std::move(destination), quic_version, proxy_chain,
+          std::move(proxy_annotation_tag), session_usage, privacy_mode,
+          priority, socket_tag, network_anonymization_key, secure_dns_policy,
+          require_dns_https_alpn, cert_verify_flags, url, net_log,
+          &net_error_details, std::move(failed_on_default_network_callback),
+          std::move(callback));
+    }
+
+    // Arguments to request.Request().
+    url::SchemeHostPort destination;
+    quic::ParsedQuicVersion quic_version;
+    ProxyChain proxy_chain = ProxyChain::Direct();
+    absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag =
+        TRAFFIC_ANNOTATION_FOR_TESTS;
+    SessionUsage session_usage = SessionUsage::kDestination;
+    PrivacyMode privacy_mode;
+    RequestPriority priority = DEFAULT_PRIORITY;
+    SocketTag socket_tag = SocketTag();
+    NetworkAnonymizationKey network_anonymization_key;
+    SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow;
+    bool require_dns_https_alpn = false;
+    int cert_verify_flags = 0;
+    GURL url;
+    NetLogWithSource net_log;
+    NetErrorDetails net_error_details;
+    CompletionOnceCallback failed_on_default_network_callback;
+    CompletionOnceCallback callback;
+
+    // The resulting request.
+    QuicSessionRequest request;
+  };
+
   std::unique_ptr<HttpStream> CreateStream(QuicSessionRequest* request) {
     std::unique_ptr<QuicChromiumClientSession::Handle> session =
         request->ReleaseSessionHandle();
@@ -411,20 +468,13 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-    QuicSessionRequest request(factory_.get());
     GURL url("https://" + destination.host() + "/");
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  destination, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    RequestBuilder builder(this);
+    builder.destination = destination;
+    builder.url = url;
 
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
-    std::unique_ptr<HttpStream> stream = CreateStream(&request);
+    std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream.get());
     stream.reset();
 
@@ -554,24 +604,15 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
     // Create request and QuicHttpStream.
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
-
+    RequestBuilder builder(this);
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_EQ(OK, callback_.WaitForResult());
 
     // Run QuicChromiumClientSession::WriteToNewSocket()
     // posted by QuicChromiumClientSession::MigrateToSocket().
     base::RunLoop().RunUntilIdle();
 
-    std::unique_ptr<HttpStream> stream = CreateStream(&request);
+    std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream.get());
 
     // Cause QUIC stream to be created.
@@ -772,18 +813,11 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(
-        ERR_IO_PENDING,
-        request.Request(
-            url::SchemeHostPort(url::kHttpsScheme, quic_server_id1.host(),
-                                quic_server_id1.port()),
-            version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-            SocketTag(), network_anonymization_key1, SecureDnsPolicy::kAllow,
-            /*require_dns_https_alpn=*/false,
-            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-            failed_on_default_network_callback_, callback_.callback()));
+    RequestBuilder builder(this);
+    builder.destination = url::SchemeHostPort(
+        url::kHttpsScheme, quic_server_id1.host(), quic_server_id1.port());
+    builder.network_anonymization_key = network_anonymization_key1;
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
     EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
@@ -817,21 +851,14 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                               "192.168.0.2", "");
 
-    QuicSessionRequest request2(factory_.get());
-    EXPECT_EQ(
-        ERR_IO_PENDING,
-        request2.Request(
-            url::SchemeHostPort(url::kHttpsScheme, quic_server_id2.host(),
-                                quic_server_id2.port()),
-            version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-            SocketTag(), network_anonymization_key2, SecureDnsPolicy::kAllow,
-            /*require_dns_https_alpn=*/false,
-            /*cert_verify_flags=*/0,
-            vary_network_anonymization_key ? url_
-                                           : GURL("https://mail.example.org/"),
-            net_log_, &net_error_details_, failed_on_default_network_callback_,
-            callback_.callback()));
+    RequestBuilder builder2(this);
+    builder2.destination = url::SchemeHostPort(
+        url::kHttpsScheme, quic_server_id2.host(), quic_server_id2.port());
+    builder2.network_anonymization_key = network_anonymization_key2;
+    builder2.url = vary_network_anonymization_key
+                       ? url_
+                       : GURL("https://mail.example.org/");
+    EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
     EXPECT_FALSE(QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
@@ -1021,52 +1048,28 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
   // Will reset stream 3.
-  stream = CreateStream(&request2);
+  stream = CreateStream(&builder2.request);
 
   EXPECT_TRUE(stream.get());
 
   // TODO(rtenneti): We should probably have a tests that HTTP and HTTPS result
   // in streams on different sessions.
-  QuicSessionRequest request3(factory_.get());
-  EXPECT_EQ(OK,
-            request3.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  stream = CreateStream(&request3);  // Will reset stream 5.
-  stream.reset();                    // Will reset stream 7.
+  RequestBuilder builder3(this);
+  EXPECT_EQ(OK, builder3.CallRequest());
+  stream = CreateStream(&builder3.request);  // Will reset stream 5.
+  stream.reset();                            // Will reset stream 7.
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1082,52 +1085,26 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
   // Will reset stream 3.
-  stream = CreateStream(&request2);
-
+  stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
 
   // TODO(rtenneti): We should probably have a tests that HTTP and HTTPS result
   // in streams on different sessions.
-  QuicSessionRequest request3(factory_.get());
-  EXPECT_EQ(OK,
-            request3.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  stream = CreateStream(&request3);  // Will reset stream 5.
-  stream.reset();                    // Will reset stream 7.
+  RequestBuilder builder3(this);
+  EXPECT_EQ(OK, builder3.CallRequest());
+  stream = CreateStream(&builder3.request);  // Will reset stream 5.
+  stream.reset();                            // Will reset stream 7.
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1154,18 +1131,9 @@ TEST_P(QuicSessionPoolTest, SyncCreateZeroRtt) {
   host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                             "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(OK,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  RequestBuilder builder(this);
+  EXPECT_EQ(OK, builder.CallRequest());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1189,20 +1157,12 @@ TEST_P(QuicSessionPoolTest, AsyncCreateZeroRtt) {
   host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                             "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  int rv = request.Request(
-      scheme_host_port_, version_, ProxyChain::Direct(),
-      TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination, privacy_mode_,
-      DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false,
-      /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-      failed_on_default_network_callback_, callback_.callback());
-  EXPECT_EQ(ERR_IO_PENDING, rv);
-  rv = callback_.WaitForResult();
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  int rv = callback_.WaitForResult();
   EXPECT_EQ(OK, rv);
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1228,25 +1188,17 @@ TEST_P(QuicSessionPoolTest, AsyncZeroRtt) {
   host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                             "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
-  EXPECT_EQ(nullptr, CreateStream(&request));
+  EXPECT_EQ(nullptr, CreateStream(&builder.request));
 
   base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1262,19 +1214,10 @@ TEST_P(QuicSessionPoolTest, DefaultInitialRtt) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1293,17 +1236,9 @@ TEST_P(QuicSessionPoolTest, FactoryDestroyedWhenJobPending) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  auto request = std::make_unique<QuicSessionRequest>(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request->Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  request.reset();
+  auto builder = std::make_unique<RequestBuilder>(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder->CallRequest());
+  builder.reset();
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   // Tearing down a QuicSessionPool with a pending Job should not cause any
   // crash. crbug.com/768343.
@@ -1329,17 +1264,8 @@ TEST_P(QuicSessionPoolTest, RequireConfirmation) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_FALSE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
   crypto_client_stream_factory_.last_stream()
@@ -1348,7 +1274,7 @@ TEST_P(QuicSessionPoolTest, RequireConfirmation) {
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1372,17 +1298,8 @@ TEST_P(QuicSessionPoolTest, RequireConfirmationAsyncQuicSession) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_FALSE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
   base::RunLoop().RunUntilIdle();
@@ -1392,7 +1309,7 @@ TEST_P(QuicSessionPoolTest, RequireConfirmationAsyncQuicSession) {
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1419,21 +1336,12 @@ TEST_P(QuicSessionPoolTest, DontRequireConfirmationFromSameIP) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_FALSE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1460,19 +1368,10 @@ TEST_P(QuicSessionPoolTest, CachedInitialRtt) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1531,19 +1430,11 @@ TEST_P(QuicSessionPoolTest, CachedInitialRttWithNetworkAnonymizationKey) {
                          packet_maker.MakeInitialSettingsPacket(1));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  network_anonymization_key, SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
-
+    RequestBuilder builder(this);
+    builder.network_anonymization_key = network_anonymization_key;
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
-    std::unique_ptr<HttpStream> stream = CreateStream(&request);
+    std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream.get());
 
     QuicChromiumClientSession* session =
@@ -1575,19 +1466,10 @@ TEST_P(QuicSessionPoolTest, 2gInitialRtt) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1611,19 +1493,10 @@ TEST_P(QuicSessionPoolTest, 3gInitialRtt) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1642,19 +1515,10 @@ TEST_P(QuicSessionPoolTest, GoAway) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -1716,19 +1580,11 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
                          packet_maker.MakeInitialSettingsPacket(1));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  kNetworkAnonymizationKeys[i], SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
-
+    RequestBuilder builder(this);
+    builder.network_anonymization_key = kNetworkAnonymizationKeys[i];
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
-    std::unique_ptr<HttpStream> stream = CreateStream(&request);
+    std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream.get());
 
     QuicChromiumClientSession* session =
@@ -1772,17 +1628,9 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  kNetworkAnonymizationKeys[i], SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
-
+    RequestBuilder builder(this);
+    builder.network_anonymization_key = kNetworkAnonymizationKeys[i];
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
     EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_QUIC_HANDSHAKE_FAILED));
 
     EXPECT_FALSE(
@@ -1867,68 +1715,42 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   host_resolver_->rules()->AddIPLiteralRule(server5.host(), "192.168.0.1", "");
 
   // Establish a QUIC session to pool against.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // `server2` can pool with the existing session. Although the endpoint does
   // not specify ALPN, we connect here with preexisting knowledge of the version
   // (from Alt-Svc), so an A/AAAA match is sufficient.
   TestCompletionCallback callback;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      OK,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
   EXPECT_EQ(GetActiveSession(scheme_host_port_), GetActiveSession(server2));
 
   // `server3` can pool with the existing session. The endpoint's ALPN protocol
   // matches.
-  QuicSessionRequest request3(factory_.get());
-  EXPECT_EQ(
-      OK,
-      request3.Request(
-          server3, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url3_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback.callback()));
-  std::unique_ptr<HttpStream> stream3 = CreateStream(&request3);
+  RequestBuilder builder3(this);
+  builder3.destination = server3;
+  builder3.url = url3_;
+  EXPECT_EQ(OK, builder3.CallRequest());
+  std::unique_ptr<HttpStream> stream3 = CreateStream(&builder3.request);
   EXPECT_TRUE(stream3.get());
   EXPECT_EQ(GetActiveSession(scheme_host_port_), GetActiveSession(server3));
 
   // `server4` cannot pool with the existing session. No endpoint matches both
   // IP and ALPN protocol.
-  QuicSessionRequest request4(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request4.Request(
-          server4, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url4_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder4(this);
+  builder4.destination = server4;
+  builder4.url = url4_;
+  EXPECT_EQ(ERR_IO_PENDING, builder4.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream4 = CreateStream(&request4);
+  std::unique_ptr<HttpStream> stream4 = CreateStream(&builder4.request);
   EXPECT_TRUE(stream4.get());
   EXPECT_NE(GetActiveSession(scheme_host_port_), GetActiveSession(server4));
 
@@ -1938,16 +1760,12 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   //
   // Without pooling, the DNS response is insufficient to start a QUIC
   // connection, so the connection will fail.
-  QuicSessionRequest request5(factory_.get());
-  EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
-            request5.Request(
-                server5, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/true,
-                /*cert_verify_flags=*/0, url5_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder5(this);
+  builder5.destination = server5;
+  builder5.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder5.require_dns_https_alpn = true;
+  builder5.url = url5_;
+  EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, builder5.CallRequest());
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1994,18 +1812,13 @@ TEST_P(QuicSessionPoolTest, PoolingWithServerMigration) {
 
   // Create new request to cause new session creation.
   TestCompletionCallback callback;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  builder2.callback = callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(OK, callback.WaitForResult());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_TRUE(socket_data1.AllReadDataConsumed());
@@ -2040,32 +1853,19 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
                                             "192.168.0.1", "");
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   TestCompletionCallback callback;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      OK,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  builder2.callback = callback.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   factory_->OnSessionGoingAway(GetActiveSession(scheme_host_port_));
@@ -2074,18 +1874,13 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
   EXPECT_FALSE(HasActiveSession(server2));
 
   TestCompletionCallback callback3;
-  QuicSessionRequest request3(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request3.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback3.callback()));
+  RequestBuilder builder3(this);
+  builder3.destination = server2;
+  builder3.url = url2_;
+  builder3.callback = callback3.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder3.CallRequest());
   EXPECT_THAT(callback3.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream3 = CreateStream(&request3);
+  std::unique_ptr<HttpStream> stream3 = CreateStream(&builder3.request);
   EXPECT_TRUE(stream3.get());
 
   EXPECT_TRUE(HasActiveSession(server2));
@@ -2114,31 +1909,18 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
   host_resolver_->rules()->AddIPLiteralRule(server1.host(), "192.168.0.1", "");
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request.Request(
-          server1, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  builder.destination = server1;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      OK,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_EQ(GetActiveSession(server1), GetActiveSession(server2));
@@ -2170,31 +1952,18 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   host_resolver_->rules()->AddIPLiteralRule(server1.host(), "192.168.0.1", "");
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request.Request(
-          server1, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  builder.destination = server1;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      OK,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_EQ(GetActiveSession(server1), GetActiveSession(server2));
@@ -2242,33 +2011,19 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   host_resolver_->rules()->AddIPLiteralRule(server1.host(), "192.168.0.1", "");
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request.Request(
-          server1, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  builder.destination = server1;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
-  TestCompletionCallback callback;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_NE(GetActiveSession(server1), GetActiveSession(server2));
@@ -2295,19 +2050,10 @@ TEST_P(QuicSessionPoolTest, Goaway) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Mark the session as going away.  Ensure that while it is still alive
@@ -2319,18 +2065,10 @@ TEST_P(QuicSessionPoolTest, Goaway) {
 
   // Create a new request for the same destination and verify that a
   // new session is created.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -2384,22 +2122,15 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
   // The MockCryptoClientStream sets max_open_streams to be
   // quic::kDefaultMaxStreamsPerConnection / 2.
   for (size_t i = 0; i < quic::kDefaultMaxStreamsPerConnection / 2; i++) {
-    QuicSessionRequest request(factory_.get());
-    int rv = request.Request(
-        scheme_host_port_, version_, ProxyChain::Direct(),
-        TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination, privacy_mode_,
-        DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow,
-        /*require_dns_https_alpn=*/false,
-        /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-        failed_on_default_network_callback_, callback_.callback());
+    RequestBuilder builder(this);
+    int rv = builder.CallRequest();
     if (i == 0) {
       EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
       EXPECT_THAT(callback_.WaitForResult(), IsOk());
     } else {
       EXPECT_THAT(rv, IsOk());
     }
-    std::unique_ptr<HttpStream> stream = CreateStream(&request);
+    std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
     EXPECT_TRUE(stream);
     stream->RegisterRequest(&request_info);
     EXPECT_EQ(OK, stream->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
@@ -2407,17 +2138,10 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
     streams.push_back(std::move(stream));
   }
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(OK,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, CompletionOnceCallback()));
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  RequestBuilder builder(this);
+  builder.callback = CompletionOnceCallback();
+  EXPECT_EQ(OK, builder.CallRequest());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream);
   stream->RegisterRequest(&request_info);
   EXPECT_EQ(ERR_IO_PENDING,
@@ -2450,17 +2174,8 @@ TEST_P(QuicSessionPoolTest, ResolutionErrorInCreate) {
 
   host_resolver_->rules()->AddSimulatedFailure(kDefaultServerHostName);
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2477,17 +2192,8 @@ TEST_P(QuicSessionPoolTest, SyncConnectErrorInCreate) {
   socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2501,17 +2207,8 @@ TEST_P(QuicSessionPoolTest, AsyncConnectErrorInCreate) {
   socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2528,31 +2225,15 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    RequestBuilder builder(this);
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   }
 
   base::RunLoop().RunUntilIdle();
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
 
   EXPECT_TRUE(stream.get());
   stream.reset();
@@ -2568,31 +2249,15 @@ TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
-    QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    RequestBuilder builder(this);
+    EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   }
 
   base::RunLoop().RunUntilIdle();
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
 
   EXPECT_TRUE(stream.get());
   stream.reset();
@@ -2623,19 +2288,10 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -2652,19 +2308,10 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   // Now attempting to request a stream to the same origin should create
   // a new session.
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  stream = CreateStream(&request2);
+  stream = CreateStream(&builder2.request);
   stream.reset();  // Will reset stream 3.
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2693,16 +2340,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail after the write of the CHLO fails.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
@@ -2718,16 +2357,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   // Run the message loop to complete host resolution.
@@ -2741,7 +2372,7 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // Create QuicHttpStream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2764,16 +2395,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail after the write of the CHLO fails.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
@@ -2789,16 +2412,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   // Run the message loop to complete host resolution.
@@ -2812,7 +2427,7 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // Create QuicHttpStream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2840,16 +2455,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail immediately.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, builder.CallRequest());
   // Check no active session, or active jobs left for this server.
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
@@ -2865,16 +2472,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
@@ -2887,7 +2486,7 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // Create QuicHttpStream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -2913,16 +2512,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail immediately.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
   // Check no active session, or active jobs left for this server.
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
@@ -2939,16 +2530,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
@@ -2961,7 +2544,7 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // Create QuicHttpStream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -3000,16 +2583,8 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
                        packet_num, quic::QUIC_IP_ADDRESS_CHANGED, "net error"));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(&factory);
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this, &factory);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   // QuicSessionPool should be notified of IP address change after
   // FinishConnectAndConfigureSocket runs FinishCreateSession.
@@ -3061,19 +2636,10 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -3099,19 +2665,10 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
 
   // Now attempting to request a stream to the same origin should create
   // a new session.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  stream = CreateStream(&request2);
+  stream = CreateStream(&builder2.request);
 
   // Check a new active session exists for the destination and the old session
   // is no longer live.
@@ -3161,18 +2718,10 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -3211,18 +2760,10 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
   EXPECT_EQ(0u, session->GetNumActiveStreams());
 
   // Second request should be sent on a new connection.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // Check an active session exists for the destination.
@@ -3260,19 +2801,10 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
       ConstructClientRstPacket(packet_num, quic::QUIC_STREAM_CANCELLED));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -3288,17 +2820,9 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 
   // Attempting a new request to the same origin uses the same connection.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  stream = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  stream = CreateStream(&builder2.request);
 
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -3376,18 +2900,10 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -3536,18 +3052,10 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -3647,18 +3155,10 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -3777,18 +3277,10 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created, but marked as non-migratable.
@@ -3854,18 +3346,10 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -3975,18 +3459,10 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
   }
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created, but marked as non-migratable.
@@ -4041,18 +3517,10 @@ TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -4140,18 +3608,10 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
   }
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that session is alive and active.
@@ -4222,18 +3682,10 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNoOpenStreams(
   }
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that session is active.
@@ -4297,18 +3749,10 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkDisconnected(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -4434,18 +3878,10 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -4621,18 +4057,10 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -4787,18 +4215,10 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -4930,18 +4350,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -5067,18 +4479,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data3.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -5212,18 +4616,10 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -5347,16 +4743,8 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   base::RunLoop().RunUntilIdle();
@@ -5436,16 +4824,8 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   base::RunLoop().RunUntilIdle();
@@ -5524,18 +4904,10 @@ TEST_P(QuicSessionPoolTest, PortMigrationDisabledOnPathDegrading) {
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -5643,18 +5015,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -5801,33 +5165,20 @@ TEST_P(
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.2", "");
 
   // Create request and QuicHttpStream to create session1.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request1.Request(
-          server1, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = server1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   // Create request and QuicHttpStream to create session2.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   QuicChromiumClientSession* session1 = GetActiveSession(server1);
@@ -5917,16 +5268,8 @@ TEST_P(QuicSessionPoolTest,
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -5984,18 +5327,10 @@ TEST_P(
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that session is alive and active.
@@ -6056,18 +5391,10 @@ TEST_P(
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6141,18 +5468,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6223,18 +5542,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6300,18 +5611,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6413,18 +5716,10 @@ void QuicSessionPoolTestBase::
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6564,18 +5859,10 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6703,18 +5990,10 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -6917,18 +6196,10 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7073,18 +6344,10 @@ TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
   socket_factory_->AddSocketDataProvider(&socket_data);
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7218,18 +6481,10 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7365,18 +6620,10 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7496,33 +6743,20 @@ TEST_P(QuicSessionPoolTest,
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.2", "");
 
   // Create request and QuicHttpStream to create session1.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request1.Request(
-          server1, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = server1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   // Create request and QuicHttpStream to create session2.
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   QuicChromiumClientSession* session1 = GetActiveSession(server1);
@@ -7633,18 +6867,10 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithNoNewNetwork) {
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7768,18 +6994,10 @@ void QuicSessionPoolTestBase::TestMigrateSessionEarlyNonMigratableStream(
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created, but marked as non-migratable.
@@ -7847,18 +7065,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -7977,18 +7187,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request #1 and QuicHttpStream.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   HttpRequestInfo request_info1;
@@ -8002,17 +7204,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
 
   // Request #2 returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   HttpRequestInfo request_info2;
@@ -8142,18 +7337,10 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request QuicHttpStream.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   HttpRequestInfo request_info1;
@@ -8286,16 +7473,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   base::RunLoop().RunUntilIdle();
 
@@ -8354,16 +7533,8 @@ void QuicSessionPoolTestBase::TestNoAlternateNetworkBeforeHandshake(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   base::RunLoop().RunUntilIdle();
 
@@ -8500,16 +7671,8 @@ void QuicSessionPoolTestBase::
   probing_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   base::RunLoop().RunUntilIdle();
 
@@ -8551,7 +7714,7 @@ void QuicSessionPoolTestBase::
   socket_data2.Resume();
 
   // Create the stream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -8614,16 +7777,8 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail after the write of the CHLO fails.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
@@ -8639,16 +7794,8 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
   // Run the message loop to complete host resolution.
@@ -8662,7 +7809,7 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
 
   // Create QuicHttpStream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -8721,16 +7868,8 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request, should fail after the write of the CHLO fails.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   // Ensure that the session is alive but not active.
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
@@ -8748,7 +7887,7 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.Resume();
 
   // Create the stream.
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -8796,18 +7935,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteError(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -8914,18 +8045,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -9080,18 +8203,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request #1 and QuicHttpStream.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   HttpRequestInfo request_info1;
@@ -9105,17 +8220,9 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
   HttpRequestInfo request_info2;
   request_info2.method = "GET";
@@ -9236,18 +8343,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request #1 and QuicHttpStream.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   HttpRequestInfo request_info1;
@@ -9261,17 +8360,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   HttpRequestInfo request_info2;
@@ -9403,18 +8495,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request #1 and QuicHttpStream.
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
 
   HttpRequestInfo request_info1;
@@ -9428,17 +8512,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   HttpRequestInfo request_info2;
@@ -9554,18 +8631,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNonMigratableStream(
   }
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created, but marked as non-migratable.
@@ -9646,18 +8715,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMigrationDisabled(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -9755,18 +8816,10 @@ void QuicSessionPoolTestBase::TestMigrationOnMultipleWriteErrors(
   failed_quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -9853,16 +8906,8 @@ TEST_P(QuicSessionPoolTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   // Deliver the network notification, which should cause the connection to be
   // closed.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -9896,18 +8941,10 @@ void QuicSessionPoolTestBase::
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10054,18 +9091,10 @@ void QuicSessionPoolTestBase::
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10220,18 +9249,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10377,18 +9398,10 @@ TEST_P(QuicSessionPoolTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10498,18 +9511,10 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10631,18 +9636,10 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10830,18 +9827,10 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -10996,18 +9985,10 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11130,18 +10111,10 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11259,18 +10232,10 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11390,18 +10355,10 @@ TEST_P(QuicSessionPoolTest,
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11521,18 +10478,10 @@ TEST_P(QuicSessionPoolTest,
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11615,18 +10564,10 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11770,18 +10711,10 @@ void QuicSessionPoolTestBase::
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -11885,17 +10818,9 @@ void QuicSessionPoolTestBase::
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -12064,18 +10989,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
   quic_data5.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that session is active.
@@ -12252,18 +11169,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
   quic_data4.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that session is active.
@@ -12338,18 +11247,10 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -12485,18 +11386,10 @@ TEST_P(QuicSessionPoolTest, ServerMigrationNonMigratableStream) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -12636,18 +11529,10 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv6ToIPv4Fails) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -12720,18 +11605,10 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv6Fails) {
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Cause QUIC stream to be created.
@@ -12782,19 +11659,11 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream);
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
@@ -12810,19 +11679,11 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   // Now attempting to request a stream to the same origin should create
   // a new session.
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2);
   QuicChromiumClientSession* session2 = GetActiveSession(scheme_host_port_);
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -12856,19 +11717,11 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream);
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
@@ -12884,19 +11737,11 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   // Now attempting to request a stream to the same origin should create
   // a new session.
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2);
   QuicChromiumClientSession* session2 = GetActiveSession(scheme_host_port_);
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -13015,23 +11860,15 @@ TEST_P(QuicSessionPoolTest, EnableNotLoadFromDiskCache) {
   host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                             "192.168.0.1", "");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
   // If we are waiting for disk cache, we would have posted a task. Verify that
   // the CancelWaitForDataReady task hasn't been posted.
   ASSERT_EQ(0u, runner_->GetPostedTasks().size());
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -13071,21 +11908,13 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   // with open stream.
   EXPECT_EQ(quic::QuicTime::Delta::FromSeconds(quic::kPingTimeoutSecs),
             QuicSessionPoolPeer::GetPingTimeout(factory_.get()));
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   HttpRequestInfo request_info;
   request_info.traffic_annotation =
@@ -13112,20 +11941,15 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   // Test two-in-a-row timeouts with open streams.
   DVLOG(1) << "Create 2nd session and timeout with open stream";
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          server2, version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = url2_;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
   QuicChromiumClientSession* session2 = GetActiveSession(server2);
 
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
   stream2->RegisterRequest(&request_info);
   EXPECT_EQ(OK, stream2->InitializeStream(false, DEFAULT_PRIORITY, net_log_,
@@ -13489,16 +12313,11 @@ TEST_P(QuicSessionPoolTest,
     socket_data.AddSocketDataToFactory(socket_factory_.get());
     client_maker_.Reset();
 
-    QuicSessionRequest request(factory_.get());
-    int rv = request.Request(
-        url::SchemeHostPort(url::kHttpsScheme, kDefaultServerHostName,
-                            kDefaultServerPort),
-        version_, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-        SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-        SocketTag(), network_anonymization_keys[i], SecureDnsPolicy::kAllow,
-        /*require_dns_https_alpn=*/false,
-        /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-        failed_on_default_network_callback_, callback_.callback());
+    RequestBuilder builder(this);
+    builder.destination = url::SchemeHostPort(
+        url::kHttpsScheme, kDefaultServerHostName, kDefaultServerPort);
+    builder.network_anonymization_key = network_anonymization_keys[i];
+    int rv = builder.CallRequest();
     EXPECT_THAT(callback_.GetResult(rv), IsOk());
 
     // While the session is still alive, there should be
@@ -13553,16 +12372,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterPackets) {
   SpdySessionTestTaskObserver observer("quic_chromium_packet_reader.cc",
                                        "StartReading");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   // Call run_loop so that QuicChromiumPacketReader::OnReadComplete() gets
   // called.
@@ -13573,7 +12384,7 @@ TEST_P(QuicSessionPoolTest, YieldAfterPackets) {
   // yielded the read.
   EXPECT_EQ(1u, observer.executed_count());
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_FALSE(stream.get());  // Session is already closed.
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -13605,17 +12416,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterDuration) {
   SpdySessionTestTaskObserver observer("quic_chromium_packet_reader.cc",
                                        "StartReading");
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   // Call run_loop so that QuicChromiumPacketReader::OnReadComplete() gets
   // called.
@@ -13626,7 +12428,7 @@ TEST_P(QuicSessionPoolTest, YieldAfterDuration) {
   // yielded the read.
   EXPECT_EQ(1u, observer.executed_count());
 
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_FALSE(stream.get());  // Session is already closed.
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -13649,34 +12451,21 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination1, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                destination2, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = destination2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   QuicChromiumClientSession::Handle* session1 =
@@ -13811,8 +12600,6 @@ TEST_P(QuicSessionPoolWithDestinationTest, InvalidCertificate) {
   // is valid for the hostname of the alternative service.
   origin2_ = url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 433);
 
-  url::SchemeHostPort destination = GetDestination();
-
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
   ASSERT_FALSE(cert->VerifyNameMatch(origin1_.host()));
@@ -13825,17 +12612,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, InvalidCertificate) {
 
   AddHangingSocketData();
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.destination = GetDestination();
+  builder.url = url;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_QUIC_HANDSHAKE_FAILED));
 
   EXPECT_TRUE(AllDataConsumed());
@@ -13849,8 +12629,6 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
   GURL url2("https://mail.example.org/");
   origin1_ = url::SchemeHostPort(url1);
   origin2_ = url::SchemeHostPort(url2);
-
-  url::SchemeHostPort destination = GetDestination();
 
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
@@ -13868,35 +12646,24 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = GetDestination();
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(origin1_));
 
   // Second request returns synchronously because it pools to existing session.
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(OK,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  RequestBuilder builder2(this);
+  builder2.destination = GetDestination();
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   QuicChromiumClientSession::Handle* session1 =
@@ -13950,34 +12717,25 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination;
+  builder1.privacy_mode = PRIVACY_MODE_DISABLED;
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(origin1_));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                PRIVACY_MODE_ENABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = destination;
+  builder2.privacy_mode = PRIVACY_MODE_ENABLED;
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(OK, callback2.WaitForResult());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // |request2| does not pool to the first session, because PrivacyMode does not
@@ -14037,34 +12795,25 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSecureDnsPolicy) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination;
+  builder1.secure_dns_policy = SecureDnsPolicy::kAllow;
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(origin1_));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = destination;
+  builder2.secure_dns_policy = SecureDnsPolicy::kDisable;
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(OK, callback2.WaitForResult());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // |request2| does not pool to the first session, because |secure_dns_policy|
@@ -14117,39 +12866,32 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
   auto proxy_chain1 = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_QUIC, "proxy1", 443);
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request1.Request(
-          destination, version_, proxy_chain1, TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination;
+  builder1.proxy_chain = proxy_chain1;
+  builder1.secure_dns_policy = SecureDnsPolicy::kAllow;
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(
       HasActiveSession(origin1_, NetworkAnonymizationKey(), proxy_chain1));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
   auto proxy_chain2 = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_QUIC, "proxy2", 443);
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      request2.Request(
-          destination, version_, proxy_chain2, TRAFFIC_ANNOTATION_FOR_TESTS,
-          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
-          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-          /*require_dns_https_alpn=*/false,
-          /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-          failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = destination;
+  builder2.proxy_chain = proxy_chain2;
+  builder2.secure_dns_policy = SecureDnsPolicy::kDisable;
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(OK, callback2.WaitForResult());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // `request2` does not pool to the first session, because `proxy_chain` does
@@ -14202,34 +12944,27 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination;
+  builder1.session_usage = SessionUsage::kDestination;
+  builder1.secure_dns_policy = SecureDnsPolicy::kAllow;
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(origin1_));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kProxy,
-                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = destination;
+  builder2.session_usage = SessionUsage::kProxy;
+  builder2.secure_dns_policy = SecureDnsPolicy::kDisable;
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(OK, callback2.WaitForResult());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // `request2` does not pool to the first session, because `session_usage`
@@ -14287,34 +13022,23 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = destination;
+  builder1.url = url1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(origin1_));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = destination;
+  builder2.url = url2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
   // |request2| does not pool to the first session, because the certificate does
@@ -14424,19 +13148,11 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesRequestPriority) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, MAXIMUM_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.priority = MAXIMUM_PRIORITY;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(MAXIMUM_PRIORITY, host_resolver_->last_request_priority());
@@ -14455,34 +13171,20 @@ TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, MAXIMUM_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.priority = MAXIMUM_PRIORITY;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_EQ(MAXIMUM_PRIORITY, host_resolver_->last_request_priority());
   EXPECT_EQ(MAXIMUM_PRIORITY, host_resolver_->request_priority(1));
 
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder2(this);
+  builder2.priority = DEFAULT_PRIORITY;
+  builder2.url = url2_;
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->request_priority(2));
 
-  request.SetPriority(LOWEST);
+  builder.request.SetPriority(LOWEST);
   EXPECT_EQ(LOWEST, host_resolver_->request_priority(1));
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->request_priority(2));
 }
@@ -14511,19 +13213,12 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesParams) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                kNetworkAnonymizationKey, SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.network_anonymization_key = kNetworkAnonymizationKey;
+  builder.secure_dns_policy = SecureDnsPolicy::kDisable;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(net::SecureDnsPolicy::kDisable,
@@ -14562,20 +13257,12 @@ TEST_P(QuicSessionPoolTest, ResultAfterQuicSessionCreationCallbackFail) {
   socket_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback quic_session_callback;
-  EXPECT_TRUE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(quic_session_callback.have_result());
@@ -14583,8 +13270,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterQuicSessionCreationCallbackFail) {
 
   // Calling WaitForQuicSessionCreation() a second time should return
   // false since the session has been created.
-  EXPECT_FALSE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   EXPECT_TRUE(callback_.have_result());
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, callback_.WaitForResult());
@@ -14602,27 +13289,19 @@ TEST_P(QuicSessionPoolTest, ResultAfterQuicSessionCreationCallbackSuccessSync) {
   socket_data.AddWrite(SYNCHRONOUS, OK);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback quic_session_callback;
-  EXPECT_TRUE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   EXPECT_EQ(OK, quic_session_callback.WaitForResult());
 
   // Calling WaitForQuicSessionCreation() a second time should return
   // false since the session has been created.
-  EXPECT_FALSE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   EXPECT_TRUE(callback_.have_result());
   EXPECT_EQ(OK, callback_.WaitForResult());
@@ -14644,20 +13323,12 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddWrite(SYNCHRONOUS, OK);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback quic_session_callback;
-  EXPECT_TRUE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   EXPECT_EQ(ERR_IO_PENDING, quic_session_callback.WaitForResult());
 
@@ -14666,8 +13337,8 @@ TEST_P(QuicSessionPoolTest,
       ->NotifySessionOneRttKeyAvailable();
   // Calling WaitForQuicSessionCreation() a second time should return
   // false since the session has been created.
-  EXPECT_FALSE(
-      request.WaitForQuicSessionCreation(quic_session_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
 
   EXPECT_EQ(OK, callback_.WaitForResult());
 }
@@ -14686,20 +13357,12 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncSync) {
   socket_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback host_resolution_callback;
-  EXPECT_TRUE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
 
   // |host_resolver_| has not finished host resolution at this point, so
   // |host_resolution_callback| should not have a result.
@@ -14718,8 +13381,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncSync) {
 
   // Calling WaitForHostResolution() a second time should return
   // false since host resolution has finished already.
-  EXPECT_FALSE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
 
   EXPECT_TRUE(callback_.have_result());
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, callback_.WaitForResult());
@@ -14743,20 +13406,12 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncAsync) {
   socket_data.AddWrite(ASYNC, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback host_resolution_callback;
-  EXPECT_TRUE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
 
   // |host_resolver_| has not finished host resolution at this point, so
   // |host_resolution_callback| should not have a result.
@@ -14773,8 +13428,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncAsync) {
 
   // Calling WaitForHostResolution() a second time should return
   // false since host resolution has finished already.
-  EXPECT_FALSE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
 
   EXPECT_FALSE(callback_.have_result());
   socket_data.GetSequencedSocketData()->Resume();
@@ -14797,22 +13452,14 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncSync) {
   socket_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   // WaitForHostResolution() should return false since host
   // resolution has finished already.
   TestCompletionCallback host_resolution_callback;
-  EXPECT_FALSE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(host_resolution_callback.have_result());
   EXPECT_TRUE(callback_.have_result());
@@ -14839,22 +13486,14 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncAsync) {
   socket_data.AddWrite(ASYNC, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   // WaitForHostResolution() should return false since host
   // resolution has finished already.
   TestCompletionCallback host_resolution_callback;
-  EXPECT_FALSE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(host_resolution_callback.have_result());
 
@@ -14876,22 +13515,14 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackFailSync) {
   host_resolver_->rules()->AddSimulatedFailure(scheme_host_port_.host());
   host_resolver_->set_synchronous_mode(true);
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_NAME_NOT_RESOLVED,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_NAME_NOT_RESOLVED, builder.CallRequest());
 
   // WaitForHostResolution() should return false since host
   // resolution has failed already.
   TestCompletionCallback host_resolution_callback;
-  EXPECT_FALSE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_FALSE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(host_resolution_callback.have_result());
 }
@@ -14905,20 +13536,12 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackFailAsync) {
 
   host_resolver_->rules()->AddSimulatedFailure(scheme_host_port_.host());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
 
   TestCompletionCallback host_resolution_callback;
-  EXPECT_TRUE(
-      request.WaitForHostResolution(host_resolution_callback.callback()));
+  EXPECT_TRUE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
 
   // Allow |host_resolver_| to fail host resolution. |host_resolution_callback|
   // Should run with ERR_NAME_NOT_RESOLVED since that's the error host
@@ -14961,57 +13584,39 @@ TEST_P(QuicSessionPoolTest, Tag) {
 #endif
 
   // Request a stream with |tag1|.
-  QuicSessionRequest request1(factory_.get());
-  int rv = request1.Request(
-      scheme_host_port_, version_, ProxyChain::Direct(),
-      TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination, privacy_mode_,
-      DEFAULT_PRIORITY, tag1, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false,
-      /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-      failed_on_default_network_callback_, callback_.callback());
+  RequestBuilder builder1(this);
+  builder1.socket_tag = tag1;
+  int rv = builder1.CallRequest();
   EXPECT_THAT(callback_.GetResult(rv), IsOk());
   EXPECT_EQ(socket_factory->GetLastProducedUDPSocket()->tag(), tag1);
   EXPECT_TRUE(socket_factory->GetLastProducedUDPSocket()
                   ->tagged_before_data_transferred());
   std::unique_ptr<QuicChromiumClientSession::Handle> stream1 =
-      request1.ReleaseSessionHandle();
+      builder1.request.ReleaseSessionHandle();
   EXPECT_TRUE(stream1);
   EXPECT_TRUE(stream1->IsConnected());
 
   // Request a stream with |tag1| and verify underlying session is reused.
-  QuicSessionRequest request2(factory_.get());
-  rv = request2.Request(
-      scheme_host_port_, version_, ProxyChain::Direct(),
-      TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination, privacy_mode_,
-      DEFAULT_PRIORITY, tag1, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false,
-      /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-      failed_on_default_network_callback_, callback_.callback());
+  RequestBuilder builder2(this);
+  builder2.socket_tag = tag1;
+  rv = builder2.CallRequest();
   EXPECT_THAT(callback_.GetResult(rv), IsOk());
   std::unique_ptr<QuicChromiumClientSession::Handle> stream2 =
-      request2.ReleaseSessionHandle();
+      builder2.request.ReleaseSessionHandle();
   EXPECT_TRUE(stream2);
   EXPECT_TRUE(stream2->IsConnected());
   EXPECT_TRUE(stream2->SharesSameSession(*stream1));
 
   // Request a stream with |tag2| and verify a new session is created.
-  QuicSessionRequest request3(factory_.get());
-  rv = request3.Request(
-      scheme_host_port_, version_, ProxyChain::Direct(),
-      TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination, privacy_mode_,
-      DEFAULT_PRIORITY, tag2, NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false,
-      /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-      failed_on_default_network_callback_, callback_.callback());
+  RequestBuilder builder3(this);
+  builder3.socket_tag = tag2;
+  rv = builder3.CallRequest();
   EXPECT_THAT(callback_.GetResult(rv), IsOk());
   EXPECT_EQ(socket_factory->GetLastProducedUDPSocket()->tag(), tag2);
   EXPECT_TRUE(socket_factory->GetLastProducedUDPSocket()
                   ->tagged_before_data_transferred());
   std::unique_ptr<QuicChromiumClientSession::Handle> stream3 =
-      request3.ReleaseSessionHandle();
+      builder3.request.ReleaseSessionHandle();
   EXPECT_TRUE(stream3);
   EXPECT_TRUE(stream3->IsConnected());
 #if BUILDFLAG(IS_ANDROID)
@@ -15034,18 +13639,10 @@ TEST_P(QuicSessionPoolTest, ReadErrorClosesConnection) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream to trigger creation of the session.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that the session is alive and active before we read the error.
@@ -15071,18 +13668,10 @@ TEST_P(QuicSessionPoolTest, MessageTooBigReadErrorDoesNotCloseConnection) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream to trigger creation of the session.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that the session is alive and active before we read the error.
@@ -15108,18 +13697,10 @@ TEST_P(QuicSessionPoolTest, ZeroLengthReadDoesNotCloseConnection) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream to trigger creation of the session.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   // Ensure that the session is alive and active before we read the error.
@@ -15148,19 +13729,10 @@ TEST_P(QuicSessionPoolTest, DnsAliasesCanBeAccessedFromStream) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
@@ -15187,19 +13759,10 @@ TEST_P(QuicSessionPoolTest, NoAdditionalDnsAliases) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
@@ -15227,19 +13790,11 @@ TEST_P(QuicSessionPoolTest, DoNotUseDnsAliases) {
 
   // By indicating that this is a request to a proxy server, DNS aliasing will
   // not be performed.
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kProxy,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.session_usage = SessionUsage::kProxy;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
-  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
@@ -15263,17 +13818,8 @@ TEST_P(QuicSessionPoolTest, ConnectErrorInCreateWithDnsAliases) {
   socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
@@ -15358,17 +13904,10 @@ void QuicSessionPoolTestBase::TestRequireDnsHttpsAlpn(
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/true,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   if (expect_success) {
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
   } else {
@@ -15528,43 +14067,34 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request1(factory_.get());
   SessionUsage session_usage;
   if (use_dns_aliases_) {
     session_usage = SessionUsage::kDestination;
   } else {
     session_usage = SessionUsage::kProxy;
   }
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                kOrigin1, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, session_usage, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false, /*cert_verify_flags=*/0,
-                kUrl1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder1(this);
+  builder1.destination = kOrigin1;
+  builder1.session_usage = session_usage;
+  builder1.url = kUrl1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
-  std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(kOrigin1, NetworkAnonymizationKey(),
                                ProxyChain::Direct(), session_usage));
 
   TestCompletionCallback callback2;
-  QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                kOrigin2, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, session_usage, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false, /*cert_verify_flags=*/0,
-                kUrl2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  RequestBuilder builder2(this);
+  builder2.destination = kOrigin2;
+  builder2.session_usage = session_usage;
+  builder2.url = kUrl2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
 
-  std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
   EXPECT_TRUE(HasActiveSession(kOrigin2, NetworkAnonymizationKey(),
                                ProxyChain::Direct(), session_usage));
@@ -15597,17 +14127,8 @@ TEST_P(QuicSessionPoolTest, EchGrease) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
-
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -15639,16 +14160,8 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromAltSvc) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
@@ -15682,16 +14195,10 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/true,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session =
@@ -15730,16 +14237,10 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
-                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/true,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_THAT(callback_.WaitForResult(), IsOk());
 
   QuicChromiumClientSession* session =
@@ -15777,16 +14278,8 @@ TEST_P(QuicSessionPoolTest, EchSvcbReliant) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(),
               IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
 }
@@ -15821,16 +14314,8 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                TRAFFIC_ANNOTATION_FOR_TESTS, SessionUsage::kDestination,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 }
 
