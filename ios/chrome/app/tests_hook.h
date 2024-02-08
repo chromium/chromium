@@ -115,6 +115,10 @@ void SetUpTestsIfPresent();
 // tests.
 void RunTestsIfPresent();
 
+// Signal that the app has successfully launched. Only used by performance
+// tests.
+void SignalAppLaunched();
+
 // Minimum duration of password checks. The password check UI displays checks as
 // in progress for at least this duration in order to avoid updating the UI too
 // fast and making it flicker. Test targets do not have an artificial minimum

@@ -89,6 +89,10 @@ void RunTestsIfPresent() {
   // No-op for XCUITest.
 }
 
+void SignalAppLaunched() {
+  // No-op for XCUITest.
+}
+
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No artificial delays for tests.
   return base::Seconds(0);

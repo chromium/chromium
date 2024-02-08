@@ -175,6 +175,10 @@ void RunTestsIfPresent() {
   // No-op for Earl Grey.
 }
 
+void SignalAppLaunched() {
+  // No-op for Earl Grey.
+}
+
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No delays for eg tests.
   return base::Seconds(0);

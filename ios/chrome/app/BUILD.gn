@@ -145,6 +145,7 @@ source_set("perf_tests_hook") {
   deps = [
     ":tests_hook",
     "//components/signin/internal/identity_manager",
+    "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }
 
@@ -219,6 +220,7 @@ source_set("app_metrics_app_state_agent") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics/model",
