@@ -109,7 +109,7 @@ function dateColumn<T>(header: string, getValue: (row: T) => Date): Column<T> {
   return new ComparableColumn(header, getValue, compareDefault, (td, v) => {
     const time = td.ownerDocument.createElement('time');
     time.dateTime = v.toISOString();
-    td.innerText = v.toLocaleString();
+    time.innerText = v.toLocaleString();
     td.append(time);
   });
 }
