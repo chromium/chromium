@@ -1,0 +1,9 @@
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("virtual_card_enrollment_illustration") {
+  sources = [
+    "virtual_card_enrollment_illustration.imageset/Contents.json",
+    "virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration.pdf",
+    "virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration_dark.pdf",
+  ]
+}

@@ -9,10 +9,16 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/web/public/web_state.h"
 
-@interface VirtualCardEnrollmentBottomSheetCoordinator : ChromeCoordinator
+// This coordinator is shows a prompt when the user is prompted to enroll a
+// virtual card. The AutofillBottomSheetTabHelper is expected to be in WebState
+// and provide VirtualCardEnrollmentCallbacks.
+@interface VirtualCardEnrollmentBottomSheetCoordinator
+    : ChromeCoordinator <VirtualCardEnrollmentBottomSheetDelegate>
 
+// Initialize this Coordinator with the model.
 - (instancetype)initWithUIModel:(autofill::VirtualCardEnrollUiModel)model
              baseViewController:(UIViewController*)baseViewController
                         browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
