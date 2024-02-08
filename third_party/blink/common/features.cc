@@ -1188,7 +1188,7 @@ BASE_FEATURE(kKeepAliveInBrowserMigration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAttributionReportingInBrowserMigration,
-             "kAttributionReportingInBrowserMigration",
+             "AttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLCPCriticalPathPredictor,

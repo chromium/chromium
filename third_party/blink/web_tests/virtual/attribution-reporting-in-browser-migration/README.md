@@ -1,7 +1,7 @@
 # Tests for Attribution Reporting APIs with the in-browser migration enabled
 
 This virtual test suite covers a subset of Attribution Reporting APIs tests with
-the `KeepAliveInBrowserMigration` and `kAttributionReportingInBrowserMigration`
+the `KeepAliveInBrowserMigration` and `AttributionReportingInBrowserMigration`
 flags enabled.
 
 These flags enable a new flow where attribution responses are processed in the
