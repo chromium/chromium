@@ -130,7 +130,9 @@ void TargetDeviceBootstrapController::CloseOpenConnections(
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::WIFI_CREDENTIALS_RECEIVED ||
+  constexpr Step kPossibleSteps[] = {Step::EMPTY_WIFI_CREDENTIALS_RECEIVED,
+                                     Step::WIFI_CREDENTIALS_RECEIVED};
+  if (!base::Contains(kPossibleSteps, status_.step) ||
       !authenticated_connection_) {
     return;
   }
