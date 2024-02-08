@@ -11,12 +11,9 @@
 
 namespace exo::wayland {
 
-// Clients at version 8 think clip rect is in parent surface's space, while
-// clients at version 9 or above think it's in local surface's space.
-// Unfortunately, clipping in version 9 is implemented incorrectly. It has been
-// fixed in version 10, so use version 10 instead.
+// version: 11
 constexpr uint32_t kSurfaceAugmenterVersion =
-    AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION + 2;
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION;
 
 void bind_surface_augmenter(wl_client* client,
                             void* data,

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -387,6 +388,20 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
         cached_frame_->metadata.frame_token);
   }
 
+  const int64_t client_frame_trace_id =
+      cached_frame_->metadata.begin_frame_ack.trace_id;
+  if (client_frame_trace_id != -1) {
+    TRACE_EVENT_INSTANT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(client_frame_trace_id),
+        [client_frame_trace_id](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_EXO_DISCARD_COMPOSITOR_FRAME);
+          data->set_display_trace_id(client_frame_trace_id);
+        });
+  }
   cached_frame_.reset();
 
   frame_timing_history_->FrameDiscarded();
@@ -470,18 +485,39 @@ void LayerTreeFrameSinkHolder::UpdateSubmitFrameTimer() {
 
 void LayerTreeFrameSinkHolder::ProcessFirstPendingBeginFrame(
     viz::CompositorFrame* frame) {
+  // The client-side frame trace ID, if available, is temporarily stored in
+  // the frame's BeginFrameAck struct. Extract it before populating
+  // BeginFrameAck.
+  const int64_t client_frame_trace_id =
+      frame->metadata.begin_frame_ack.trace_id;
+
   // If there are not-yet-handled BeginFrames requests from the remote side,
   // use `frame` as response to the earliest one.
   if (!pending_begin_frames_.empty()) {
     frame->metadata.begin_frame_ack =
         pending_begin_frames_.front().begin_frame_ack;
     pending_begin_frames_.pop();
-    return;
+  } else {
+    // Submit an unsolicited frame.
+    frame->metadata.begin_frame_ack =
+        viz::BeginFrameAck::CreateManualAckWithDamage();
   }
 
-  // Submit an unsolicited frame.
-  frame->metadata.begin_frame_ack =
-      viz::BeginFrameAck::CreateManualAckWithDamage();
+  if (client_frame_trace_id != -1) {
+    // Use both the ID from the client-side frame submission and the ID from the
+    // BeginFrame request to connect the two flows.
+    TRACE_EVENT_INSTANT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(client_frame_trace_id),
+        perfetto::Flow::Global(frame->metadata.begin_frame_ack.trace_id),
+        [client_frame_trace_id](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_EXO_SUBMIT_COMPOSITOR_FRAME);
+          data->set_display_trace_id(client_frame_trace_id);
+        });
+  }
 }
 
 bool LayerTreeFrameSinkHolder::ShouldSubmitFrameNow() const {
