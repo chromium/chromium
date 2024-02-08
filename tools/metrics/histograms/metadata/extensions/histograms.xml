@@ -3651,6 +3651,25 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.NonWebstoreLocationWithDeveloperModeOff{ExtensionState}"
+    enum="ExtensionLocation" expires_after="2024-06-30">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of {ExtensionState} non-webstore extensions with a non-webstore
+    update_url loaded on profile open and developer mode disabled. Grouped by
+    Extension::Location, which only includes external pref, registry, and
+    unpacked. Emitted on every profile open only for &quot;user profiles&quot;
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
+  </summary>
+  <token key="ExtensionState">
+    <variant name=".Disabled" summary="disabled"/>
+    <variant name=".Enabled" summary="enabled"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"
     expires_after="2023-07-07">
   <owner>anunoy@chromium.org</owner>
