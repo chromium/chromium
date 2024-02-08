@@ -12,6 +12,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/feed/core/common/pref_names.h"
+#import "components/feed/core/v2/public/ios/notice_card_tracker.h"
+#import "components/feed/core/v2/public/ios/prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -463,6 +466,7 @@ using feed::FeedUserActionType;
 
 - (void)recordNoticeCardShown:(BOOL)shown {
   base::UmaHistogramBoolean(kDiscoverFeedNoticeCardFulfilled, shown);
+  feed::prefs::SetLastFetchHadNoticeCard(*self.prefService, shown);
 }
 
 - (void)recordFeedArticlesFetchDurationInSeconds:
@@ -557,6 +561,8 @@ using feed::FeedUserActionType;
 - (void)recordActivityLoggingEnabled:(BOOL)loggingEnabled {
   base::UmaHistogramBoolean(kDiscoverFeedActivityLoggingEnabled,
                             loggingEnabled);
+  self.prefService->SetBoolean(feed::prefs::kLastFetchHadLoggingEnabled,
+                               loggingEnabled);
 }
 
 - (void)recordBrokenNTPHierarchy:(BrokenNTPHierarchyRelationship)relationship {
