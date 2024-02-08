@@ -367,7 +367,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
       ash::switches::kForceRefreshRateThrottle);
 
   if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
-    picker_client_ = std::make_unique<PickerClientImpl>(picker_controller);
+    picker_client_ = std::make_unique<PickerClientImpl>(
+        picker_controller, user_manager::UserManager::Get());
   }
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();

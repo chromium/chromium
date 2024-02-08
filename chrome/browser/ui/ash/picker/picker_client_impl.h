@@ -33,7 +33,9 @@ class PickerClientImpl
  public:
   // Sets this instance as the client of `controller`.
   // Automatically unsets the client when this instance is destroyed.
-  explicit PickerClientImpl(ash::PickerController* controller);
+  // `manager` needs to outlive this class.
+  explicit PickerClientImpl(ash::PickerController* controller,
+                            user_manager::UserManager* user_manager);
   PickerClientImpl(const PickerClientImpl&) = delete;
   PickerClientImpl& operator=(const PickerClientImpl&) = delete;
   ~PickerClientImpl() override;
@@ -57,6 +59,10 @@ class PickerClientImpl
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observation_{this};
 
   base::WeakPtrFactory<PickerClientImpl> weak_factory_{this};
 };

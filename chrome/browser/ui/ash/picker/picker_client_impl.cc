@@ -60,21 +60,19 @@ void OnCrosSearchResultsUpdated(
 
 }  // namespace
 
-PickerClientImpl::PickerClientImpl(ash::PickerController* controller)
+PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
+                                   user_manager::UserManager* user_manager)
     : controller_(controller) {
   controller_->SetClient(this);
 
-  auto* user_manager = user_manager::UserManager::Get();
   // As `PickerClientImpl` is initialised in
   // `ChromeBrowserMainExtraPartsAsh::PostProfileInit`, the user manager does
   // not notify us of the first user "change".
   ActiveUserChanged(user_manager->GetActiveUser());
-  user_manager->AddSessionStateObserver(this);
+  user_session_state_observation_.Observe(user_manager);
 }
 
 PickerClientImpl::~PickerClientImpl() {
-  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-
   controller_->SetClient(nullptr);
 }
 

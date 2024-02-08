@@ -16,6 +16,10 @@ std::optional<ValidGifUrl> ValidGifUrl::Create(const GURL& url) {
   return std::nullopt;
 }
 
+ValidGifUrl ValidGifUrl::CreateForTesting(const GURL& url) {
+  return ValidGifUrl(url);
+}
+
 ValidGifUrl::~ValidGifUrl() = default;
 
 GURL ValidGifUrl::ToGURL() const {

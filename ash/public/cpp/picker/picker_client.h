@@ -23,6 +23,9 @@ class ASH_PUBLIC_EXPORT ValidGifUrl {
  public:
   static std::optional<ValidGifUrl> Create(const GURL& url);
 
+  // Creates an instance bypassing the validation checks.
+  static ValidGifUrl CreateForTesting(const GURL& url);
+
   ~ValidGifUrl();
 
   GURL ToGURL() const;
