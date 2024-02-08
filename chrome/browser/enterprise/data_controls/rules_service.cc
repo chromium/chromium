@@ -10,6 +10,25 @@
 
 namespace data_controls {
 
+namespace {
+
+template <typename ActionSourceOrDestination>
+ActionSourceOrDestination ExtractPasteActionContext(
+    const content::ClipboardEndpoint& endpoint) {
+  ActionSourceOrDestination action;
+  if (endpoint.data_transfer_endpoint() &&
+      endpoint.data_transfer_endpoint()->IsUrlType()) {
+    action.url = *endpoint.data_transfer_endpoint()->GetURL();
+  }
+  if (endpoint.browser_context()) {
+    action.incognito = Profile::FromBrowserContext(endpoint.browser_context())
+                           ->IsIncognitoProfile();
+  }
+  return action;
+}
+
+}  // namespace
+
 // ---------------------------
 // RulesService implementation
 // ---------------------------
@@ -31,26 +50,12 @@ Verdict RulesService::GetPasteVerdict(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata) const {
-  ActionContext context;
-  if (source.data_transfer_endpoint() &&
-      source.data_transfer_endpoint()->IsUrlType()) {
-    context.source.url = *source.data_transfer_endpoint()->GetURL();
-  }
-  if (source.browser_context()) {
-    context.source.incognito =
-        Profile::FromBrowserContext(source.browser_context())
-            ->IsIncognitoProfile();
-  }
-  if (destination.data_transfer_endpoint() &&
-      destination.data_transfer_endpoint()->IsUrlType()) {
-    context.destination.url = *destination.data_transfer_endpoint()->GetURL();
-  }
-  if (destination.browser_context()) {
-    context.destination.incognito =
-        Profile::FromBrowserContext(destination.browser_context())
-            ->IsIncognitoProfile();
-  }
-  return rules_manager_.GetVerdict(Rule::Restriction::kClipboard, context);
+  return rules_manager_.GetVerdict(
+      Rule::Restriction::kClipboard,
+      {
+          .source = GetAsActionSource(source),
+          .destination = GetAsActionDestination(destination),
+      });
 }
 
 Verdict RulesService::GetCopyRestrictedBySourceVerdict(
@@ -65,6 +70,20 @@ Verdict RulesService::GetCopyToOSClipboardVerdict(const GURL& source) const {
       Rule::Restriction::kClipboard,
       {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()},
        .destination = {.os_clipboard = true}});
+}
+
+ActionSource RulesService::GetAsActionSource(
+    const content::ClipboardEndpoint& endpoint) const {
+  if (!endpoint.browser_context()) {
+    return {.os_clipboard = true};
+  }
+
+  return ExtractPasteActionContext<ActionSource>(endpoint);
+}
+
+ActionDestination RulesService::GetAsActionDestination(
+    const content::ClipboardEndpoint& endpoint) const {
+  return ExtractPasteActionContext<ActionDestination>(endpoint);
 }
 
 // ----------------------------------

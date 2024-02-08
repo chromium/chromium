@@ -49,6 +49,12 @@ class RulesService : public KeyedService {
   explicit RulesService(content::BrowserContext* browser_context);
 
  private:
+  // Helpers to convert action-specific types to rule-specific types.
+  ActionSource GetAsActionSource(
+      const content::ClipboardEndpoint& endpoint) const;
+  ActionDestination GetAsActionDestination(
+      const content::ClipboardEndpoint& endpoint) const;
+
   // `profile_` and `rules_manager_` are initialized with the browser_context
   // passed in the constructor.
   const raw_ptr<Profile> profile_ = nullptr;

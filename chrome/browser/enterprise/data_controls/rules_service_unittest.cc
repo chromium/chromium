@@ -39,6 +39,14 @@ class DataControlsRulesServiceTest : public testing::Test {
 
   Profile* incognito_profile() { return incognito_profile_; }
 
+  content::WebContents* web_contents() {
+    if (!web_contents_) {
+      content::WebContents::CreateParams params(profile_);
+      web_contents_ = content::WebContents::Create(params);
+    }
+    return web_contents_.get();
+  }
+
   content::WebContents* incognito_web_contents() {
     if (!incognito_web_contents_) {
       content::WebContents::CreateParams params(incognito_profile_);
@@ -49,8 +57,13 @@ class DataControlsRulesServiceTest : public testing::Test {
 
   const GURL google_url() const { return GURL("https://google.com"); }
 
-  content::ClipboardEndpoint google_url_endpoint() const {
-    return content::ClipboardEndpoint(ui::DataTransferEndpoint(google_url()));
+  content::ClipboardEndpoint google_url_endpoint() {
+    return content::ClipboardEndpoint(
+        ui::DataTransferEndpoint(google_url()),
+        base::BindLambdaForTesting([this]() -> content::BrowserContext* {
+          return static_cast<content::BrowserContext*>(profile());
+        }),
+        *web_contents()->GetPrimaryMainFrame());
   }
 
   content::ClipboardEndpoint empty_endpoint() const {
@@ -96,6 +109,7 @@ class DataControlsRulesServiceTest : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   raw_ptr<Profile> incognito_profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::WebContents> incognito_web_contents_;
 };
 
@@ -825,6 +839,218 @@ TEST_F(DataControlsRulesServiceTest, NonOSClipboardDestination) {
                         ->GetForBrowserContext(profile())
                         ->GetCopyToOSClipboardVerdict(
                             /*source*/ google_url()));
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyRestrictedBySourceVerdict(
+                               /*source*/ google_url()));
+  }
+}
+
+TEST_F(DataControlsRulesServiceTest, OSClipboardSource) {
+  {
+    SetDataControls(profile()->GetPrefs(), {R"({
+                      "sources": {
+                        "os_clipboard": true
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "BLOCK"}
+                      ]
+                    })"});
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetPasteVerdict(
+                               /*source*/ empty_endpoint(),
+                               /*destination*/ google_url_endpoint(),
+                               /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ google_url_endpoint(),
+                            /*destination*/ empty_endpoint(),
+                            /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyRestrictedBySourceVerdict(
+                            /*source*/ google_url()));
+  }
+
+  {
+    SetDataControls(profile()->GetPrefs(), {R"({
+                      "sources": {
+                        "os_clipboard": true
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "WARN"}
+                      ]
+                    })"});
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(profile())
+                          ->GetPasteVerdict(
+                              /*source*/ empty_endpoint(),
+                              /*destination*/ google_url_endpoint(),
+                              /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ google_url_endpoint(),
+                            /*destination*/ empty_endpoint(),
+                            /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyRestrictedBySourceVerdict(
+                            /*source*/ google_url()));
+  }
+
+  {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
+    SetDataControls(profile()->GetPrefs(), {
+                                               R"({
+                      "sources": {
+                        "os_clipboard": true
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "ALLOW"}
+                      ]
+                    })",
+                                               R"({
+                      "sources": {
+                        "os_clipboard": true
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "WARN"}
+                      ]
+                    })"});
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetPasteVerdict(
+                               /*source*/ empty_endpoint(),
+                               /*destination*/ google_url_endpoint(),
+                               /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ google_url_endpoint(),
+                            /*destination*/ empty_endpoint(),
+                            /*metadata*/ {}));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyToOSClipboardVerdict(
+                            /*source*/ google_url()));
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetCopyRestrictedBySourceVerdict(
+                            /*source*/ google_url()));
+  }
+}
+
+TEST_F(DataControlsRulesServiceTest, NonOSClipboardSource) {
+  {
+    SetDataControls(profile()->GetPrefs(), {R"({
+                      "sources": {
+                        "os_clipboard": false
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "BLOCK"}
+                      ]
+                    })"});
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ empty_endpoint(),
+                            /*destination*/ google_url_endpoint(),
+                            /*metadata*/ {}));
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetPasteVerdict(
+                               /*source*/ google_url_endpoint(),
+                               /*destination*/ empty_endpoint(),
+                               /*metadata*/ {}));
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
+    ExpectBlockVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyRestrictedBySourceVerdict(
+                               /*source*/ google_url()));
+  }
+
+  {
+    SetDataControls(profile()->GetPrefs(), {R"({
+                      "sources": {
+                        "os_clipboard": false
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "WARN"}
+                      ]
+                    })"});
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ empty_endpoint(),
+                            /*destination*/ google_url_endpoint(),
+                            /*metadata*/ {}));
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(profile())
+                          ->GetPasteVerdict(
+                              /*source*/ google_url_endpoint(),
+                              /*destination*/ empty_endpoint(),
+                              /*metadata*/ {}));
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(profile())
+                          ->GetCopyToOSClipboardVerdict(
+                              /*source*/ google_url()));
+    ExpectWarnVerdict(RulesServiceFactory::GetInstance()
+                          ->GetForBrowserContext(profile())
+                          ->GetCopyRestrictedBySourceVerdict(
+                              /*source*/ google_url()));
+  }
+
+  {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
+    SetDataControls(profile()->GetPrefs(), {
+                                               R"({
+                      "sources": {
+                        "os_clipboard": false
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "ALLOW"}
+                      ]
+                    })",
+                                               R"({
+                      "sources": {
+                        "os_clipboard": false
+                      },
+                      "restrictions": [
+                        {"class": "CLIPBOARD", "level": "WARN"}
+                      ]
+                    })"});
+    ExpectNoVerdict(RulesServiceFactory::GetInstance()
+                        ->GetForBrowserContext(profile())
+                        ->GetPasteVerdict(
+                            /*source*/ empty_endpoint(),
+                            /*destination*/ google_url_endpoint(),
+                            /*metadata*/ {}));
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetPasteVerdict(
+                               /*source*/ google_url_endpoint(),
+                               /*destination*/ empty_endpoint(),
+                               /*metadata*/ {}));
+    ExpectAllowVerdict(RulesServiceFactory::GetInstance()
+                           ->GetForBrowserContext(profile())
+                           ->GetCopyToOSClipboardVerdict(
+                               /*source*/ google_url()));
     ExpectAllowVerdict(RulesServiceFactory::GetInstance()
                            ->GetForBrowserContext(profile())
                            ->GetCopyRestrictedBySourceVerdict(
