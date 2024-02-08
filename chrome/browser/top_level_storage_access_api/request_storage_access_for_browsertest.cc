@@ -827,12 +827,6 @@ class RequestStorageAccessForWithCHIPSBrowserTest
                       R"(", "associatedSites": ["https://)", kHostC, R"("])",
                       R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
   }
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
-    enabled.push_back({net::features::kPartitionedCookies, {}});
-    return enabled;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
