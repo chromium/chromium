@@ -5,17 +5,22 @@
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "policy_common_definitions.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -60,6 +65,29 @@ constexpr char kInvalidBluetoothServiceUUIDList[] = "[\"wrong-uuid\"]";
 
 constexpr char kDeviceLocalAccountKioskAccountId[] = "kiosk_account_id";
 
+constexpr char kValidDeviceWeeklyScheduledSuspendList[] = R"([
+    {
+      "start": {
+        "day_of_week": "MONDAY",
+        "time": 64800000
+      },
+      "end": {
+        "day_of_week": "TUESDAY",
+        "time": 28800000
+      }
+    },
+    {
+      "start": {
+        "day_of_week": "FRIDAY",
+        "time": 75600000
+      },
+      "end": {
+        "day_of_week": "MONDAY",
+        "time": 25200000
+      }
+    }
+])";
+
 }  // namespace
 
 class DevicePolicyDecoderTest : public testing::Test {
@@ -74,6 +102,7 @@ class DevicePolicyDecoderTest : public testing::Test {
  protected:
   base::Value GetWallpaperDict() const;
   base::Value GetBluetoothServiceAllowedList() const;
+  std::vector<WeeklyTimeInterval> GetDeviceWeeklyScheduledSuspendList() const;
   void DecodeDevicePolicyTestHelper(
       const em::ChromeDeviceSettingsProto& device_policy,
       const std::string& policy_path,
@@ -95,6 +124,23 @@ base::Value DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
                          .Append(kValidBluetoothServiceUUID4)
                          .Append(kValidBluetoothServiceUUID8)
                          .Append(kValidBluetoothServiceUUID32));
+}
+
+std::vector<WeeklyTimeInterval>
+DevicePolicyDecoderTest::GetDeviceWeeklyScheduledSuspendList() const {
+  using time_proto = em::WeeklyTimeProto;
+  std::vector<WeeklyTimeInterval> ret;
+  ret.emplace_back(
+      WeeklyTime(time_proto::MONDAY, base::Hours(18).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt),
+      WeeklyTime(time_proto::TUESDAY, base::Hours(8).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt));
+  ret.emplace_back(
+      WeeklyTime(time_proto::FRIDAY, base::Hours(21).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt),
+      WeeklyTime(time_proto::MONDAY, base::Hours(7).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt));
+  return ret;
 }
 
 void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(
@@ -734,6 +780,41 @@ TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
   DecodeDevicePolicyTestHelper(device_policy,
                                key::kDeviceExtendedAutoUpdateEnabled,
                                std::move(deviceextendedautoupdateenabled));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceWeeklyScheduledSuspendSuccess) {
+  std::string error;
+  std::optional<base::Value> decoded_json =
+      DecodeJsonStringAndNormalize(kValidDeviceWeeklyScheduledSuspendList,
+                                   key::kDeviceWeeklyScheduledSuspend, &error);
+  ASSERT_TRUE(decoded_json.has_value());
+  ASSERT_TRUE(decoded_json->is_list());
+
+  std::vector<WeeklyTimeInterval> actual_list;
+  for (const auto& item : decoded_json->GetList()) {
+    ASSERT_TRUE(item.is_dict());
+    std::unique_ptr<WeeklyTimeInterval> interval =
+        WeeklyTimeInterval::ExtractFromDict(item.GetDict(),
+                                            /*timezone_offset=*/std::nullopt);
+    ASSERT_TRUE(interval);
+    actual_list.emplace_back(std::move(*interval));
+  }
+
+  EXPECT_EQ(GetDeviceWeeklyScheduledSuspendList(), actual_list);
+  EXPECT_THAT(error, ::testing::IsEmpty());
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceWeeklyScheduledSuspendInvalidJsonError) {
+  std::string error;
+  std::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+      kInvalidJson, key::kDeviceWeeklyScheduledSuspend, &error);
+  EXPECT_FALSE(decoded_json.has_value());
+  std::string localized_error = l10n_util::GetStringFUTF8(
+      IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
+  EXPECT_THAT(
+      localized_error,
+      ::testing::HasSubstr("Policy parsing error: Invalid JSON string"));
 }
 
 }  // namespace policy
