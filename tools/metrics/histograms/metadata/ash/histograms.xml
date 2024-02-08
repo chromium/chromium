@@ -2310,20 +2310,28 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DeskProfiles.AvatarView.ButtonPressed"
     enum="BooleanHit" expires_after="2024-12-21">
-  <owner>shidi@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
   <summary>Records when the desk profiles button is pressed.</summary>
 </histogram>
 
 <histogram name="Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager"
     units="BooleanHit" expires_after="2024-12-21">
-  <owner>shidi@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
   <summary>
     Records when the profile manager is opened from desk profiles context menu.
   </summary>
+</histogram>
+
+<histogram name="Ash.Desks.DeskProfiles.UsageStatus"
+    enum="DeskProfilesUsageStatus" expires_after="2024-12-21">
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>Records relative adoption of desk profiles.</summary>
 </histogram>
 
 <histogram name="Ash.Desks.DesksCount3" units="units"

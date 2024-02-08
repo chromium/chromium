@@ -466,6 +466,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Desk template is too large"/>
 </enum>
 
+<enum name="DeskProfilesUsageStatus">
+  <int value="0" label="Conditions are not met"/>
+  <int value="1" label="Conditions are met"/>
+  <int value="2" label="Desk profiles are enabled"/>
+</enum>
+
 <enum name="DesksAssignToAllDesksSource">
   <int value="0" label="Move to desk menu"/>
   <int value="1" label="Keyboard shortcut"/>

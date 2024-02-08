@@ -10901,6 +10901,44 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
   }
 }
 
+TEST_P(DeskBarTest, DeskProfilesUsageMetrics) {
+  base::HistogramTester histogram_tester;
+
+  OpenDeskBar();
+  // There's only one desk and regardless of whether the flag feature is enabled
+  // or not, conditions are not met.
+  histogram_tester.ExpectBucketCount(kDeskProfilesUsageStatusHistogramName,
+                                     DeskProfilesUsageStatus::kConditionsNotMet,
+                                     1);
+  CloseDeskBar();
+
+  NewDesk();
+  OpenDeskBar();
+  // Now there are two desks and we expect metrics depending on whether the
+  // feature is enabled or not.
+  if (use_desk_profiles_) {
+    histogram_tester.ExpectBucketCount(kDeskProfilesUsageStatusHistogramName,
+                                       DeskProfilesUsageStatus::kConditionsMet,
+                                       1);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kDeskProfilesUsageStatusHistogramName,
+        DeskProfilesUsageStatus::kConditionsNotMet, 2);
+  }
+  CloseDeskBar();
+
+  // Explicitly assign a profile to one of the desks.
+  if (use_desk_profiles_) {
+    DesksController::Get()->GetDeskAtIndex(0)->SetLacrosProfileId(
+        GetDummyLacrosDeskProfileId(0));
+
+    OpenDeskBar();
+    histogram_tester.ExpectBucketCount(kDeskProfilesUsageStatusHistogramName,
+                                       DeskProfilesUsageStatus::kEnabled, 1);
+    CloseDeskBar();
+  }
+}
+
 struct DeskButtonTestParams {
   ShelfAlignment alignment = ShelfAlignment::kBottom;
 };
