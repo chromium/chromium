@@ -2,48 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("../../login.gni")
 
 assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
-
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
-      ]
-  deps = [ ":signin_fatal_error" ]
-}
-
-###############################
-# Closure compiler libraries below
-
-# Template used by the `tools/oobe/generate_screen_template.py` script.
-
-js_library("signin_fatal_error") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 group("web_components") {
   public_deps = [
