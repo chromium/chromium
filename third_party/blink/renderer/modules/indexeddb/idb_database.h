@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -42,7 +41,7 @@ class IDBCursorWithValue final : public IDBCursor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  IDBCursorWithValue(std::unique_ptr<WebIDBCursor>,
+  IDBCursorWithValue(mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>,
                      mojom::IDBCursorDirection,
                      IDBRequest*,
                      const Source*,

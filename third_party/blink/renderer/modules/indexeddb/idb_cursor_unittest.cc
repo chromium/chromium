@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,13 +16,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_test_helper.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
+#include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+static constexpr int64_t kStoreId = 5678;
+static constexpr int64_t kTransactionId = 1234;
 
 namespace {
 
@@ -79,39 +95,82 @@ class MockCursorImpl : public mojom::blink::IDBCursor {
   int continue_calls_ = 0;
   bool destroyed_ = false;
 
-  mojo::AssociatedReceiver<IDBCursor> receiver_;
+  mojo::AssociatedReceiver<mojom::blink::IDBCursor> receiver_;
 };
 
 }  // namespace
 
-class WebIDBCursorTest : public testing::Test {
+class IDBCursorTest : public testing::Test {
  public:
-  WebIDBCursorTest() : null_key_(IDBKey::CreateNone()) {
+  IDBCursorTest() : null_key_(IDBKey::CreateNone()) {}
+
+  void SetUpCursor(V8TestingScope& scope) {
+    auto* execution_context = scope.GetExecutionContext();
+    MockIDBDatabase mock_database;
+    // Set up `transaction`.
+    IDBDatabase* db = MakeGarbageCollected<IDBDatabase>(
+        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
+        mock_database.BindNewEndpointAndPassDedicatedRemote());
+
+    MockIDBTransaction mock_transaction_remote;
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
+        transaction_remote.BindNewEndpointAndPassReceiver(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    receiver.EnableUnassociatedUsage();
+    mock_transaction_remote.Bind(std::move(receiver));
+
+    HashSet<String> transaction_scope = {"store"};
+    IDBTransaction* transaction = IDBTransaction::CreateNonVersionChange(
+        scope.GetScriptState(), std::move(transaction_remote), kTransactionId,
+        transaction_scope, mojom::IDBTransactionMode::ReadOnly,
+        mojom::IDBTransactionDurability::Relaxed, db);
+
+    // Set up `store`.
+    IDBKeyPath store_key_path("primaryKey");
+    scoped_refptr<IDBObjectStoreMetadata> store_metadata = base::AdoptRef(
+        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true, 1));
+    IDBObjectStore* store =
+        MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction);
+
+    // Create a `request` and a `source`.
+    IDBRequest* request =
+        IDBRequest::Create(scope.GetScriptState(), store, transaction,
+                           IDBRequest::AsyncTraceState());
+    IDBCursor::Source* source =
+        MakeGarbageCollected<IDBCursor::Source>(
+          request->source(scope.GetScriptState())->GetAsIDBObjectStore());
+
+    // Set up mojo endpoints.
     mojo::AssociatedRemote<mojom::blink::IDBCursor> remote;
     mock_cursor_ = std::make_unique<MockCursorImpl>(
         remote.BindNewEndpointAndPassDedicatedReceiver());
-    cursor_ = std::make_unique<WebIDBCursor>(
-        remote.Unbind(), 1,
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    cursor_ = MakeGarbageCollected<IDBCursor>(
+        remote.Unbind(), mojom::blink::IDBCursorDirection::NextNoDuplicate,
+        request,
+        source,
+        transaction);
   }
 
   // Disallow copy and assign.
-  WebIDBCursorTest(const WebIDBCursorTest&) = delete;
-  WebIDBCursorTest& operator=(const WebIDBCursorTest&) = delete;
+  IDBCursorTest(const IDBCursorTest&) = delete;
+  IDBCursorTest& operator=(const IDBCursorTest&) = delete;
 
  protected:
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<IDBKey> null_key_;
-  std::unique_ptr<WebIDBCursor> cursor_;
+  Persistent<IDBCursor> cursor_;
   std::unique_ptr<MockCursorImpl> mock_cursor_;
 };
 
-TEST_F(WebIDBCursorTest, PrefetchTest) {
+TEST_F(IDBCursorTest, PrefetchTest) {
+  V8TestingScope scope;
+  SetUpCursor(scope);
   // Call continue() until prefetching should kick in.
   int continue_calls = 0;
   EXPECT_EQ(mock_cursor_->continue_calls(), 0);
-  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < IDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(), nullptr);
     platform_->RunUntilIdle();
     EXPECT_EQ(++continue_calls, mock_cursor_->continue_calls());
@@ -178,15 +237,17 @@ TEST_F(WebIDBCursorTest, PrefetchTest) {
     }
   }
 
-  cursor_.reset();
+  scope.GetExecutionContext()->NotifyContextDestroyed();
   platform_->RunUntilIdle();
   EXPECT_TRUE(mock_cursor_->destroyed());
 }
 
-TEST_F(WebIDBCursorTest, AdvancePrefetchTest) {
+TEST_F(IDBCursorTest, AdvancePrefetchTest) {
+  V8TestingScope scope;
+  SetUpCursor(scope);
   // Call continue() until prefetching should kick in.
   EXPECT_EQ(0, mock_cursor_->continue_calls());
-  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < IDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(), nullptr);
   }
   platform_->RunUntilIdle();
@@ -197,7 +258,7 @@ TEST_F(WebIDBCursorTest, AdvancePrefetchTest) {
 
   platform_->RunUntilIdle();
   EXPECT_EQ(1, mock_cursor_->prefetch_calls());
-  EXPECT_EQ(static_cast<int>(WebIDBCursor::kPrefetchContinueThreshold),
+  EXPECT_EQ(static_cast<int>(IDBCursor::kPrefetchContinueThreshold),
             mock_cursor_->continue_calls());
   EXPECT_EQ(0, mock_cursor_->advance_calls());
 
@@ -243,7 +304,7 @@ TEST_F(WebIDBCursorTest, AdvancePrefetchTest) {
   EXPECT_EQ(1, cursor_->prefetch_keys_.back()->Number());
 
   // IDBCursor.advance(1)
-  cursor_->Advance(1, nullptr);
+  cursor_->AdvanceImpl(1, nullptr);
   platform_->RunUntilIdle();
   EXPECT_EQ(2, cursor_->prefetch_keys_.back()->Number());
 
@@ -254,30 +315,32 @@ TEST_F(WebIDBCursorTest, AdvancePrefetchTest) {
   EXPECT_EQ(3, cursor_->prefetch_keys_.back()->Number());
 
   // IDBCursor.advance(2)
-  cursor_->Advance(2, nullptr);
+  cursor_->AdvanceImpl(2, nullptr);
   platform_->RunUntilIdle();
   EXPECT_EQ(0u, cursor_->prefetch_keys_.size());
 
   EXPECT_EQ(0, mock_cursor_->advance_calls());
 
   // IDBCursor.advance(lots) - beyond the fetched amount
-  cursor_->Advance(WebIDBCursor::kMaxPrefetchAmount, nullptr);
+  cursor_->AdvanceImpl(IDBCursor::kMaxPrefetchAmount, nullptr);
   platform_->RunUntilIdle();
   EXPECT_EQ(1, mock_cursor_->advance_calls());
   EXPECT_EQ(1, mock_cursor_->prefetch_calls());
-  EXPECT_EQ(static_cast<int>(WebIDBCursor::kPrefetchContinueThreshold),
+  EXPECT_EQ(static_cast<int>(IDBCursor::kPrefetchContinueThreshold),
             mock_cursor_->continue_calls());
 
-  cursor_.reset();
+  scope.GetExecutionContext()->NotifyContextDestroyed();
   platform_->RunUntilIdle();
   EXPECT_TRUE(mock_cursor_->destroyed());
 }
 
-TEST_F(WebIDBCursorTest, PrefetchReset) {
+TEST_F(IDBCursorTest, PrefetchReset) {
+  V8TestingScope scope;
+  SetUpCursor(scope);
   // Call continue() until prefetching should kick in.
   int continue_calls = 0;
   EXPECT_EQ(mock_cursor_->continue_calls(), 0);
-  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < IDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(), nullptr);
     platform_->RunUntilIdle();
     EXPECT_EQ(++continue_calls, mock_cursor_->continue_calls());
@@ -322,7 +385,7 @@ TEST_F(WebIDBCursorTest, PrefetchReset) {
   EXPECT_EQ(1, mock_cursor_->reset_calls());
   EXPECT_EQ(1, mock_cursor_->last_used_count());
 
-  cursor_.reset();
+  scope.GetExecutionContext()->NotifyContextDestroyed();
   platform_->RunUntilIdle();
   EXPECT_TRUE(mock_cursor_->destroyed());
 }

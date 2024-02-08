@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"

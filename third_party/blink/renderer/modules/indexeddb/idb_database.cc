@@ -44,13 +44,13 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
-#include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -580,7 +580,7 @@ void IDBDatabase::Get(
     bool key_only,
     base::OnceCallback<void(mojom::blink::IDBDatabaseGetResultPtr)>
         result_callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
@@ -596,7 +596,7 @@ void IDBDatabase::GetAll(int64_t transaction_id,
                          int64_t max_count,
                          bool key_only,
                          IDBRequest* request) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
@@ -629,8 +629,7 @@ void IDBDatabase::OpenCursor(int64_t object_store_id,
                              bool key_only,
                              mojom::blink::IDBTaskType task_type,
                              IDBRequest* request) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(request->transaction()->Id(),
-                                                 nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(request->transaction()->Id(), nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
@@ -645,7 +644,7 @@ void IDBDatabase::Count(int64_t transaction_id,
                         int64_t index_id,
                         const IDBKeyRange* key_range,
                         mojom::blink::IDBDatabase::CountCallback callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   database_remote_->Count(transaction_id, object_store_id, index_id,
                           mojom::blink::IDBKeyRange::From(key_range),
@@ -656,7 +655,7 @@ void IDBDatabase::Delete(int64_t transaction_id,
                          int64_t object_store_id,
                          const IDBKey* primary_key,
                          base::OnceCallback<void(bool)> success_callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(IDBKeyRange::Create(primary_key));
@@ -669,7 +668,7 @@ void IDBDatabase::DeleteRange(int64_t transaction_id,
                               int64_t object_store_id,
                               const IDBKeyRange* key_range,
                               base::OnceCallback<void(bool)> success_callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
@@ -690,7 +689,7 @@ void IDBDatabase::Clear(
     int64_t transaction_id,
     int64_t object_store_id,
     mojom::blink::IDBDatabase::ClearCallback success_callback) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
   database_remote_->Clear(transaction_id, object_store_id,
                           std::move(success_callback));
 }

@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -389,7 +388,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
   // Speciality versions of `SendResult()`.
   void SendResultValue(std::unique_ptr<IDBValue> value);
-  void SendResultCursor(std::unique_ptr<WebIDBCursor>,
+  void SendResultCursor(mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>,
                         std::unique_ptr<IDBKey>,
                         std::unique_ptr<IDBKey> primary_key,
                         std::unique_ptr<IDBValue>);

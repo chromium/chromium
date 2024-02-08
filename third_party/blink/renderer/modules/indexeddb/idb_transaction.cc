@@ -36,13 +36,13 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
-#include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -528,7 +528,7 @@ void IDBTransaction::Put(int64_t object_store_id,
     return;
   }
 
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(id_, nullptr);
+  IDBCursor::ResetCursorPrefetchCaches(id_, nullptr);
 
   size_t index_keys_size = 0;
   for (const auto& index_key : index_keys) {
