@@ -15065,6 +15065,46 @@
             ]
         }
     ],
+    "ProtectedAudienceBandAKeyPrefetchStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgePrefetchBandAKeys"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceEnableWALForInterestGroupStorageStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesEnableUpdatingExecutionModeToFrozenContext": [
         {
             "platforms": [
