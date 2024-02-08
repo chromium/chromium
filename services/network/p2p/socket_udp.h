@@ -121,6 +121,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
               int result);
 
   int SetSocketDiffServCodePointInternal(net::DiffServCodePoint dscp);
+  net::NetLog* net_log() const { return net_log_with_source_.net_log(); }
 
   // Called at the end of sends to send out SendComplete to the |client_|.
   void ProcessSendCompletions();
@@ -144,7 +145,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   raw_ptr<P2PMessageThrottler> throttler_;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  raw_ptr<net::NetLog> net_log_;
+  net::NetLogWithSource net_log_with_source_;
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;

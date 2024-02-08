@@ -113,7 +113,8 @@ P2PSocketUdp::P2PSocketUdp(
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
       throttler_(throttler),
       traffic_annotation_(traffic_annotation),
-      net_log_(net_log),
+      net_log_with_source_(
+          net::NetLogWithSource::Make(net_log, net::NetLogSourceType::SOCKET)),
       socket_factory_(socket_factory) {}
 
 P2PSocketUdp::P2PSocketUdp(
@@ -145,7 +146,7 @@ void P2PSocketUdp::Init(
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
 
-  socket_ = socket_factory_.Run(net_log_.get());
+  socket_ = socket_factory_.Run(net_log());
 
   int result = -1;
   if (min_port == 0) {
@@ -153,8 +154,9 @@ void P2PSocketUdp::Init(
   } else if (local_address.port() == 0) {
     for (unsigned port = min_port; port <= max_port && result < 0; ++port) {
       result = socket_->Listen(net::IPEndPoint(local_address.address(), port));
-      if (result < 0 && port != max_port)
-        socket_ = socket_factory_.Run(net_log_.get());
+      if (result < 0 && port != max_port) {
+        socket_ = socket_factory_.Run(net_log());
+      }
     }
   } else if (local_address.port() >= min_port &&
              local_address.port() <= max_port) {
