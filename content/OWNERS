@@ -2,12 +2,9 @@
 # subdirectories that have specific owners who are the experts in reviewing that
 # code. Top level content/OWNERS are reviewers who are qualified to review
 # changes across all of content and are responsible for its architecture. They
-# will defer to subdirectory owners as needed. As such we expect that a
-# content/OWNER has made substantial contributions to content/ in the recent
-# past, specifically both in the browser and renderer subdirectories as they
-# encapsulate the main architecture, and demonstrated overall knowledge of the
-# content architecture by doing code reviews for changes that affect different
-# parts of content even before being a content/OWNER.
+# will defer to subdirectory owners as needed. For more information about owner
+# responsibilities as well as how to become a top-level owner, please see
+# //content/README.md#content-owners.
 #
 # For public questions directed to OWNERS, you can send email
 # to content-owners@chromium.org.
