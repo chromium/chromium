@@ -731,6 +731,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "autofill-shared-storage-server-card-data",
+    "owners": [ "nburris@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "autofill-show-autocomplete-delete-button",
     "owners": [ "jkeitel@google.com", "autofill-squad-muc@google.com"],
     "expiry_milestone": 124

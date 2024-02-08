@@ -73,6 +73,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/companion/visual_query/features.h"
 #include "components/assist_ranker/predictor_config_definitions.h"
+#include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -11103,6 +11104,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin | kOsAndroid,
      FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
 #endif
+
+    {"autofill-shared-storage-server-card-data",
+     flag_descriptions::kAutofillSharedStorageServerCardDataName,
+     flag_descriptions::kAutofillSharedStorageServerCardDataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillSharedStorageServerCardData)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

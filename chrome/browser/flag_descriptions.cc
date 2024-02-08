@@ -621,6 +621,12 @@ const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
 
+const char kAutofillSharedStorageServerCardDataName[] =
+    "Enable storing autofill server card data in the shared storage database";
+const char kAutofillSharedStorageServerCardDataDescription[] =
+    "When enabled, the cached server credit card data from autofill will be "
+    "pushed into the shared storage database for the payments origin.";
+
 const char kAutofillShowAutocompleteDeleteButtonName[] =
     "Show a delete button for Autocomplete entries";
 const char kAutofillShowAutocompleteDeleteButtonDescription[] =
