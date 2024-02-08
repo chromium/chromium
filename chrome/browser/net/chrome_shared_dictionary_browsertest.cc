@@ -107,19 +107,9 @@ class SharedDictionaryAccessObserver : public content::WebContentsObserver {
 
 std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  switch (
-      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
-      auto it = headers.find("sec-available-dictionary");
-      return it == headers.end() ? std::nullopt
-                                 : std::make_optional(it->second);
-    }
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
       auto it = headers.find("available-dictionary");
       return it == headers.end() ? std::nullopt
                                  : std::make_optional(it->second);
-    }
-  }
 }
 
 void CheckSharedDictionaryUseCounter(
@@ -165,23 +155,14 @@ void CheckSharedDictionaryUseCounter(
 // `ChromeSharedDictionaryBrowserTest` is required to test Chrome
 // specific code such as Site Settings.
 // See `SharedDictionaryBrowserTest` for content's version of tests.
-class ChromeSharedDictionaryBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<
-          network::features::CompressionDictionaryTransportBackendVersion> {
+class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
  public:
   ChromeSharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+    scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {base::test::FeatureRefAndParams(
-             network::features::kCompressionDictionaryTransportBackend,
-             {{network::features::kCompressionDictionaryTransportBackendVersion
-                   .name,
-               network::features::kCompressionDictionaryTransportBackendVersion
-                   .GetName(GetVersion())}}),
-         base::test::FeatureRefAndParams(
-             network::features::kCompressionDictionaryTransport, {}),
-         base::test::FeatureRefAndParams(network::features::kSharedZstd, {})},
+        {network::features::kCompressionDictionaryTransportBackend,
+         network::features::kCompressionDictionaryTransport,
+         network::features::kSharedZstd},
         /*disabled_features=*/{});
 
     embedded_test_server()->RegisterRequestHandler(
@@ -202,9 +183,6 @@ class ChromeSharedDictionaryBrowserTest
       const ChromeSharedDictionaryBrowserTest&) = delete;
 
  protected:
-  network::features::CompressionDictionaryTransportBackendVersion GetVersion() {
-    return GetParam();
-  }
   net::EmbeddedTestServer* cross_origin_server() {
     return cross_origin_server_.get();
   }
@@ -379,26 +357,7 @@ class ChromeSharedDictionaryBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ChromeSharedDictionaryBrowserTest,
-    testing::Values(
-        network::features::CompressionDictionaryTransportBackendVersion::kV1,
-        network::features::CompressionDictionaryTransportBackendVersion::kV2),
-    [](const testing::TestParamInfo<
-        network::features::CompressionDictionaryTransportBackendVersion>&
-           info) {
-      switch (info.param) {
-        case network::features::CompressionDictionaryTransportBackendVersion::
-            kV1:
-          return "V1";
-        case network::features::CompressionDictionaryTransportBackendVersion::
-            kV2:
-          return "V2";
-      }
-    });
-
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockWriting) {
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   settings->SetCookieSetting(embedded_test_server()->GetURL("/"),
@@ -409,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockWriting) {
   EXPECT_FALSE(TryRegisterDictionary(*embedded_test_server()));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        BlockWritingCrossOrigin) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
@@ -421,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
   EXPECT_FALSE(TryRegisterDictionary(*cross_origin_server()));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockReading) {
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockReading) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
@@ -438,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, BlockReading) {
       CheckDictionaryHeader(*embedded_test_server(), /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        BlockReadingCrossOrigin) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -456,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       CheckDictionaryHeader(*cross_origin_server(), /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        BlockReadingWhileNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -477,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        BlockReadingWhileIframeNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -498,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expect_blocked=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterMainFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -532,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterSubFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -577,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterSubresource) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -616,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterZstdMainFrameNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -650,7 +609,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_subresource_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
                        UseCounterZstdSubresource) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -695,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest,
 #else
 #define MAYBE_SiteDataCount SiteDataCount
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, MAYBE_SiteDataCount) {
   base::Time time1 = base::Time::Now();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));

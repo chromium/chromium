@@ -244,13 +244,11 @@ SharedDictionaryStorageOnDisk::CreateWriter(
   }
 
   std::unique_ptr<SimpleUrlPatternMatcher> matcher;
-  if (NeedToUseUrlPatternMatcher()) {
-    auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
-    if (!matcher_create_result.has_value()) {
-      return nullptr;
-    }
-    matcher = std::move(matcher_create_result.value());
+  auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
+  if (!matcher_create_result.has_value()) {
+    return nullptr;
   }
+  matcher = std::move(matcher_create_result.value());
   return manager_->CreateWriter(
       isolation_key_, url, response_time, expiration, match, match_dest, id,
       base::BindOnce(&SharedDictionaryStorageOnDisk::OnDictionaryWritten,
@@ -278,28 +276,17 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     return;
   }
 
-  const bool need_matcher = NeedToUseUrlPatternMatcher();
-  const bool need_to_remove_dest_and_id = NeedToRemoveMatchDestAndId();
   for (auto& info : result.value()) {
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
     const std::string match = info.match();
     std::unique_ptr<SimpleUrlPatternMatcher> matcher;
-    if (need_matcher) {
-      auto matcher_create_result =
-          SimpleUrlPatternMatcher::Create(match, info.url());
-      if (!matcher_create_result.has_value()) {
-        continue;
-      }
-      matcher = std::move(matcher_create_result.value());
+    auto matcher_create_result =
+        SimpleUrlPatternMatcher::Create(match, info.url());
+    if (!matcher_create_result.has_value()) {
+      continue;
     }
-    if (need_to_remove_dest_and_id) {
-      info = net::SharedDictionaryInfo(
-          info.url(), info.response_time(), info.expiration(), info.match(),
-          /*match_dest_string=*/"", /*id=*/"", info.last_used_time(),
-          info.size(), info.hash(), info.disk_cache_key_token(),
-          info.primary_key_in_database());
-    }
+    matcher = std::move(matcher_create_result.value());
     WrappedDictionaryInfo wrapped_info(std::move(info), std::move(matcher));
     auto key = std::make_tuple(match, wrapped_info.match_dest());
     dictionary_info_map_[scheme_host_port].insert(

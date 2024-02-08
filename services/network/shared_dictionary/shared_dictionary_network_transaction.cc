@@ -153,11 +153,9 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
     result = SharedDictionaryEncodingType::kSharedZstd;
   }
 
-  // Check "Content-Dictionary" header if V2 backend is enabled, and the
-  // content encoding indicates that a dictionary is used.
-  if (features::kCompressionDictionaryTransportBackendVersion.Get() !=
-          features::CompressionDictionaryTransportBackendVersion::kV1 &&
-      result != SharedDictionaryEncodingType::kNotUsed) {
+  // Check "Content-Dictionary" header when the content encoding indicates that
+  // a dictionary is used.
+  if (result != SharedDictionaryEncodingType::kNotUsed) {
     CHECK(!dictionary_hash_base64_.empty());
     std::string content_dictionary;
     if (!headers.GetNormalizedHeader(
@@ -262,21 +260,11 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     shared_dictionary_.reset();
     return;
   }
-
-  switch (features::kCompressionDictionaryTransportBackendVersion.Get()) {
-    case features::CompressionDictionaryTransportBackendVersion::kV1:
-      request_headers->SetHeader(
-          network::shared_dictionary::kSecAvailableDictionaryHeaderName,
-          base::ToLowerASCII(base::HexEncode(shared_dictionary_->hash().data)));
-      break;
-    case features::CompressionDictionaryTransportBackendVersion::kV2:
-      dictionary_hash_base64_ = base::StrCat(
-          {":", base::Base64Encode(shared_dictionary_->hash().data), ":"});
-      request_headers->SetHeader(
-          network::shared_dictionary::kAvailableDictionaryHeaderName,
-          dictionary_hash_base64_);
-      break;
-  }
+  dictionary_hash_base64_ = base::StrCat(
+      {":", base::Base64Encode(shared_dictionary_->hash().data), ":"});
+  request_headers->SetHeader(
+      network::shared_dictionary::kAvailableDictionaryHeaderName,
+      dictionary_hash_base64_);
   if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
     AddAcceptEncoding(request_headers,
                       base::StrCat({GetSharedBrotliContentEncodingName(), ", ",

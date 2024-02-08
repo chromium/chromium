@@ -104,27 +104,14 @@ constexpr std::string_view kThirdPartyOriginTrialToken =
     "OjQ0MyIsICJmZWF0dXJlIjogIkNvbXByZXNzaW9uRGljdGlvbmFyeVRyYW5zcG9ydEZvclRlc3"
     "QiLCAiZXhwaXJ5IjogMjAyMTU4NzUzNiwgImlzVGhpcmRQYXJ0eSI6IHRydWV9";
 
-// The SHA256 hash of dictionary
-// (content/test/data/shared_dictionary/test.dict and test_dict.html).
-constexpr std::string_view kExpectedDictionaryHash =
-    "53969bcf5e960e0edbf0a4bdde6b0b3e9381e156de7f5b91ce8391624270f416";
 // The Structured Field sf-binary hash of sha256 of dictionary.
+// (content/test/data/shared_dictionary/test.dict and test_dict.html).
 constexpr std::string_view kExpectedDictionaryHashBase64 =
     ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:";
 constexpr net::SHA256HashValue kExpectedDictionaryHashValue = {
     {0x53, 0x96, 0x9b, 0xcf, 0x5e, 0x96, 0x0e, 0x0e, 0xdb, 0xf0, 0xa4,
      0xbd, 0xde, 0x6b, 0x0b, 0x3e, 0x93, 0x81, 0xe1, 0x56, 0xde, 0x7f,
      0x5b, 0x91, 0xce, 0x83, 0x91, 0x62, 0x42, 0x70, 0xf4, 0x16}};
-
-std::string_view GetExpectedDictionaryHashString() {
-  switch (
-      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
-      return kExpectedDictionaryHash;
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
-      return kExpectedDictionaryHashBase64;
-  }
-}
 
 constexpr std::string_view kUncompressedDataString =
     "test(\"This is uncompressed.\");";
@@ -218,16 +205,6 @@ bool WaitForHistogram(const std::string& histogram_name,
     }
   }
   return true;
-}
-
-std::string ToString(
-    network::features::CompressionDictionaryTransportBackendVersion version) {
-  switch (version) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
-      return "V1";
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
-      return "V2";
-  }
 }
 
 enum class FeatureState {
@@ -416,45 +393,22 @@ std::string IframeLoadScript(const GURL& url) {
 }
 std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  switch (
-      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
-      auto it = headers.find("sec-available-dictionary");
-      return it == headers.end() ? std::nullopt
-                                 : std::make_optional(it->second);
-    }
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
       auto it = headers.find("available-dictionary");
       return it == headers.end() ? std::nullopt
                                  : std::make_optional(it->second);
-    }
-  }
 }
 
 bool HasSharedDictionaryAcceptEncoding(
-    const net::test_server::HttpRequest::HeaderMap& headers,
-    network::features::CompressionDictionaryTransportBackendVersion version) {
+    const net::test_server::HttpRequest::HeaderMap& headers) {
   auto it = headers.find(net::HttpRequestHeaders::kAcceptEncoding);
   if (it == headers.end()) {
     return false;
   }
-  switch (version) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
-      if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
-        return it->second == "sbr, zstd-d" ||
-               base::EndsWith(it->second, ", sbr, zstd-d");
-      } else {
-        return it->second == "sbr" || base::EndsWith(it->second, ", sbr");
-      }
-    }
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
-      if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
-        return it->second == "br-d, zstd-d" ||
-               base::EndsWith(it->second, ", br-d, zstd-d");
-      } else {
-        return it->second == "br-d" || base::EndsWith(it->second, ", br-d");
-      }
-    }
+  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
+    return it->second == "br-d, zstd-d" ||
+           base::EndsWith(it->second, ", br-d, zstd-d");
+  } else {
+    return it->second == "br-d" || base::EndsWith(it->second, ", br-d");
   }
 }
 
@@ -598,10 +552,7 @@ class DummyClientCertStoreContentBrowserClient
 
 class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
  public:
-  explicit SharedDictionaryBrowserTestBase(
-      const network::features::CompressionDictionaryTransportBackendVersion
-          version)
-      : version_(version) {}
+  SharedDictionaryBrowserTestBase() = default;
 
   SharedDictionaryBrowserTestBase(const SharedDictionaryBrowserTestBase&) =
       delete;
@@ -792,8 +743,8 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     std::optional<std::string> dict_hash =
         GetAvailableDictionary(request.headers);
     if (dict_hash) {
-      if (*dict_hash == GetExpectedDictionaryHashString()) {
-        if (HasSharedDictionaryAcceptEncoding(request.headers, version_)) {
+      if (*dict_hash == kExpectedDictionaryHashBase64) {
+        if (HasSharedDictionaryAcceptEncoding(request.headers)) {
           response->AddCustomHeader("content-dictionary",
                                     kExpectedDictionaryHashBase64);
           if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
@@ -819,9 +770,6 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
 
     return response;
   }
-
-  const network::features::CompressionDictionaryTransportBackendVersion
-      version_;
 };
 
 // Tests end to end functionality of "compression dictionary transport" feature
@@ -829,13 +777,10 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
 // TODO(crbug.com/1413922): Remove this when we fully launch this feature.
 class SharedDictionaryFeatureStateBrowserTest
     : public SharedDictionaryBrowserTestBase,
-      public ::testing::WithParamInterface<std::tuple<
-          FeatureState,
-          network::features::CompressionDictionaryTransportBackendVersion>> {
+      public ::testing::WithParamInterface<FeatureState> {
  public:
-  SharedDictionaryFeatureStateBrowserTest()
-      : SharedDictionaryBrowserTestBase(GetVersion()) {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
+  SharedDictionaryFeatureStateBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     switch (GetFeatureState()) {
       case FeatureState::kDisabled:
@@ -846,42 +791,28 @@ class SharedDictionaryFeatureStateBrowserTest
         disabled_features.emplace_back(network::features::kSharedZstd);
         break;
       case FeatureState::kBackendOnly:
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kCompressionDictionaryTransportBackend,
-            {{network::features::kCompressionDictionaryTransportBackendVersion
-                  .name,
-              network::features::kCompressionDictionaryTransportBackendVersion
-                  .GetName(GetVersion())}}));
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransportBackend);
         disabled_features.emplace_back(
             network::features::kCompressionDictionaryTransport);
         disabled_features.emplace_back(network::features::kSharedZstd);
         break;
       case FeatureState::kFullyEnabled:
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kCompressionDictionaryTransportBackend,
-            {{network::features::kCompressionDictionaryTransportBackendVersion
-                  .name,
-              network::features::kCompressionDictionaryTransportBackendVersion
-                  .GetName(GetVersion())}}));
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kCompressionDictionaryTransport, {}));
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransportBackend);
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransport);
         disabled_features.emplace_back(network::features::kSharedZstd);
         break;
       case FeatureState::kFullyEnabledWithZstd:
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kCompressionDictionaryTransportBackend,
-            {{network::features::kCompressionDictionaryTransportBackendVersion
-                  .name,
-              network::features::kCompressionDictionaryTransportBackendVersion
-                  .GetName(GetVersion())}}));
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kCompressionDictionaryTransport, {}));
-        enabled_features.emplace_back(base::test::FeatureRefAndParams(
-            network::features::kSharedZstd, {}));
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransportBackend);
+        enabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransport);
+        enabled_features.emplace_back(network::features::kSharedZstd);
         break;
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   SharedDictionaryFeatureStateBrowserTest(
       const SharedDictionaryFeatureStateBrowserTest&) = delete;
@@ -907,11 +838,7 @@ class SharedDictionaryFeatureStateBrowserTest
   void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
 
  protected:
-  FeatureState GetFeatureState() const { return std::get<0>(GetParam()); }
-  network::features::CompressionDictionaryTransportBackendVersion GetVersion()
-      const {
-    return std::get<1>(GetParam());
-  }
+  FeatureState GetFeatureState() const { return GetParam(); }
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   bool FeatureIsFullyEnabled() const {
@@ -1024,25 +951,15 @@ class SharedDictionaryFeatureStateBrowserTest
   std::optional<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SharedDictionaryFeatureStateBrowserTest,
-    ::testing::Combine(
-        testing::Values(FeatureState::kDisabled,
-                        FeatureState::kBackendOnly,
-                        FeatureState::kFullyEnabled,
-                        FeatureState::kFullyEnabledWithZstd),
-        testing::Values(network::features::
-                            CompressionDictionaryTransportBackendVersion::kV1,
-                        network::features::
-                            CompressionDictionaryTransportBackendVersion::kV2)),
-    [](const testing::TestParamInfo<std::tuple<
-           FeatureState,
-           network::features::CompressionDictionaryTransportBackendVersion>>&
-           info) {
-      return ToString(std::get<0>(info.param)) + "_" +
-             ToString(std::get<1>(info.param));
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedDictionaryFeatureStateBrowserTest,
+                         testing::Values(FeatureState::kDisabled,
+                                         FeatureState::kBackendOnly,
+                                         FeatureState::kFullyEnabled,
+                                         FeatureState::kFullyEnabledWithZstd),
+                         [](const testing::TestParamInfo<FeatureState>& info) {
+                           return ToString(info.param);
+                         });
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                        LinkRelDictionary) {
@@ -1190,16 +1107,6 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       base::BindLambdaForTesting(
           [&](std::vector<network::mojom::SharedDictionaryInfoPtr> result) {
             ASSERT_EQ(1u, result.size());
-            switch (GetVersion()) {
-              case network::features::
-                  CompressionDictionaryTransportBackendVersion::kV1:
-                EXPECT_EQ(GetFeatureState() == FeatureState::kBackendOnly
-                              ? base::Days(30)
-                              : base::Seconds(31536000),
-                          result[0]->expiration);
-                break;
-              case network::features::
-                  CompressionDictionaryTransportBackendVersion::kV2:
                 // The dictionary response was treated as somewhat aged
                 // (response time - request time). So the expiration is a bit
                 // smaller than 3600 seconds which is set in the Cache-Control
@@ -1208,8 +1115,6 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
                 EXPECT_GT(result[0]->expiration,
                           base::Seconds(3600) -
                               (result[0]->response_time - test_start_time));
-                break;
-            }
             loop.Quit();
           }));
   loop.Run();
@@ -1266,23 +1171,14 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 // with fully enabled features.
 class SharedDictionaryBrowserTest
     : public SharedDictionaryBrowserTestBase,
-      public ::testing::WithParamInterface<std::tuple<
-          BrowserType,
-          network::features::CompressionDictionaryTransportBackendVersion>> {
+      public ::testing::WithParamInterface<BrowserType> {
  public:
-  SharedDictionaryBrowserTest()
-      : SharedDictionaryBrowserTestBase(GetVersion()) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+  SharedDictionaryBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {base::test::FeatureRefAndParams(
-             network::features::kCompressionDictionaryTransportBackend,
-             {{network::features::kCompressionDictionaryTransportBackendVersion
-                   .name,
-               network::features::kCompressionDictionaryTransportBackendVersion
-                   .GetName(GetVersion())}}),
-         base::test::FeatureRefAndParams(
-             network::features::kCompressionDictionaryTransport, {}),
-         base::test::FeatureRefAndParams(network::features::kSharedZstd, {})},
+        {network::features::kCompressionDictionaryTransportBackend,
+         network::features::kCompressionDictionaryTransport,
+         network::features::kSharedZstd},
         /*disabled_features=*/{});
   }
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;
@@ -1380,11 +1276,7 @@ class SharedDictionaryBrowserTest
   }
 
  protected:
-  BrowserType GetBrowserType() const { return std::get<0>(GetParam()); }
-  network::features::CompressionDictionaryTransportBackendVersion GetVersion()
-      const {
-    return std::get<1>(GetParam());
-  }
+  BrowserType GetBrowserType() const { return GetParam(); }
   net::EmbeddedTestServer* cross_origin_server() const {
     return cross_origin_server_.get();
   }
@@ -1498,21 +1390,11 @@ class SharedDictionaryBrowserTest
       std::optional<std::string> dict_hash =
           GetAvailableDictionary(request.headers);
       if (dict_hash) {
-        if (*dict_hash == GetExpectedDictionaryHashString()) {
-          if (HasSharedDictionaryAcceptEncoding(request.headers,
-                                                GetVersion())) {
-            switch (GetVersion()) {
-              case network::features::
-                  CompressionDictionaryTransportBackendVersion::kV1:
-                response->AddCustomHeader("content-encoding", "sbr");
-                break;
-              case network::features::
-                  CompressionDictionaryTransportBackendVersion::kV2:
-                response->AddCustomHeader("content-encoding", "br-d");
-                response->AddCustomHeader("content-dictionary",
-                                          kExpectedDictionaryHashBase64);
-                break;
-            }
+        if (*dict_hash == kExpectedDictionaryHashBase64) {
+          if (HasSharedDictionaryAcceptEncoding(request.headers)) {
+            response->AddCustomHeader("content-encoding", "br-d");
+            response->AddCustomHeader("content-dictionary",
+                                      kExpectedDictionaryHashBase64);
             response->set_content(kBrotliCompressedDataString);
           } else {
             response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);
@@ -1536,22 +1418,13 @@ class SharedDictionaryBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SharedDictionaryBrowserTest,
-    ::testing::Combine(
-        testing::Values(BrowserType::kNormal, BrowserType::kOffTheRecord),
-        testing::Values(network::features::
-                            CompressionDictionaryTransportBackendVersion::kV1,
-                        network::features::
-                            CompressionDictionaryTransportBackendVersion::kV2)),
-    [](const testing::TestParamInfo<std::tuple<
-           BrowserType,
-           network::features::CompressionDictionaryTransportBackendVersion>>&
-           info) {
-      return ToString(std::get<0>(info.param)) + "_" +
-             ToString(std::get<1>(info.param));
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedDictionaryBrowserTest,
+                         testing::Values(BrowserType::kNormal,
+                                         BrowserType::kOffTheRecord),
+                         [](const testing::TestParamInfo<BrowserType>& info) {
+                           return ToString(info.param);
+                         });
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        LinkRelDictionarySecureContext) {
@@ -2063,18 +1936,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestEmptyString) {
                    FetchTargetDataScript(dictionary_url))
                 .ExtractString());
 
-  switch (GetVersion()) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
-      // Check that Chrome uses the dictionary while fetching a script.
-      EXPECT_EQ(kCompressedDataResultString,
-                LoadTestScript(GetURL(kTestPath + "?for_script")));
-      break;
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
-      // Check that Chrome doesn't use the dictionary while fetching a script.
-      EXPECT_EQ(kUncompressedDataResultString,
-                LoadTestScript(GetURL(kTestPath + "?for_script")));
-      break;
-  }
+  // Check that Chrome doesn't use the dictionary while fetching a script.
+  EXPECT_EQ(kUncompressedDataResultString,
+            LoadTestScript(GetURL(kTestPath + "?for_script")));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
@@ -2098,24 +1962,12 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
   EXPECT_EQ(kCompressedDataResultString,
             LoadTestScript(GetURL(kTestPath + "?for_script")));
 
-  switch (GetVersion()) {
-    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
-      // Check that Chrome uses the dictionary while fetching the resource using
-      // Fetch API.
-      EXPECT_EQ(kCompressedDataOriginalString,
-                EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
-                       FetchTargetDataScript(dictionary_url))
-                    .ExtractString());
-      break;
-    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
-      // Check that Chrome doesn't use the dictionary while fetching the
-      // resource using Fetch API.
-      EXPECT_EQ(kUncompressedDataString,
-                EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
-                       FetchTargetDataScript(dictionary_url))
-                    .ExtractString());
-      break;
-  }
+  // Check that Chrome doesn't use the dictionary while fetching the resource
+  // using Fetch API.
+  EXPECT_EQ(kUncompressedDataString,
+            EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
+                   FetchTargetDataScript(dictionary_url))
+                .ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_P(

@@ -395,16 +395,6 @@ const base::FeatureParam<bool> kPrefetchNoVarySearchShippedByDefault{
 BASE_FEATURE(kCompressionDictionaryTransportBackend,
              "CompressionDictionaryTransportBackend",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<CompressionDictionaryTransportBackendVersion>::Option
-    kCompressionDictionaryTransportBackendVersionOptions[] = {
-        {CompressionDictionaryTransportBackendVersion::kV1, "v1"},
-        {CompressionDictionaryTransportBackendVersion::kV2, "v2"}};
-const base::FeatureParam<CompressionDictionaryTransportBackendVersion>
-    kCompressionDictionaryTransportBackendVersion{
-        &kCompressionDictionaryTransportBackend,
-        "CompressionDictionaryTransportBackendVersion",
-        CompressionDictionaryTransportBackendVersion::kV2,
-        &kCompressionDictionaryTransportBackendVersionOptions};
 
 // When both this feature and the kCompressionDictionaryTransportBackend feature
 // are enabled, the following will happen:

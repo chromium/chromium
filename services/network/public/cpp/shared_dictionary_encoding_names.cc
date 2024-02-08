@@ -9,12 +9,7 @@
 namespace network {
 
 const char* GetSharedBrotliContentEncodingName() {
-  switch (features::kCompressionDictionaryTransportBackendVersion.Get()) {
-    case features::CompressionDictionaryTransportBackendVersion::kV1:
-      return "sbr";
-    case features::CompressionDictionaryTransportBackendVersion::kV2:
-      return "br-d";
-  }
+  return "br-d";
 }
 
 const char* GetSharedZstdContentEncodingName() {

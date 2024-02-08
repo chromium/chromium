@@ -69,12 +69,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;
 
-  // Returns true when V2 backend is used.
-  // TODO(crbug.com/1413922): Remove this when we remove V1 backend support.
-  static bool NeedToUseUrlPatternMatcher();
-  // Returns true when V1 backend is used.
-  static bool NeedToRemoveMatchDestAndId();
-
   SharedDictionaryStorage();
   virtual ~SharedDictionaryStorage();
 
@@ -128,16 +122,9 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
         !base::Contains(info.match_dest(), destination)) {
       continue;
     }
-    if (!info.matcher()) {
-      // This is for V1 backend.
-      // TODO(crbug.com/1413922): Remove this after V1 backend is removed.
-      if (base::MatchPattern(url.path(), info.match())) {
-        matched_info = &info;
-      }
-    } else {
-      if (info.matcher()->Match(url)) {
-        matched_info = &info;
-      }
+    CHECK(info.matcher());
+    if (info.matcher()->Match(url)) {
+      matched_info = &info;
     }
   }
   return matched_info;

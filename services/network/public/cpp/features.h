@@ -151,15 +151,6 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kGetCookiesStringUma);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransportBackend);
 
-enum class CompressionDictionaryTransportBackendVersion {
-  kV1,
-  kV2,
-};
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<CompressionDictionaryTransportBackendVersion>
-    kCompressionDictionaryTransportBackendVersion;
-
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransport);
 COMPONENT_EXPORT(NETWORK_CPP)

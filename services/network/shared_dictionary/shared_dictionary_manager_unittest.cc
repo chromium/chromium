@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -92,16 +91,6 @@ std::string ToString(TestManagerType type) {
   }
 }
 
-std::string ToString(
-    features::CompressionDictionaryTransportBackendVersion version) {
-  switch (version) {
-    case features::CompressionDictionaryTransportBackendVersion::kV1:
-      return "V1";
-    case features::CompressionDictionaryTransportBackendVersion::kV2:
-      return "V2";
-  }
-}
-
 void CheckDiskCacheEntryDataEquals(
     SharedDictionaryDiskCache& disk_cache,
     const base::UnguessableToken& disk_cache_key_token,
@@ -156,12 +145,8 @@ void WriteDictionary(
 }
 
 base::TimeDelta GetDefaultExpiration() {
-  if (features::kCompressionDictionaryTransportBackendVersion.Get() ==
-      features::CompressionDictionaryTransportBackendVersion::kV2) {
-    return base::Seconds(2592000);  // See kDefaultCacheControlHeader
-  }
   return base::FeatureList::IsEnabled(features::kCompressionDictionaryTransport)
-             ? shared_dictionary::kDefaultExpiration
+             ? base::Seconds(2592000)
              : shared_dictionary::kMaxExpirationForOriginTrial;
 }
 
@@ -169,19 +154,9 @@ base::TimeDelta GetDefaultExpiration() {
 
 class SharedDictionaryManagerTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<
-          std::tuple<TestManagerType,
-                     features::CompressionDictionaryTransportBackendVersion>> {
+      public ::testing::WithParamInterface<TestManagerType> {
  public:
-  SharedDictionaryManagerTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    enabled_features.emplace_back(base::test::FeatureRefAndParams(
-        features::kCompressionDictionaryTransportBackend,
-        {{features::kCompressionDictionaryTransportBackendVersion.name,
-          features::kCompressionDictionaryTransportBackendVersion.GetName(
-              GetVersion())}}));
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
+  SharedDictionaryManagerTest() = default;
   ~SharedDictionaryManagerTest() override = default;
 
   SharedDictionaryManagerTest(const SharedDictionaryManagerTest&) = delete;
@@ -203,10 +178,7 @@ class SharedDictionaryManagerTest
   }
 
  protected:
-  TestManagerType GetManagerType() const { return std::get<0>(GetParam()); }
-  features::CompressionDictionaryTransportBackendVersion GetVersion() const {
-    return std::get<1>(GetParam());
-  }
+  TestManagerType GetManagerType() const { return GetParam(); }
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager() {
     switch (GetManagerType()) {
       case TestManagerType::kInMemory:
@@ -267,22 +239,14 @@ class SharedDictionaryManagerTest
   base::ScopedTempDir tmp_directory_;
   base::FilePath database_path_;
   base::FilePath cache_directory_path_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedDictionaryManagerTest,
-    ::testing::Combine(
-        testing::Values(TestManagerType::kInMemory, TestManagerType::kOnDisk),
-        testing::Values(
-            features::CompressionDictionaryTransportBackendVersion::kV1,
-            features::CompressionDictionaryTransportBackendVersion::kV2)),
-    [](const testing::TestParamInfo<std::tuple<
-           TestManagerType,
-           features::CompressionDictionaryTransportBackendVersion>>& info) {
-      return ToString(std::get<0>(info.param)) + "_" +
-             ToString(std::get<1>(info.param));
+    testing::ValuesIn({TestManagerType::kInMemory, TestManagerType::kOnDisk}),
+    [](const testing::TestParamInfo<TestManagerType>& info) {
+      return ToString(info.param);
     });
 
 TEST_P(SharedDictionaryManagerTest, SameStorageForSameIsolationKey) {
@@ -624,60 +588,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
   }
 }
 
-TEST_P(SharedDictionaryManagerTest,
-       WriterForUseAsDictionaryHeaderExpiresOption) {
-  // We don't support `expires` option in the V2 backend.
-  if (GetVersion() ==
-      features::CompressionDictionaryTransportBackendVersion::kV2) {
-    return;
-  }
-  std::unique_ptr<SharedDictionaryManager> manager =
-      CreateSharedDictionaryManager();
-  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
-                                                  kSite1);
-
-  scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(isolation_key);
-  ASSERT_TRUE(storage);
-
-  struct {
-    std::string header_string;
-    bool expect_success;
-  } kTestCases[] = {
-      // Valid `expires` value.
-      {"match=\"test\", expires=1000", true},
-      // List `expires` value is not supported.
-      {"match=\"test\", expires=(1000 2000)", false},
-      // String `expires` value is not supported.
-      {"match=\"test\", expires=PI", false},
-  };
-  for (const auto& testcase : kTestCases) {
-    SCOPED_TRACE(base::StringPrintf("header_string: %s",
-                                    testcase.header_string.c_str()));
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        net::HttpResponseHeaders::TryToCreate(base::StrCat(
-            {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-             ": ", testcase.header_string, "\n\n"}));
-    ASSERT_TRUE(headers);
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"),
-        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(testcase.expect_success, !!writer);
-  }
-}
-
 TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
-  // We don't use the cache conterol header for the lifetime of the dictionary
-  // in the V1 backend.
-  if (GetVersion() ==
-      features::CompressionDictionaryTransportBackendVersion::kV1) {
-    return;
-  }
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
@@ -744,30 +655,27 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
 
   struct {
     std::string header_string;
-    bool expect_success_v1;
-    bool expect_success_v2;
+    bool expect_success;
     std::string expected_id;
   } kTestCases[] = {
       // Valid `id` value.
-      {"match=\"test\", id=\"test_id\"", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true, /*expected_id=*/"test_id"},
+      {"match=\"test\", id=\"test_id\"",
+       /*expect_success=*/true, /*expected_id=*/"test_id"},
       // Valid `id` value with backslash.
-      {"match=\"test\", id=\"test\\\\id\"", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true, /*expected_id=*/"test\\id"},
+      {"match=\"test\", id=\"test\\\\id\"",
+       /*expect_success=*/true, /*expected_id=*/"test\\id"},
       // Valid `id` value with double quote.
-      {"match=\"test\", id=\"test\\\"id\"", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true, /*expected_id=*/"test\"id"},
+      {"match=\"test\", id=\"test\\\"id\"",
+       /*expect_success=*/true, /*expected_id=*/"test\"id"},
       // `id` should not be a list.
-      {"match=\"test\", id=(\"id1\" \"id2\")", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/false},
+      {"match=\"test\", id=(\"id1\" \"id2\")",
+       /*expect_success=*/false},
       // `id` can be 1024 characters long.
       {base::StrCat({"match=\"test\", id=\"", std::string(1024, 'x'), "\""}),
-       /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true, /*expected_id=*/std::string(1024, 'x')},
+       /*expect_success=*/true, /*expected_id=*/std::string(1024, 'x')},
       // `id` too long.
       {base::StrCat({"match=\"test\", id=\"", std::string(1025, 'x'), "\""}),
-       /*expect_success_v1=*/true,
-       /*expect_success_v2=*/false},
+       /*expect_success=*/false},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",
@@ -786,14 +694,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
         /*access_allowed_check_callback=*/base::BindOnce([]() {
           return true;
         }));
-    switch (GetVersion()) {
-      case features::CompressionDictionaryTransportBackendVersion::kV1:
-        EXPECT_EQ(testcase.expect_success_v1, !!writer);
-        continue;
-      case features::CompressionDictionaryTransportBackendVersion::kV2:
-        EXPECT_EQ(testcase.expect_success_v2, !!writer);
-        break;
-    }
+    EXPECT_EQ(testcase.expect_success, !!writer);
     if (!writer) {
       continue;
     }
@@ -824,43 +725,40 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
 
   struct {
     std::string header_string;
-    bool expect_success_v1;
-    bool expect_success_v2;
+    bool expect_success;
     std::vector<mojom::RequestDestination> expected_match_dest;
   } kTestCases[] = {
       // No `match-dest` value.
-      {"match=\"test\"", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true, /*expected_match_dest=*/{}},
+      {"match=\"test\"",
+       /*expect_success=*/true, /*expected_match_dest=*/{}},
       // Valid `match-dest` value.
-      {"match=\"test\", match-dest=(\"document\")", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true,
+      {"match=\"test\", match-dest=(\"document\")",
+       /*expect_success=*/true,
        /*expected_match_dest=*/{mojom::RequestDestination::kDocument}},
       // `match-dest` must be a list.
-      {"match=\"test\", match-dest=\"document\"", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/false},
+      {"match=\"test\", match-dest=\"document\"",
+       /*expect_success=*/false},
       // Unknown `match-dest` value should be treated as empty.
-      {"match=\"test\", match-dest=(\"unknown\")", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true,
+      {"match=\"test\", match-dest=(\"unknown\")",
+       /*expect_success=*/true,
        /*expected_match_dest=*/{}},
       //`match-dest` should not be a sf-token.
       // https://github.com/httpwg/http-extensions/issues/2723
-      {"match=\"test\", match-dest=(document)", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/false},
+      {"match=\"test\", match-dest=(document)",
+       /*expect_success=*/false},
       // Valid `match-dest` value "".
-      {"match=\"test\", match-dest=(\"\")", /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true,
+      {"match=\"test\", match-dest=(\"\")",
+       /*expect_success=*/true,
        /*expected_match_dest=*/{mojom::RequestDestination::kEmpty}},
       // Valid `match-dest` value ("document" "frame" "iframe").
       {"match=\"test\", match-dest=(\"document\" \"frame\" \"iframe\")",
-       /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true,
+       /*expect_success=*/true,
        /*expected_match_dest=*/
        {mojom::RequestDestination::kDocument, mojom::RequestDestination::kFrame,
         mojom::RequestDestination::kIframe}},
       // Valid `match-dest` value ("document" "frame" "iframe" "").
       {"match=\"test\", match-dest=(\"document\" \"\")",
-       /*expect_success_v1=*/true,
-       /*expect_success_v2=*/true,
+       /*expect_success=*/true,
        /*expected_match_dest=*/
        {mojom::RequestDestination::kEmpty,
         mojom::RequestDestination::kDocument}},
@@ -886,14 +784,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
         /*access_allowed_check_callback=*/base::BindOnce([]() {
           return true;
         }));
-    switch (GetVersion()) {
-      case features::CompressionDictionaryTransportBackendVersion::kV1:
-        EXPECT_EQ(testcase.expect_success_v1, !!writer);
-        continue;
-      case features::CompressionDictionaryTransportBackendVersion::kV2:
-        EXPECT_EQ(testcase.expect_success_v2, !!writer);
-        break;
-    }
+    EXPECT_EQ(testcase.expect_success, !!writer);
     if (!writer) {
       continue;
     }
@@ -922,13 +813,12 @@ TEST_P(SharedDictionaryManagerTest, InvalidMatch) {
   ASSERT_TRUE(storage);
   struct {
     std::string header_string;
-    bool expect_success_v1;
-    bool expect_success_v2;
+    bool expect_success;
   } kTestCases[] = {
       // Invalid as a constructor string of URLPattern.
-      {"{", true, false},
+      {"{", false},
       // Unsupported regexp group.
-      {"(a|b)", true, false},
+      {"(a|b)", false},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(
@@ -947,14 +837,7 @@ TEST_P(SharedDictionaryManagerTest, InvalidMatch) {
         /*access_allowed_check_callback=*/base::BindOnce([]() {
           return true;
         }));
-    switch (GetVersion()) {
-      case features::CompressionDictionaryTransportBackendVersion::kV1:
-        EXPECT_EQ(testcase.expect_success_v1, !!writer);
-        break;
-      case features::CompressionDictionaryTransportBackendVersion::kV2:
-        EXPECT_EQ(testcase.expect_success_v2, !!writer);
-        break;
-    }
+    EXPECT_EQ(testcase.expect_success, !!writer);
   }
 }
 

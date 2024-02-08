@@ -141,7 +141,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     EXPECT_EQ(dictionary_url, dictionary_info.url());
     EXPECT_EQ(base::FeatureList::IsEnabled(
                   network::features::kCompressionDictionaryTransport)
-                  ? shared_dictionary::kDefaultExpiration
+                  ? base::Seconds(2592000)
                   : shared_dictionary::kMaxExpirationForOriginTrial,
               dictionary_info.expiration());
     EXPECT_EQ("/path*", dictionary_info.match());

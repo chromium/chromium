@@ -9,9 +9,7 @@
 
 namespace network {
 
-// Returns the content encoding name of Shared Brotli:
-//   "sbr": when CompressionDictionaryTransportBackendVersion is kV1.
-//   "br-d": when CompressionDictionaryTransportBackendVersion is kV2.
+// Returns the content encoding name of Shared Brotli: "br-d"
 COMPONENT_EXPORT(NETWORK_CPP) const char* GetSharedBrotliContentEncodingName();
 
 // Returns the content encoding name of Shared Zstd: "zstd-d".

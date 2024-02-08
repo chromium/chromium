@@ -13,11 +13,6 @@
 
 namespace network::shared_dictionary {
 
-// The default value (1 year) of expiration time in "use-as-dictionary"
-// HTTP header.
-// This will not be used when V2 backend is enabled.
-constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
-
 // The max expiration time (30 days) for Origin Trial. This is used when
 // CompressionDictionaryTransport feature is disabled in the network service.
 // TODO(crbug.com/1413922): Remove this after the Origin Trial experiment.
@@ -34,11 +29,6 @@ size_t GetDictionarySizeLimit();
 COMPONENT_EXPORT(NETWORK_SERVICE)
 base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
-
-// The header name of "sec-available-dictionary".
-// This will not be used when V2 backend is enabled.
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kSecAvailableDictionaryHeaderName[];
 
 // The header name of "available-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
@@ -57,10 +47,6 @@ COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 
 // The dictionary option name of "match-dest".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatchDest[];
-
-// The dictionary option name of "expires".
-// This will not be used when V2 backend is enabled.
-COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
 
 // The dictionary option name of "type".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameType[];

@@ -3745,20 +3745,6 @@ const flags_ui::FeatureEntry::FeatureVariation
          std::size(kDesktopPWAsLinkCapturingDefaultOff), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-const FeatureEntry::FeatureParam
-    kCompressionDictionaryTransportBackendVersionV1[]{
-        {"CompressionDictionaryTransportBackendVersion", "v1"}};
-const FeatureEntry::FeatureParam
-    kCompressionDictionaryTransportBackendVersionV2[]{
-        {"CompressionDictionaryTransportBackendVersion", "v2"}};
-
-const FeatureEntry::FeatureVariation
-    kCompressionDictionaryTransportBackendVariations[] = {
-        {"V1", kCompressionDictionaryTransportBackendVersionV1,
-         std::size(kCompressionDictionaryTransportBackendVersionV1), nullptr},
-        {"V2", kCompressionDictionaryTransportBackendVersionV2,
-         std::size(kCompressionDictionaryTransportBackendVersionV2), nullptr}};
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
     {
@@ -10246,10 +10232,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompressionDictionaryTransportBackendName,
      flag_descriptions::kCompressionDictionaryTransportBackendDescription,
      kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         network::features::kCompressionDictionaryTransportBackend,
-         kCompressionDictionaryTransportBackendVariations,
-         "CompressionDictionaryTransportBackend")},
+     FEATURE_VALUE_TYPE(
+         network::features::kCompressionDictionaryTransportBackend)},
 
     {"enable-compression-dictionary-transport-allow-http1",
      flag_descriptions::kCompressionDictionaryTransportOverHttp1Name,

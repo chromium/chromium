@@ -115,13 +115,11 @@ SharedDictionaryStorageInMemory::CreateWriter(
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id) {
   std::unique_ptr<SimpleUrlPatternMatcher> matcher;
-  if (NeedToUseUrlPatternMatcher()) {
-    auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
-    if (!matcher_create_result.has_value()) {
-      return nullptr;
-    }
-    matcher = std::move(matcher_create_result.value());
+  auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
+  if (!matcher_create_result.has_value()) {
+    return nullptr;
   }
+  matcher = std::move(matcher_create_result.value());
   return base::MakeRefCounted<SharedDictionaryWriterInMemory>(
       base::BindOnce(&SharedDictionaryStorageInMemory::OnDictionaryWritten,
                      weak_factory_.GetWeakPtr(), url, response_time, expiration,
