@@ -370,7 +370,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 #pragma mark - DownloadManagerViewControllerProtocol
 
 - (UIView*)openInSourceView {
-  return nil;
+  return self.openInButton;
 }
 
 - (void)setFullscreenController:(FullscreenController*)fullscreenController {
