@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -1832,11 +1833,23 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoOpen:
       if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
         return selectlist->open();
+      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+        return dialog->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
+        return details->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->PopupIsVisible();
       }
       return false;
     case CSSSelector::kPseudoClosed:
       if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
         return !selectlist->open();
+      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+        return !dialog->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
+        return !details->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->UsesMenuList() && !select->PopupIsVisible();
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

@@ -662,7 +662,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if ((match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed) &&
-      !RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
+      !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
