@@ -13685,22 +13685,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Control and reprogramming of MIDI devices blocked
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been allowed to use MIDI system exclusive messages.">
-        This site can control and reprogram your MIDI devices (SysEx).
+        This site can control and reprogram your MIDI devices
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_BLOCK" desc="Radio button to block access to use MIDI system exclusive messages.">
-        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from controlling and reprogramming your MIDI devices.
+        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from controlling and reprogramming your MIDI devices
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_NO_ACTION" desc="Radio button to keep allowing access to use MIDI system exclusive messages.">
-        Continue allowing this site to control and reprogram your MIDI devices.
+        Continue allowing this site to control and reprogram your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been denied access to use MIDI system exclusive messages.">
-        This site has been blocked from controlling and reprogramming your MIDI devices (SysEx).
+        This site has been blocked from controlling and reprogramming your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_UNBLOCK" desc="Radio button choice to unblock a site from using MIDI system exclusive messages.">
-        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to control and reprogram your MIDI devices.
+        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to control and reprogram your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_NO_ACTION" desc="Radio button choice to continue blocking a site from using MIDI system exclusive messages.">
-        Continue blocking this site from controlling and reprogramming your MIDI devices.
+        Continue blocking this site from controlling and reprogramming your MIDI devices
       </message>
 
       <!-- Media Stream -->
