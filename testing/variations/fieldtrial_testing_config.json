@@ -12955,6 +12955,70 @@
             ]
         }
     ],
+    "OneTimePermissionClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithNormalLanguage",
+                    "params": {
+                        "experimental_custom_invitation_arm_trigger_id": "tZMcjst2x0tK1KeaPYj0VbPmvceJ,bpnHbhSrK0tK1KeaPYj0RBC9zv7H,ZDjpUDFx20tK1KeaPYj0WbM2hHXy",
+                        "probability": "1",
+                        "probability_vector": "0.5,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "xTNFzsgeH0tK1KeaPYj0VueEfPNg,rMwYPzTTj0tK1KeaPYj0XB5xXsRF,5XkVTH91f0tK1KeaPYj0SJhtw5pX",
+                        "use_stronger_prompt_language": "false"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
+                    ]
+                },
+                {
+                    "name": "HatsControl_20240208",
+                    "params": {
+                        "experimental_custom_invitation_arm_trigger_id": "Db6NddebR0tK1KeaPYj0UzKHA4zC,sRE9DYcBN0tK1KeaPYj0PtzgM3xw,t6mgdAXqK0tK1KeaPYj0VHRxVpBT",
+                        "probability": "1",
+                        "probability_vector": "0.5,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "ZhVFvGaem0tK1KeaPYj0YXx2ouZy,pwU6FSjhZ0tK1KeaPYj0U8h8dv8e,wGFymXxYr0tK1KeaPYj0SxPYLBBc"
+                    },
+                    "enable_features": [
+                        "PermissionsPromptSurvey"
+                    ],
+                    "disable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ]
+                },
+                {
+                    "name": "EnabledWithStrongLanguage_20240208",
+                    "params": {
+                        "experimental_custom_invitation_arm_trigger_id": "eaHr88umj0tK1KeaPYj0YkhJEi1Y,8U6CRfLYU0tK1KeaPYj0RbTHRpNZ,qrWTeaJaK0tK1KeaPYj0XjFWabba",
+                        "probability": "1",
+                        "probability_vector": "0.5,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "hCatPbt6B0tK1KeaPYj0WXqMjcvX,89BwvKxbJ0tK1KeaPYj0NtK7Ybn8,3fTPt7XMF0tK1KeaPYj0TXd8QN47",
+                        "use_stronger_prompt_language": "true"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "OpaqueResponseBlockingV02": [
         {
             "platforms": [
