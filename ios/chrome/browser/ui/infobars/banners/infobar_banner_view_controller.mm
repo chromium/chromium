@@ -211,6 +211,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
   self.infobarButton.pointerInteractionEnabled = YES;
+  self.infobarButton.layer.cornerRadius = kBannerViewCornerRadius;
+  self.infobarButton.clipsToBounds = YES;
   self.infobarButton.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
