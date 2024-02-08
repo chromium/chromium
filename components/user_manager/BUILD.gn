@@ -36,6 +36,8 @@ component("user_manager") {
       "include_exclude_account_id_filter.h",
       "known_user.cc",
       "known_user.h",
+      "multi_user/multi_user_sign_in_policy_controller.cc",
+      "multi_user/multi_user_sign_in_policy_controller.h",
       "scoped_user_manager.cc",
       "scoped_user_manager.h",
       "user.cc",

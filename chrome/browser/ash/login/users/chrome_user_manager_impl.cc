@@ -48,7 +48,6 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
@@ -101,6 +100,8 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
@@ -120,10 +121,13 @@ namespace ash {
 
 // TODO(b/278643115) Remove the using when moved.
 namespace prefs {
+using user_manager::prefs::kMultiProfileNeverShowIntro;
 using user_manager::prefs::kMultiProfileUserBehaviorPref;
+using user_manager::prefs::kMultiProfileWarningShowDismissed;
 using user_manager::prefs::kRegularUsersPref;
 }  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
+using user_manager::MultiUserSignInPolicyController;
 using user_manager::ParseMultiUserSignInPolicyPref;
 
 namespace {
@@ -278,7 +282,7 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
-  MultiProfileUserController::RegisterPrefs(registry);
+  MultiUserSignInPolicyController::RegisterPrefs(registry);
 
   SessionLengthLimiter::RegisterPrefs(registry);
   enterprise_user_session_metrics::RegisterPrefs(registry);
@@ -287,7 +291,18 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 void ChromeUserManagerImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  MultiProfileUserController::RegisterProfilePrefs(registry);
+  // TODO(b/278643115): Move to components/user_manager. Currently,
+  // using user_prefs::PrefRegistrySyncable in components/user_manager
+  // will cause circular dependency.
+  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
+                               std::string(MultiUserSignInPolicyToPrefValue(
+                                   MultiUserSignInPolicy::kUnrestricted)));
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileNeverShowIntro, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileWarningShowDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 // static
@@ -302,7 +317,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
-      multi_profile_user_controller_(GetLocalState(), this),
+      multi_user_sign_in_policy_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
 
@@ -443,14 +458,14 @@ void ChromeUserManagerImpl::Shutdown() {
     device_local_account_policy_service_->RemoveObserver(this);
   }
 
-  multi_profile_user_controller_.Shutdown();
+  multi_user_sign_in_policy_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
 }
 
-MultiProfileUserController*
-ChromeUserManagerImpl::GetMultiProfileUserController() {
-  return &multi_profile_user_controller_;
+MultiUserSignInPolicyController*
+ChromeUserManagerImpl::GetMultiUserSignInPolicyController() {
+  return &multi_user_sign_in_policy_controller_;
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
@@ -462,7 +477,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   }
 
   // No user is allowed if the primary user policy forbids it.
-  if (multi_profile_user_controller_.GetPrimaryUserPolicy() ==
+  if (multi_user_sign_in_policy_controller_.GetPrimaryUserPolicy() ==
       MultiUserSignInPolicy::kNotAllowed) {
     return {};
   }
@@ -583,7 +598,7 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
       auto* user =
           user_manager::UserManager::Get()->FindUserAndModify(account_id);
       CHECK(user);
-      multi_profile_user_controller_.StartObserving(user);
+      multi_user_sign_in_policy_controller_.StartObserving(user);
     }
   }
   system::UpdateSystemTimezone(profile);
@@ -904,7 +919,8 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
                                                 : account_id.GetUserEmail());
   }
 
-  multi_profile_user_controller_.RemoveCachedValues(account_id.GetUserEmail());
+  multi_user_sign_in_policy_controller_.RemoveCachedValues(
+      account_id.GetUserEmail());
 
   ChromeUserManager::RemoveNonCryptohomeData(account_id);
 }

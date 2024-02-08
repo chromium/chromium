@@ -2,67 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 
 #include <utility>
 
-#include "ash/public/cpp/login_types.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 
-namespace ash {
+namespace user_manager {
 
-// TODO(b/278643115) Remove the using when moved.
-namespace prefs {
-using user_manager::prefs::kCachedMultiProfileUserBehavior;
-using user_manager::prefs::kMultiProfileNeverShowIntro;
-using user_manager::prefs::kMultiProfileUserBehaviorPref;
-using user_manager::prefs::kMultiProfileWarningShowDismissed;
-}  // namespace prefs
-using user_manager::MultiUserSignInPolicy;
-using user_manager::MultiUserSignInPolicyToPrefValue;
-using user_manager::ParseMultiUserSignInPolicyPref;
-
-MultiProfileUserController::MultiProfileUserController(
+MultiUserSignInPolicyController::MultiUserSignInPolicyController(
     PrefService* local_state,
-    user_manager::UserManager* user_manager)
+    UserManager* user_manager)
     : local_state_(local_state), user_manager_(user_manager) {}
 
-MultiProfileUserController::~MultiProfileUserController() = default;
+MultiUserSignInPolicyController::~MultiUserSignInPolicyController() = default;
 
 // static
-void MultiProfileUserController::RegisterPrefs(PrefRegistrySimple* registry) {
+void MultiUserSignInPolicyController::RegisterPrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kCachedMultiProfileUserBehavior);
 }
 
-// static
-void MultiProfileUserController::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
-                               std::string(MultiUserSignInPolicyToPrefValue(
-                                   MultiUserSignInPolicy::kUnrestricted)));
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileNeverShowIntro, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileWarningShowDismissed, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-}
-
-void MultiProfileUserController::Shutdown() {
+void MultiUserSignInPolicyController::Shutdown() {
   pref_watchers_.clear();
 }
 
 std::optional<MultiUserSignInPolicy>
-MultiProfileUserController::GetPrimaryUserPolicy() const {
-  const user_manager::User* user = user_manager_->GetPrimaryUser();
+MultiUserSignInPolicyController::GetPrimaryUserPolicy() const {
+  const User* user = user_manager_->GetPrimaryUser();
   if (!user) {
     return std::nullopt;
   }
@@ -76,9 +50,9 @@ MultiProfileUserController::GetPrimaryUserPolicy() const {
       prefs->GetString(prefs::kMultiProfileUserBehaviorPref));
 }
 
-bool MultiProfileUserController::IsUserAllowedInSession(
+bool MultiUserSignInPolicyController::IsUserAllowedInSession(
     const std::string& user_email) const {
-  const user_manager::User* primary_user = user_manager_->GetPrimaryUser();
+  const User* primary_user = user_manager_->GetPrimaryUser();
   std::string primary_user_email;
   if (primary_user) {
     primary_user_email = primary_user->GetAccountId().GetUserEmail();
@@ -100,7 +74,7 @@ bool MultiProfileUserController::IsUserAllowedInSession(
   return policy == MultiUserSignInPolicy::kUnrestricted;
 }
 
-void MultiProfileUserController::StartObserving(user_manager::User* user) {
+void MultiUserSignInPolicyController::StartObserving(User* user) {
   // Profile name could be empty during tests.
   if (user->GetAccountId().GetUserEmail().empty() || !user->GetProfilePrefs()) {
     return;
@@ -110,21 +84,21 @@ void MultiProfileUserController::StartObserving(user_manager::User* user) {
   registrar->Init(user->GetProfilePrefs());
   registrar->Add(
       prefs::kMultiProfileUserBehaviorPref,
-      base::BindRepeating(&MultiProfileUserController::OnUserPrefChanged,
+      base::BindRepeating(&MultiUserSignInPolicyController::OnUserPrefChanged,
                           base::Unretained(this), user));
   pref_watchers_.push_back(std::move(registrar));
 
   OnUserPrefChanged(user);
 }
 
-void MultiProfileUserController::RemoveCachedValues(
+void MultiUserSignInPolicyController::RemoveCachedValues(
     std::string_view user_email) {
   ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
   update->Remove(user_email);
 }
 
-MultiUserSignInPolicy MultiProfileUserController::GetCachedValue(
+MultiUserSignInPolicy MultiUserSignInPolicyController::GetCachedValue(
     std::string_view user_email) const {
   const base::Value::Dict& dict =
       local_state_->GetDict(prefs::kCachedMultiProfileUserBehavior);
@@ -138,15 +112,16 @@ MultiUserSignInPolicy MultiProfileUserController::GetCachedValue(
       MultiUserSignInPolicy::kUnrestricted);
 }
 
-void MultiProfileUserController::SetCachedValue(std::string_view user_email,
-                                                MultiUserSignInPolicy policy) {
+void MultiUserSignInPolicyController::SetCachedValue(
+    std::string_view user_email,
+    MultiUserSignInPolicy policy) {
   ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
   update->Set(user_email, MultiUserSignInPolicyToPrefValue(policy));
 }
 
-void MultiProfileUserController::CheckSessionUsers() {
-  for (const user_manager::User* user : user_manager_->GetLoggedInUsers()) {
+void MultiUserSignInPolicyController::CheckSessionUsers() {
+  for (const User* user : user_manager_->GetLoggedInUsers()) {
     const std::string& user_email = user->GetAccountId().GetUserEmail();
     if (!IsUserAllowedInSession(user_email)) {
       user_manager_->NotifyUserNotAllowed(user_email);
@@ -155,7 +130,7 @@ void MultiProfileUserController::CheckSessionUsers() {
   }
 }
 
-void MultiProfileUserController::OnUserPrefChanged(user_manager::User* user) {
+void MultiUserSignInPolicyController::OnUserPrefChanged(User* user) {
   std::string user_email = user->GetAccountId().GetUserEmail();
   CHECK(!user_email.empty());
 
@@ -177,4 +152,4 @@ void MultiProfileUserController::OnUserPrefChanged(user_manager::User* user) {
   CheckSessionUsers();
 }
 
-}  // namespace ash
+}  // namespace user_manager

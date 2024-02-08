@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
@@ -199,9 +200,9 @@ void FakeChromeUserManager::LoginUser(const AccountId& account_id,
   SimulateUserProfileLoad(account_id);
 }
 
-MultiProfileUserController*
-FakeChromeUserManager::GetMultiProfileUserController() {
-  return multi_profile_user_controller_;
+user_manager::MultiUserSignInPolicyController*
+FakeChromeUserManager::GetMultiUserSignInPolicyController() {
+  return multi_user_sign_in_policy_controller_;
 }
 
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {

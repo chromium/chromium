@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -36,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
@@ -118,9 +118,11 @@ class SessionControllerClientImplTest : public testing::Test {
 
     // Initialize the UserManager singleton.
     user_manager_.Reset(std::make_unique<TestChromeUserManager>());
-    controller_ = std::make_unique<ash::MultiProfileUserController>(
-        TestingBrowserProcess::GetGlobal()->local_state(), user_manager_.Get());
-    user_manager_->set_multi_profile_user_controller(controller_.get());
+    controller_ =
+        std::make_unique<user_manager::MultiUserSignInPolicyController>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            user_manager_.Get());
+    user_manager_->set_multi_user_sign_in_policy_controller(controller_.get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -152,7 +154,7 @@ class SessionControllerClientImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     assistant_delegate_.reset();
-    user_manager_->set_multi_profile_user_controller(nullptr);
+    user_manager_->set_multi_user_sign_in_policy_controller(nullptr);
     controller_.reset();
     user_manager_.Reset();
 
@@ -218,7 +220,7 @@ class SessionControllerClientImplTest : public testing::Test {
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<TestChromeUserManager> user_manager_;
-  std::unique_ptr<ash::MultiProfileUserController> controller_;
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;

@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
 
-class MultiProfileUserController;
 
 // ChromeOS specific add-ons interface for the UserManager.
 class UserManagerInterface {
@@ -19,7 +22,8 @@ class UserManagerInterface {
 
   virtual ~UserManagerInterface() = default;
 
-  virtual MultiProfileUserController* GetMultiProfileUserController() = 0;
+  virtual user_manager::MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() = 0;
 };
 
 }  // namespace ash
