@@ -4,6 +4,11 @@
 
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
 namespace {
 
 double GetRatio(double value1, double value2) {
@@ -13,6 +18,22 @@ double GetRatio(double value1, double value2) {
   }
 
   return std::max(value1, value2) / std::min(value1, value2);
+}
+
+int GetFormulaMessageId(bool is_multiply, bool is_approximate) {
+  if (is_multiply) {
+    if (is_approximate) {
+      return IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT;
+    }
+
+    return IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT;
+  }
+
+  if (is_approximate) {
+    return IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT;
+  }
+
+  return IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT;
 }
 
 }  // namespace
@@ -90,9 +111,16 @@ std::optional<ConversionRule> ConversionRule::Create(
     return std::nullopt;
   }
 
-  // If neither term_a nor term_c is valid, there is no valid conversion rule.
+  // If neither |term_a| nor |term_c| is valid, there is no valid conversion
+  // rule.
   if ((!term_a || term_a.value() == kInvalidRateTermValue) &&
       (!term_c || term_c.value() == kInvalidRateTermValue)) {
+    return std::nullopt;
+  }
+
+  // Neither |term_a| nor |term_c| should be negative. Return nullopt for this
+  // unexpected case.
+  if ((term_a && term_a.value() < 0) || (term_c && term_c.value() < 0)) {
     return std::nullopt;
   }
 
@@ -109,6 +137,11 @@ double ConversionRule::ConvertAmountToSi(double unit_amount) const {
 double ConversionRule::ConvertAmountFromSi(double si_amount) const {
   return (term_a_ != kInvalidRateTermValue) ? ((si_amount - term_b_) / term_a_)
                                             : (term_c_ / si_amount);
+}
+bool ConversionRule::IsSingleVariableLinearConversion() const {
+  return (term_a_ != kInvalidRateTermValue) &&
+         (term_b_ == kInvalidRateTermValue) &&
+         (term_c_ == kInvalidRateTermValue);
 }
 
 UnitConversion::UnitConversion(const ConversionRule& source_rule,
@@ -129,13 +162,13 @@ std::optional<UnitConversion> UnitConversion::Create(
 }
 bool UnitConversion::operator<(const UnitConversion& other) const {
   double linear_term_ratio =
-      GetRatio(source_rule_.linear_term(), dest_rule_.linear_term());
+      GetRatio(source_rule_.term_a(), dest_rule_.term_a());
   if (linear_term_ratio == kInvalidRateTermValue) {
     return false;
   }
 
-  double other_linear_term_ratio = GetRatio(other.source_rule_.linear_term(),
-                                            other.dest_rule_.linear_term());
+  double other_linear_term_ratio =
+      GetRatio(other.source_rule_.term_a(), other.dest_rule_.term_a());
   if (other_linear_term_ratio == kInvalidRateTermValue) {
     return true;
   }
@@ -148,8 +181,55 @@ double UnitConversion::ConvertSourceAmountToDestAmount(
       source_rule_.ConvertAmountToSi(source_amount));
 }
 std::optional<std::string> UnitConversion::GetConversionFormulaText() const {
-  // TODO(b/322418683): implement this function builder
-  return std::nullopt;
+  // We only return formula description texts for conversions between two units
+  // whose `ConversionRule` only involves |term_a_| values i.e. formula form is:
+  // a * source = target.
+  if (!source_rule_.IsSingleVariableLinearConversion() ||
+      !dest_rule_.IsSingleVariableLinearConversion()) {
+    return std::nullopt;
+  }
+
+  // Don't return a formula description text if the conversion rate is
+  // exactly 1.
+  if (source_rule_.term_a() == dest_rule_.term_a()) {
+    return std::nullopt;
+  }
+
+  // Get the greater ratio (i.e. >= 1) of the two linear |term_a_| values.
+  // The conversion formula will be in the form: source * (a1/a2) = target
+  // The actual ratio will determine whether the conversion operator used for
+  // the formula description is multiplication (when the source unit |term_a|
+  // value is the numerator) or division (when the target unit |term_a| value
+  // is the numerator).
+  double conversion_term_a =
+      GetRatio(source_rule_.term_a(), dest_rule_.term_a());
+
+  // Check if the conversion term is a decimal number. If it is, an
+  // approximation qualifier (i.e. "for an approximate result, ...") will be
+  // appended at the beginning of the formula text.
+  double int_part = 0.0;
+  bool is_approximate_formula = std::modf(conversion_term_a, &int_part) != 0.0;
+
+  bool is_multiply_formula = source_rule_.term_a() > dest_rule_.term_a();
+  int formula_message_id =
+      GetFormulaMessageId(is_multiply_formula, is_approximate_formula);
+
+  // We use |kResultValueTemplate| (i.e. '%.6g') in the `base::StringPrintf`
+  // call below. Precision with `g` is the number of significant digits, not the
+  // number of decimal places.
+  //
+  // We would like to show a conversion term rounded to a maximum of three
+  // decimal places. This rounding calculation here will drop the values of the
+  // fourth decimal place and later, turning them into trailing zeros that
+  // `base::StringPrintf` will remove when formatting.
+  double rounded_conversion_term_a =
+      std::round(conversion_term_a * 1000) / 1000.0;
+
+  return l10n_util::GetStringFUTF8(
+      formula_message_id,
+      base::UTF8ToUTF16(base::ToLowerASCII(source_rule_.category())),
+      base::UTF8ToUTF16(
+          base::StringPrintf(kResultValueTemplate, rounded_conversion_term_a)));
 }
 
 UnitConversionResult::UnitConversionResult() = default;
