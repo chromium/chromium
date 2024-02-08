@@ -122,6 +122,10 @@ export class TabOrganizationNotStartedElement extends
     }
   }
 
+  private shouldShowBodyLink_(): boolean {
+    return this.getSyncState_() === SyncState.SYNCED && this.showFre;
+  }
+
   private shouldShowAccountInfo_(): boolean {
     return !!this.account_ &&
         (!this.sync_ || !this.sync_.syncing || this.sync_.paused ||
@@ -190,6 +194,19 @@ export class TabOrganizationNotStartedElement extends
         this.dispatchEvent(new CustomEvent(
             'organize-tabs-click', {bubbles: true, composed: true}));
         break;
+    }
+  }
+
+  private onLinkClick_() {
+    this.dispatchEvent(new CustomEvent('learn-more-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onLinkKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onLinkClick_();
     }
   }
 }

@@ -292,6 +292,10 @@ interface Page {
   // Called when the top level bubble tab should change.
   TabSearchTabIndexChanged(int32 index);
 
+  // Called when state of whether the first run experience should be shown
+  // changes.
+  ShowFREChanged(bool show);
+
   // Called when the tab organization feature should be enabled/disabled.
   TabOrganizationEnabledChanged(bool enabled);
 };

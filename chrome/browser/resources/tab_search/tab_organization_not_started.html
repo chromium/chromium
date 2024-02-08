@@ -29,6 +29,10 @@
     flex-direction: column;
     gap: 4px;
   }
+
+  .tab-organization-link {
+    display: inline;
+  }
 </style>
 
 <div class="tab-organization-container">
@@ -42,6 +46,16 @@
     </div>
     <div class="tab-organization-body">
       [[getBody_(showFre, sync_, account_)]]
+      <template is="dom-if"
+          if="[[shouldShowBodyLink_(showFre, sync_, account_)]]">
+        <a class="tab-organization-link"
+            role="link"
+            tabindex="0"
+            on-click="onLinkClick_"
+            on-keydown="onLinkKeyDown_">
+            $i18n{notStartedBodyLinkFRE}
+        </a>
+      </template>
     </div>
   </div>
   <template is="dom-if" if="[[shouldShowAccountInfo_(sync_, account_)]]">

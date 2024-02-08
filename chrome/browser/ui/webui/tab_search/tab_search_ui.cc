@@ -95,6 +95,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"learnMoreDisclaimer", IDS_TAB_ORGANIZATION_DISCLAIMER},
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
       {"notStartedBodyFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE},
+      {"notStartedBodyLinkFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_LINK_FRE},
       {"notStartedBodySignedOut",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT},
       {"notStartedBodySyncPaused",
