@@ -314,6 +314,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &password_manager::features::kSharedPasswordNotificationUI,
     &password_manager::features::
+        kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+    &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,

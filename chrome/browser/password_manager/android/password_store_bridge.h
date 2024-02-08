@@ -28,8 +28,13 @@ class PasswordStoreBridge
   PasswordStoreBridge(const PasswordStoreBridge&) = delete;
   PasswordStoreBridge& operator=(const PasswordStoreBridge&) = delete;
 
-  // Called by Java to store a new credential into the password store.
-  void InsertPasswordCredentialForTesting(
+  // Called by Java to store a new credential into the profile password store.
+  void InsertPasswordCredentialInProfileStoreForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& credential);
+
+  // Called by Java to store a new credential into the account password store.
+  void InsertPasswordCredentialInAccountStoreForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credential);
 
@@ -74,8 +79,12 @@ class PasswordStoreBridge
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
-  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
+  const scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
       ProfilePasswordStoreFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
+  const scoped_refptr<password_manager::PasswordStoreInterface> account_store_ =
+      AccountPasswordStoreFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile(),
           ServiceAccessType::EXPLICIT_ACCESS);
 
@@ -84,10 +93,7 @@ class PasswordStoreBridge
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       AffiliationServiceFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile()),
-      profile_store_,
-      AccountPasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS)};
+      profile_store_, account_store_};
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,

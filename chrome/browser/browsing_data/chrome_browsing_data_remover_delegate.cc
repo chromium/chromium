@@ -949,16 +949,22 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (account_store) {
-      // A sync completion callback is passed in for account
-      // passwords, in order to ensure that the passwords are cleared before the
-      // user is signed out via cookie deletion.
-      // TODO:(crbug.com/1167715) - Test that associated compromised credentials
-      // are removed.
+      // Desktop must wait for DATA_TYPE_ACCOUNT_PASSWORDS deletions to be
+      // uploaded to the sync server before deleting any other types (because
+      // deleting DATA_TYPE_COOKIES first would revoke the account storage
+      // opt-in and prevent the upload).
+      // On Android, the account storage doesn't depend on cookies, so there's
+      // no need to wait.
+      base::OnceCallback<void(bool)> sync_completion;
+#if !BUILDFLAG(IS_ANDROID)
+      sync_completion =
+          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
+                                       constants::DATA_TYPE_ACCOUNT_PASSWORDS);
+#endif
       account_store->RemoveLoginsByURLAndTime(
           filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
-          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
-                                       constants::DATA_TYPE_ACCOUNT_PASSWORDS));
+          std::move(sync_completion));
     }
   }
 

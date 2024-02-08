@@ -52,6 +52,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+        browser_state->GetPrefs(),
         SyncServiceFactory::GetForBrowserState(browser_state));
   }
 

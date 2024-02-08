@@ -95,10 +95,11 @@ void ProfileStatisticsAggregator::StartAggregator() {
 #else
       nullptr;
 #endif
+  // Only count local passwords.
   AddCounter(std::make_unique<browsing_data::SigninDataCounter>(
       ProfilePasswordStoreFactory::GetForProfile(
           profile_, ServiceAccessType::EXPLICIT_ACCESS),
-      /*account_store=*/nullptr, /*sync_service=*/nullptr,
+      /*account_store=*/nullptr, profile_->GetPrefs(), /*sync_service=*/nullptr,
       std::move(credential_store)));
 
   // Initiate autofill counting.

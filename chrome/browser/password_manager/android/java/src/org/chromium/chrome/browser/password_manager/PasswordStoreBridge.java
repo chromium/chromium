@@ -79,7 +79,24 @@ public class PasswordStoreBridge {
     @VisibleForTesting
     public void insertPasswordCredential(PasswordStoreCredential credential) {
         PasswordStoreBridgeJni.get()
-                .insertPasswordCredentialForTesting(mNativePasswordStoreBridge, credential);
+                .insertPasswordCredentialInProfileStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
+    }
+
+    /** Inserts new credential into the profile password store. */
+    @VisibleForTesting
+    public void insertPasswordCredentialInProfileStore(PasswordStoreCredential credential) {
+        PasswordStoreBridgeJni.get()
+                .insertPasswordCredentialInProfileStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
+    }
+
+    /** Inserts new credential into the account password store. */
+    @VisibleForTesting
+    public void insertPasswordCredentialInAccountStore(PasswordStoreCredential credential) {
+        PasswordStoreBridgeJni.get()
+                .insertPasswordCredentialInAccountStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
     }
 
     public void blocklistForTesting(String url) {
@@ -167,7 +184,10 @@ public class PasswordStoreBridge {
     public interface Natives {
         long init(PasswordStoreBridge passwordStoreBridge);
 
-        void insertPasswordCredentialForTesting(
+        void insertPasswordCredentialInProfileStoreForTesting(
+                long nativePasswordStoreBridge, PasswordStoreCredential credential);
+
+        void insertPasswordCredentialInAccountStoreForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
 
         void blocklistForTesting(long nativePasswordStoreBridge, String url);

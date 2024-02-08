@@ -3963,19 +3963,23 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
   EXPECT_CALL(*profile_password_store(), RemoveLoginsByURLAndTime).Times(0);
   ExpectRemoveLoginsByURLAndTime(account_password_store());
 
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                constants::DATA_TYPE_ACCOUNT_PASSWORDS, false);
-}
-
-TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
-       RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure) {
-  EXPECT_CALL(*profile_password_store(), RemoveLoginsByURLAndTime).Times(0);
-  ExpectRemoveLoginsByURLAndTime(account_password_store());
-
   uint64_t failed_data_types = BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(), constants::DATA_TYPE_ACCOUNT_PASSWORDS,
       false);
-  EXPECT_EQ(failed_data_types, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
+  // Desktop waits for DATA_TYPE_ACCOUNT_PASSWORDS deletions to be uploaded to
+  // the sync server before deleting any other types (because deleting
+  // DATA_TYPE_COOKIES first would revoke the account storage opt-in and prevent
+  // the upload). In this test, deletions are never uploaded, so
+  // DATA_TYPE_ACCOUNT_PASSWORDS is reported as failed.
+  // On Android, the account storage doesn't depend on cookies, so there's no
+  // waiting logic and DATA_TYPE_ACCOUNT_PASSWORDS is reported as successful.
+  EXPECT_EQ(failed_data_types,
+#if BUILDFLAG(IS_ANDROID)
+            0u
+#else
+            constants::DATA_TYPE_ACCOUNT_PASSWORDS
+#endif
+  );
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

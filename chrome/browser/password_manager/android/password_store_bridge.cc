@@ -65,10 +65,17 @@ PasswordStoreBridge::PasswordStoreBridge(
 
 PasswordStoreBridge::~PasswordStoreBridge() = default;
 
-void PasswordStoreBridge::InsertPasswordCredentialForTesting(
+void PasswordStoreBridge::InsertPasswordCredentialInProfileStoreForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential) {
   profile_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+}
+
+void PasswordStoreBridge::InsertPasswordCredentialInAccountStoreForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& credential) {
+  CHECK(account_store_);
+  account_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
 }
 
 void PasswordStoreBridge::BlocklistForTesting(
@@ -132,6 +139,9 @@ void PasswordStoreBridge::GetAllCredentials(
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
   profile_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+  if (account_store_) {
+    account_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+  }
 }
 
 void PasswordStoreBridge::Destroy(JNIEnv* env) {
