@@ -5,17 +5,20 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './attribution_internals_table.js';
 
-import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
+import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
-import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
-import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
-import {AttributionInternalsTableElement} from './attribution_internals_table.js';
+import type {TriggerVerification} from './attribution.mojom-webui.js';
+import {AttributionSupport} from './attribution.mojom-webui.js';
+import type {HandlerInterface, ObserverInterface, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
+import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
+import type {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
-import {ArrayTableModel, Column, TableModel} from './table_model.js';
+import type {Column} from './table_model.js';
+import {ArrayTableModel, TableModel} from './table_model.js';
 import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value

@@ -16,9 +16,9 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {Policy} from './policy_row.js';
-import {PolicyTableElement, PolicyTableModel} from './policy_table.js';
-import {Status, StatusBoxElement} from './status_box.js';
+import type {Policy} from './policy_row.js';
+import type {PolicyTableElement, PolicyTableModel} from './policy_table.js';
+import type {Status, StatusBoxElement} from './status_box.js';
 
 export interface PolicyNamesResponse {
   [id: string]: {name: string, policyNames: NonNullable<string[]>};

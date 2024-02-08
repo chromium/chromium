@@ -5,7 +5,7 @@
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {EligibleEntry} from './commerce_internals.mojom-webui.js';
+import type {EligibleEntry} from './commerce_internals.mojom-webui.js';
 import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 
 const SUBSCRIPTION_ROWS =

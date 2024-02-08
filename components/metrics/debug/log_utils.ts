@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {LogEvent} from './browser_proxy.js';
+import type {LogEvent} from './browser_proxy.js';
 
 /**
  * Helper function to convert undefined UMA log types to "Unknown" string.

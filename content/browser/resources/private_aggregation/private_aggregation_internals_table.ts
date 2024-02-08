@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './private_aggregation_internals_table.html.js';
-import {TableModel} from './table_model.js';
+import type {TableModel} from './table_model.js';
 
 /**
  * Helper function for setting sort attributes on |th|.

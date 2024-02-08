@@ -7,8 +7,9 @@ import './policy_test_table.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
-import {PolicyTestTableElement} from './policy_test_table.js';
+import type {PolicyInfo} from './policy_test_browser_proxy.js';
+import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
+import type {PolicyTestTableElement} from './policy_test_table.js';
 
 const policyTestBrowserProxy: PolicyTestBrowserProxy =
     PolicyTestBrowserProxy.getInstance();

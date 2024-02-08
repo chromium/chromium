@@ -7,8 +7,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {PolicyInfo, PolicySchema} from './policy_test_browser_proxy.js';
-import {PolicyTestRowElement} from './policy_test_row.js';
+import type {PolicyInfo, PolicySchema} from './policy_test_browser_proxy.js';
+import type {PolicyTestRowElement} from './policy_test_row.js';
 import {getTemplate} from './policy_test_table.html.js';
 
 export class PolicyTestTableElement extends CustomElement {

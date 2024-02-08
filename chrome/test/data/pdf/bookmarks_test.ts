@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';

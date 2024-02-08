@@ -6,7 +6,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './session_info_table.html.js';
 import * as TimeUtil from './time_util.js';
-import {SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
+import type {SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
 import * as XRRuntimeUtil from './xr_runtime_util.js';
 import * as XRSessionUtil from './xr_session_util.js';
 

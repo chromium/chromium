@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewerAttachmentBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-attachment-bar.js';
+import type {ViewerAttachmentBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-attachment-bar.js';
 
 function createAttachmentBar(): ViewerAttachmentBarElement {
   document.body.innerHTML = '';

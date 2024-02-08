@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {getAllNodes, SyncNode, SyncNodeMap, Timer} from './chrome_sync.js';
+import type {SyncNode, SyncNodeMap} from './chrome_sync.js';
+import {getAllNodes, Timer} from './chrome_sync.js';
 
 const ERROR_ATTR: string = 'error';
 const SELECTED_ATTR: string = 'selected';

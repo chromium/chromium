@@ -5,7 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 // <if expr="chromeos_ash">
-import {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
+import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
 // </if>
 
 /**

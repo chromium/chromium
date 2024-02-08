@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
+import type {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
 import {VulkanInfo} from './vulkan_info.js';
 

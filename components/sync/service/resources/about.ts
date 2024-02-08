@@ -5,10 +5,11 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
+import type {WebUiListener} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 
 import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
-import {ProtocolEvent} from './traffic_log.js';
+import type {ProtocolEvent} from './traffic_log.js';
 
 // Contains the latest snapshot of sync about info.
 interface TypeStatus {

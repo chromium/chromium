@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 

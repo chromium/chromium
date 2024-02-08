@@ -10,11 +10,11 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ClientTraceReport} from './trace_report.mojom-webui.js';
+import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {getTemplate} from './trace_report_list.html.js';
 

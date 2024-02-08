@@ -9,7 +9,7 @@ import './policy_row.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {Policy, PolicyRowElement} from './policy_row.js';
+import type {Policy, PolicyRowElement} from './policy_row.js';
 import {getTemplate} from './policy_table.html.js';
 
 export interface PolicyTableModel {

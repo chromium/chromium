@@ -7,7 +7,8 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicySchema, PolicyScope, PolicySource, PresetAtrributes, Presets, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
+import type {PolicyInfo, PolicySchema, PresetAtrributes} from './policy_test_browser_proxy.js';
+import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, Presets, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import {getTemplate} from './policy_test_row.html.js';
 
 export class PolicyTestRowElement extends CustomElement {

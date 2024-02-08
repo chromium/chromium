@@ -7,7 +7,8 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './experiment.html.js';
-import {Feature, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
+import type {Feature} from './flags_browser_proxy.js';
+import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 /**
  * Parses the element's text content to find the matching search term.
