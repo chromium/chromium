@@ -565,12 +565,17 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
         tab_data.tab_resource_usage
             ? tab_data.tab_resource_usage->memory_usage_in_bytes()
             : 0;
+    const bool is_high_memory_usage =
+        tab_data.tab_resource_usage
+            ? tab_data.tab_resource_usage->is_high_memory_usage()
+            : false;
     show_footer =
         show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
     footer_view_->SetAlertData({alert_state_, show_discard_status,
                                 tab_data.discarded_memory_savings_in_bytes});
 
-    footer_view_->SetPerformanceData({tab_memory_usage_in_bytes});
+    footer_view_->SetPerformanceData(
+        {is_high_memory_usage, tab_memory_usage_in_bytes});
 
   } else {
     if (alert_state_ != old_alert_state) {

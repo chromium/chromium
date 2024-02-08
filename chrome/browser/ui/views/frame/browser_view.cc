@@ -3633,9 +3633,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     const uint64_t memory_used =
         tab_data.tab_resource_usage->memory_usage_in_bytes();
     const bool is_high_memory_usage =
-        memory_used > static_cast<uint64_t>(
-                          performance_manager::features::
-                              kMemoryUsageInHovercardsHighThresholdBytes.Get());
+        tab_data.tab_resource_usage->is_high_memory_usage();
     if (is_high_memory_usage || is_for_tab) {
       const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
                                                   : IDS_TAB_AX_MEMORY_USAGE;

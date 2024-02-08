@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -164,12 +163,8 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
     const std::u16string formatted_memory_usage =
         ui::FormatBytes(data.memory_usage_in_bytes);
     const std::u16string row_text = l10n_util::GetStringFUTF16(
-        data.memory_usage_in_bytes >
-                static_cast<uint64_t>(
-                    performance_manager::features::
-                        kMemoryUsageInHovercardsHighThresholdBytes.Get())
-            ? IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE
-            : IDS_HOVERCARD_TAB_MEMORY_USAGE,
+        data.is_high_memory_usage ? IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE
+                                  : IDS_HOVERCARD_TAB_MEMORY_USAGE,
         formatted_memory_usage);
 
     const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
