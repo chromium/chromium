@@ -163,7 +163,7 @@ public class TabDragSource implements View.OnDragListener {
         if (!TabUiFeatureUtilities.isTabDragEnabled() || DragDropGlobalState.hasValue()) {
             return false;
         }
-        // Do not allow move for last tab when partner homepage enabled.
+        // Do not allow move for last tab when homepage enabled and is set to a custom url.
         if (MultiWindowUtils.getInstance().hasAtMostOneTabWithHomepageEnabled(mTabModelSelector)) {
             return false;
         }
