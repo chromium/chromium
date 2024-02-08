@@ -267,6 +267,8 @@ struct MockConfig {
   std::string metrics_endpoint;
   std::string idp_login_url;
   std::string disconnect_endpoint;
+  std::optional<SkColor> brand_background_color;
+  std::optional<SkColor> brand_text_color;
 };
 
 struct MockIdpInfo {
@@ -338,15 +340,15 @@ static const RequestParameters kDefaultRequestParameters{
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
     {kWellKnown, {ParseStatus::kSuccess, net::HTTP_OK}},
-    {
-        {ParseStatus::kSuccess, net::HTTP_OK},
-        kAccountsEndpoint,
-        kTokenEndpoint,
-        kClientMetadataEndpoint,
-        kMetricsEndpoint,
-        kIdpLoginUrl,
-        kIdpDisconnectUrl,
-    },
+    {{ParseStatus::kSuccess, net::HTTP_OK},
+     kAccountsEndpoint,
+     kTokenEndpoint,
+     kClientMetadataEndpoint,
+     kMetricsEndpoint,
+     kIdpLoginUrl,
+     kIdpDisconnectUrl,
+     /*brand_background_color=*/std::nullopt,
+     /*brand_text_color=*/std::nullopt},
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
     kSingleAccount,
@@ -358,15 +360,15 @@ static const base::flat_map<std::string, MockIdpInfo> kSingleProviderInfo{
 constexpr char kProviderTwoUrlFull[] = "https://idp2.example/fedcm.json";
 static const MockIdpInfo kProviderTwoInfo{
     {{kProviderTwoUrlFull}},
-    {
-        {ParseStatus::kSuccess, net::HTTP_OK},
-        "https://idp2.example/accounts",
-        "https://idp2.example/token",
-        "https://idp2.example/client_metadata",
-        "https://idp2.example/metrics",
-        "https://idp2.example/login_url",
-        "https://idp2.example/disconnect",
-    },
+    {{ParseStatus::kSuccess, net::HTTP_OK},
+     "https://idp2.example/accounts",
+     "https://idp2.example/token",
+     "https://idp2.example/client_metadata",
+     "https://idp2.example/metrics",
+     "https://idp2.example/login_url",
+     "https://idp2.example/disconnect",
+     /*brand_background_color=*/std::nullopt,
+     /*brand_text_color=*/std::nullopt},
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
     kMultipleAccounts};
@@ -454,22 +456,19 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     ++num_fetched_[FetchedEndpoint::CONFIG];
 
     std::string provider_key = provider.spec();
+    const MockConfig& config = config_.idp_info[provider_key].config;
     IdpNetworkRequestManager::Endpoints endpoints;
-    endpoints.token =
-        GURL(config_.idp_info[provider_key].config.token_endpoint);
-    endpoints.accounts =
-        GURL(config_.idp_info[provider_key].config.accounts_endpoint);
-    endpoints.client_metadata =
-        GURL(config_.idp_info[provider_key].config.client_metadata_endpoint);
-    endpoints.metrics =
-        GURL(config_.idp_info[provider_key].config.metrics_endpoint);
-    endpoints.disconnect =
-        GURL(config_.idp_info[provider_key].config.disconnect_endpoint);
+    endpoints.token = GURL(config.token_endpoint);
+    endpoints.accounts = GURL(config.accounts_endpoint);
+    endpoints.client_metadata = GURL(config.client_metadata_endpoint);
+    endpoints.metrics = GURL(config.metrics_endpoint);
+    endpoints.disconnect = GURL(config.disconnect_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
-    idp_metadata.idp_login_url =
-        GURL(config_.idp_info[provider_key].config.idp_login_url);
+    idp_metadata.idp_login_url = GURL(config.idp_login_url);
+    idp_metadata.brand_background_color = config.brand_background_color;
+    idp_metadata.brand_text_color = config.brand_text_color;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -642,6 +641,9 @@ class TestDialogController
     AccountList displayed_accounts;
     std::optional<IdentityRequestAccount::SignInMode> sign_in_mode;
     blink::mojom::RpContext rp_context;
+    // The last seen background/text color from IdP metadata.
+    std::optional<SkColor> brand_background_color;
+    std::optional<SkColor> brand_text_color;
     // State related to ShowFailureDialog().
     size_t num_show_idp_signin_status_mismatch_dialog_requests{0u};
     // State related to ShowIdpSigninFailureDialog().
@@ -697,6 +699,9 @@ class TestDialogController
       if (idp_data.has_login_status_mismatch) {
         state_->displayed_mismatch_idps.push_back(idp_data.idp_for_display);
       }
+      state_->brand_background_color =
+          idp_data.idp_metadata.brand_background_color;
+      state_->brand_text_color = idp_data.idp_metadata.brand_text_color;
     }
 
     switch (accounts_dialog_action_) {
@@ -1131,6 +1136,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   bool did_show_idp_signin_status_mismatch_dialog() const {
     return dialog_controller_state_
         .num_show_idp_signin_status_mismatch_dialog_requests;
+  }
+
+  std::optional<SkColor> brand_background_color() const {
+    return dialog_controller_state_.brand_background_color;
+  }
+
+  std::optional<SkColor> brand_text_color() const {
+    return dialog_controller_state_.brand_text_color;
   }
 
   int CountNumLoginStateIsSignin() {
@@ -6555,6 +6568,42 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
       main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Tests that when background text is passed but no background color, the
+// background text is ignored.
+TEST_F(FederatedAuthRequestImplTest,
+       BrandingWithTextColorAndNoBackgroundColor) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.brand_text_color =
+      SkColorSetRGB(10, 10, 10);
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.standalone_console_message =
+      "The FedCM text color is ignored because background color was not "
+      "provided";
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_EQ(brand_background_color(), std::nullopt);
+  EXPECT_EQ(brand_text_color(), std::nullopt);
+}
+
+// Tests that when background text does not contrast enough with the background
+// color, the text color is ignored.
+TEST_F(FederatedAuthRequestImplTest,
+       BrandingWithInsufficientContrastTextColor) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.brand_background_color =
+      SkColorSetRGB(0, 0, 0);
+  configuration.idp_info[kProviderUrlFull].config.brand_text_color =
+      SkColorSetRGB(1, 1, 1);
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.standalone_console_message =
+      "The FedCM text color is ignored because it does not contrast enough "
+      "with the provided background color";
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_EQ(brand_background_color(), SkColorSetRGB(0, 0, 0));
+  EXPECT_EQ(brand_text_color(), std::nullopt);
 }
 
 class FederatedAuthRequestExampleOrgTest : public FederatedAuthRequestImplTest {

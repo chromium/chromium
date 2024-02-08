@@ -1216,6 +1216,27 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
   // TODO(yigu): Clean up the client metadata related errors for metrics and
   // console logs.
+  if (!idp_info->metadata.brand_background_color &&
+      idp_info->metadata.brand_text_color) {
+    idp_info->metadata.brand_text_color = std::nullopt;
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "The FedCM text color is ignored because background color was not "
+        "provided");
+  }
+  if (idp_info->metadata.brand_background_color &&
+      idp_info->metadata.brand_text_color) {
+    float text_contrast_ratio = color_utils::GetContrastRatio(
+        *idp_info->metadata.brand_background_color,
+        *idp_info->metadata.brand_text_color);
+    if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio) {
+      idp_info->metadata.brand_text_color = std::nullopt;
+      render_frame_host().AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "The FedCM text color is ignored because it does not contrast enough "
+          "with the provided background color");
+    }
+  }
   OnFetchDataForIdpSucceeded(std::move(idp_info), accounts, client_metadata);
 }
 
