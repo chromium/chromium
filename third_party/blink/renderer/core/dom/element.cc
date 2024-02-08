@@ -5076,14 +5076,13 @@ void Element::SetIsEligibleForElementCapture(bool value) {
     SetElementFlag(ElementFlags::kHasCheckedElementCaptureEligibility, true);
   }
 
-  ConsoleMessage* console_message = nullptr;
   if (has_checked) {
     const bool old_value =
         !HasRareData() ||
         HasElementFlag(ElementFlags::kIsEligibleForElementCapture);
 
     if (value != old_value) {
-      console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kInfo,
           String::Format("restrictTo(): Element %s restriction eligibility. "
@@ -5096,7 +5095,7 @@ void Element::SetIsEligibleForElementCapture(bool value) {
     // We want to issue a different log message if the element is not eligible
     // when first painted.
     if (!value) {
-      console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "restrictTo(): Element is not eligible for restriction. For "
@@ -5104,11 +5103,6 @@ void Element::SetIsEligibleForElementCapture(bool value) {
           "https://screen-share.github.io/element-capture/"
           "#elements-eligible-for-restriction");
     }
-  }
-
-  if (console_message) {
-    console_message->SetNodes(GetDocument().GetFrame(), {this->GetDomNodeId()});
-    GetDocument().AddConsoleMessage(console_message);
   }
 
   return SetElementFlag(ElementFlags::kIsEligibleForElementCapture, value);
@@ -9844,6 +9838,15 @@ void Element::setHTMLUnsafe(const String& html,
   CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
+}
+
+void Element::AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
+                                mojom::blink::ConsoleMessageLevel level,
+                                const String& message) {
+  auto* console_message =
+      MakeGarbageCollected<ConsoleMessage>(source, level, message);
+  console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
+  GetDocument().AddConsoleMessage(console_message);
 }
 
 }  // namespace blink

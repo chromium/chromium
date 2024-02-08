@@ -615,15 +615,12 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     String download_attr =
         static_cast<String>(FastGetAttribute(html_names::kDownloadAttr));
     if (download_attr.length() > kMaxDownloadAttrLength) {
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kError,
           String::Format("Download attribute for anchor element is too long. "
                          "Max: %d, given: %d",
                          kMaxDownloadAttrLength, download_attr.length()));
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {this->GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
       return;
     }
 

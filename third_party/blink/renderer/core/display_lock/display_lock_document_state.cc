@@ -449,12 +449,10 @@ void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
         RuntimeEnabledFeatures::WarnOnContentVisibilityRenderAccessEnabled()
             ? mojom::blink::ConsoleMessageLevel::kWarning
             : mojom::blink::ConsoleMessageLevel::kVerbose;
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+    element->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript, level,
         forced_render_warnings_ == kMaxConsoleMessages ? kForcedRenderingMax
                                                        : kForcedRendering);
-    console_message->SetNodes(document_->GetFrame(), {element->GetDomNodeId()});
-    document_->AddConsoleMessage(console_message);
   }
 }
 

@@ -468,13 +468,10 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
 
     // invoketarget & popovertarget shouldn't be combined, so warn.
     if (invokee && popover.popover) {
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "popovertarget is ignored on elements with invoketarget set.");
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {this->GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
     }
 
     // Buttons with an invoketarget will dispatch an InvokeEvent on the Invoker,

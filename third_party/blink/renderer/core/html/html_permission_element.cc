@@ -447,11 +447,8 @@ void HTMLPermissionElement::UpdateText() {
 }
 
 void HTMLPermissionElement::AddConsoleError(String error) {
-  ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kRendering,
-      mojom::blink::ConsoleMessageLevel::kError, error);
-  console_message->SetNodes(GetDocument().GetFrame(), {this->GetDomNodeId()});
-  GetDocument().AddConsoleMessage(console_message);
+  AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
+                    mojom::blink::ConsoleMessageLevel::kError, error);
 }
 
 }  // namespace blink
