@@ -13562,11 +13562,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   accessibility_fatal_error_count_ = 0;
 
   UpdateIsolatableSandboxedIframeTracking(navigation_request);
-
-  // After commit, the browser process's access of the features' state becomes
-  // read-only. (i.e. It can only get feature state, not set)
-  RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
-      this, navigation_request->GetRuntimeFeatureStateContext());
 }
 
 // TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
@@ -13593,6 +13588,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
 
+  // After commit, the browser process's access of the features' state becomes
+  // read-only. (i.e. It can only get feature state, not set)
   RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
       this, navigation_request->GetRuntimeFeatureStateContext());
 
