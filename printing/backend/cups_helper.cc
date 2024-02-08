@@ -9,11 +9,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -802,8 +803,8 @@ http_t* HttpConnectionCUPS::http() {
 }
 
 bool ParsePpdCapabilities(cups_dest_t* dest,
-                          base::StringPiece locale,
-                          base::StringPiece printer_capabilities,
+                          std::string_view locale,
+                          std::string_view printer_capabilities,
                           PrinterSemanticCapsAndDefaults* printer_info) {
   // A file created while in a sandbox will be automatically deleted once all
   // handles to it have been closed.  This precludes the use of multiple

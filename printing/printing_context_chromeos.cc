@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -42,7 +43,7 @@ const char kUsernamePlaceholder[] = "chronos";
 // We only support sending document name for secure printers.
 const char kDocumentNamePlaceholder[] = "-";
 
-bool IsUriSecure(base::StringPiece uri) {
+bool IsUriSecure(std::string_view uri) {
   return base::StartsWith(uri, "ipps:") || base::StartsWith(uri, "https:") ||
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }

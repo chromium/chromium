@@ -5,8 +5,9 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_UTILS_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_UTILS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(USE_CUPS)
@@ -30,7 +31,7 @@ enum class Unit {
 // name nor the dimension, or if `value` contains a prefix of
 // media sizes not meant for users' eyes.
 COMPONENT_EXPORT(PRINT_BACKEND)
-gfx::Size ParsePaperSize(base::StringPiece value);
+gfx::Size ParsePaperSize(std::string_view value);
 
 #if BUILDFLAG(USE_CUPS)
 // Calculates a paper's printable area in microns from its size in microns and

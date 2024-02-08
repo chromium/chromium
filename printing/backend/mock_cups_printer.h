@@ -5,6 +5,8 @@
 #ifndef PRINTING_BACKEND_MOCK_CUPS_PRINTER_H_
 #define PRINTING_BACKEND_MOCK_CUPS_PRINTER_H_
 
+#include <string_view>
+
 #include "printing/backend/cups_printer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -42,7 +44,7 @@ class MockCupsPrinter : public CupsPrinter {
   MOCK_CONST_METHOD1(GetSupportedOptionValues,
                      ipp_attribute_t*(const char* option_name));
   MOCK_CONST_METHOD1(GetSupportedOptionValueStrings,
-                     std::vector<base::StringPiece>(const char* option_name));
+                     std::vector<std::string_view>(const char* option_name));
   MOCK_CONST_METHOD0(GetMediaColDatabase, ipp_attribute_t*());
   MOCK_CONST_METHOD1(GetDefaultOptionValue,
                      ipp_attribute_t*(const char* option_name));

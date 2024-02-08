@@ -9,14 +9,14 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -293,7 +293,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   if (advanced_settings) {
     for (const auto item : *advanced_settings) {
       static constexpr auto kNonJobAttributes =
-          base::MakeFixedFlatSet<base::StringPiece>(
+          base::MakeFixedFlatSet<std::string_view>(
               {"printer-info", "printer-make-and-model", "system_driverinfo"});
       if (!base::Contains(kNonJobAttributes, item.first)) {
         settings->advanced_settings().emplace(item.first, item.second.Clone());

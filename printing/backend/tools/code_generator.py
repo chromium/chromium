@@ -41,6 +41,8 @@ HANDLER_HEADER = """// DO NOT MODIFY
 
 #include "printing/backend/ipp_handler_map.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "printing/backend/ipp_handlers.h"
 
@@ -64,8 +66,8 @@ L10N_HEADER = """// DO NOT MODIFY
 #include "base/no_destructor.h"
 #include "components/strings/grit/components_strings.h"
 
-const std::map<base::StringPiece, int>& CapabilityLocalizationMap() {
-  static const base::NoDestructor<std::map<base::StringPiece, int>> l10n_map({
+const std::map<std::string_view, int>& CapabilityLocalizationMap() {
+  static const base::NoDestructor<std::map<std::string_view, int>> l10n_map({
 """
 
 L10N_FOOTER = """  });

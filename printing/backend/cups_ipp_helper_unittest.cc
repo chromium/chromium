@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -41,7 +42,7 @@ MATCHER(EqualsMediaColEntry, "") {
 class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  public:
   // name and value of IPP attribute; needed to fetch localized display name
-  using LocalizationKey = std::pair<base::StringPiece, base::StringPiece>;
+  using LocalizationKey = std::pair<std::string_view, std::string_view>;
 
   MockCupsPrinterWithMarginsAndAttributes() = default;
   ~MockCupsPrinterWithMarginsAndAttributes() override = default;
@@ -54,13 +55,13 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
   // CupsOptionProvider:
-  std::vector<base::StringPiece> GetSupportedOptionValueStrings(
+  std::vector<std::string_view> GetSupportedOptionValueStrings(
       const char* option_name) const override {
     ipp_attribute_t* attr = GetSupportedOptionValues(option_name);
     if (!attr)
-      return std::vector<base::StringPiece>();
+      return std::vector<std::string_view>();
 
-    std::vector<base::StringPiece> strings;
+    std::vector<std::string_view> strings;
     const int size = ippGetCount(attr);
     strings.reserve(size);
     for (int i = 0; i < size; ++i) {
@@ -103,11 +104,11 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
     return localized_name->second.c_str();
   }
 
-  void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
+  void SetSupportedOptions(std::string_view name, ipp_attribute_t* attribute) {
     supported_attributes_[name] = attribute;
   }
 
-  void SetOptionDefault(base::StringPiece name, ipp_attribute_t* attribute) {
+  void SetOptionDefault(std::string_view name, ipp_attribute_t* attribute) {
     default_attributes_[name] = attribute;
   }
 
@@ -121,8 +122,8 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
  private:
-  std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
-  std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
+  std::map<std::string_view, ipp_attribute_t*> supported_attributes_;
+  std::map<std::string_view, ipp_attribute_t*> default_attributes_;
   std::map<LocalizationKey, std::string> localized_strings_;
   raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
