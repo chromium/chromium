@@ -67,11 +67,11 @@ export class TraceReportListElement extends PolymerElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.initializeList();
+    this.initializeList(true);
   }
 
-  private async initializeList(): Promise<void> {
-    this.isLoading = true;
+  private async initializeList(hasLoading: boolean = false): Promise<void> {
+    this.isLoading = hasLoading;
     const {reports} = await this.traceReportProxy_.handler.getAllTraceReports();
     if (reports) {
       this.traces = reports;
@@ -120,7 +120,6 @@ export class TraceReportListElement extends PolymerElement {
   private hasTraces_(traces: ClientTraceReport[]): boolean {
     return traces.length > 0;
   }
-
 
   private async onDeleteAllTracesClick_(): Promise<void> {
     const {success} = await this.traceReportProxy_.handler.deleteAllTraces();

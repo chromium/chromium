@@ -197,6 +197,8 @@ export class TraceReportElement extends PolymerElement {
     if (!success) {
       this.dispatchToast_(
           `Failed to delete ${this.tokenToString_(this.trace.uuid)}.`);
+    } else {
+      this.dispatchReloadRequest_();
     }
     this.isLoading = false;
   }
@@ -209,6 +211,8 @@ export class TraceReportElement extends PolymerElement {
     if (!success) {
       this.dispatchToast_(
           `Failed to upload trace ${this.tokenToString_(this.trace.uuid)}.`);
+    } else {
+      this.dispatchReloadRequest_();
     }
     this.isLoading = false;
   }
@@ -232,6 +236,13 @@ export class TraceReportElement extends PolymerElement {
   private isDownloadDisabled_(isLoading: boolean, uploadState: UploadState):
       boolean {
     return isLoading || uploadState === UploadState.UPLOADED;
+  }
+
+  private dispatchReloadRequest_(): void {
+    this.dispatchEvent(new CustomEvent('refresh-traces-request', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 
