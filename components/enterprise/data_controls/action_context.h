@@ -24,6 +24,11 @@ struct ActionSource {
   // Chrome tabs. This field is only used for clipboard interactions, and as
   // such defaults to "false".
   bool os_clipboard = false;
+
+  // Indicates that the source of the data is a separate Chrome profile from the
+  // one receiving that data. This field is only used for clipboard
+  // interactions, and as such defaults to "false".
+  bool other_profile = false;
 };
 
 struct ActionDestination {
@@ -41,6 +46,13 @@ struct ActionDestination {
   // only apply to Chrome tabs. This field is only used for clipboard
   // interactions, and as such defaults to "false".
   bool os_clipboard = false;
+
+  // Indicates that the destination of the data is a separate Chrome profile
+  // from the one providing that data. As such, this should only be set to
+  // "true" for tab-to-tab clipboard interactions, destinations like the OS
+  // clipboard are not considered a separate profile. This field is only used
+  // for clipboard interactions, and as such defaults to "false".
+  bool other_profile = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   Component component = Component::kUnknownComponent;

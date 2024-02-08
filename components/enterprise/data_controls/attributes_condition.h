@@ -38,6 +38,7 @@ class AttributesCondition {
   static constexpr char kKeyUrls[] = "urls";
   static constexpr char kKeyIncognito[] = "incognito";
   static constexpr char kKeyOsClipboard[] = "os_clipboard";
+  static constexpr char kKeyOtherProfile[] = "other_profile";
 #if BUILDFLAG(IS_CHROMEOS)
   static constexpr char kKeyComponents[] = "components";
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -65,6 +66,7 @@ class AttributesCondition {
   // corresponding conditions.
   bool IncognitoMatches(bool incognito) const;
   bool OsClipboardMatches(bool os_clipboard) const;
+  bool OtherProfileMatches(bool other_profile) const;
 
   // Helpers to help check which attributes are meaningful to the condition.
   bool is_os_clipboard_condition() const;
@@ -83,6 +85,10 @@ class AttributesCondition {
   // the OS clipboard. It is always null for non-clipboard conditions.
   std::optional<bool> os_clipboard_;
 
+  // This attribute indicates the destination/source condition must/mustn't be
+  // a separate Chrome profile. It is always null for non-clipboard conditions.
+  std::optional<bool> other_profile_;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // A destination/source must be in this set to pass the condition, unless the
   // set is empty.
@@ -97,6 +103,7 @@ class SourceAttributesCondition : public AttributesCondition, public Condition {
   static std::unique_ptr<Condition> Create(const base::Value& value);
   static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
 
+  // data_controls::Condition:
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:
@@ -113,6 +120,7 @@ class DestinationAttributesCondition : public AttributesCondition,
   static std::unique_ptr<Condition> Create(const base::Value& value);
   static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
 
+  // data_controls::Condition:
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:
