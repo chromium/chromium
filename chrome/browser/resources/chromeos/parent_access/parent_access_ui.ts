@@ -90,7 +90,7 @@ export class ParentAccessUi extends PolymerElement {
     // Otherwise, all requests should be https and in the ALLOWED_HOSTS list.
     const requestIsHttps = requestUrl.protocol === 'https:';
     const requestIsInAllowedHosts = ALLOWED_HOSTS.some(
-        (allowedHost) => requestUrl.host == allowedHost ||
+        (allowedHost) => requestUrl.host === allowedHost ||
             requestUrl.host.endsWith(allowedHost));
 
     return requestIsHttps && requestIsInAllowedHosts;
@@ -118,7 +118,7 @@ export class ParentAccessUi extends PolymerElement {
       const eventOriginFilter = parsedWebviewUrl.origin;
 
       const oauthFetchResult = await this.parentAccessUiHandler.getOauthToken();
-      if (oauthFetchResult.status != GetOauthTokenStatus.kSuccess) {
+      if (oauthFetchResult.status !== GetOauthTokenStatus.kSuccess) {
         throw new Error('OAuth token was not successfully fetched.');
       }
 
