@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/containers/fixed_flat_set.h"
@@ -28,7 +29,7 @@ namespace {
 // TODO(ssid): Some dump providers do not create ownership edges on background
 // dump. So, the effective size will not be correct.
 constexpr auto kDumpProviderAllowlist =
-    base::MakeFixedFlatSet<base::StringPiece>({
+    base::MakeFixedFlatSet<std::string_view>({
 // clang-format off
 #if BUILDFLAG(IS_ANDROID)
         base::android::MeminfoDumpProvider::kDumpProviderName,
@@ -97,7 +98,7 @@ constexpr auto kDumpProviderAllowlist =
 // A list of string names that are allowed for the memory allocator dumps in
 // background mode.
 constexpr auto kAllocatorDumpNameAllowlist =
-    base::MakeFixedFlatSet<base::StringPiece>({
+    base::MakeFixedFlatSet<std::string_view>({
 // clang-format off
         // Some of the blink values vary based on compile time flags. The
         // compile time flags are not in base, so all are listed here.
