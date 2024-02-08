@@ -50,6 +50,7 @@ accessibility/slot-poison.html [ Failure ]
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
+wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
 # We don't support extracting fuzzy information from .ini files, which these
 # WPT infrastructure tests rely on.
