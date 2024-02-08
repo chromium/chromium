@@ -147,11 +147,13 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   // comment of `QRImageGenerator::GenerateQRCode`).
   auto callback = base::BindOnce(
       &QRCodeGeneratorBubble::OnCodeGeneratorResponse, base::Unretained(this));
-  if (qrcode_service_override_.is_null()) {
-    qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
-  } else {
-    qrcode_service_override_.Run(std::move(request), std::move(callback));
+  if (qrcode_error_override_.has_value()) {
+    auto response = qrcode_generator::mojom::GenerateQRCodeResponse::New();
+    response->error_code = qrcode_error_override_.value();
+    std::move(callback).Run(std::move(response));
+    return;
   }
+  qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
 }
 
 void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
@@ -350,7 +352,7 @@ void QRCodeGeneratorBubble::Init() {
   // End controls row
 
   // Initialize Service
-  if (!qrcode_service_ && qrcode_service_override_.is_null()) {
+  if (!qrcode_service_) {
     qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
   }
 }
@@ -431,11 +433,9 @@ gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
   return final_image;
 }
 
-void QRCodeGeneratorBubble::SetQRCodeServiceForTesting(
-    base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
-                                 QRImageGenerator::ResponseCallback callback)>
-        qrcode_service_override) {
-  qrcode_service_override_ = std::move(qrcode_service_override);
+void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(
+    std::optional<qrcode_generator::mojom::QRCodeGeneratorError> error) {
+  qrcode_error_override_ = error;
 }
 
 const SkBitmap QRCodeGeneratorBubble::GetBitmap() {

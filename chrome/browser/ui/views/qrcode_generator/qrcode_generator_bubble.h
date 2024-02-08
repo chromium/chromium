@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_QRCODE_GENERATOR_QRCODE_GENERATOR_BUBBLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -74,10 +75,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   views::Label* error_label_for_testing() { return bottom_error_label_; }
   views::LabelButton* download_button_for_testing() { return download_button_; }
 
-  void SetQRCodeServiceForTesting(
-      base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
-                                   QRImageGenerator::ResponseCallback callback)>
-          qrcode_service_override);
+  void SetQRCodeErrorForTesting(
+      std::optional<qrcode_generator::mojom::QRCodeGeneratorError> error);
 
  private:
   // Updates and formats QR code, text, and controls.
@@ -131,18 +130,10 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // `QRImageGenerator` class.
   std::unique_ptr<QRImageGenerator> qrcode_service_;
 
-  // Unit tests can set `qr_code_service_override_` to intercept QR code
-  // requests and inject test-controlled QR code responses.
-  //
-  // Rationale for using a `RepeatingCallback` instead of implementing
-  // dependency injection using virtual methods: 1) `GenerateQRCode` will become
-  // a free function after shipping https://crbug.com/1431991, 2) in general
-  // `RepeatingCallback` is equivalent to a pure interface with a single method,
-  // (note that `RepeatingCallback` below has the same signature as
-  // `GenerateQRCode`).
-  base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
-                               QRImageGenerator::ResponseCallback callback)>
-      qrcode_service_override_;
+  // Unit tests can set `qr_code_error_override_` to inject QR code
+  // generation errors.
+  std::optional<qrcode_generator::mojom::QRCodeGeneratorError>
+      qrcode_error_override_;
 
   // URL for which the QR code is being generated.
   // Used for validation.

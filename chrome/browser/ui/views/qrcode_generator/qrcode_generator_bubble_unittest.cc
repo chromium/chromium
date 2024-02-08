@@ -72,43 +72,9 @@ TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
             image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip));
 }
 
-// Test-fake implementation of QRImageGenerator; the real implementation
-// can't be used in these tests because it requires spawning a service process.
-class FakeQRCodeGeneratorService {
+class VisibilityChangedWaiter : public views::ViewObserver {
  public:
-  FakeQRCodeGeneratorService() = default;
-
-  using GenerateQRCodeCallback =
-      base::OnceCallback<void(mojom::GenerateQRCodeResponsePtr)>;
-  void GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
-                      GenerateQRCodeCallback callback) {
-    pending_callback_ = std::move(callback);
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  void WaitForRequest() {
-    if (HasPendingRequest())
-      return;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  bool HasPendingRequest() const { return bool(pending_callback_); }
-
-  void DeliverResponse(mojom::GenerateQRCodeResponsePtr response) {
-    CHECK(pending_callback_);
-    std::move(pending_callback_).Run(std::move(response));
-  }
-
- private:
-  GenerateQRCodeCallback pending_callback_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-class ViewVisibilityWaiter : public views::ViewObserver {
- public:
-  explicit ViewVisibilityWaiter(views::View* view) {
+  explicit VisibilityChangedWaiter(views::View* view) {
     observation_.Observe(view);
   }
 
@@ -138,14 +104,6 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
     auto bubble = std::make_unique<QRCodeGeneratorBubble>(
         anchor_view_, web_contents_->GetWeakPtr(), base::DoNothing(),
         base::DoNothing(), GURL("https://www.chromium.org/a"));
-
-    // `base::Unretained` is okay, because `TearDown` will run before
-    // destruction of `fake_service_` and will `reset` the `bubble_widget_`
-    // which will destroy the `bubble` which will destroy/drop the callback we
-    // are setting for testing below.
-    bubble->SetQRCodeServiceForTesting(
-        base::BindRepeating(&FakeQRCodeGeneratorService::GenerateQRCode,
-                            base::Unretained(&fake_service_)));
 
     bubble_ = bubble.get();
     bubble_widget_.reset(
@@ -193,8 +151,6 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
            error_label()->GetViewAccessibility().IsIgnored();
   }
 
-  FakeQRCodeGeneratorService* service() { return &fake_service_; }
-
  private:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
@@ -202,10 +158,8 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
 
   WidgetAutoclosePtr anchor_widget_;
   raw_ptr<views::View> anchor_view_;
-  raw_ptr<QRCodeGeneratorBubble, DanglingUntriaged> bubble_;
   WidgetAutoclosePtr bubble_widget_;
-
-  FakeQRCodeGeneratorService fake_service_;
+  raw_ptr<QRCodeGeneratorBubble> bubble_;
 };
 
 // This test is a bit fiddly because mojo imposes asynchronicity on both sender
@@ -215,78 +169,56 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
 //    responses have been delivered
 TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
   bubble()->Show();
-
   EXPECT_TRUE(ImageShowing());
 
-  service()->WaitForRequest();
-  ASSERT_TRUE(service()->HasPendingRequest());
-  auto error_response = mojom::GenerateQRCodeResponse::New();
-  error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-
-  EXPECT_TRUE(ImageShowing());
-
+  // The UI regenerates the QR code when the user types new text, so synthesize
+  // that, but inject an error.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(error_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(
+        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
-
     EXPECT_FALSE(ImageShowing());
   }
 
   // The UI regenerates the QR code when the user types new text, so synthesize
-  // that.
-  textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
-  service()->WaitForRequest();
-
-  auto ok_response = mojom::GenerateQRCodeResponse::New();
-  ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
-  ok_response->bitmap.allocN32Pixels(16, 16);
-  ok_response->data_size = gfx::Size(16, 16);
-
+  // that, but this time clear the injected error.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(ok_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(std::nullopt);
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
-
     EXPECT_TRUE(ImageShowing());
   }
 }
 
 TEST_F(QRCodeGeneratorBubbleUITest,
        PlaceholderImageShowsAfterTextFieldEmptied) {
+  // Expecting placeholder image when the text input is empty.
+  textfield()->SelectAll(false);
+  textfield()->DeleteRange(textfield()->GetSelectedRange());
   bubble()->Show();
-
   EXPECT_TRUE(ImagePlaceholderShowing());
 
-  service()->WaitForRequest();
-  ASSERT_TRUE(service()->HasPendingRequest());
-  auto error_response = mojom::GenerateQRCodeResponse::New();
-  error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-
-  EXPECT_TRUE(ImagePlaceholderShowing());
-
+  // Expecting image to be hidden after QR generation error.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(error_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(
+        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
 
     EXPECT_FALSE(ImageShowing());
   }
 
-  auto ok_response = mojom::GenerateQRCodeResponse::New();
-  ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
-  ok_response->bitmap.allocN32Pixels(16, 16);
-  ok_response->bitmap.eraseColor(SK_ColorRED);
-  ok_response->data_size = gfx::Size(16, 16);
-
-  // The UI regenerates the QR code when the user types new text, so synthesize
-  // that.
-  textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
-  service()->WaitForRequest();
-
+  // Expecting image to be shown after QR generation success.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(ok_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(std::nullopt);
+    // The UI regenerates the QR code when the user types new text, so
+    // synthesize that.
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
 
     EXPECT_TRUE(ImageShowing());
@@ -294,48 +226,40 @@ TEST_F(QRCodeGeneratorBubbleUITest,
     EXPECT_TRUE(download_button()->GetEnabled());
   }
 
+  // Expecting placeholder image after deleting the text input again.
   textfield()->SelectAll(false);
   textfield()->DeleteRange(textfield()->GetSelectedRange());
-
   EXPECT_TRUE(ImageShowing());
   EXPECT_TRUE(ImagePlaceholderShowing());
   EXPECT_FALSE(download_button()->GetEnabled());
 }
 
 TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
+  // Expecting placeholder image when the text input is empty.
+  textfield()->SelectAll(false);
+  textfield()->DeleteRange(textfield()->GetSelectedRange());
   bubble()->Show();
-
   EXPECT_TRUE(ImagePlaceholderShowing());
   EXPECT_TRUE(ErrorLabelHiddenAndA11yIgnored());
 
-  service()->WaitForRequest();
-  ASSERT_TRUE(service()->HasPendingRequest());
-  auto error_response = mojom::GenerateQRCodeResponse::New();
-  error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-
-  EXPECT_TRUE(ImagePlaceholderShowing());
-
+  // Expecting image to be hidden after QR generation error.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(error_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(
+        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
 
     EXPECT_FALSE(ImageShowing());
   }
 
-  auto too_long_response = mojom::GenerateQRCodeResponse::New();
-  too_long_response->error_code = mojom::QRCodeGeneratorError::INPUT_TOO_LONG;
-
-  // The UI regenerates the QR code when the user types new text, so synthesize
-  // that.
-  textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
-  service()->WaitForRequest();
-
+  // Input-too-long should present a different UI from unknown errors.
   {
-    ViewVisibilityWaiter waiter(image());
-    service()->DeliverResponse(std::move(too_long_response));
+    VisibilityChangedWaiter waiter(image());
+    bubble()->SetQRCodeErrorForTesting(
+        mojom::QRCodeGeneratorError::INPUT_TOO_LONG);
+    textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
-
     EXPECT_TRUE(ImageShowing());
     EXPECT_TRUE(ImagePlaceholderShowing());
     EXPECT_TRUE(ErrorLabelShowing());
