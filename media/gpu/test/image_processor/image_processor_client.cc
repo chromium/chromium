@@ -129,24 +129,14 @@ void ImageProcessorClient::CreateImageProcessorTask(
       &ImageProcessorClient::NotifyError, base::Unretained(this));
 
   if (create_backend_cb) {
-    // Note: We aren't really missing anything by using the callback directly
-    // versus calling ImageProcessorFactory::CreateWithInputCandidates since the
-    // candidates list is empty in the else branch.
     image_processor_ =
         ImageProcessor::Create(*create_backend_cb, input_config, output_config,
                                ImageProcessor::OutputMode::IMPORT, error_cb,
                                image_processor_client_thread_.task_runner());
   } else {
-    ImageProcessorFactory::PickFormatCB pick_format_cb =
-        base::BindRepeating([](const std::vector<Fourcc>& fourcc_config,
-                               std::optional<Fourcc> fourcc) {
-          return std::make_optional<Fourcc>(fourcc_config[0]);
-        });
-
-    image_processor_ = ImageProcessorFactory::CreateWithInputCandidates(
-        {}, gfx::Rect(input_config.size), output_config.size, num_buffers,
-        image_processor_client_thread_.task_runner(), pick_format_cb, error_cb,
-        input_config, output_config);
+    image_processor_ = ImageProcessorFactory::Create(
+        input_config, output_config, num_buffers, error_cb,
+        image_processor_client_thread_.task_runner());
   }
 
   done->Signal();

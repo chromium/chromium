@@ -45,8 +45,6 @@ void FrameResourceToFrameReadyCB(ImageProcessorBackend::FrameReadyCB callback,
 
 }  // namespace
 
-ImageProcessorBackend::PortConfig::PortConfig() = default;
-
 ImageProcessorBackend::PortConfig::PortConfig(const PortConfig&) = default;
 
 ImageProcessorBackend::PortConfig::PortConfig(
