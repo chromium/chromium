@@ -2417,7 +2417,6 @@ test("content_unittests") {
     "../browser/indexed_db/indexed_db_cleanup_on_io_error_unittest.cc",
     "../browser/indexed_db/indexed_db_context_unittest.cc",
     "../browser/indexed_db/indexed_db_database_unittest.cc",
-    "../browser/indexed_db/indexed_db_dispatcher_host_unittest.cc",
     "../browser/indexed_db/indexed_db_fake_backing_store.cc",
     "../browser/indexed_db/indexed_db_fake_backing_store.h",
     "../browser/indexed_db/indexed_db_leveldb_coding_unittest.cc",
