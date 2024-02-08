@@ -378,7 +378,7 @@ source_set("unittests") {
 }
 
 # TODO(crbug.com/1290541): Fails to link on Fuchsia builds.
-# TODO(https://issuetracker.google.com/236160471): CDDL compiler doesn't build
+# TODO(issuetracker.google.com/236160471): CDDL compiler doesn't build
 # on Windows.
 if (!is_fuchsia && !is_win) {
   test("openscreen_unittests") {
@@ -387,8 +387,12 @@ if (!is_fuchsia && !is_win) {
       "//components/media_router/common/providers/cast/certificate:openscreen_certificate_verifier",
       "//components/openscreen_platform",
       "//testing/gmock",
-      "//third_party/openscreen/src:openscreen_unittests_all",
     ]
+
+    # TODO(issues.chromium.org/41496044): Re-enable for MSAN once fixed.
+    if (!is_msan) {
+      deps += [ "//third_party/openscreen/src:openscreen_unittests_all" ]
+    }
   }
 }
 
