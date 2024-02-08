@@ -127,6 +127,7 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   int GetCheckIntervalForTesting() const;
   int GetFetchIntervalForTesting() const;
   base::Time GetCWSInfoTimestampForTesting() const;
+  base::Time GetCWSInfoFetchErrorTimestampForTesting() const;
   void SetMaxExtensionIdsPerRequestForTesting(int max);
 
  protected:
