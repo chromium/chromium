@@ -34,6 +34,11 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
 
   static get properties() {
     return {
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+
       groupAriaLabel: String,
 
       /**
@@ -61,6 +66,7 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     ];
   }
 
+  disabled: boolean;
   groupAriaLabel: string;
   noSetPref: boolean;
   selected: string;
