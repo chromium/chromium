@@ -112,6 +112,14 @@ void ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   NOTIMPLEMENTED();
 }
 
+void ImageProcessorBackend::ProcessLegacyFrame(
+    scoped_refptr<FrameResource> frame,
+    LegacyFrameResourceReadyCB cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+
+  NOTIMPLEMENTED();
+}
+
 void ImageProcessorBackend::Reset() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);

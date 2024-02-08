@@ -35,6 +35,9 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   // buffer.
   using LegacyFrameReadyCB =
       base::OnceCallback<void(size_t, scoped_refptr<VideoFrame>)>;
+  // FrameResource version of LegacyFrameReadyCB
+  using LegacyFrameResourceReadyCB =
+      base::OnceCallback<void(size_t, scoped_refptr<FrameResource>)>;
 
   // Callback for notifying client when error occurs.
   using ErrorCB = base::RepeatingClosure;
@@ -117,6 +120,15 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   // panic.
   virtual void ProcessLegacy(scoped_refptr<VideoFrame> frame,
                              LegacyFrameReadyCB cb);
+
+  // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
+  // used when output mode is ALLOCATE. After processing, call |cb| with the
+  // buffer.
+  // If ALLOCATE mode is not supported, the implementation is optional. In this
+  // case, this method should not be called and the default implementation will
+  // panic.
+  virtual void ProcessLegacyFrame(scoped_refptr<FrameResource> frame,
+                                  LegacyFrameResourceReadyCB cb);
 
   // Drop all pending process requests. The default implementation is no-op.
   virtual void Reset();

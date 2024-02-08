@@ -517,6 +517,25 @@ void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   ProcessJobs();
 }
 
+void V4L2ImageProcessorBackend::ProcessLegacyFrame(
+    scoped_refptr<FrameResource> frame,
+    LegacyFrameResourceReadyCB cb) {
+  DVLOGF(4) << "ts=" << frame->timestamp().InMilliseconds();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK_EQ(output_memory_type_, V4L2_MEMORY_MMAP);
+
+  auto job_record = std::make_unique<JobRecord>();
+  job_record->input_frame = std::move(frame);
+  job_record->legacy_frame_ready_cb = std::move(cb);
+  if (MediaTraceIsEnabled()) {
+    job_record->start_time = base::TimeTicks::Now();
+  }
+
+  input_job_queue_.emplace(std::move(job_record));
+  ProcessJobs();
+}
+
 void V4L2ImageProcessorBackend::ProcessFrame(
     scoped_refptr<FrameResource> input_frame,
     scoped_refptr<FrameResource> output_frame,
@@ -875,6 +894,10 @@ void V4L2ImageProcessorBackend::Dequeue() {
           base::TimeTicks::Now(), "timestamp", timestamp.InMilliseconds());
     }
 
+    // At most of of |job_record->legacy_ready_cb| or
+    // |job_record->legacy_frame_ready_cb| should be set.
+    CHECK(job_record->legacy_ready_cb.is_null() ||
+          job_record->legacy_frame_ready_cb.is_null());
     if (!job_record->legacy_ready_cb.is_null()) {
       // Since the legacy API only supports a |output_memory_type_| of
       // V4L2_MEMORY_MMAP, |output_frame| is manufactured by a call to
@@ -887,6 +910,9 @@ void V4L2ImageProcessorBackend::Dequeue() {
       std::move(job_record->legacy_ready_cb)
           .Run(buffer->BufferId(),
                output_frame->AsVideoFrameResource()->GetMutableVideoFrame());
+    } else if (!job_record->legacy_frame_ready_cb.is_null()) {
+      std::move(job_record->legacy_frame_ready_cb)
+          .Run(buffer->BufferId(), std::move(output_frame));
     } else {
       std::move(job_record->ready_cb).Run(std::move(output_frame));
     }
