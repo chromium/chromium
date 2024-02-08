@@ -633,7 +633,6 @@ crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/text
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1516836 [ android android-shield-android-tv no-passthrough renderer-skia-gl ] conformance/extensions/oes-texture-half-float-with-video.html [ RetryOnFailure ]
 
 ## Pixel 4 ##
 
