@@ -251,7 +251,8 @@ it’s important to get the severity as correct as possible.
 We do not release severe security regressions, so we need to know the earliest
 impacted Chrome release branch.
 
-First, if an issue [doesn’t impact Chrome users by default, add the hotlist
+First, if an issue [doesn’t impact Chrome users by default (such as be being
+behind a disabled feature or a command line flag), add the hotlist
 **`Security_Impact-None`**](security-labels.md#when-to-use-security_impact_none-toc_security_impact_none);
 otherwise, set a **Found In** milestone in the `Found In` field as follows:
 
