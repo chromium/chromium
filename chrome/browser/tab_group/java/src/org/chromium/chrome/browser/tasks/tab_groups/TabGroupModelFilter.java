@@ -136,7 +136,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         && sourceTab.isIncognito() == destinationTab.isIncognito()
                 : "Attempting to merge groups from different model";
 
-        int destinationRootId = getRootId(destinationTab);
+        int destinationRootId = destinationTab.getRootId();
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
@@ -156,15 +156,15 @@ public class TabGroupModelFilter extends TabModelFilter {
                     int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
                     assert index != TabModel.INVALID_TAB_INDEX;
                     originalIndexes.add(index);
-                    originalRootIds.add(getRootId(tab));
+                    originalRootIds.add(tab.getRootId());
                 }
 
-                setRootId(tab, destinationRootId);
+                tab.setRootId(destinationRootId);
             }
             resetFilterState();
 
             Tab lastMergedTab = tabsToMerge.get(tabsToMerge.size() - 1);
-            TabGroup group = mRootIdToGroupMap.get(getRootId(lastMergedTab));
+            TabGroup group = mRootIdToGroupMap.get(lastMergedTab.getRootId());
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
@@ -195,7 +195,7 @@ public class TabGroupModelFilter extends TabModelFilter {
      */
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, boolean isSameGroup, boolean notify) {
-        int destinationRootId = getRootId(destinationTab);
+        int destinationRootId = destinationTab.getRootId();
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
@@ -213,13 +213,13 @@ public class TabGroupModelFilter extends TabModelFilter {
             int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
             assert index != TabModel.INVALID_TAB_INDEX;
             originalIndexes.add(index);
-            originalRootIds.add(getRootId(tab));
+            originalRootIds.add(tab.getRootId());
 
             if (tab.getId() == destinationTab.getId()) continue;
 
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
-            setRootId(tab, destinationRootId);
+            tab.setRootId(destinationRootId);
             if (index == destinationIndexInTabModel || index + 1 == destinationIndexInTabModel) {
                 // If the tab is not moved TabModelImpl will not invoke
                 // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
@@ -274,7 +274,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabModel tabModel = getTabModel();
         Tab sourceTab = TabModelUtils.getTabById(tabModel, sourceTabId);
         int sourceIndex = tabModel.indexOf(sourceTab);
-        TabGroup sourceTabGroup = mRootIdToGroupMap.get(getRootId(sourceTab));
+        TabGroup sourceTabGroup = mRootIdToGroupMap.get(sourceTab.getRootId());
         int targetIndex;
         if (trailing) {
             Tab lastTabInSourceGroup =
@@ -287,21 +287,21 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         assert targetIndex != TabModel.INVALID_TAB_INDEX;
 
-        int prevFilterIndex = mRootIdToGroupIndexMap.get(getRootId(sourceTab));
+        int prevFilterIndex = mRootIdToGroupIndexMap.get(sourceTab.getRootId());
         if (sourceTabGroup.size() == 1) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
             }
             return;
         }
-        int newRootId = getRootId(sourceTab);
-        if (sourceTab.getId() == getRootId(sourceTab)) {
+        int newRootId = sourceTab.getRootId();
+        boolean sourceTabIdWasRootId = sourceTab.getId() == newRootId;
+        if (sourceTabIdWasRootId) {
             // If moving tab's id is the root id of the group, find a new root id.
-            if (sourceIndex != 0
-                    && getRootId(tabModel.getTabAt(sourceIndex - 1)) == getRootId(sourceTab)) {
+            if (sourceIndex != 0 && tabModel.getTabAt(sourceIndex - 1).getRootId() == newRootId) {
                 newRootId = tabModel.getTabAt(sourceIndex - 1).getId();
             } else if (sourceIndex != tabModel.getCount() - 1
-                    && getRootId(tabModel.getTabAt(sourceIndex + 1)) == getRootId(sourceTab)) {
+                    && tabModel.getTabAt(sourceIndex + 1).getRootId() == newRootId) {
                 newRootId = tabModel.getTabAt(sourceIndex + 1).getId();
             }
         }
@@ -310,13 +310,14 @@ public class TabGroupModelFilter extends TabModelFilter {
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.willMoveTabOutOfGroup(sourceTab, newRootId);
         }
-        if (sourceTab.getId() == getRootId(sourceTab)) {
+        if (sourceTabIdWasRootId) {
             for (int tabId : sourceTabGroup.getTabIdList()) {
-                setRootId(TabModelUtils.getTabById(tabModel, tabId), newRootId);
+                Tab tab = TabModelUtils.getTabById(tabModel, tabId);
+                tab.setRootId(newRootId);
             }
             resetFilterState();
         }
-        setRootId(sourceTab, sourceTab.getId());
+        sourceTab.setRootId(sourceTab.getId());
         // If moving tab is already in the target index in tab model, no move in tab model.
         if (sourceIndex == targetIndex) {
             resetFilterState();
@@ -340,7 +341,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     private int getTabModelDestinationIndex(Tab destinationTab) {
         List<Integer> destinationGroupedTabIds =
-                mRootIdToGroupMap.get(getRootId(destinationTab)).getTabIdList();
+                mRootIdToGroupMap.get(destinationTab.getRootId()).getTabIdList();
         int destinationTabIndex =
                 TabModelUtils.getTabIndexById(
                         getTabModel(),
@@ -373,7 +374,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         // Unconditionally signal removal of the tab from the group it is in.
         mIsUndoing = true;
         boolean groupExistedBeforeMove = mRootIdToGroupMap.get(originalRootId) != null;
-        setRootId(tab, originalRootId);
+        tab.setRootId(originalRootId);
         if (currentIndex == originalIndex) {
             didMoveTab(tab, originalIndex, currentIndex);
         } else {
@@ -403,7 +404,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         Tab tab = TabModelUtils.getTabById(getTabModel(), id);
         if (tab == null) return super.getRelatedTabList(id);
 
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);
         if (group == null) return super.getRelatedTabList(TabModel.INVALID_TAB_INDEX);
         return getRelatedTabList(group.getTabIdList());
@@ -414,7 +415,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
         if (tab == null) return super.getRelatedTabIds(tabId);
 
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);
         if (group == null) return super.getRelatedTabIds(TabModel.INVALID_TAB_INDEX);
         return Collections.unmodifiableList(group.getTabIdList());
@@ -449,7 +450,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     public boolean hasOtherRelatedTabs(Tab tab) {
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);
         return group != null && group.size() > 1;
     }
@@ -478,7 +479,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
             Tab parentTab = TabModelUtils.getTabById(getTabModel(), tab.getParentId());
             if (parentTab != null) {
-                return getRootId(parentTab);
+                return parentTab.getRootId();
             }
         }
         return Tab.INVALID_TAB_ID;
@@ -492,10 +493,10 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         int parentId = getParentId(tab);
         if (parentId != Tab.INVALID_TAB_ID) {
-            setRootId(tab, parentId);
+            tab.setRootId(parentId);
         }
 
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         if (mRootIdToGroupMap.containsKey(rootId)) {
             boolean wasGroupSizeOfOne = mRootIdToGroupMap.get(rootId).size() == 1;
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
@@ -515,7 +516,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                 }
             }
         } else {
-            TabGroup tabGroup = new TabGroup(getRootId(tab));
+            TabGroup tabGroup = new TabGroup(tab.getRootId());
             tabGroup.addTab(tab.getId(), getTabModel());
             mRootIdToGroupMap.put(rootId, tabGroup);
             if (mIsResetting || getTabModel().indexOf(tab) == getTabModel().getCount() - 1) {
@@ -543,7 +544,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabModel tabModel = getTabModel();
         for (int i = 0; i < tabModel.getCount(); i++) {
             Tab tab = tabModel.getTabAt(i);
-            int rootId = getRootId(tab);
+            int rootId = tab.getRootId();
             if (!mRootIdToGroupIndexMap.containsKey(rootId)) {
                 mRootIdToGroupIndexMap.put(rootId, mRootIdToGroupIndexMap.size());
             }
@@ -552,7 +553,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void closeTab(Tab tab) {
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         if (tab.isIncognito() != isIncognito()
                 || mRootIdToGroupMap.get(rootId) == null
                 || !mRootIdToGroupMap.get(rootId).contains(tab.getId())) {
@@ -583,7 +584,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     @Override
     protected void selectTab(Tab tab) {
         assert mAbsentSelectedTab == null;
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         if (mRootIdToGroupMap.get(rootId) == null) {
             mAbsentSelectedTab = tab;
         } else {
@@ -598,7 +599,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabModel tabModel = getTabModel();
         for (int i = 0; i < tabModel.getCount(); i++) {
             Tab tab = tabModel.getTabAt(i);
-            int rootId = getRootId(tab);
+            int rootId = tab.getRootId();
             if (!mRootIdToGroupIndexMap.containsKey(rootId)) {
                 mRootIdToGroupIndexMap.put(rootId, mRootIdToGroupIndexMap.size());
             }
@@ -706,7 +707,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         // another. If at any time a rootId is repeated without the prior tab having the same rootId
         // then the invariant is violated.
         for (int i = 0; i < getTabModel().getCount(); i++) {
-            int rootId = getRootId(getTabModel().getTabAt(i));
+            int rootId = getTabModel().getTabAt(i).getRootId();
             if (rootId == lastRootId) continue;
 
             if (processedRootIds.contains(rootId)) return false;
@@ -735,7 +736,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             int fixedRootId = group.getTabIdOfFirstTab();
             for (int tabId : group.getTabIdList()) {
                 Tab tab = TabModelUtils.getTabById(model, tabId);
-                setRootId(tab, fixedRootId);
+                tab.setRootId(fixedRootId);
             }
             fixedRootIdCount++;
         }
@@ -749,7 +750,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     @Override
     public int getValidPosition(Tab tab, int proposedPosition) {
         final int parentId = getParentId(tab);
-        final int rootId = parentId == Tab.INVALID_TAB_ID ? getRootId(tab) : parentId;
+        final int rootId = parentId == Tab.INVALID_TAB_ID ? tab.getRootId() : parentId;
         int newPosition = proposedPosition;
         // If the tab is not in the model and won't be part of a group ensure it is positioned
         // outside any other groups.
@@ -806,8 +807,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         int moveToIndex = proposedPosition;
         // Find a spot where the tabs on either side of the new tab are not part of the same group.
         while (moveToIndex != tabCount
-                && getRootId(getTabModel().getTabAt(moveToIndex - 1))
-                        == getRootId(getTabModel().getTabAt(moveToIndex))) {
+                && getTabModel().getTabAt(moveToIndex - 1).getRootId()
+                        == getTabModel().getTabAt(moveToIndex).getRootId()) {
             moveToIndex++;
         }
         return moveToIndex;
@@ -835,7 +836,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             resetFilterState();
             if (groupBeforeMove != null && groupBeforeMove.size() != 1) return;
 
-            TabGroup group = mRootIdToGroupMap.get(getRootId(tab));
+            TabGroup group = mRootIdToGroupMap.get(tab.getRootId());
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(tab, group.getLastShownTabId());
             }
@@ -856,31 +857,19 @@ public class TabGroupModelFilter extends TabModelFilter {
         super.didMoveTab(tab, newIndex, curIndex);
     }
 
-    private static void setRootId(Tab tab, int id) {
-        tab.setRootId(id);
-    }
-
-    /**
-     * Get the root id for the given tab. The root id is shared for tabs in the same group.
-     * @param tab The {@link Tab}.
-     * @return The root id for the given tab. The root id is shared for tabs in the same group.
-     */
-    public int getRootId(Tab tab) {
-        return tab.getRootId();
-    }
-
     private boolean isMoveTabOutOfGroup(Tab movedTab) {
-        return !mRootIdToGroupMap.containsKey(getRootId(movedTab));
+        return !mRootIdToGroupMap.containsKey(movedTab.getRootId());
     }
 
     private boolean isMergeTabToGroup(Tab tab) {
-        if (!mRootIdToGroupMap.containsKey(getRootId(tab))) return false;
-        TabGroup tabGroup = mRootIdToGroupMap.get(getRootId(tab));
+        int rootId = tab.getRootId();
+        if (!mRootIdToGroupMap.containsKey(rootId)) return false;
+        TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
         return !tabGroup.contains(tab.getId());
     }
 
     private int getRootIdBeforeMove(Tab tabToMove, boolean isMoveToDifferentGroup) {
-        if (!isMoveToDifferentGroup) return getRootId(tabToMove);
+        if (!isMoveToDifferentGroup) return tabToMove.getRootId();
 
         Set<Integer> rootIdSet = mRootIdToGroupMap.keySet();
         for (Integer rootIdKey : rootIdSet) {
@@ -897,18 +886,18 @@ public class TabGroupModelFilter extends TabModelFilter {
         int startIndex = Math.min(oldIndexInTabModel, newIndexInTabModel);
         int endIndex = Math.max(oldIndexInTabModel, newIndexInTabModel);
         for (int i = startIndex; i <= endIndex; i++) {
-            if (getRootId(getTabModel().getTabAt(i)) != getRootId(movedTab)) return false;
+            if (getTabModel().getTabAt(i).getRootId() != movedTab.getRootId()) return false;
         }
         return true;
     }
 
     private boolean hasFinishedMovingGroup(Tab movedTab, int newIndexInTabModel) {
-        TabGroup tabGroup = mRootIdToGroupMap.get(getRootId(movedTab));
+        TabGroup tabGroup = mRootIdToGroupMap.get(movedTab.getRootId());
         int offsetIndex = newIndexInTabModel - tabGroup.size() + 1;
         if (offsetIndex < 0) return false;
 
         for (int i = newIndexInTabModel; i >= offsetIndex; i--) {
-            if (getRootId(getTabModel().getTabAt(i)) != getRootId(movedTab)) return false;
+            if (getTabModel().getTabAt(i).getRootId() != movedTab.getRootId()) return false;
         }
         return true;
     }
@@ -957,7 +946,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             return TabList.INVALID_TAB_INDEX;
         }
 
-        int rootId = getRootId(tab);
+        int rootId = tab.getRootId();
         if (!mRootIdToGroupIndexMap.containsKey(rootId)) return TabList.INVALID_TAB_INDEX;
         return mRootIdToGroupIndexMap.get(rootId);
     }

@@ -1304,7 +1304,7 @@ public class TabGroupModelFilterUnitTest {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(
                             mTabGroupModelFilter.getTabModel(), mTab2.getId()));
-            originalRootIds.add(mTabGroupModelFilter.getRootId(tab));
+            originalRootIds.add(tab.getRootId());
         }
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), false);
@@ -1326,7 +1326,7 @@ public class TabGroupModelFilterUnitTest {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(
                             mTabGroupModelFilter.getTabModel(), mTab2.getId()));
-            originalRootIds.add(mTabGroupModelFilter.getRootId(tab));
+            originalRootIds.add(tab.getRootId());
         }
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab3.getId(), mTab4.getId(), false);
@@ -1347,7 +1347,7 @@ public class TabGroupModelFilterUnitTest {
         for (Tab tab : expectedSourceTabs) {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), tab.getId()));
-            originalRootIds.add(mTabGroupModelFilter.getRootId(tab));
+            originalRootIds.add(tab.getRootId());
         }
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
@@ -1367,7 +1367,7 @@ public class TabGroupModelFilterUnitTest {
         for (Tab tab : expectedSourceTabs) {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), tab.getId()));
-            originalRootIds.add(mTabGroupModelFilter.getRootId(tab));
+            originalRootIds.add(tab.getRootId());
         }
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);

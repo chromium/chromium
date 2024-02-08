@@ -2641,7 +2641,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         Tab tab = getTabById(mInteractingTab.getId());
         computeAndUpdateTabGroupMargins(true, animationList);
         if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
-            setTabGroupBackgroundContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
+            setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
         }
 
         return animationList;
@@ -2789,9 +2789,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             boolean eitherTabInAGroup =
                     mTabGroupModelFilter.hasOtherRelatedTabs(currTab)
                             || mTabGroupModelFilter.hasOtherRelatedTabs(nextTab);
-            boolean areRelatedTabs =
-                    mTabGroupModelFilter.getRootId(currTab)
-                            == mTabGroupModelFilter.getRootId(nextTab);
+            boolean areRelatedTabs = currTab.getRootId() == nextTab.getRootId();
             if (eitherTabInAGroup && !areRelatedTabs) trailingMargin = mTabMarginWidth;
 
             // 1.b. Attempt to update the current tab's trailing margin.
@@ -2889,7 +2887,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
 
-            if (mTabGroupModelFilter.getRootId(getTabById(tab.getId())) == groupId) {
+            if (getTabById(tab.getId()).getRootId() == groupId) {
                 setBackgroundTabContainerVisible(tab, visible);
             }
         }
@@ -2911,8 +2909,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (Math.abs(offset) > mTabMarginWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
             final int tabId = mInteractingTab.getId();
 
-            setTabGroupBackgroundContainersVisible(
-                    mTabGroupModelFilter.getRootId(getTabById(tabId)), false);
+            setTabGroupBackgroundContainersVisible(getTabById(tabId).getRootId(), false);
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             return curIndex;
@@ -2981,8 +2978,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 1.b. Set tab group dim as necessary.
             int groupId =
-                    mTabGroupModelFilter.getRootId(
-                            getTabById(mStripTabs[curIndex + (towardEnd ? 1 : -1)].getId()));
+                    getTabById(mStripTabs[curIndex + (towardEnd ? 1 : -1)].getId()).getRootId();
             setTabGroupBackgroundContainersVisible(groupId, mHoveringOverGroup);
         }
 
@@ -3007,9 +3003,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     private int maybeMovePastGroup(float offset, int curIndex, boolean towardEnd) {
         int direction = towardEnd ? 1 : -1;
-        int groupId =
-                mTabGroupModelFilter.getRootId(
-                        getTabById(mStripTabs[curIndex + direction].getId()));
+        int groupId = getTabById(mStripTabs[curIndex + direction].getId()).getRootId();
         int numTabsToSkip = mTabGroupModelFilter.getRelatedTabCountForRootId(groupId);
         float effectiveTabWidth = mCachedTabWidth - mTabOverlapWidth;
         float threshold = (numTabsToSkip * effectiveTabWidth) + mTabMarginWidth + mTabOverlapWidth;
@@ -3188,8 +3182,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 setTrailingMarginForTab(mInteractingTab, mLastTrailingMargin, animationList);
                 Tab tab = getTabById(mInteractingTab.getId());
                 if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
-                    setTabGroupBackgroundContainersVisible(
-                            mTabGroupModelFilter.getRootId(tab), false);
+                    setTabGroupBackgroundContainersVisible(tab.getRootId(), false);
                 }
             }
 
@@ -3198,7 +3191,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setTrailingMarginForTab(hoveredTab, mTabMarginWidth, animationList);
             Tab tab = getTabById(hoveredTab.getId());
             if (mTabGroupModelFilter.hasOtherRelatedTabs(tab)) {
-                setTabGroupBackgroundContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
+                setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
             }
             mInteractingTab = hoveredTab;
 
