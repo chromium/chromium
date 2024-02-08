@@ -132,6 +132,16 @@ void NearbyConnectionManagerImpl::OnSecureChannelStatusChanged(
     HandleChannelAuthenticated(remote_device_id);
 }
 
+void NearbyConnectionManagerImpl::OnNearbyConnectionStateChanged(
+    SecureChannel* secure_channel,
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  std::string remote_device_id =
+      GetRemoteDeviceIdForSecureChannel(secure_channel);
+  NotifyNearbyConnectionStateChanged(ChooseChannelRecipient(remote_device_id),
+                                     step, result);
+}
+
 bool NearbyConnectionManagerImpl::DoesAuthenticatingChannelExist(
     const std::string& remote_device_id) {
   return base::Contains(remote_device_id_to_secure_channel_map_,

@@ -15,6 +15,8 @@
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,6 +49,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
         mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+        mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+            nearby_connection_state_listener,
         NearbyConnector::ConnectCallback callback);
     ConnectionRequestMetadata(const ConnectionRequestMetadata&) = delete;
     ConnectionRequestMetadata& operator=(const ConnectionRequestMetadata&) =
@@ -56,6 +60,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
     std::vector<uint8_t> bluetooth_public_address;
     std::vector<uint8_t> eid;
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener;
     NearbyConnector::ConnectCallback callback;
   };
 
@@ -76,6 +82,8 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& eid,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       NearbyConnector::ConnectCallback callback) override;
 
   // KeyedService:

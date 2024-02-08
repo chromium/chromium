@@ -5,11 +5,13 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CLIENT_CONNECTION_PARAMETERS_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -63,6 +65,8 @@ class ClientConnectionParameters {
   void SetBleDiscoveryState(
       mojom::DiscoveryResult discovery_state,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+  void SetNearbyConnectionState(mojom::NearbyConnectionStep step,
+                                mojom::NearbyConnectionStepResult result);
 
   bool operator==(const ClientConnectionParameters& other) const;
   bool operator<(const ClientConnectionParameters& other) const;
@@ -78,6 +82,9 @@ class ClientConnectionParameters {
   virtual void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_result,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code) = 0;
+  virtual void UpdateNearbyConnectionState(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) = 0;
 
   void NotifyConnectionRequestCanceled();
 

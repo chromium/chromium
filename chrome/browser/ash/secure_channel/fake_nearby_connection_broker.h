@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
 
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
 namespace ash {
 namespace secure_channel {
@@ -18,6 +19,8 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
   ~FakeNearbyConnectionBroker() override;

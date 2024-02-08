@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,6 +44,8 @@ class NearbyConnectionBroker : public mojom::NearbyMessageSender,
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_remote,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
 
@@ -55,6 +60,8 @@ class NearbyConnectionBroker : public mojom::NearbyMessageSender,
   void InvokeDisconnectedCallback();
   void NotifyConnected();
   void NotifyMessageReceived(const std::string& received_message);
+  void NotifyConnectionStateChanged(mojom::NearbyConnectionStep step,
+                                    mojom::NearbyConnectionStepResult result);
 
  private:
   std::vector<uint8_t> bluetooth_public_address_;
@@ -62,6 +69,8 @@ class NearbyConnectionBroker : public mojom::NearbyMessageSender,
   mojo::Receiver<mojom::NearbyFilePayloadHandler>
       file_payload_handler_receiver_;
   mojo::Remote<mojom::NearbyMessageReceiver> message_receiver_remote_;
+  mojo::Remote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote_;
   base::OnceClosure on_connected_callback_;
   base::OnceClosure on_disconnected_callback_;
 };

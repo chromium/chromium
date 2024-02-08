@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -166,7 +167,7 @@ class NearbyEndpointFinderImplTest : public testing::Test {
     std::move(result_closure_).Run();
   }
 
-  void OnEndpointDiscoveryFailure() {
+  void OnEndpointDiscoveryFailure(::nearby::connections::mojom::Status status) {
     has_failed_ = true;
     std::move(result_closure_).Run();
   }

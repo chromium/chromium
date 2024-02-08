@@ -85,4 +85,11 @@ void ClientConnectionParametersImpl::UpdateBleDiscoveryState(
       discovery_state, potential_error_code);
 }
 
+void ClientConnectionParametersImpl::UpdateNearbyConnectionState(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  secure_channel_structured_metrics_logger_remote_->LogNearbyConnectionState(
+      step, result);
+}
+
 }  // namespace ash::secure_channel

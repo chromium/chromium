@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/secure_channel/nearby_connector_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_process_manager.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,6 +67,8 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
       base::OnceClosure on_connected_callback,
@@ -73,8 +77,9 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
     auto instance = std::make_unique<FakeNearbyConnectionBroker>(
         bluetooth_public_address, std::move(message_sender_receiver),
         std::move(file_payload_handler_receiver),
-        std::move(message_receiver_remote), std::move(on_connected_callback),
-        std::move(on_disconnected_callback));
+        std::move(message_receiver_remote),
+        std::move(nearby_connection_state_listener),
+        std::move(on_connected_callback), std::move(on_disconnected_callback));
     last_created_ = instance.get();
     return instance;
   }
@@ -118,6 +123,30 @@ class FakeMessageReceiver : public mojom::NearbyMessageReceiver {
   std::vector<std::string> received_messages_;
 };
 
+class FakeNearbyConnectionStateListener
+    : public mojom::NearbyConnectionStateListener {
+ public:
+  FakeNearbyConnectionStateListener() = default;
+  ~FakeNearbyConnectionStateListener() override = default;
+
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+  GeneratePendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  void OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result) override {
+    nearby_connection_step_ = nearby_connection_step;
+    nearby_connection_step_result_ = result;
+  }
+
+  mojo::Receiver<mojom::NearbyConnectionStateListener> receiver_{this};
+  mojom::NearbyConnectionStep nearby_connection_step_;
+  mojom::NearbyConnectionStepResult nearby_connection_step_result_;
+};
+
 }  // namespace
 
 class NearbyConnectorImplTest : public testing::Test {
@@ -141,10 +170,13 @@ class NearbyConnectorImplTest : public testing::Test {
     NearbyEndpointFinderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
-  void Connect(FakeMessageReceiver* fake_message_receiver,
-               const std::vector<uint8_t>& address) {
+  void Connect(
+      FakeMessageReceiver* fake_message_receiver,
+      FakeNearbyConnectionStateListener* fake_nearby_connection_state_listener,
+      const std::vector<uint8_t>& address) {
     connector_->Connect(
         address, GetEid(), fake_message_receiver->GeneratePendingRemote(),
+        fake_nearby_connection_state_listener->GeneratePendingRemote(),
         base::BindOnce(&NearbyConnectorImplTest::OnConnectResult,
                        base::Unretained(this), fake_message_receiver->id()));
   }
@@ -183,7 +215,9 @@ class NearbyConnectorImplTest : public testing::Test {
 TEST_F(NearbyConnectorImplTest, ConnectAndTransferMessages) {
   // Attempt connection.
   FakeMessageReceiver receiver;
-  Connect(&receiver, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener;
+  Connect(&receiver, &nearby_connection_state_listener,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   FakeNearbyConnectionBroker* broker =
       fake_connection_broker_factory_.last_created();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
@@ -222,7 +256,9 @@ TEST_F(NearbyConnectorImplTest, ConnectAndTransferMessages) {
 TEST_F(NearbyConnectorImplTest, TwoConnections) {
   // Attempt connection 1.
   FakeMessageReceiver receiver1;
-  Connect(&receiver1, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener1;
+  Connect(&receiver1, &nearby_connection_state_listener1,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   FakeNearbyConnectionBroker* broker1 =
       fake_connection_broker_factory_.last_created();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
@@ -230,7 +266,9 @@ TEST_F(NearbyConnectorImplTest, TwoConnections) {
   // Attempt connection 2 before connection 1 has completed. No new broker
   // should have been created since they are queued.
   FakeMessageReceiver receiver2;
-  Connect(&receiver2, GetBluetoothAddress(/*repeated_address_value=*/2u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener2;
+  Connect(&receiver2, &nearby_connection_state_listener2,
+          GetBluetoothAddress(/*repeated_address_value=*/2u));
   EXPECT_EQ(broker1, fake_connection_broker_factory_.last_created());
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
 
@@ -272,7 +310,9 @@ TEST_F(NearbyConnectorImplTest, TwoConnections) {
 TEST_F(NearbyConnectorImplTest, TwoConnections_FirstFails) {
   // Attempt connection 1.
   FakeMessageReceiver receiver1;
-  Connect(&receiver1, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener1;
+  Connect(&receiver1, &nearby_connection_state_listener1,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   FakeNearbyConnectionBroker* broker1 =
       fake_connection_broker_factory_.last_created();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
@@ -280,7 +320,9 @@ TEST_F(NearbyConnectorImplTest, TwoConnections_FirstFails) {
   // Attempt connection 2 before connection 1 has completed. No new broker
   // should have been created since they are queued.
   FakeMessageReceiver receiver2;
-  Connect(&receiver2, GetBluetoothAddress(/*repeated_address_value=*/2u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener2;
+  Connect(&receiver2, &nearby_connection_state_listener2,
+          GetBluetoothAddress(/*repeated_address_value=*/2u));
   EXPECT_EQ(broker1, fake_connection_broker_factory_.last_created());
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
 
@@ -316,7 +358,9 @@ TEST_F(NearbyConnectorImplTest, TwoConnections_FirstFails) {
 TEST_F(NearbyConnectorImplTest, FailToConnect) {
   // Attempt connection.
   FakeMessageReceiver receiver;
-  Connect(&receiver, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener;
+  Connect(&receiver, &nearby_connection_state_listener,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   FakeNearbyConnectionBroker* broker =
       fake_connection_broker_factory_.last_created();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
@@ -338,7 +382,9 @@ TEST_F(NearbyConnectorImplTest, FailToConnect) {
 TEST_F(NearbyConnectorImplTest, NearbyProcessStops) {
   // Attempt connection.
   FakeMessageReceiver receiver;
-  Connect(&receiver, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener;
+  Connect(&receiver, &nearby_connection_state_listener,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   FakeNearbyConnectionBroker* broker =
       fake_connection_broker_factory_.last_created();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
@@ -361,7 +407,9 @@ TEST_F(NearbyConnectorImplTest, NearbyProcessStops) {
 TEST_F(NearbyConnectorImplTest, NearbyProcessStopsDuringConnectionAttempt) {
   // Attempt connection.
   FakeMessageReceiver receiver;
-  Connect(&receiver, GetBluetoothAddress(/*repeated_address_value=*/1u));
+  FakeNearbyConnectionStateListener nearby_connection_state_listener;
+  Connect(&receiver, &nearby_connection_state_listener,
+          GetBluetoothAddress(/*repeated_address_value=*/1u));
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
 
   // Stop the Nearby process; this should result in a disconnection.

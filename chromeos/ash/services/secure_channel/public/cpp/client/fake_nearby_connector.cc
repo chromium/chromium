@@ -109,9 +109,13 @@ void FakeNearbyConnector::FakeConnection::DisconnectPendingFileTransfers() {
 FakeNearbyConnector::ConnectArgs::ConnectArgs(
     const std::vector<uint8_t>& bluetooth_public_address,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener,
     ConnectCallback callback)
     : bluetooth_public_address(bluetooth_public_address),
       message_receiver(std::move(message_receiver)),
+      nearby_connection_state_listener(
+          std::move(nearby_connection_state_listener)),
       callback(std::move(callback)) {}
 
 FakeNearbyConnector::ConnectArgs::~ConnectArgs() = default;
@@ -161,10 +165,12 @@ void FakeNearbyConnector::Connect(
     const std::vector<uint8_t>& bluetooth_public_address,
     const std::vector<uint8_t>& eid,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener,
     ConnectCallback callback) {
   queued_connect_args_.emplace(std::make_unique<ConnectArgs>(
       bluetooth_public_address, std::move(message_receiver),
-      std::move(callback)));
+      std::move(nearby_connection_state_listener), std::move(callback)));
   std::move(on_connect_closure).Run();
 }
 

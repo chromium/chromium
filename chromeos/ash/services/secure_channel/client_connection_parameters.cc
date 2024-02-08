@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -50,6 +51,12 @@ void ClientConnectionParameters::SetBleDiscoveryState(
     mojom::DiscoveryResult discovery_result,
     absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   UpdateBleDiscoveryState(discovery_result, potential_error_code);
+}
+
+void ClientConnectionParameters::SetNearbyConnectionState(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  UpdateNearbyConnectionState(step, result);
 }
 
 bool ClientConnectionParameters::operator==(

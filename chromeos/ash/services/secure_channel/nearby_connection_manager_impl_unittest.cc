@@ -179,6 +179,9 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
         base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
                                 OnBleDiscoveryStateChanged,
                             base::Unretained(this), device_id_pair),
+        base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
+                                OnNearbyConnectionStateChanged,
+                            base::Unretained(this), device_id_pair),
         base::BindOnce(
             &SecureChannelNearbyConnectionManagerImplTest::OnConnectionSuccess,
             base::Unretained(this), device_id_pair),
@@ -286,6 +289,10 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
     size_t num_success_callbacks_before_call = successful_connections_.size();
 
+    fake_secure_channel->ChangeNearbyConnectionState(
+        mojom::NearbyConnectionStep::
+            kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
+        mojom::NearbyConnectionStepResult::kSuccess);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::CONNECTED);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::AUTHENTICATING);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::AUTHENTICATED);
@@ -359,6 +366,13 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
     device_discovery_results_[device_id_pair] = result;
   }
 
+  void OnNearbyConnectionStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result) {
+    device_nearby_connection_states_[device_id_pair] = nearby_connection_step;
+  }
+
   void SetInRemoteDeviceIdToMetadataMap(const DeviceIdPair& device_id_pair) {
     remote_device_id_to_id_pairs_map_[device_id_pair.remote_device_id()].insert(
         device_id_pair);
@@ -386,6 +400,8 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
       remote_device_id_to_id_pairs_map_;
   base::flat_map<DeviceIdPair, mojom::DiscoveryResult>
       device_discovery_results_;
+  base::flat_map<DeviceIdPair, mojom::NearbyConnectionStep>
+      device_nearby_connection_states_;
   std::vector<std::pair<DeviceIdPair, std::unique_ptr<AuthenticatedChannel>>>
       successful_connections_;
   std::vector<std::pair<DeviceIdPair, NearbyInitiatorFailureType>>

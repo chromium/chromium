@@ -12,6 +12,8 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/wire_message.h"
 
@@ -64,6 +66,7 @@ SecureChannel::PendingMessage::~PendingMessage() {}
 SecureChannel::SecureChannel(std::unique_ptr<Connection> connection)
     : status_(Status::DISCONNECTED), connection_(std::move(connection)) {
   connection_->AddObserver(this);
+  connection_->AddNearbyConnectionObserver(this);
 }
 
 SecureChannel::~SecureChannel() {
@@ -235,6 +238,14 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
   // |false| here, a fatal error has occurred. Thus, there is no need to retry
   // the message; instead, disconnect.
   Disconnect();
+}
+
+void SecureChannel::OnNearbyConnectionStateChagned(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  for (auto& observer : observer_list_) {
+    observer.OnNearbyConnectionStateChanged(this, step, result);
+  }
 }
 
 void SecureChannel::TransitionToStatus(const Status& new_status) {

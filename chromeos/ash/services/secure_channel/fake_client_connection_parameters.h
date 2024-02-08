@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -62,6 +65,9 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_result,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+  void UpdateNearbyConnectionState(
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result) override;
 
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
@@ -76,6 +82,8 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
 
   mojom::DiscoveryResult ble_discovery_result_;
   absl::optional<mojom::DiscoveryErrorCode> potential_ble_discovery_error_code_;
+  mojom::NearbyConnectionStep nearby_connection_step_;
+  mojom::NearbyConnectionStepResult nearby_connection_step_result_;
 
   mojo::Remote<mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;

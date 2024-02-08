@@ -56,6 +56,12 @@ void FakeClientConnectionParameters::UpdateBleDiscoveryState(
   ble_discovery_result_ = discovery_result;
   potential_ble_discovery_error_code_ = potential_error_code;
 }
+void FakeClientConnectionParameters::UpdateNearbyConnectionState(
+    mojom::NearbyConnectionStep nearby_connection_step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_step_ = nearby_connection_step;
+  nearby_connection_step_result_ = result;
+}
 
 void FakeClientConnectionParameters::OnChannelDisconnected(
     uint32_t disconnection_reason,
