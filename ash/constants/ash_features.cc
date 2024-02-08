@@ -1589,12 +1589,6 @@ BASE_FEATURE(kImeStylusHandwriting,
              "StylusHandwriting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to hide voice button in IME tray if accessibility mic icon
-// is already shown in the shelf.
-BASE_FEATURE(kImeTrayHideVoiceButton,
-             "ImeTrayHideVoiceButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables debug info UI for Korean input method's internal-mode switch.
 BASE_FEATURE(kImeKoreanModeSwitchDebug,
              "ImeKoreanModeSwitchDebug",
@@ -3629,10 +3623,6 @@ bool IsStandaloneWindowMigrationUxEnabled() {
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
   return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
-}
-
-bool IsImeTrayHideVoiceButtonEnabled() {
-  return base::FeatureList::IsEnabled(kImeTrayHideVoiceButton);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {

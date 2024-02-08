@@ -6702,11 +6702,6 @@ const char kImeFstDecoderParamsUpdateName[] =
 const char kImeFstDecoderParamsUpdateDescription[] =
     "Enable updated parameters for the FST decoder.";
 
-const char kImeTrayHideVoiceButtonName[] =
-    "Hides redudant voice button in IME tray";
-const char kImeTrayHideVoiceButtonDescription[] =
-    "Hides voice button in IME tray when mic icon is shown in the shelf";
-
 const char kImeKoreanModeSwitchDebugName[] =
     "Korean input method's mode switch debug";
 const char kImeKoreanModeSwitchDebugDescription[] =

@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -124,9 +123,6 @@ bool IsKioskSession() {
 
 bool ShouldShowVoiceButton() {
   auto* ime_controller = Shell::Get()->ime_controller();
-  if (!ash::features::IsImeTrayHideVoiceButtonEnabled()) {
-    return ime_controller->is_voice_enabled();
-  }
   const bool is_dictation_enabled =
       Shell::Get()
           ->accessibility_controller()
