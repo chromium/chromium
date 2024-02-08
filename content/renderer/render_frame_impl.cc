@@ -420,14 +420,14 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
 bool IsValidCommitUrl(const GURL& url) {
   // Invalid URLs are not accepted by the browser process.
   if (!url.is_valid()) {
-    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
                                   RendererBlockedURLReason::kInvalidURL);
     return false;
   }
 
   // Do not send a URL longer than Mojo will serialize.
   if (url.possibly_invalid_spec().length() > url::kMaxURLChars) {
-    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
                                   RendererBlockedURLReason::kTooLongURL);
     return false;
   }
@@ -436,7 +436,7 @@ bool IsValidCommitUrl(const GURL& url) {
   // fragments).
   if (url.SchemeIs(url::kAboutScheme) &&
       (!url.IsAboutBlank() && !url.IsAboutSrcdoc())) {
-    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedByFilterURL",
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
                                   RendererBlockedURLReason::kBadAboutURL);
     return false;
   }
