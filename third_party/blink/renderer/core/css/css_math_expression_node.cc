@@ -967,6 +967,34 @@ static CalculationResultCategory DetermineComparisonCategory(
   return category;
 }
 
+static CalculationResultCategory DetermineCalcSizeCategory(
+    const CSSMathExpressionNode& left_side,
+    const CSSMathExpressionNode& right_side,
+    CSSMathOperator op) {
+  CalculationResultCategory left_category = left_side.Category();
+  CalculationResultCategory right_category = right_side.Category();
+
+  if (left_category == kCalcOther || right_category == kCalcOther) {
+    return kCalcOther;
+  }
+
+  if (left_category == kCalcLength) {
+    if (right_category == kCalcLength) {
+      return kCalcLength;
+    } else if (right_category == kCalcPercentLength ||
+               right_category == kCalcPercent) {
+      return kCalcPercentLength;
+    }
+  } else if (left_category == kCalcPercentLength ||
+             left_category == kCalcPercent) {
+    if (right_category == kCalcLength || right_category == kCalcPercentLength ||
+        right_category == kCalcPercent) {
+      return kCalcPercentLength;
+    }
+  }
+  return kCalcOther;
+}
+
 // ------ Start of CSSMathExpressionIdentifierLiteral member functions -
 
 CSSMathExpressionIdentifierLiteral::CSSMathExpressionIdentifierLiteral(
@@ -1002,6 +1030,24 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
 
   CalculationResultCategory new_category =
       DetermineCategory(*left_side, *right_side, op);
+  if (new_category == kCalcOther) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CSSMathExpressionOperation>(left_side, right_side,
+                                                          op, new_category);
+}
+
+// static
+CSSMathExpressionNode* CSSMathExpressionOperation::CreateCalcSizeOperation(
+    const CSSMathExpressionNode* left_side,
+    const CSSMathExpressionNode* right_side) {
+  DCHECK_NE(left_side->Category(), kCalcOther);
+  DCHECK_NE(right_side->Category(), kCalcOther);
+
+  const CSSMathOperator op = CSSMathOperator::kCalcSize;
+  CalculationResultCategory new_category =
+      DetermineCalcSizeCategory(*left_side, *right_side, op);
   if (new_category == kCalcOther) {
     return nullptr;
   }
@@ -1561,6 +1607,16 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
       result.value() *= number;
       break;
     }
+    case CSSMathOperator::kCalcSize: {
+      // TODO(https://crbug.com/313072): For now we handle only the case where
+      // the calculation converts to a PixelsAndPercent without any
+      // substitutions of the 'size' keyword from the basis (which may or may
+      // not itself convert to PixelsAndPercent).  We could theoretically
+      // handle more cases, but this should be fine for now (as for many of
+      // the functions below) not to handle all cases.
+      result = operands_[1]->ToPixelsAndPercent(length_resolver);
+      break;
+    }
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax:
     case CSSMathOperator::kClamp:
@@ -1645,7 +1701,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
     case CSSMathOperator::kSign:
-    case CSSMathOperator::kProgress: {
+    case CSSMathOperator::kProgress:
+    case CSSMathOperator::kCalcSize: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
@@ -1670,9 +1727,11 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kAbs;
       } else if (operator_ == CSSMathOperator::kSign) {
         op = CalculationOperator::kSign;
-      } else {
-        CHECK(operator_ == CSSMathOperator::kProgress);
+      } else if (operator_ == CSSMathOperator::kProgress) {
         op = CalculationOperator::kProgress;
+      } else {
+        CHECK(operator_ == CSSMathOperator::kCalcSize);
+        op = CalculationOperator::kCalcSize;
       }
       return CalculationExpressionOperationNode::CreateSimplified(
           std::move(operands), op);
@@ -1791,6 +1850,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
       // When stepped value functions are involved, we can't resolve the
       // expression into a length array.
     case CSSMathOperator::kProgress:
+    case CSSMathOperator::kCalcSize:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -1886,7 +1946,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kRem:
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
-    case CSSMathOperator::kSign: {
+    case CSSMathOperator::kSign:
+    case CSSMathOperator::kCalcSize: {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
@@ -2008,6 +2069,18 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kSign:
         case CSSMathOperator::kProgress:
           return CSSPrimitiveValue::UnitType::kNumber;
+        case CSSMathOperator::kCalcSize: {
+          DCHECK_EQ(operands_.size(), 2u);
+          CSSPrimitiveValue::UnitType calculation_type =
+              operands_[1]->ResolvedUnitType();
+          if (calculation_type != CSSPrimitiveValue::UnitType::kIdent) {
+            // The basis is not involved.
+            return calculation_type;
+          }
+          // TODO(https://crbug.com/313072): We could in theory resolve the
+          // 'size' keyword to produce a correct answer in more cases.
+          return CSSPrimitiveValue::UnitType::kUnknown;
+        }
         case CSSMathOperator::kInvalid:
           NOTREACHED();
           return CSSPrimitiveValue::UnitType::kUnknown;
@@ -2129,6 +2202,15 @@ double CSSMathExpressionOperation::EvaluateOperator(
     case CSSMathOperator::kProgress: {
       CHECK_EQ(operands.size(), 3u);
       return (operands[0] - operands[1]) / (operands[2] - operands[1]);
+    }
+    case CSSMathOperator::kCalcSize: {
+      CHECK_EQ(operands.size(), 2u);
+      // TODO(https://crbug.com/313072): In theory we could also
+      // evaluate (a) cases where the basis (operand 0) is not a double,
+      // and (b) cases where the basis (operand 0) is a double and the
+      // calculation (operand 1) requires 'size' keyword substitutions.
+      // But for now just handle the simplest case.
+      return operands[1];
     }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -3207,6 +3289,11 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return MakeGarbageCollected<CSSMathExpressionOperation>(
           CalculationResultCategory::kCalcNumber, std::move(operands),
           CSSMathOperator::kProgress);
+    }
+    case CalculationOperator::kCalcSize: {
+      CHECK_EQ(children.size(), 2u);
+      return CSSMathExpressionOperation::CreateCalcSizeOperation(
+          Create(*children.front()), Create(*children.back()));
     }
     case CalculationOperator::kInvalid:
       NOTREACHED();

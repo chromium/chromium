@@ -283,6 +283,14 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children.size(), 2u);
+      // TODO(https://crbug.com/313072): It may be worth implementing
+      // simplification for calc-size(), but it's not likely to be possible to
+      // simplify calc-size() in any of its real use cases.
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
@@ -402,11 +410,18 @@ float CalculationExpressionOperationNode::Evaluate(
       }
     }
     case CalculationOperator::kProgress: {
-      DCHECK(!children_.empty());
+      DCHECK_EQ(children_.size(), 3u);
       float progress = children_[0]->Evaluate(max_value, anchor_evaluator);
       float from = children_[1]->Evaluate(max_value, anchor_evaluator);
       float to = children_[2]->Evaluate(max_value, anchor_evaluator);
       return (progress - from) / (to - from);
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      // float basis = children_[0]->Evaluate(max_value, anchor_evaluator);
+      // TODO(https://crbug.com/313072): pass basis to computation of
+      // calculation!
+      return children_[1]->Evaluate(max_value, anchor_evaluator);
     }
     case CalculationOperator::kInvalid:
       break;
@@ -445,6 +460,11 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
           children_[0]->IsNumber() ? children_[1] : children_[0];
       return CreateSimplified(
           Children({pixels_and_percent->Zoom(factor), number}), operator_);
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      return CreateSimplified(
+          Children({children_[0], children_[1]->Zoom(factor)}), operator_);
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:
@@ -504,6 +524,16 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
         return ResultType::kPixelsAndPercent;
 
       return ResultType::kNumber;
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      auto basis_type = children_[0]->ResolvedResultType();
+      auto calculation_type = children_[1]->ResolvedResultType();
+      if (basis_type != ResultType::kPixelsAndPercent ||
+          calculation_type != ResultType::kPixelsAndPercent) {
+        return ResultType::kInvalid;
+      }
+      return ResultType::kPixelsAndPercent;
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:

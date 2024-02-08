@@ -391,6 +391,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
       Operands&& operands,
       CSSValueID function_id);
 
+  static CSSMathExpressionNode* CreateCalcSizeOperation(
+      const CSSMathExpressionNode* left_side,
+      const CSSMathExpressionNode* right_side);
+
   CSSMathExpressionOperation(const CSSMathExpressionNode* left_side,
                              const CSSMathExpressionNode* right_side,
                              CSSMathOperator op,
@@ -442,11 +446,12 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return operator_ == CSSMathOperator::kAbs ||
            operator_ == CSSMathOperator::kSign;
   }
+  bool IsCalcSize() const { return operator_ == CSSMathOperator::kCalcSize; }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {
     return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
-           IsTrigonometricFunction() || IsSignRelatedFunction();
+           IsTrigonometricFunction() || IsSignRelatedFunction() || IsCalcSize();
   }
 
   bool InvolvesPercentage() const final;
