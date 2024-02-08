@@ -1827,8 +1827,7 @@ DOMNodeId InputMethodController::NodeIdOfFocusedElement() const {
 }
 
 WebTextInputType InputMethodController::TextInputType() const {
-  Element* element = GetDocument().FocusedElement();
-  if (!element) {
+  if (!IsAvailable()) {
     return kWebTextInputTypeNone;
   }
 
@@ -1836,7 +1835,8 @@ WebTextInputType InputMethodController::TextInputType() const {
   // editing inside a <canvas> with EditContext we need to handle that case
   // directly before looking at the selection position.
   if (GetActiveEditContext()) {
-    if (IsA<HTMLCanvasElement>(*element)) {
+    Element* element = GetDocument().FocusedElement();
+    if (IsA<HTMLCanvasElement>(element)) {
       return kWebTextInputTypeContentEditable;
     }
   }
@@ -1852,8 +1852,10 @@ WebTextInputType InputMethodController::TextInputType() const {
   if (!RootEditableElementOfSelection(GetFrame().Selection()))
     return kWebTextInputTypeNone;
 
-  if (!IsAvailable())
+  Element* element = GetDocument().FocusedElement();
+  if (!element) {
     return kWebTextInputTypeNone;
+  }
 
   if (auto* input = DynamicTo<HTMLInputElement>(*element)) {
     FormControlType type = input->FormControlType();
