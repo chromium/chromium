@@ -86,6 +86,7 @@ source_set("base") {
     "scoped_protobuf_http_request.h",
     "service_urls.cc",
     "service_urls.h",
+    "session_authz_service_client.h",
     "session_options.cc",
     "session_options.h",
     "socket_reader.cc",
@@ -290,6 +291,8 @@ static_library("test_support") {
     "fake_oauth_token_getter.h",
     "mock_oauth_client.cc",
     "mock_oauth_client.h",
+    "mock_session_authz_service_client.cc",
+    "mock_session_authz_service_client.h",
     "protobuf_http_test_responder.cc",
     "protobuf_http_test_responder.h",
     "test_rsa_key_pair.h",
@@ -300,7 +303,9 @@ static_library("test_support") {
     ":protobuf_http_client_messages_proto",
     "//base/test:test_support",
     "//remoting/proto",
+    "//remoting/proto:internal_structs",
     "//services/network:test_support",
+    "//testing/gmock",
   ]
   public_deps = [
     ":authorization",

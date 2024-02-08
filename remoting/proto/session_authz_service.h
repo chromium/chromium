@@ -27,6 +27,8 @@ struct GenerateHostTokenResponseStruct {
 struct VerifySessionTokenRequestStruct {
   VerifySessionTokenRequestStruct();
   ~VerifySessionTokenRequestStruct();
+  VerifySessionTokenRequestStruct(const VerifySessionTokenRequestStruct&);
+  bool operator==(const VerifySessionTokenRequestStruct&) const;
 
   std::string session_token;
 };

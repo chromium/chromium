@@ -8,11 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/session_authz_service_client.h"
 #include "remoting/proto/session_authz_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -28,33 +27,23 @@ namespace remoting {
 
 // A helper class that communicates with the SessionAuthz service using the Corp
 // API. For internal details, see go/crd-sessionauthz.
-class CorpSessionAuthzServiceClient {
+class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
  public:
-  using GenerateHostTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
-      std::unique_ptr<internal::GenerateHostTokenResponseStruct>)>;
-  using VerifySessionTokenCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
-      std::unique_ptr<internal::VerifySessionTokenResponseStruct>)>;
-  using ReauthorizeHostCallback = base::OnceCallback<void(
-      const ProtobufHttpStatus&,
-      std::unique_ptr<internal::ReauthorizeHostResponseStruct>)>;
-
   CorpSessionAuthzServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<OAuthTokenGetter> oauth_token_getter);
-  ~CorpSessionAuthzServiceClient();
+  ~CorpSessionAuthzServiceClient() override;
 
   CorpSessionAuthzServiceClient(const CorpSessionAuthzServiceClient&) = delete;
   CorpSessionAuthzServiceClient& operator=(
       const CorpSessionAuthzServiceClient&) = delete;
 
-  void GenerateHostToken(GenerateHostTokenCallback callback);
+  void GenerateHostToken(GenerateHostTokenCallback callback) override;
   void VerifySessionToken(
       const internal::VerifySessionTokenRequestStruct& request,
-      VerifySessionTokenCallback callback);
+      VerifySessionTokenCallback callback) override;
   void ReauthorizeHost(const internal::ReauthorizeHostRequestStruct& request,
-                       ReauthorizeHostCallback callback);
+                       ReauthorizeHostCallback callback) override;
 
  private:
   template <typename CallbackType>
