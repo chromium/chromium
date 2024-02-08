@@ -324,6 +324,16 @@ suite('ComposeApp', () => {
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
 
+    // Input with positive feedback.
+    const appWithPositiveFeedback = await initializeNewAppWithState({
+      webuiState: JSON.stringify({input: 'some input'}),
+      hasPendingRequest: false,
+      feedback: UserFeedback.kUserFeedbackPositive,
+    });
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP,
+        appWithPositiveFeedback.$.feedbackButtons.selectedOption);
+
     // Already has a response but is loading another one.
     const appWithResultAndLoading = await initializeNewAppWithState({
       webuiState: JSON.stringify({input: 'some input'}),
@@ -623,15 +633,16 @@ suite('ComposeApp', () => {
         selectedLength: Number(Length.kLonger),
         selectedTone: Number(Tone.kCasual),
       }),
-      feedback: UserFeedback.kUserFeedbackUnspecified,
+      feedback: UserFeedback.kUserFeedbackPositive,
     });
     const appWithUndo = document.createElement('compose-app');
     document.body.appendChild(appWithUndo);
     await testProxy.whenCalled('requestInitialState');
 
-    // CLick undo.
+    // Click undo.
     appWithUndo.$.undoButton.click();
     await testProxy.whenCalled('undo');
+    await flushTasks();
 
     // UI is updated.
     assertEquals('my old input', appWithUndo.$.textarea.value);
@@ -640,6 +651,9 @@ suite('ComposeApp', () => {
         appWithUndo.$.resultText.$.root.innerText, 'some undone result');
     assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
     assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP,
+        appWithUndo.$.feedbackButtons.selectedOption);
   });
 
   test('Feedback', async () => {

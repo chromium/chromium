@@ -15,6 +15,7 @@ import '//resources/cr_elements/md_select.css.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -72,6 +73,7 @@ export interface ComposeAppElement {
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
     resultText: ComposeResultTextElement,
+    feedbackButtons: CrFeedbackButtonsElement,
   };
 }
 
@@ -652,7 +654,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
     this.undoEnabled_ = this.response_.undoAvailable;
-    this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.$.textarea.transitionToEditable();
     if (!this.partialResponse_) {
       if (this.response_.status === ComposeStatus.kOk) {
@@ -680,12 +681,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
+    this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.response_ = response;
   }
 
   private partialComposeResponseReceived_(partialResponse:
                                               PartialComposeResponse) {
     assert(!this.response_);
+    this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.partialResponse_ = partialResponse;
   }
 
