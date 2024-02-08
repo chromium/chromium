@@ -608,8 +608,11 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // the WebStateListDidChange with kDetach.
   OrderControllerSourceFromWebStateList source(*this);
   OrderController order_controller(source);
-  active_index_ =
-      order_controller.DetermineNewActiveIndex(active_index_, {index});
+
+  RemovingIndexes removing_indexes({index});
+  active_index_ = removing_indexes.IndexAfterRemoval(
+      order_controller.DetermineNewActiveIndex(active_index_,
+                                               removing_indexes));
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
@@ -656,19 +659,14 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
   // Immediately determine the new active index to avoid
   // sending multiple notification about changing active
   // WebState.
-  int new_active_index = kInvalidIndex;
-  if (start_index != 0) {
-    std::vector<int> removing_indexes;
-    removing_indexes.reserve(count() - start_index);
-    for (int i = start_index; i < count(); ++i) {
-      removing_indexes.push_back(i);
-    }
+  OrderControllerSourceFromWebStateList source(*this);
+  OrderController order_controller(source);
 
-    OrderControllerSourceFromWebStateList source(*this);
-    OrderController order_controller(source);
-    new_active_index = order_controller.DetermineNewActiveIndex(
-        active_index_, RemovingIndexes(std::move(removing_indexes)));
-  }
+  const int new_active_index = order_controller.DetermineNewActiveIndex(
+      active_index_,
+      RemovingIndexes::Range(start_index, count() - start_index));
+
+  ActivateWebStateAtImpl(new_active_index);
 
   // Detach all web states in a first pass, before destroying them at once
   // later. This avoids odd side effects as a result of WebStateImpl's
@@ -677,17 +675,6 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
   std::vector<std::unique_ptr<web::WebState>> detached_web_states;
 
   const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
-  if (new_active_index != active_index_) {
-    web::WebState* old_active_web_state = GetActiveWebState();
-    SetActiveIndex(new_active_index);
-
-    // Notify the event to the observers that a WebState is detached and an
-    // active WebState is updated as well.
-    detached_web_states.push_back(DetachWebStateAtImpl(
-        count() - 1, DetachParams::ClosingWithUpdateActiveWebState(
-                         is_user_action, old_active_web_state)));
-  }
-
   while (count() > start_index) {
     detached_web_states.push_back(DetachWebStateAtImpl(
         count() - 1, DetachParams::Closing(is_user_action)));

@@ -419,8 +419,9 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
 
   OrderControllerSourceFromWebStateList source(*web_state_list);
   OrderController order_controller(source);
-  const int active_index = order_controller.DetermineNewActiveIndex(
-      web_state_list->active_index(), std::move(removing_indexes));
+  const int active_index = removing_indexes.IndexAfterRemoval(
+      order_controller.DetermineNewActiveIndex(web_state_list->active_index(),
+                                               removing_indexes));
 
   NSUInteger selectedIndex = active_index != WebStateList::kInvalidIndex
                                  ? static_cast<NSUInteger>(active_index)
@@ -484,8 +485,9 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 
   OrderControllerSourceFromWebStateList source(web_state_list);
   OrderController order_controller(source);
-  const int active_index = order_controller.DetermineNewActiveIndex(
-      web_state_list.active_index(), std::move(removing_indexes));
+  const int active_index = removing_indexes.IndexAfterRemoval(
+      order_controller.DetermineNewActiveIndex(web_state_list.active_index(),
+                                               removing_indexes));
   DCHECK_LT(active_index, web_state_list.count());
   storage.set_active_index(active_index);
 }

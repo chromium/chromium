@@ -113,8 +113,9 @@ ios::proto::WebStateListStorage FilterItems(
     const OrderControllerSourceFromWebStateListStorage source(storage);
     const OrderController order_controller(source);
 
-    result.set_active_index(order_controller.DetermineNewActiveIndex(
-        storage.active_index(), removing_indexes));
+    result.set_active_index(removing_indexes.IndexAfterRemoval(
+        order_controller.DetermineNewActiveIndex(storage.active_index(),
+                                                 removing_indexes)));
   }
 
   const int items_size = storage.items_size();
