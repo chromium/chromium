@@ -29,6 +29,10 @@ BASE_FEATURE(kSidePanelCompanion,
 BASE_FEATURE(kSidePanelCompanion2,
              "SidePanelCompanion2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the companion on ChromeOS.
+BASE_FEATURE(kSidePanelCompanionChromeOS,
+             "SidePanelCompanionChromeOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Dynamically enables the search companion if the user has experiments
 // enabled.
 BASE_FEATURE(kCompanionEnabledByObservingExpsNavigations,
