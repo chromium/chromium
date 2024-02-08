@@ -31,11 +31,11 @@ config("find_bad_constructs") {
       "-Xclang",
       "check-stack-allocated",
 
-      # TODO(danakj): Enable this after clang update.
-      #"-Xclang",
-      #"-plugin-arg-find-bad-constructs",
-      #"-Xclang",
-      #"check-allow-auto-typedefs",
+      # TODO(danakj): Delete this and the option from the plugin.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-allow-auto-typedefs",
 
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
