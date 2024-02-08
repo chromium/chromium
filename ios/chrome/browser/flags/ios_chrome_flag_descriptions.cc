@@ -724,6 +724,12 @@ const char kOmniboxPopupRowContentConfigurationName[] =
 const char kOmniboxPopupRowContentConfigurationDescription[] =
     "Enables the use of content configuration for the omnibox popup row.";
 
+const char kOmniboxRichAutocompletionName[] =
+    "Omnibox rich inline autocompletion";
+const char kOmniboxRichAutocompletionDescription[] =
+    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
+    "to any type of input that users repeatedly use to get to specific URLs.";
+
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =

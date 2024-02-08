@@ -642,6 +642,10 @@ extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 extern const char kOmniboxPopupRowContentConfigurationName[];
 extern const char kOmniboxPopupRowContentConfigurationDescription[];
 
+// Title and description for omnibox rich inline autocompletion.
+extern const char kOmniboxRichAutocompletionName[];
+extern const char kOmniboxRichAutocompletionDescription[];
+
 // Title and description for improved RTL layout of suggestions.
 extern const char kOmniboxSuggestionsRTLImprovementsName[];
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
