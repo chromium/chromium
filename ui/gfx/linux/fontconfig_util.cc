@@ -30,6 +30,13 @@ constexpr base::FilePath::CharType kGoogleSansStaticPath[] =
     FILE_PATH_LITERAL("/usr/share/fonts/google-sans/static");
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// This should match `imageloader::kImageloaderMountBase` from
+// //third_party/cros_system_api/constants/imageloader.h.
+constexpr base::FilePath::CharType kImageloaderMountBase[] =
+    FILE_PATH_LITERAL("/run/imageloader/");
+#endif
+
 // A singleton class to wrap a global font-config configuration. The
 // configuration reference counter is incremented to avoid the deletion of the
 // structure while being used. This class is single-threaded and should only be
@@ -273,5 +280,29 @@ void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
     param_out->subpixel_rendering = ConvertFontconfigRgba(fc_rgba);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool AddAppFontDir(base::FilePath dir) {
+  if (dir.ReferencesParent()) {
+    // Possible path traversal.
+    return false;
+  }
+  if (!base::FilePath(kImageloaderMountBase).IsParent(dir)) {
+    // Not a DLC path.
+    return false;
+  }
+
+  FcConfig* config = GetGlobalFontConfig();
+
+  // Points to memory owned by `dir`.
+  const FcChar8* dir_fcstring =
+      reinterpret_cast<const FcChar8*>(dir.value().c_str());
+
+  // Adds the folder to the available fonts in the application. Returns
+  // false only when fonts cannot be added due to "allocation failure".
+  // https://www.freedesktop.org/software/fontconfig/fontconfig-devel/fcconfigappfontadddir.html
+  return FcConfigAppFontAddDir(config, dir_fcstring);
+}
+#endif
 
 }  // namespace gfx
