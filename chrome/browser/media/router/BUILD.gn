@@ -338,10 +338,14 @@ source_set("unittests") {
       "providers/dial/dial_media_route_provider_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
+    if (is_win) {
+      sources += [ "discovery/discovery_network_list_win_unittest.cc" ]
+    }
     deps += [
       ":logger_list",
       ":test_support",
       "//chrome/browser/media/router/discovery",
+      "//chrome/browser/media/router/discovery:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",

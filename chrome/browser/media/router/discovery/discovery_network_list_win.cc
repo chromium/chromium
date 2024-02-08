@@ -2,39 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/discovery/discovery_network_list.h"
+#include "chrome/browser/media/router/discovery/discovery_network_list_win.h"
 
 #include <winsock2.h>
-#include <ws2tcpip.h>
+#include <wrl/client.h>
 
-#include <iphlpapi.h>  // NOLINT
 #include <windot11.h>  // NOLINT
 #include <wlanapi.h>   // NOLINT
 
 #include <algorithm>
 #include <cstring>
-#include <map>
+
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/small_map.h"
+
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/win/hstring_reference.h"
+#include "base/win/scoped_hstring.h"
+#include "base/win/windows_version.h"
+#include "chrome/browser/media/router/discovery/discovery_network_list.h"
+
+namespace WinrtConnectivity = ABI::Windows::Networking::Connectivity;
+namespace WinrtCollections = ABI::Windows::Foundation::Collections;
+
+using Microsoft::WRL::ComPtr;
 
 namespace media_router {
 namespace {
 
-struct GuidOperatorLess {
-  bool operator()(const GUID& guid1, const GUID& guid2) const {
-    return memcmp(&guid1, &guid2, sizeof(GUID)) < 0;
-  }
-};
+bool g_requires_network_location_permission_for_testing = false;
+
+WindowsOsApi& GetWindowsOsApi() {
+  static base::NoDestructor<WindowsOsApi> windows_os_api;
+  return *windows_os_api;
+}
 
 void IfTable2Deleter(PMIB_IF_TABLE2 interface_table) {
   if (interface_table) {
-    FreeMibTable(interface_table);
+    GetWindowsOsApi().ip_helper_api.free_mib_table_callback.Run(
+        interface_table);
   }
+}
+
+}  // namespace
+
+bool GuidOperatorLess::operator()(const GUID& guid1, const GUID& guid2) const {
+  return memcmp(&guid1, &guid2, sizeof(GUID)) < 0;
 }
 
 typedef DWORD(WINAPI* WlanOpenHandleFunction)(DWORD dwClientVersion,
@@ -132,7 +149,8 @@ class ScopedWlanClientHandle {
 base::small_map<std::map<GUID, std::string, GuidOperatorLess>>
 GetInterfaceGuidMacMap() {
   PMIB_IF_TABLE2 interface_table_raw = nullptr;
-  auto result = GetIfTable2(&interface_table_raw);
+  auto result = GetWindowsOsApi().ip_helper_api.get_if_table2_callback.Run(
+      &interface_table_raw);
   if (result != ERROR_SUCCESS) {
     return {};
   }
@@ -228,17 +246,182 @@ base::small_map<std::map<std::string, std::string>> GetMacSsidMap() {
   return mac_ssid_map;
 }
 
-}  // namespace
+// Returns true when running on a Windows version that prompts for network
+// location permission.  At the time of this writing, the permission prompt
+// exists in Win11 24H2 only, which does not have a final build yet, but is
+// shipping publicly to Windows Insiders.
+//
+// See the following documentation for more detail:
+//
+// Changes to API behavior for Wi-Fi access and location
+// https://learn.microsoft.com/en-us/windows/win32/nativewifi/wi-fi-access-location-changes
+//
+// Announcing Windows 11 Insider Preview Build 25977 (Canary Channel)
+// https://blogs.windows.com/windows-insider/2023/10/18/announcing-windows-11-insider-preview-build-25977-canary-channel/
+[[nodiscard]] bool RequiresNetworkLocationPermission() {
+  const base::win::OSInfo::VersionNumber& os_version =
+      base::win::OSInfo::GetInstance()->version_number();
+
+  // Win11 uses 10 for its major version number.
+  const bool is_24h2_or_greater =
+      (os_version.major > 10) ||
+      (os_version.major == 10 && os_version.build >= 25977);
+  return is_24h2_or_greater ||
+         g_requires_network_location_permission_for_testing;
+}
+
+// Returns true when `connection_profile` is connected to a local network or the
+// internet.
+bool IsProfileConnectedToNetwork(
+    WinrtConnectivity::IConnectionProfile* connection_profile) {
+  WinrtConnectivity::NetworkConnectivityLevel connectivity;
+  HRESULT hr = connection_profile->GetNetworkConnectivityLevel(&connectivity);
+  if (hr != S_OK) {
+    return false;
+  }
+  return connectivity != WinrtConnectivity::NetworkConnectivityLevel::
+                             NetworkConnectivityLevel_None;
+}
+
+// Returns the GUID for the network interface adapter used by
+// `connection_profile`.
+HRESULT GetProfileNetworkAdapterId(
+    WinrtConnectivity::IConnectionProfile* connection_profile,
+    GUID* network_adapter_id) {
+  ComPtr<WinrtConnectivity::INetworkAdapter> network_adapter;
+  HRESULT hr = connection_profile->get_NetworkAdapter(&network_adapter);
+  if (hr != S_OK) {
+    return hr;
+  }
+  return network_adapter->get_NetworkAdapterId(network_adapter_id);
+}
+
+// Returns the WiFi SSID used by the`connection_profile` for network
+// connectivity. Returns an error when `connection_profile` does not use a WiFi
+// network adapter.
+HRESULT GetProfileWifiSSID(
+    WinrtConnectivity::IConnectionProfile* connection_profile,
+    HSTRING* out_ssid) {
+  ComPtr<WinrtConnectivity::IConnectionProfile2> connection_profile2;
+  HRESULT hr =
+      connection_profile->QueryInterface(IID_PPV_ARGS(&connection_profile2));
+  if (hr != S_OK) {
+    return hr;
+  }
+
+  ComPtr<WinrtConnectivity::IWlanConnectionProfileDetails>
+      wlan_connection_details;
+  hr = connection_profile2->get_WlanConnectionProfileDetails(
+      &wlan_connection_details);
+  if (hr != S_OK) {
+    return hr;
+  }
+
+  if (wlan_connection_details == nullptr) {
+    // `connection_profile` is not using WiFi.
+    return kWifiNotSupported;
+  }
+  return wlan_connection_details->GetConnectedSsid(out_ssid);
+}
+
+HRESULT GetAllConnectionProfiles(
+    ComPtr<WinrtCollections::IVectorView<
+        WinrtConnectivity::ConnectionProfile*>>* out_connection_profiles,
+    uint32_t* out_connection_profiles_size) {
+  ComPtr<WinrtConnectivity::INetworkInformationStatics>
+      network_information_statics;
+  HRESULT hr =
+      GetWindowsOsApi().winrt_api.ro_get_activation_factory_callback.Run(
+          base::win::HStringReference(
+              RuntimeClass_Windows_Networking_Connectivity_NetworkInformation)
+              .Get(),
+          IID_PPV_ARGS(&network_information_statics));
+  if (hr != S_OK) {
+    return hr;
+  }
+
+  ComPtr<WinrtCollections::IVectorView<WinrtConnectivity::ConnectionProfile*>>
+      connection_profiles;
+  hr = network_information_statics->GetConnectionProfiles(&connection_profiles);
+  if (hr != S_OK) {
+    return hr;
+  }
+
+  uint32_t connection_profiles_size;
+  hr = connection_profiles->get_Size(&connection_profiles_size);
+  if (hr != S_OK) {
+    return hr;
+  }
+
+  *out_connection_profiles = connection_profiles;
+  *out_connection_profiles_size = connection_profiles_size;
+  return S_OK;
+}
+
+// Returns a map from a network adapter's MAC address to its currently
+// associated WiFi SSID using WinRT Network APIs instead of Win32 WLAN APIS.
+// In particular, uses IWlanConnectionProfileDetails::GetConnectedSsid() to get
+// the SSID without prompting the user for network location permission.  The
+// Win32 version uses WlanQueryInterface(), which prompts for permission in
+// Win11 24H2.
+base::small_map<std::map<std::string, std::string>> GetMacSsidMapUsingWinrt() {
+  ComPtr<WinrtCollections::IVectorView<WinrtConnectivity::ConnectionProfile*>>
+      connection_profiles;
+  uint32_t connection_profiles_size = 0u;
+  HRESULT hr =
+      GetAllConnectionProfiles(&connection_profiles, &connection_profiles_size);
+  if (hr != S_OK) {
+    return {};
+  }
+
+  auto guid_mac_map = GetInterfaceGuidMacMap();
+  base::small_map<std::map<std::string, std::string>> mac_ssid_map;
+
+  // This loop finds each connected wireless interface, mapping its MAC address
+  // to its SSID.
+  for (uint32_t i = 0u; i < connection_profiles_size; ++i) {
+    ComPtr<WinrtConnectivity::IConnectionProfile> connection_profile;
+    hr = connection_profiles->GetAt(i, &connection_profile);
+    if (hr != S_OK) {
+      continue;
+    }
+
+    if (!IsProfileConnectedToNetwork(connection_profile.Get())) {
+      // Skip disconnected profiles.
+      continue;
+    }
+
+    HSTRING ssid_hstring;
+    hr = GetProfileWifiSSID(connection_profile.Get(), &ssid_hstring);
+    if (hr != S_OK) {
+      // Skip ethernet and cellular profiles.
+      continue;
+    }
+    base::win::ScopedHString ssid(ssid_hstring);
+
+    GUID network_adapter_id;
+    hr = GetProfileNetworkAdapterId(connection_profile.Get(),
+                                    &network_adapter_id);
+    if (hr != S_OK) {
+      continue;
+    }
+
+    const auto mac_entry = guid_mac_map.find(network_adapter_id);
+    if (mac_entry == guid_mac_map.end()) {
+      continue;
+    }
+
+    mac_ssid_map.emplace(/*wifi_network_adapter_mac_address=*/mac_entry->second,
+                         ssid.GetAsUTF8());
+  }
+  return mac_ssid_map;
+}
 
 std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
   // Max number of times to retry GetAdaptersAddresses due to
   // ERROR_BUFFER_OVERFLOW. If GetAdaptersAddresses returns this indefinitely
   // due to an unforeseen reason, we don't want to be stuck in an endless loop.
   constexpr int kMaxGetAdaptersAddressTries = 10;
-
-  // Use an initial buffer size of 15KB, as recommended by MSDN. See:
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
-  constexpr int kInitialAddressBufferSize = 15000;
 
   constexpr ULONG kAddressFlags =
       GAA_FLAG_SKIP_UNICAST | GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST |
@@ -251,7 +434,7 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
   // the required size.  Although it's very unlikely that two successive calls
   // will both require increasing the buffer size, there's no guarantee that
   // this won't happen; this is what the maximum retry count guards against.
-  ULONG addresses_buffer_size = kInitialAddressBufferSize;
+  ULONG addresses_buffer_size = kGetAdaptersAddressesInitialBufferSize;
   std::unique_ptr<char[]> addresses_buffer;
   PIP_ADAPTER_ADDRESSES adapter_addresses = nullptr;
   ULONG result = ERROR_BUFFER_OVERFLOW;
@@ -261,8 +444,10 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
     addresses_buffer.reset(new char[addresses_buffer_size]);
     adapter_addresses =
         reinterpret_cast<PIP_ADAPTER_ADDRESSES>(addresses_buffer.get());
-    result = GetAdaptersAddresses(AF_UNSPEC, kAddressFlags, nullptr,
-                                  adapter_addresses, &addresses_buffer_size);
+    result =
+        GetWindowsOsApi().ip_helper_api.get_adapters_addresses_callback.Run(
+            AF_UNSPEC, kAddressFlags, nullptr, adapter_addresses,
+            &addresses_buffer_size);
   }
 
   if (result != NO_ERROR) {
@@ -270,7 +455,12 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
   }
 
   std::vector<DiscoveryNetworkInfo> network_ids;
-  auto mac_ssid_map = GetMacSsidMap();
+  base::small_map<std::map<std::string, std::string>> mac_ssid_map;
+  if (RequiresNetworkLocationPermission()) {
+    mac_ssid_map = GetMacSsidMapUsingWinrt();
+  } else {
+    mac_ssid_map = GetMacSsidMap();
+  }
   for (const IP_ADAPTER_ADDRESSES* current_adapter = adapter_addresses;
        current_adapter != nullptr; current_adapter = current_adapter->Next) {
     // We only want adapters which are up and either Ethernet or wireless, so we
@@ -313,6 +503,27 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
   StableSortDiscoveryNetworkInfo(network_ids.begin(), network_ids.end());
 
   return network_ids;
+}
+
+WindowsOsApi::WindowsOsApi() = default;
+WindowsOsApi::WindowsOsApi(const WindowsOsApi& source) = default;
+WindowsOsApi::~WindowsOsApi() = default;
+
+WindowsOsApi::IpHelperApi::IpHelperApi() = default;
+WindowsOsApi::IpHelperApi::IpHelperApi(const IpHelperApi& source) = default;
+WindowsOsApi::IpHelperApi::~IpHelperApi() = default;
+
+WindowsOsApi::WinrtApi::WinrtApi() = default;
+WindowsOsApi::WinrtApi::WinrtApi(const WinrtApi& source) = default;
+WindowsOsApi::WinrtApi::~WinrtApi() = default;
+
+void OverrideWindowsOsApiForTesting(WindowsOsApi overridden_api) {
+  GetWindowsOsApi() = overridden_api;
+}
+
+void OverrideRequiresNetworkLocationPermissionForTesting(  // IN-TEST
+    bool requires_permission) {
+  g_requires_network_location_permission_for_testing = requires_permission;
 }
 
 }  // namespace media_router
