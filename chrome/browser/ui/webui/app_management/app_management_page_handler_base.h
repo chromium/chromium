@@ -49,12 +49,6 @@ class AppManagementPageHandlerBase
     virtual gfx::NativeWindow GetUninstallAnchorWindow() const = 0;
   };
 
-  AppManagementPageHandlerBase(
-      mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
-      mojo::PendingRemote<app_management::mojom::Page> page,
-      Profile* profile,
-      Delegate& delegate);
-
   AppManagementPageHandlerBase(const AppManagementPageHandlerBase&) = delete;
   AppManagementPageHandlerBase& operator=(const AppManagementPageHandlerBase&) =
       delete;
@@ -106,6 +100,13 @@ class AppManagementPageHandlerBase
   void OnWebAppUserLinkCapturingPreferencesChanged(const webapps::AppId& app_id,
                                                    bool is_preferred) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+ protected:
+  AppManagementPageHandlerBase(
+      mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
+      mojo::PendingRemote<app_management::mojom::Page> page,
+      Profile* profile,
+      Delegate& delegate);
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

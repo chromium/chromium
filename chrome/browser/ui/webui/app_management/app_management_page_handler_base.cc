@@ -281,32 +281,6 @@ std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
 
 }  // namespace
 
-AppManagementPageHandlerBase::AppManagementPageHandlerBase(
-    mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
-    mojo::PendingRemote<app_management::mojom::Page> page,
-    Profile* profile,
-    Delegate& delegate)
-    : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
-      profile_(profile),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      shelf_delegate_(this, profile),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      delegate_(delegate) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
-  preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
-
-  // On Chrome OS, file handler updates are already plumbed through
-  // App Service since the change will also affect the intent filters.
-  // There's no need to update twice.
-#if !BUILDFLAG(IS_CHROMEOS)
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  registrar_observation_.Observe(&provider->registrar_unsafe());
-#endif
-}
-
 AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
 
 void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
@@ -603,6 +577,32 @@ void AppManagementPageHandlerBase::OnWebAppUserLinkCapturingPreferencesChanged(
   OnPreferredAppChanged(app_id, is_preferred);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+AppManagementPageHandlerBase::AppManagementPageHandlerBase(
+    mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
+    mojo::PendingRemote<app_management::mojom::Page> page,
+    Profile* profile,
+    Delegate& delegate)
+    : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
+      profile_(profile),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      shelf_delegate_(this, profile),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      delegate_(delegate) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
+  preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
+
+  // On Chrome OS, file handler updates are already plumbed through
+  // App Service since the change will also affect the intent filters.
+  // There's no need to update twice.
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  registrar_observation_.Observe(&provider->registrar_unsafe());
+#endif
+}
 
 app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
     const apps::AppUpdate& update) {
