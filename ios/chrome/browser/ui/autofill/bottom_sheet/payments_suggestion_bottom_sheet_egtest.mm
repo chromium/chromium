@@ -270,7 +270,7 @@ NSString* ExpirationDateNSString() {
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
   // Verify the CVC requester is visible.
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Confirm Card")]
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Verification")]
       assertWithMatcher:grey_notNil()];
 
   GREYAssertNil(
