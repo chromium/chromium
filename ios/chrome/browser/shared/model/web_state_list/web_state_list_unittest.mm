@@ -1175,69 +1175,26 @@ TEST_F(WebStateListTest, InsertWebState_InsertionInPinnedRange) {
   EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(2, true), 2);
 
   // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(0, CreateWebState(testURL0),
-                                 WebStateList::INSERT_NO_FLAGS,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(CreateWebState(testURL0),
+                                 WebStateList::InsertionParams::AtIndex(0));
   // Expect a WebState to be added at the end of the WebStateList.
   EXPECT_EQ(web_state_list_.GetWebStateAt(4)->GetVisibleURL().spec(), testURL0);
 
   // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(2, CreateWebState(testURL1),
-                                 WebStateList::INSERT_NO_FLAGS,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(CreateWebState(testURL1),
+                                 WebStateList::InsertionParams::AtIndex(2));
   // Expect a WebState to be added at the end of the WebStateList.
   EXPECT_EQ(web_state_list_.GetWebStateAt(5)->GetVisibleURL().spec(), testURL1);
 
   // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(1, CreateWebState(testURL2),
-                                 WebStateList::INSERT_NO_FLAGS,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(CreateWebState(testURL2),
+                                 WebStateList::InsertionParams::AtIndex(1));
   // Expect a WebState to be added at the end of the WebStateList.
   EXPECT_EQ(web_state_list_.GetWebStateAt(6)->GetVisibleURL().spec(), testURL2);
 }
 
-// Tests InsertWebState method correctly updates insertion index if it is in the
-// pinned WebStates range and the flag is INSERT_FORCE_INDEX.
-TEST_F(WebStateListTest, InsertWebState_ForceInsertionInPinnedRange) {
-  const char testURL0[] = "https://chromium.org/test_0";
-  const char testURL1[] = "https://chromium.org/test_1";
-  const char testURL2[] = "https://chromium.org/test_2";
-
-  EXPECT_TRUE(web_state_list_.empty());
-
-  AppendNewWebState(kURL0);
-  AppendNewWebState(kURL1);
-  AppendNewWebState(kURL2);
-  AppendNewWebState(kURL3);
-
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(0, true), 0);
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(1, true), 1);
-  EXPECT_EQ(web_state_list_.SetWebStatePinnedAt(2, true), 2);
-
-  // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(0, CreateWebState(testURL0),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
-  // Expect a WebState to be added at the end of WebStates list.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(4)->GetVisibleURL().spec(), testURL0);
-
-  // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(2, CreateWebState(testURL1),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
-  // Expect a WebState to be added at the end of WebStates list.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(5)->GetVisibleURL().spec(), testURL1);
-
-  // Insert a WebState into pinned WebStates range.
-  web_state_list_.InsertWebState(1, CreateWebState(testURL2),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
-  // Expect a WebState to be added at the end of WebStates list.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(6)->GetVisibleURL().spec(), testURL2);
-}
-
-// Tests InsertWebState method correctly updates insertion index when the flag
-// is INSERT_PINNED.
+// Tests InsertWebState method correctly updates insertion index when the params
+// specify it should be pinned.
 TEST_F(WebStateListTest, InsertWebState_InsertWebStatePinned) {
   const char testURL0[] = "https://chromium.org/test_0";
   const char testURL1[] = "https://chromium.org/test_1";
@@ -1250,57 +1207,10 @@ TEST_F(WebStateListTest, InsertWebState_InsertWebStatePinned) {
   AppendNewWebState(kURL2);
   AppendNewWebState(kURL3);
 
-  // Insert a pinned WebState at invalid index.
-  web_state_list_.InsertWebState(WebStateList::kInvalidIndex,
-                                 CreateWebState(testURL0),
-                                 WebStateList::INSERT_PINNED, WebStateOpener());
-  // Expect a WebState to be added into pinned WebStates range.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), testURL0);
-  // Expect a WebState to be pinned.
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
-
-  // Insert a pinned WebState to the non-pinned WebStates range.
-  web_state_list_.InsertWebState(2, CreateWebState(testURL1),
-                                 WebStateList::INSERT_PINNED, WebStateOpener());
-  // Expect a WebState to be added at the end of the pinned WebStates range.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), testURL1);
-  // Expect a WebState to be pinned.
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
-
-  // Insert a pinned WebState to the pinned WebStates range.
-  web_state_list_.InsertWebState(0, CreateWebState(testURL2),
-                                 WebStateList::INSERT_PINNED, WebStateOpener());
-  // Expect a WebState to be added at the end of the pinned WebStates range.
-  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), testURL2);
-  // Expect a WebState to be pinned.
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(2));
-
-  // Final check that only first three WebStates were pinned.
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
-  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(2));
-  EXPECT_FALSE(web_state_list_.IsWebStatePinnedAt(3));
-}
-
-// Tests InsertWebState method correctly updates insertion index when the flags
-// are INSERT_PINNED and INSERT_FORCE_INDEX.
-TEST_F(WebStateListTest, InsertWebState_InsertWebStatePinnedForceIndex) {
-  const char testURL0[] = "https://chromium.org/test_0";
-  const char testURL1[] = "https://chromium.org/test_1";
-  const char testURL2[] = "https://chromium.org/test_2";
-
-  EXPECT_TRUE(web_state_list_.empty());
-
-  AppendNewWebState(kURL0);
-  AppendNewWebState(kURL1);
-  AppendNewWebState(kURL2);
-  AppendNewWebState(kURL3);
-
-  // Insert a pinned WebState at invalid index.
+  // Insert a pinned WebState without specifying an index.
   web_state_list_.InsertWebState(
-      WebStateList::kInvalidIndex, CreateWebState(testURL0),
-      WebStateList::INSERT_PINNED | WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener());
+      CreateWebState(testURL0),
+      WebStateList::InsertionParams::Automatic().Pinned());
   // Expect a WebState to be added into pinned WebStates range.
   EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), testURL0);
   // Expect a WebState to be pinned.
@@ -1308,9 +1218,8 @@ TEST_F(WebStateListTest, InsertWebState_InsertWebStatePinnedForceIndex) {
 
   // Insert a pinned WebState to the non-pinned WebStates range.
   web_state_list_.InsertWebState(
-      2, CreateWebState(testURL1),
-      WebStateList::INSERT_PINNED | WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener());
+      CreateWebState(testURL1),
+      WebStateList::InsertionParams::AtIndex(2).Pinned());
   // Expect a WebState to be added at the end of the pinned WebStates range.
   EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), testURL1);
   // Expect a WebState to be pinned.
@@ -1318,10 +1227,9 @@ TEST_F(WebStateListTest, InsertWebState_InsertWebStatePinnedForceIndex) {
 
   // Insert a pinned WebState to the pinned WebStates range.
   web_state_list_.InsertWebState(
-      0, CreateWebState(testURL2),
-      WebStateList::INSERT_PINNED | WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener());
-  // Expect a WebState to be added at the same index.
+      CreateWebState(testURL2),
+      WebStateList::InsertionParams::AtIndex(0).Pinned());
+  // Expect a WebState to be added at the end of the pinned WebStates range.
   EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), testURL2);
   // Expect a WebState to be pinned.
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));

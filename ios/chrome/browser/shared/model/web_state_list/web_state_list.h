@@ -269,12 +269,6 @@ class WebStateList {
   int InsertWebState(std::unique_ptr<web::WebState> web_state,
                      InsertionParams params = InsertionParams::Automatic());
 
-  // Deprecated. Use the variant with InsertionParams.
-  int InsertWebState(int index,
-                     std::unique_ptr<web::WebState> web_state,
-                     int insertion_flags,
-                     WebStateOpener opener);
-
   // Moves the WebState at the specified index to another index.
   void MoveWebStateAt(int from_index, int to_index);
 

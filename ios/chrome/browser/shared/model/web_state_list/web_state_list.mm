@@ -346,16 +346,6 @@ int WebStateList::InsertWebState(std::unique_ptr<web::WebState> web_state,
   return InsertWebStateImpl(std::move(web_state), params);
 }
 
-int WebStateList::InsertWebState(int index,
-                                 std::unique_ptr<web::WebState> web_state,
-                                 int insertion_flags,
-                                 WebStateOpener opener) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  InsertionParams params =
-      InsertionParams::ForDeprecationMigration(insertion_flags, index, opener);
-  return InsertWebState(std::move(web_state), params);
-}
-
 void WebStateList::MoveWebStateAt(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
