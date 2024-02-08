@@ -34,6 +34,7 @@ external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/context.py [
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure ]
+crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
 crbug.com/1507773 external/wpt/webdriver/tests/bidi/script/call_function/remote_values.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_elements/find.py [ Failure Pass Timeout ]
@@ -540,6 +541,8 @@ crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting
 crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting.tentative.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/request.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout ]
 crbug.com/626703 external/wpt/fullscreen/rendering/backdrop-inherit.html [ Timeout ]
