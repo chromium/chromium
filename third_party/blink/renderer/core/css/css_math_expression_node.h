@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
@@ -78,11 +79,20 @@ class CORE_EXPORT CSSMathExpressionNode
   static CSSMathExpressionNode* Create(PixelsAndPercent pixels_and_percent);
   static CSSMathExpressionNode* Create(const CalculationExpressionNode& node);
 
+  enum class Flag : uint8_t {
+    AllowPercent,
+
+    MinValue = AllowPercent,
+    MaxValue = AllowPercent,
+  };
+
+  using Flags = base::EnumSet<Flag, Flag::MinValue, Flag::MaxValue>;
+
   static CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
       CSSParserTokenRange tokens,
       const CSSParserContext&,
-      const bool is_percentage_allowed,
+      const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
       // Variable substitutions for relative color syntax.
       // https://www.w3.org/TR/css-color-5/#relative-colors

@@ -188,6 +188,9 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
        "progress(11em from 1rem to 110px) * 11", 11.0, 0.5, 10.5},
   };
 
+  using enum CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   Font font;
   CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
   length_resolver.SetFontSizes(
@@ -204,7 +207,8 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
     // Test expression evaluation.
     const CSSMathExpressionNode* expression =
         CSSMathExpressionNode::ParseMathFunction(
-            CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
+            CSSValueID::kCalc, range, *context, Flags({AllowPercent}),
+            kCSSAnchorQueryTypesNone);
     auto* number = MakeGarbageCollected<InterpolableNumber>(*expression);
     EXPECT_EQ(number->Value(length_resolver), test_case.output);
 
@@ -229,9 +233,9 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
     const auto target_tokens = target_tokenizer.TokenizeToEOF();
     const CSSParserTokenRange target_range(target_tokens);
     const CSSMathExpressionNode* target_expression =
-        CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc,
-                                                 target_range, *context, true,
-                                                 kCSSAnchorQueryTypesNone);
+        CSSMathExpressionNode::ParseMathFunction(
+            CSSValueID::kCalc, target_range, *context, Flags({AllowPercent}),
+            kCSSAnchorQueryTypesNone);
     auto* target = MakeGarbageCollected<InterpolableNumber>(*target_expression);
     EXPECT_EQ(target->Value(length_resolver), test_case.interpolation_output);
 

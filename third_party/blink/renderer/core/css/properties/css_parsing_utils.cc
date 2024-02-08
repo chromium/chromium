@@ -938,11 +938,14 @@ class MathFunctionParser {
   STACK_ALLOCATED();
 
  public:
+  using Flag = CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   MathFunctionParser(
       CSSParserTokenRange& range,
       const CSSParserContext& context,
       CSSPrimitiveValue::ValueRange value_range,
-      const bool is_percentage_allowed = true,
+      const Flags parsing_flags = Flags({Flag::AllowPercent}),
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
       HashMap<CSSValueID, double> color_channel_keyword_values = {})
       : source_range_(range), range_(range) {
@@ -951,7 +954,7 @@ class MathFunctionParser {
       calc_value_ = CSSMathFunctionValue::Create(
           CSSMathExpressionNode::ParseMathFunction(
               token.FunctionId(), ConsumeFunction(range_), context,
-              is_percentage_allowed, allowed_anchor_queries),
+              parsing_flags, allowed_anchor_queries),
           value_range);
     }
   }
@@ -1008,8 +1011,15 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
     value_range = CSSPrimitiveValue::ValueRange::kPositiveInteger;
   }
 
-  MathFunctionParser math_parser(range, context, value_range,
-                                 is_percentage_allowed);
+  using enum CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
+  Flags parsing_flags;
+  if (is_percentage_allowed) {
+    parsing_flags.Put(AllowPercent);
+  }
+
+  MathFunctionParser math_parser(range, context, value_range, parsing_flags);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
     if (math_value->Category() != kCalcNumber) {
       return nullptr;
@@ -1273,6 +1283,9 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSPrimitiveValue::ValueRange value_range,
     UnitlessQuirk unitless,
     CSSAnchorQueryTypes allowed_anchor_queries) {
+  using enum CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kDimensionToken || token.GetType() == kNumberToken) {
     return ConsumeLength(range, context, value_range, unitless);
@@ -1281,8 +1294,7 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     return ConsumePercent(range, context, value_range);
   }
   MathFunctionParser math_parser(range, context, value_range,
-                                 true /* is_percentage_allowed */,
-                                 allowed_anchor_queries);
+                                 Flags({AllowPercent}), allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode())) {
       return math_parser.ConsumeValue();

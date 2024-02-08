@@ -2328,14 +2328,17 @@ class CSSMathExpressionNodeParser {
   STACK_ALLOCATED();
 
  public:
+  using Flag = CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   CSSMathExpressionNodeParser(
       const CSSParserContext& context,
-      const bool is_percentage_allowed,
+      const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
       const HashMap<CSSValueID, double>& color_channel_keyword_values)
       : context_(context),
         allowed_anchor_queries_(allowed_anchor_queries),
-        is_percentage_allowed_(is_percentage_allowed),
+        parsing_flags_(parsing_flags),
         color_channel_keyword_values_(color_channel_keyword_values) {}
 
   bool IsSupportedMathFunction(CSSValueID function_id) {
@@ -2745,7 +2748,8 @@ class CSSMathExpressionNodeParser {
           M_E, CSSPrimitiveValue::UnitType::kNumber);
     }
     if (!(token.GetType() == kNumberToken ||
-          (token.GetType() == kPercentageToken && is_percentage_allowed_) ||
+          (token.GetType() == kPercentageToken &&
+           parsing_flags_.Has(Flag::AllowPercent)) ||
           token.GetType() == kDimensionToken)) {
       // For relative color syntax. Swap in the associated value of a color
       // channel here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
@@ -2918,8 +2922,7 @@ class CSSMathExpressionNodeParser {
 
   const CSSParserContext& context_;
   const CSSAnchorQueryTypes allowed_anchor_queries_;
-  // Indicates if percentages are allowed.
-  const bool is_percentage_allowed_;
+  const Flags parsing_flags_;
   const HashMap<CSSValueID, double>& color_channel_keyword_values_;
 };
 
@@ -3197,10 +3200,10 @@ CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
     CSSValueID function_id,
     CSSParserTokenRange tokens,
     const CSSParserContext& context,
-    const bool is_percentage_allowed,
+    const Flags parsing_flags,
     CSSAnchorQueryTypes allowed_anchor_queries,
     const HashMap<CSSValueID, double>& color_channel_keyword_values) {
-  CSSMathExpressionNodeParser parser(context, is_percentage_allowed,
+  CSSMathExpressionNodeParser parser(context, parsing_flags,
                                      allowed_anchor_queries,
                                      color_channel_keyword_values);
   CSSMathExpressionNode* result =
