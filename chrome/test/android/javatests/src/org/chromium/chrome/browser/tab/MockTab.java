@@ -20,6 +20,9 @@ public class MockTab extends TabImpl {
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
 
+    private Boolean mCanGoBack;
+    private Boolean mCanGoForward;
+
     private boolean mIsCustomTab;
 
     private Long mTimestampMillis;
@@ -70,6 +73,13 @@ public class MockTab extends TabImpl {
             return super.getUrl();
         }
         return mGurlOverride;
+    }
+
+    /**
+     * @param url The {@link GURL} to override with or null to remove the override.
+     */
+    public void setUrl(@Nullable GURL url) {
+        mGurlOverride = url;
     }
 
     public void broadcastOnLoadStopped(boolean toDifferentDocument) {
@@ -154,6 +164,40 @@ public class MockTab extends TabImpl {
 
     public void setParentId(int parentId) {
         mParentId = parentId;
+    }
+
+    /**
+     * Overrides the {@link canGoBack} return value
+     *
+     * @param canGoBack The canGoBack return value or null to remove the override.
+     */
+    public void setCanGoBack(@Nullable Boolean canGoBack) {
+        mCanGoBack = canGoBack;
+    }
+
+    @Override
+    public boolean canGoBack() {
+        if (mCanGoBack != null) {
+            return mCanGoBack;
+        }
+        return super.canGoBack();
+    }
+
+    /**
+     * Overrides the {@link canGoForward} return value
+     *
+     * @param canGoForward The canGoForward return value or null to remove the override.
+     */
+    public void setCanGoForward(@Nullable Boolean canGoForward) {
+        mCanGoForward = canGoForward;
+    }
+
+    @Override
+    public boolean canGoForward() {
+        if (mCanGoForward != null) {
+            return mCanGoForward;
+        }
+        return super.canGoForward();
     }
 
     @Override
