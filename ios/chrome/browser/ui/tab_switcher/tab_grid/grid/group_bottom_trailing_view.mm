@@ -61,7 +61,7 @@ const CGFloat kSpacing = 2;
 - (void)configureWithGroupTabInfo:(GroupTabInfo*)groupTabInfo {
   [self hideAllViews];
   [_mainSubview configureWithSnapshot:groupTabInfo.snapshot
-                              favicon:groupTabInfo.snapshot];
+                              favicon:groupTabInfo.favicon];
   _mainSubview.hidden = NO;
 }
 

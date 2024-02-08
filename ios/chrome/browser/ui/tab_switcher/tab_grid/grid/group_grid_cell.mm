@@ -256,18 +256,17 @@ const CGFloat kSpacing = 4;
   int groupTabInfosLength = [groupTabInfos count];
   if (groupTabInfosLength > 0) {
     [_topLeadingSnapshotView configureWithSnapshot:groupTabInfos[0].snapshot
-                                           favicon:groupTabInfos[0].snapshot];
+                                           favicon:groupTabInfos[0].favicon];
     _topLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 1) {
     [_topTrailingSnapshotView configureWithSnapshot:groupTabInfos[1].snapshot
-                                            favicon:groupTabInfos[1].snapshot];
+                                            favicon:groupTabInfos[1].favicon];
     _topTrailingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 2) {
-    [_bottomLeadingSnapshotView
-        configureWithSnapshot:groupTabInfos[2].snapshot
-                      favicon:groupTabInfos[2].snapshot];
+    [_bottomLeadingSnapshotView configureWithSnapshot:groupTabInfos[2].snapshot
+                                              favicon:groupTabInfos[2].favicon];
     _bottomLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength == 4) {

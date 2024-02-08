@@ -1640,30 +1640,29 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     cell.state = GridCellStateNotEditing;
   }
-  [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
-    // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
-      // TODO(crbug.com/1501837): Remove once the group color is available
-      // throught the group model. Keep for now for testing purposes.
-      cell.icon = icon;
-    }
-  }];
-
-  [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
-    // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
-      GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
-      snapshotFavicon.snapshot = snapshot;
-      snapshotFavicon.favicon = snapshot;
-      // The `snapshotFavicon` is for demo purposes only, it will be replaced
-      // when the group tab model is available, the objects in `groupTabInfos`
-      // can be updated manually to view the different group tab configurations.
-      NSArray<GroupTabInfo*>* groupTabInfos = @[
-        snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-        snapshotFavicon, snapshotFavicon, snapshotFavicon
-      ];
-      [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
-    }
+  [item fetchFavicon:^(TabSwitcherItem* itemForFavicon, UIImage* favicon) {
+    [item fetchSnapshot:^(TabSwitcherItem* itemForSnapshot, UIImage* snapshot) {
+      // Only update the icon if the cell is not already reused for another
+      // item.
+      if (cell.itemIdentifier == itemForFavicon.identifier and
+          cell.itemIdentifier == itemForSnapshot.identifier) {
+        // TODO(crbug.com/1501837): Remove once the group color is available
+        // throught the group model. Keep for now for testing purposes.
+        cell.icon = favicon;
+        GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
+        snapshotFavicon.snapshot = snapshot;
+        snapshotFavicon.favicon = favicon;
+        // The `snapshotFavicon` is for demo purposes only, it will be replaced
+        // when the group tab model is available, the objects in `groupTabInfos`
+        // can be updated manually to view the different group tab
+        // configurations.
+        NSArray<GroupTabInfo*>* groupTabInfos = @[
+          snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
+          snapshotFavicon, snapshotFavicon
+        ];
+        [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
+      }
+    }];
   }];
 
   cell.opacity = 1.0f;
