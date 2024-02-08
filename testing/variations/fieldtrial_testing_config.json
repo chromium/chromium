@@ -4781,6 +4781,24 @@
             ]
         }
     ],
+    "CrOSFederatedAutocorrectPhh": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "launch_stage": "prod"
+                    },
+                    "enable_features": [
+                        "AutocorrectFederatedPhh"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSFederatedLauncherQueryPhhVersion1": [
         {
             "platforms": [
