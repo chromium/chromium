@@ -1355,7 +1355,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="200928901437634269">Folosește Contul Google al copilului sau un cont de la școală. Poți și să setezi controlul parental.</translation>
 <translation id="2009590708342941694">Instrument pentru emoji</translation>
 <translation id="2010501376126504057">Dispozitive compatibile</translation>
-<translation id="201217432804812273">Activează opțiunea Salvează grupul</translation>
+<translation id="201217432804812273">Activează opțiunea „Salvează grupul”</translation>
 <translation id="2012935757369720523">Șterge fișierul</translation>
 <translation id="2013550551806600826">Încearcă. Activează sau dezactivează setarea, apoi derulează cu două degete pe touchpad în zona de testare. Poți găsi opțiunea mai târziu în Setări &gt; Dispozitiv &gt; Mouse și touchpad.</translation>
 <translation id="2015232545623037616">PC și Chromecast în aceeași rețea Wi-Fi</translation>
@@ -4556,7 +4556,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="447252321002412580">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="4472533928615930332">Imaginea generată <ph name="INDEX" /> din <ph name="SUBJECT" />, în stilul <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Începeți</translation>
-<translation id="4473559657152613417">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
+<translation id="4473559657152613417">Dă clic dreapta pe o filă și selectează „Adaugă fila într-un grup nou”</translation>
 <translation id="4473996011558324141">durata estimată</translation>
 <translation id="4474155171896946103">Marchează toate filele...</translation>
 <translation id="4475552974751346499">Caută în descărcări</translation>
@@ -5278,7 +5278,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5051461727068120271">Descarcă fișierul neconfirmat</translation>
 <translation id="5051836348807686060">Verificarea ortografiei nu este acceptată pentru limbile selectate</translation>
 <translation id="5052499409147950210">Editează site-ul</translation>
-<translation id="5052853071318006357">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
+<translation id="5052853071318006357">Dă clic dreapta pe o filă și selectează „Adaugă fila într-un grup nou”</translation>
 <translation id="5053233576223592551">Adaugă un nume de utilizator</translation>
 <translation id="505347685865235222">Grup nedenumit – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054374119096692193">Vezi toate opțiunile pentru carduri în <ph name="BEGIN_LINK" />Personalizează Chrome<ph name="END_LINK" /></translation>
@@ -8298,7 +8298,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Examinează o extensie care a fost eliminată din Magazinul web Chrome}few{Examinează {NUM_EXTENSIONS} extensii care au fost eliminate din Magazinul web Chrome}other{Examinează {NUM_EXTENSIONS} de extensii care au fost eliminate din Magazinul web Chrome}}</translation>
 <translation id="7436921188514130341">Of, nu mai merge! A apărut o eroare la redenumire.</translation>
 <translation id="7439519621174723623">Adaugă un nume de dispozitiv pentru a continua</translation>
-<translation id="7441736532026945583">Selectează Ascunde grupul pentru a elimina grupul din bara de file</translation>
+<translation id="7441736532026945583">Selectează „Ascunde grupul” pentru a elimina grupul din bara de file</translation>
 <translation id="7441736921018636843">Ca să modifici setarea, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /> pentru a elimina expresia de acces pentru sincronizare</translation>
 <translation id="7441830548568730290">Alți utilizatori</translation>
 <translation id="744341768939279100">Creați un profil nou</translation>
@@ -8899,7 +8899,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7887864092952184874">Mouse Bluetooth conectat</translation>
 <translation id="7889371445710865055">Schimbă limba de dictare</translation>
 <translation id="7890147169288018054">Vezi informații despre rețea, cum ar fi adresa IP sau MAC</translation>
-<translation id="7892005672811746207">Activează opțiunea Salvează grupul</translation>
+<translation id="7892005672811746207">Activează opțiunea „Salvează grupul”</translation>
 <translation id="7892384782944609022">Asocierea nu a reușit. Selectează dispozitivul pentru a încerca din nou.</translation>
 <translation id="7893008570150657497">să acceseze fotografii, muzică și alte tipuri de conținut media de pe computer;</translation>
 <translation id="7893153962594818789">Conexiunea Bluetooth este dezactivată pe acest dispozitiv <ph name="DEVICE_TYPE" />. Introdu parola și activează Bluetooth.</translation>
@@ -9742,7 +9742,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8528962588711550376">Se conectează.</translation>
 <translation id="8529578450330869579">Folosește Sistemul denumirilor de domenii (DNS) securizat pentru a împiedica persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. DNS folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Nu s-a conectat prin Tethering instantaneu</translation>
-<translation id="8531367864749403520">Selectează Ascunde grupul pentru a elimina grupul din bara de file</translation>
+<translation id="8531367864749403520">Selectează „Ascunde grupul” pentru a elimina grupul din bara de file</translation>
 <translation id="8531701051932785007">Navigarea sigură îmbunătățită este dezactivată</translation>
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="8534656636775144800">Hopa! A apărut o eroare la asocierea la domeniu. Încearcă din nou.</translation>
