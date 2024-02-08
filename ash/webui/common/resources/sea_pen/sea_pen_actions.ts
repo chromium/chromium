@@ -29,6 +29,7 @@ export enum SeaPenActionName {
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
+  SET_SEA_PEN_ATTRIBUTION = 'set_sea_pen_attribution',
   SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG =
       'set_should_show_sea_pen_terms_of_service_dialog',
 }
@@ -39,8 +40,8 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     ClearSeaPenThumbnailsAction|EndSelectRecentSeaPenImageAction|
     SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
     SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
-    SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|
+    SetSelectedRecentSeaPenImageAction|SetSeaPenAttributionAction|
+    BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction|
     SetShouldShowSeaPenTermsOfServiceDialogAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
@@ -195,6 +196,17 @@ export function setSelectedRecentSeaPenImageAction(key: string|null):
   return {
     name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE,
     key: key,
+  };
+}
+
+/** Sets the attribution for recent Sea Pen image. */
+export interface SetSeaPenAttributionAction extends Action {
+  name: SeaPenActionName.SET_SEA_PEN_ATTRIBUTION;
+}
+
+export function setSeaPenAttributionAction(): SetSeaPenAttributionAction {
+  return {
+    name: SeaPenActionName.SET_SEA_PEN_ATTRIBUTION,
   };
 }
 

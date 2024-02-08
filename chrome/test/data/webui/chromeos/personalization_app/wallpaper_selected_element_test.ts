@@ -144,6 +144,87 @@ suite('WallpaperSelectedElementTest', function() {
         assertEquals('', placeholder.style.display);
       });
 
+  test(
+      'shows loading placeholder when Sea Pen wallpaper is loading',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          ...personalizationStore.data.wallpaper.seaPen.loading,
+          selected: {image: true, attribution: false},
+          setImage: 0,
+        };
+        wallpaperSelectedElement = initElement(WallpaperSelectedElement);
+
+        assertEquals(
+            null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
+
+        assertEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                'textContainer'));
+
+        const placeholder = wallpaperSelectedElement.shadowRoot!.getElementById(
+            'imagePlaceholder');
+
+        assertTrue(
+            !!placeholder, 'image is loading, the placeholder should display');
+
+        // Attribution still loading, loading placeholder should be shown.
+        personalizationStore.data.wallpaper.seaPen = {
+          ...personalizationStore.data.wallpaper.seaPen,
+          loading: {
+            ...personalizationStore.data.wallpaper.seaPen.loading,
+            selected: {image: false, attribution: true},
+            setImage: 0,
+          },
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        assertEquals(
+            '', placeholder.style.display,
+            'attribution is loading, loading placeholder should display');
+
+        // Loading placeholder should be hidden.
+        personalizationStore.data.wallpaper.seaPen = {
+          ...personalizationStore.data.wallpaper.seaPen,
+          loading: {
+            ...personalizationStore.data.wallpaper.seaPen.loading,
+            selected: {image: false, attribution: false},
+            setImage: 0,
+          },
+        };
+        personalizationStore.data.wallpaper.currentSelected = {
+          descriptionContent: '',
+          descriptionTitle: '',
+          key: '/sea_pen/111.jpg',
+          layout: WallpaperLayout.kCenterCropped,
+          type: WallpaperType.kSeaPen,
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        assertEquals(
+            'none', placeholder.style.display,
+            'image placeholer should not display');
+
+        // Sent a Sea Pen wallpaper request to update user wallpaper. Loading
+        // placeholder should come back.
+        personalizationStore.data.wallpaper.seaPen = {
+          ...personalizationStore.data.wallpaper.seaPen,
+          loading: {
+            ...personalizationStore.data.wallpaper.seaPen.loading,
+            selected: {image: false, attribution: false},
+            setImage: 1,
+          },
+        };
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        assertEquals(
+            '', placeholder.style.display,
+            'ongoing requests, image placeholder should display');
+      });
+
   test('shows wallpaper image and attribution when loaded', async () => {
     personalizationStore.data.wallpaper.attribution =
         wallpaperProvider.attribution;
