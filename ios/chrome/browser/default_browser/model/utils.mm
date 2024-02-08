@@ -463,8 +463,15 @@ void StoreCurrentTimestampForKey(NSString* key) {
 }
 
 std::string GetVideoPromoVariant() {
-  return base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserVideoPromo, "default_browser_video_promo_variant");
+  if (!IsDefaultBrowserVideoPromoEnabled()) {
+    return "";
+  }
+  std::string variant = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserVideoPromo, kDefaultBrowserVideoPromoVariant);
+  if (variant != "") {
+    return variant;
+  }
+  return kVideoFullscreenPromo;
 }
 
 }  // namespace
