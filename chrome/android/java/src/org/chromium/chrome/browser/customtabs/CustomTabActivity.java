@@ -92,14 +92,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             new CustomTabActivityTabProvider.Observer() {
                 @Override
                 public void onInitialTabCreated(@NonNull Tab tab, int mode) {
-                    resetPostMessageHandlersForCurrentSession();
-                    maybeCreateHistoryTabHelper(tab);
+                    onTabInitOrSwapped(tab);
                 }
 
                 @Override
                 public void onTabSwapped(@NonNull Tab tab) {
-                    resetPostMessageHandlersForCurrentSession();
-                    maybeCreateHistoryTabHelper(tab);
+                    onTabInitOrSwapped(tab);
                 }
 
                 @Override
@@ -107,6 +105,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     resetPostMessageHandlersForCurrentSession();
                 }
             };
+
+    private void onTabInitOrSwapped(@Nullable Tab tab) {
+        resetPostMessageHandlersForCurrentSession();
+        if (tab != null) maybeCreateHistoryTabHelper(tab);
+    }
 
     private void maybeCreateHistoryTabHelper(Tab tab) {
         String appId = mIntentDataProvider.getClientPackageName();
@@ -149,7 +152,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         super.performPreInflationStartup();
         mTabProvider.addObserver(mTabChangeObserver);
         // We might have missed an onInitialTabCreated event.
-        resetPostMessageHandlersForCurrentSession();
+        onTabInitOrSwapped(mTabProvider.getTab());
 
         mSession = mIntentDataProvider.getSession();
 
