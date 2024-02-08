@@ -119,13 +119,10 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Setting the default value to 0 is convenient for testing. Every Android bot
-// has *some* version of GmsCore installed, so all of them will satisfy the
-// min version check.
 constinit const base::FeatureParam<int> kUPMLocalPasswordsMinGmsVersionCode(
     &kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
     "min_gms_version",
-    /*default_value=*/0);
+    /*default_value=*/240212000);
 
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",

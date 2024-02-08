@@ -19,6 +19,8 @@ bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service);
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
 // based on feature flags, minimum GmsCore version and other criteria.
+// If switches::kSkipLocalUpmGmsCoreVersionCheckForTesting is added to the
+// command-line, the GmsCore version check will be skipped.
 void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
                                       const base::FilePath& login_db_directory);
 

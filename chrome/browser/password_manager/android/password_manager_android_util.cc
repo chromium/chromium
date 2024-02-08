@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -70,15 +71,22 @@ bool IsSyncingEnabled(PrefService* pref_service) {
 
 LocalUpmUserType GetLocalUpmUserType(PrefService* pref_service,
                                      const base::FilePath& login_db_directory) {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
-  // `gms_version_str` must be converted to int for comparison, because it can
+  // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
-  if (!base::StringToInt(gms_version_str, &gms_version) ||
-      gms_version <
-          password_manager::features::kUPMLocalPasswordsMinGmsVersionCode
-              .Get()) {
+  // Compare with a constant before comparing with
+  // kUPMLocalPasswordsMinGmsVersionCode, as the latter will enroll the user
+  // into the experiment.
+  bool has_min_gms_version =
+      base::StringToInt(
+          base::android::BuildInfo::GetInstance()->gms_version_code(),
+          &gms_version) &&
+      gms_version >= 240212000 &&
+      gms_version >=
+          password_manager::features::kUPMLocalPasswordsMinGmsVersionCode.Get();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting) &&
+      !has_min_gms_version) {
     return LocalUpmUserType::kNotEligible;
   }
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -82,6 +83,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -191,7 +193,6 @@
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/feed/buildflags.h"
 #else
 #include "content/public/browser/host_zoom_map.h"
@@ -3939,11 +3940,14 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
  public:
   ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest() {
 #if BUILDFLAG(IS_ANDROID)
-    // Using the account store on Android also requires UPM support for local
-    // passwords.
+    // Using the account store on Android requires enabling the flag for UPM
+    // support of local passwords. Skip the Gms version check, otherwise the
+    // flag won't do anything in bots that have outdated GmsCore.
     feature_list_.InitAndEnableFeature(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #endif
   }
 };

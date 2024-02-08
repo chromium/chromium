@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -65,8 +66,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #endif
 
@@ -1603,16 +1604,21 @@ namespace {
 class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
     : public ChromePasswordProtectionServiceTest {
  public:
-  ChromePasswordProtectionServiceWithAccountPasswordStoreTest() = default;
+  ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // Using the account store on Android requires enabling the flag for UPM
+    // support of local passwords. Skip the Gms version check, otherwise the
+    // flag won't do anything in bots that have outdated GmsCore.
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+#endif
+  }
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  // Using the account store on Android also requires UPM support for local
-  // passwords.
-  base::test::ScopedFeatureList feature_list_{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
-#endif
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
@@ -1689,9 +1695,14 @@ class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
+    // Splitting the stores requires enabling the flag for UPM support of local
+    // passwords. Skip the Gms version check, otherwise the flag won't do
+    // anything in bots that have outdated GmsCore.
     feature_list_.InitAndEnableFeature(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
     PasswordCheckupWithPhishGuardTest::SetUp();
   }
 };

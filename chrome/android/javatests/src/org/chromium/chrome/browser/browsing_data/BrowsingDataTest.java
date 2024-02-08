@@ -43,7 +43,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests for browsing data deletion. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.SKIP_LOCAL_UPM_GMS_CORE_VERSION_CHECK_FOR_TESTING,
+})
 @Batch(Batch.PER_CLASS)
 public class BrowsingDataTest {
     private static final String TEST_FILE = "/content/test/data/browsing_data/site_data.html";

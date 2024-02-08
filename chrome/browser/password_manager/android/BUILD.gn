@@ -464,6 +464,7 @@ source_set("utils") {
   ]
 
   deps = [
+    "//chrome/common:non_code_constants",
     "//components/autofill/core/common",
     "//components/browser_sync",
     "//components/password_manager/core/browser",

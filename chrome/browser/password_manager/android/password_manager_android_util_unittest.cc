@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -195,6 +196,10 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
   UsesSplitStoresAndUPMForLocalTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         syncer::kSyncDeferredStartupTimeoutSeconds, "0");
+    // Skip the Gms version check, otherwise enabling UPM flags in individual
+    // tests won't actually do anything in bots with outdated GmsCore.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
   }
 
   // Can be invoked more than once, calling DestroyProfile() in-between.
@@ -595,6 +600,8 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
         {{password_manager::features::kUPMLocalPasswordsMinGmsVersionCode.name,
           base::ToString(std::numeric_limits<int>::max())}});
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
     fake_server::FakeServerHttpPostProvider::DisableNetwork();
     CreateProfile();
     ASSERT_TRUE(
