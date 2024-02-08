@@ -26,11 +26,11 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -176,15 +176,7 @@ public class WebApkUpdateIntegrationTest {
                 });
     }
 
-    private void waitForHistogram(String name, int count) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return RecordHistogram.getHistogramTotalCountForTesting(name) >= count;
-                },
-                "waitForHistogram timeout",
-                10000,
-                200);
-    }
+    private void waitForHistogram() {}
 
     private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
         FileInputStream requestFile = new FileInputStream(path);
@@ -199,13 +191,16 @@ public class WebApkUpdateIntegrationTest {
     @Feature({"Webapps"})
     public void testStoreUpdateRequestToFile() throws Exception {
         String pageUrl = mTestServer.getURL(WEBAPK_START_URL);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "WebApk.Update.ShellVersion", SHELL_APK_VERSION);
 
         WebappActivity activity = mActivityTestRule.startWebApkActivity(pageUrl);
         assertEquals(ActivityType.WEB_APK, activity.getActivityType());
         assertEquals(pageUrl, activity.getIntentDataProvider().getUrlToLoad());
 
         waitForDialog();
-        waitForHistogram("WebApk.Update.RequestQueued", 1);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
         WebappDataStorage storage =
                 WebappRegistry.getInstance()

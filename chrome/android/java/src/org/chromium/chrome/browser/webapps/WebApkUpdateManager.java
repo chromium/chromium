@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.UpdateRequestQueued;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -535,7 +534,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                                 mStorage, WebApkInstallResult.FAILURE, /* relaxUpdates= */ false);
                         return;
                     }
-                    scheduleUpdate();
+                    scheduleUpdate(info.shellApkVersion());
                 };
         String updateRequestPath = mStorage.createAndSetUpdateRequestFilePath(info);
         encodeIconsInBackground(
@@ -565,8 +564,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Schedules update for when WebAPK is not running. */
     @VisibleForTesting
-    protected void scheduleUpdate() {
-        WebApkUmaRecorder.recordUpdateRequestQueued(UpdateRequestQueued.TWICE);
+    protected void scheduleUpdate(int shellApkVersion) {
+        WebApkUmaRecorder.recordQueuedUpdateShellVersion(shellApkVersion);
         TaskInfo updateTask;
         if (mStorage.shouldForceUpdate()) {
             // Start an update task ASAP for forced updates.

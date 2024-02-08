@@ -218,7 +218,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records WebAPK &quot;Shell APK version&quot; when the WebAPK is launched.
-    The &quot;Shell APK version&quot; is documented in shell_apk_version.gni
+    The &quot;Shell APK version&quot; is documented in
+    chrome/android/webapk/shell_apk/current_version/current_version.gni
     {WebApkDistributorType}
   </summary>
   <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
@@ -294,6 +295,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time point when a request to update a WebAPK is sent to the
     WebAPK Server.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Update.ShellVersion" units="units"
+    expires_after="2025-01-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When a WebAPK update request was queued, records the current WebAPK's
+    &quot;Shell APK version&quot; The &quot;Shell APK version&quot; is
+    documented in
+    chrome/android/webapk/shell_apk/current_version/current_version.gni
   </summary>
 </histogram>
 

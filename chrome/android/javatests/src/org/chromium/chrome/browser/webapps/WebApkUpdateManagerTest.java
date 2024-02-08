@@ -248,7 +248,7 @@ public class WebApkUpdateManagerTest {
         }
 
         @Override
-        protected void scheduleUpdate() {
+        protected void scheduleUpdate(int shellVersion) {
             if (mCompleteCallback != null) mCompleteCallback.notifyCalled();
         }
 
