@@ -204,6 +204,7 @@ def __run(ctx, args):
     files_to_instrument = []
     if instrument_file:
         files_to_instrument = str(ctx.fs.read(ctx.fs.canonpath(instrument_file))).splitlines()
+
         # strip() is for removing '\r' on Windows.
         files_to_instrument = [ctx.fs.canonpath(f).strip() for f in files_to_instrument]
 

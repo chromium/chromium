@@ -71,13 +71,14 @@ luci.console_view(
 
 def cq_build_perf_builder(description_html, **kwargs):
     # Use CQ reclient instance and high reclient jobs/cores to simulate CQ builds.
+    if not kwargs.get("siso_configs"):
+        kwargs["siso_configs"] = ["builder"]
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
-        siso_configs = ["builder"],
         **kwargs
     )
 
@@ -213,6 +214,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "linux",
         short_name = "siso",
     ),
+    siso_configs = ["builder", "remote-library-link"],
 )
 
 cq_build_perf_builder(
@@ -337,6 +339,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "cros",
         short_name = "siso",
     ),
+    siso_configs = ["builder", "remote-library-link"],
 )
 
 cq_build_perf_builder(
@@ -486,6 +489,7 @@ This builder measures build performance for Linux developer builds, by simulatin
         short_name = "dev",
     ),
     reclient_jobs = 5120,
+    siso_configs = ["remote-library-link"],
 )
 
 developer_build_perf_builder(

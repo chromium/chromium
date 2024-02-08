@@ -75,8 +75,9 @@ def __step_config(ctx, step_config):
             "clang_large": largePlatform,
         })
         step_config["input_deps"].update(clang_all.input_deps)
+
         # TODO: https://issues.chromium.org/40120210 - remove this
-	# once we can use relative path in hmap.
+        # once we can use relative path in hmap.
         need_input_root_absolute_path_for_objc = False
         gn_args = gn.args(ctx)
         if gn_args.get("target_os") == "\"ios\"":

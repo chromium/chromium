@@ -610,6 +610,7 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
+    siso_configs = ["builder", "remote-library-link"],
     siso_enabled = True,
 )
 
@@ -747,6 +748,7 @@ This builder should be removed after migrating linux_chromium_compile_dbg_ng fro
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_configs = ["builder", "remote-library-link"],
     siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
@@ -880,6 +882,7 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
+    siso_configs = ["builder", "remote-library-link"],
     siso_enabled = True,
 )
 

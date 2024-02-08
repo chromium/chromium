@@ -51,6 +51,7 @@ __handlers = {}
 
 def __step_config(ctx, step_config):
     step_config["rules"].extend([
+        # pnacl
         {
             "name": "nacl/pnacl-clang++",
             "action": "newlib_pnacl.*_cxx",
@@ -86,17 +87,33 @@ def __step_config(ctx, step_config):
             "input_root_absolute_path": True,
         },
         {
+            "name": "nacl/pnacl-ar",
+            "action": "newlib_pnacl_alink",
+            "remote": False,
+        },
+        # glibc
+        {
             "name": "nacl/glibc/x86_64-nacl-g++",
             "action": "glibc_x64_cxx",
             "inputs": [
                 "native_client/toolchain/linux_x86/nacl_x86_glibc/bin/x86_64-nacl-g++",
             ],
             # ELF-32 doesn't work on gVisor,
-            # so will local-fallback if gVisor is used.
-            # TODO(b/278485912): remote=True for trusted instance.
             "remote": False,
-            "input_root_absolute_path": True,
         },
+        {
+            "name": "nacl/glibc/x86_64-nacl-ar",
+            "action": "glibc_x64_alink",
+            # ELF-32 doesn't work on gVisor,
+            "remote": False,
+        },
+        {
+            "name": "nacl/glibc/x86_64_solink/gcc_solink_wrapper",
+            "action": "glibc_x64_solink",
+            # ELF-32 doesn't work on gVisor,
+            "remote": False,
+        },
+        # pnacl_newlib
         {
             "name": "nacl/pnacl_newlib/x86_64-nacl-clang++",
             "action": "clang_newlib_x64_cxx",
@@ -120,6 +137,12 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "nacl/pnacl_newlib/x86_64-nacl-ar",
+            "action": "clang_newlib_x64_alink",
+            "remote": False,
+        },
+        # saigo_newlib
+        {
             "name": "nacl/saigo_newlib/x86_64-nacl-clang++",
             "action": "irt_x64_cxx",
             "command_prefix": "../../native_client/toolchain/linux_x86/saigo_newlib/bin/x86_64-nacl-clang++",
@@ -140,6 +163,11 @@ def __step_config(ctx, step_config):
             "remote": True,
             "input_root_absolute_path": True,
             "timeout": "2m",
+        },
+        {
+            "name": "nacl/saigo_newlib/x86_64-nacl-ar",
+            "action": "(.*_)?irt_x64_alink",
+            "remote": False,
         },
     ])
 

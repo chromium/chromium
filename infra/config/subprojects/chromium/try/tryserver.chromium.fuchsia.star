@@ -108,6 +108,7 @@ This builder should be removed after migrating size from Ninja to Siso. b/277863
             ],
         },
     },
+    siso_configs = ["builder", "remote-library-link"],
     siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,

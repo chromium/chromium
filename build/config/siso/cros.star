@@ -122,6 +122,8 @@ def __step_config(ctx, step_config):
 
 cros = module(
     "cros",
+    custom_toolchain = __custom_toolchain,
+    custom_sysroot = __custom_sysroot,
     filegroups = __filegroups,
     handlers = __handlers,
     step_config = __step_config,

@@ -9,6 +9,8 @@ load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./config.star", "config")
+load("./cros.star", "cros")
 
 # TODO: b/323091468 - Propagate target android ABI and android SDK version
 # from GN, and remove remove hardcoded filegroups.
@@ -52,6 +54,26 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*"],
         },
+        "third_party/llvm-build/Release+Asserts/lib/clang/18/lib:libs": {
+            "type": "glob",
+            "includes": ["*"],
+        },
+        "third_party/llvm-build/Release+Asserts/lib/clang/18/share:share": {
+            "type": "glob",
+            "includes": ["*"],
+        },
+        "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso": {
+            "type": "glob",
+            "includes": ["*.so*"],
+        },
+        "build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu:libs": {
+            "type": "glob",
+            "includes": ["*.o", "*.so*", "lib*.a"],
+        },
+        "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc": {
+            "type": "glob",
+            "includes": ["*.o", "*.a", "*.so"],
+        },
     }
     if android.enabled(ctx):
         for arch in android_archs:
@@ -83,6 +105,23 @@ def __step_config(ctx, step_config):
         "build/linux/debian_bullseye_i386-sysroot:headers": [
             "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
             "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers",
+        ],
+        "build/linux/debian_bullseye_amd64-sysroot:link": [
+            "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso",
+            "build/linux/debian_bullseye_amd64-sysroot/lib64/ld-linux-x86-64.so.2",
+            "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc",
+            "build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu:libs",
+            "third_party/llvm-build/Release+Asserts/bin/clang",
+            "third_party/llvm-build/Release+Asserts/bin/clang++",
+            "third_party/llvm-build/Release+Asserts/bin/ld.lld",
+            "third_party/llvm-build/Release+Asserts/bin/lld",
+            "third_party/llvm-build/Release+Asserts/bin/llvm-nm",
+            "third_party/llvm-build/Release+Asserts/bin/llvm-readelf",
+            "third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
+            # The following inputs are used for sanitizer builds.
+            # It might be better to add them only for sanitizer builds if there is a performance issue.
+            "third_party/llvm-build/Release+Asserts/lib/clang/18/lib:libs",
+            "third_party/llvm-build/Release+Asserts/lib/clang/18/share:share",
         ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
@@ -142,6 +181,52 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
     ])
+
+    # TODO: b/316267242 - Enable remote links for Android and CrOS toolchain builds.
+    if not android.enabled(ctx) and not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
+        step_config["rules"].extend([
+            {
+                "name": "clang/alink/llvm-ar",
+                "action": "(.*_)?alink",
+                "inputs": [
+                    # TODO: b/316267242 - Add inputs to GN config.
+                    "third_party/llvm-build/Release+Asserts/bin/llvm-ar",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-library-link"),
+                "platform_ref": "large",
+                "accumulate": True,
+            },
+            {
+                "name": "clang/solink/gcc_solink_wrapper",
+                "action": "(.*_)?solink",
+                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
+                "inputs": [
+                    # TODO: b/316267242 - Add inputs to GN config.
+                    "build/toolchain/gcc_solink_wrapper.py",
+                    "build/toolchain/whole_archive.py",
+                    "build/toolchain/wrapper_utils.py",
+                    "build/linux/debian_bullseye_amd64-sysroot:link",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-library-link"),
+                "platform_ref": "large",
+            },
+        ])
     return step_config
 
 clang = module(
