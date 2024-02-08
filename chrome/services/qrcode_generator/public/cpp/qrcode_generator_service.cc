@@ -37,22 +37,8 @@ void QRImageGenerator::GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
       base::BindOnce(&MeasureDurationAndForwardToOriginalCallback,
                      base::TimeTicks::Now(), std::move(callback));
 
-  // Using a WeakPtr below meets the following requirement from the doc comment:
-  // "The `callback` will not be run if `this` generator is destroyed first".
-  ResponseCallback weak_callback =
-      base::BindOnce(&QRImageGenerator::ForwardResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(timed_callback));
-
-  // Execute either a mojo call or an in-process C++ call depending on whether
-  // the "RustyQrCodeGenerator" feature has been enabled.
   QRCodeGeneratorServiceImpl().GenerateQRCode(std::move(request),
-                                              std::move(weak_callback));
-}
-
-void QRImageGenerator::ForwardResponse(
-    ResponseCallback original_callback,
-    mojom::GenerateQRCodeResponsePtr response) {
-  std::move(original_callback).Run(std::move(response));
+                                              std::move(timed_callback));
 }
 
 }  //  namespace qrcode_generator
