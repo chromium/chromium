@@ -1890,7 +1890,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Standard deviation for commit time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
-    {ArcPerformanceAppCategories}
+    This metric is reported for all clients. {ArcPerformanceAppCategories}.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -1952,6 +1952,22 @@ chromium-metrics-reviews@google.com.
     Render frames per second, not considering frames which exo could not
     present. Only collected if the user has app syncing enabled and doesn't have
     a custom passphrase set. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Arc.Runtime.Performance.PresentDeviation2{ArcPerformanceAppCategories}"
+    units="microseconds" expires_after="2024-07-07">
+  <owner>khmel@google.com</owner>
+  <owner>alanding@google.com</owner>
+  <summary>
+    Standard deviation for present time delta from ideal time. Only collected if
+    the user has app syncing enabled and doesn't have a custom passphrase set.
+    This metric is reported for all clients. {ArcPerformanceAppCategories}
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
