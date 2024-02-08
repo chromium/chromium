@@ -35,11 +35,14 @@ struct CORE_EXPORT GridItemData {
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
 
-  GridItemData(BlockNode node,
+  GridItemData(BlockNode item_node,
+               const ComputedStyle& parent_grid_style,
                const ComputedStyle& root_grid_style,
-               FontBaseline parent_grid_font_baseline,
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
+
+  GridItemData(BlockNode item_node, const ComputedStyle& grid_style)
+      : GridItemData(std::move(item_node), grid_style, grid_style) {}
 
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);

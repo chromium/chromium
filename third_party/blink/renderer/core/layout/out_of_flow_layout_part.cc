@@ -734,8 +734,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           const BoxStrut& borders,
           const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
     const auto& grid_style = containing_grid.StyleRef();
-    GridItemData grid_item(candidate.Node(), grid_style,
-                           grid_style.GetFontBaseline());
+    GridItemData grid_item(candidate.Node(), grid_style);
 
     return {grid_style.GetWritingDirection(),
             GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(

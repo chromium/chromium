@@ -4106,16 +4106,14 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
       ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
   for (LayoutBox* oof_child : oofs) {
-    BlockNode child(oof_child);
-    DCHECK(child.IsOutOfFlowPositioned());
+    GridItemData out_of_flow_item(BlockNode(oof_child), container_style);
+    DCHECK(out_of_flow_item.IsOutOfFlow());
 
     std::optional<LogicalRect> containing_block_rect;
-    GridItemData out_of_flow_item(child, container_style,
-                                  container_style.GetFontBaseline());
+    const auto position = out_of_flow_item.node.Style().GetPosition();
 
     // If the current grid is also the containing-block for the OOF-positioned
     // item, pick up the static-position from the grid-area.
-    const EPosition position = child.Style().GetPosition();
     if ((is_absolute_container && position == EPosition::kAbsolute) ||
         (is_fixed_container && position == EPosition::kFixed)) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(
