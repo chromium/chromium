@@ -114,6 +114,10 @@ std::string GetNameFromId(const std::string& id) {
   return "items/" + id + "/storeMetadata";
 }
 
+// Whether or not to skip the check if the build includes the Google Chrome API
+// key. Used for testing.
+bool skip_api_key_check_for_testing = false;
+
 // Histogram helpers.
 void RecordFetchSuccess(bool success) {
   base::UmaHistogramBoolean("Extensions.CWSInfoService.FetchSuccess", success);
@@ -305,39 +309,47 @@ std::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
 
 void CWSInfoService::CheckAndMaybeFetchInfo() {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  // Do nothing unless an official api key is configured OR
+  // the api key check is skipped for testing.
+  // Note that there will be no periodic checking after this since we
+  // return immediately without scheduling a future check.
+  if (!google_apis::IsGoogleChromeAPIKeyUsed() &&
+      !skip_api_key_check_for_testing) {
+    return;
+  }
+
   // If a fetch is already in progress, don't do anything.
   if (active_fetch_) {
     return;
   }
 
-  if (CanFetchInfo()) {
-    base::TimeDelta elapsed_time =
-        base::Time::Now() -
-        pref_service_->GetTime(prefs::kCWSInfoFetchErrorTimestamp);
-    // If there was a previous fetch error, wait a full fetch interval before
-    // retrying.
-    if (elapsed_time >= base::Seconds(current_fetch_interval_secs_)) {
-      elapsed_time =
-          base::Time::Now() - pref_service_->GetTime(prefs::kCWSInfoTimestamp);
-      // Enough time has elapsed since the last successful fetch.
-      bool data_refresh_needed =
-          elapsed_time >= base::Seconds(current_fetch_interval_secs_);
+  base::TimeDelta elapsed_time =
+      base::Time::Now() -
+      pref_service_->GetTime(prefs::kCWSInfoFetchErrorTimestamp);
+  // If there was a previous fetch error, wait a full fetch interval before
+  // retrying.
+  if (elapsed_time >= base::Seconds(current_fetch_interval_secs_)) {
+    elapsed_time =
+        base::Time::Now() - pref_service_->GetTime(prefs::kCWSInfoTimestamp);
+    // Enough time has elapsed since the last successful fetch.
+    bool data_refresh_needed =
+        elapsed_time >= base::Seconds(current_fetch_interval_secs_);
 
-      bool new_info_requested = false;
-      std::unique_ptr<FetchContext> fetch_context =
-          CreateRequests(new_info_requested);
+    bool new_info_requested = false;
+    std::unique_ptr<FetchContext> fetch_context =
+        CreateRequests(new_info_requested);
 
-      if ((data_refresh_needed || new_info_requested) && fetch_context) {
-        // Stop the check timer in case it is running. This can happen if we got
-        // here because of an out-of-cycle fetch.
-        info_check_timer_.Stop();
-        // Save the fetch context and send the (first) request.
-        active_fetch_ = std::move(fetch_context);
-        RecordNumRequestsInFetch(active_fetch_->requests.size());
-        current_fetch_interval_secs_ = GetNextFetchInterval();
-        SendRequest();
-        return;
-      }
+    if ((data_refresh_needed || new_info_requested) && fetch_context) {
+      // Stop the check timer in case it is running. This can happen if we got
+      // here because of an out-of-cycle fetch.
+      info_check_timer_.Stop();
+      // Save the fetch context and send the (first) request.
+      active_fetch_ = std::move(fetch_context);
+      RecordNumRequestsInFetch(active_fetch_->requests.size());
+      current_fetch_interval_secs_ = GetNextFetchInterval();
+      SendRequest();
+      return;
     }
   }
 
@@ -346,15 +358,6 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
                                    ? kFastCheckIntervalSeconds
                                    : kCheckIntervalSeconds;
   ScheduleCheck(check_interval_seconds);
-}
-
-bool CWSInfoService::CanFetchInfo() const {
-  // TODO(anunoy): These two checks are needed to support the enterprise policy
-  // and safety check extensions module respectively. Once safety check is
-  // launched, we can remove this method completely.
-  return pref_service_->GetInteger(
-             pref_names::kExtensionUnpublishedAvailability) == 1 ||
-         base::FeatureList::IsEnabled(features::kSafetyCheckExtensions);
 }
 
 void CWSInfoService::ScheduleCheck(int seconds) {
@@ -586,6 +589,11 @@ base::Time CWSInfoService::GetCWSInfoTimestampForTesting() const {
 
 base::Time CWSInfoService::GetCWSInfoFetchErrorTimestampForTesting() const {
   return pref_service_->GetTime(prefs::kCWSInfoFetchErrorTimestamp);
+}
+
+// static
+void CWSInfoService::SetSkipApiCheckForTesting(bool skip_api_key_check) {
+  skip_api_key_check_for_testing = skip_api_key_check;
 }
 
 }  // namespace extensions

@@ -120,6 +120,9 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   // Create CWSInfoService instance.
   cws_info_service_ = CWSInfoService::Get(profile_.get());
 
+  // Skip official Google API key check for testing.
+  cws_info_service_->SetSkipApiCheckForTesting(true);
+
   // Create test extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   auto* test_extension_system = static_cast<extensions::TestExtensionSystem*>(
