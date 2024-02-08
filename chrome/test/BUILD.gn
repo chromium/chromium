@@ -2879,6 +2879,10 @@ if (!is_android) {
         "supervised_user/family_member.cc",
         "supervised_user/family_member.h",
       ]
+      if (enable_extensions) {
+        sources +=
+            [ "../browser/supervised_user/extensions_interactive_uitest.cc" ]
+      }
       deps += [ "//components/supervised_user/test_support" ]
     }
 

@@ -40,11 +40,14 @@ CoreAccountId GetAccountId(Profile* profile) {
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
+std::string GetFamilyMemberSettingsUrlBase(FamilyMember& member) {
+  return base::StrCat({"https://families.google.com/u/0/manage/family/child/",
+                       GetAccountId(member.browser()->profile()).ToString()});
+}
+
 GURL GetControlListUrlFor(FamilyMember& member, std::string_view page) {
-  return GURL(
-      base::StrCat({"https://families.google.com/u/0/manage/family/child/",
-                    GetAccountId(member.browser()->profile()).ToString(),
-                    "/exceptions/", page}));
+  return GURL(base::StrCat(
+      {GetFamilyMemberSettingsUrlBase(member), "/exceptions/", page}));
 }
 }  // namespace
 
@@ -69,9 +72,8 @@ GURL FamilyMember::GetAllowListUrlFor(FamilyMember& member) const {
 }
 
 GURL FamilyMember::GetPermissionsUrlFor(FamilyMember& member) const {
-  return GURL(base::StrCat(
-      {"https://families.google.com/u/0/manage/family/child/",
-       GetAccountId(member.browser()->profile()).ToString(), "/permissions"}));
+  return GURL(
+      base::StrCat({GetFamilyMemberSettingsUrlBase(member), "/permissions"}));
 }
 
 void FamilyMember::TurnOnSync() {

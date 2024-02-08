@@ -315,9 +315,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionReceived_default) {
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.GetResult(); },
                   ParentPermissionDialog::Result::kParentPermissionReceived))));
 }
@@ -329,9 +329,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
 
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.InvalidCredentialWasReceived(); },
                   true),
       CheckResult([this]() { return harness_.GetResult(); },
@@ -342,9 +342,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionDialogCanceled_default) {
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.GetResult(); },
                   ParentPermissionDialog::Result::kParentPermissionCanceled))));
 }
@@ -356,9 +356,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
 
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.GetResult(); },
                   ParentPermissionDialog::Result::kParentPermissionReceived),
       CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
@@ -393,9 +393,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
 
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.InvalidCredentialWasReceived(); },
                   true),
       CheckResult([this]() { return harness_.GetResult(); },
@@ -423,9 +423,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionDialogCanceled_extension) {
   RunTestSequence(InAnyContext(Steps(
       ShowDialog(),
-      WaitForShow(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kCancelButtonElementId),
-      WaitForHide(ParentPermissionDialogView::kDialogViewIdForTesting),
+      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
       CheckResult([this]() { return harness_.GetResult(); },
                   ParentPermissionDialog::Result::kParentPermissionCanceled),
       CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
