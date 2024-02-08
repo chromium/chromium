@@ -13,16 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -42,16 +39,19 @@
 namespace updater::test {
 namespace {
 
-template <typename StringT>
-std::string ToString(const StringT& s) {
-  if constexpr (std::is_same_v<StringT, std::wstring>) {
-    return base::WideToUTF8(s);
-  } else {
-    return s;
-  }
+std::string ToString(const std::string& s) {
+  return s;
+}
+
+std::string ToString(const std::wstring& s) {
+  return base::WideToUTF8(s);
 }
 
 }  // namespace
+
+TEST(UnitTestUtil, ToString) {
+  EXPECT_EQ(ToString("test"), ToString(L"test"));
+}
 
 TEST(UnitTestUtil, Processes) {
   auto print_processes_tester =
