@@ -19,6 +19,7 @@ class FakeLinuxUi : public LinuxUiAndTheme {
 
   // ui::LinuxUi:
   bool Initialize() override;
+  void InitializeFontSettings() override;
   base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
@@ -40,13 +41,7 @@ class FakeLinuxUi : public LinuxUiAndTheme {
       const ui::Event& event,
       int text_flags,
       std::vector<ui::TextEditCommandAuraLinux>* commands) override;
-  gfx::FontRenderParams GetDefaultFontRenderParams() const override;
-  void GetDefaultFontDescription(
-      std::string* family_out,
-      int* size_pixels_out,
-      int* style_out,
-      int* weight_out,
-      gfx::FontRenderParams* params_out) const override;
+  gfx::FontRenderParams GetDefaultFontRenderParams() override;
   bool AnimationsEnabled() const override;
   void AddWindowButtonOrderObserver(
       ui::WindowButtonOrderObserver* observer) override;

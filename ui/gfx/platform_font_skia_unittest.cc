@@ -30,42 +30,34 @@ namespace gfx {
 // Implementation of LinuxUi used to control the default font description.
 class TestFontDelegate : public ui::FakeLinuxUi {
  public:
-  TestFontDelegate() = default;
+  TestFontDelegate() {
+    set_default_font_settings(FontSettings{
+        // Default values to be returned.
+        .family = "",
+        .size_pixels = 0,
+        .style = Font::NORMAL,
+        .weight = static_cast<int>(Font::Weight::NORMAL),
+    });
+  }
 
   TestFontDelegate(const TestFontDelegate&) = delete;
   TestFontDelegate& operator=(const TestFontDelegate&) = delete;
 
   ~TestFontDelegate() override = default;
 
-  void set_family(const std::string& family) { family_ = family; }
-  void set_size_pixels(int size_pixels) { size_pixels_ = size_pixels; }
-  void set_style(int style) { style_ = style; }
-  void set_weight(gfx::Font::Weight weight) { weight_ = weight; }
-  void set_params(const FontRenderParams& params) { params_ = params; }
+  void SetFontSettings(const FontSettings& font_settings,
+                       const FontRenderParams& params) {
+    set_default_font_settings(font_settings);
+    params_ = params;
+  }
 
-  FontRenderParams GetDefaultFontRenderParams() const override {
+  FontRenderParams GetDefaultFontRenderParams() override {
+    return params_;
     NOTIMPLEMENTED();
     return FontRenderParams();
   }
 
-  void GetDefaultFontDescription(std::string* family_out,
-                                 int* size_pixels_out,
-                                 int* style_out,
-                                 int* weight_out,
-                                 FontRenderParams* params_out) const override {
-    *family_out = family_;
-    *size_pixels_out = size_pixels_;
-    *style_out = style_;
-    *weight_out = static_cast<int>(weight_);
-    *params_out = params_;
-  }
-
  private:
-  // Default values to be returned.
-  std::string family_;
-  int size_pixels_ = 0;
-  int style_ = Font::NORMAL;
-  gfx::Font::Weight weight_ = Font::Weight::NORMAL;
   FontRenderParams params_;
 };
 
@@ -98,13 +90,17 @@ class PlatformFontSkiaTest : public testing::Test {
 // Test that PlatformFontSkia's default constructor initializes the instance
 // with the correct parameters.
 TEST_F(PlatformFontSkiaTest, DefaultFont) {
-  test_font_delegate_.set_family(kTestFontName);
-  test_font_delegate_.set_size_pixels(13);
-  test_font_delegate_.set_style(Font::NORMAL);
   FontRenderParams params;
   params.antialiasing = false;
   params.hinting = FontRenderParams::HINTING_FULL;
-  test_font_delegate_.set_params(params);
+  test_font_delegate_.SetFontSettings(
+      {
+          .family = kTestFontName,
+          .size_pixels = 13,
+          .style = Font::NORMAL,
+          .weight = static_cast<int>(gfx::Font::Weight::NORMAL),
+      },
+      params);
   scoped_refptr<gfx::PlatformFontSkia> font(new gfx::PlatformFontSkia());
   EXPECT_EQ(kTestFontName, font->GetFontName());
   EXPECT_EQ(13, font->GetFontSize());
@@ -114,10 +110,14 @@ TEST_F(PlatformFontSkiaTest, DefaultFont) {
   EXPECT_EQ(params.hinting, font->GetFontRenderParams().hinting);
 
   // Drop the old default font and check that new settings are loaded.
-  test_font_delegate_.set_family(kSymbolFontName);
-  test_font_delegate_.set_size_pixels(15);
-  test_font_delegate_.set_style(gfx::Font::ITALIC);
-  test_font_delegate_.set_weight(gfx::Font::Weight::BOLD);
+  test_font_delegate_.SetFontSettings(
+      {
+          .family = kSymbolFontName,
+          .size_pixels = 15,
+          .style = Font::ITALIC,
+          .weight = static_cast<int>(gfx::Font::Weight::BOLD),
+      },
+      params);
   PlatformFontSkia::ReloadDefaultFont();
   scoped_refptr<gfx::PlatformFontSkia> font2(new gfx::PlatformFontSkia());
   EXPECT_EQ(kSymbolFontName, font2->GetFontName());

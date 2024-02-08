@@ -49,16 +49,7 @@ class TestFontDelegate : public ui::FakeLinuxUi {
 
   void set_params(const FontRenderParams& params) { params_ = params; }
 
-  FontRenderParams GetDefaultFontRenderParams() const override {
-    return params_;
-  }
-  void GetDefaultFontDescription(std::string* family_out,
-                                 int* size_pixels_out,
-                                 int* style_out,
-                                 int* weight_out,
-                                 FontRenderParams* params_out) const override {
-    NOTIMPLEMENTED();
-  }
+  FontRenderParams GetDefaultFontRenderParams() override { return params_; }
 
  private:
   FontRenderParams params_;

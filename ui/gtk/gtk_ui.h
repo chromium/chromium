@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -62,6 +63,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   // ui::LinuxUi:
   bool Initialize() override;
+  void InitializeFontSettings() override;
   base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
@@ -83,13 +85,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
       const ui::Event& event,
       int text_flags,
       std::vector<ui::TextEditCommandAuraLinux>* commands) override;
-  gfx::FontRenderParams GetDefaultFontRenderParams() const override;
-  void GetDefaultFontDescription(
-      std::string* family_out,
-      int* size_pixels_out,
-      int* style_out,
-      int* weight_out,
-      gfx::FontRenderParams* params_out) const override;
+  gfx::FontRenderParams GetDefaultFontRenderParams() override;
   bool AnimationsEnabled() const override;
   void AddWindowButtonOrderObserver(
       ui::WindowButtonOrderObserver* observer) override;
@@ -146,9 +142,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // ThemeService interface and the colors we send to Blink.
   void UpdateColors();
 
-  // Updates |default_font_*|.
-  void UpdateDefaultFont();
-
   // Listen for scale factor changes on `monitor`.
   void TrackMonitor(GdkMonitor* monitor);
 
@@ -182,13 +175,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
   SkColor inactive_selection_bg_color_;
   SkColor inactive_selection_fg_color_;
 
-  // Details about the default UI font.
-  std::string default_font_family_;
-  int default_font_size_pixels_ = 0;
-  // Bitfield of gfx::Font::Style values.
-  int default_font_style_ = gfx::Font::NORMAL;
-  gfx::Font::Weight default_font_weight_ = gfx::Font::Weight::NORMAL;
-  gfx::FontRenderParams default_font_render_params_;
+  std::optional<gfx::FontRenderParams> default_font_render_params_;
 
   std::unique_ptr<SettingsProvider> settings_provider_;
 
