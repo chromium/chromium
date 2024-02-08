@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -56,14 +54,9 @@ std::string GetUrlOfActiveTab(const Browser* browser) {
 }
 
 void CloseBrowser(Browser* browser) {
-  // TODO(b/323129396) Remove feature flag once QA verifies it.
-  if (base::FeatureList::IsEnabled(chromeos::features::kKioskCloseAllTabs)) {
-    // Note we don't use `browser.window().Close()` because it can fail if a
-    // user drags the window.
-    browser->tab_strip_model()->CloseAllTabs();
-  } else {
-    browser->window()->Close();
-  }
+  // Note we don't use `browser.window().Close()` because it can fail if a
+  // user drags the window.
+  browser->tab_strip_model()->CloseAllTabs();
 }
 
 void CloseBrowserWindowsIf(base::FunctionRef<bool(const Browser&)> filter) {
