@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -440,7 +441,7 @@ void ExistingUserController::UpdateLoginDisplay(
   }
 
   if (LoginDisplayHostMojo::Get()) {
-    auto login_users = ExtractLoginUsers(users);
+    auto login_users = chrome_user_manager_util::FindLoginAllowedUsers(users);
     LoginDisplayHostMojo::Get()->SetUsers(login_users);
   }
 }
@@ -1096,34 +1097,6 @@ bool ExistingUserController::password_changed() const {
   }
 
   return password_changed_;
-}
-
-// static
-user_manager::UserList ExistingUserController::ExtractLoginUsers(
-    const user_manager::UserList& users) {
-  bool show_users_on_signin;
-  CrosSettings::Get()->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
-                                  &show_users_on_signin);
-  user_manager::UserList filtered_users;
-  for (user_manager::User* user : users) {
-    // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
-    // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
-    if (user->IsKioskType()) {
-      continue;
-    }
-    const bool meets_allowlist_requirements =
-        !user->HasGaiaAccount() ||
-        user_manager::UserManager::Get()->IsGaiaUserAllowed(*user);
-    // Public session accounts are always shown on login screen.
-    const bool meets_show_users_requirements =
-        show_users_on_signin ||
-        user->GetType() == user_manager::UserType::kPublicAccount;
-    if (meets_allowlist_requirements && meets_show_users_requirements) {
-      filtered_users.push_back(user);
-    }
-  }
-  return filtered_users;
 }
 
 void ExistingUserController::LoginAuthenticated(
