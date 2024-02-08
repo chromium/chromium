@@ -91,6 +91,12 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
     ~KioskProfileLoadFailedObserver() override = default;
     virtual void OnKioskProfileLoadFailed() = 0;
   };
+  class AcceleratorController {
+   public:
+    virtual ~AcceleratorController() = default;
+    virtual void EnableAccelerators() = 0;
+    virtual void DisableAccelerators() = 0;
+  };
 
   using ReturnBoolCallback = base::RepeatingCallback<bool()>;
 
@@ -104,9 +110,11 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
           KioskAppLauncher::NetworkDelegate*)>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
-  KioskLaunchController(LoginDisplayHost* host,
-                        AppLaunchSplashScreenView* splash_screen,
-                        KioskAppLauncherFactory app_launcher_factory);
+  KioskLaunchController(
+      LoginDisplayHost* host,
+      AppLaunchSplashScreenView* splash_screen,
+      KioskAppLauncherFactory app_launcher_factory,
+      std::unique_ptr<AcceleratorController> accelerator_controller);
   KioskLaunchController(const KioskLaunchController&) = delete;
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
@@ -152,6 +160,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
  private:
   friend class KioskLaunchControllerTest;
+
+  class ScopedAcceleratorDisabler;
 
   enum AppState {
     kCreatingProfile = 0,   // Profile is being created.
@@ -226,6 +236,9 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // Used to login into kiosk user profile.
   std::unique_ptr<KioskProfileLoader> kiosk_profile_loader_;
+
+  std::unique_ptr<AcceleratorController> accelerator_controller_;
+  std::unique_ptr<ScopedAcceleratorDisabler> accelerator_disabler_;
 
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;

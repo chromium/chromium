@@ -73,6 +73,22 @@ auto BuildExtension(std::string extension_name, std::string extension_id) {
       .Build();
 }
 
+class FakeAcceleratorController
+    : public KioskLaunchController::AcceleratorController {
+ public:
+  FakeAcceleratorController() = default;
+  ~FakeAcceleratorController() override = default;
+
+  void EnableAccelerators() override { enabled_ = true; }
+
+  void DisableAccelerators() override { enabled_ = false; }
+
+  bool enabled() { return enabled_; }
+
+ private:
+  bool enabled_ = false;
+};
+
 }  // namespace
 
 class MockKioskProfileLoadFailedObserver
@@ -117,11 +133,15 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         KioskLaunchController::DisableLoginOperationsForTesting();
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
+    auto fake_accelerator_controller =
+        std::make_unique<FakeAcceleratorController>();
+    accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
         /*host=*/nullptr, view_.get(),
         base::BindRepeating(
             &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        std::move(fake_accelerator_controller));
 
     // We can't call `crash_reporter::ResetCrashKeysForTesting()` to reset crash
     // keys since it destroys the storage for static crash keys. Instead we set
@@ -150,6 +170,10 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   KioskProfileLoader::Delegate& profile_controls() { return *controller_; }
 
   FakeKioskAppLauncher& launcher() { return *app_launcher_; }
+
+  FakeAcceleratorController& accelerator_controller() {
+    return *accelerator_controller_;
+  }
 
   int num_launchers_created() { return app_launchers_created_; }
 
@@ -200,6 +224,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void CancelAppLaunch() { controller_->HandleAccelerator(kAppLaunchBailout); }
 
+  void CleanUpController() { controller().CleanUp(); }
+
  private:
   void SetDeviceEnterpriseManaged() {
     cros_settings_test_helper().InstallAttributes()->SetCloudManaged(
@@ -241,6 +267,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       nullptr;  // owned by `controller_`.
   int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
+  raw_ptr<FakeAcceleratorController>
+      accelerator_controller_;  // owned by `controller_`.
   KioskAppId kiosk_app_id_;
 };
 
@@ -258,6 +286,17 @@ TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
 
   EXPECT_EQ(view().last_app_data().url, GURL(kInstallUrl));
+}
+
+TEST_F(KioskLaunchControllerTest, ControllerShouldDisableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  EXPECT_FALSE(accelerator_controller().enabled());
+}
+
+TEST_F(KioskLaunchControllerTest, CleanUpShouldReenableAccelerators) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  CleanUpController();
+  EXPECT_TRUE(accelerator_controller().enabled());
 }
 
 TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {

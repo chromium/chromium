@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
@@ -169,7 +171,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     case KioskAppType::kWebApp:
       // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
       // Lacros until App Service installation API is available.
-      if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+      if (base::FeatureList::IsEnabled(::features::kKioskEnableAppService) &&
           !crosapi::browser_util::IsLacrosEnabled()) {
         return std::make_unique<WebKioskAppServiceLauncher>(
             profile, kiosk_app_id.account_id.value(), network_delegate);
@@ -210,6 +212,26 @@ void DeleteSoon(std::unique_ptr<T> pointer) {
       FROM_HERE, std::move(pointer));
 }
 
+class DefaultAcceleratorController
+    : public KioskLaunchController::AcceleratorController {
+ public:
+  DefaultAcceleratorController() = default;
+  DefaultAcceleratorController(const DefaultAcceleratorController&) = delete;
+  DefaultAcceleratorController& operator=(const AcceleratorController&) =
+      delete;
+  ~DefaultAcceleratorController() override = default;
+
+  void DisableAccelerators() override {
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        true);
+  }
+
+  void EnableAccelerators() override {
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        false);
+  }
+};
+
 }  // namespace
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -238,18 +260,37 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
   crash_key.Set(KioskLaunchStateToString(state));
 }
 
+class KioskLaunchController::ScopedAcceleratorDisabler {
+ public:
+  explicit ScopedAcceleratorDisabler(AcceleratorController& controller)
+      : controller_(controller) {
+    controller_->DisableAccelerators();
+  }
+
+  ScopedAcceleratorDisabler(const ScopedAcceleratorDisabler&) = delete;
+  ScopedAcceleratorDisabler& operator=(const ScopedAcceleratorDisabler&) =
+      delete;
+  ~ScopedAcceleratorDisabler() { controller_->EnableAccelerators(); }
+
+ private:
+  raw_ref<AcceleratorController> controller_;
+};
+
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : KioskLaunchController(LoginDisplayHost::default_host(),
                             oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
-                            base::BindRepeating(&BuildKioskAppLauncher)) {}
+                            base::BindRepeating(&BuildKioskAppLauncher),
+                            std::make_unique<DefaultAcceleratorController>()) {}
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen,
-    KioskAppLauncherFactory app_launcher_factory)
+    KioskAppLauncherFactory app_launcher_factory,
+    std::unique_ptr<AcceleratorController> accelerator_controller)
     : host_(host),
       splash_screen_view_(splash_screen),
-      app_launcher_factory_(std::move(app_launcher_factory)) {}
+      app_launcher_factory_(std::move(app_launcher_factory)),
+      accelerator_controller_(std::move(accelerator_controller)) {}
 
 KioskLaunchController::~KioskLaunchController() = default;
 
@@ -262,6 +303,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   RecordKioskLaunchUMA(auto_launch);
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
+  accelerator_disabler_ =
+      std::make_unique<ScopedAcceleratorDisabler>(*accelerator_controller_);
 
   if (host_) {
     host_->GetLoginDisplay()->SetUIEnabled(true);
@@ -450,6 +493,7 @@ void KioskLaunchController::CleanUp() {
 
   app_launcher_.reset();
   network_ui_controller_.reset();
+  accelerator_disabler_.reset();
 
   // Can be null in tests.
   if (host_) {
@@ -540,7 +584,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   // fails.
   if (kiosk_app_id_.type == KioskAppType::kWebApp &&
       error == KioskAppLaunchError::Error::kUnableToInstall &&
-      (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
+      (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService) ||
        crosapi::browser_util::IsLacrosEnabled())) {
     HandleWebAppInstallFailed();
     return;
