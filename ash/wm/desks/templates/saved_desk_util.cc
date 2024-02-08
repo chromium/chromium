@@ -13,6 +13,7 @@
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -80,9 +81,10 @@ bool AreDesksTemplatesEnabled() {
   return features::AreDesksTemplatesEnabled();
 }
 
-bool IsSavedDesksEnabled() {
-  return !IsGuestSession();
+bool ShouldShowSavedDesksButtons() {
+  return !IsGuestSession() && !window_util::IsInFasterSplitScreenSetupSession();
 }
+
 SavedDeskDialogController* GetSavedDeskDialogController() {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession())

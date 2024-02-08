@@ -2334,7 +2334,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // TODO(crbug.com/1360638): Remove the conditional here when the Save & Recall
   // flag flip has landed since it will always be true.
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeechPattern("Save desk for later");
     sm_.ExpectSpeech("Button");

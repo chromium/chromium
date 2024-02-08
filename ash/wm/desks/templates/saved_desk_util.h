@@ -28,7 +28,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 ASH_EXPORT bool AreDesksTemplatesEnabled();
 
-ASH_EXPORT bool IsSavedDesksEnabled();
+ASH_EXPORT bool ShouldShowSavedDesksButtons();
 
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();

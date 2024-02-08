@@ -428,6 +428,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
+  const aura::Window* root_window() const { return root_window_; }
 
   OverviewSession* overview_session() { return overview_session_; }
 

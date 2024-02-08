@@ -64,10 +64,12 @@ void SplitViewOverviewSession::Init(std::optional<OverviewStartAction> action,
     return;
   }
 
+  // Set the type before we start overview, which will initialize the grid and
+  // check whether to create the desk bar and buttons based on `setup_type_`.
+  setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
   OverviewController::Get()->StartOverview(
       action.value_or(OverviewStartAction::kFasterSplitScreenSetup),
       type.value_or(OverviewEnterExitType::kNormal));
-  setup_type_ = SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }
 
 void SplitViewOverviewSession::RecordSplitViewOverviewSessionExitPointMetrics(

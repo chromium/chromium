@@ -184,8 +184,13 @@ const Desk* GetDeskForContext(aura::Window* context) {
 }
 
 bool ShouldDesksBarBeCreated() {
-  return !display::Screen::GetScreen()->InTabletMode() ||
-         DesksController::Get()->desks().size() > 1;
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return DesksController::Get()->desks().size() > 1;
+  }
+
+  // If in clamshell mode, and overview was started by faster splitscreen setup,
+  // don't show the desk bar.
+  return !window_util::IsInFasterSplitScreenSetupSession();
 }
 
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {

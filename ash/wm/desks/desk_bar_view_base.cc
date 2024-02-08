@@ -538,7 +538,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
   new_desk_button_label_->SetPaintToLayer();
   new_desk_button_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     int button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY;
     if (!saved_desk_util::AreDesksTemplatesEnabled()) {
       button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
@@ -882,7 +882,7 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
 }
 
 void DeskBarViewBase::UpdateButtonsForSavedDeskGrid() {
-  if (IsZeroState() || !saved_desk_util::IsSavedDesksEnabled()) {
+  if (IsZeroState() || !saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
   }
 
@@ -906,7 +906,7 @@ void DeskBarViewBase::UpdateDeskButtonsVisibility() {
 }
 
 void DeskBarViewBase::UpdateLibraryButtonVisibility() {
-  if (!saved_desk_util::IsSavedDesksEnabled()) {
+  if (!saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
   }
 
@@ -987,7 +987,7 @@ void DeskBarViewBase::OnGestureTap(const gfx::Rect& screen_rect,
 bool DeskBarViewBase::ShouldShowLibraryUi() {
   // Only update visibility when needed. This will save a lot of repeated work.
   if (library_ui_visibility_ == LibraryUiVisibility::kToBeChecked) {
-    if (!saved_desk_util::IsSavedDesksEnabled() ||
+    if (!saved_desk_util::ShouldShowSavedDesksButtons() ||
         display::Screen::GetScreen()->InTabletMode()) {
       library_ui_visibility_ = LibraryUiVisibility::kHidden;
     } else {

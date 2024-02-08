@@ -2098,8 +2098,9 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.
-  if (!saved_desk_util::IsSavedDesksEnabled())
+  if (!saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
+  }
 
   // If there is only one item and it is animating to close, hide the widget as
   // the closing window cannot be saved as part of a template.
@@ -2824,8 +2825,9 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
 void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     bool increment) {
-  if (!saved_desk_util::IsSavedDesksEnabled())
+  if (!saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
+  }
 
   int addend = increment ? 1 : -1;
 
@@ -2926,6 +2928,7 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
     params.init_properties_container.SetProperty(kOverviewUiKey, true);
     faster_splitview_widget_ =
         std::make_unique<views::Widget>(std::move(params));
+    faster_splitview_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
     auto* box_layout_view = faster_splitview_widget_->SetContentsView(
         std::make_unique<views::BoxLayoutView>());
     box_layout_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);

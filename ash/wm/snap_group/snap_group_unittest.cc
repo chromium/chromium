@@ -180,6 +180,8 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
     EXPECT_TRUE(overview_grid->faster_splitview_widget_for_testing());
     EXPECT_FALSE(overview_grid->no_windows_widget());
+    EXPECT_FALSE(overview_grid->GetSaveDeskButtonContainer());
+    EXPECT_FALSE(overview_grid->desks_bar_view());
   }
 
   return split_view_overview_session;

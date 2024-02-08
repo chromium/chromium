@@ -734,12 +734,26 @@ bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {
           SnapGroupController::Get());
 }
 
-bool IsInFasterSplitScreenSetupSession(aura::Window* window) {
+bool IsInFasterSplitScreenSetupSession(const aura::Window* window) {
   SplitViewOverviewSession* split_view_overview_session =
       RootWindowController::ForWindow(window)->split_view_overview_session();
   return !Shell::Get()->IsInTabletMode() && split_view_overview_session &&
          split_view_overview_session->setup_type() ==
              SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
+}
+
+bool IsInFasterSplitScreenSetupSession() {
+  if (!IsInOverviewSession() || display::Screen::GetScreen()->InTabletMode()) {
+    return false;
+  }
+  auto* overview_session = GetOverviewSession();
+  for (const auto& grid : overview_session->grid_list()) {
+    // Return true if any grid is in faster splitscreen setup.
+    if (IsInFasterSplitScreenSetupSession(grid->root_window())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ash::window_util
