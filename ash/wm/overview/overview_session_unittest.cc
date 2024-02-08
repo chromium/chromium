@@ -48,6 +48,7 @@
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -6942,6 +6943,31 @@ TEST_F(SplitViewOverviewSessionTest, DragOverviewWindowToSnap) {
             SplitViewController::State::kBothSnapped);
   EXPECT_EQ(split_view_controller()->secondary_window(), window3.get());
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
+}
+
+// Regression test for http://b/323136574, where a floated window should not
+// have an unclipped size when it's in a partial overview session.
+TEST_F(SplitViewOverviewSessionTest, FloatedWindowsHaveNoUnclippedSize) {
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+
+  // Float `window1` and then snap `window2`. A partial overview session should
+  // start.
+  Shell::Get()->float_controller()->ToggleFloat(window1.get());
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsFloated());
+
+  const WindowSnapWMEvent event(
+      WM_EVENT_CYCLE_SNAP_SECONDARY,
+      WindowSnapActionSource::kKeyboardShortcutToSnap);
+  auto* window2_state = WindowState::Get(window2.get());
+  window2_state->OnWMEvent(&event);
+  EXPECT_TRUE(window2_state->IsSnapped());
+
+  ASSERT_TRUE(GetOverviewController()->InOverviewSession());
+  auto* window1_item = GetOverviewItemForWindow(window1.get());
+  ASSERT_TRUE(window1_item);
+
+  EXPECT_FALSE(window1_item->unclipped_size_for_testing());
 }
 
 // Verify the correct behavior when dragging windows in overview mode.

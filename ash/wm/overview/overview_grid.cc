@@ -1820,9 +1820,12 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   // Get the bounds of the item if there is a snapped window or a window
   // about to be snapped. If the height is less than that of the header, there
   // is nothing from the original window to be shown and nothing to be clipped.
+  // Floated windows doesn't need this special handling (see b/323136574).
+  auto* window = item->GetWindow();
+  const bool is_floated = WindowState::Get(window)->IsFloated();
   std::optional<gfx::RectF> split_view_bounds =
       GetSplitviewBoundsMaintainingAspectRatio();
-  if (!split_view_bounds ||
+  if (is_floated || !split_view_bounds ||
       split_view_bounds->height() < kWindowMiniViewHeaderHeight) {
     item->set_unclipped_size(std::nullopt);
     return width;
@@ -1832,10 +1835,10 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   // split view bounds aspect ratio, and vertical clipping otherwise.
   const float aspect_ratio =
       target_size.width() /
-      (target_size.height() -
-       item->GetWindow()->GetProperty(aura::client::kTopViewInset));
+      (target_size.height() - window->GetProperty(aura::client::kTopViewInset));
   const float target_aspect_ratio =
-      split_view_bounds->width() / split_view_bounds->height();
+      static_cast<float>(split_view_bounds->width()) /
+      split_view_bounds->height();
   const bool clip_horizontally = aspect_ratio > target_aspect_ratio;
   const int window_height = height - kWindowMiniViewHeaderHeight;
   gfx::Size unclipped_size;
@@ -1851,8 +1854,9 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
 
     // Find the width so that it matches height and matches the aspect ratio of
     // |split_view_bounds|.
-    width = split_view_bounds->width() * window_height /
-            split_view_bounds->height();
+    // TODO(sammiequon): Check to see if we can unify this with the `width`
+    // calculation in the above branch where we do the clamp and the max.
+    width = target_aspect_ratio * window_height;
     // The unclipped height is the height which matches |width| but keeps the
     // aspect ratio of |target_bounds|. Clipping takes the overview header into
     // account, so add that back in.

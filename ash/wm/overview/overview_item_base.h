@@ -315,6 +315,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
     return cannot_snap_widget_.get();
   }
 
+  const std::optional<gfx::Size>& unclipped_size_for_testing() const {
+    return unclipped_size_;
+  }
+
  protected:
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
