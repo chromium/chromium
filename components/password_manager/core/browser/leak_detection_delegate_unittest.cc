@@ -104,11 +104,16 @@ class LeakDetectionDelegateTest : public testing::Test {
     mock_factory_ = mock_factory.get();
     delegate_.set_leak_factory(std::move(mock_factory));
     pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kPasswordLeakDetectionEnabled, true);
+        prefs::kPasswordLeakDetectionEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(
         ::prefs::kSafeBrowsingEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(
         ::prefs::kSafeBrowsingEnhanced, false);
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
+#endif  // BUILDFLAG(IS_ANDROID)
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(pref_service()));
   }
 
@@ -462,6 +467,90 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(*profile_store(), UpdateLogin);
   WaitForPasswordStore();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(LeakDetectionDelegateTest,
+       LeakDetectionDoneForLocalStoreWithSplitStoresAndUPMForLocal) {
+  LeakDetectionDelegateInterface* delegate_interface = &delegate();
+  const PasswordForm form = CreateTestForm();
+
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  // Mark that the local and account stores are split.
+  pref_service()->SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
+
+  ExpectPasswords({}, /*store=*/account_store());
+  ExpectPasswords({form}, /*store=*/profile_store());
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(
+          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(false)),
+          form.url, form.username_value, /* in_account_store = */ false));
+  delegate_interface->OnLeakDetectionDone(
+      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+
+  EXPECT_CALL(*profile_store(), UpdateLogin);
+  WaitForPasswordStore();
+}
+
+TEST_F(LeakDetectionDelegateTest,
+       LeakDetectionDoneForAccountStoreWithSplitStoresAndUPMForLocal) {
+  LeakDetectionDelegateInterface* delegate_interface = &delegate();
+  const PasswordForm form = CreateTestForm();
+
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  // Mark that the local and account stores are split.
+  pref_service()->SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
+
+  ExpectPasswords({form}, /*store=*/account_store());
+  ExpectPasswords({}, /*store=*/profile_store());
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(
+          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(true)),
+          form.url, form.username_value, /* in_account_store = */ true));
+  delegate_interface->OnLeakDetectionDone(
+      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+
+  EXPECT_CALL(*account_store(), UpdateLogin);
+  WaitForPasswordStore();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();

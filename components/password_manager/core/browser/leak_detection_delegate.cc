@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -111,24 +112,32 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
                           std::exchange(is_leaked_timer_, nullptr)->Elapsed());
   helper_.reset();
 
+  const bool in_account_store =
+      (in_stores & PasswordForm::Store::kAccountStore) ==
+      PasswordForm::Store::kAccountStore;
+
   // A credential is marked as syncing if either the profile store is synced
   // or it is in the account store.
-  // TODO(b/317058107): Revisit if this codepath, and possibly others using
-  // `PasswordForm::Store::kAccountStore` are compatible with ongoing changes
-  // on Android.
   IsSyncing is_syncing{false};
-  bool in_account_store = (in_stores & PasswordForm::Store::kAccountStore) ==
-                          PasswordForm::Store::kAccountStore;
-  const syncer::SyncService* sync_service = client_->GetSyncService();
-  switch (sync_util::GetPasswordSyncState(sync_service)) {
-    case sync_util::SyncState::kNotActive:
-      break;
-    case sync_util::SyncState::kActiveWithNormalEncryption:
-    case sync_util::SyncState::kActiveWithCustomPassphrase:
-      is_syncing = IsSyncing(
-          in_account_store ||
-          sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service));
-      break;
+
+  if (in_account_store) {
+    // Credential saved to the account store.
+    is_syncing = IsSyncing{true};
+  } else {
+    // Credential saved to the local-or-syncable store.
+#if BUILDFLAG(IS_ANDROID)
+    const bool uses_split_stores_for_sync_users =
+        UsesSplitStoresAndUPMForLocal(client_->GetPrefs());
+#else
+    const bool uses_split_stores_for_sync_users = false;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    if (!uses_split_stores_for_sync_users) {
+      // TODO(crbug.com/40066949): Remove this codepath once
+      // IsSyncFeatureEnabled() is fully deprecated.
+      is_syncing = IsSyncing(sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          client_->GetSyncService()));
+    }
   }
 
   CredentialLeakType leak_type =
