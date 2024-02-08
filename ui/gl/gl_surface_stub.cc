@@ -23,7 +23,7 @@ bool GLSurfaceStub::Resize(const gfx::Size& size,
 }
 
 bool GLSurfaceStub::IsOffscreen() {
-  return false;
+  return true;
 }
 
 gfx::SwapResult GLSurfaceStub::SwapBuffers(PresentationCallback callback,
