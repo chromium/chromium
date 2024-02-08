@@ -201,7 +201,7 @@ class ServoWebDriverTestharnessExecutor(TestharnessExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.make_result(*data), [])
+        return (test.result_cls(*data), [])
 
     def do_testharness(self, session, url, timeout):
         session.url = url
@@ -257,15 +257,15 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
             result = self.implementation.run_test(test)
             return self.convert_result(test, result)
         except OSError:
-            return test.make_result("CRASH", None), []
+            return test.result_cls("CRASH", None), []
         except TimeoutError:
-            return test.make_result("TIMEOUT", None), []
+            return test.result_cls("TIMEOUT", None), []
         except Exception as e:
             message = getattr(e, "message", "")
             if message:
                 message += "\n"
             message += traceback.format_exc()
-            return test.make_result("INTERNAL-ERROR", message), []
+            return test.result_cls("INTERNAL-ERROR", message), []
 
     def screenshot(self, test, viewport_size, dpi, page_ranges):
         # https://github.com/web-platform-tests/wpt/issues/7135
