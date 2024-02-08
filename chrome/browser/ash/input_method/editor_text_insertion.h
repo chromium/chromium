@@ -16,7 +16,7 @@ namespace input_method {
 
 class EditorTextInsertion {
  public:
-  EditorTextInsertion(const std::string& text);
+  explicit EditorTextInsertion(const std::string& text);
   ~EditorTextInsertion();
 
   // To help ensure that we do not insert the pending text in text fields other
@@ -27,6 +27,9 @@ class EditorTextInsertion {
 
   // Attempts to commit the pending text into the currently focused text input.
   bool Commit();
+
+  // Returns the length of the text to be inserted with this operation.
+  int GetTextLength();
 
  private:
   enum State {

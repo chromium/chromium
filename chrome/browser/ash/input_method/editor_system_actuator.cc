@@ -41,11 +41,6 @@ EditorSystemActuator::EditorSystemActuator(
 EditorSystemActuator::~EditorSystemActuator() = default;
 
 void EditorSystemActuator::InsertText(const std::string& text) {
-  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
-  logger->LogEditorState(EditorStates::kInsert);
-  logger->LogNumberOfCharactersInserted(text.length());
-  logger->LogNumberOfCharactersSelectedForInsert(
-      system_->GetSelectedTextLength());
   // After making an announcement there needs to be a small delay to ensure any
   // other announcements triggered from a text insertion do not collide with the
   // original announcement.
@@ -90,9 +85,22 @@ void EditorSystemActuator::SubmitFeedback(const std::string& description) {
 }
 
 void EditorSystemActuator::OnFocus(int context_id) {
-  if (queued_text_insertion_ && (queued_text_insertion_->HasTimedOut() ||
-                                 queued_text_insertion_->Commit())) {
+  if (queued_text_insertion_ == nullptr) {
+    return;
+  }
+  if (queued_text_insertion_->HasTimedOut()) {
     queued_text_insertion_ = nullptr;
+    return;
+  }
+  if (queued_text_insertion_->Commit()) {
+    EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
+    logger->LogEditorState(EditorStates::kInsert);
+    logger->LogNumberOfCharactersInserted(
+        queued_text_insertion_->GetTextLength());
+    logger->LogNumberOfCharactersSelectedForInsert(
+        system_->GetSelectedTextLength());
+    queued_text_insertion_ = nullptr;
+    return;
   }
 }
 

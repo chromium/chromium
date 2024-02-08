@@ -46,6 +46,10 @@ bool EditorTextInsertion::Commit() {
   return true;
 }
 
+int EditorTextInsertion::GetTextLength() {
+  return pending_text_.size();
+}
+
 void EditorTextInsertion::CancelTextInsertion() {
   state_ = State::kTimedOut;
 }
