@@ -2406,11 +2406,6 @@ BASE_FEATURE(kReleaseNotesNotificationAllChannels,
              "ReleaseNotesNotificationAllChannels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Release Notes suggestion chip on ChromeOS.
-BASE_FEATURE(kReleaseNotesSuggestionChip,
-             "ReleaseNotesSuggestionChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables rendering ARC notifications using ChromeOS notification framework
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
