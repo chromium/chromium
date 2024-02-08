@@ -62,7 +62,7 @@ void IncognitoMenuView::BuildMenu() {
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
                                              incognito_window_count)
           : std::u16string(),
-      header_art_icon);
+      std::u16string(), header_art_icon);
 
   AddFeatureButton(
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW),

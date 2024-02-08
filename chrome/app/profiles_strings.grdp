@@ -141,6 +141,9 @@
       Hide Accounts
     </message>
   </if>
+  <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
+    managed by <ph name="VALUE">$1<ex>1</ex></ph>
+  </message>
   <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
     Manage profiles
   </message>

@@ -479,7 +479,8 @@ END_METADATA
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
                                   const std::u16string& title,
-                                  const std::u16string& subtitle) {
+                                  const std::u16string& subtitle,
+                                  const std::u16string& management_label) {
   views::View* profile_titles_container =
       parent->AddChildView(std::make_unique<views::View>());
   // Separate the titles from the avatar image by the default margin.
@@ -502,6 +503,14 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
     profile_titles_container->AddChildView(std::make_unique<views::Label>(
         subtitle, views::style::CONTEXT_LABEL,
         features::IsChromeRefresh2023() ? views::style::STYLE_BODY_3
+                                        : views::style::STYLE_SECONDARY));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) &&
+      !management_label.empty()) {
+    profile_titles_container->AddChildView(std::make_unique<views::Label>(
+        management_label, views::style::CONTEXT_LABEL,
+        features::IsChromeRefresh2023() ? views::style::STYLE_BODY_5
                                         : views::style::STYLE_SECONDARY));
   }
 }
@@ -657,6 +666,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     const ui::ImageModel& image_model,
     const std::u16string& title,
     const std::u16string& subtitle,
+    const std::u16string& management_label,
     const ui::ThemedVectorIcon& avatar_header_art) {
   constexpr int kBottomMargin = kDefaultMargin;
 
@@ -732,7 +742,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
       std::move(heading_label), profile_background_color,
       std::move(avatar_image_view), std::move(edit_button), avatar_header_art);
   BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
-                               subtitle);
+                               subtitle, management_label);
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(

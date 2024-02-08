@@ -96,6 +96,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   std::u16string menu_title_;
   std::u16string menu_subtitle_;
+  std::u16string management_label_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // A profile switcher object needed if the user triggers opening other
