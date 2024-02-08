@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_CHROMEOS_H_
 
+#include <string>
+
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +29,23 @@ class AppManagementPageHandlerChromeOs : public AppManagementPageHandlerBase {
       const AppManagementPageHandlerChromeOs&) = delete;
 
   ~AppManagementPageHandlerChromeOs() override;
+
+  // app_management::mojom::PageHandler:
+  void SetResizeLocked(const std::string& app_id, bool locked) override;
+  void SetPreferredApp(const std::string& app_id,
+                       bool is_preferred_app) override;
+  void GetOverlappingPreferredApps(
+      const std::string& app_id,
+      GetOverlappingPreferredAppsCallback callback) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::WindowMode window_mode) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      apps::RunOnOsLoginMode run_on_os_login_mode) override;
+  void ShowDefaultAppAssociationsUi() override;
+  void OpenStorePage(const std::string& app_id) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_CHROMEOS_H_

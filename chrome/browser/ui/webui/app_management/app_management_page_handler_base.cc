@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -69,7 +70,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -413,16 +413,6 @@ void AppManagementPageHandlerBase::SetPermission(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::SetResizeLocked(const std::string& app_id,
-                                                   bool locked) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-      app_id, locked);
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AppManagementPageHandlerBase::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
       app_id, apps::UninstallSource::kAppManagement,
@@ -435,96 +425,9 @@ void AppManagementPageHandlerBase::OpenNativeSettings(
       app_id);
 }
 
-void AppManagementPageHandlerBase::SetPreferredApp(const std::string& app_id,
-                                                   bool is_preferred_app) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  bool is_preferred_app_for_supported_links =
-      proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
-
-  if (is_preferred_app && !is_preferred_app_for_supported_links) {
-    proxy->SetSupportedLinksPreference(app_id);
-  } else if (!is_preferred_app && is_preferred_app_for_supported_links) {
-    proxy->RemoveSupportedLinksPreference(app_id);
-  }
-#else
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-
-  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
-      app_id, is_preferred_app, base::DoNothing());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void AppManagementPageHandlerBase::GetOverlappingPreferredApps(
-    const std::string& app_id,
-    GetOverlappingPreferredAppsCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  base::flat_set<std::string> app_ids =
-      proxy->PreferredAppsList().FindPreferredAppsForFilters(intent_filters);
-  app_ids.erase(app_id);
-
-  // Erase all IDs that do not correspond to installed apps in App Service. Such
-  // IDs could be apps that have been uninstalled but did not have their
-  // preference updated correctly, or the legacy "use_browser" preference. This
-  // prevents attempting to show an overlapping app dialog for an app that
-  // doesn't currently exist.
-  base::EraseIf(app_ids, [proxy](const std::string& app_id) {
-    return !proxy->AppRegistryCache().IsAppInstalled(app_id);
-  });
-  std::move(callback).Run(std::move(app_ids).extract());
-#else
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-  provider->scheduler().ScheduleCallbackWithResult(
-      "AppManagementPageHandlerBase::GetOverlappingPreferredApps",
-      web_app::AllAppsLockDescription(),
-      base::BindOnce(
-          [](const webapps::AppId& app_id, web_app::AllAppsLock& all_apps_lock,
-             base::Value::Dict& debug_value) {
-            return all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
-                app_id);
-          },
-          app_id),
-      std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void AppManagementPageHandlerBase::UpdateAppSize(const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->UpdateAppSize(app_id);
-}
-
-void AppManagementPageHandlerBase::SetWindowMode(const std::string& app_id,
-                                                 apps::WindowMode window_mode) {
-  // On ChromeOS, apps should always open in a new window,
-  // hence window mode changes are not allowed.
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTIMPLEMENTED();
-#else
-  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-
-  // Changing window mode is not allowed for isolated web apps.
-  if (provider->registrar_unsafe().IsIsolated(app_id)) {
-    return;
-  }
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-      app_id, window_mode);
-#endif
-}
-
-void AppManagementPageHandlerBase::SetRunOnOsLoginMode(
-    const std::string& app_id,
-    apps::RunOnOsLoginMode run_on_os_login_mode) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTIMPLEMENTED();
-#else
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
-      app_id, run_on_os_login_mode);
-#endif
 }
 
 void AppManagementPageHandlerBase::SetFileHandlingEnabled(
@@ -535,13 +438,6 @@ void AppManagementPageHandlerBase::SetFileHandlingEnabled(
       /*is_managed=*/false);
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
       app_id, std::move(permission));
-}
-
-void AppManagementPageHandlerBase::ShowDefaultAppAssociationsUi() {
-  DCHECK(CanShowDefaultAppAssociationsUi());
-#if BUILDFLAG(IS_WIN)
-  base::win::LaunchDefaultAppsSettingsModernDialog({});
-#endif
 }
 
 void AppManagementPageHandlerBase::OnWebAppFileHandlerApprovalStateChanged(
@@ -778,43 +674,6 @@ app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return app;
-}
-
-void AppManagementPageHandlerBase::OpenStorePage(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  auto* apk_service = ash::ApkWebAppService::Get(profile_);
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&proxy, &apk_service](const apps::AppUpdate& update) {
-        if (update.InstallSource() == apps::InstallSource::kPlayStore) {
-          std::string package_name = update.PublisherId();
-          if (apk_service->IsWebAppInstalledFromArc(update.AppId())) {
-            package_name =
-                apk_service->GetPackageNameForWebApp(update.AppId()).value();
-          }
-          GURL url("https://play.google.com/store/apps/details?id=" +
-                   package_name);
-          proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                                  apps::LaunchSource::kFromChromeInternal);
-        } else if (update.InstallSource() ==
-                   apps::InstallSource::kChromeWebStore) {
-          GURL url("https://chrome.google.com/webstore/detail/" +
-                   update.AppId());
-          proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                                  apps::LaunchSource::kFromChromeInternal);
-        }
-      });
-#endif
-}
-
-void AppManagementPageHandlerBase::SetAppLocale(const std::string& app_id,
-                                                const std::string& locale_tag) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
-      app_id, locale_tag);
-#else
-  NOTIMPLEMENTED();
-#endif
 }
 
 void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {

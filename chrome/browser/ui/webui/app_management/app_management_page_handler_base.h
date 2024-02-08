@@ -67,25 +67,10 @@ class AppManagementPageHandlerBase
   void SetPinned(const std::string& app_id, bool pinned) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
-  void SetResizeLocked(const std::string& app_id, bool locked) override;
   void Uninstall(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
-  void SetPreferredApp(const std::string& app_id,
-                       bool is_preferred_app) override;
-  void GetOverlappingPreferredApps(
-      const std::string& app_id,
-      GetOverlappingPreferredAppsCallback callback) override;
   void UpdateAppSize(const std::string& app_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::WindowMode window_mode) override;
-  void SetRunOnOsLoginMode(
-      const std::string& app_id,
-      apps::RunOnOsLoginMode run_on_os_login_mode) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
-  void ShowDefaultAppAssociationsUi() override;
-  void OpenStorePage(const std::string& app_id) override;
-  void SetAppLocale(const std::string& app_id,
-                    const std::string& locale_tag) override;
 
   // web_app::WebAppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(
@@ -107,6 +92,8 @@ class AppManagementPageHandlerBase
       mojo::PendingRemote<app_management::mojom::Page> page,
       Profile* profile,
       Delegate& delegate);
+
+  Profile* profile() { return profile_; }
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

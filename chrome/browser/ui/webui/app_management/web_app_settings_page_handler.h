@@ -27,6 +27,23 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase {
       delete;
 
   ~WebAppSettingsPageHandler() override;
+
+  // app_management::mojom::PageHandler:
+  void SetResizeLocked(const std::string& app_id, bool locked) override;
+  void SetPreferredApp(const std::string& app_id,
+                       bool is_preferred_app) override;
+  void GetOverlappingPreferredApps(
+      const std::string& app_id,
+      GetOverlappingPreferredAppsCallback callback) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::WindowMode window_mode) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      apps::RunOnOsLoginMode run_on_os_login_mode) override;
+  void ShowDefaultAppAssociationsUi() override;
+  void OpenStorePage(const std::string& app_id) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_WEB_APP_SETTINGS_PAGE_HANDLER_H_
