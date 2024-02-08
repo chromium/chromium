@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.View;
@@ -55,10 +56,12 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.ui.widget.ToastManager;
 
 import java.util.ArrayList;
@@ -74,6 +77,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    @Mock private ToolbarColorObserver mToolbarColorObserver;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -102,6 +106,7 @@ public final class ToolbarTabletUnitTest {
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
         mToolbarTablet.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
         mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
+        mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
         mToolbarTabletLayout =
                 (LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -586,6 +591,16 @@ public final class ToolbarTabletUnitTest {
                 });
         mTabSwitcherButton.performLongClick();
         Assert.assertEquals("Long press callback not triggered.", 1, callback.getCallCount());
+    }
+
+    @Test
+    public void testThemeColorChange() {
+        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(true);
+        int color = Color.BLACK;
+        mToolbarTablet.onThemeColorChanged(color, false);
+        // Verify that ToolbarColorObserver is notified of the color change.
+        verify(mToolbarColorObserver).onToolbarColorChanged(color);
+        ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(false);
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

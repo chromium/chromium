@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -395,6 +396,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 };
         mMultiInstanceManager = multiInstanceManager;
         mHubManagerSupplier = hubManagerSupplier;
+        mStatusBarColorController.setAllowToolbarColorOnTablets(
+                ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
     }
 
     @Override

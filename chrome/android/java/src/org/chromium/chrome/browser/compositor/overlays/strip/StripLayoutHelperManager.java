@@ -68,7 +68,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -162,6 +164,7 @@ public class StripLayoutHelperManager
     private boolean mIsHidden;
     private boolean mIsTransitioning;
     private final ToolbarManager mToolbarManager;
+    private final StatusBarColorController mStatusBarColorController;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
@@ -452,6 +455,7 @@ public class StripLayoutHelperManager
         }
 
         mToolbarManager = toolbarManager;
+        mStatusBarColorController = mToolbarManager.getStatusBarColorController();
 
         mNormalHelper =
                 new StripLayoutHelper(
@@ -545,6 +549,7 @@ public class StripLayoutHelperManager
     /** Mark whether tab strip |isHidden|. */
     public void setIsTabStripHidden(boolean isHidden) {
         mIsHidden = isHidden;
+        mStatusBarColorController.setTabStripHiddenOnTablet(mIsHidden);
     }
 
     @Override
@@ -606,6 +611,8 @@ public class StripLayoutHelperManager
             // The fade-out is implemented by adding a scrim layer on top of the tab strip, with the
             // same bg as the toolbar background color.
             scrimOpacity = calculateScrimOpacityDuringTransition(visibleHeight);
+            mStatusBarColorController.setTabStripColorOverlay(
+                    getStripTransitionScrimColor(), scrimOpacity);
 
             yOffset = 0;
         } else if (mIsHidden) {
@@ -627,7 +634,7 @@ public class StripLayoutHelperManager
     }
 
     private int getStripTransitionScrimColor() {
-        if (!ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue()) {
+        if (!ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim()) {
             return getBackgroundColor();
         }
         return mToolbarManager.getPrimaryColor();
@@ -676,11 +683,26 @@ public class StripLayoutHelperManager
     public void onHeightChanged(int newHeight) {
         mIsTransitioning = true;
         mIsHidden = newHeight == 0;
+        // Update the strip visibility state in StatusBarController just after the margins are
+        // updated during a hide->show transition so that the status bar assumes the base tab strip
+        // color for the remaining duration of the transition while a scrim is applied.
+        if (!mIsHidden) {
+            mStatusBarColorController.setTabStripHiddenOnTablet(false);
+        }
+        // Set the status bar color and scrim overlay at the start of the transition.
+        mStatusBarColorController.setTabStripColorOverlay(
+                getStripTransitionScrimColor(), mIsHidden ? 0f : 1f);
     }
 
     @Override
     public void onTransitionFinished() {
         mIsTransitioning = false;
+        //  Update the strip visibility state in StatusBarColorController only after a show->hide
+        // transition, so that the status bar assumes the toolbar color when the strip is hidden.
+        if (mIsHidden) {
+            mStatusBarColorController.setTabStripHiddenOnTablet(true);
+        }
+        mStatusBarColorController.setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 
     private boolean duringTabStripTransition() {

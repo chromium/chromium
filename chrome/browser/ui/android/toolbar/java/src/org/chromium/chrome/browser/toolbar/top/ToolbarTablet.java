@@ -533,6 +533,13 @@ public class ToolbarTablet extends ToolbarLayout
         mLocationBar.getTabletCoordinator().tintBackground(textBoxColor);
         mLocationBar.updateVisualsForState();
         setToolbarHairlineColor(color);
+
+        // Notify the StatusBarColorController of the toolbar color change. This is to match the
+        // status bar's color with the toolbar color when the tab strip is hidden on a tablet when
+        // DYNAMIC_TOP_CHROME is enabled.
+        if (ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim()) {
+            notifyToolbarColorChanged(color);
+        }
     }
 
     /** Called when the currently visible New Tab Page changes. */

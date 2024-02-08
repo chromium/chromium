@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -72,8 +75,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -108,6 +113,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ToolbarManager mToolbarManager;
+    @Mock private StatusBarColorController mStatusBarColorController;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -130,6 +136,8 @@ public class StripLayoutHelperManagerTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         when(mToolbarContainerView.getContext()).thenReturn(mContext);
+        when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
+
         TabStripSceneLayer.setTestFlag(true);
         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(true);
 
@@ -608,6 +616,16 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         eq(mToolbarPrimaryColor),
                         /* scrimOpacity= */ eq(0f));
+
+        // Verify StatusBarColorController method invocations.
+        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
+        // Invocation during the transition.
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(mToolbarPrimaryColor, expectedOpacity);
+        // Invocation after the transition finished.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 
     @Test
@@ -656,11 +674,14 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.setIsTabStripHidden(true);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty when tab strip hidden.", views.isEmpty());
+        verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
 
         mStripLayoutHelperManager.setIsTabStripHidden(false);
         mStripLayoutHelperManager.onHeightChanged(40);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty during tab strip transition.", views.isEmpty());
+        // Invoked once by #setIsTabStripHidden(), once by #onHeightChanged().
+        verify(mStatusBarColorController, times(2)).setTabStripHiddenOnTablet(false);
 
         mStripLayoutHelperManager.onTransitionFinished();
         mStripLayoutHelperManager.getVirtualViews(views);
@@ -728,5 +749,19 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         eq(scrimColor),
                         /* scrimOpacity= */ eq(0f));
+
+        // Verify StatusBarColorController method invocations.
+        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
+        // Invocations before the transition started.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+        // Invocations during the transition.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(false);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(scrimColor, expectedOpacity);
+        // Invocation after the transition finished.
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 }
