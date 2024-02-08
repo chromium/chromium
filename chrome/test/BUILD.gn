@@ -10564,7 +10564,6 @@ if (!is_android) {
         "//third_party/libpng",
         "//ui/base:test_support",
         "//ui/events:test_support",
-        "//ui/gfx/linux:gbm",
         "//ui/ozone",
         "//ui/platform_window/common",
         "//ui/resources:ui_test_pak",
@@ -11211,7 +11210,6 @@ if (!is_android && !is_chromeos_device) {
         "//components/reporting/client:test_support",
         "//components/reporting/storage:test_support",
         "//components/reporting/util:test_callbacks_support",
-        "//ui/gfx/linux:gbm",
       ]
 
       sources += [
@@ -12010,10 +12008,6 @@ if (!is_android) {
         "//third_party/wtl",
         "//ui/resources",
       ]
-    }
-
-    if (is_chromeos) {
-      deps += [ "//ui/gfx/linux:gbm" ]
     }
   }
 

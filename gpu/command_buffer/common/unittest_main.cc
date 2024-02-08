@@ -10,10 +10,6 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
-
 namespace {
 
 class GpuTestSuite : public base::TestSuite {
@@ -27,15 +23,7 @@ class GpuTestSuite : public base::TestSuite {
 };
 
 GpuTestSuite::GpuTestSuite(int argc, char** argv)
-    : base::TestSuite(argc, argv) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/271455200): the FeatureList has not been initialized by this point,
-  // so this call will always disable Intel media compression. We may want to
-  // move this to a later point to be able to run GPU unit tests with Intel
-  // media compression enabled.
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif
-}
+    : base::TestSuite(argc, argv) {}
 
 GpuTestSuite::~GpuTestSuite() = default;
 

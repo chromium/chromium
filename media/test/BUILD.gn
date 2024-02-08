@@ -23,10 +23,6 @@ source_set("run_all_unittests") {
   if (is_android) {
     deps += [ "//ui/gl" ]
   }
-
-  if (is_chromeos) {
-    deps += [ "//ui/gfx/linux:gbm" ]
-  }
 }
 
 source_set("pipeline_integration_test_base") {

@@ -40,7 +40,6 @@ source_set("gbm") {
     "//skia",
     "//third_party/minigbm",
     "//ui/gfx:buffer_types",
-    "//ui/gfx:gfx_switches",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry:geometry",
   ]

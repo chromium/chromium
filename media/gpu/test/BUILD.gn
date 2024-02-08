@@ -210,10 +210,6 @@ static_library("video_test_environment") {
     ":frame_file_writer",
     "//testing/gtest",
   ]
-
-  if (is_chromeos) {
-    deps += [ "//ui/gfx/linux:gbm" ]
-  }
 }
 
 static_library("video_player_test_environment") {

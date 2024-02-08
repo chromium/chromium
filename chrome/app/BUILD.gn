@@ -203,10 +203,7 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chromeos/dbus/constants",
-      "//ui/gfx/linux:gbm",
-    ]
+    deps += [ "//chromeos/dbus/constants" ]
   }
 
   if (is_chromeos_ash) {

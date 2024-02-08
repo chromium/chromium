@@ -41,10 +41,6 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
-
 namespace content {
 
 class UnitTestTestSuite::UnitTestEventListener
@@ -147,10 +143,6 @@ UnitTestTestSuite::UnitTestTestSuite(
   listeners.Append(new CheckForLeakedWebUIRegistrations);
 
   scoped_feature_list_.InitFromCommandLine(enabled, disabled);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif
 
   mojo::core::InitFeatures();
   if (command_line->HasSwitch(switches::kTestChildProcess)) {

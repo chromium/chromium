@@ -21,10 +21,6 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
 #endif
 
 namespace gl {
@@ -35,12 +31,6 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
 #if BUILDFLAG(IS_OZONE)
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/271455200): is the process single-threaded at this point and has
-  // the FeatureList been initialized? Those are requirements of
-  // ui::EnsureIntelMediaCompressionEnvVarIsSet().
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);

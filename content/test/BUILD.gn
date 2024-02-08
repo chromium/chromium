@@ -803,8 +803,6 @@ static_library("test_support") {
       "../browser/smart_card/mock_smart_card_context_factory.cc",
       "../browser/smart_card/mock_smart_card_context_factory.h",
     ]
-
-    deps += [ "//ui/gfx/linux:gbm" ]
   }
 
   if (is_fuchsia) {
