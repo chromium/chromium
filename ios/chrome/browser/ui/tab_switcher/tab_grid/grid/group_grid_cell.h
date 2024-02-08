@@ -27,7 +27,7 @@
 // The look of the cell.
 @property(nonatomic, assign) GridTheme theme;
 // Settable UI elements of the group cell.
-@property(nonatomic, weak) UIImage* icon;
+@property(nonatomic, copy) NSString* groupColorName;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) BOOL titleHidden;
 // Sets to update and keep cell alpha in sync.

@@ -31,6 +31,7 @@ NSInteger kIconSymbolPointSize = 13;
 const CGFloat kSnapshotViewLeadingOffset = 4;
 const CGFloat kSnapshotViewTrailingOffset = 4;
 const CGFloat kSnapShotViewBottomOffset = 4;
+const CGFloat kGroupColorViewSize = 18;
 
 // The vertical/horizontal spacing to apply between the snapshot views.
 const CGFloat kSpacing = 4;
@@ -50,7 +51,7 @@ const CGFloat kSpacing = 4;
   NSLayoutConstraint* _topBarHeightConstraint;
   // Visual components of the cell.
   UIView* _topBar;
-  UIImageView* _iconView;
+  UIView* _groupColorView;
   UILabel* _titleLabel;
   UIImageView* _closeIconView;
   UIImageView* _selectIconView;
@@ -193,7 +194,7 @@ const CGFloat kSpacing = 4;
   [super prepareForReuse];
   self.title = nil;
   self.titleHidden = NO;
-  self.icon = nil;
+  self.groupColorName = nil;
   [self configureWithGroupTabInfos:nil totalTabsCount:0];
   self.selected = NO;
   self.opacity = 1.0;
@@ -237,9 +238,11 @@ const CGFloat kSpacing = 4;
   _theme = theme;
 }
 
-- (void)setIcon:(UIImage*)icon {
-  _iconView.image = icon;
-  _icon = icon;
+- (void)setGroupColorName:(NSString*)groupColorName {
+  if (groupColorName) {
+    _groupColorName = groupColorName;
+    _groupColorView.backgroundColor = [UIColor colorNamed:_groupColorName];
+  }
 }
 
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
@@ -330,13 +333,9 @@ const CGFloat kSpacing = 4;
   _topBar = [[UIView alloc] init];
   _topBar.translatesAutoresizingMaskIntoConstraints = NO;
 
-  _iconView = [[UIImageView alloc] init];
-  _iconView.translatesAutoresizingMaskIntoConstraints = NO;
-  _iconView.contentMode = UIViewContentModeScaleAspectFill;
-  _iconView.layer.cornerRadius = kGridCellIconCornerRadius;
-  _iconView.layer.masksToBounds = YES;
-  _iconView.backgroundColor = UIColor.clearColor;
-  _iconView.tintColor = [UIColor colorNamed:kGrey400Color];
+  _groupColorView = [[UIView alloc] init];
+  _groupColorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _groupColorView.layer.cornerRadius = kGroupColorViewSize / 2;
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -359,7 +358,7 @@ const CGFloat kSpacing = 4;
 
   [_topBar addSubview:_selectIconView];
 
-  [_topBar addSubview:_iconView];
+  [_topBar addSubview:_groupColorView];
   [_topBar addSubview:_titleLabel];
   [_topBar addSubview:_closeIconView];
 
@@ -367,19 +366,21 @@ const CGFloat kSpacing = 4;
     [_titleLabel.leadingAnchor
         constraintEqualToAnchor:_topBar.leadingAnchor
                        constant:kGridCellHeaderLeadingInset],
-    [_iconView.widthAnchor constraintEqualToConstant:0],
-    [_iconView.heightAnchor constraintEqualToConstant:0],
+    [_groupColorView.widthAnchor constraintEqualToConstant:0],
+    [_groupColorView.heightAnchor constraintEqualToConstant:0],
   ];
 
   _nonAccessibilityConstraints = @[
-    [_iconView.leadingAnchor
+    [_groupColorView.heightAnchor
+        constraintEqualToConstant:kGroupColorViewSize],
+    [_groupColorView.widthAnchor constraintEqualToConstant:kGroupColorViewSize],
+    [_groupColorView.leadingAnchor
         constraintEqualToAnchor:_topBar.leadingAnchor
                        constant:kGridCellHeaderLeadingInset],
-    [_iconView.centerYAnchor constraintEqualToAnchor:_topBar.centerYAnchor],
-    [_iconView.widthAnchor constraintEqualToConstant:kGridCellIconDiameter],
-    [_iconView.heightAnchor constraintEqualToConstant:kGridCellIconDiameter],
+    [_groupColorView.centerYAnchor
+        constraintEqualToAnchor:_topBar.centerYAnchor],
     [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_iconView.trailingAnchor
+        constraintEqualToAnchor:_groupColorView.trailingAnchor
                        constant:kGridCellHeaderLeadingInset],
   ];
 

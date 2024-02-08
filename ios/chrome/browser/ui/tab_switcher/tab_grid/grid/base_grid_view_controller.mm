@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
@@ -1628,7 +1629,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.delegate = self;
   cell.theme = self.theme;
   cell.itemIdentifier = item.identifier;
-  cell.title = item.title;
+  // TODO(crbug.com/1501837): Add the right title when the model is available.
+  cell.title = @"Temporary Title";
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
@@ -1648,7 +1650,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
           cell.itemIdentifier == itemForSnapshot.identifier) {
         // TODO(crbug.com/1501837): Remove once the group color is available
         // throught the group model. Keep for now for testing purposes.
-        cell.icon = favicon;
+        cell.groupColorName = kYellow500Color;
         GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
         snapshotFavicon.snapshot = snapshot;
         snapshotFavicon.favicon = favicon;
