@@ -185,8 +185,13 @@ chromium-metrics-reviews@google.com.
     Records if the telemetry ping sent for APK download contained a full
     referrer chain, or if there was an error collecting the referrer chain.
     Logged each time a user opted into extended reporting downloads an APK file
-    from a normal window on Android. Warning: this histogram was expired from
-    2023-06-10 to 2023-08-16; data may be missing.
+    from a normal window on Android.
+
+    In M123, this was expanded to cover new kinds of failure leading to
+    incomplete referrer chains.
+
+    Warning: this histogram was expired from 2023-06-10 to 2023-08-16; data may
+    be missing.
   </summary>
 </histogram>
 

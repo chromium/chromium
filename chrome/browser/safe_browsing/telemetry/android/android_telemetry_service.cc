@@ -61,8 +61,12 @@ enum class ApkDownloadTelemetryIncompleteReason {
   SB_NAVIGATION_MANAGER_NOT_READY = 1,
   // Full referrer chain captured.
   COMPLETE = 2,
+  // No render frame host existed for the download
+  MISSING_RENDER_FRAME_HOST = 3,
+  // The render frame host had not committed to a valid URL
+  RENDER_FRAME_HOST_INVALID_URL = 4,
 
-  kMaxValue = COMPLETE,
+  kMaxValue = RENDER_FRAME_HOST_INVALID_URL,
 };
 
 void RecordApkDownloadTelemetryIncompleteReason(
@@ -168,6 +172,8 @@ void AndroidTelemetryService::FillReferrerChain(
     content::WebContents* web_contents,
     content::RenderFrameHost* rfh,
     ClientSafeBrowsingReportRequest* report) {
+  using enum ApkDownloadTelemetryIncompleteReason;
+
   SafeBrowsingNavigationObserverManager* observer_manager =
       web_contents
           ? SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
@@ -175,15 +181,19 @@ void AndroidTelemetryService::FillReferrerChain(
           : nullptr;
 
   if (!web_contents) {
-    RecordApkDownloadTelemetryIncompleteReason(
-        ApkDownloadTelemetryIncompleteReason::MISSING_WEB_CONTENTS);
+    RecordApkDownloadTelemetryIncompleteReason(MISSING_WEB_CONTENTS);
     return;
   } else if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
                  profile_->GetPrefs(),
                  g_browser_process->safe_browsing_service()) ||
              !observer_manager) {
-    RecordApkDownloadTelemetryIncompleteReason(
-        ApkDownloadTelemetryIncompleteReason::SB_NAVIGATION_MANAGER_NOT_READY);
+    RecordApkDownloadTelemetryIncompleteReason(SB_NAVIGATION_MANAGER_NOT_READY);
+    return;
+  } else if (!rfh) {
+    RecordApkDownloadTelemetryIncompleteReason(MISSING_RENDER_FRAME_HOST);
+    return;
+  } else if (!rfh->GetLastCommittedURL().is_valid()) {
+    RecordApkDownloadTelemetryIncompleteReason(RENDER_FRAME_HOST_INVALID_URL);
     return;
   }
 
