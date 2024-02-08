@@ -108,6 +108,9 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddInteger(
       "prerenderStartTimeThreshold",
       features::kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds.Get());
+  source->AddInteger(
+      "preconnectStartTimeThreshold",
+      features::kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds.Get());
 
   // Needed by <cr-most-visited> but not used in
   // chrome://new-tab-page-third-party/.
