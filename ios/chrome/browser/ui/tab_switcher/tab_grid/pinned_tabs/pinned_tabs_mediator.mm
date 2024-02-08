@@ -359,8 +359,9 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
-        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex,
-                         WebStateList::INSERT_PINNED);
+        const WebStateList::InsertionParams params =
+            WebStateList::InsertionParams::AtIndex(destinationIndex).Pinned();
+        MoveTabToBrowser(tabInfo.tabID, self.browser, params);
         return;
       }
       base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,

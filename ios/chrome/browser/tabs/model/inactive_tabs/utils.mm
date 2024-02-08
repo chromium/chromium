@@ -179,18 +179,15 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
     }
 
     if (base::ranges::binary_search(indexes_moving, index)) {
-      // Using INSERT_FORCE_INDEX allow to insert all the moved tabs at the
-      // expected location and INSERT_ACTIVATE allow to activate the tab if
-      // needed (e.g. the first moved tab from source when target has no
-      // active WebState).
-      const int insertion_flags =
-          WebStateList::INSERT_FORCE_INDEX |
-          (index == index_to_activate ? WebStateList::INSERT_ACTIVATE
-                                      : WebStateList::INSERT_NO_FLAGS);
+      // Using `AtIndex` allows to insert all the moved tabs with a desired
+      // location and `Activate` allows to activate the tab if needed (e.g. the
+      // first moved tab from source when target has no active WebState).
+      const WebStateList::InsertionParams params =
+          WebStateList::InsertionParams::AtIndex(insertion_index)
+              .Activate(index == index_to_activate);
 
-      MoveTabFromBrowserToBrowser(
-          source_browser, index, target_browser, insertion_index,
-          static_cast<WebStateList::InsertionFlags>(insertion_flags));
+      MoveTabFromBrowserToBrowser(source_browser, index, target_browser,
+                                  params);
       continue;
     }
   }

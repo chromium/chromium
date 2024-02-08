@@ -60,26 +60,6 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
   WebStateList* const web_state_list = browser_->GetWebStateList();
   ChromeBrowserState* const browser_state = browser_->GetBrowserState();
 
-  int insertion_index = WebStateList::kInvalidIndex;
-  int insertion_flags = WebStateList::INSERT_NO_FLAGS;
-  if (tab_insertion_params.index != TabInsertion::kPositionAutomatically) {
-    DCHECK_LE(tab_insertion_params.index, INT_MAX);
-    insertion_index = static_cast<int>(tab_insertion_params.index);
-    insertion_flags |= WebStateList::INSERT_FORCE_INDEX;
-  } else if (!ui::PageTransitionCoreTypeIs(web_load_params.transition_type,
-                                           ui::PAGE_TRANSITION_LINK)) {
-    insertion_index = web_state_list->count();
-    insertion_flags |= WebStateList::INSERT_FORCE_INDEX;
-  }
-
-  if (!tab_insertion_params.in_background) {
-    insertion_flags |= WebStateList::INSERT_ACTIVATE;
-  }
-
-  if (tab_insertion_params.inherit_opener) {
-    insertion_flags |= WebStateList::INSERT_INHERIT_OPENER;
-  }
-
   std::unique_ptr<web::WebState> web_state;
   web::WebState::CreateParams create_params(browser_state);
   create_params.created_with_opener = tab_insertion_params.opened_by_dom;
@@ -117,10 +97,17 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     web_state->GetNavigationManager()->LoadURLWithParams(web_load_params);
   }
 
-  const WebStateList::InsertionParams params =
-      WebStateList::InsertionParams::ForDeprecationMigration(
-          insertion_flags, insertion_index,
-          WebStateOpener(tab_insertion_params.parent));
+  WebStateList::InsertionParams params =
+      WebStateList::InsertionParams::Automatic();
+  if (tab_insertion_params.index != TabInsertion::kPositionAutomatically) {
+    params = WebStateList::InsertionParams::AtIndex(tab_insertion_params.index);
+  } else if (!ui::PageTransitionCoreTypeIs(web_load_params.transition_type,
+                                           ui::PAGE_TRANSITION_LINK)) {
+    params = WebStateList::InsertionParams::AtIndex(web_state_list->count());
+  }
+  params.Activate(!tab_insertion_params.in_background)
+      .InheritOpener(tab_insertion_params.inherit_opener)
+      .WithOpener(WebStateOpener(tab_insertion_params.parent));
   web::WebState* web_state_ptr = web_state.get();
   web_state_list->InsertWebState(std::move(web_state), params);
   return web_state_ptr;

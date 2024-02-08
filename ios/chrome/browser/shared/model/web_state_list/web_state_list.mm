@@ -22,31 +22,11 @@
 namespace {
 
 // Returns whether the given flag is set in a flagset.
-bool IsInsertionFlagSet(int flagset, WebStateList::InsertionFlags flag) {
-  return (flagset & flag) == flag;
-}
-
-// Returns whether the given flag is set in a flagset.
 bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
   return (flagset & flag) == flag;
 }
 
 }  // namespace
-
-WebStateList::InsertionParams
-WebStateList::InsertionParams::ForDeprecationMigration(int insertion_flags,
-                                                       int desired_index,
-                                                       WebStateOpener opener) {
-  InsertionParams params = InsertionParams::Automatic();
-  if (IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX)) {
-    params = InsertionParams::AtIndex(desired_index);
-  }
-  params.WithOpener(opener)
-      .InheritOpener(IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER))
-      .Activate(IsInsertionFlagSet(insertion_flags, INSERT_ACTIVATE))
-      .Pinned(IsInsertionFlagSet(insertion_flags, INSERT_PINNED));
-  return params;
-}
 
 WebStateList::ScopedBatchOperation::ScopedBatchOperation(
     WebStateList* web_state_list)
