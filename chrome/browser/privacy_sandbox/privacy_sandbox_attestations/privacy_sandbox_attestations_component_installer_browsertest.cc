@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -25,7 +26,10 @@ namespace privacy_sandbox {
 class PrivacySandboxAttestationsBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
-  PrivacySandboxAttestationsBrowserTest() = default;
+  PrivacySandboxAttestationsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivacySandboxAttestationSentinel);
+  }
 
   void SetUp() override {
     MixinBasedInProcessBrowserTest::SetUp();
@@ -54,6 +58,8 @@ class PrivacySandboxAttestationsBrowserTest
 
   PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
       &mixin_host_};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
