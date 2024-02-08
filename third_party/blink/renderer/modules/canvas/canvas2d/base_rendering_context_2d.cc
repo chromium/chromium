@@ -3098,7 +3098,13 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
     canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
+
   const Font& font = AccessFont(canvas);
+
+  if (HostAsOffscreenCanvas() && font.GetFontSelector() &&
+      !font.GetFontSelector()->GetExecutionContext()) {
+    return MakeGarbageCollected<TextMetrics>();
+  }
 
   const CanvasRenderingContext2DState& state = GetState();
   TextDirection direction = ToTextDirection(state.GetDirection(), canvas);

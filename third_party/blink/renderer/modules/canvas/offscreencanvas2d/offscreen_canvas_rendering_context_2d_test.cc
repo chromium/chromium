@@ -273,5 +273,17 @@ TEST(OffscreenCanvasRenderingContext2DTest,
   host->transferToImageBitmap(scope.GetScriptState(), no_exception);
 }
 
+// Regression test for https://crbug.com/1509382.
+TEST(OffscreenCanvasRenderingContext2DTest, NoCrashOnDocumentShutdown) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,
+                                       /*height=*/10);
+  OffscreenCanvasRenderingContext2D* context = GetContext(scope, host);
+  context->setFont("12px Ahem");
+  scope.GetDocument().Shutdown();
+  context->measureText("hello world");
+}
+
 }  // namespace
 }  // namespace blink
