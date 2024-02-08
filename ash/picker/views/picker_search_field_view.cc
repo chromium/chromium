@@ -34,22 +34,22 @@ PickerSearchFieldView::PickerSearchFieldView(
     PickerSessionMetrics* session_metrics)
     : search_callback_(std::move(search_callback)),
       session_metrics_(session_metrics) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  textfield_ = AddChildView(
-      views::Builder<views::Textfield>()
-          .SetController(this)
-          .SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets))
-          .SetBackgroundColor(SK_ColorTRANSPARENT)
-          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-              TypographyToken::kCrosBody2))
-          .SetPlaceholderText(l10n_util::GetStringUTF16(
-              IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT))
-          // TODO(b/309706053): Replace this once the strings are finalized.
-          .SetAccessibleName(u"placeholder")
-          .Build());
-
-  SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding);
+  views::Builder<PickerSearchFieldView>(this)
+      .SetUseDefaultFillLayout(true)
+      .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)
+      .AddChild(
+          views::Builder<views::Textfield>()
+              .CopyAddressTo(&textfield_)
+              .SetController(this)
+              .SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets))
+              .SetBackgroundColor(SK_ColorTRANSPARENT)
+              .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+                  TypographyToken::kCrosBody2))
+              .SetPlaceholderText(l10n_util::GetStringUTF16(
+                  IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT))
+              // TODO(b/309706053): Replace this once the strings are finalized.
+              .SetAccessibleName(u"placeholder"))
+      .BuildChildren();
 }
 
 PickerSearchFieldView::~PickerSearchFieldView() = default;

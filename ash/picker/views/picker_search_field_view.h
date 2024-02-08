@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -64,6 +65,11 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   raw_ptr<views::Textfield> textfield_ = nullptr;
 };
 
+BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::View)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerSearchFieldView)
 
 #endif  // ASH_PICKER_VIEWS_PICKER_SEARCH_FIELD_VIEW_H_
