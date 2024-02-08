@@ -4,7 +4,7 @@
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import type {ImageTransformParam} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_orientation.js';
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {createRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {getMediaType, isImage, isPDF, isRaw, isVideo} from '../../common/js/file_type.js';
@@ -28,7 +28,7 @@ export class ThumbnailLoader {
   /**
    * The image transform from metadata.
    */
-  private transform_: ImageTransformParam|null = null;
+  private transform_?: ImageTransformParam = undefined;
   private loadTarget_: LoadTarget|null = null;
   private thumbnailUrl_: string|null;
   private fallbackUrl_: string|null = null;
@@ -79,7 +79,7 @@ export class ThumbnailLoader {
             this.thumbnailUrl_ = this.metadata_.thumbnail.url;
             this.transform_ = (this.metadata_.thumbnail &&
                                this.metadata_.thumbnail.transform) ??
-                null;
+                undefined;
             this.loadTarget_ = LoadTarget.CONTENT_METADATA;
           }
           break;
@@ -100,7 +100,7 @@ export class ThumbnailLoader {
             this.thumbnailUrl_ = this.entry_.toURL();
             this.transform_ =
                 (this.metadata_.media && this.metadata_.media.imageTransform) ??
-                null;
+                undefined;
             this.loadTarget_ = LoadTarget.FILE_ENTRY;
           }
           break;
@@ -177,7 +177,7 @@ export class ThumbnailLoader {
         this.metadata_.filesystem.modificationTime &&
         this.metadata_.filesystem.modificationTime.getTime();
     this.taskId_ = ImageLoaderClient.loadToImage(
-        LoadImageRequest.createRequest({
+        createRequest({
           url: this.thumbnailUrl_,
           maxWidth: THUMBNAIL_MAX_WIDTH,
           maxHeight: THUMBNAIL_MAX_HEIGHT,
@@ -226,7 +226,7 @@ export class ThumbnailLoader {
           this.metadata_.filesystem.modificationTime.getTime();
 
       // Load using ImageLoaderClient.
-      const request = LoadImageRequest.createRequest({
+      const request = createRequest({
         url: requestUrl,
         maxWidth: THUMBNAIL_MAX_WIDTH,
         maxHeight: THUMBNAIL_MAX_HEIGHT,

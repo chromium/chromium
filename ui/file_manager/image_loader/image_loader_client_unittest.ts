@@ -5,7 +5,7 @@
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {ImageLoaderClient} from './image_loader_client.js';
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
+import {createForUrl, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
 /**
  * Lets the client to load URL and returns the local cache (not caches in the
@@ -26,7 +26,7 @@ function loadAndCheckCacheUsed(
         {width: 100, height: 100, ifd: null, data: 'ImageData'}));
   };
 
-  const request = LoadImageRequest.createForUrl(url);
+  const request = createForUrl(url);
   request.cache = cache;
 
   return new Promise((fulfill) => {

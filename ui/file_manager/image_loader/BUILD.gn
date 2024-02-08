@@ -39,7 +39,7 @@ copy("copy_src") {
     "image_loader_util.js",
     "image_orientation.ts",
     "image_request_task.js",
-    "load_image_request.js",
+    "load_image_request.ts",
     "piex_loader.ts",
     "scheduler.ts",
   ]

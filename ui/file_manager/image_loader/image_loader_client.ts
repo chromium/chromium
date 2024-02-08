@@ -4,17 +4,7 @@
 
 import {LruCache} from 'chrome://file-manager/common/js/lru_cache.js';
 
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
-
-// TODO(b/319188711): Share this definition with load_image_request.js when it's
-// converted to TS.
-interface CacheValue {
-  timestamp: number|null;
-  width: number;
-  height: number;
-  ifd: string|null;
-  data: string;
-}
+import {cacheKey, type CacheValue, createCancel, type LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
 let instance: ImageLoaderClient|null = null;
 
@@ -68,16 +58,16 @@ export class ImageLoaderClient {
     request.url = request.url.replace(CLIENT_SWA_REGEX, IMAGE_LOADER_URL);
 
     // Try to load from cache, if available.
-    const cacheKey = LoadImageRequest.cacheKey(request);
-    if (cacheKey) {
+    const key = cacheKey(request);
+    if (key) {
       if (request.cache) {
         // Load from cache.
-        let cachedValue: CacheValue|null = this.cache_.get(cacheKey);
+        let cachedValue: CacheValue|null = this.cache_.get(key);
         // Check if the image in cache is up to date. If not, then remove it.
         // It relies on comparing `null` equals to `undefined`.
         // eslint-disable-next-line eqeqeq
         if (cachedValue && cachedValue.timestamp != request.timestamp) {
-          this.cache_.remove(cacheKey);
+          this.cache_.remove(key);
           cachedValue = null;
         }
         if (cachedValue && cachedValue.data && cachedValue.width &&
@@ -93,7 +83,7 @@ export class ImageLoaderClient {
         }
       } else {
         // Remove from cache.
-        this.cache_.remove(cacheKey);
+        this.cache_.remove(key);
       }
     }
 
@@ -110,11 +100,11 @@ export class ImageLoaderClient {
       }
       const result = resultData;
       // Save to cache.
-      if (cacheKey && request.cache) {
+      if (key && request.cache) {
         const value: CacheValue|null =
             LoadImageResponse.cacheValue(result, request.timestamp);
         if (value) {
-          this.cache_.put(cacheKey, value, value.data.length);
+          this.cache_.put(key, value, value.data.length);
         }
       }
       callback(result);
@@ -128,8 +118,7 @@ export class ImageLoaderClient {
    * @param taskId Task id returned by ImageLoaderClient.load().
    */
   cancel(taskId: number) {
-    ImageLoaderClient.sendMessage_(
-        LoadImageRequest.createCancel(taskId), (_result) => {});
+    ImageLoaderClient.sendMessage_(createCancel(taskId), (_result) => {});
   }
 
   // Helper functions.

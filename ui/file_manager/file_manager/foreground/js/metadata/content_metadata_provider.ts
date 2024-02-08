@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
-import {LoadImageRequest, type LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {createForUrl, type LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {getContentMetadata, getContentMimeType} from '../../../common/js/api.js';
@@ -168,7 +168,7 @@ export class ContentMetadataProvider extends MetadataProvider {
         (entry as FileEntry)
             .file(
                 file => {
-                  const request = LoadImageRequest.createForUrl(entry.toURL());
+                  const request = createForUrl(entry.toURL());
                   request.maxWidth = THUMBNAIL_MAX_WIDTH;
                   request.maxHeight = THUMBNAIL_MAX_HEIGHT;
                   request.timestamp = file.lastModified;

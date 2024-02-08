@@ -5,10 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {ImageCache} from './cache.js';
-import {ImageOrientation} from './image_orientation.js';
 import type {ImageTransformParam} from './image_orientation.js';
+import {ImageOrientation} from './image_orientation.js';
 import {ImageRequestTask} from './image_request_task.js';
-import {LoadImageRequest, LoadImageResponse} from './load_image_request.js';
+import {type LoadImageRequest, LoadImageResponse} from './load_image_request.js';
 import {Scheduler} from './scheduler.js';
 
 let instance: ImageLoader|null = null;

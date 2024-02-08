@@ -12,7 +12,6 @@ export interface ImageTransformParam {
 
 /**
  * Class representing image orientation.
- * @final
  */
 export class ImageOrientation {
   /**

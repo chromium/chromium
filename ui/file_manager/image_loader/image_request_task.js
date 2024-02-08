@@ -8,7 +8,7 @@ import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js'
 import {ImageCache} from './cache.js';
 import {ImageLoaderUtil} from './image_loader_util.js';
 import {ImageOrientation} from './image_orientation.js';
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
+import {cacheKey, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 import {PiexLoader} from './piex_loader.js';
 
 /**
@@ -19,7 +19,8 @@ export class ImageRequestTask {
   /**
    * @param {string} id Request ID.
    * @param {ImageCache} cache Cache object.
-   * @param {LoadImageRequest} request Request message as a hash array.
+   * @param {import('./load_image_request.js').LoadImageRequest} request Request
+   *     message as a hash array.
    * @param {(a: LoadImageResponse)=> void} callback Response handler.
    */
   constructor(id, cache, request, callback) {
@@ -37,7 +38,7 @@ export class ImageRequestTask {
     this.cache_ = cache;
 
     /**
-     * @type {!LoadImageRequest}
+     * @type {!import('./load_image_request.js').LoadImageRequest}
      * @private
      */
     this.request_ = request;
@@ -193,9 +194,9 @@ export class ImageRequestTask {
    * @private
    */
   loadFromCache_(onSuccess, onFailure) {
-    const cacheKey = LoadImageRequest.cacheKey(this.request_);
+    const key = cacheKey(this.request_);
 
-    if (!cacheKey) {
+    if (!key) {
       // Cache key is not provided for the request.
       onFailure();
       return;
@@ -204,7 +205,7 @@ export class ImageRequestTask {
     if (!this.request_.cache) {
       // Cache is disabled for this request; therefore, remove it from cache
       // if existed.
-      this.cache_.removeImage(cacheKey);
+      this.cache_.removeImage(key);
       onFailure();
       return;
     }
@@ -220,7 +221,7 @@ export class ImageRequestTask {
     // string | null, d: string) => void' is not assignable to parameter of type
     // '(width: number, height: number, ifd?: string | undefined, data?: string
     // | undefined) => void'.
-    this.cache_.loadImage(cacheKey, timestamp, onSuccess, onFailure);
+    this.cache_.loadImage(key, timestamp, onSuccess, onFailure);
   }
 
   /**
@@ -239,15 +240,15 @@ export class ImageRequestTask {
       return;
     }
 
-    const cacheKey = LoadImageRequest.cacheKey(this.request_);
-    if (!cacheKey) {
+    const key = cacheKey(this.request_);
+    if (!key) {
       // Cache key is not provided for the request.
       return;
     }
 
     // @ts-ignore: error TS2345: Argument of type 'string | null' is not
     // assignable to parameter of type 'string | undefined'.
-    this.cache_.saveImage(cacheKey, timestamp, width, height, this.ifd_, data);
+    this.cache_.saveImage(key, timestamp, width, height, this.ifd_, data);
   }
 
   /**

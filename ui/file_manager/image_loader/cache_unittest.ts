@@ -4,18 +4,18 @@
 
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {LoadImageRequest} from './load_image_request.js';
+import {cacheKey} from './load_image_request.js';
 
 
 export function testCreateCacheKey() {
-  const key = LoadImageRequest.cacheKey({url: 'http://example.com/image.jpg'});
+  const key = cacheKey({url: 'http://example.com/image.jpg'});
   assertTrue(!!key);
 }
 
 export function testNotCreateCacheKey() {
-  let key = LoadImageRequest.cacheKey({url: 'data:xxx'});
+  let key = cacheKey({url: 'data:xxx'});
   assertFalse(!!key);
 
-  key = LoadImageRequest.cacheKey({url: 'DaTa:xxx'});
+  key = cacheKey({url: 'DaTa:xxx'});
   assertFalse(!!key);
 }
