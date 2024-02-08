@@ -479,6 +479,11 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->captured_css_properties =
         std::move(css_property_builder).Finish();
 
+    for (const auto& class_name : transition_state_element.class_list) {
+      element_data->class_list.push_back(
+          AtomicString::FromUTF8(class_name.c_str()));
+    }
+
     element_data->CacheStateForOldSnapshot();
 
     element_data_map_.insert(name, std::move(element_data));
@@ -736,6 +741,8 @@ bool ViewTransitionStyleTracker::Capture() {
     element_data->target_element = element;
     element_data->element_index = next_index++;
     element_data->old_snapshot_id = snapshot_id;
+    element_data->class_list =
+        element->ComputedStyleRef().ViewTransitionClass();
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -806,6 +813,13 @@ VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
   return result;
 }
 
+const Vector<AtomicString>&
+ViewTransitionStyleTracker::GetViewTransitionClassList(
+    const AtomicString& name) const {
+  CHECK(element_data_map_.Contains(name));
+  return element_data_map_.at(name)->class_list;
+}
+
 bool ViewTransitionStyleTracker::Start() {
   DCHECK_EQ(state_, State::kCaptured);
 
@@ -860,6 +874,9 @@ bool ViewTransitionStyleTracker::Start() {
     DCHECK(!element_data->target_element);
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
+    element_data->class_list =
+        element->ComputedStyleRef().ViewTransitionClass();
+
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
@@ -1602,6 +1619,9 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
       css_property_builder.Insert(ToTranstionPropertyId(id), value.Utf8());
     }
     element.captured_css_properties = std::move(css_property_builder).Finish();
+    for (const auto& class_name : element_data->class_list) {
+      element.class_list.push_back(class_name.Utf8());
+    }
   }
 
   // TODO(khushalsagar): Need to send offsets to retain positioning of

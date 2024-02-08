@@ -62,6 +62,7 @@ class StyleRequest {
   ScrollbarPart scrollbar_part{kNoPart};
   CustomScrollbar* scrollbar{nullptr};
   AtomicString pseudo_argument{g_null_atom};
+  Vector<AtomicString> pseudo_ident_list;
   RulesToInclude rules_to_include{kAll};
   bool can_trigger_animations{true};
 

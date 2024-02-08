@@ -46,10 +46,14 @@ ViewTransitionPseudoElementBase::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   // Set the parent style to the style of our parent. There is no use
   // for an originating element for a view transition pseudo.
-  auto style_request = StyleRequest(
+  StyleRequest style_request(
       GetPseudoId(), ParentOrShadowHostElement()->GetComputedStyle(),
       /* originating_element_style */ nullptr, view_transition_name());
   style_request.rules_to_include = style_tracker_->StyleRulesToInclude();
+  if (GetPseudoId() != kPseudoIdViewTransition) {
+    style_request.pseudo_ident_list =
+        style_tracker_->GetViewTransitionClassList(view_transition_name());
+  }
   // Use the document element to get the style for the pseudo element, since the
   // documentElement is the originating element for the view transition pseudo
   // elements.

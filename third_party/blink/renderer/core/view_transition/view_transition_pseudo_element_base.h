@@ -29,6 +29,7 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
   void Trace(Visitor* visitor) const override;
 
  protected:
+  Vector<AtomicString> view_transition_class_;
   Member<const ViewTransitionStyleTracker> style_tracker_;
 };
 

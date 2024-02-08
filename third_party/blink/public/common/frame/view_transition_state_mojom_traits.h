@@ -59,6 +59,11 @@ struct BLINK_COMMON_EXPORT
     return r.captured_css_properties;
   }
 
+  static const std::vector<std::string>& class_list(
+      const blink::ViewTransitionElement& r) {
+    return r.class_list;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };
