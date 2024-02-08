@@ -299,7 +299,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://bookmarks",
     "chrome://bookmarks-side-panel.top-chrome",
     "chrome://chrome-urls",
-    "chrome://commander",
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",

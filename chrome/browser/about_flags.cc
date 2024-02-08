@@ -8452,13 +8452,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidStackingAnimation)},
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-    {"quick-commands", flag_descriptions::kQuickCommandsName,
-     flag_descriptions::kQuickCommandsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kQuickCommands)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"quick-delete-for-android", flag_descriptions::kQuickDeleteForAndroidName,
      flag_descriptions::kQuickDeleteForAndroidDescription, kOsAndroid,

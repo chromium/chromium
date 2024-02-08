@@ -249,10 +249,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [2980],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/resources.grd": {
-    "META": {"sizes": {"includes": [15]}},
-    "includes": [3020],
-  },
   "chrome/browser/resources/component_extension_resources.grd": {
     "includes": [3040],
     "structures": [3060],

@@ -203,7 +203,6 @@
   E(kActionCloseSignInPromo, IDC_CLOSE_SIGN_IN_PROMO) \
   E(kActionShowFullUrls, IDC_SHOW_FULL_URLS) \
   E(kActionCaretBrowsingToggle, IDC_CARET_BROWSING_TOGGLE) \
-  E(kActionToggleQuickCommands, IDC_TOGGLE_QUICK_COMMANDS) \
   E(kActionChromeTips, IDC_CHROME_TIPS) \
   E(kActionChromeWhatsNew, IDC_CHROME_WHATS_NEW) \
   E(kActionPerformance, IDC_PERFORMANCE) \

@@ -115,9 +115,8 @@ enum class ProfileKeepAliveOrigin {
   // Profile, but may be a different one in Lacros.
   kProfilePickerView = 25,
 
-  // The frontend view for Commander exists (even if it's not visible). It
-  // renders to a WebUI, so we can't just destroy it whenever we want.
-  kCommanderFrontend = 26,
+  // DEPRECATED
+  // kCommanderFrontend = 26,
 
   // UI bubble that may outlive the Browser, especially on Mac.
   kDiceWebSigninInterceptionBubble = 27,

@@ -98,11 +98,6 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the QuickCommands UI surface. See https://crbug.com/1014639
-BASE_FEATURE(kQuickCommands,
-             "QuickCommands",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
 // the browser width is resized smaller than normal.
 BASE_FEATURE(kResponsiveToolbar,

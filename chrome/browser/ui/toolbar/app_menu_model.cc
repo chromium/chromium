@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -700,9 +699,6 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   }
   AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
-  if (commander::IsEnabled()) {
-    AddItemWithStringId(IDC_TOGGLE_QUICK_COMMANDS, IDS_TOGGLE_QUICK_COMMANDS);
-  }
 
   if (features::IsSidePanelPinningEnabled()) {
     AddItemWithStringId(IDC_SHOW_READING_MODE_SIDE_PANEL,
@@ -760,7 +756,6 @@ void ToolsMenuModel::Build(Browser* browser) {
       }
     }
     SetCommandIcon(this, IDC_NAME_WINDOW, kNameWindowIcon);
-    SetCommandIcon(this, IDC_TOGGLE_QUICK_COMMANDS, kQuickCommandsIcon);
     SetCommandIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
                    kMenuBookChromeRefreshIcon);
     SetCommandIcon(this, IDC_PERFORMANCE, kPerformanceIcon);

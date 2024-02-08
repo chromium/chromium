@@ -57,8 +57,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kCrxInstaller";
     case ProfileKeepAliveOrigin::kProfilePickerView:
       return out << "kProfilePickerView";
-    case ProfileKeepAliveOrigin::kCommanderFrontend:
-      return out << "kCommanderFrontend";
     case ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble:
       return out << "kDiceWebSigninInterceptionBubble";
     case ProfileKeepAliveOrigin::kHistoryMenuBridge:

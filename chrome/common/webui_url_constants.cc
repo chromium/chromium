@@ -579,8 +579,6 @@ const char kChromeUITabStripURL[] = "chrome://tab-strip.top-chrome";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const char kChromeUICommanderHost[] = "commander";
-const char kChromeUICommanderURL[] = "chrome://commander";
 const char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 const char kChromeUITabSearchURL[] = "chrome://tab-search.top-chrome/";
 #endif
