@@ -48,12 +48,28 @@ NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kDockingPromoAccessibilityId;
-  self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   if (self.animationViewWrapper) {
     [self configureAndLayoutAnimationView];
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
+}
+
+// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
+// the animations accordingly.
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  BOOL hidden = ![self shouldShowAnimation];
+
+  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden =
+      hidden || !darkModeEnabled;
+
+  [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 #pragma mark - DockingPromoConsumer
