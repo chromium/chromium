@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,7 +48,11 @@ AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
                                    profile,
-                                   delegate) {}
+                                   delegate) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
+}
 
 AppManagementPageHandlerChromeOs::~AppManagementPageHandlerChromeOs() = default;
 
@@ -139,4 +144,15 @@ void AppManagementPageHandlerChromeOs::SetAppLocale(
     const std::string& locale_tag) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->SetAppLocale(
       app_id, locale_tag);
+}
+
+void AppManagementPageHandlerChromeOs::OnPreferredAppChanged(
+    const std::string& app_id,
+    bool is_preferred_app) {
+  NotifyAppChanged(app_id);
+}
+
+void AppManagementPageHandlerChromeOs::OnPreferredAppsListWillBeDestroyed(
+    apps::PreferredAppsListHandle* handle) {
+  preferred_apps_list_handle_observer_.Reset();
 }

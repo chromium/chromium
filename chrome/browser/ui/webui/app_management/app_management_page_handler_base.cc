@@ -455,7 +455,6 @@ AppManagementPageHandlerBase::AppManagementPageHandlerBase(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
-  preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
 }
 
 void AppManagementPageHandlerBase::NotifyAppChanged(const std::string& app_id) {
@@ -672,32 +671,4 @@ void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {
 void AppManagementPageHandlerBase::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   cache->RemoveObserver(this);
-}
-
-void AppManagementPageHandlerBase::OnPreferredAppChanged(
-    const std::string& app_id,
-    bool is_preferred_app) {
-  app_management::mojom::AppPtr app;
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
-        }
-      });
-
-  // If an app with this id is not already installed, do nothing.
-  if (!app) {
-    return;
-  }
-
-  app->is_preferred_app = is_preferred_app;
-
-  page_->OnAppChanged(std::move(app));
-}
-
-void AppManagementPageHandlerBase::OnPreferredAppsListWillBeDestroyed(
-    apps::PreferredAppsListHandle* handle) {
-  preferred_apps_list_handle_observer_.Reset();
 }
