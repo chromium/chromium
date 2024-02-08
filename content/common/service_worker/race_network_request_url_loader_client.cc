@@ -659,8 +659,14 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginReadData() {
   uint32_t buffer_num_bytes = 0;
   base::span<const char> read_buffer;
   MojoResult result = body_->BeginReadData(&buffer, &buffer_num_bytes,
-                                           MOJO_READ_DATA_FLAG_NONE);
+                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
+    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer",
+                            buffer_num_bytes);
+    volatile const char* buffer_v = static_cast<volatile const char*>(buffer);
+    for (size_t i = 0; i < buffer_num_bytes; ++i) {
+      buffer_v[i];
+    }
     read_buffer =
         base::make_span(static_cast<const char*>(buffer), buffer_num_bytes);
   }
