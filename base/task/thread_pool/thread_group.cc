@@ -189,8 +189,7 @@ void ThreadGroup::StartImpl(
 
   max_tasks_ = max_tasks;
   DCHECK_GE(max_tasks_, 1U);
-  in_start().initial_max_tasks = max_tasks_;
-  DCHECK_LE(in_start().initial_max_tasks, kMaxNumberOfWorkers);
+  in_start().initial_max_tasks = std::min(max_tasks_, kMaxNumberOfWorkers);
   max_best_effort_tasks_ = max_best_effort_tasks;
   in_start().suggested_reclaim_time = suggested_reclaim_time;
   in_start().worker_environment = worker_environment;
