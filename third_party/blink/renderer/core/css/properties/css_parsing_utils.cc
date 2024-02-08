@@ -7119,5 +7119,49 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
                                             CSSValuePair::kKeepIdenticalValues);
 }
 
+CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
+                                         const CSSParserContext& context) {
+  if (CSSValue* dashed_ident = ConsumeDashedIdent(range, context)) {
+    return dashed_ident;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  bool flip_block = false;
+  bool flip_inline = false;
+  bool flip_start = false;
+  while (!range.AtEnd()) {
+    CSSIdentifierValue* tactic =
+        ConsumeIdent<CSSValueID::kFlipBlock, CSSValueID::kFlipInline,
+                     CSSValueID::kFlipStart>(range);
+    if (!tactic) {
+      break;
+    }
+    switch (tactic->GetValueID()) {
+      case CSSValueID::kFlipBlock:
+        if (flip_block) {
+          return nullptr;
+        }
+        flip_block = true;
+        break;
+      case CSSValueID::kFlipInline:
+        if (flip_inline) {
+          return nullptr;
+        }
+        flip_inline = true;
+        break;
+      case CSSValueID::kFlipStart:
+        if (flip_start) {
+          return nullptr;
+        }
+        flip_start = true;
+        break;
+      default:
+        NOTREACHED();
+        return nullptr;
+    }
+    list->Append(*tactic);
+  }
+  return list->length() ? list : nullptr;
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

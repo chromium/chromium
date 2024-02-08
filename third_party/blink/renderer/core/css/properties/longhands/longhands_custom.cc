@@ -6865,6 +6865,93 @@ const CSSValue* PositionFallbackBounds::CSSValueFromComputedStyleInternal(
       *style.PositionFallbackBounds());
 }
 
+const CSSValue* PositionTryOptions::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  // position-try-options: none | [ <dashed-ident> | <try-tactic> ]#
+  // <try-tactic> = flip-block || flip-inline || flip-start
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeSinglePositionTryOption, range, context);
+}
+
+const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (const blink::PositionTryOptions* options =
+          style.GetPositionTryOptions()) {
+    CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
+    for (const auto& option : options->GetOptions()) {
+      if (option.HasTryTactic()) {
+        CSSValueList* tactic_list = CSSValueList::CreateSpaceSeparated();
+        TryTacticFlags tactic = option.GetTryTactic();
+        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipBlock)) {
+          tactic_list->Append(
+              *CSSIdentifierValue::Create(CSSValueID::kFlipBlock));
+        }
+        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipInline)) {
+          tactic_list->Append(
+              *CSSIdentifierValue::Create(CSSValueID::kFlipInline));
+        }
+        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipStart)) {
+          tactic_list->Append(
+              *CSSIdentifierValue::Create(CSSValueID::kFlipStart));
+        }
+        option_list->Append(*tactic_list);
+      } else {
+        option_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
+            *option.GetPositionTryName()));
+      }
+    }
+    return option_list;
+  }
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
+}
+
+void PositionTryOptions::ApplyValue(StyleResolverState& state,
+                                    const CSSValue& value,
+                                    ValueMode) const {
+  if (value.IsIdentifierValue()) {
+    DCHECK(To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone);
+    // Just represent as nullptr.
+    return;
+  }
+  HeapVector<PositionTryOption> options;
+  for (const auto& option : To<CSSValueList>(value)) {
+    if (const auto* name = DynamicTo<CSSCustomIdentValue>(*option)) {
+      options.push_back(PositionTryOption(
+          StyleBuilderConverter::ConvertCustomIdent(state, *name)));
+      continue;
+    }
+    TryTacticFlags try_tactics = static_cast<TryTacticFlags>(TryTactic::kNone);
+    for (const auto& tactic : To<CSSValueList>(*option)) {
+      switch (To<CSSIdentifierValue>(*tactic).GetValueID()) {
+        case CSSValueID::kFlipBlock:
+          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipBlock);
+          break;
+        case CSSValueID::kFlipInline:
+          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipInline);
+          break;
+        case CSSValueID::kFlipStart:
+          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipStart);
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+    DCHECK_NE(try_tactics, static_cast<TryTacticFlags>(TryTactic::kNone));
+    options.push_back(try_tactics);
+  }
+  DCHECK(!options.empty());
+  state.StyleBuilder().SetPositionTryOptions(
+      MakeGarbageCollected<blink::PositionTryOptions>(options));
+}
+
 const CSSValue* PositionTryOrder::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

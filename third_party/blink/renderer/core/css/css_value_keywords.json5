@@ -1792,5 +1792,11 @@
     "most-height",
     "most-block-size",
     "most-inline-size",
+
+    // position-try-options
+    // none
+    "flip-block",
+    "flip-inline",
+    "flip-start",
   ],
 }
