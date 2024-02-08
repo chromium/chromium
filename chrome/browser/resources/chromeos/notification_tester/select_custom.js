@@ -45,7 +45,7 @@ export class SelectCustom extends PolymerElement {
   // <select> element.
   onSelectChange(event) {
     const customInput = this.shadowRoot.querySelector('.hidden-input');
-    this.customSelected = event.target.value == 'custom';
+    this.customSelected = event.target.value === 'custom';
     customInput.hidden = !this.customSelected;
     this.formItemStyle = this.customSelected ? 'form-item-custom' : 'form-item';
     if (this.customSelected) {
