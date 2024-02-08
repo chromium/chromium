@@ -9,6 +9,7 @@ robolectric_library("components_autofill_junit_tests") {
   sources = [
     "src/org/chromium/components/autofill/AutofillProviderTest.java",
     "src/org/chromium/components/autofill/AutofillRequestTest.java",
+    "src/org/chromium/components/autofill/AutofillSessionUMATest.java",
     "src/org/chromium/components/autofill/FormDataTest.java",
     "src/org/chromium/components/autofill/PrefillRequestTest.java",
   ]
@@ -18,6 +19,7 @@ robolectric_library("components_autofill_junit_tests") {
     "//components/android_autofill/browser:features_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:java",
+    "//components/autofill/core/common/mojom:mojo_types_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
