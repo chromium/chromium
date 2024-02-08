@@ -190,14 +190,6 @@ class CommandBufferHelperImpl
     textures_.erase(service_id);
   }
 
-  void SetCleared(GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << service_id << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    DCHECK(textures_.count(service_id));
-    textures_[service_id]->SetCleared();
-  }
-
  private:
   gpu::Mailbox CreateLegacyMailbox(GLuint service_id) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";

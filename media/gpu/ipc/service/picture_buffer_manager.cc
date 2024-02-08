@@ -144,10 +144,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
           DCHECK(service_id);
           picture_data.service_ids.push_back(service_id);
 
-          // The texture is not cleared yet, but it will be before the VDA
-          // outputs it. Rather than requiring output to happen on the GPU
-          // thread, mark the texture as cleared immediately.
-          command_buffer_helper_->SetCleared(service_id);
+          // NOTE: The texture is not cleared yet, but it will be before the VDA
+          // outputs it.
 
           // Generate a mailbox while we are still on the GPU thread.
           picture_data.mailbox_holders[j] = gpu::MailboxHolder(

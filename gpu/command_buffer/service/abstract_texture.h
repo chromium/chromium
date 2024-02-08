@@ -60,11 +60,6 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // Set a texture parameter.  The GL context must be current.
   void SetParameteri(GLenum pname, GLint param);
 
-  // Marks the texture as cleared, to help prevent sending an uninitialized
-  // texture to the (untrusted) renderer.  One should call this only when one
-  // has actually initialized the texture.
-  void SetCleared();
-
   // Set a callback that will be called when the AbstractTexture is going to
   // drop its reference to the underlying TextureBase.  We can't guarantee that
   // the TextureBase will be destroyed, but it is the last time that we can
@@ -73,9 +68,6 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // the current context during this callback.  Also, do not assume that one
   // has a current context.
   void SetCleanupCallback(CleanupCallback cleanup_callback);
-
-  // Used to notify the AbstractTexture if the context is lost.
-  void NotifyOnContextLost();
 
   unsigned int service_id() const { return GetTextureBase()->service_id(); }
 

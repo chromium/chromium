@@ -47,16 +47,8 @@ void AbstractTexture::SetParameteri(GLenum pname, GLint param) {
   gl_api_->glTexParameteriFn(texture_passthrough_->target(), pname, param);
 }
 
-void AbstractTexture::SetCleared() {
-  // The passthrough decoder has no notion of 'cleared', so do nothing.
-}
-
 void AbstractTexture::SetCleanupCallback(CleanupCallback cb) {
   cleanup_cb_ = std::move(cb);
-}
-
-void AbstractTexture::NotifyOnContextLost() {
-  NOTIMPLEMENTED();
 }
 
 scoped_refptr<TexturePassthrough>

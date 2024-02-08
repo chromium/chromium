@@ -124,9 +124,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // The context must be current.
   virtual void DestroyTexture(GLuint service_id) = 0;
 
-  // Sets the cleared flag on level 0 of the texture.
-  virtual void SetCleared(GLuint service_id) = 0;
-
   // Add a callback to be called when our stub is destroyed. This callback
   // may not change the current context.
   virtual void AddWillDestroyStubCB(WillDestroyStubCB callback) = 0;
