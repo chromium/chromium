@@ -5,7 +5,6 @@
 module.exports = {
   // clang-format off
   'env': {'browser': true, 'es6': true},
-  'extends': '../../../../ui/webui/resources/tools/eslint_import_type.config.js',
   'rules': {
     'no-restricted-properties': [
       'error', {

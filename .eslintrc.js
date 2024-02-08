@@ -137,6 +137,9 @@ module.exports = {
       // https://google.github.io/styleguide/tsguide.html#interfaces-vs-type-aliases
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
 
+      // https://google.github.io/styleguide/tsguide.html#import-type
+      '@typescript-eslint/consistent-type-imports': 'error',
+
       // https://google.github.io/styleguide/tsguide.html#visibility
       '@typescript-eslint/explicit-member-accessibility': ['error', {
         accessibility: 'no-public',
