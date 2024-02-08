@@ -1399,10 +1399,23 @@ void AutofillAgent::AjaxSucceeded() {
   form_tracker_->AjaxSucceeded();
 }
 
-void AutofillAgent::JavaScriptChangedAutofilledValue(
-    const WebFormControlElement& element,
-    const WebString& old_value) {
+void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
+                                           const WebString& old_value,
+                                           bool was_autofilled) {
   if (old_value == element.Value()) {
+    return;
+  }
+  // The provisionally saved form must be updated on JS changes. However, it
+  // should not be changed, so that only the user can set the tracked form and
+  // not JS. This call here is meant to keep the tracked form up to date with
+  // the form's most recent version, and not switch from one form to another.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillImproveSubmissionDetection) &&
+      form_util::GetFormRendererId(form_util::GetOwningForm(element)) ==
+          last_interacted_.form_id.GetId()) {
+    UpdateLastInteracted(form_util::GetOwningForm(element));
+  }
+  if (!was_autofilled) {
     return;
   }
   if (std::optional<FormAndField> form_and_field =
@@ -1577,6 +1590,10 @@ void AutofillAgent::UpdateStateForTextChange(
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillImproveSubmissionDetection)) {
+    return last_interacted_.saved_state;
+  }
   content::RenderFrame* render_frame = unsafe_render_frame();
   if (!render_frame) {
     return std::nullopt;
