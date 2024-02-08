@@ -707,7 +707,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="The name of the Save Video Frame As command in the content area context menu">
-            Sa&amp;ve video frame as...
+            Save video &amp;frame as...
           </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="The name of the Save Video As command in the content area context menu">
             Sa&amp;ve video as...
@@ -716,10 +716,10 @@ are declared in tools/grit/grit_rule.gni.
             C&amp;opy video address
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="The name of the Copy Video Frame command in the content area context menu">
-            C&amp;opy video frame
+            Cop&amp;y video frame
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME" desc="In Title Case: The name of the Lens Search command in the content area context menu">
-            Search video frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+            &amp;Search video frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENVIDEONEWTAB" desc="The name of the Open Video in New Tab command in the content area context menu">
             &amp;Open video in new tab
@@ -985,7 +985,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="In Title Case: The name of the Save Video Frame As command in the content area context menu">
-           Sa&amp;ve Video Frame As...
+           Save Video &amp;Frame As...
           </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="In Title Case: The name of the Save Video As command in the content area context menu">
            Sa&amp;ve Video As...
@@ -994,10 +994,10 @@ are declared in tools/grit/grit_rule.gni.
             C&amp;opy Video Address
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="The name of the Copy Video Frame command in the content area context menu">
-            C&amp;opy Video Frame
+            Cop&amp;y Video Frame
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME" desc="In Title Case: The name of the Lens Search command in the content area context menu">
-            Search Video Frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+            &amp;Search Video Frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENVIDEONEWTAB" desc="In Title Case: The name of the Open Video in New Tab command in the content area context menu">
             &amp;Open Video in New Tab
