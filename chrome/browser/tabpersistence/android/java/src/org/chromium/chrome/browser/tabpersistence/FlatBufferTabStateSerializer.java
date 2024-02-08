@@ -117,11 +117,13 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.timestampMillis = tabStateFlatBuffer.timestampMillis();
             state.lastNavigationCommittedTimestampMillis =
                     tabStateFlatBuffer.lastNavigationCommittedTimestampMillis();
-            Token tabGroupId =
-                    new Token(
-                            tabStateFlatBuffer.tabGroupId().high(),
-                            tabStateFlatBuffer.tabGroupId().low());
-            state.tabGroupId = tabGroupId.isZero() ? null : tabGroupId;
+
+            Token tabGroupId = null;
+            var flatBufferTabGroupId = tabStateFlatBuffer.tabGroupId();
+            if (flatBufferTabGroupId != null) {
+                tabGroupId = new Token(flatBufferTabGroupId.high(), flatBufferTabGroupId.low());
+            }
+            state.tabGroupId = (tabGroupId == null || tabGroupId.isZero()) ? null : tabGroupId;
             state.userAgent = getTabUserAgentTypeFromFlatBuffer(tabStateFlatBuffer.userAgent());
             state.tabLaunchTypeAtCreation =
                     getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
