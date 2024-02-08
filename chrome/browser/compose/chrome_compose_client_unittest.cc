@@ -153,7 +153,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution},
+         optimization_guide::features::kOptimizationGuideModelExecution,
+         compose::features::kComposeTextOutputAnimation},
         {});
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
@@ -724,6 +725,45 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationOk, 1);
   // Check that no request duration Error metric was emitted.
   histogram_tester.ExpectTotalCount(compose::kComposeRequestDurationError, 0);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {optimization_guide::features::kOptimizationGuideOnDeviceModel},
+      {compose::features::kComposeTextOutputAnimation});
+  base::HistogramTester histogram_tester;
+
+  const std::string input = "a user typed this";
+  optimization_guide::proto::ComposeRequest context_request;
+  *context_request.mutable_page_metadata() = ComposePageMetadata();
+  base::test::TestFuture<
+      optimization_guide::
+          OptimizationGuideModelExecutionResultStreamingCallback>
+      saved_callback;
+  EXPECT_CALL(session(), AddContext(EqualsProto(context_request)));
+  EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input)), _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) { saved_callback.SetValue(callback); })));
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(compose_dialog(), PartialResponseReceived(_)).Times(0);
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_)).Times(1);
+
+  page_handler()->Compose(input, false);
+
+  // Send a partial response.
+  saved_callback.Get().Run(OptimizationGuideStreamingResult(
+      ComposeResponse(true, "Cucu"), /*is_complete=*/false,
+      /*provided_by_on_device=*/true));
+
+  // Then send the full response.
+  saved_callback.Get().Run(OptimizationGuideStreamingResult(
+      ComposeResponse(true, "Cucumbers"), /*is_complete=*/true,
+      /*provided_by_on_device=*/true));
+  FlushMojo();
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {

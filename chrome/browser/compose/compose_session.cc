@@ -455,6 +455,10 @@ void ComposeSession::ModelExecutionProgress(
     optimization_guide::StreamingResponse result) {
   CHECK(base::FeatureList::IsEnabled(
       optimization_guide::features::kOptimizationGuideOnDeviceModel));
+  if (!base::FeatureList::IsEnabled(
+          compose::features::kComposeTextOutputAnimation)) {
+    return;
+  }
   if (!dialog_remote_.is_bound()) {
     return;
   }

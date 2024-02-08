@@ -44,6 +44,9 @@ BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
 // Controls parameters around UI rendering.
 BASE_DECLARE_FEATURE(kComposeUiParams);
 
+// Enables animation of text output. Applies only to on-device evaluation.
+BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

@@ -48,4 +48,9 @@ BASE_FEATURE(kEnableComposeSavedStateNotification,
 BASE_FEATURE(kComposeUiParams,
              "ComposeUiParams",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeTextOutputAnimation,
+             "ComposeTextOutputAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace compose::features
