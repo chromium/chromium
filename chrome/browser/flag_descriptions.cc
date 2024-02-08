@@ -6937,6 +6937,12 @@ const char kOsSettingsAppBadgingToggleDescription[] =
     "Enables app badging toggle to be displayed in app notification page in"
     "ChromeOS Settings.";
 
+const char kOsSettingsDeprecateDnsDialogName[] =
+    "ChromeOS Settings Deprecate DNS Dialog";
+const char kOsSettingsDeprecateDnsDialogDescription[] =
+    "If enabled, deprecate the DNS dialog in Security and Privacy Settings "
+    "page in ChromeOS Settings.";
+
 const char kOsSettingsDeprecateSyncMetricsToggleName[] =
     "ChromeOS Settings Deprecate Sync Metrics Toggle";
 const char kOsSettingsDeprecateSyncMetricsToggleDescription[] =
