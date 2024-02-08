@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
 
 namespace app_list {
@@ -214,15 +215,15 @@ void SearchMetricsManager::OnTrain(LaunchData& launch_data,
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
 
-  metrics::structured::events::v2::launcher_usage::LauncherUsage()
-      .SetTarget(NormalizeId(launch_data.id))
-      .SetApp(last_launched_app_id_)
-      .SetSearchQuery(query)
-      .SetSearchQueryLength(query.size())
-      .SetProviderType(static_cast<int>(launch_data.result_type))
-      .SetHour(now_exploded.hour)
-      .SetScore(launch_data.score)
-      .Record();
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(metrics::structured::events::v2::launcher_usage::LauncherUsage()
+                    .SetTarget(NormalizeId(launch_data.id))
+                    .SetApp(last_launched_app_id_)
+                    .SetSearchQuery(query)
+                    .SetSearchQueryLength(query.size())
+                    .SetProviderType(static_cast<int>(launch_data.result_type))
+                    .SetHour(now_exploded.hour)
+                    .SetScore(launch_data.score)));
 
   // Only record the last launched app if the hashed logging feature flag is
   // enabled, because it is only used by hashed logging.
