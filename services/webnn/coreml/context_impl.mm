@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <CoreML/CoreML.h>
-
 #include "services/webnn/coreml/context_impl.h"
 
-#import "base/strings/sys_string_conversions.h"
+#import <CoreML/CoreML.h>
+
 #include "services/webnn/coreml/graph_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 

@@ -26,7 +26,7 @@
 
 @implementation WebNNMLFeatureProvider
 - (MLFeatureValue*)featureValueForName:(NSString*)featureName {
-  return [_featureValues objectForKey:featureName];
+  return _featureValues[featureName];
 }
 - (instancetype)initWithFeatures:(NSSet<NSString*>*)feature_names
                    featureValues:(NSDictionary*)feature_values {
@@ -138,8 +138,7 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
 
   // TODO(https://crbug.com/1522278): Add metrics to measure compilation time.
   [MLModel
-      compileModelAtURL:[NSURL URLWithString:base::apple::FilePathToNSString(
-                                                 model_file_path)]
+      compileModelAtURL:base::apple::FilePathToNSURL(model_file_path)
       completionHandler:^(NSURL* compiled_model_url, NSError* error) {
         // compiled_model_url refers to a directory placed directly inside
         // NSTemporaryDirectory(), it is not inside model_file_dir.
@@ -262,11 +261,11 @@ absl::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
   }
   uint32_t current_stride = expected_size.ValueOrDie();
   for (uint32_t dimension : operand_info->dimensions) {
-    [shape addObject:[NSNumber numberWithUnsignedInt:dimension]];
+    [shape addObject:@(dimension)];
     // since expected_size was computed by multiplying all dimensions together
     // current_stride has to be perfectly divisible by dimension.
     current_stride = current_stride / dimension;
-    [stride addObject:[NSNumber numberWithUnsignedInt:current_stride]];
+    [stride addObject:@(current_stride)];
   }
   return GraphImpl::CoreMLFeatureInfo(data_type, shape, stride);
 }
@@ -300,7 +299,7 @@ void GraphImpl::ComputeImpl(
           mojom::Error::Code::kUnknownError, "Input initialization error")));
       return;
     }
-    [feature_values setObject:feature_value forKey:feature_name];
+    feature_values[feature_name] = feature_value;
   }
 
   // Run the MLModel
