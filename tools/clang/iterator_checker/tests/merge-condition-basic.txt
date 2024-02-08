@@ -1,0 +1,7 @@
+merge-condition-basic.cpp:61:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 10;  // Invalid.
+   ^
+merge-condition-basic.cpp:114:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 10;
+   ^
+2 errors generated.
