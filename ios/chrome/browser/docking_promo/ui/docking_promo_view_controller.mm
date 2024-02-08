@@ -122,8 +122,7 @@ NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
   ];
 
   UIView* instructionView =
-      [[InstructionView alloc] initWithList:dockingPromoSteps
-                                      style:InstructionViewStyleBold];
+      [[InstructionView alloc] initWithList:dockingPromoSteps];
 
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
 

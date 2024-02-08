@@ -93,7 +93,6 @@ UIView* CreateIconView(UIImage* icon) {
         self.backgroundColor =
             [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
         break;
-      case InstructionViewStyleBold:
       case InstructionViewStyleDefault:
         self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
         break;
@@ -284,11 +283,6 @@ UIView* CreateIconView(UIImage* icon) {
 // initialization and when entering or exiting dark mode.
 - (void)updateColorForStepNumberLabel:(UILabel*)stepNumberLabel {
   switch (self.style) {
-    case InstructionViewStyleBold:
-      stepNumberLabel.textColor = [UIColor colorNamed:kBlue600Color];
-      stepNumberLabel.layer.backgroundColor =
-          [UIColor colorNamed:kBlueHaloColor].CGColor;
-      break;
     case InstructionViewStyleGrayscale:
       stepNumberLabel.textColor = [UIColor colorNamed:kGrey600Color];
       stepNumberLabel.layer.backgroundColor =
