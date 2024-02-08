@@ -821,6 +821,11 @@
       base_feature: "none",
     },
     {
+      // https://chromestatus.com/feature/5196713071738880
+      name: "CSSCalcSizeFunction",
+      status: "experimental",
+    },
+    {
       name: "CSSCapFontUnits",
       status: "stable",
     },
