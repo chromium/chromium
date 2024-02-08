@@ -60,6 +60,7 @@ enum class TrackListType {
   kGridTemplateSubgrid
 };
 enum class UnitlessQuirk { kAllow, kForbid };
+enum class AllowCalcSize { kAllow, kForbid };
 enum class AllowedColorKeywords { kAllowSystemColor, kNoSystemColor };
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 
@@ -123,7 +124,8 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
     UnitlessQuirk = UnitlessQuirk::kForbid,
-    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
+    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone,
+    AllowCalcSize = AllowCalcSize::kForbid);
 CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     CSSParserTokenRange&,
     const CSSParserContext&,

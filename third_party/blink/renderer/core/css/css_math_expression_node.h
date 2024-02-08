@@ -81,9 +81,10 @@ class CORE_EXPORT CSSMathExpressionNode
 
   enum class Flag : uint8_t {
     AllowPercent,
+    AllowCalcSize,
 
     MinValue = AllowPercent,
-    MaxValue = AllowPercent,
+    MaxValue = AllowCalcSize,
   };
 
   using Flags = base::EnumSet<Flag, Flag::MinValue, Flag::MaxValue>;

@@ -1282,7 +1282,8 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range,
     UnitlessQuirk unitless,
-    CSSAnchorQueryTypes allowed_anchor_queries) {
+    CSSAnchorQueryTypes allowed_anchor_queries,
+    AllowCalcSize allow_calc_size) {
   using enum CSSMathExpressionNode::Flag;
   using Flags = CSSMathExpressionNode::Flags;
 
@@ -1293,8 +1294,12 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
   if (token.GetType() == kPercentageToken) {
     return ConsumePercent(range, context, value_range);
   }
-  MathFunctionParser math_parser(range, context, value_range,
-                                 Flags({AllowPercent}), allowed_anchor_queries);
+  Flags parsing_flags({AllowPercent});
+  if (allow_calc_size == AllowCalcSize::kAllow) {
+    parsing_flags.Put(AllowCalcSize);
+  }
+  MathFunctionParser math_parser(range, context, value_range, parsing_flags,
+                                 allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode())) {
       return math_parser.ConsumeValue();
@@ -6341,7 +6346,8 @@ CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
   }
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
+      AllowCalcSize::kAllow);
 }
 
 CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
@@ -6353,7 +6359,8 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
   }
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
+      AllowCalcSize::kAllow);
 }
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,

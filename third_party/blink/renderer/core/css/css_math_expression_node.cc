@@ -2374,6 +2374,8 @@ class CSSMathExpressionNodeParser {
         return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
       case CSSValueID::kProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
+      case CSSValueID::kCalcSize:
+        return RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
@@ -2518,6 +2520,17 @@ class CSSMathExpressionNodeParser {
         CSSMathOperator::kProgress);
   }
 
+  CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
+                                       CSSParserTokenRange& tokens,
+                                       int depth) {
+    if (function_id != CSSValueID::kCalcSize ||
+        !parsing_flags_.Has(Flag::AllowCalcSize)) {
+      return nullptr;
+    }
+    // TODO(https://crbug.com/313072): Implement this!
+    return nullptr;
+  }
+
   CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
       CSSParserTokenRange& tokens,
@@ -2535,6 +2548,12 @@ class CSSMathExpressionNodeParser {
       if (CSSMathExpressionNode* progress =
               ParseProgressNotation(function_id, tokens, depth)) {
         return progress;
+      }
+    }
+    if (RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
+      if (CSSMathExpressionNode* calc_size =
+              ParseCalcSize(function_id, tokens, depth)) {
+        return calc_size;
       }
     }
 
