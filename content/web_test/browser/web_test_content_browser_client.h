@@ -57,6 +57,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<FakeBluetoothChooser> GetNextFakeBluetoothChooser();
   void ResetFakeBluetoothDelegate();
 
+  void ResetWebSensorProviderAutomation();
+
   // ContentBrowserClient overrides.
   void BrowserChildProcessHostCreated(BrowserChildProcessHost* host) override;
   void ExposeInterfacesToRenderer(

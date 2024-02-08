@@ -618,6 +618,10 @@ void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
   sensor_provider_manager_->Bind(std::move(receiver));
 }
 
+void WebTestContentBrowserClient::ResetWebSensorProviderAutomation() {
+  sensor_provider_manager_.reset();
+}
+
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
