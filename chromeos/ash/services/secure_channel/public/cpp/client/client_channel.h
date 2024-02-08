@@ -5,10 +5,12 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
@@ -27,6 +29,9 @@ class ClientChannel {
     virtual ~Observer();
     virtual void OnDisconnected() = 0;
     virtual void OnMessageReceived(const std::string& payload) = 0;
+    virtual void OnNearbyConnectionStateChagned(
+        mojom::NearbyConnectionStep step,
+        mojom::NearbyConnectionStepResult result) {}
   };
 
   ClientChannel(const ClientChannel&) = delete;
@@ -86,6 +91,9 @@ class ClientChannel {
 
   void NotifyDisconnected();
   void NotifyMessageReceived(const std::string& payload);
+  void NotifyNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result);
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;

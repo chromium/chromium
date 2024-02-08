@@ -88,6 +88,9 @@ class ConnectionManagerImpl : public ConnectionManager,
   // ClientChannel::Observer:
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& payload) override;
+  void OnNearbyConnectionStateChagned(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   void OnConnectionTimeout();
   void TearDownConnection();

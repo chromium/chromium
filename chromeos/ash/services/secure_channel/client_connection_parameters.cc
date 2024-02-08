@@ -39,12 +39,15 @@ void ClientConnectionParameters::SetConnectionAttemptFailed(
 
 void ClientConnectionParameters::SetConnectionSucceeded(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener_receiver) {
   static const std::string kFunctionName = "SetConnectionSucceeded";
   VerifyDelegateWaitingForResponse(kFunctionName);
   has_invoked_delegate_function_ = true;
-  PerformSetConnectionSucceeded(std::move(channel),
-                                std::move(message_receiver_receiver));
+  PerformSetConnectionSucceeded(
+      std::move(channel), std::move(message_receiver_receiver),
+      std::move(nearby_connection_state_listener_receiver));
 }
 
 void ClientConnectionParameters::SetBleDiscoveryState(

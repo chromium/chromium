@@ -211,6 +211,15 @@ void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
   NotifyMessageReceived(payload);
 }
 
+void ConnectionManagerImpl::OnNearbyConnectionStateChagned(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  if (secure_channel_structured_metrics_logger_) {
+    secure_channel_structured_metrics_logger_->LogNearbyConnectionState(step,
+                                                                        result);
+  }
+}
+
 void ConnectionManagerImpl::OnConnectionTimeout() {
   PA_LOG(WARNING) << "AttemptConnection() has timed out. Closing connection "
                   << "attempt.";

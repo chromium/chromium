@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_DELEGATE_H_
 
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,14 +42,20 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
   message_receiver_receiver() const {
     return message_receiver_receiver_;
   }
+  const mojo::PendingReceiver<mojom::NearbyConnectionStateListener>&
+  nearby_connection_state_listener_receiver() const {
+    return nearby_connection_state_listener_receiver_;
+  }
 
  private:
   // mojom::ConnectionDelegate:
   void OnConnectionAttemptFailure(
       mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
-                    mojo::PendingReceiver<mojom::MessageReceiver>
-                        message_receiver_receiver) override;
+  void OnConnection(
+      mojo::PendingRemote<mojom::Channel> channel,
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_receiver) override;
 
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
@@ -60,6 +67,8 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
       connection_attempt_failure_reason_;
   mojo::Remote<mojom::Channel> channel_;
   mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver_;
+  mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_receiver_;
 };
 
 }  // namespace ash::secure_channel

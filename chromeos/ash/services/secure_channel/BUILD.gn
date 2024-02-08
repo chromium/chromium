@@ -243,6 +243,8 @@ static_library("test_support") {
     "fake_multiplexed_channel.h",
     "fake_nearby_connection_manager.cc",
     "fake_nearby_connection_manager.h",
+    "fake_nearby_connection_state_listener.cc",
+    "fake_nearby_connection_state_listener.h",
     "fake_pending_connection_manager.cc",
     "fake_pending_connection_manager.h",
     "fake_pending_connection_request.h",

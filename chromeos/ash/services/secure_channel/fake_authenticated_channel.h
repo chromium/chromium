@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/register_payload_file_request.h"
@@ -91,10 +92,15 @@ class FakeAuthenticatedChannelObserver : public AuthenticatedChannel::Observer {
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& feature,
                          const std::string& payload) override;
+  void OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
  private:
   bool has_been_notified_of_disconnection_ = false;
   std::vector<std::pair<std::string, std::string>> received_messages_;
+  mojom::NearbyConnectionStep nearby_connection_step_;
+  mojom::NearbyConnectionStepResult nearby_connection_step_result_;
 };
 
 }  // namespace ash::secure_channel

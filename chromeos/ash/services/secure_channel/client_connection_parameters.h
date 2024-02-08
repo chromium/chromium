@@ -60,7 +60,9 @@ class ClientConnectionParameters {
   // not been invoked.
   void SetConnectionSucceeded(
       mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver);
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_receiver);
 
   void SetBleDiscoveryState(
       mojom::DiscoveryResult discovery_state,
@@ -79,8 +81,9 @@ class ClientConnectionParameters {
       mojom::ConnectionAttemptFailureReason reason) = 0;
   virtual void PerformSetConnectionSucceeded(
       mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver>
-          message_receiver_receiver) = 0;
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_receiver) = 0;
   virtual void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_result,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code) = 0;
