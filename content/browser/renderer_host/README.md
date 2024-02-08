@@ -35,7 +35,7 @@ that can paint or handle input events as a single unit.
 
 For diagrams and explanations of how those classes fit with each other, see also
 [this documentation](https://www.chromium.org/developers/design-documents/oop-iframes/)
-and [docs/frame_trees.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/frame_trees.md).
+and [docs/frame_trees.md](https://chromium.googlesource.com/chromium/src/+/main/docs/frame_trees.md).
 
 ### Connections between browser and renderer/GPU processes, process-related code
 Represents child processes (e.g., renderers, GPU, etc) and their connection to
@@ -58,8 +58,8 @@ related to it.
 history items (for pages), made up of a tree of session history items (for
 frames).
 
-See also [docs/navigation.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/navigation.md)
-and [docs/session_history.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/session_history.md).
+See also [docs/navigation.md](https://chromium.googlesource.com/chromium/src/+/main/docs/navigation.md)
+and [docs/session_history.md](https://chromium.googlesource.com/chromium/src/+/main/docs/session_history.md).
 
 ### Compositing, input, display
 Coordinates handling of input, display, and compositing between the browser,
@@ -86,4 +86,4 @@ accessibility.
 Code in this directory can't call up to the WebContents "layer," except through
 delegate interfaces (e.g. RenderFrameHostDelegate). This is to separate out
 code that deals with the renderer process and code that deals with the tab.
-This is enfoced by the [DEPS](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/DEPS).
+This is enforced by the [DEPS](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/DEPS).
