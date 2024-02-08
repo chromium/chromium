@@ -20,7 +20,8 @@ namespace ash::input_method {
 namespace {
 
 constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(200);
-constexpr char16_t kAnnouncementMessage[] =
+constexpr char16_t kAnnouncementForFeedback[] = u"Feedback submitted";
+constexpr char16_t kAnnouncementForInsertion[] =
     u"Replacing selected text with suggestion";
 
 bool IsUrlAllowed(const GURL& url) {
@@ -46,7 +47,7 @@ void EditorSystemActuator::InsertText(const std::string& text) {
   // After making an announcement there needs to be a small delay to ensure any
   // other announcements triggered from a text insertion do not collide with the
   // original announcement.
-  system_->Announce(kAnnouncementMessage);
+  system_->Announce(kAnnouncementForInsertion);
   announcement_delay_.Reset();
   announcement_delay_.Start(
       FROM_HERE, kAnnouncementDelay,
@@ -84,6 +85,7 @@ void EditorSystemActuator::CloseUI() {
 
 void EditorSystemActuator::SubmitFeedback(const std::string& description) {
   SendEditorFeedback(profile_, description);
+  system_->Announce(kAnnouncementForFeedback);
 }
 
 void EditorSystemActuator::OnFocus(int context_id) {
