@@ -115,10 +115,26 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   hr = dml_create_device_proc(d3d12_device.Get(), flags,
                               IID_PPV_ARGS(&dml_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create DirectML device: " +
-                       logging::SystemErrorCodeToString(hr);
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create DirectML device."));
+    if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
+      // DirectML debug layer can fail to load even when it has been installed
+      // on the system. Try again without the debug flag and see if we're
+      // successful.
+      flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
+      hr = dml_create_device_proc(d3d12_device.Get(), flags,
+                                  IID_PPV_ARGS(&dml_device));
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "Failed to create DirectML device without debug flag: " +
+                           logging::SystemErrorCodeToString(hr);
+        return base::unexpected(
+            CreateError(mojom::Error::Code::kUnknownError,
+                        "Failed to create DirectML device."));
+      }
+    } else {
+      DLOG(ERROR) << "Failed to create DirectML device: " +
+                         logging::SystemErrorCodeToString(hr);
+      return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                          "Failed to create DirectML device."));
+    }
   };
 
   const DML_FEATURE_LEVEL max_feature_level_supported =
