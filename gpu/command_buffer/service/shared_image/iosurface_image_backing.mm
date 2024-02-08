@@ -877,7 +877,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
-    bool retain_gl_texture,
+    GrContextType gr_context_type,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
@@ -910,17 +910,18 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     return;
   }
 
-  // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
-  // best approach as it can lead to issues with context losses.
-  if (retain_gl_texture) {
-    egl_state_for_legacy_mailbox_ = RetainGLTexture();
+  // NOTE: Mac currently retains GLTexture and reuses it. This might lead to
+  // issues with context losses, but is also beneficial to performance at
+  // least on perf benchmarks.
+  if (gr_context_type == GrContextType::kGL) {
+    egl_state_for_skia_gl_context_ = RetainGLTexture();
   }
 }
 
 IOSurfaceImageBacking::~IOSurfaceImageBacking() {
-  if (egl_state_for_legacy_mailbox_) {
-    egl_state_for_legacy_mailbox_->WillRelease(have_context());
-    egl_state_for_legacy_mailbox_ = nullptr;
+  if (egl_state_for_skia_gl_context_) {
+    egl_state_for_skia_gl_context_->WillRelease(have_context());
+    egl_state_for_skia_gl_context_ = nullptr;
   }
   DCHECK(egl_state_map_.empty());
 }

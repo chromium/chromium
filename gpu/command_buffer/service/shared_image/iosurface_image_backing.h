@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
@@ -117,7 +118,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       GLenum gl_target,
       bool framebuffer_attachment_angle,
       bool is_cleared,
-      bool retain_gl_texture,
+      GrContextType gr_context_type,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
@@ -247,7 +248,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
   std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
-  scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_legacy_mailbox_;
+
+  // If Skia is using GL, this object creates a GL texture at construction time
+  // for the Skia GL context and reuses it (for that context) for its lifetime.
+  scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_skia_gl_context_;
 
   std::unique_ptr<gl::GLFence> last_write_gl_fence_;
 

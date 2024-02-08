@@ -418,13 +418,12 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
   const GLenum texture_target = gpu::GetPlatformSpecificTextureTarget();
-  const bool retain_gl_texture = gr_context_type_ == GrContextType::kGL;
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, io_surface_id, mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, std::move(debug_label),
       texture_target, framebuffer_attachment_angle, is_cleared,
-      retain_gl_texture);
+      gr_context_type_);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     backing->InitializePixels(pixel_data);
@@ -500,7 +499,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
       UsageWillResultInGLWrite(usage, gr_context_type_);
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
-  const bool retain_gl_texture = gr_context_type_ == GrContextType::kGL;
 
   if (is_plane_format) {
     const gfx::Size plane_size = gpu::GetPlaneSize(buffer_plane, size);
@@ -510,14 +508,14 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
         io_surface, io_surface_plane, io_surface_id, mailbox, plane_format,
         plane_size, color_space, surface_origin, alpha_type, usage,
         std::move(debug_label), target, framebuffer_attachment_angle,
-        /*is_cleared=*/true, retain_gl_texture, std::move(buffer_usage));
+        /*is_cleared=*/true, gr_context_type_, std::move(buffer_usage));
   }
 
   return std::make_unique<IOSurfaceImageBacking>(
       io_surface, /*io_surface_plane=*/0, io_surface_id, mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, std::move(debug_label),
       target, framebuffer_attachment_angle, /*is_cleared=*/true,
-      retain_gl_texture, std::move(buffer_usage));
+      gr_context_type_, std::move(buffer_usage));
 }
 
 }  // namespace gpu
