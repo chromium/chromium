@@ -449,8 +449,9 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
     const std::optional<testing::Matcher<std::string>>& id,
     const std::optional<testing::Matcher<std::string>>& name,
     const std::optional<testing::Matcher<std::string>>& src,
-    const std::vector<testing::Matcher<std::string>>& reasons,
+    const std::vector<BlockingDetailsReasonsMatcher>& reasons,
     const std::optional<SameOriginMatcher>& same_origin_details) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       id.has_value()
           ? testing::Field(
@@ -492,6 +493,7 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
 SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
     const testing::Matcher<std::string>& url,
     const std::vector<ReasonsMatcher>& children) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       testing::Field(
           "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
@@ -501,11 +503,49 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
           testing::ElementsAreArray(children))));
 }
 
+BlockingDetailsReasonsMatcher
+BackForwardCacheBrowserTest::MatchesDetailedReason(
+    const testing::Matcher<std::string>& name,
+    const std::optional<BlockingReasonLocationMatcher>& source) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly
+  // messages.
+  return testing::Pointee(testing::AllOf(
+      testing::Field("name", &blink::mojom::BFCacheBlockingDetailedReason::name,
+                     name),
+      testing::Field(
+          "source", &blink::mojom::BFCacheBlockingDetailedReason::source,
+          source.has_value()
+              ? source.value()
+              : testing::Property(
+                    "is_null",
+                    &blink::mojom::BlockingReasonSourceLocationPtr::is_null,
+                    true))));
+}
+
+BlockingReasonLocationMatcher
+BackForwardCacheBrowserTest::MatchesSourceLocation(
+    const testing::Matcher<std::string>& url,
+    const testing::Matcher<uint64_t>& line_number,
+    const testing::Matcher<uint64_t>& column_number) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly
+  // messages.
+  return testing::Pointee(testing::AllOf(
+      testing::Field("url", &blink::mojom::BlockingReasonSourceLocation::url,
+                     url),
+      testing::Field("line_number",
+                     &blink::mojom::BlockingReasonSourceLocation::line_number,
+                     line_number),
+      testing::Field("column_number",
+                     &blink::mojom::BlockingReasonSourceLocation::column_number,
+                     column_number)));
+}
+
 BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
     const std::optional<testing::Matcher<std::string>>& url,
     const std::optional<testing::Matcher<std::string>>& function_name,
     const testing::Matcher<uint64_t>& line_number,
     const testing::Matcher<uint64_t>& column_number) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       url.has_value()
           ? testing::Field("url", &blink::mojom::BlockingDetails::url,

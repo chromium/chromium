@@ -82,7 +82,8 @@ TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
   EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
-  EXPECT_EQ(result->reasons[0], "masked");
+  EXPECT_EQ(result->reasons[0]->name, "masked");
+  EXPECT_FALSE(result->reasons[0]->source);
 
   // b-1 is masked.
   EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
@@ -115,7 +116,8 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, FirstCrossOriginReachable) {
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
   EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
-  EXPECT_EQ(result->reasons[0], "masked");
+  EXPECT_EQ(result->reasons[0]->name, "masked");
+  EXPECT_FALSE(result->reasons[0]->source);
   // b-1 is unmasked, but reasons are empty because it does not have any
   // blocking reasons.
   EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
@@ -134,7 +136,8 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
   EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
-  EXPECT_EQ(result->reasons[0], "masked");
+  EXPECT_EQ(result->reasons[0]->name, "masked");
+  EXPECT_FALSE(result->reasons[0]->source);
 
   // b-1 is masked.
   EXPECT_TRUE(result->same_origin_details->children[0]->reasons.empty());
@@ -143,10 +146,11 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
                                  ->same_origin_details->children[0]
                                  ->reasons.size()),
             1);
-  EXPECT_EQ(result->same_origin_details->children[1]
-                ->same_origin_details->children[0]
-                ->reasons[0],
-            "masked");
+  auto& reason = result->same_origin_details->children[1]
+                     ->same_origin_details->children[0]
+                     ->reasons[0];
+  EXPECT_EQ(reason->name, "masked");
+  EXPECT_FALSE(result->reasons[0]->source);
   // b-4 is masked.
   EXPECT_TRUE(result->same_origin_details->children[2]->reasons.empty());
 }

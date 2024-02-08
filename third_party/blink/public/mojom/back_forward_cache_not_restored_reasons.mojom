@@ -12,9 +12,35 @@ module blink.mojom;
 struct SameOriginBfcacheNotRestoredDetails {
   // URL when the frame navigated away. This could be cut down if the
   // reported value was longer than a limit.
+  // TODO(crbug.com/324031239): Use url.mojom.Url (in url/mojom/url.mojom)
+  // instead of string.
   string url;
   // List of children frames' information.
   array<BackForwardCacheNotRestoredReasons> children;
+};
+
+// JavaScript source location of a BFCache blocking reason.
+struct BlockingReasonSourceLocation {
+  // The absolute URL (e.g. https://...) of the file where the reason was found.
+  // This should be empty string if the reason doesn't have URL.
+  // TODO(crbug.com/324031239): Use url.mojom.Url (in url/mojom/url.mojom)
+  // instead of string.
+  string url;
+  // The line number of the reason.
+  uint64 line_number;
+  // The column number of the reason.
+  uint64 column_number;
+};
+
+// Detailed information for why the frame in question was blocked
+// from BFCache.
+struct BFCacheBlockingDetailedReason {
+  // The name of the reason.
+  // TODO(crbug.com/1519483): Define enums of reasons and use them instead of strings.
+  string name;
+  // The JavaScript source location of the reason. This should be null if the reason
+  // doesn't have a source location.
+  BlockingReasonSourceLocation? source;
 };
 
 // Struct for NotRestoredReasons API to report from browser to renderer. This
@@ -29,7 +55,7 @@ struct BackForwardCacheNotRestoredReasons {
   string? name;
   // List of reasons that blocked back/forward cache if any.
   // TODO(crbug.com/1519483): Define enums of reasons and use them instead of strings.
-  array<string> reasons;
+  array<BFCacheBlockingDetailedReason> reasons;
   // This will be absl::nullopt when this document is cross-origin from the main
   // document.
   SameOriginBfcacheNotRestoredDetails? same_origin_details;

@@ -51,6 +51,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
@@ -1786,18 +1787,31 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
     not_restored_reasons->same_origin_details->url = url_.spec();
     // Populate the reasons for same-origin frames.
-    not_restored_reasons->reasons = GetDocumentResult().GetStringReasons();
+    for (auto& name : GetDocumentResult().GetStringReasons()) {
+      blink::mojom::BFCacheBlockingDetailedReasonPtr reason =
+          blink::mojom::BFCacheBlockingDetailedReason::New();
+      reason->name = name;
+      not_restored_reasons->reasons.push_back(std::move(reason));
+    }
     if (is_root_outermost_main_frame_) {
       int index_copy = exposed_cross_origin_iframe_index;
+      bool no_masked_reason =
+          std::find_if(
+              not_restored_reasons->reasons.begin(),
+              not_restored_reasons->reasons.end(),
+              [](const blink::mojom::BFCacheBlockingDetailedReasonPtr& reason) {
+                return reason->name == "masked";
+              }) == not_restored_reasons->reasons.end();
       if (HasUnexposedCrossOriginBlockingIframe(index_copy) &&
-          std::find(not_restored_reasons->reasons.begin(),
-                    not_restored_reasons->reasons.end(),
-                    "masked") == not_restored_reasons->reasons.end()) {
+          no_masked_reason) {
         // If any cross-origin iframe is blocking and does not have "masked" in
         // its own reasons, we need to add "masked" to the outermost main
         // frame's reasons. Note that we need to add "masked" only when the
         // reasons do not have it yet.
-        not_restored_reasons->reasons.push_back("masked");
+        blink::mojom::BFCacheBlockingDetailedReasonPtr masked_reason =
+            blink::mojom::BFCacheBlockingDetailedReason::New();
+        masked_reason->name = "masked";
+        not_restored_reasons->reasons.push_back(std::move(masked_reason));
       }
     }
     for (const auto& subtree : GetChildren()) {
@@ -1815,7 +1829,10 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
       // Note that we need to flatten the tree in order to check the eligibility
       // of the cross-origin subtree. Add "masked" to this frame to signal that
       // this is the blocking frame.
-      not_restored_reasons->reasons.push_back("masked");
+      blink::mojom::BFCacheBlockingDetailedReasonPtr masked_reason =
+          blink::mojom::BFCacheBlockingDetailedReason::New();
+      masked_reason->name = "masked";
+      not_restored_reasons->reasons.push_back(std::move(masked_reason));
     }
     // Decrease the index now that we saw a cross-origin iframe.
     exposed_cross_origin_iframe_index--;
