@@ -1805,6 +1805,17 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         '^content/shell/browser/shell_content_browser_client.cc'
       )
     ),
+    BanRule(
+      pattern = r'/absl::(optional|nullopt|make_optional|in_place|in_place_t)',
+      explanation = (
+         'Don\'t use `absl::optional`. Use `std::optional`.',
+      ),
+      # TODO(b/40288126): Enforce after completing the rewrite.
+      treat_as_error = False,
+      excluded_paths = [
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ]
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
