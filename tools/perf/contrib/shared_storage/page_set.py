@@ -13,7 +13,8 @@ import time
 from telemetry import story
 from telemetry.internal.backends.chrome_inspector import websocket
 from telemetry.page import page as page_module
-from telemetry.page import shared_page_state
+
+from contrib.shared_storage import shared_storage_shared_page_state as state
 
 # Timeouts in seconds.
 _ACTION_TIMEOUT = 2
@@ -157,7 +158,7 @@ class SharedStorageStory(
                         (self.NAME, _ACTION_TIMEOUT, repr(w)))
 
       # Reload the page if necessary. Otherwise, skip.
-      if self.RENAVIGATE_AFTER_ACTION:
+      if self.RENAVIGATE_AFTER_ACTION and index < self._iterations - 1:
         url = self.file_path_url_with_scheme if self.is_file else self.url
         action_runner.Navigate(url,
                                self.script_to_evaluate_on_commit,
@@ -193,10 +194,9 @@ class SharedStorageStory(
     action_runner.tab.ClearSharedStorageNotifications()
 
   def _RunSharedStorageAction(self, action_runner, index):
-    logging.info("".join([
-        "running iteration ",
-        str(index + 1), ": ", self.ACTION_SCRIPT_TEMPLATE
-    ]))
+    logging.info("".join(
+        ["running iteration ",
+         str(index), ": ", self.ACTION_SCRIPT_TEMPLATE]))
     if self.ACTION_SCRIPT_TEMPLATE.find(_INDEX_PLACEHOLDER) != -1:
       action_runner.tab.EvaluateJavaScript(self.ACTION_SCRIPT_TEMPLATE,
                                            promise=True,
@@ -257,9 +257,9 @@ class SharedStorageStorySet(story.StorySet):
                verbosity=0):
     super(SharedStorageStorySet, self).__init__()
     if user_agent == 'mobile':
-      shared_page_state_class = shared_page_state.SharedMobilePageState
+      shared_page_state_class = state.SharedStorageSharedMobilePageState
     elif user_agent == 'desktop':
-      shared_page_state_class = shared_page_state.SharedDesktopPageState
+      shared_page_state_class = state.SharedStorageSharedDesktopPageState
     else:
       raise ValueError('user_agent %s is unrecognized' % user_agent)
 

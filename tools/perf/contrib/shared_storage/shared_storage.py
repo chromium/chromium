@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import logging
+import os
 
 from benchmarks import memory
 from contrib.shared_storage import page_set
@@ -54,6 +55,9 @@ _DEFAULT_NUM_REPEAT = 10
 # Use maximum allowed trace buffer size (in KB).
 _TRACE_BUFFER_SIZE = 2**32 - 1
 
+# Timeout in seconds allowed for the browser to shutdown when asked, before
+# it is killed.
+_SHUTDOWN_TIMEOUT = 90
 
 class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
   URL = 'file://fresh_with_worklet.html'
@@ -107,6 +111,9 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
         '--enable-features=' + ','.join(_ENABLED_FEATURES),
         '--enable-privacy-sandbox-ads-apis'
     ])
+
+    # Increase the default shutdown timeout due to some long-running tests.
+    os.environ['CHROME_SHUTDOWN_TIMEOUT'] = str(_SHUTDOWN_TIMEOUT)
 
   def CustomizeOptions(self, finder_options, possible_browser=None):
     #`finder_options` is an instance of `browser_options.BrowserFinderOptions`.
