@@ -20,17 +20,13 @@ using MahiMenuViewTest = ChromeViewsTestBase;
 
 TEST_F(MahiMenuViewTest, Bounds) {
   const gfx::Rect anchor_view_bounds = gfx::Rect(50, 50, 25, 100);
-  int menu_width = anchor_view_bounds.width();
   auto menu_widget = MahiMenuView::CreateWidget(anchor_view_bounds);
 
   // The bounds of the created widget should be similar to the value from the
   // utils function.
-  EXPECT_EQ(
-      editor_menu::GetEditorMenuBounds(
-          anchor_view_bounds, /*editor_menu_preferred_size=*/gfx::Size(
-              menu_width,
-              menu_widget->GetContentsView()->GetHeightForWidth(menu_width))),
-      menu_widget->GetRestoredBounds());
+  EXPECT_EQ(editor_menu::GetEditorMenuBounds(
+                anchor_view_bounds, menu_widget.get()->GetContentsView()),
+            menu_widget->GetRestoredBounds());
 }
 
 }  // namespace chromeos::mahi

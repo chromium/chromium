@@ -53,14 +53,13 @@ constexpr char kWidgetName[] = "EditorMenuViewWidget";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
-// Min width in rewrite mode to ensure there is space for the chips.
-constexpr int kEditorMenuRewriteModeMinWidth = 288;
-
 constexpr int kBadgeHorizontalPadding = 8;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
 constexpr int kChipsVerticalPadding = 12;
+constexpr int kHeightWithoutChips = 100;
+constexpr int kHeightPerChipRow = 40;
 constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
@@ -124,6 +123,32 @@ void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                     : IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
 }
 
+int EditorMenuView::GetHeightForWidth(int width) const {
+  // When the width of editor menu view is updated, we will adjust the number of
+  // rows chips (see: UpdateChipsContainer). Thus, here we need to pre-compute
+  // the expected number of rows here and so we can estimate the height rather
+  // than relying on the default logic.
+
+  const int chip_container_width = width - kChipsContainerInsets.width();
+  int running_width = 0;
+  int num_rows = 0;
+  for (views::View* row : chips_container_->children()) {
+    for (views::View* chip : row->children()) {
+      const int chip_width = chip->GetPreferredSize().width();
+      if (num_rows > 0 &&
+          running_width + kChipsHorizontalPadding + chip_width <=
+              chip_container_width) {
+        running_width += kChipsHorizontalPadding + chip_width;
+      } else {
+        ++num_rows;
+        running_width = chip_width;
+      }
+    }
+  }
+
+  return kHeightWithoutChips + num_rows * kHeightPerChipRow;
+}
+
 bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
   GetWidget()->Close();
@@ -137,15 +162,9 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  const int editor_menu_width = editor_menu_mode_ == EditorMenuMode::kWrite
-                                    ? anchor_view_bounds.width()
-                                    : std::max(anchor_view_bounds.width(),
-                                               kEditorMenuRewriteModeMinWidth);
-  UpdateChipsContainer(editor_menu_width);
-
-  GetWidget()->SetBounds(GetEditorMenuBounds(
-      anchor_view_bounds,
-      gfx::Size(editor_menu_width, GetHeightForWidth(editor_menu_width))));
+  gfx::Rect editor_menu_bounds = GetEditorMenuBounds(anchor_view_bounds, this);
+  GetWidget()->SetBounds(editor_menu_bounds);
+  UpdateChipsContainer(/*editor_menu_width=*/editor_menu_bounds.width());
 }
 
 void EditorMenuView::DisableMenu() {

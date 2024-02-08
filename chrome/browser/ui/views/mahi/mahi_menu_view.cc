@@ -164,13 +164,10 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
 }
 
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  const int menu_width = anchor_view_bounds.width();
-
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
-  GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
-      anchor_view_bounds,
-      gfx::Size(menu_width, GetHeightForWidth(menu_width))));
+  GetWidget()->SetBounds(
+      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this));
 }
 
 void MahiMenuView::OnSummaryButtonPressed() {
