@@ -106,9 +106,12 @@ class ComparableColumn<T, V> extends ValueColumn<T, V> {
 }
 
 function dateColumn<T>(header: string, getValue: (row: T) => Date): Column<T> {
-  return new ComparableColumn(
-      header, getValue, compareDefault,
-      (td, v) => td.innerText = v.toLocaleString());
+  return new ComparableColumn(header, getValue, compareDefault, (td, v) => {
+    const time = td.ownerDocument.createElement('time');
+    time.dateTime = v.toISOString();
+    td.innerText = v.toLocaleString();
+    td.append(time);
+  });
 }
 
 const numberClass: string = 'number';
@@ -248,6 +251,7 @@ class Selectable {
   constructor() {
     this.input = document.createElement('input');
     this.input.type = 'checkbox';
+    this.input.title = 'Select';
   }
 }
 
@@ -259,6 +263,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
   constructor(private readonly model: TableModel<T>) {
     this.selectAll = document.createElement('input');
     this.selectAll.type = 'checkbox';
+    this.selectAll.title = 'Select All';
     this.selectAll.addEventListener('input', () => {
       const checked = this.selectAll.checked;
       this.model.getRows().forEach((row) => {

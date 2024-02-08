@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     // Sort by priority ascending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
       document.querySelector('#reportTable')
-        .shadowRoot.querySelectorAll('th')[5].click();
+        .shadowRoot.querySelector('th:nth-child(6) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
   }
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     // Sort by priority descending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
       document.querySelector('#reportTable')
-        .shadowRoot.querySelectorAll('th')[5].click();
+        .shadowRoot.querySelector('th:nth-child(6) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
   }
