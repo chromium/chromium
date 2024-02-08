@@ -38,10 +38,6 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_observer.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
-#endif
-
 namespace gl {
 class GLFence;
 class ProgressReporter;
@@ -54,7 +50,7 @@ namespace gles2 {
 
 class ContextGroup;
 class GPUTracer;
-class PassthroughAbstractTextureImpl;
+class AbstractTexture;
 class MultiDrawManager;
 class GLES2DecoderPassthroughImpl;
 class GLES2ExternalFramebuffer;
@@ -404,7 +400,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
       CopyTexImageResourceManager* copy_tex_image_blit) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  void OnAbstractTextureDestroyed(PassthroughAbstractTextureImpl*,
+  void OnAbstractTextureDestroyed(AbstractTexture*,
                                   scoped_refptr<TexturePassthrough>);
 #endif
 
@@ -524,9 +520,9 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool OnlyHasPendingProgramCompletionQueries();
 
 #if !BUILDFLAG(IS_ANDROID)
-  // A set of raw pointers to currently living PassthroughAbstractTextures
+  // A set of raw pointers to currently living AbstractTextures
   // which allow us to properly signal to them when we are destroyed.
-  base::flat_set<PassthroughAbstractTextureImpl*> abstract_textures_;
+  base::flat_set<AbstractTexture*> abstract_textures_;
 #endif
 
   int commands_to_process_;
