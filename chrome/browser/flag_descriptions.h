@@ -2176,8 +2176,10 @@ extern const char kWebXrForceRuntimeName[];
 extern const char kWebXrForceRuntimeDescription[];
 
 extern const char kWebXrRuntimeChoiceNone[];
+extern const char kWebXrRuntimeChoiceArCore[];
 extern const char kWebXrRuntimeChoiceCardboard[];
 extern const char kWebXrRuntimeChoiceOpenXR[];
+extern const char kWebXrRuntimeChoiceOrientationSensors[];
 
 extern const char kWebXrHandInputName[];
 extern const char kWebXrHandInputDescription[];

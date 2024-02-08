@@ -134,25 +134,20 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
   content::XRProviderList providers;
 
 #if BUILDFLAG(IS_ANDROID)
-  // May be unused if all runtimes are disabled.
-  [[maybe_unused]] const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(ENABLE_OPENXR)
-  if (IsEnabled(command_line, switches::kWebXrRuntimeOpenXr,
-                &device::features::kOpenXR)) {
+  if (IsEnabled(base::CommandLine::ForCurrentProcess(),
+                switches::kWebXrRuntimeOpenXr, &device::features::kOpenXR)) {
     providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
   }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
-  if (IsEnabled(command_line, switches::kWebXrRuntimeCardboard)) {
-    base::android::ScopedJavaLocalRef<jobject>
-        j_vr_compositor_delegate_provider =
-            vr::Java_VrCompositorDelegateProviderImpl_Constructor(
-                base::android::AttachCurrentThread());
-    providers.emplace_back(std::make_unique<webxr::CardboardDeviceProvider>(
-        std::make_unique<webxr::VrCompositorDelegateProvider>(
-            std::move(j_vr_compositor_delegate_provider))));
-  }
+  base::android::ScopedJavaLocalRef<jobject> j_vr_compositor_delegate_provider =
+      vr::Java_VrCompositorDelegateProviderImpl_Constructor(
+          base::android::AttachCurrentThread());
+
+  providers.emplace_back(std::make_unique<webxr::CardboardDeviceProvider>(
+      std::make_unique<webxr::VrCompositorDelegateProvider>(
+          std::move(j_vr_compositor_delegate_provider))));
 #endif  // BUILDFLAG(ENABLE_CARDBOARD)
 #if BUILDFLAG(ENABLE_ARCORE)
   base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =

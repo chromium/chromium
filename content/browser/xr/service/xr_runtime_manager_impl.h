@@ -136,6 +136,9 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // Gets the system default immersive-ar runtime if available.
   BrowserXRRuntimeImpl* GetImmersiveArRuntime();
 
+  // Gets the system default inline runtime if available.
+  BrowserXRRuntimeImpl* GetInlineRuntime();
+
   XRProviderList providers_;
 
   // XRRuntimes are owned by their providers, each correspond to a
