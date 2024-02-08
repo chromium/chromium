@@ -74,6 +74,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="OK"/>
   <int value="1" label="MODEL_INTERPRETATION_ERROR"/>
   <int value="2" label="MEMORY_ALLOCATION_ERROR"/>
+  <int value="3" label="NNAPI_UNAVAILABLE"/>
+  <int value="4" label="NNAPI_USE_ERROR"/>
+  <int value="5" label="GPU_UNAVAILABLE"/>
+  <int value="6" label="GPU_USE_ERROR"/>
+  <int value="7" label="DELEGATE_CONFIG_ERROR"/>
+  <int value="8" label="NOT_FULLY_DELEGABLE"/>
 </enum>
 
 <enum name="MachineLearningServiceDocumentScannerResultEvent">
@@ -121,6 +127,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="OK"/>
   <int value="1" label="MODEL_SPEC_ERROR"/>
   <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="FEATURE_NOT_SUPPORTED_ERROR"/>
+  <int value="4" label="LANGUAGE_NOT_SUPPORTED_ERROR"/>
 </enum>
 
 <enum name="MachineLearningServiceMojoConnectionEvent">
