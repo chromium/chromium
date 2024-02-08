@@ -28,7 +28,7 @@
     width: 256px;
   }
 </style>
-<div class="subsection">
+<div class="subsection" id="subsection">
   <template is="dom-repeat"
       items="{{buttonRemappingList}}"
       index-as="index">
@@ -85,5 +85,6 @@
     id="keyCombinationInputDialog"
     button-remapping-list="{{buttonRemappingList}}"
     remapping-index="[[selectedButtonIndex_]]"
-    has-launcher-button="[[hasLauncherButton]]">
+    has-launcher-button="[[hasLauncherButton]]"
+    on-close="onKeyCombinationDialogClose_">
 </key-combination-input-dialog>
