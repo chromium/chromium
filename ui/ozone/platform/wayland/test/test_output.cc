@@ -94,7 +94,7 @@ int64_t TestOutput::GetDisplayId() const {
 }
 
 void TestOutput::Flush() {
-  flush_metrics_callback_.Run(resource(), metrics_);
+  flush_metrics_callback_.Run(this, metrics_);
 
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";

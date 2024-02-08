@@ -29,10 +29,9 @@ class TestOutput : public GlobalObject {
  public:
   // A callback that allows clients to respond to a Flush() of a given
   // TestOutput's metrics_. This is called immediately before Flush() sends
-  // metrics events to clients. The output_resource is the wl_resource
-  // associated with this output.
+  // metrics events to clients.
   using FlushMetricsCallback =
-      base::RepeatingCallback<void(wl_resource* output_resource,
+      base::RepeatingCallback<void(TestOutput* TestOutput,
                                    const TestOutputMetrics& metrics)>;
 
   explicit TestOutput(FlushMetricsCallback flush_metrics_callback);

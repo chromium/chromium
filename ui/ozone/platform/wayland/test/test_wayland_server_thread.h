@@ -55,6 +55,7 @@ struct DisplayDeleter {
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
+enum class AuraOutputManagerProtocol { kDisabled, kEnabledV1 };
 
 struct ServerConfig {
   TestZcrTextInputExtensionV1::Version text_input_extension_version =
@@ -68,7 +69,8 @@ struct ServerConfig {
       EnableAuraShellProtocol::kDisabled;
   bool surface_submission_in_pixel_coordinates = true;
   bool supports_viewporter_surface_scaling = false;
-  bool use_aura_output_manager = false;
+  AuraOutputManagerProtocol aura_output_manager_protocol =
+      AuraOutputManagerProtocol::kDisabled;
 };
 
 class TestWaylandServerThread;
@@ -138,10 +140,10 @@ class TestWaylandServerThread : public base::Thread,
     return output_ptr;
   }
 
-  // Called when the Flush() is called for a TestOutput associated with
-  // `output_resource`. When called sends the corresponding events for the
-  // `metrics` to clients of the zaura_output_manager.
-  void OnTestOutputMetricsFlush(wl_resource* output_resource,
+  // Called when the Flush() is called for a `test_output`. When called sends
+  // the corresponding events for the `metrics` to clients of the
+  // aura output manager.
+  void OnTestOutputMetricsFlush(TestOutput* test_output,
                                 const TestOutputMetrics& metrics);
 
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }

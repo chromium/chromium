@@ -110,7 +110,8 @@ bool TestWaylandServerThread::Start() {
     return false;
 
   if (config_.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
-    if (config_.use_aura_output_manager) {
+    if (config_.aura_output_manager_protocol ==
+        AuraOutputManagerProtocol::kEnabledV1) {
       // zaura_output_manager should be initialized before any wl_output
       // globals.
       if (!zaura_output_manager_.Initialize(display_.get())) {
@@ -234,10 +235,10 @@ TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
 }
 
 void TestWaylandServerThread::OnTestOutputMetricsFlush(
-    wl_resource* output_resource,
+    TestOutput* test_output,
     const TestOutputMetrics& metrics) {
   if (zaura_output_manager_.resource()) {
-    zaura_output_manager_.SendOutputMetrics(output_resource, metrics);
+    zaura_output_manager_.SendOutputMetrics(test_output, metrics);
   }
 }
 
