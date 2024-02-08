@@ -1708,6 +1708,12 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
       observer.OnAppListVisibilityWillChange(real_target_visibility,
                                              display_id);
     }
+
+    // The virtual keyboard should be hidden before the bubble launcher
+    // calculating the work area.
+    if (real_target_visibility) {
+      keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
+    }
   }
 }
 
