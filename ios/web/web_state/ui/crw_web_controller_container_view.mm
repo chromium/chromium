@@ -190,11 +190,15 @@
 
 // Update the content view frame.
 - (void)updateWebViewContentViewFrame {
-  if (self.cover) {
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [self.webViewContentView setFrame:self.bounds];
   } else {
-    [self.webViewContentView
-        setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
+    if (self.cover) {
+      [self.webViewContentView setFrame:self.bounds];
+    } else {
+      [self.webViewContentView
+          setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
+    }
   }
 }
 
