@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -31,7 +32,12 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
+#include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_plugin_container.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -1564,11 +1570,13 @@ class PdfAccessibilityTreeBuilder {
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher)
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
+    blink::WebPluginContainer* plugin_container)
     : content::RenderFrameObserver(render_frame),
       render_frame_(render_frame),
       action_handler_(action_handler),
-      image_fetcher_(image_fetcher) {
+      image_fetcher_(image_fetcher),
+      plugin_container_(plugin_container) {
   DCHECK(render_frame);
   DCHECK(action_handler_);
   DCHECK(image_fetcher_);
@@ -1759,7 +1767,7 @@ void PdfAccessibilityTree::DoSetAccessibilityViewportInfo(
     root_data.relative_bounds.transform = MakeTransformFromViewInfo();
     root->SetData(root_data);
     UpdateAXTreeDataFromSelection();
-    render_accessibility->OnPluginRootNodeUpdated();
+    MarkPluginContainerDirty();
   }
 }
 
@@ -1829,7 +1837,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-  render_accessibility->SetPluginTreeSource(this);
+  MarkPluginContainerDirty();
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
@@ -1969,7 +1977,13 @@ void PdfAccessibilityTree::UnserializeNodes() {
     LOG(FATAL) << tree_.error();
 
   UpdateAXTreeDataFromSelection();
+
+  // TODO(accessibility): this call *re-creates* the serializer in
+  // RenderAccessibilityImpl. In order to use the serializer there as intended,
+  // we should supply a list of dirty objects to invalidate on the serializer
+  // instead of re-creating the entire serializer.
   render_accessibility->SetPluginTreeSource(this);
+  MarkPluginContainerDirty();
   nodes_.clear();
 
   if (!sent_metrics_once_) {
@@ -2130,7 +2144,7 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
-  render_accessibility->SetPluginTreeSource(this);
+  MarkPluginContainerDirty();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2168,7 +2182,7 @@ void PdfAccessibilityTree::ResetStatusNodeAttributes() {
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
-  render_accessibility->SetPluginTreeSource(this);
+  MarkPluginContainerDirty();
 }
 
 void PdfAccessibilityTree::UpdateAXTreeDataFromSelection() {
@@ -2365,7 +2379,22 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
   return std::make_unique<PdfAXActionTarget>(target_node, this);
 }
 
+blink::WebPluginContainer* PdfAccessibilityTree::GetPluginContainer() {
+  return plugin_container_;
+}
+
 void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
+  auto* render_accessibility = GetRenderAccessibility();
+  if (mode.is_mode_off()) {
+    if (render_accessibility) {
+      render_accessibility->SetPluginTreeSource(nullptr);
+    }
+    return;
+  }
+
+  CHECK(render_accessibility);
+  render_accessibility->SetPluginTreeSource(this);
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (!mode.has_mode(ui::AXMode::kPDFOcr)) {
     if (ocr_service_) {
@@ -2542,7 +2571,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // PDF accessibility tree is available now, so it may be necessary to add a
     // postamble page after the last OCRed page.
     AddPostamblePageIfNeeded(ocr_requests.back().page_node_id);
-    render_accessibility->SetPluginTreeSource(this);
+    MarkPluginContainerDirty();
   } else {
     // PDF accessibility tree is not yet available. If all pages are OCRed
     // before PDF content is being loaded into the accessibility tree, update
@@ -2571,11 +2600,24 @@ void PdfAccessibilityTree::CreateOcrService() {
 bool PdfAccessibilityTree::ShowContextMenu() {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
-  if (!render_accessibility)
+  if (!render_accessibility) {
     return false;
+  }
 
-  render_accessibility->ShowPluginContextMenu();
-  return true;
+  // Might be nullptr within tests.
+  if (!plugin_container_) {
+    CHECK_IS_TEST();
+    return false;
+  }
+
+  const blink::WebAXObject& obj =
+      blink::WebAXObject::FromWebNode(plugin_container_->GetElement());
+  if (obj.IsNull()) {
+    return false;
+  }
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kShowContextMenu;
+  return obj.PerformAction(action_data);
 }
 
 bool PdfAccessibilityTree::SetChildTree(const ui::AXNodeID& target_node_id,
@@ -2601,7 +2643,7 @@ bool PdfAccessibilityTree::SetChildTree(const ui::AXNodeID& target_node_id,
   tree_update.root_id = doc_node_->id;
   tree_update.nodes = {target_node_data};
   CHECK(tree_.Unserialize(tree_update)) << tree_.error();
-  render_accessibility->SetPluginTreeSource(this);
+  MarkPluginContainerDirty();
   return true;
 }
 
@@ -2643,6 +2685,24 @@ void PdfAccessibilityTree::MaybeHandleAccessibilityChange(
       action_handler_->EnableAccessibility();
     }
   }
+}
+
+void PdfAccessibilityTree::MarkPluginContainerDirty() {
+  // Might be nullptr within tests.
+  if (!plugin_container_) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  const blink::WebAXObject& obj =
+      blink::WebAXObject::FromWebNode(plugin_container_->GetElement());
+  if (obj.IsDetached()) {
+    return;
+  }
+
+  obj.AddDirtyObjectToSerializationQueue(ax::mojom::EventFrom::kNone,
+                                         ax::mojom::Action::kNone,
+                                         std::vector<ui::AXEventIntent>());
 }
 
 }  // namespace pdf

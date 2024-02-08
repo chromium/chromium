@@ -76,8 +76,6 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   void Trace(Visitor*) const;
 
-  AXObject* GetPluginRoot();
-
   void Freeze();
 
   void Thaw();

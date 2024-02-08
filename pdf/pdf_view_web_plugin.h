@@ -225,7 +225,8 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
-        PdfAccessibilityImageFetcher* image_fetcher);
+        PdfAccessibilityImageFetcher* image_fetcher,
+        blink::WebPluginContainer* plugin_container);
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
@@ -766,8 +767,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::unique_ptr<UrlLoader> form_loader_;
 
   // Handler for accessibility data updates.
-  std::unique_ptr<PdfAccessibilityDataHandler> const
-      pdf_accessibility_data_handler_;
+  std::unique_ptr<PdfAccessibilityDataHandler> pdf_accessibility_data_handler_;
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;
