@@ -5,6 +5,7 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -155,6 +157,21 @@ gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
     return content_rect.ApproximatelyEqual(visible_rect, 1) ? visible_rect
                                                             : content_rect;
   }
+}
+
+int AsPercent(float value) {
+  return base::saturated_cast<int>(std::nearbyint(value * 100.0f));
+}
+
+perfetto::Track FrameInUseTrack(const media::VideoFrameMetadata& metadata) {
+  return perfetto::Track(static_cast<uint64_t>(
+      (metadata.capture_begin_time.value() - base::TimeTicks())
+          .InMicroseconds()));
+}
+
+perfetto::Track CaptureTrack(const media::VideoFrameMetadata& metadata) {
+  return perfetto::Track(static_cast<uint64_t>(
+      (metadata.reference_time.value() - base::TimeTicks()).InMicroseconds()));
 }
 
 }  // namespace
@@ -791,19 +808,15 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   UMA_HISTOGRAM_BOOLEAN("Viz.FrameSinkVideoCapturer.FrameResurrected",
                         can_resurrect_content);
 
-  // Compute the current in-flight utilization and attenuate it: The utilization
-  // reported to the oracle is in terms of a maximum sustainable amount (not the
-  // absolute maximum).
-  const float utilization =
-      GetPipelineUtilization() / kTargetPipelineUtilization;
+  const float utilization = GetPipelineUtilization();
+  const int utilization_pct = AsPercent(utilization);
 
   // Do not proceed if the pool did not provide a frame: This indicates the
   // pipeline is full.
   if (!frame) {
     TRACE_EVENT_INSTANT("gpu.capture", "PipelineLimited", "trigger",
                         VideoCaptureOracle::EventAsString(event),
-                        "atten_util_percent",
-                        base::saturated_cast<int>(utilization * 100.0f + 0.5f));
+                        "utilization_pct", utilization_pct);
     oracle_->RecordWillNotCapture(utilization);
     if (next_capture_frame_number_ == 0) {
       // The pool was unable to provide a buffer for the very first capture, and
@@ -829,17 +842,16 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   if (utilization >= 1.0) {
     TRACE_EVENT_INSTANT("gpu.capture", "NearlyPipelineLimited", "trigger",
                         VideoCaptureOracle::EventAsString(event),
-                        "atten_util_percent",
-                        base::saturated_cast<int>(utilization * 100.0f + 0.5f));
+                        "utilization_pct", utilization_pct);
   }
 
   // At this point, the capture is going to proceed. Populate the VideoFrame's
   // metadata, and notify the oracle.
   const int64_t capture_frame_number = next_capture_frame_number_++;
+
   // !WARNING: now that the frame number has been incremented, returning without
   // adding the frame to the |delivery_queue_| or decrementing the frame number
   // will cause the queue to be permanently stuck.
-
   VideoFrameMetadata& metadata = frame->metadata();
   metadata.capture_begin_time = capture_begin_time;
   metadata.capture_counter = capture_frame_number;
@@ -858,6 +870,11 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         *frame_metadata.top_controls_visible_height;
   }
   metadata.top_controls_visible_height = last_top_controls_visible_height_;
+
+  // Record that the frame has been reserved for capture.
+  TRACE_EVENT_BEGIN("gpu.capture", "FrameInUse", FrameInUseTrack(metadata),
+                    "frame_number", capture_frame_number, "utilization_pct",
+                    utilization_pct);
 
   oracle_->RecordCapture(utilization);
 
@@ -883,9 +900,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // Note: The following is used by
   // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
   // addition to the usual runtime tracing
-  TRACE_EVENT_BEGIN("gpu.capture", "Capture",
-                    perfetto::Track(oracle_frame_number), "frame_number",
-                    capture_frame_number, "trigger",
+  TRACE_EVENT_BEGIN("gpu.capture", "Capture", CaptureTrack(metadata),
+                    "frame_number", capture_frame_number, "trigger",
                     VideoCaptureOracle::EventAsString(event));
 
   // Determine what rectangular region has changed since the last captured
@@ -1110,11 +1126,11 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         "format=%s (%s) area:%s "
         "scale_from: %s "
         "scale_to: %s "
-        "frame pool utilization: %f",
+        "frame pool utilization: %d",
         format.c_str(), is_bitmap ? "bitmap" : "GPU memory buffer",
         request->area().ToString().c_str(),
         request->scale_from().ToString().c_str(),
-        request->scale_to().ToString().c_str(), utilization));
+        request->scale_to().ToString().c_str(), utilization_pct));
   }
 
   const SubtreeCaptureId subtree_id =
@@ -1360,8 +1376,8 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     // Note: The following is used by
     // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
     // addition to the usual runtime tracing
-    TRACE_EVENT_END("gpu.capture", perfetto::Track(oracle_frame_number));
-    TRACE_EVENT_INSTANT("gpu.capture", "CaptureEnd", "success", false);
+    TRACE_EVENT_END("gpu.capture", CaptureTrack(frame->metadata()), "success",
+                    false);
     MaybeScheduleRefreshFrame();
     return;
   }
@@ -1375,9 +1391,8 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
   // Note: The following is used by
   // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
   // addition to the usual runtime tracing
-  TRACE_EVENT_END("gpu.capture", perfetto::Track(oracle_frame_number),
-                  "success", true, "time_delta",
-                  frame->timestamp().InMicroseconds());
+  TRACE_EVENT_END("gpu.capture", CaptureTrack(frame->metadata()), "success",
+                  true, "time_delta", frame->timestamp().InMicroseconds());
 
   // Clone a handle to the shared memory backing the populated video frame, to
   // send to the consumer.
@@ -1412,9 +1427,15 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
       callbacks.InitWithNewPipeAndPassReceiver());
 
   num_frames_in_flight_++;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  TRACE_COUNTER("gpu.capture", "NumFramesInFlight", num_frames_in_flight_);
+#else
+  // TODO(crbug/1006541): Delete when Perfetto is the default.
   TRACE_COUNTER_ID1("gpu.capture",
                     "FrameSinkVideoCapturerImpl::num_frames_in_flight_", this,
                     num_frames_in_flight_);
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Send the frame to the consumer.
   consumer_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
@@ -1480,18 +1501,17 @@ bool FrameSinkVideoCapturerImpl::CanResurrectFrame(
 void FrameSinkVideoCapturerImpl::NotifyFrameReleased(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   num_frames_in_flight_--;
-
-  TRACE_COUNTER_ID1("gpu.capture",
-                    "FrameSinkVideoCapturerImpl::num_frames_in_flight_", this,
-                    num_frames_in_flight_);
+  const media::VideoFrameMetadata metadata = frame->metadata();
+  TRACE_EVENT_END("gpu.capture", FrameInUseTrack(metadata), "frame_number",
+                  metadata.capture_counter, "utilization_pct",
+                  AsPercent(GetPipelineUtilization()));
 }
 
 float FrameSinkVideoCapturerImpl::GetPipelineUtilization() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return static_cast<float>(num_frames_in_flight_) / kDesignLimitMaxFrames;
+  return num_frames_in_flight_ /
+         (kDesignLimitMaxFrames * kTargetPipelineUtilization);
 }
 
 void FrameSinkVideoCapturerImpl::MaybeInformConsumerOfEmptyRegion() {

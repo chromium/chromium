@@ -335,9 +335,13 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // been released by it.
   void NotifyFrameReleased(scoped_refptr<media::VideoFrame> frame);
 
-  // Returns pipeline utilization. Pipeline utilization is different from pool
-  // utilization, since a marked frame may be returned multiple times w/o
-  // increasing pool utilization, but it would increase pipeline utilization.
+  // Returns pipeline utilization as a fraction of kTargetPipelineUtilization.
+  // May be more than 1.0 if the current pool utilization is greater than
+  // kTargetPipelineUtilization.
+  //
+  // Pipeline utilization is different from pool utilization, since a marked
+  // frame may be returned multiple times w/o increasing pool utilization, but
+  // it would increase pipeline utilization.
   float GetPipelineUtilization() const;
 
   // Informs the consumer that the frame was dropped due to being cropped
