@@ -193,15 +193,12 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
                                    bool background) {
     std::unique_ptr<web::WebState> web_state = CreateWebState();
 
-    int insertion_flags = WebStateList::INSERT_FORCE_INDEX;
-    if (!background) {
-      insertion_flags |= WebStateList::INSERT_ACTIVATE;
-    }
-    if (pinned) {
-      insertion_flags |= WebStateList::INSERT_PINNED;
-    }
-    browser_->GetWebStateList()->InsertWebState(
-        index, std::move(web_state), insertion_flags, WebStateOpener(parent));
+    const WebStateList::InsertionParams params =
+        WebStateList::InsertionParams::AtIndex(index)
+            .Pinned(pinned)
+            .Activate(!background)
+            .WithOpener(WebStateOpener(parent));
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state), params);
     return browser_->GetWebStateList()->GetWebStateAt(index);
   }
 

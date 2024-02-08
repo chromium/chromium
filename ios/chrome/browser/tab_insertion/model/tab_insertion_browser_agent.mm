@@ -117,10 +117,12 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     web_state->GetNavigationManager()->LoadURLWithParams(web_load_params);
   }
 
+  const WebStateList::InsertionParams params =
+      WebStateList::InsertionParams::ForDeprecationMigration(
+          insertion_flags, insertion_index,
+          WebStateOpener(tab_insertion_params.parent));
   web::WebState* web_state_ptr = web_state.get();
-  web_state_list->InsertWebState(insertion_index, std::move(web_state),
-                                 insertion_flags,
-                                 WebStateOpener(tab_insertion_params.parent));
+  web_state_list->InsertWebState(std::move(web_state), params);
   return web_state_ptr;
 }
 

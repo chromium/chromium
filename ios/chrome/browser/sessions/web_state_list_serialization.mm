@@ -276,14 +276,6 @@ std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
       item_storage.metadata());
 }
 
-// Returns the flags used to insert a WebState at `index`, possibly marking
-// it as `pinned` or `active`.
-int WebStateInsertionFlags(int index, bool pinned, bool active) {
-  return WebStateList::INSERT_FORCE_INDEX |
-         (pinned ? WebStateList::INSERT_PINNED : 0) |
-         (active ? WebStateList::INSERT_ACTIVATE : 0);
-}
-
 // Helper function that deserialize into a WebStateList using a deserializer.
 // Used by the two implementation of `DeserializeWebStateList(...)`.
 std::vector<web::WebState*> DeserializeWebStateListInternal(
@@ -334,11 +326,10 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
       max_identifier = std::max(max_identifier, web_state_id.identifier());
     }
 
-    const int insertion_flags = WebStateInsertionFlags(
-        index, index < restored_pinned_tabs_count, index == active_index);
-
     const int inserted_index = web_state_list->InsertWebState(
-        index, std::move(web_state), insertion_flags, WebStateOpener{});
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(index)
+                                  .Pinned(index < restored_pinned_tabs_count)
+                                  .Activate(index == active_index));
 
     DCHECK_EQ(inserted_index, index);
   }

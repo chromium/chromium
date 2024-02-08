@@ -1028,8 +1028,8 @@ TEST_F(SessionRestorationServiceImplTest, CreateUnrealizedWebState) {
   // Insert the WebState into the Browser's WebStateList and then wait for
   // the session to be saved to storage.
   browser.GetWebStateList()->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(web_state),
-      WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   WaitForSessionSaveComplete();
 
   // Check that the data for the WebState has been saved to disk.

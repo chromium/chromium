@@ -119,8 +119,8 @@ class TabsCloserTest : public PlatformTest {
         browser_state_.get());
   }
 
-  // Creates an insert a fake WebState in `browser` using `policy` and `opener`.
-  web::WebState* InsertWebState(InsertionPolicy policy, WebStateOpener opener) {
+  // Appends a fake WebState in `browser_` using `policy` and `opener`.
+  web::WebState* AppendWebState(InsertionPolicy policy, WebStateOpener opener) {
     const GURL url = GURL("https://example.com");
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
@@ -139,13 +139,15 @@ class TabsCloserTest : public PlatformTest {
           content_world, std::make_unique<web::FakeWebFramesManager>());
     }
 
-    const int flags =
-        WebStateList::INSERT_FORCE_INDEX |
-        (policy == InsertionPolicy::kPinned ? WebStateList::INSERT_PINNED : 0);
-
     WebStateList* web_state_list = browser_->GetWebStateList();
-    const int insertion_index = web_state_list->InsertWebState(
-        web_state_list->count(), std::move(web_state), flags, opener);
+    // Force the insertion at the end. Otherwise, the opener will trigger logic
+    // to move an inserted WebState close to its opener.
+    const WebStateList::InsertionParams params =
+        WebStateList::InsertionParams::AtIndex(web_state_list->count())
+            .Pinned(policy == InsertionPolicy::kPinned)
+            .WithOpener(opener);
+    const int insertion_index =
+        web_state_list->InsertWebState(std::move(web_state), params);
 
     return web_state_list->GetWebStateAt(insertion_index);
   }
@@ -186,11 +188,11 @@ TEST_F(TabsCloserTest, BrowserWithOnlyRegularTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
 
   ASSERT_EQ(web_state_list->count(), 3);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -249,11 +251,11 @@ TEST_F(TabsCloserTest, BrowserWithOnlyRegularTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
 
   ASSERT_EQ(web_state_list->count(), 3);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -312,9 +314,9 @@ TEST_F(TabsCloserTest, BrowserWithOnlyPinnedTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
 
   ASSERT_EQ(web_state_list->count(), 2);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -371,9 +373,9 @@ TEST_F(TabsCloserTest, BrowserWithOnlyPinnedTabs_ClosePolicyRegularTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
 
   ASSERT_EQ(web_state_list->count(), 2);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -395,15 +397,15 @@ TEST_F(TabsCloserTest, BrowserWithRegularAndPinnedTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state3 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
   web::WebState* web_state4 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
 
   ASSERT_EQ(web_state_list->count(), 5);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -468,15 +470,15 @@ TEST_F(TabsCloserTest, BrowserWithRegularAndPinnedTabs_ClosePolicyRegularTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state3 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
   web::WebState* web_state4 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
 
   ASSERT_EQ(web_state_list->count(), 5);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -544,15 +546,15 @@ TEST_F(TabsCloserTest,
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state3 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
   web::WebState* web_state4 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
 
   ASSERT_EQ(web_state_list->count(), 5);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
@@ -605,15 +607,15 @@ TEST_F(TabsCloserTest,
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
   web::WebState* web_state1 =
-      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
   web::WebState* web_state2 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
   web::WebState* web_state3 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
   web::WebState* web_state4 =
-      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
+      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
 
   ASSERT_EQ(web_state_list->count(), 5);
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);

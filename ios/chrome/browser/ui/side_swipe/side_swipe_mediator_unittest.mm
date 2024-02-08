@@ -165,9 +165,9 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   item->SetURL(GURL(kChromeUINewTabURL));
   // Insert the WebState and make sure it's active. This should trigger
   // the activation WebState change and update edge navigation state.
-  browser_->GetWebStateList()->InsertWebState(1, std::move(fake_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
   EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
   EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
 
