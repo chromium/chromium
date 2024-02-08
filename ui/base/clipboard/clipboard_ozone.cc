@@ -133,6 +133,8 @@ class ClipboardOzone::AsyncClipboardOzone {
   AsyncClipboardOzone& operator=(const AsyncClipboardOzone&) = delete;
   ~AsyncClipboardOzone() = default;
 
+  void OnPreShutdown() { platform_clipboard_ = nullptr; }
+
   bool IsSelectionBufferAvailable() const {
     return platform_clipboard_->IsSelectionBufferAvailable();
   }
@@ -348,7 +350,7 @@ class ClipboardOzone::AsyncClipboardOzone {
   base::flat_map<ClipboardBuffer, PlatformClipboard::DataMap> offered_data_;
 
   // Provides communication to a system clipboard under ozone level.
-  const raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
+  raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
 
   // Reference to the ClipboardOzone object instantiating this
   // ClipboardOzone::AsyncClipboardOzone object. It is used to set
@@ -380,7 +382,9 @@ ClipboardOzone::ClipboardOzone() {
 
 ClipboardOzone::~ClipboardOzone() = default;
 
-void ClipboardOzone::OnPreShutdown() {}
+void ClipboardOzone::OnPreShutdown() {
+  async_clipboard_ozone_->OnPreShutdown();
+}
 
 absl::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
     ClipboardBuffer buffer) const {

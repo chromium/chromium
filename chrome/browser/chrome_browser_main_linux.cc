@@ -24,6 +24,10 @@
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -91,6 +95,13 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
+
+#if BUILDFLAG(IS_LINUX)
+void ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() {
+  ChromeBrowserMainPartsPosix::PostMainMessageLoopRun();
+  ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
+}
+#endif
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
