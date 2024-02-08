@@ -30,9 +30,9 @@ class FamilyMember {
 
   // Urls of family member's blocklist and allowlist settings. Member must be a
   // supervised user who is a subject to parental controls.
-  GURL GetBlockListUrlFor(FamilyMember& member) const;
-  GURL GetAllowListUrlFor(FamilyMember& member) const;
-  GURL GetPermissionsUrlFor(FamilyMember& member) const;
+  GURL GetBlockListUrlFor(const FamilyMember& member) const;
+  GURL GetAllowListUrlFor(const FamilyMember& member) const;
+  GURL GetPermissionsUrlFor(const FamilyMember& member) const;
 
   // Browsertest apis expect pointer.
   Browser* browser() const { return &browser_.get(); }

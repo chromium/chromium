@@ -40,12 +40,12 @@ CoreAccountId GetAccountId(Profile* profile) {
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
-std::string GetFamilyMemberSettingsUrlBase(FamilyMember& member) {
+std::string GetFamilyMemberSettingsUrlBase(const FamilyMember& member) {
   return base::StrCat({"https://families.google.com/u/0/manage/family/child/",
                        GetAccountId(member.browser()->profile()).ToString()});
 }
 
-GURL GetControlListUrlFor(FamilyMember& member, std::string_view page) {
+GURL GetControlListUrlFor(const FamilyMember& member, std::string_view page) {
   return GURL(base::StrCat(
       {GetFamilyMemberSettingsUrlBase(member), "/exceptions/", page}));
 }
@@ -63,15 +63,15 @@ FamilyMember::FamilyMember(
                          add_tab_function) {}
 FamilyMember::~FamilyMember() = default;
 
-GURL FamilyMember::GetBlockListUrlFor(FamilyMember& member) const {
+GURL FamilyMember::GetBlockListUrlFor(const FamilyMember& member) const {
   return GetControlListUrlFor(member, "blocked");
 }
 
-GURL FamilyMember::GetAllowListUrlFor(FamilyMember& member) const {
+GURL FamilyMember::GetAllowListUrlFor(const FamilyMember& member) const {
   return GetControlListUrlFor(member, "allowed");
 }
 
-GURL FamilyMember::GetPermissionsUrlFor(FamilyMember& member) const {
+GURL FamilyMember::GetPermissionsUrlFor(const FamilyMember& member) const {
   return GURL(
       base::StrCat({GetFamilyMemberSettingsUrlBase(member), "/permissions"}));
 }
