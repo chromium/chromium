@@ -12117,58 +12117,6 @@
             ]
         }
     ],
-    "OmniboxActionsUISimplification": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ActionsUISimplificationIncludeRealbox": "true",
-                        "ActionsUISimplificationTrimExtra": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxActionsUISimplification"
-                    ]
-                },
-                {
-                    "name": "ExcludeRealbox",
-                    "params": {
-                        "ActionsUISimplificationIncludeRealbox": "false",
-                        "ActionsUISimplificationTrimExtra": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxActionsUISimplification"
-                    ]
-                },
-                {
-                    "name": "ExcludeRealbox_TrimExtraFalse",
-                    "params": {
-                        "ActionsUISimplificationIncludeRealbox": "false",
-                        "ActionsUISimplificationTrimExtra": "false"
-                    },
-                    "enable_features": [
-                        "OmniboxActionsUISimplification"
-                    ]
-                },
-                {
-                    "name": "TrimExtraFalse",
-                    "params": {
-                        "ActionsUISimplificationIncludeRealbox": "true",
-                        "ActionsUISimplificationTrimExtra": "false"
-                    },
-                    "enable_features": [
-                        "OmniboxActionsUISimplification"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [

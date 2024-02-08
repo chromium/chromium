@@ -308,7 +308,7 @@ BASE_FEATURE(kNtpRealboxPedals,
 // Feature used to enable the simplified actions UI design.
 BASE_FEATURE(kOmniboxActionsUISimplification,
              "OmniboxActionsUISimplification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Feature used to enable the new keyword mode behavior.
 BASE_FEATURE(kOmniboxKeywordModeRefresh,
