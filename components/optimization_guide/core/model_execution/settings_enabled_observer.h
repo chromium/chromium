@@ -17,13 +17,6 @@ class SettingsEnabledObserver : public base::CheckedObserver {
   explicit SettingsEnabledObserver(proto::ModelExecutionFeature feature);
   ~SettingsEnabledObserver() override;
 
-  // Notifies `this` that the consumer feature team should prepare to enable
-  // their feature when browser restarts. After browser restart, the feature
-  // team should call `ShouldFeatureBeCurrentlyEnabledForUser` before displaying
-  // any feature functionality. TODO(rajendrant): Remove this once all the
-  // consumers stop using it.
-  virtual void PrepareToEnableOnRestart() {}
-
   // Notifies the consumers whenever the feature enabled state is changed.
   // `is_now_enabled` indicates the current enabled state of the feature. This
   // could be invoked without the enabled change toggling. This is not called

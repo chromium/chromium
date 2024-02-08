@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service.h"
-
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -30,10 +27,10 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class WallpaperSearchServiceBrowserTest : public InProcessBrowserTest {
+class WallpaperSearchBrowserTest : public InProcessBrowserTest {
  public:
-  WallpaperSearchServiceBrowserTest() = default;
-  ~WallpaperSearchServiceBrowserTest() override = default;
+  WallpaperSearchBrowserTest() = default;
+  ~WallpaperSearchBrowserTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -51,7 +48,7 @@ class WallpaperSearchServiceBrowserTest : public InProcessBrowserTest {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // PRE_ simulates a browser restart.
-IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
                        PRE_EnablingWallpaperSearchEnables) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
       browser()->profile());
@@ -65,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 }
 
-IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
                        EnablingWallpaperSearchEnables) {
   // Wallpaper search feature should be enabled.
   auto* keyed_service =
@@ -78,26 +75,21 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class WallpaperSearchServiceBrowserChromeAshTest
-    : public WallpaperSearchServiceBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public WallpaperSearchBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  bool IsDeviceOwner() const { return std::get<0>(GetParam()); }
-  // Chrome OS builds sometimes run on non-Chrome OS environments.
-  bool IsRunningOnChromeOS() const { return std::get<1>(GetParam()); }
+  bool IsDeviceOwner() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WallpaperSearchServiceBrowserChromeAshTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
                        PRE_EnablingWallpaperSearchEnables) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       "test@example.com", signin::ConsentLevel::kSync);
-  WallpaperSearchServiceFactory::GetForProfile(browser()->profile())
-      ->SkipChromeOSDeviceCheckForTesting(IsRunningOnChromeOS());
 
   // Enable Wallpaper Search via Optimization Guide Prefs.
   // GM3 should enable itself when the browser restarts.
