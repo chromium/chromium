@@ -249,6 +249,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/first_run/omnibox_position:omnibox_position_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/third_party/earl_grey2:app_framework+link",
   ]
