@@ -136,12 +136,13 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
-    P2PMessageThrottler* throttler) {
+    P2PMessageThrottler* throttler,
+    absl::optional<base::UnguessableToken> devtools_token) {
   switch (type) {
     case P2P_SOCKET_UDP:
-      return std::make_unique<P2PSocketUdp>(delegate, std::move(client),
-                                            std::move(socket), throttler,
-                                            traffic_annotation, net_log);
+      return std::make_unique<P2PSocketUdp>(
+          delegate, std::move(client), std::move(socket), throttler,
+          traffic_annotation, net_log, devtools_token);
     case P2P_SOCKET_TCP_CLIENT:
     case P2P_SOCKET_SSLTCP_CLIENT:
     case P2P_SOCKET_TLS_CLIENT:

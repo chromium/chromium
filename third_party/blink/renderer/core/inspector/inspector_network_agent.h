@@ -177,6 +177,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                 ClientNavigationReason);
   void FrameClearedScheduledNavigation(LocalFrame*);
 
+  void WillCreateP2PSocketUdp(absl::optional<base::UnguessableToken>*);
   void WillCreateWebSocket(ExecutionContext*,
                            uint64_t identifier,
                            const KURL& request_url,

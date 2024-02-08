@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -68,7 +69,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       net::NetLog* net_log,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
-      P2PMessageThrottler* throttler);
+      P2PMessageThrottler* throttler,
+      absl::optional<base::UnguessableToken> devtools_token);
 
   P2PSocket(const P2PSocket&) = delete;
   P2PSocket& operator=(const P2PSocket&) = delete;

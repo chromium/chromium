@@ -101,13 +101,15 @@ P2PSocketUdp::PendingPacket::PendingPacket(const PendingPacket& other) =
 P2PSocketUdp::PendingPacket::~PendingPacket() = default;
 
 P2PSocketUdp::P2PSocketUdp(
+
     Delegate* Delegate,
     mojo::PendingRemote<mojom::P2PSocketClient> client,
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PMessageThrottler* throttler,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
-    const DatagramServerSocketFactory& socket_factory)
+    const DatagramServerSocketFactory& socket_factory,
+    absl::optional<base::UnguessableToken> devtools_token)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
       throttler_(throttler),
       traffic_annotation_(traffic_annotation),
@@ -120,14 +122,16 @@ P2PSocketUdp::P2PSocketUdp(
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PMessageThrottler* throttler,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    net::NetLog* net_log)
+    net::NetLog* net_log,
+    absl::optional<base::UnguessableToken> devtools_token)
     : P2PSocketUdp(Delegate,
                    std::move(client),
                    std::move(socket),
                    throttler,
                    traffic_annotation,
                    net_log,
-                   base::BindRepeating(&DefaultSocketFactory)) {}
+                   base::BindRepeating(&DefaultSocketFactory),
+                   devtools_token) {}
 
 P2PSocketUdp::~P2PSocketUdp() = default;
 

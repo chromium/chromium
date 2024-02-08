@@ -293,7 +293,8 @@ class P2PSocketUdpTest : public testing::Test {
         &throttler_, TRAFFIC_ANNOTATION_FOR_TESTS,
         /*net_log=*/nullptr,
         base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets_,
-                            nullptr, &fake_clock_));
+                            nullptr, &fake_clock_),
+        absl::nullopt);
 
     local_address_ = ParseAddress(kTestLocalIpAddress, kTestPort1);
     socket_impl_->Init(
@@ -608,7 +609,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
     std::unique_ptr<P2PSocketUdp> socket_impl(new P2PSocketUdp(
         &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
         &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
-        fake_socket_factory));
+        fake_socket_factory, absl::nullopt));
     net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, 0);
     socket_impl->Init(
         local_address, min_port, max_port,
@@ -631,7 +632,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
   std::unique_ptr<P2PSocketUdp> socket_impl(new P2PSocketUdp(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*net_log=*/nullptr, std::move(fake_socket_factory)));
+      /*net_log=*/nullptr, std::move(fake_socket_factory), absl::nullopt));
   net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, 0);
 
   auto* socket_impl_ptr = socket_impl.get();
@@ -672,7 +673,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
   std::unique_ptr<P2PSocketUdp> socket_host(new P2PSocketUdp(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*net_log=*/nullptr, std::move(fake_socket_factory)));
+      /*net_log=*/nullptr, std::move(fake_socket_factory), absl::nullopt));
   net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, valid_port);
   socket_host->Init(
       local_address, min_port, max_port,
@@ -711,7 +712,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
   auto socket_impl = std::make_unique<P2PSocketUdp>(
       &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
       &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
-      std::move(fake_socket_factory));
+      std::move(fake_socket_factory), absl::nullopt);
   net::IPEndPoint local_address =
       ParseAddress(kTestLocalIpAddress, invalid_port);
 
