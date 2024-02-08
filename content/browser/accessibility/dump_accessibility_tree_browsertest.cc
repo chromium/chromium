@@ -1869,8 +1869,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
+// TODO(b/324376803): Re-enable flaky test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccessibilityContenteditableDocsLi \
+  DISABLED_AccessibilityContenteditableDocsLi
+#else
+#define MAYBE_AccessibilityContenteditableDocsLi \
+  AccessibilityContenteditableDocsLi
+#endif
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       AccessibilityContenteditableDocsLi) {
+                       MAYBE_AccessibilityContenteditableDocsLi) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
