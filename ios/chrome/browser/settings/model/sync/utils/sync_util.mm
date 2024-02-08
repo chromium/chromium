@@ -300,7 +300,7 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
 
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(browser_state);
-    // TODO(crbug.com/1462552): Simplify this (remove the whole
+    // TODO(crbug.com/40066949): Simplify this (remove the whole
     // `if (!UseIdentityErrorInfobar(syncService)) {...}`) after kSync users are
     // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for
     // details.

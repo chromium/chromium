@@ -743,7 +743,7 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
   EXPECT_EQ(invocation_counter, 1u);
 }
 
-// TODO(crbug.com/1462552): Remove this test after kSync users are migrated in
+// TODO(crbug.com/40066949): Remove this test after kSync users are migrated in
 // phase 3. See ConsentLevel::kSync documentation for details.
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.

@@ -356,7 +356,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
   NSMutableArray* urls = [[NSMutableArray alloc] init];
-  // TODO(crbug.com/1462552): Remove IsSyncFeatureEnabled() usage after kSync
+  // TODO(crbug.com/40066949): Remove IsSyncFeatureEnabled() usage after kSync
   // users are migrated to kSignin in phase 3. See ConsentLevel::kSync for more
   // details.
   if (syncService->IsSyncFeatureEnabled()) {

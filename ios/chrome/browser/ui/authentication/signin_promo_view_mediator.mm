@@ -1079,7 +1079,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // If the sign-in view is removed when the user is authenticated, then the
   // sign-in for sync has been done by another view, and this mediator cannot be
   // counted as being dismissed.
-  // TODO(crbug.com/1462858): Once new sync opt-ins are deprecated this usage
+  // TODO(crbug.com/40067025): Once new sync opt-ins are deprecated this usage
   // of kSync will become obsolete. Delete this code after phase 2.
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
     return;

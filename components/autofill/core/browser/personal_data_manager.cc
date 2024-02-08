@@ -612,7 +612,7 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   // feature explicitly. `sync_service` is nullptr-checked because this
   // method can also be used (apart from the Sync service observer's calls) in
   // SetSyncService() where setting a nullptr is possible.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   database_helper_->SetUseAccountStorageForServerData(
       sync_service && !sync_service->IsSyncFeatureEnabled());
@@ -653,7 +653,7 @@ CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
 }
 
 bool PersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics() const {
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ && sync_service_->IsSyncFeatureEnabled();
 }
@@ -681,7 +681,7 @@ bool PersonalDataManager::IsPaymentsDownloadActive() const {
           syncer::SyncService::TransportState::PAUSED) {
     return false;
   }
-  // TODO(crbug.com/1462552): Simplify (merge with
+  // TODO(crbug.com/40066949): Simplify (merge with
   // IsPaymentsWalletSyncTransportEnabled()) once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_->IsSyncFeatureEnabled() ||
@@ -695,7 +695,7 @@ bool PersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
           syncer::SyncService::TransportState::PAUSED) {
     return false;
   }
-  // TODO(crbug.com/1462552): Simplify (merge with IsPaymentsDownloadActive())
+  // TODO(crbug.com/40066949): Simplify (merge with IsPaymentsDownloadActive())
   // once ConsentLevel::kSync and SyncService::IsSyncFeatureEnabled() are
   // deleted from the codebase.
   return !sync_service_->IsSyncFeatureEnabled() &&
@@ -718,7 +718,7 @@ PersonalDataManager::GetPaymentsSigninStateForMetrics() const {
   }
 
   // Check if the user has turned on sync.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (sync_service_->IsSyncFeatureEnabled()) {
     return PaymentsSigninState::kSignedInAndSyncFeatureEnabled;
@@ -1551,7 +1551,7 @@ bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
   CHECK(sync_service_);
 
   // Check if the user is in sync transport mode for wallet data.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!sync_service_->IsSyncFeatureEnabled()) {
     // For SyncTransport, only show server payment methods if the user has opted
@@ -1769,7 +1769,7 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
 }
 
 bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
-  // TODO(crbug.com/1462552): Remove this method in favor of
+  // TODO(crbug.com/40066949): Remove this method in favor of
   // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
@@ -2301,7 +2301,7 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
   // This option should only be shown for users that have not enabled the Sync
   // Feature and that have server credit cards available.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!sync_service_ || sync_service_->IsSyncFeatureEnabled() ||
       GetServerCreditCards().empty()) {

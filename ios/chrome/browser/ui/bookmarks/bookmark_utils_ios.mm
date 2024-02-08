@@ -181,7 +181,7 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
   if (sync_service->GetAccountInfo().IsEmpty()) {
     return false;
   }
-  // TODO(crbug.com/1462552): Remove this after UNO phase 3. See
+  // TODO(crbug.com/40066949): Remove this after UNO phase 3. See
   // ConsentLevel::kSync documentation for more details.
   if (sync_service->HasSyncConsent()) {
     return false;
@@ -277,7 +277,7 @@ bool bookmarkSavedIntoAccountWithStorageType(
     bookmarks::StorageType storageType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   BOOL hasSyncConsent =

@@ -55,7 +55,7 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
 
   // If `kReplaceSyncPromosWithSignInPromos` is NOT enabled, then demographics
   // may only be uploaded for users who have opted in to Sync.
-  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureEnabled() is deleted
+  // TODO(crbug.com/40066949): Simplify once IsSyncFeatureEnabled() is deleted
   // from the codebase.
   if (sync_service->IsSyncFeatureEnabled()) {
     return true;

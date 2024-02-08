@@ -82,7 +82,7 @@ class PrimaryAccountMutator {
   // are written to the persistent storage.
   // TODO(crbug.com/1261772): Don't set a default `access_point`. All callsites
   //     should provide a valid value.
-  // TODO(crbug.com/1462858): ConsentLevel::kSync is being migrated away from,
+  // TODO(crbug.com/40067025): ConsentLevel::kSync is being migrated away from,
   //     please see ConsentLevel::kSync documentation before adding new calls
   //     with ConsentLevel::kSync. Also, update this documentation when the
   //     deprecation process advances.

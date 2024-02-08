@@ -288,7 +288,7 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
       base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
                                     account_type);
       break;
-    // TODO(crbug.com/1462552): Remove kSync usage after phase 3 migration. See
+    // TODO(crbug.com/40066949): Remove kSync usage after phase 3 migration. See
     // ConsentLevel::kSync documentation for more details.
     case signin::ConsentLevel::kSync:
       base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",

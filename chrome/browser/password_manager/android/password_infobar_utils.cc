@@ -18,7 +18,7 @@ namespace password_manager {
 std::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);
 
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(
           SyncServiceFactory::GetForProfile(profile))) {

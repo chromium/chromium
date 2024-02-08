@@ -300,7 +300,7 @@ class SyncService : public KeyedService {
   // Whether the primary account has consented to Sync (see IdentityManager). If
   // this is false, then IsSyncFeatureEnabled will also be false, but
   // Sync-the-transport might still run.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   virtual bool HasSyncConsent() const = 0;
@@ -334,7 +334,7 @@ class SyncService : public KeyedService {
   // first-time Sync setup has been completed by the user.
   // Note: This does not imply that Sync is actually running. Check
   // IsSyncFeatureActive or GetTransportState to get the current state.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool IsSyncFeatureEnabled() const;
@@ -356,7 +356,7 @@ class SyncService : public KeyedService {
   // even if this is false.
   // TODO(crbug.com/1444344): Remove this API, in favor of
   // IsSyncFeatureEnabled().
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool CanSyncFeatureStart() const;
@@ -367,7 +367,7 @@ class SyncService : public KeyedService {
   // To see which datatypes are actually syncing, see GetActiveDataTypes().
   // Note: This refers to Sync-the-feature. Sync-the-transport may be active
   // even if this is false.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   bool IsSyncFeatureActive() const;

@@ -213,7 +213,7 @@ void UnifiedConsentService::Shutdown() {
 
 void UnifiedConsentService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==

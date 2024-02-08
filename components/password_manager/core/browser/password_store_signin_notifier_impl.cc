@@ -50,7 +50,7 @@ void PasswordStoreSigninNotifierImpl::NotifySignedOut(
 // IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1462978): Remove this code when ConsentLevel::kSync is
+  // TODO(crbug.com/40067058): Remove this code when ConsentLevel::kSync is
   // deleted (since kSignin users are handled by
   // OnExtendedAccountInfoRemoved()). See ConsentLevel::kSync documentation for
   // details.
@@ -66,7 +66,7 @@ void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only react to non-syncing Gaia account sign-out event - the syncing
   // account is handled separately in OnPrimaryAccountChanged().
-  // TODO(crbug.com/1462978): Remove the not-kSync check when
+  // TODO(crbug.com/40067058): Remove the not-kSync check when
   // ConsentLevel::kSync is deleted. See ConsentLevel::kSync documentation for
   // details.
   if (info.account_id !=

@@ -152,7 +152,7 @@ void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (!UsesUPMBackend()) {
     pref_service_->SetBoolean(
@@ -167,7 +167,7 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                             false);
   std::optional<SyncingAccount> account = std::nullopt;
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
@@ -185,7 +185,7 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   is_password_sync_enabled_ =
       IsSyncFeatureEnabledIncludingPasswords(sync_service_);
@@ -268,14 +268,14 @@ void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
 void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
     syncer::SyncService* sync) {
   // Return early if the setting didn't change and no sync errors were resolved.
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (IsSyncFeatureEnabledIncludingPasswords(sync) ==
       is_password_sync_enabled_) {
     return;
   }
 
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   is_password_sync_enabled_ = IsSyncFeatureEnabledIncludingPasswords(sync);
 

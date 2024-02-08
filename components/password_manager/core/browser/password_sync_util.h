@@ -31,7 +31,7 @@ enum class SyncState {
 // sync-the-feature turned on, and if so, return the e-mail representing the
 // account for which sync is on. Returns an empty string otherwise (which
 // includes the sync-off case even if account passwords are on).
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled() is
 // fully deprecated, see ConsentLevel::kSync documentation for details.
 std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service);
@@ -56,7 +56,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
 // even if account passwords are enabled. On some platforms, e.g. iOS, this can
 // be the majority of users (eventually all), so please avoid integrating with
 // this function if possible.
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled() is
 // fully deprecated, see ConsentLevel::kSync documentation for details.
 bool IsSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service);
@@ -68,7 +68,7 @@ bool IsSyncFeatureEnabledIncludingPasswords(
 // even if account passwords are enabled and active. On some platforms, e.g.
 // iOS, this can be the majority of users (eventually all), so please avoid
 // integrating with this function if possible.
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled()/
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled()/
 // IsSyncFeatureActive() is fully deprecated, see ConsentLevel::kSync
 // documentation for details.
 bool IsSyncFeatureActiveIncludingPasswords(

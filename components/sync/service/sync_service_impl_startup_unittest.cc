@@ -76,7 +76,7 @@ class SyncServiceImplStartupTest : public testing::Test {
         kEmail, signin::ConsentLevel::kSignin);
   }
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   void SignInWithSyncConsent() {
@@ -98,7 +98,7 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_impl_bundle_.identity_test_env()->WaitForRefreshTokensLoaded();
   }
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   void SignInWithSyncConsentWithoutRefreshToken() {

@@ -111,7 +111,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 // NOTE: See disclaimer at top of file re: direct usage.
 // NOTE:`ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
 // documentation.
-// TODO(crbug.com/1462978): remove this function once `ConsentLevel::kSync` is
+// TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

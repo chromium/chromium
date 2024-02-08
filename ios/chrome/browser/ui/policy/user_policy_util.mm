@@ -76,7 +76,7 @@ bool CanFetchUserPolicy(AuthenticationService* authService,
     return false;
   }
 
-  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // TODO(crbug.com/40066949): Remove kSync usage after users are migrated to
   // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
 
   bool enabled_for_sync =

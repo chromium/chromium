@@ -447,7 +447,7 @@ base::Value::Dict ConstructAboutInformation(
                    /*is_good=*/user_actionable_error ==
                        SyncService::UserActionableError::kNone);
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
@@ -480,8 +480,8 @@ base::Value::Dict ConstructAboutInformation(
   }
   if (!is_local_sync_enabled_state) {
     username->Set(service->GetAccountInfo().email);
-    // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
-    // See ConsentLevel::kSync documentation for details.
+    // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is
+    // deleted. See ConsentLevel::kSync documentation for details.
     user_has_consent->Set(service->HasSyncConsent());
   }
 
@@ -502,7 +502,7 @@ base::Value::Dict ConstructAboutInformation(
           token_status.connection_status == CONNECTION_OK);
   last_synced->Set(
       GetLastSyncedTimeString(service->GetLastSyncedTimeForDebugging()));
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
   is_setup_complete->Set(
       service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());

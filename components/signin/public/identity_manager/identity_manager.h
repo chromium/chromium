@@ -171,7 +171,7 @@ class IdentityManager : public KeyedService,
   // documentation.
   // Returns a non-empty struct if the primary account exists and was granted
   // the required consent level.
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   // TODO(1046746): Update (./README.md).
   CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
@@ -185,7 +185,7 @@ class IdentityManager : public KeyedService,
   // account for sync.
   // Note that `ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
   // documentation.
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
@@ -678,7 +678,7 @@ class IdentityManager : public KeyedService,
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
 
-  // TODO(crbug.com/1462858): Remove this field once
+  // TODO(crbug.com/40067025): Remove this field once
   // kReplaceSyncPromosWithSignInPromos launches.
   const bool should_verify_scope_access_;
 

@@ -174,7 +174,7 @@ void SyncBasedUrlKeyedDataCollectionConsentHelper::OnSyncShutdown(
 
 void SyncBasedUrlKeyedDataCollectionConsentHelper::UpdateSyncDataTypeStates() {
   if (require_sync_feature_enabled_) {
-    // TODO(crbug.com/1462552): Find a replacement once IsSyncFeatureEnabled()
+    // TODO(crbug.com/40066949): Find a replacement once IsSyncFeatureEnabled()
     // starts always returning false.
     sync_feature_state_ =
         sync_service_ && sync_service_->IsSyncFeatureEnabled();

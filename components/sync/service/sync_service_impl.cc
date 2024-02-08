@@ -1121,7 +1121,7 @@ void SyncServiceImpl::OnActionableProtocolError(
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
-      // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+      // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
       // deleted from the codebase. See ConsentLevel::kSync documentation for
       // details.
       if (!IsLocalSyncEnabled() &&

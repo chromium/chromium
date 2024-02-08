@@ -513,7 +513,7 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   }
 
   auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/1462552): Remove this call once IsSyncFeatureEnabled()
+  // TODO(crbug.com/40066949): Remove this call once IsSyncFeatureEnabled()
   // is fully deprecated, see ConsentLevel::kSync documentation for details,
   // in components/signin/public/base/consent_level.h.
   return sync_service && sync_service->IsSyncFeatureEnabled() &&

@@ -215,7 +215,7 @@ std::string GetSigninStatusDescription(
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return "Not Signed In";
   } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // TODO(crbug.com/1462978): Delete when ConsentLevel::kSync is deleted from
+    // TODO(crbug.com/40067058): Delete when ConsentLevel::kSync is deleted from
     // the codebase. See ConsentLevel::kSync documentation for details.
     return "Signed In, Consented for Sync";
   } else {

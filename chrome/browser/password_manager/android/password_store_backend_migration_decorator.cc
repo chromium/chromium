@@ -22,7 +22,7 @@ namespace password_manager {
 
 namespace {
 
-// TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on Android.
+// TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on Android.
 using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 // Time in seconds by which the passwords migration from the built-in backend to
@@ -64,7 +64,7 @@ PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     CachePasswordSyncSettingOnStartup(syncer::SyncService* sync) {
   sync_service_ = sync;
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   password_sync_configured_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
@@ -74,7 +74,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     SyncStatusChangeApplied() {
   DCHECK(sync_service_);
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   password_sync_applied_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_);
@@ -85,13 +85,13 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   DCHECK(sync_service_ == sync);
 
   // Return early if the setting didn't change.
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (sync_util::IsSyncFeatureEnabledIncludingPasswords(sync) ==
       password_sync_configured_setting_) {
     return;
   }
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   password_sync_configured_setting_ =
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync);
@@ -113,7 +113,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     OnSyncCycleCompleted(syncer::SyncService* sync) {
   // Reenrollment check is made on the first sync cycle when password sync is
   // active.
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (!sync_util::IsSyncFeatureActiveIncludingPasswords(sync) ||
       !is_waiting_for_the_first_sync_cycle_) {
@@ -130,7 +130,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     return;
   }
 
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (sync_util::IsSyncFeatureActiveIncludingPasswords(sync)) {
     int reenrollment_attempts = prefs_->GetInteger(
@@ -338,7 +338,7 @@ void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
   if (!ShouldAttemptMigration(prefs_))
     return;
 
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
       !IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {

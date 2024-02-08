@@ -81,7 +81,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
 
 bool IsSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled()
+  // TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled()
   // is fully deprecated, see ConsentLevel::kSync documentation for details.
   return sync_service && sync_service->IsSyncFeatureEnabled() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(

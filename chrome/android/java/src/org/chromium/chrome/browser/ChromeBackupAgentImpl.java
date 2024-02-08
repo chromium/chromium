@@ -199,7 +199,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        // TODO(crbug.com/1462552): Remove syncAccount once UNO is launched, given the sync feature
+        // TODO(crbug.com/40066949): Remove syncAccount once UNO is launched, given the sync feature
         // and consent will disappear.
         final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
         final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();

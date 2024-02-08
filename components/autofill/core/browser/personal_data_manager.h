@@ -656,7 +656,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns true if Sync-the-feature is enabled and
   // UserSelectableType::kAutofill is among the user's selected data types.
-  // TODO(crbug.com/1462552): Remove this method once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Remove this method once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   bool IsSyncFeatureEnabledForAutofill() const;
 
