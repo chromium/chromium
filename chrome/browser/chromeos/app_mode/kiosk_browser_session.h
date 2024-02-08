@@ -65,9 +65,6 @@ class KioskBrowserSession {
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
 
-  // Replaces chrome::AttemptUserExit() by `closure`.
-  void SetAttemptUserExitForTesting(base::OnceClosure closure);
-
   Browser* GetSettingsBrowserForTesting();
   void SetOnHandleBrowserCallbackForTesting(
       base::RepeatingCallback<void(bool is_closing)> callback);

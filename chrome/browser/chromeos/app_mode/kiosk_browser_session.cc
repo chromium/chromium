@@ -247,11 +247,6 @@ void KioskBrowserSession::InitForWebKiosk(
   metrics_service_->RecordKioskSessionWebStarted();
 }
 
-void KioskBrowserSession::SetAttemptUserExitForTesting(
-    base::OnceClosure closure) {
-  attempt_user_exit_ = std::move(closure);
-}
-
 void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(
     base::RepeatingCallback<void(bool is_closing)> callback) {
   on_handle_browser_callback_ = std::move(callback);

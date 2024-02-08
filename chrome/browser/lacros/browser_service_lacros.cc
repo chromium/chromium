@@ -666,11 +666,6 @@ void BrowserServiceLacros::NewFullscreenWindowWithProfile(
 
   browser->window()->Show();
 
-  if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
-      crosapi::mojom::SessionType::kWebKioskSession) {
-    KioskSessionServiceLacros::Get()->InitWebKioskSession(browser, url);
-  }
-
   // Report a success result to ash. Please note that showing Lacros window is
   // asynchronous. Ash-chrome should use the `exo::WMHelper` class rather than
   // this callback method call to track window creation status.
