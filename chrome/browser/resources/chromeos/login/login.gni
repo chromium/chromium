@@ -117,7 +117,7 @@ common_screens_js_files = [
   "screens/common/marketing_opt_in.ts",
   "screens/common/multidevice_setup.ts",
   "screens/common/offline_ad_login.ts",
-  "screens/common/online_authentication_screen.js",
+  "screens/common/online_authentication_screen.ts",
   "screens/common/oobe_reset.ts",
   "screens/common/os_install.ts",
   "screens/common/os_trial.ts",

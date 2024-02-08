@@ -9,8 +9,8 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -18,68 +18,52 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 
 import {getTemplate} from './online_authentication_screen.html.js';
 
-
-
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const DialogMode = {
-  LOADING: 'loading',
-};
+enum DialogMode {
+  LOADING = 'loading',
+}
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
 const OnlineAuthenticationScreenElementBase = mixinBehaviors(
-  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+  [LoginScreenBehavior, MultiStepBehavior, OobeI18nBehavior],
+  PolymerElement) as { new (): PolymerElement
+    & LoginScreenBehaviorInterface
+    & MultiStepBehaviorInterface
+    & OobeI18nBehaviorInterface,
+  };
 
-
-/**
- * @polymer
- */
-class OnlineAuthenticationScreenElement extends OnlineAuthenticationScreenElementBase {
+export class OnlineAuthenticationScreenElement extends OnlineAuthenticationScreenElementBase {
   static get is() {
-    return 'online-authentication-screen-element';
+    return 'online-authentication-screen-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-    };
+  static get properties(): PolymerElementProperties {
+    return {};
   }
 
-  get EXTERNAL_API() {
-    return [];
-  }
-
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return DialogMode.LOADING;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return DialogMode;
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.initializeLoginScreen('OnlineAuthenticationScreen');
   }
+}
 
-  /**
-   * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload
-   */
-  onBeforeShow() {
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnlineAuthenticationScreenElement.is]: OnlineAuthenticationScreenElement;
   }
 }
 
