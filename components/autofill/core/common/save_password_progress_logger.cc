@@ -65,10 +65,7 @@ void SavePasswordProgressLogger::LogFormData(
   message += GetStringFromID(STRING_FORM_NAME) + ": " +
              ScrubElementID(form_data.name) + "\n";
 
-  message += GetStringFromID(STRING_IS_FORM_TAG) + ": " +
-             (form_data.is_form_tag ? "true" : "false") + "\n";
-
-  if (form_data.is_form_tag) {
+  if (!form_data.renderer_id.is_null()) {
     message +=
         "Form renderer id: " + NumberToString(form_data.renderer_id.value()) +
         "\n";

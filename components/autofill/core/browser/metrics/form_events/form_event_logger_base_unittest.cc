@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -570,7 +571,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
 
   // Set the form to appear outside a <form> tag, which means it is not eligible
   // for the email heuristic only metric.
-  form_.is_form_tag = false;
+  form_.renderer_id = FormRendererId();
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);

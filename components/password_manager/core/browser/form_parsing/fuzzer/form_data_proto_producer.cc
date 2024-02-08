@@ -34,7 +34,6 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
 
   result.id_attribute = UTF8ToUTF16(form_proto.id());
   result.name_attribute = UTF8ToUTF16(form_proto.name());
-  result.is_form_tag = form_proto.is_form_tag();
   result.name = UTF8ToUTF16(form_proto.name());
   result.action = GURL(form_proto.action());
   result.url = GURL(form_proto.origin());

@@ -762,7 +762,6 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   form_data.host_frame = autofill::LocalFrameToken(
       base::UnguessableToken::CreateForTesting(98765, 43210));
   form_data.renderer_id = FormRendererId(42);
-  form_data.is_form_tag = true;
   form_on_page.form_data = form_data;
   form_on_page.username_element_renderer_id = FieldRendererId(123);
   form_on_page.password_element_renderer_id = FieldRendererId(456);
@@ -799,7 +798,6 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
 
   FormData form_data;
   form_data.renderer_id = FormRendererId(42);
-  form_data.is_form_tag = true;
   form_on_page.form_data = form_data;
 
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));

@@ -619,7 +619,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   upload.set_form_signature(form.form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
-  upload.set_has_form_tag(form.is_form_tag());
+  upload.set_has_form_tag(form.is_form_element());
   if (!form.current_page_language()->empty() &&
       form.randomized_encoder().has_value()) {
     upload.set_language(form.current_page_language().value());

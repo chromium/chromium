@@ -658,7 +658,6 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   form.name = '';
   form.origin = gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
   form.action = '';
-  form.is_form_tag = false;
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
     // TODO(crbug.com/1440471): Pass iframe elements.

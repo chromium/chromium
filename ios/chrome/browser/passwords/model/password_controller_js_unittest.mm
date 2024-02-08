@@ -1330,8 +1330,7 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
   auto expected_form = base::Value::Dict()
                            .Set("name", "")
                            .Set("origin", BaseUrl())
-                           .Set("action", "")
-                           .Set("is_form_tag", false);
+                           .Set("action", "");
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"1", /*contole_type=*/"text",
                   /*identifier=*/"gChrome~field~~INPUT~0", /*value=*/"",

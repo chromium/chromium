@@ -4677,7 +4677,7 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
   // Create FormdData for a form with 1 password field and process it.
   FormData form_data;
-  form_data.is_form_tag = false;
+  form_data.renderer_id = FormRendererId();
   form_data.url = GURL("http://www.testwebsite.com");
 
   FormFieldData old_password_field;
@@ -4724,20 +4724,19 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 }
 
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
-  base::test::ScopedFeatureList feature_list;
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
 
   // Create FormData for a form with 3 password fields and process it.
   FormData form_data;
-  form_data.renderer_id = FormRendererId(0);
+  form_data.renderer_id = FormRendererId(1);
   form_data.url = test_form_url_;
 
   FormFieldData old_password_field;
   old_password_field.form_control_type =
       autofill::FormControlType::kInputPassword;
-  old_password_field.renderer_id = FieldRendererId(1);
+  old_password_field.renderer_id = FieldRendererId(2);
   old_password_field.name = u"oldpass";
   old_password_field.value = u"oldpass";
   form_data.fields.push_back(old_password_field);
@@ -4745,7 +4744,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   FormFieldData new_password_field;
   new_password_field.form_control_type =
       autofill::FormControlType::kInputPassword;
-  new_password_field.renderer_id = FieldRendererId(2);
+  new_password_field.renderer_id = FieldRendererId(3);
   new_password_field.name = u"newpass";
   new_password_field.autocomplete_attribute = "new-password";
   form_data.fields.push_back(new_password_field);
@@ -4753,7 +4752,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   FormFieldData confirm_password_field;
   confirm_password_field.form_control_type =
       autofill::FormControlType::kInputPassword;
-  confirm_password_field.renderer_id = FieldRendererId(3);
+  confirm_password_field.renderer_id = FieldRendererId(4);
   confirm_password_field.name = u"confpass";
   form_data.fields.push_back(confirm_password_field);
 
@@ -4813,19 +4812,18 @@ TEST_P(PasswordManagerTest,
 // Similar test as above with fields that have empty names.
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   constexpr char16_t kEmptyName[] = u"";
-  base::test::ScopedFeatureList feature_list;
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
 
   FormData form_data;
-  form_data.renderer_id = FormRendererId(0);
+  form_data.renderer_id = FormRendererId(1);
   form_data.url = test_form_url_;
 
   FormFieldData old_password_field;
   old_password_field.form_control_type =
       autofill::FormControlType::kInputPassword;
-  old_password_field.renderer_id = FieldRendererId(1);
+  old_password_field.renderer_id = FieldRendererId(2);
   old_password_field.name = kEmptyName;
   old_password_field.value = u"oldpass";
   form_data.fields.push_back(old_password_field);
@@ -4833,7 +4831,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   FormFieldData new_password_field;
   new_password_field.form_control_type =
       autofill::FormControlType::kInputPassword;
-  new_password_field.renderer_id = FieldRendererId(2);
+  new_password_field.renderer_id = FieldRendererId(3);
   new_password_field.name = kEmptyName;
   new_password_field.autocomplete_attribute = "new-password";
   form_data.fields.push_back(new_password_field);
@@ -4853,7 +4851,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
 }
 
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
-  base::test::ScopedFeatureList feature_list;
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -4864,7 +4861,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 
     // Create FormData for a form with 1 password field and process it.
     FormData form_data;
-    form_data.is_form_tag = false;
     form_data.renderer_id = FormRendererId(0);
     form_data.url = test_form_url_;
 
@@ -4920,7 +4916,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 // Similar test as above with fields that have empty names.
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
   constexpr char16_t kEmptyName[] = u"";
-  base::test::ScopedFeatureList feature_list;
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -4931,7 +4926,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
 
     // Create FormData for a form with 1 password field and process it.
     FormData form_data;
-    form_data.is_form_tag = false;
     form_data.renderer_id = FormRendererId(0);
     form_data.url = test_form_url_;
 

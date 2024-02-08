@@ -67,7 +67,7 @@ FormData CreateTestForm() {
   f.id_attribute = u"form_id";
   f.url = GURL("https://foo.com");
   f.action = GURL("https://bar.com");
-  f.is_form_tag = true;
+  f.renderer_id = test::MakeFormRendererId();
   return f;
 }
 
@@ -117,6 +117,7 @@ class FormDataAndroidTest : public ::testing::Test {
   MockFormDataAndroidBridge& form_bridge() { return *form_bridge_; }
 
  private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::vector<MockFormFieldDataAndroidBridge*> field_bridges_;
   raw_ptr<MockFormDataAndroidBridge> form_bridge_;
 };
@@ -133,7 +134,7 @@ TEST_F(FormDataAndroidTest, Form) {
 }
 
 // Tests that form similarity checks include name, name_attribute, id_attribute,
-// url, action, and is_form_tag.
+// url, and action.
 // Similarity checks are used to determine whether a web page has modified a
 // field significantly enough to warrant restarting an ongoing Autofill session,
 // e.g., because their change would lead to a change in type predictions. As a
@@ -141,8 +142,8 @@ TEST_F(FormDataAndroidTest, Form) {
 // are unlikely to have been superficial dynamic changes by Javascript on the
 // website.
 TEST_F(FormDataAndroidTest, SimilarFormAs) {
-  FormDataAndroid af(CreateTestForm(), kSampleSessionId);
   FormData f = CreateTestForm();
+  FormDataAndroid af(f, kSampleSessionId);
 
   // If forms are the same, they are similar.
   EXPECT_TRUE(af.SimilarFormAs(f));
@@ -169,11 +170,6 @@ TEST_F(FormDataAndroidTest, SimilarFormAs) {
   // If actions differ, they are not similar.
   f = af.form();
   f.action = GURL("https://other.com");
-  EXPECT_FALSE(af.SimilarFormAs(f));
-
-  // If is_form_tag differs, they are not similar.
-  f = af.form();
-  f.is_form_tag = !f.is_form_tag;
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // If their global ids differ, they are not similar.
@@ -216,8 +212,8 @@ TEST_F(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
     return SimilarityCheckResult((base::to_underlying(components) | ...));
   };
 
-  FormDataAndroid af(CreateTestForm(), kSampleSessionId);
   FormData f = CreateTestForm();
+  FormDataAndroid af(f, kSampleSessionId);
 
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             FormDataAndroid::kFormsAreSimilar);
@@ -251,11 +247,6 @@ TEST_F(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
   f.action = GURL("https://other.com");
   EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
             to_check_result(SimilarityCheckComponent::kAction));
-
-  f = af.form();
-  f.is_form_tag = !f.is_form_tag;
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kIsFormTag));
 
   f = af.form();
   f.name_attribute = af.form().name_attribute + u"x";

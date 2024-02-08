@@ -399,7 +399,6 @@ class PasswordFormManagerTest : public testing::Test,
     observed_form_.action = action;
     observed_form_.name = u"sign-in";
     observed_form_.renderer_id = FormRendererId(1);
-    observed_form_.is_form_tag = true;
 
     observed_form_only_password_fields_ = observed_form_;
 
@@ -651,7 +650,6 @@ TEST_P(PasswordFormManagerTest, DoesManage) {
   EXPECT_FALSE(
       form_manager_->DoesManage(observed_form_.renderer_id, &another_driver));
   FormData another_form = observed_form_;
-  another_form.is_form_tag = false;
   another_form.renderer_id = FormRendererId();
   EXPECT_FALSE(form_manager_->DoesManage(another_form.renderer_id, &driver_));
 
@@ -662,7 +660,7 @@ TEST_P(PasswordFormManagerTest, DoesManage) {
 }
 
 TEST_P(PasswordFormManagerTest, DoesManageNoFormTag) {
-  observed_form_.is_form_tag = false;
+  observed_form_.renderer_id = FormRendererId();
   CreateFormManager(observed_form_);
 
   FormData another_form = observed_form_;

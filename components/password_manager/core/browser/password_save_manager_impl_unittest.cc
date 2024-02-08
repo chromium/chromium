@@ -209,7 +209,6 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     observed_form_.action = action;
     observed_form_.name = u"sign-in";
     observed_form_.renderer_id = autofill::FormRendererId(1);
-    observed_form_.is_form_tag = true;
 
     observed_form_only_password_fields_ = observed_form_;
 

@@ -620,7 +620,7 @@ void PasswordManager::OnPasswordFormCleared(
     return;
   }
   // If a password form was cleared, login is successful.
-  if (form_data.is_form_tag) {
+  if (!form_data.renderer_id.is_null()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();

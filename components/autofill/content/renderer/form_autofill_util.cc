@@ -1353,7 +1353,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     if (form_element.IsNull()) {
       DCHECK(form.renderer_id.is_null());
       DCHECK(form.main_frame_origin.opaque());
-      form.is_form_tag = false;
       form.is_action_empty = true;
       return form;
     }
@@ -2151,7 +2150,6 @@ std::optional<FormData> FindFormForContentEditable(
   form.name_attribute = GetAttribute<kName>(content_editable).Utf16();
   form.name =
       !form.id_attribute.empty() ? form.id_attribute : form.name_attribute;
-  form.is_form_tag = false;
   form.is_action_empty = true;
   form.fields.emplace_back();
 

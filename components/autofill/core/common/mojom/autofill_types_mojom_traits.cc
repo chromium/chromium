@@ -296,8 +296,6 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     return false;
   out->is_action_empty = data.is_action_empty();
 
-  out->is_form_tag = data.is_form_tag();
-
   if (!data.ReadRendererId(&out->renderer_id)) {
     return false;
   }

@@ -18,6 +18,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame.h"
@@ -193,12 +194,13 @@ void VerifyNoSubmitMessagesReceived(
   EXPECT_EQ(nullptr, fake_driver.form_submitted());
 }
 
+// TODO(crbug.com/1522821): Update.
 FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   FormData data;
   data.name = u"name";
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
-  data.is_form_tag = true;  // Default value.
+  data.renderer_id = test::MakeFormRendererId();  // Default value.
 
   WebDocument document = main_frame->GetDocument();
   WebFormControlElement fname_element =
@@ -271,11 +273,12 @@ void SimulateFillFormWithNonFillableFields(
           .To<WebFormControlElement>();
   ASSERT_FALSE(lname_element.IsNull());
 
+  // TODO(crbug.com/1522821): Update.
   FormData form;
   form.name = u"name";
   form.url = GURL("http://example.com/");
   form.action = GURL("http://example.com/blade.php");
-  form.is_form_tag = true;  // Default value.
+  form.renderer_id = test::MakeFormRendererId();  // Default value.
 
   FormFieldData field;
   field.name = u"fname";
@@ -350,6 +353,7 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
   }
 
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   FakeContentAutofillDriver fake_driver_;
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
 };

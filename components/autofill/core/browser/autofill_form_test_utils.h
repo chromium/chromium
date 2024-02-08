@@ -75,7 +75,6 @@ struct FormDescription {
   const std::string url = kFormUrl;
   const std::string action = kFormActionUrl;
   std::optional<url::Origin> main_frame_origin;
-  bool is_form_tag = true;
 };
 
 // Flags determining whether the corresponding check should be run on the test

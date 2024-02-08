@@ -92,7 +92,6 @@ TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormData) {
   EXPECT_TRUE(logger.LogsContainSubstring("Origin: http://myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Action: http://m.myform.com"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form name: form_name"));
-  EXPECT_TRUE(logger.LogsContainSubstring("Form with form tag: true"));
   EXPECT_TRUE(logger.LogsContainSubstring("Form fields:"));
   EXPECT_TRUE(logger.LogsContainSubstring(
       "password: signature=2051817934, type=password, renderer_id=10, "

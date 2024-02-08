@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -711,7 +712,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
-  form.is_form_tag = true;
+  form.renderer_id = test::MakeFormRendererId();
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText, "given-name"),
@@ -818,7 +819,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   std::vector<FieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
   form.url = GURL("http://www.foo.com/");
-  form.is_form_tag = true;
+  form.renderer_id = test::MakeFormRendererId();
 
   form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
                                             FormControlType::kInputText,
@@ -1217,9 +1218,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                              {.label = u"First Name", .name = u"first"},
                              {.label = u"Last Name", .name = u"last"},
                              {.label = u"Email", .name = u"email"},
-
                          }});
-
   FormStructure form_structure(form);
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
   for (auto& fs_field : form_structure) {
@@ -1455,7 +1454,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                     {.label = u"First Name", .name = u"first"},
                                     {.label = u"Last Name", .name = u"last"},
                                     {.label = u"Address", .name = u"address"}},
-                         .is_form_tag = false});
+                         .renderer_id = FormRendererId()});
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
   test::InitializePossibleTypesAndValidities(
@@ -1568,9 +1567,10 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_IsFormTag) {
   for (bool is_form_tag : {false, true}) {
-    SCOPED_TRACE(testing::Message() << "is_form_tag=" << is_form_tag);
     FormData form = test::GetFormData(
-        {.fields = {{.name = u"email"}}, .is_form_tag = is_form_tag});
+        {.fields = {{.name = u"email"}},
+         .renderer_id =
+             is_form_tag ? test::MakeFormRendererId() : FormRendererId()});
 
     FormStructure form_structure(form);
     for (auto& fs_field : form_structure) {

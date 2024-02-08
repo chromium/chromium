@@ -124,7 +124,6 @@ FormStructure::FormStructure(const FormData& form)
       full_source_url_(form.full_url),
       target_url_(form.action),
       main_frame_origin_(form.main_frame_origin),
-      is_form_tag_(form.is_form_tag),
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(base::TimeTicks::Now()),
       host_frame_(form.host_frame),
@@ -666,17 +665,17 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
   FieldCandidatesMap field_type_map;
 
   if (ShouldRunHeuristics()) {
-    FormFieldParser::ParseFormFields(context, fields_, is_form_tag_,
+    FormFieldParser::ParseFormFields(context, fields_, is_form_element(),
                                      field_type_map);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormFieldParser::ParseSingleFieldForms(context, fields_, is_form_tag_,
+    FormFieldParser::ParseSingleFieldForms(context, fields_, is_form_element(),
                                            field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields inside a form tag, allow heuristics even
     // when the minimum number of fields is not met. See similar comments
     // in `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    if (is_form_tag_ &&
+    if (is_form_element() &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
       FormFieldParser::ParseStandaloneEmailFields(context, fields_,
@@ -749,6 +748,14 @@ size_t FormStructure::active_field_count() const {
   return active_field_count_;
 }
 
+bool FormStructure::is_form_element() const {
+  return !renderer_id_.is_null() ||
+         (!fields_.empty() &&
+          fields_.begin()->get()->form_control_type ==
+              FormControlType::kContentEditable &&
+          *fields_.begin()->get()->renderer_id == *renderer_id_);
+}
+
 FormData FormStructure::ToFormData() const {
   FormData data;
   data.id_attribute = id_attribute_;
@@ -759,7 +766,6 @@ FormData FormStructure::ToFormData() const {
   data.full_url = full_source_url_;
   data.action = target_url_;
   data.main_frame_origin = main_frame_origin_;
-  data.is_form_tag = is_form_tag_;
   data.renderer_id = renderer_id_;
   data.host_frame = host_frame_;
   data.version = version_;
