@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_PICKER_PICKER_CLIENT_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -20,6 +25,10 @@ class SearchEngine;
 
 namespace ash {
 class PickerController;
+}
+
+namespace aura {
+class Window;
 }
 
 namespace user_manager {
@@ -52,6 +61,29 @@ class PickerClientImpl
   void ActiveUserChanged(user_manager::User* active_user) override;
 
  private:
+  // Implements `AppListControllerDelegate` with empty methods. Used only for
+  // constructing search engine providers.
+  class PickerAppListControllerDelegate : public AppListControllerDelegate {
+   public:
+    PickerAppListControllerDelegate();
+    ~PickerAppListControllerDelegate() override;
+
+    // AppListControllerDelegate overrides:
+    void DismissView() override;
+    aura::Window* GetAppListWindow() override;
+    int64_t GetAppListDisplayId() override;
+    bool IsAppPinned(const std::string& app_id) override;
+    bool IsAppOpen(const std::string& app_id) const override;
+    void PinApp(const std::string& app_id) override;
+    void UnpinApp(const std::string& app_id) override;
+    Pinnable GetPinnable(const std::string& app_id) override;
+    void CreateNewWindow(bool incognito,
+                         bool should_trigger_session_restore) override;
+    void OpenURL(Profile* profile,
+                 const GURL& url,
+                 ui::PageTransition transition,
+                 WindowOpenDisposition disposition) override;
+  };
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
@@ -59,6 +91,7 @@ class PickerClientImpl
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
+  PickerAppListControllerDelegate app_list_controller_delegate_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

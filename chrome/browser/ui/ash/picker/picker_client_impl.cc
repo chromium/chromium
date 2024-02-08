@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,8 +15,14 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_web_view_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -24,6 +31,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -164,4 +173,77 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   profile_ = profile;
 
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    search_engine_->AddProvider(
+        std::make_unique<app_list::OmniboxLacrosProvider>(
+            profile_, &app_list_controller_delegate_,
+            crosapi::CrosapiManager::Get()));
+  } else {
+    search_engine_->AddProvider(std::make_unique<app_list::OmniboxProvider>(
+        profile_, &app_list_controller_delegate_));
+  }
+}
+
+PickerClientImpl::PickerAppListControllerDelegate::
+    PickerAppListControllerDelegate() = default;
+PickerClientImpl::PickerAppListControllerDelegate::
+    ~PickerAppListControllerDelegate() = default;
+
+void PickerClientImpl::PickerAppListControllerDelegate::DismissView() {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+aura::Window*
+PickerClientImpl::PickerAppListControllerDelegate::GetAppListWindow() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+}
+
+int64_t
+PickerClientImpl::PickerAppListControllerDelegate::GetAppListDisplayId() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return 0;
+}
+
+bool PickerClientImpl::PickerAppListControllerDelegate::IsAppPinned(
+    const std::string& app_id) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+bool PickerClientImpl::PickerAppListControllerDelegate::IsAppOpen(
+    const std::string& app_id) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+void PickerClientImpl::PickerAppListControllerDelegate::PinApp(
+    const std::string& app_id) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void PickerClientImpl::PickerAppListControllerDelegate::UnpinApp(
+    const std::string& app_id) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+AppListControllerDelegate::Pinnable
+PickerClientImpl::PickerAppListControllerDelegate::GetPinnable(
+    const std::string& app_id) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return AppListControllerDelegate::NO_PIN;
+}
+
+void PickerClientImpl::PickerAppListControllerDelegate::CreateNewWindow(
+    bool incognito,
+    bool should_trigger_session_restore) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void PickerClientImpl::PickerAppListControllerDelegate::OpenURL(
+    Profile* profile,
+    const GURL& url,
+    ui::PageTransition transition,
+    WindowOpenDisposition disposition) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
