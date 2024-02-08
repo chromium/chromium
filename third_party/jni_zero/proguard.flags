@@ -12,8 +12,3 @@
 -keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.jni_zero.CalledByNativeUnchecked <methods>;
 }
-
-# Allow unused native methods to be removed, but prevent renaming on those that are kept.
--keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class org.jni_zero.*,J.N,J.*_N {
-  native <methods>;
-}
