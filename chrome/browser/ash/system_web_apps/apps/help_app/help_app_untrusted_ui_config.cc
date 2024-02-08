@@ -110,6 +110,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
+    source->AddBoolean("AppInstallServiceUri",
+                       chromeos::features::IsAppInstallServiceUriEnabled());
   }
 
   Profile* profile = Profile::FromWebUI(web_ui);
