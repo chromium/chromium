@@ -208,7 +208,8 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
     const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
     AppendCookieToVectorIfMatchAndHasHostPermission(
         cookie, details, extension, match_vector,
-        net::CookiePartitionKeyCollection());
+        CookiePartitionKeyCollectionFromApiPartitionKey(
+            details->partition_key));
   }
 }
 
