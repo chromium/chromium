@@ -830,8 +830,20 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     combined_results.set_result(response.result());
 
     for (const auto& scanner : response.scanners()) {
-      if (ShouldIncludeScanner(scanner, local_only, secure_only)) {
-        *combined_results.add_scanners() = scanner;
+      if (!ShouldIncludeScanner(scanner, local_only, secure_only)) {
+        continue;
+      }
+
+      lorgnette::ScannerInfo* scanner_out = combined_results.add_scanners();
+      *scanner_out = scanner;
+
+      for (Scanner& zeroconf_scanner : zeroconf_scanners_) {
+        if (MergeDuplicateScannerRecords(scanner_out, zeroconf_scanner)) {
+          PRINTER_LOG(DEBUG)
+              << "Updating " << scanner.name() << ": " << scanner.display_name()
+              << " -> " << scanner_out->display_name();
+          break;
+        }
       }
     }
 
