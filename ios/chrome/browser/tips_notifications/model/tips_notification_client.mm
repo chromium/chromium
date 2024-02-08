@@ -10,7 +10,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -22,7 +21,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -269,10 +268,8 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() {
 void TipsNotificationClient::ShowDefaultBrowserPromo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
-  [HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands)
-      showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:DefaultBrowserPromoSource::
-                                                       kTipsNotification];
+  [HandlerForProtocol(browser->GetCommandDispatcher(), PromosManagerCommands)
+      maybeDisplayDefaultBrowserPromo];
 }
 
 void TipsNotificationClient::ShowWhatsNew() {

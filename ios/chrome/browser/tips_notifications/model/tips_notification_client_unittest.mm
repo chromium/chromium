@@ -8,7 +8,6 @@
 
 #import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
-#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
@@ -20,7 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -183,14 +182,11 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
 
 // Tests that the client handles a Default Browser notification response.
 TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
-  id mock_handler = OCMProtocolMock(@protocol(SettingsCommands));
-  OCMExpect([mock_handler
-      showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:DefaultBrowserPromoSource::
-                                                       kTipsNotification]);
+  id mock_handler = OCMProtocolMock(@protocol(PromosManagerCommands));
+  OCMExpect([mock_handler maybeDisplayDefaultBrowserPromo]);
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_handler
-                   forProtocol:@protocol(SettingsCommands)];
+                   forProtocol:@protocol(PromosManagerCommands)];
 
   id mock_response = MockRequestResponse(TipsNotificationType::kDefaultBrowser);
   client_->HandleNotificationInteraction(mock_response);
