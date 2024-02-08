@@ -70,6 +70,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   content::WebContents* GetActiveWebContents();
 
+  // For OOPIF PDF viewer, returns the active `WebContents`, as there is only a
+  // single `WebContents`. For GuestView PDF viewer, returns the embedder
+  // `WebContents`.
+  content::WebContents* GetEmbedderWebContents();
+
  protected:
   guest_view::TestGuestViewManager* GetGuestViewManager(
       content::BrowserContext* profile = nullptr);

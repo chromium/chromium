@@ -168,6 +168,19 @@ WebContents* PDFExtensionTestBase::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
+content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
+  content::WebContents* contents = GetActiveWebContents();
+
+  // OOPIF PDF viewer only has a single `WebContents`.
+  if (UseOopif()) {
+    return contents;
+  }
+
+  MimeHandlerViewGuest* guest =
+      pdf_extension_test_util::GetOnlyMimeHandlerView(contents);
+  return guest ? guest->embedder_web_contents() : nullptr;
+}
+
 TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager(
     content::BrowserContext* profile) {
   if (!profile) {

@@ -1110,13 +1110,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithNoTitle) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
-  EXPECT_EQ(u"test.pdf", guest_view->GetController()
-                             .GetLastCommittedEntry()
-                             ->GetTitleForDisplay());
-  EXPECT_EQ(u"test.pdf", GetActiveWebContents()->GetTitle());
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  const std::u16string kExpectedTitle = u"test.pdf";
+  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()->GetTitle());
 }
 
 // This test ensures that titles are set properly for PDFs with /Title.
@@ -1126,17 +1127,19 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithTitle) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-title.pdf"));
-  ASSERT_TRUE(guest_view);
-  EXPECT_EQ(u"PDF title test", guest_view->GetController()
-                                   .GetLastCommittedEntry()
-                                   ->GetTitleForDisplay());
-  EXPECT_EQ(u"PDF title test", GetActiveWebContents()->GetTitle());
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-title.pdf")));
+
+  const std::u16string kExpectedTitle = u"PDF title test";
+  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()->GetTitle());
 }
 
-// This test ensures that titles are set properly for embedded PDFs with /Title.
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
+// This test ensures that titles are set properly for embedded PDFs (using data
+// URL). PDF /Title should be ignored for embedded PDFs.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdfDataUrl) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -1152,6 +1155,19 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
       "\"></body></html>";
   ASSERT_TRUE(LoadPdf(GURL(data_url)));
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
+}
+
+// This test ensures that tab titles are set properly for embedded PDFs.
+// PDF /Title should be ignored for embedded PDFs.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  EXPECT_EQ(u"TabWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
 
 // Flaky, http://crbug.com/767427
