@@ -240,10 +240,6 @@
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #endif
@@ -649,12 +645,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // being turned on, even if it is not enabled yet.
   if (!profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
-  }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile)) {
-    screentime::TabHelper::CreateForWebContents(web_contents);
   }
 #endif
 

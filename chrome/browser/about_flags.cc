@@ -302,7 +302,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -8000,12 +7999,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExoSurroundingTextOffsetDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kExoSurroundingTextOffset)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_MAC)
-    {"screentime", flag_descriptions::kScreenTimeName,
-     flag_descriptions::kScreenTimeDescription, kOsMac,
-     FEATURE_VALUE_TYPE(screentime::kScreenTime)},
-#endif
 
     {"enable-heavy-ad-intervention",
      flag_descriptions::kHeavyAdInterventionName,

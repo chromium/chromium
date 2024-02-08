@@ -405,10 +405,6 @@
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/cocoa/screentime/history_bridge_factory.h"
-#include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1118,11 +1114,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   screen_ai::AXScreenAIAnnotatorFactory::EnsureFactoryBuilt();
   screen_ai::PdfOcrControllerFactory::GetInstance();
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
-#endif
-#if BUILDFLAG(IS_MAC)
-  if (screentime::IsScreenTimeEnabled()) {
-    screentime::HistoryBridgeFactory::GetInstance();
-  }
 #endif
   SCTReportingServiceFactory::GetInstance();
   search_engines::SearchEngineChoiceServiceFactory::GetInstance();
