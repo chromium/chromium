@@ -51,10 +51,6 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
@@ -275,7 +271,7 @@ void WebAppControllerBrowserTest::TearDownOnMainThread() {
     test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+  if (IsCrosapiEnabled()) {
     // Make sure all ash browser UI are closed before the test tears down.
     CloseAllAshBrowserWindows();
   }
@@ -292,7 +288,7 @@ void WebAppControllerBrowserTest::SetUpCommandLine(
 
 void WebAppControllerBrowserTest::SetUpOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::IsCrosapiDisabledForTesting()) {
+  if (IsCrosapiEnabled()) {
     CHECK(IsWebAppsCrosapiEnabled());
   }
 #endif
