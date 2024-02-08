@@ -249,57 +249,14 @@ void ApplicationContextImpl::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!tearing_down_);
 
-  // Tell the metrics services that the application resumes.
-  PrefService* local_state = GetLocalState();
-  metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service && local_state) {
-    metrics_service->OnAppEnterForeground();
-    local_state->CommitPendingWrite();
-  }
-
-  variations::VariationsService* variations_service = GetVariationsService();
-  if (variations_service) {
-    variations_service->OnAppEnterForeground();
-  }
-  ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service) {
-    ukm_service->OnAppEnterForeground();
-  }
+  OnAppEnterState(AppState::kForeground);
 }
 
 void ApplicationContextImpl::OnAppEnterBackground() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!tearing_down_);
 
-  // Mark all the ChromeBrowserStates as clean and persist history.
-  std::vector<ChromeBrowserState*> loaded_browser_state =
-      GetChromeBrowserStateManager()->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browser_state : loaded_browser_state) {
-    if (history::HistoryService* history_service =
-            ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-                browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
-      history_service->HandleBackgrounding();
-    }
-
-    PrefService* browser_state_prefs = browser_state->GetPrefs();
-    if (browser_state_prefs) {
-      browser_state_prefs->CommitPendingWrite();
-    }
-  }
-
-  // Tell the metrics services they were cleanly shutdown.
-  metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service) {
-    metrics_service->OnAppEnterBackground(
-        /*keep_recording_in_background=*/true);
-  }
-  ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service) {
-    ukm_service->OnAppEnterBackground();
-  }
-
-  // Persisting to disk is protected by a critical task, so no other special
-  // handling is necessary on iOS.
+  OnAppEnterState(AppState::kBackground);
 }
 
 bool ApplicationContextImpl::WasLastShutdownClean() {
@@ -555,6 +512,90 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
+}
+
+void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!tearing_down_);
+
+  // Tell the metrics services that the application state changes (taking
+  // care not to create the services if they have not been created yet).
+  if (metrics_services_manager_) {
+    if (metrics::MetricsService* metrics_service =
+            metrics_services_manager_->GetMetricsService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          metrics_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          metrics_service->OnAppEnterBackground();
+          break;
+      }
+    }
+
+    if (variations::VariationsService* variations_service =
+            metrics_services_manager_->GetVariationsService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          variations_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          // Nothing to do for VariationsService when entering background.
+          break;
+      }
+    }
+
+    if (ukm::UkmService* ukm_service =
+            metrics_services_manager_->GetUkmService()) {
+      switch (app_state) {
+        case AppState::kForeground:
+          ukm_service->OnAppEnterForeground();
+          break;
+
+        case AppState::kBackground:
+          ukm_service->OnAppEnterBackground();
+          break;
+      }
+    }
+  }
+
+  // Request saving the local state prefs and all loaded ChromeBrowserStates'
+  // prefs (taking care not to create the objects if they have not been created
+  // yet).
+  if (chrome_browser_state_manager_) {
+    std::vector<ChromeBrowserState*> loaded_browser_states =
+        chrome_browser_state_manager_->GetLoadedBrowserStates();
+
+    for (ChromeBrowserState* browser_state : loaded_browser_states) {
+      switch (app_state) {
+        case AppState::kForeground:
+          // Nothing extra to do when entering foreground.
+          break;
+
+        case AppState::kBackground:
+          if (history::HistoryService* history_service =
+                  ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+                      browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
+            history_service->HandleBackgrounding();
+          }
+          break;
+      }
+
+      // No need to check that `GetPrefs()` returns non-null value since the
+      // ChromeBrowserState owns its PrefService and thus the method cannot
+      // return null.
+      browser_state->GetPrefs()->CommitPendingWrite();
+    }
+  }
+
+  if (local_state_) {
+    local_state_->CommitPendingWrite();
+  }
+
+  // Persisting to disk is protected by a critical task, so no other special
+  // handling is necessary on iOS.
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

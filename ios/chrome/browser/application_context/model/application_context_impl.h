@@ -86,6 +86,16 @@ class ApplicationContextImpl : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
 
  private:
+  // Represents the possible application states the app can be in.
+  enum class AppState {
+    kForeground,
+    kBackground,
+  };
+
+  // Helper method to implement the work required when transitioning between
+  // application states.
+  void OnAppEnterState(AppState app_state);
+
   // Sets the locale used by the application.
   void SetApplicationLocale(const std::string& locale);
 
