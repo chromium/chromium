@@ -520,10 +520,27 @@ void ProfileMenuView::BuildIdentity() {
             ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,
                                          base::UTF8ToUTF16(*account_manager))
             : std::u16string();
+
+    auto management_environment =
+        chrome::enterprise_util::GetManagementEnvironment(
+            profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                         identity_manager->GetPrimaryAccountId(
+                             signin::ConsentLevel::kSignin)));
+
+    const gfx::VectorIcon* badge = nullptr;
+    if (management_environment !=
+        chrome::enterprise_util::ManagementEnvironment::kNone) {
+      badge = &vector_icons::kBusinessIcon;
+    }
+
+    auto badge_image_model =
+        badge ? ui::ImageModel::FromVectorIcon(*badge, ui::kColorMenuIcon, 16)
+              : ui::ImageModel();
+
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
-        ui::ImageModel::FromImage(account_info.account_image), menu_title_,
-        menu_subtitle_, management_label_);
+        ui::ImageModel::FromImage(account_info.account_image),
+        badge_image_model, menu_title_, menu_subtitle_, management_label_);
   } else {
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
             switches::ExplicitBrowserSigninPhase::kExperimental) &&
@@ -546,7 +563,7 @@ void ProfileMenuView::BuildIdentity() {
             !account_info.IsEmpty()
                 ? account_info.account_image
                 : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
-        menu_title_, menu_subtitle_, management_label_);
+        ui::ImageModel(), menu_title_, menu_subtitle_, management_label_);
   }
 }
 
@@ -566,8 +583,9 @@ void ProfileMenuView::BuildGuestIdentity() {
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(), menu_title_,
-      menu_subtitle_, management_label_, header_art_icon);
+      /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
+      ui::ImageModel(), menu_title_, menu_subtitle_, management_label_,
+      header_art_icon);
 }
 
 void ProfileMenuView::BuildAutofillButtons() {
