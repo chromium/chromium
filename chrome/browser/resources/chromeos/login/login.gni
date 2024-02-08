@@ -19,7 +19,7 @@ unconditional_existing_files = [
   "cr_ui.js",
   "display_manager.js",
   "install_oobe_error_store.js",
-  "i18n_setup.js",
+  "i18n_setup.ts",
   "lazy_load_screens.js",
   "login_ui_tools.js",
   "multi_tap_detector.js",

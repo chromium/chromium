@@ -222,10 +222,6 @@ js_type_check("closure_compile_local") {
   ]
 }
 
-js_library("i18n_setup") {
-  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
-}
-
 js_library("cr_ui") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/cr_ui.js" ]
   deps = [
