@@ -317,6 +317,9 @@ crbug.com/1145858 [ fuchsia ] conformance/extensions/ext-disjoint-timer-query.ht
 # Causes the render process to hang
 crbug.com/1280692 [ fuchsia web-engine-shell ] conformance/context/context-creation-and-destruction.html [ Skip ]
 
+# Crashes on fuchsia-fyi-sherlock-qemu
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+
 # Linux Intel
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
 # be removed once upgraded to kernel 5.4.0-77 or later.
@@ -455,6 +458,30 @@ crbug.com/1489477 [ fuchsia ] conformance/textures/svg_image/tex-2d-luminance-lu
 
 # Anti-aliasing disabled on Fuchsia
 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+
+# Failures on fuchsia-fyi-sherlock-qemu
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-canvas.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texparameter-test.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-npot.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/gl-teximage.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-active-bind.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/line-loop-tri-fan.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/line-rendering-quality.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/more-than-65536-indices.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 ####################
 # Win failures     #
