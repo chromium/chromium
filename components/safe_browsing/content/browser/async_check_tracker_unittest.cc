@@ -49,6 +49,8 @@ class MockUIManager : public BaseUIManager {
   UnsafeResource displayed_resource_;
 };
 
+constexpr int kLocalNavigationTimestampsSizeThreshold = 5;
+
 }  // namespace
 
 class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
@@ -56,7 +58,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
  protected:
   AsyncCheckTrackerTest()
       : RenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+            content::BrowserTaskEnvironment::REAL_IO_THREAD,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     bool sb_on_ui_thread_enabled = GetParam();
     if (sb_on_ui_thread_enabled) {
       feature_list_.InitWithFeatures(
@@ -292,6 +295,80 @@ TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   // UnsafeResource::IsMainPageLoadPendingWithSyncCheck.
   resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       IsMainPageLoadPending_DeleteExpiredNavigationTimestamps) {
+  tracker_->SetNavigationTimestampsSizeThresholdForTesting(
+      kLocalNavigationTimestampsSizeThreshold);
+  UnsafeResource resource;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+
+  std::vector<int64_t> old_navigation_ids;
+  for (int i = 0; i < kLocalNavigationTimestampsSizeThreshold; i++) {
+    content::MockNavigationHandle handle(url_, main_rfh());
+    old_navigation_ids.push_back(handle.GetNavigationId());
+    CallDidFinishNavigation(handle, /*has_committed=*/true);
+  }
+  for (int64_t id : old_navigation_ids) {
+    resource.navigation_id = id;
+    EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  }
+
+  task_environment()->FastForwardBy(base::Seconds(180));
+  content::MockNavigationHandle recent_handle1(url_, main_rfh());
+  CallDidFinishNavigation(recent_handle1, /*has_committed=*/true);
+  for (int64_t id : old_navigation_ids) {
+    resource.navigation_id = id;
+    EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  }
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  content::MockNavigationHandle recent_handle2(url_, main_rfh());
+  CallDidFinishNavigation(recent_handle2, /*has_committed=*/true);
+  // The old navigation timestamps have been cleaned up, so the function returns
+  // true.
+  for (int64_t id : old_navigation_ids) {
+    resource.navigation_id = id;
+    EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  }
+
+  // The recent timestamps should not be cleaned up.
+  resource.navigation_id = recent_handle1.GetNavigationId();
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+  resource.navigation_id = recent_handle2.GetNavigationId();
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+}
+
+TEST_P(
+    AsyncCheckTrackerTest,
+    IsMainPageLoadPending_DeleteExpiredNavigationTimestamps_NotReachingThreshold) {
+  tracker_->SetNavigationTimestampsSizeThresholdForTesting(
+      kLocalNavigationTimestampsSizeThreshold);
+  UnsafeResource resource;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
+  resource.navigation_id = handle.GetNavigationId();
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+
+  task_environment()->FastForwardBy(base::Seconds(181));
+  content::MockNavigationHandle recent_handle(url_, main_rfh());
+  CallDidFinishNavigation(recent_handle, /*has_committed=*/true);
+  // The timestamp has expired but not cleaned up, because the size of the
+  // timestamps has not reached the threshold.
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+
+  for (int i = 0; i < kLocalNavigationTimestampsSizeThreshold - 1; i++) {
+    content::MockNavigationHandle new_handle(url_, main_rfh());
+    CallDidFinishNavigation(new_handle, /*has_committed=*/true);
+  }
+  // The size of the timestamps has reached the threshold, so the old timestamp
+  // is cleaned up.
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 }
 
 TEST_P(AsyncCheckTrackerTest, GetBlockedPageCommittedTimestamp) {

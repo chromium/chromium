@@ -17,6 +17,16 @@ namespace {
 
 using security_interstitials::UnsafeResource;
 
+// The threshold that will trigger a cleanup on
+// `committed_navigation_timestamps_`.
+constexpr int kNavigationTimestampsSizeThreshold = 10000;
+
+// Navigation timestamps that are older than this interval are considered
+// expired and may be cleaned up. This interval must be much larger than the
+// life time of UrlCheckerOnSB so that IsMainPageLoadPending returns the correct
+// result when the check completes.
+constexpr base::TimeDelta kNavigationTimestampExpiration = base::Seconds(180);
+
 }  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AsyncCheckTracker);
@@ -67,7 +77,9 @@ AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
                                      scoped_refptr<BaseUIManager> ui_manager)
     : content::WebContentsUserData<AsyncCheckTracker>(*web_contents),
       content::WebContentsObserver(web_contents),
-      ui_manager_(std::move(ui_manager)) {}
+      ui_manager_(std::move(ui_manager)),
+      navigation_timestamps_size_threshold_(
+          kNavigationTimestampsSizeThreshold) {}
 
 AsyncCheckTracker::~AsyncCheckTracker() {
   DeletePendingCheckers(/*excluded_navigation_id=*/std::nullopt);
@@ -145,6 +157,13 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
     // AsyncCheckTracker is created) and then a prerendered navigation starts
     // on the same WebContents.
     committed_navigation_timestamps_[navigation_id] = base::TimeTicks::Now();
+    if (committed_navigation_timestamps_.size() >
+        navigation_timestamps_size_threshold_) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AsyncCheckTracker::DeleteExpiredNavigationTimestamps,
+                         GetWeakPtr()));
+    }
   }
   base::UmaHistogramCounts10000(
       "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
@@ -245,8 +264,21 @@ void AsyncCheckTracker::DeletePendingCheckers(
   }
 }
 
+void AsyncCheckTracker::DeleteExpiredNavigationTimestamps() {
+  base::EraseIf(committed_navigation_timestamps_,
+                [&](const auto& id_timestamp_pair) {
+                  return base::TimeTicks::Now() - id_timestamp_pair.second >
+                         kNavigationTimestampExpiration;
+                });
+}
+
 size_t AsyncCheckTracker::PendingCheckersSizeForTesting() {
   return pending_checkers_.size();
+}
+
+void AsyncCheckTracker::SetNavigationTimestampsSizeThresholdForTesting(
+    size_t threshold) {
+  navigation_timestamps_size_threshold_ = threshold;
 }
 
 void AsyncCheckTracker::SetOnAllCheckersCompletedForTesting(
