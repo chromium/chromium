@@ -126,24 +126,38 @@ void UpdateModalDialogPosition(views::Widget* widget,
   gfx::Rect dialog_bounds(position, size);
 
   if (widget->is_top_level() && SupportsGlobalScreenCoordinates()) {
-    const gfx::Rect initial_dialog_bounds =
+    gfx::Rect dialog_screen_bounds =
         dialog_bounds +
         host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
-    const gfx::Rect initial_host_bounds =
-        host_widget->GetWindowBoundsInScreen();
+    const gfx::Rect host_screen_bounds = host_widget->GetWindowBoundsInScreen();
 
     // TODO(crbug.com/1341530): The requested dialog bounds should never fall
     // outside the bounds of the transient parent.
-    DCHECK(initial_dialog_bounds.Intersects(initial_host_bounds));
+    DCHECK(dialog_screen_bounds.Intersects(host_screen_bounds));
 
-    // Move the host so that it becomes fully visible on screen, otherwise
-    // it risks the modal window becoming effectively deadlocked as controls to
-    // dismiss the dialog may become inaccessible.
-    host_widget->SetBoundsConstrained(initial_host_bounds);
+    // Adjust the dialog bound to ensure it remains visible on the display.
+    const gfx::Rect display_work_area =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestView(dialog_host->GetHostView())
+            .work_area();
+    if (!display_work_area.Contains(dialog_screen_bounds)) {
+      dialog_screen_bounds.AdjustToFit(display_work_area);
+    }
 
-    const gfx::Rect adjusted_host_bounds =
-        host_widget->GetClientAreaBoundsInScreen();
-    dialog_bounds += adjusted_host_bounds.OffsetFromOrigin();
+    // For platforms that clip transient children to the viewport we must
+    // maximize its bounds on the display whilst keeping it within the host
+    // bounds to avoid viewport clipping.
+    // In the case that the host window bounds do not have sufficient overlap
+    // with the display, and the dialog cannot be shown in its entirety, this is
+    // a recoverable state as users are still able to reposition the host window
+    // back onto the display.
+    if (PlatformClipsChildrenToViewport() &&
+        !host_screen_bounds.Contains(dialog_screen_bounds)) {
+      dialog_screen_bounds.AdjustToFit(host_screen_bounds);
+    }
+
+    // Readjust the position of the dialog.
+    dialog_bounds.set_origin(dialog_screen_bounds.origin());
   }
 
   widget->SetBounds(dialog_bounds);
@@ -306,6 +320,14 @@ bool SupportsGlobalScreenCoordinates() {
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .supports_global_screen_coordinates;
+#endif
+}
+
+bool PlatformClipsChildrenToViewport() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return false;
 #endif
 }
 
