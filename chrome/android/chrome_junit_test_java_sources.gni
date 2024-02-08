@@ -371,6 +371,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webapps/WebApkInstallNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkIntentDataProviderFactoryTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkShareTargetUtilTest.java",
+  "junit/src/org/chromium/chrome/browser/webapps/WebApkSyncServiceTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebApkUpdateManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappAuthenticatorTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappDataStorageTest.java",

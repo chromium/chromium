@@ -30,6 +30,8 @@ class WebApkSyncService : public KeyedService {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate();
 
+  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;

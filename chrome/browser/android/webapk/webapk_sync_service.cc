@@ -4,8 +4,22 @@
 
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 
+#include <jni.h>
+
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "chrome/android/chrome_jni_headers/WebApkSyncService_jni.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "components/sync/base/features.h"
+
+using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapk {
 
@@ -37,6 +51,37 @@ void WebApkSyncService::MergeSyncDataForTesting(
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 WebApkSyncService::GetModelTypeControllerDelegate() {
   return sync_bridge_->GetModelTypeControllerDelegate();
+}
+
+void WebApkSyncService::OnWebApkUsed(
+    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics) {
+  sync_bridge_->OnWebApkUsed(std::move(app_specifics));
+}
+
+// static
+static void JNI_WebApkSyncService_OnWebApkUsed(
+    JNIEnv* env,
+    const JavaParamRef<jbyteArray>& java_webapk_specifics) {
+  if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    return;
+  }
+
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  if (profile == nullptr) {
+    return;
+  }
+
+  std::string specifics_bytes;
+  base::android::JavaByteArrayToString(env, java_webapk_specifics,
+                                       &specifics_bytes);
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  if (!specifics->ParseFromString(specifics_bytes)) {
+    LOG(ERROR) << "failed to parse WebApkSpecifics proto";
+    return;
+  }
+  WebApkSyncService::GetForProfile(profile)->OnWebApkUsed(std::move(specifics));
 }
 
 }  // namespace webapk

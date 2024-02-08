@@ -862,6 +862,7 @@ public class WebappRegistryTest {
                         .build();
         expectedIntentDataProviders.put(testScope2, intentDataProvider2);
 
+        // This one will not be returned because it has no manifest id.
         BrowserServicesIntentDataProvider intentDataProvider3 =
                 new WebApkIntentDataProviderBuilder(testPackageName3, testStartUrl3)
                         .setWebApkManifestId(testManifestId3)
@@ -897,7 +898,7 @@ public class WebappRegistryTest {
 
         List<WebApkSpecifics> webApkSpecificsList =
                 webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting);
-        assertEquals(3, webApkSpecificsList.size());
+        assertEquals(2, webApkSpecificsList.size());
 
         Set<String> visitedScopes = new HashSet<String>();
         for (WebApkSpecifics webApkSpecifics : webApkSpecificsList) {
@@ -932,7 +933,7 @@ public class WebappRegistryTest {
             visitedScopes.add(webApkSpecifics.getScope());
         }
 
-        assertEquals(3, visitedScopes.size());
+        assertEquals(2, visitedScopes.size());
     }
 
     private Set<String> addWebappsToRegistry(String... webapps) {

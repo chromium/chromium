@@ -10,6 +10,7 @@ import android.graphics.Color;
 import org.chromium.base.TimeUtils;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -18,6 +19,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /** Builder class for WebAPK {@link BrowserServicesIntentDataProvider} objects. */
 public class WebApkIntentDataProviderBuilder {
@@ -30,7 +32,10 @@ public class WebApkIntentDataProviderBuilder {
     private String mManifestId;
     private String mName;
     private String mShortName;
+    private WebappIcon mPrimaryIcon;
+    private Map<String, String> mIconUrlToMurmur2HashMap = new HashMap<String, String>();
     private long mToolbarColor;
+    private int mShellApkVersion = 1;
 
     public WebApkIntentDataProviderBuilder(String webApkPackageName, String url) {
         mWebApkPackageName = webApkPackageName;
@@ -77,11 +82,19 @@ public class WebApkIntentDataProviderBuilder {
         return this;
     }
 
-    private String manifestId() {
-        if (mManifestId == null) {
-            return mUrl;
-        }
-        return mManifestId;
+    public WebApkIntentDataProviderBuilder setPrimaryIcon(WebappIcon icon) {
+        mPrimaryIcon = icon;
+        return this;
+    }
+
+    public WebApkIntentDataProviderBuilder setIconUrlToMurmur2HashMap(Map<String, String> hashmap) {
+        mIconUrlToMurmur2HashMap = hashmap;
+        return this;
+    }
+
+    public WebApkIntentDataProviderBuilder setShellApkVersion(int shellApkVersion) {
+        mShellApkVersion = shellApkVersion;
+        return this;
     }
 
     /** Builds {@link BrowserServicesIntentDataProvider} object using options that have been set. */
@@ -90,7 +103,7 @@ public class WebApkIntentDataProviderBuilder {
                 new Intent(),
                 mUrl,
                 mScope,
-                null,
+                mPrimaryIcon,
                 null,
                 mName,
                 mShortName,
@@ -105,13 +118,13 @@ public class WebApkIntentDataProviderBuilder {
                 /* isPrimaryIconMaskable= */ false,
                 /* isSplashIconMaskable= */ false,
                 mWebApkPackageName,
-                /* shellApkVersion= */ 1,
+                mShellApkVersion,
                 mManifestUrl,
                 mUrl,
-                manifestId(),
+                mManifestId,
                 /* appKey= */ null,
                 WebApkDistributor.BROWSER,
-                /* iconUrlToMurmur2HashMap= */ new HashMap<String, String>(),
+                mIconUrlToMurmur2HashMap,
                 null,
                 /* forceNavigation= */ false,
                 /* isSplashProvidedByWebApk= */ false,
