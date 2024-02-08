@@ -6337,6 +6337,8 @@ static_library("ui") {
         "views/apps/native_app_window_frame_view_mac.h",
         "views/apps/native_app_window_frame_view_mac.mm",
         "views/chrome_views_delegate_mac.cc",
+        "views/permissions/permission_prompt_notifications_mac.cc",
+        "views/permissions/permission_prompt_notifications_mac.h",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
         "views/webauthn/mac_authentication_view.h",

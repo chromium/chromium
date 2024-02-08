@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_quiet_icon.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
@@ -23,6 +24,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
+#endif
 
 namespace {
 
@@ -202,6 +207,21 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }
+
+#if BUILDFLAG(IS_MAC)
+  // If this is a notification permission request coming from a PWA (or a PWA
+  // associated tab), and this is the first time we show a permission prompt for
+  // this request, try using a OS-native permission prompt. If showing the
+  // prompt fails, it will trigger the view to be recreated for the request, at
+  // which point we end up in the normal code path below.
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+      !delegate->WasCurrentRequestAlreadyDisplayed() &&
+      PermissionPromptNotificationsMac::CanHandleRequest(web_contents,
+                                                         delegate)) {
+    return std::make_unique<PermissionPromptNotificationsMac>(web_contents,
+                                                              delegate);
+  }
+#endif
 
   if (web_app::AppBrowserController::IsWebApp(browser)) {
     return CreatePwaPrompt(browser, web_contents, delegate);

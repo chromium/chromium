@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -185,6 +186,24 @@ class AppShimManager
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
   LaunchNotificationProvider(const webapps::AppId& app_id);
 
+  // Triggers an OS-level notification permission request prompt to be shown by
+  // the app shim corresponding to `app_id`. Returns the current state without
+  // showing a prompt if permission has already been granted and/or denied to
+  // the app shim.
+  using RequestNotificationPermissionCallback =
+      chrome::mojom::AppShim::RequestNotificationPermissionCallback;
+  void ShowNotificationPermissionRequest(
+      const webapps::AppId& app_id,
+      RequestNotificationPermissionCallback callback);
+
+  // Causes ShowNotificationPermissionRequest() to immediately call its callback
+  // with the given `result`, rather than trying to request permission from the
+  // app shim.
+  void SetNotificationPermissionResponseForTesting(
+      mac_notifications::mojom::RequestPermissionResult result) {
+    notification_permission_result_for_testing_ = result;
+  }
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;
@@ -313,6 +332,8 @@ class AppShimManager
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
 
  private:
+  friend class ScopedAppShimKeepAlive;
+
   // The state for an individual app, and for the profile-scoped app info.
   struct ProfileState;
   struct AppState;
@@ -417,6 +438,13 @@ class AppShimManager
   ProfileState* GetOrCreateProfileState(Profile* profile,
                                         const webapps::AppId& app_id);
 
+  // Launches a shim for `app_id` in background mode (i.e. without being shown
+  // in the Dock and other UI surfaces). Can call `callback` with nullptr if the
+  // `app_id` is invalid (for example not installed locally in any profile). If
+  // the launch itself fails, this will still call `callback` with a valid
+  // AppShimHost, but a mojo connection to the app shim will never be
+  // established (and any calls that were made to the remote app shim will be
+  // dropped).
   void LaunchShimInBackgroundMode(
       const webapps::AppId& app_id,
       base::OnceCallback<void(AppShimHost*)> callback);
@@ -462,6 +490,10 @@ class AppShimManager
   // in an app shim.
   mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler>
       notification_action_handler_receivers_;
+
+  // Set in some tests to short-circuit ShowNotificationPermissionRequest.
+  std::optional<mac_notifications::mojom::RequestPermissionResult>
+      notification_permission_result_for_testing_;
 
   raw_ptr<AppShimObserver> app_shim_observer_ = nullptr;
 

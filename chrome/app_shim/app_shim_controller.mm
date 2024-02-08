@@ -769,6 +769,16 @@ void AppShimController::BindNotificationProvider(
   notifications_receiver_.Bind(std::move(provider));
 }
 
+void AppShimController::RequestNotificationPermission(
+    RequestNotificationPermissionCallback callback) {
+  if (!notification_service_un()) {
+    std::move(callback).Run(
+        mac_notifications::mojom::RequestPermissionResult::kRequestFailed);
+    return;
+  }
+  notification_service_un()->RequestPermission(std::move(callback));
+}
+
 void AppShimController::BindNotificationService(
     mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
         service,
@@ -799,7 +809,7 @@ void AppShimController::BindNotificationService(
     // notification service.
     notification_service_un()->Bind(std::move(service));
     // TODO(crbug.com/938661): Determine when to ask for permissions.
-    notification_service_un()->RequestPermission();
+    notification_service_un()->RequestPermission(base::DoNothing());
   } else {
     notification_service_ =
         std::make_unique<mac_notifications::MacNotificationServiceNS>(

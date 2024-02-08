@@ -1571,6 +1571,8 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "NoneVisible";
     case PermissionPromptDisposition::NOT_APPLICABLE:
       return "NotApplicable";
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
+      return "MacOsPrompt";
   }
 
   NOTREACHED();
@@ -1612,6 +1614,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
@@ -1644,6 +1647,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::NONE_VISIBLE:
     case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::NOT_APPLICABLE:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return false;
   }
 }

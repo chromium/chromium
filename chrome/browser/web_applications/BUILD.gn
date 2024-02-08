@@ -1138,4 +1138,8 @@ source_set("interactive_ui_tests") {
       "//components/user_manager",
     ]
   }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/apps/app_shim" ]
+  }
 }

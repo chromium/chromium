@@ -178,6 +178,8 @@ class AppShimController
   void BindNotificationProvider(
       mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
           provider) override;
+  void RequestNotificationPermission(
+      RequestNotificationPermissionCallback callback) override;
 
   // mac_notifications::mojom::MacNotificationProvider implementation.
   void BindNotificationService(

@@ -68,6 +68,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
@@ -337,6 +338,12 @@ struct AppShimManager::AppState {
   // shutdown some browser windows/profiles might have already closed by the
   // time OnShimProcessDisconnected runs.
   bool did_save_last_active_profiles_on_terminate = false;
+
+  // Sometimes, for example when we have a pending notification permission
+  // prompt, we want to keep alive an app shim process even though no windows
+  // are open. This counter keep tracks of the number of outstanding
+  // ScopedAppShimKeepAlive instances.
+  int keep_alive_count = 0;
 };
 
 AppShimManager::ProfileState::ProfileState(
@@ -381,7 +388,7 @@ bool AppShimManager::AppState::ShouldDeleteAppState() const {
 
   // The old behavior, and the behavior for single-profile apps, is to close
   // only when all profiles are closed.
-  return profiles.empty();
+  return profiles.empty() && keep_alive_count == 0;
 }
 
 void AppShimManager::AppState::MaybeSaveLastActiveProfiles() const {
@@ -395,6 +402,37 @@ void AppShimManager::AppState::MaybeSaveLastActiveProfiles() const {
   }
   AppShimRegistry::Get()->SaveLastActiveProfilesForApp(
       app_id, last_active_profile_paths);
+}
+
+class ScopedAppShimKeepAlive {
+ public:
+  ScopedAppShimKeepAlive(AppShimManager* manager, const webapps::AppId& app_id);
+  ~ScopedAppShimKeepAlive();
+
+  ScopedAppShimKeepAlive(const ScopedAppShimKeepAlive&) = delete;
+  ScopedAppShimKeepAlive& operator=(const ScopedAppShimKeepAlive&) = delete;
+
+ private:
+  base::WeakPtr<AppShimManager> manager_;
+  const webapps::AppId app_id_;
+};
+
+ScopedAppShimKeepAlive::ScopedAppShimKeepAlive(AppShimManager* manager,
+                                               const webapps::AppId& app_id)
+    : manager_(manager->weak_factory_.GetWeakPtr()), app_id_(app_id) {
+  auto app = manager_->apps_.find(app_id_);
+  CHECK(app != manager_->apps_.end());
+  app->second->keep_alive_count++;
+}
+
+ScopedAppShimKeepAlive::~ScopedAppShimKeepAlive() {
+  if (manager_) {
+    auto app = manager_->apps_.find(app_id_);
+    if (app != manager_->apps_.end()) {
+      CHECK_GT(app->second->keep_alive_count, 0);
+      app->second->keep_alive_count--;
+    }
+  }
 }
 
 AppShimManager::AppShimManager(std::unique_ptr<Delegate> delegate)
@@ -498,6 +536,54 @@ AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
   AppShimHost* shim = app_state->multi_profile_host.get();
   std::move(bind_provider).Run(shim);
   return remote;
+}
+
+void AppShimManager::ShowNotificationPermissionRequest(
+    const webapps::AppId& app_id,
+    RequestNotificationPermissionCallback callback) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
+
+  if (notification_permission_result_for_testing_.has_value()) {
+    std::move(callback).Run(*notification_permission_result_for_testing_);
+    return;
+  }
+
+  auto request_permission = base::BindOnce(
+      [](base::WeakPtr<AppShimManager> manager, const webapps::AppId& app_id,
+         RequestNotificationPermissionCallback callback, AppShimHost* host) {
+        if (!host) {
+          LOG(ERROR)
+              << "Failed to launch app shim for notifications permissions";
+          std::move(callback).Run(mac_notifications::mojom::
+                                      RequestPermissionResult::kRequestFailed);
+          return;
+        }
+        std::unique_ptr<ScopedAppShimKeepAlive> keep_alive;
+        if (manager) {
+          keep_alive =
+              std::make_unique<ScopedAppShimKeepAlive>(manager.get(), app_id);
+        }
+        // Wrap callback with default invoke to correctly report a failure if
+        // the app shim fails to launch.
+        host->GetAppShim()->RequestNotificationPermission(
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                std::move(callback).Then(base::OnceClosure(
+                    base::DoNothingWithBoundArgs(std::move(keep_alive)))),
+                mac_notifications::mojom::RequestPermissionResult::
+                    kRequestFailed));
+      },
+      weak_factory_.GetWeakPtr(), app_id, std::move(callback));
+
+  auto found_app = apps_.find(app_id);
+  if (found_app == apps_.end()) {
+    LaunchShimInBackgroundMode(app_id, std::move(request_permission));
+    return;
+  }
+
+  AppState* app_state = found_app->second.get();
+  CHECK(app_state->IsMultiProfile());
+  std::move(request_permission).Run(app_state->multi_profile_host.get());
 }
 
 Profile* AppShimManager::ProfileForBackgroundShimLaunch(

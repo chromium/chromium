@@ -106,6 +106,16 @@ struct Notification {
   gfx.mojom.ImageSkia? icon;
 };
 
+// This enum is used in UMA. Do not delete or re-order entries. New entries
+// should only be added at the end.
+enum RequestPermissionResult {
+  kRequestFailed = 0,
+  kPermissionDenied = 1,
+  kPermissionGranted = 2,
+  kPermissionPreviouslyDenied = 3,
+  kPermissionPreviouslyGranted = 4,
+};
+
 // Interface to control notifications shown by the helper app. Implemented by
 // the helper app and called from the browser process.
 interface MacNotificationService {

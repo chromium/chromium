@@ -237,6 +237,9 @@ enum class PermissionPromptDisposition {
   // Only used on desktop, a bubble shown near the embedded permission element,
   // after the user clicks on the element.
   ELEMENT_ANCHORED_BUBBLE = 13,
+
+  // Only used on macOS, a native OS provided permission prompt.
+  MAC_OS_PROMPT = 14,
 };
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
