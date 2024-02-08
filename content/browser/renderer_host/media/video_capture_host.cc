@@ -279,8 +279,8 @@ void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
     device_id_to_observer_map_[device_id]->OnStateChanged(
         media::mojom::VideoCaptureResult::NewState(
             media::mojom::VideoCaptureState::STOPPED));
+    device_id_to_observer_map_.erase(controller_id);
   }
-  device_id_to_observer_map_.erase(controller_id);
 
   DeleteVideoCaptureController(controller_id, media::VideoCaptureError::kNone);
   NotifyStreamRemoved();
