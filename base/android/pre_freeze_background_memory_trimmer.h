@@ -40,16 +40,16 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
   static void SetIsRespectingModernTrimForTesting(bool is_respecting);
-  size_t GetNumberOfPendingBackgroundTasksForTesting();
+  size_t GetNumberOfPendingBackgroundTasksForTesting() LOCKS_EXCLUDED(lock_);
 
-  static void OnPreFreezeForTesting() { OnPreFreeze(); }
+  static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
 
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
-  static void OnPreFreeze();
+  static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
@@ -84,7 +84,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   PreFreezeBackgroundMemoryTrimmer();
 
-  static void UnregisterBackgroundTask(BackgroundTask*);
+  static void UnregisterBackgroundTask(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
   void UnregisterBackgroundTaskInternal(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
@@ -94,14 +94,14 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
   void PostDelayedBackgroundTaskModern(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
-  void OnPreFreezeInternal();
+  void OnPreFreezeInternal() LOCKS_EXCLUDED(lock_);
 
   void PostMetricsTask(std::optional<uint64_t> pmf_before);
 
