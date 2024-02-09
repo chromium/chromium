@@ -22,7 +22,7 @@ bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
 
 NavigationLoaderInterceptor::Result::Result(
     scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
-    std::optional<SubresourceLoaderParams> subresource_loader_params,
+    SubresourceLoaderParams subresource_loader_params,
     ResponseHeadUpdateParams response_head_update_params)
     : single_request_factory(std::move(single_request_factory)),
       subresource_loader_params(std::move(subresource_loader_params)),

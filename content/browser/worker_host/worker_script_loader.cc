@@ -122,7 +122,7 @@ void WorkerScriptLoader::MaybeStartLoader(
   subresource_loader_params_ =
       interceptor_result
           ? std::move(interceptor_result->subresource_loader_params)
-          : std::nullopt;
+          : SubresourceLoaderParams();
 
   if (interceptor_result && interceptor_result->single_request_factory) {
     // The interceptor elected to handle the request. Use it.

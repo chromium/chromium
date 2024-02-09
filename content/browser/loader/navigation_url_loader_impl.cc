@@ -151,7 +151,7 @@ class NavigationLoaderInterceptorBrowserContainer
                     base::MakeRefCounted<
                         network::SingleRequestURLLoaderFactory>(
                         std::move(handler)),
-                    /*subresource_loader_params=*/std::nullopt));
+                    /*subresource_loader_params=*/{}));
               } else {
                 std::move(callback).Run(std::nullopt);
               }
@@ -633,9 +633,9 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     if (!interceptor_result->single_request_factory) {
       // Skip the subsequent interceptors and start with the default behavior.
       //
-      // Here `subresource_loader_params_` can still be non-null e.g. when
-      // there's a controlling service worker that doesn't have a fetch event
-      // handler so it doesn't intercept requests.
+      // Here `subresource_loader_params_` can still have non-default values
+      // e.g. when there's a controlling service worker that doesn't have a
+      // fetch event handler so it doesn't intercept requests.
       StartNonInterceptedRequest(
           std::move(interceptor_result->response_head_update_params));
       return;
@@ -673,7 +673,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     return;
   }
 
-  subresource_loader_params_ = std::nullopt;
+  subresource_loader_params_ = {};
 
   if (next_interceptor_index >= interceptors_.size()) {
     // All interceptors have been checked and none has elected to handle the
@@ -724,7 +724,7 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     bool reset_subresource_loader_params,
     ResponseHeadUpdateParams head_update_params) {
   if (reset_subresource_loader_params)
-    subresource_loader_params_.reset();
+    subresource_loader_params_ = {};
 
   head_update_params_ = std::move(head_update_params);
   scoped_refptr<network::SharedURLLoaderFactory> factory =

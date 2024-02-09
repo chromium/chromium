@@ -56,7 +56,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      SubresourceLoaderParams subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;

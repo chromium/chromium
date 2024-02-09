@@ -1502,7 +1502,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      SubresourceLoaderParams subresource_loader_params,
       std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,

@@ -110,7 +110,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  std::optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
+  SubresourceLoaderParams TakeSubresourceLoaderParams() {
     return std::move(subresource_loader_params_);
   }
 
@@ -131,7 +131,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
-  std::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   const int32_t request_id_;
   const uint32_t options_;

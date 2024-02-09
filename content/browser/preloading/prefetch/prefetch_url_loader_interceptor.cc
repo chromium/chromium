@@ -195,7 +195,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
                       navigation_request->GetNextPageUkmSourceId()),
                   &bypass_redirect_checks,
                   navigation_request->GetNavigationId())),
-          /*subresource_loader_params=*/std::nullopt));
+          /*subresource_loader_params=*/{}));
 }
 
 }  // namespace content

@@ -55,7 +55,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   struct CONTENT_EXPORT Result final {
     Result(
         scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
-        std::optional<SubresourceLoaderParams> subresource_loader_params,
+        SubresourceLoaderParams subresource_loader_params,
         ResponseHeadUpdateParams response_head_update_params = {});
 
     ~Result();
@@ -68,13 +68,13 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
     // When null, the fallback network-service factory is used.
     scoped_refptr<network::SharedURLLoaderFactory> single_request_factory;
 
-    // Non-null if to be used for subsequent URL requests going forward.
+    // Used for subsequent URL requests going forward.
     //
     // Note that `single_request_factory` can be nullptr while
-    // `subresource_loader_params` can be non-nullptr if it does NOT want to
-    // handle the specific request but wants to handle the subsequent resource
-    // requests.
-    std::optional<SubresourceLoaderParams> subresource_loader_params;
+    // `subresource_loader_params` can have non-default values if it does NOT
+    // want to handle the specific request but wants to handle the subsequent
+    // resource requests.
+    SubresourceLoaderParams subresource_loader_params;
 
     // When `single_request_factory` is null, used to update the response params
     // in non-intercepted loader via

@@ -1925,13 +1925,13 @@ ServiceWorkerContainerHost::GetRunningStatusCallbackReceiver() {
   return receiver;
 }
 
-std::optional<SubresourceLoaderParams>
+SubresourceLoaderParams
 ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
     base::WeakPtr<ServiceWorkerContainerHost> container_host) {
   // We didn't find a matching service worker for this request, and
   // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
   if (!container_host || !container_host->controller()) {
-    return std::nullopt;
+    return {};
   }
 
   // Otherwise let's send the controller service worker information along
@@ -1947,7 +1947,7 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
         object_host->CreateIncompleteObjectInfo();
   }
 
-  return std::optional<SubresourceLoaderParams>(std::move(params));
+  return params;
 }
 
 }  // namespace content

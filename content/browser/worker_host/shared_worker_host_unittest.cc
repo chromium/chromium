@@ -119,7 +119,7 @@ class SharedWorkerHostTest : public testing::Test {
     auto subresource_loader_factories =
         std::make_unique<blink::PendingURLLoaderFactoryBundle>();
 
-    std::optional<SubresourceLoaderParams> subresource_loader_params =
+    SubresourceLoaderParams subresource_loader_params =
         SubresourceLoaderParams();
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         loader_factory_remote =

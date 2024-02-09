@@ -63,7 +63,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     signed_exchange_loader_ = nullptr;
     // Skip subsequent interceptors and fallback to the network.
     std::move(callback).Run(NavigationLoaderInterceptor::Result(
-        /*factory=*/nullptr, /*subresource_loader_params=*/std::nullopt));
+        /*factory=*/nullptr, /*subresource_loader_params=*/{}));
     return;
   }
 
@@ -73,7 +73,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
       base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
                          weak_factory_.GetWeakPtr())),
-      /*subresource_loader_params=*/std::nullopt));
+      /*subresource_loader_params=*/{}));
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(

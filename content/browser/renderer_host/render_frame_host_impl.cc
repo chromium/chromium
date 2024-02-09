@@ -10262,7 +10262,7 @@ void RenderFrameHostImpl::CommitNavigation(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-    std::optional<SubresourceLoaderParams> subresource_loader_params,
+    SubresourceLoaderParams subresource_loader_params,
     std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
@@ -10571,10 +10571,9 @@ void RenderFrameHostImpl::CommitNavigation(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
         remote_object;
     blink::mojom::ServiceWorkerState sent_state;
-    if (subresource_loader_params &&
-        subresource_loader_params->controller_service_worker_info) {
+    if (subresource_loader_params.controller_service_worker_info) {
       controller =
-          std::move(subresource_loader_params->controller_service_worker_info);
+          std::move(subresource_loader_params.controller_service_worker_info);
       if (controller->object_info) {
         controller->object_info->receiver =
             remote_object.InitWithNewEndpointAndPassReceiver();
@@ -10765,7 +10764,7 @@ void RenderFrameHostImpl::CommitNavigation(
     // it until its request endpoint is sent. Now that the request endpoint was
     // sent, it can be used, so add it to ServiceWorkerObjectHost.
     if (remote_object.is_valid()) {
-      subresource_loader_params->controller_service_worker_object_host
+      subresource_loader_params.controller_service_worker_object_host
           ->AddRemoteObjectPtrAndUpdateState(std::move(remote_object),
                                              sent_state);
     }

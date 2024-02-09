@@ -526,8 +526,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // Returns params with the ControllerServiceWorkerInfoPtr if we have found
   // a matching controller service worker for non-null |container_host|.
   // Otherwise this returns std::nullopt.
-  static std::optional<SubresourceLoaderParams>
-  MaybeCreateSubresourceLoaderParams(
+  static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
       base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
   base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();

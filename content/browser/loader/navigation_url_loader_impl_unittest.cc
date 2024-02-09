@@ -104,7 +104,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             base::BindOnce(&TestNavigationLoaderInterceptor::StartLoader,
                            base::Unretained(this))),
-        /*subresource_loader_params=*/std::nullopt));
+        /*subresource_loader_params=*/{}));
   }
 
   void StartLoader(

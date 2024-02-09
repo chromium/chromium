@@ -122,22 +122,21 @@ void DidCreateScriptLoader(
     std::optional<GlobalRenderFrameHostId> ancestor_render_frame_host_id,
     const GURL& initial_request_url,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-    std::optional<SubresourceLoaderParams> subresource_loader_params,
+    SubresourceLoaderParams subresource_loader_params,
     const network::URLLoaderCompletionStatus* completion_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(main_script_load_params.is_null(), completion_status == nullptr);
   DCHECK(!(main_script_load_params.is_null() &&
-           subresource_loader_params.has_value()));
+           subresource_loader_params.controller_service_worker_info));
 
   // Prepare the controller service worker info to pass to the renderer.
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
-  if (subresource_loader_params &&
-      subresource_loader_params->controller_service_worker_info) {
+  if (subresource_loader_params.controller_service_worker_info) {
     controller =
-        std::move(subresource_loader_params->controller_service_worker_info);
+        std::move(subresource_loader_params.controller_service_worker_info);
     controller_service_worker_object_host =
-        subresource_loader_params->controller_service_worker_object_host;
+        subresource_loader_params.controller_service_worker_object_host;
   }
 
   // Figure out the final response URL.
@@ -701,9 +700,8 @@ void WorkerScriptFetcher::OnComplete(
     return;
   }
 
-  std::move(callback_).Run(nullptr /* main_script_load_params */,
-                           std::nullopt /* subresource_loader_params */,
-                           &status);
+  std::move(callback_).Run(/*main_script_load_params=*/nullptr,
+                           /*subresource_loader_params=*/{}, &status);
   delete this;
 }
 

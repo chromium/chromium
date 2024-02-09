@@ -55,7 +55,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     net::NetworkAnonymizationKey network_anonymization_key,
-    std::optional<SubresourceLoaderParams> subresource_loader_params,
+    SubresourceLoaderParams subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;
   response_head_ = std::move(response_head);

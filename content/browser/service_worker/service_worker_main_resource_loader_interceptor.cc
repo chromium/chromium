@@ -274,9 +274,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
     LoaderCallback loader_callback,
     base::WeakPtr<ServiceWorkerContainerHost> container_host) {
-  if (auto subresource_loader_params =
-          ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
-              container_host)) {
+  auto subresource_loader_params =
+      ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+          container_host);
+  if (subresource_loader_params.controller_service_worker_info) {
     std::move(loader_callback)
         .Run(NavigationLoaderInterceptor::Result(
             /*factory=*/nullptr, std::move(subresource_loader_params)));

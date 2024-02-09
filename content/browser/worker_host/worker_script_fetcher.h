@@ -171,7 +171,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // - `completion_status` is not nullptr.
   using CreateAndStartCallback = base::OnceCallback<void(
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      SubresourceLoaderParams subresource_loader_params,
       const network::URLLoaderCompletionStatus* completion_status)>;
 
   WorkerScriptFetcher(
@@ -235,7 +235,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
-  std::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;

@@ -255,7 +255,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   net::HttpRequestHeaders url_loader_modified_headers_;
   net::HttpRequestHeaders url_loader_modified_cors_exempt_headers_;
 
-  std::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
 

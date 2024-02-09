@@ -504,7 +504,7 @@ class PrefetchedNavigationLoaderInterceptor
               base::BindOnce(
                   &PrefetchedNavigationLoaderInterceptor::StartRedirectResponse,
                   weak_factory_.GetWeakPtr())),
-          /*subresource_loader_params=*/std::nullopt));
+          /*subresource_loader_params=*/{}));
       return;
     }
     if (tentative_resource_request.url == exchange_->inner_url()) {
@@ -565,7 +565,7 @@ class PrefetchedNavigationLoaderInterceptor
           this->exchange_->outer_response()->load_timing;
       // TODO(crbug.com/1441384) test workerStart in SXG scenarios
       std::move(callback).Run(NavigationLoaderInterceptor::Result(
-          /*factory=*/nullptr, /*subresource_loader_params=*/std::nullopt,
+          /*factory=*/nullptr, /*subresource_loader_params=*/{},
           std::move(head_update_params)));
       return;
     }
