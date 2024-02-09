@@ -30,7 +30,7 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
               &ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab,
               base::Unretained(this)),
           close_cb,
-          std::make_unique<BubbleContentsWrapperT<ReadingListUI>>(
+          std::make_unique<WebUIContentsWrapperT<ReadingListUI>>(
               GURL(chrome::kChromeUIReadLaterURL),
               browser->profile(),
               IDS_READ_LATER_TITLE,

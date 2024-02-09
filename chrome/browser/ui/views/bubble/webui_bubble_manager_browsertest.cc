@@ -37,7 +37,7 @@ void DestroyBubble(WebUIBubbleManager* bubble_manager, Profile* profile) {
   bubble_manager->CloseBubble();
   bubble_manager->ResetContentsWrapperForTesting();
   if (auto* service =
-          BubbleContentsWrapperServiceFactory::GetForProfile(profile, true)) {
+          WebUIContentsWrapperServiceFactory::GetForProfile(profile, true)) {
     service->Shutdown();
   }
   base::RunLoop().RunUntilIdle();
@@ -51,27 +51,27 @@ class TestWebUIController : public ui::MojoBubbleWebUIController {
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 template <>
-class BubbleContentsWrapperT<TestWebUIController> final
-    : public BubbleContentsWrapper {
+class WebUIContentsWrapperT<TestWebUIController> final
+    : public WebUIContentsWrapper {
  public:
-  BubbleContentsWrapperT(const GURL& webui_url,
-                         content::BrowserContext* browser_context,
-                         int task_manager_string_id,
-                         bool webui_resizes_host = true,
-                         bool esc_closes_ui = true)
-      : BubbleContentsWrapper(webui_url,
-                              browser_context,
-                              task_manager_string_id,
-                              webui_resizes_host,
-                              esc_closes_ui,
-                              "Test") {}
+  WebUIContentsWrapperT(const GURL& webui_url,
+                        content::BrowserContext* browser_context,
+                        int task_manager_string_id,
+                        bool webui_resizes_host = true,
+                        bool esc_closes_ui = true)
+      : WebUIContentsWrapper(webui_url,
+                             browser_context,
+                             task_manager_string_id,
+                             webui_resizes_host,
+                             esc_closes_ui,
+                             "Test") {}
   void ReloadWebContents() override {}
-  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<BubbleContentsWrapper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebUIContentsWrapper> weak_ptr_factory_{this};
 };
 
 class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {

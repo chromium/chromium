@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_BUBBLE_CONTENTS_WRAPPER_H_
-#define CHROME_BROWSER_UI_VIEWS_BUBBLE_BUBBLE_CONTENTS_WRAPPER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_WRAPPER_H_
+#define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_WRAPPER_H_
 
 #include <memory>
 #include <utility>
@@ -24,12 +24,11 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-// BubbleContentsWrapper wraps a WebContents that hosts a bubble WebUI (ie a
-// WebUI with WebUIController subclassing MojoBubbleWebUIController). This class
-// notifies the Host when it should be shown or hidden via ShowUI() and
-// CloseUI() in addition to passing through resize events so the Host can adjust
-// bounds accordingly.
-class BubbleContentsWrapper : public content::WebContentsDelegate,
+// WebUIContentsWrapper wraps a WebContents that hosts a top chrome WebUI.
+// This class notifies the Host when it should be shown or hidden via ShowUI()
+// and CloseUI() in addition to passing through resize events so the Host can
+// adjust bounds accordingly.
+class WebUIContentsWrapper : public content::WebContentsDelegate,
                               public content::WebContentsObserver,
                               public ui::MojoBubbleWebUIController::Embedder {
  public:
@@ -61,13 +60,13 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
         const blink::mojom::FileChooserParams& params) {}
   };
 
-  BubbleContentsWrapper(const GURL& webui_url,
+  WebUIContentsWrapper(const GURL& webui_url,
                         content::BrowserContext* browser_context,
                         int task_manager_string_id,
                         bool webui_resizes_host,
                         bool esc_closes_ui,
                         const std::string& webui_name);
-  ~BubbleContentsWrapper() override;
+  ~WebUIContentsWrapper() override;
 
   // content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* source,
@@ -110,10 +109,10 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   virtual void ReloadWebContents() = 0;
 
   // Gets weak ptr to prevent UAF.
-  virtual base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() = 0;
+  virtual base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() = 0;
 
-  base::WeakPtr<BubbleContentsWrapper::Host> GetHost();
-  void SetHost(base::WeakPtr<BubbleContentsWrapper::Host> host);
+  base::WeakPtr<WebUIContentsWrapper::Host> GetHost();
+  void SetHost(base::WeakPtr<WebUIContentsWrapper::Host> host);
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
@@ -126,23 +125,23 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   const bool webui_resizes_host_;
   // If true will cause the ESC key to close the UI during pre-handling.
   const bool esc_closes_ui_;
-  base::WeakPtr<BubbleContentsWrapper::Host> host_;
+  base::WeakPtr<WebUIContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-// BubbleContentsWrapperT is designed to be paired with the WebUIController
+// WebUIContentsWrapperT is designed to be paired with the WebUIController
 // subclass used by the hosted WebUI. This type information allows compile time
 // checking that the WebUIController subclasses MojoBubbleWebUIController as
 // expected.
 template <typename T>
-class BubbleContentsWrapperT : public BubbleContentsWrapper {
+class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
-  BubbleContentsWrapperT(const GURL& webui_url,
+  WebUIContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
                          bool webui_resizes_host = true,
                          bool esc_closes_ui = true)
-      : BubbleContentsWrapper(webui_url,
+      : WebUIContentsWrapper(webui_url,
                               browser_context,
                               task_manager_string_id,
                               webui_resizes_host,
@@ -173,13 +172,13 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
                : nullptr;
   }
 
-  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   const GURL webui_url_;
-  base::WeakPtrFactory<BubbleContentsWrapper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebUIContentsWrapper> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_BUBBLE_CONTENTS_WRAPPER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_WRAPPER_H_

@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -26,14 +26,14 @@ class MenuRunner;
 // WebUI. This includes keyboard event handling, context menu triggering, and
 // handling visibility updates.
 class SidePanelWebUIView : public views::WebView,
-                           public BubbleContentsWrapper::Host {
+                           public WebUIContentsWrapper::Host {
   METADATA_HEADER(SidePanelWebUIView, views::WebView)
 
  public:
   static inline constexpr int kSidePanelWebViewId = 777;
   SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,
-                     BubbleContentsWrapper* contents_wrapper);
+                     WebUIContentsWrapper* contents_wrapper);
   SidePanelWebUIView(const SidePanelWebUIView&) = delete;
   SidePanelWebUIView& operator=(const SidePanelWebUIView&) = delete;
   ~SidePanelWebUIView() override;
@@ -42,7 +42,7 @@ class SidePanelWebUIView : public views::WebView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
-  // BubbleContentsWrapper::Host:
+  // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
   void ShowCustomContextMenu(
@@ -56,7 +56,7 @@ class SidePanelWebUIView : public views::WebView,
  private:
   base::RepeatingClosure on_show_cb_;
   base::RepeatingClosure close_cb_;
-  raw_ptr<BubbleContentsWrapper, DanglingUntriaged> contents_wrapper_;
+  raw_ptr<WebUIContentsWrapper, DanglingUntriaged> contents_wrapper_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
   // A handler to handle unhandled keyboard messages coming back from the
@@ -73,7 +73,7 @@ class SidePanelWebUIViewT : public SidePanelWebUIView {
   SidePanelWebUIViewT(
       base::RepeatingClosure on_show_cb,
       base::RepeatingClosure close_cb,
-      std::unique_ptr<BubbleContentsWrapperT<T>> contents_wrapper)
+      std::unique_ptr<WebUIContentsWrapperT<T>> contents_wrapper)
       : SidePanelWebUIView(std::move(on_show_cb),
                            std::move(close_cb),
                            contents_wrapper.get()),
@@ -84,12 +84,12 @@ class SidePanelWebUIViewT : public SidePanelWebUIView {
   SidePanelWebUIViewT& operator=(const SidePanelWebUIViewT&) = delete;
   ~SidePanelWebUIViewT() override = default;
 
-  BubbleContentsWrapperT<T>* contents_wrapper() {
+  WebUIContentsWrapperT<T>* contents_wrapper() {
     return contents_wrapper_.get();
   }
 
  private:
-  std::unique_ptr<BubbleContentsWrapperT<T>> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapperT<T>> contents_wrapper_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_WEB_UI_VIEW_H_

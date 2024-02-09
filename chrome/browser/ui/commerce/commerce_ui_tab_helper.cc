@@ -455,7 +455,7 @@ CommerceUiTabHelper::CreateShoppingInsightsWebView() {
   auto shopping_insights_web_view =
       std::make_unique<SidePanelWebUIViewT<ShoppingInsightsSidePanelUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
-          std::make_unique<BubbleContentsWrapperT<ShoppingInsightsSidePanelUI>>(
+          std::make_unique<WebUIContentsWrapperT<ShoppingInsightsSidePanelUI>>(
               GURL(kChromeUIShoppingInsightsSidePanelUrl),
               Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,

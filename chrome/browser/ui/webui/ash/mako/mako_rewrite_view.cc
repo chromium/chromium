@@ -24,7 +24,7 @@ constexpr int kMakoRewriteHeightThreshold = 400;
 
 }  // namespace
 
-MakoRewriteView::MakoRewriteView(BubbleContentsWrapper* contents_wrapper,
+MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
                                  const gfx::Rect& caret_bounds)
     : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
       caret_bounds_(caret_bounds) {

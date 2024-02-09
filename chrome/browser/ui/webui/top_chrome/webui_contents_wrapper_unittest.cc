@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 
 #include <memory>
 #include <utility>
@@ -25,9 +25,9 @@ namespace views {
 
 namespace {
 
-class MockHost : public BubbleContentsWrapper::Host {
+class MockHost : public WebUIContentsWrapper::Host {
  public:
-  // BubbleContentsWrapper::Host:
+  // WebUIContentsWrapper::Host:
   void ShowUI() override { ++show_ui_called_; }
   void CloseUI() override { ++close_ui_called_; }
   void ShowCustomContextMenu(
@@ -62,33 +62,34 @@ class MockHost : public BubbleContentsWrapper::Host {
   base::WeakPtrFactory<MockHost> weak_ptr_factory_{this};
 };
 
-class TestBubbleContentsWrapper final : public BubbleContentsWrapper {
+class TestWebUIContentsWrapper
+    : public WebUIContentsWrapper {
  public:
-  explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
-  ~TestBubbleContentsWrapper() override = default;
+  explicit TestWebUIContentsWrapper(Profile* profile)
+      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
+  ~TestWebUIContentsWrapper() override = default;
 
-  // BubbleContentsWrapper:
+  // WebUIContentsWrapper:
   void ReloadWebContents() override {}
-  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<TestBubbleContentsWrapper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TestWebUIContentsWrapper> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
 namespace test {
 
-class BubbleContentsWrapperTest : public ChromeViewsTestBase {
+class WebUIContentsWrapperTest : public ChromeViewsTestBase {
  public:
-  BubbleContentsWrapperTest() = default;
-  BubbleContentsWrapperTest(const BubbleContentsWrapperTest&) = delete;
-  BubbleContentsWrapperTest& operator=(const BubbleContentsWrapperTest&) =
+  WebUIContentsWrapperTest() = default;
+  WebUIContentsWrapperTest(const WebUIContentsWrapperTest&) = delete;
+  WebUIContentsWrapperTest& operator=(const WebUIContentsWrapperTest&) =
       delete;
-  ~BubbleContentsWrapperTest() override = default;
+  ~WebUIContentsWrapperTest() override = default;
 
   // ViewsTestBase:
   void SetUp() override {
@@ -102,19 +103,19 @@ class BubbleContentsWrapperTest : public ChromeViewsTestBase {
         profile_.get(), std::move(instance));
 
     contents_wrapper_ =
-        std::make_unique<TestBubbleContentsWrapper>(profile_.get());
+        std::make_unique<TestWebUIContentsWrapper>(profile_.get());
     contents_wrapper_->SetWebContentsForTesting(std::move(test_contents));
   }
 
-  BubbleContentsWrapper* contents_wrapper() { return contents_wrapper_.get(); }
+  WebUIContentsWrapper* contents_wrapper() { return contents_wrapper_.get(); }
 
  private:
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 };
 
-TEST_F(BubbleContentsWrapperTest, CallsHostForShowUIAndCloseUIWhenPresent) {
+TEST_F(WebUIContentsWrapperTest, CallsHostForShowUIAndCloseUIWhenPresent) {
   MockHost host;
   EXPECT_EQ(0, host.show_ui_called());
   EXPECT_EQ(0, host.close_ui_called());
@@ -132,7 +133,7 @@ TEST_F(BubbleContentsWrapperTest, CallsHostForShowUIAndCloseUIWhenPresent) {
   EXPECT_EQ(1, host.close_ui_called());
 }
 
-TEST_F(BubbleContentsWrapperTest, CallsShowContextMenu) {
+TEST_F(WebUIContentsWrapperTest, CallsShowContextMenu) {
   MockHost host;
   EXPECT_EQ(0, host.show_custom_context_menu_called());
 
@@ -145,7 +146,7 @@ TEST_F(BubbleContentsWrapperTest, CallsShowContextMenu) {
   EXPECT_EQ(1, host.show_custom_context_menu_called());
 }
 
-TEST_F(BubbleContentsWrapperTest, NotifiesHostWhenResized) {
+TEST_F(WebUIContentsWrapperTest, NotifiesHostWhenResized) {
   MockHost host;
   EXPECT_EQ(0, host.resize_due_to_auto_resize_called());
 
@@ -160,7 +161,7 @@ TEST_F(BubbleContentsWrapperTest, NotifiesHostWhenResized) {
   EXPECT_EQ(1, host.resize_due_to_auto_resize_called());
 }
 
-TEST_F(BubbleContentsWrapperTest, EscapeKeyClosesHost) {
+TEST_F(WebUIContentsWrapperTest, EscapeKeyClosesHost) {
   MockHost host;
   contents_wrapper()->SetHost(host.GetWeakPtr());
 
@@ -179,7 +180,7 @@ TEST_F(BubbleContentsWrapperTest, EscapeKeyClosesHost) {
   EXPECT_EQ(1, host.close_ui_called());
 }
 
-TEST_F(BubbleContentsWrapperTest, ClosesHostOnWebContentsCrash) {
+TEST_F(WebUIContentsWrapperTest, ClosesHostOnWebContentsCrash) {
   MockHost host;
   contents_wrapper()->SetHost(host.GetWeakPtr());
   EXPECT_EQ(0, host.close_ui_called());

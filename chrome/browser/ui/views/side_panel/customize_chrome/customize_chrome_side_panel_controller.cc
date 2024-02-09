@@ -128,7 +128,7 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
   auto customize_chrome_web_view =
       std::make_unique<SidePanelWebUIViewT<CustomizeChromeUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
-          std::make_unique<BubbleContentsWrapperT<CustomizeChromeUI>>(
+          std::make_unique<WebUIContentsWrapperT<CustomizeChromeUI>>(
               GURL(chrome::kChromeUICustomizeChromeSidePanelURL),
               Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,

@@ -15,7 +15,7 @@ constexpr int kMakoConsentCornerRadius = 20;
 
 }  // namespace
 
-MakoConsentView::MakoConsentView(BubbleContentsWrapper* contents_wrapper,
+MakoConsentView::MakoConsentView(WebUIContentsWrapper* contents_wrapper,
                                  const gfx::Rect& caret_bounds)
     : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()) {
   set_has_parent(false);

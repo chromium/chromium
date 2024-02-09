@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -36,26 +36,26 @@ content::WebContents::CreateParams GetWebContentsCreateParams(
 
 }  // namespace
 
-bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
+bool WebUIContentsWrapper::Host::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   return false;
 }
 
-bool BubbleContentsWrapper::Host::HandleContextMenu(
+bool WebUIContentsWrapper::Host::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
 }
 
-content::WebContents* BubbleContentsWrapper::Host::OpenURLFromTab(
+content::WebContents* WebUIContentsWrapper::Host::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
   return nullptr;
 }
 
-BubbleContentsWrapper::BubbleContentsWrapper(
+WebUIContentsWrapper::WebUIContentsWrapper(
     const GURL& webui_url,
     content::BrowserContext* browser_context,
     int task_manager_string_id,
@@ -76,11 +76,11 @@ BubbleContentsWrapper::BubbleContentsWrapper(
                                                        task_manager_string_id);
 }
 
-BubbleContentsWrapper::~BubbleContentsWrapper() {
+WebUIContentsWrapper::~WebUIContentsWrapper() {
   WebContentsObserver::Observe(nullptr);
 }
 
-void BubbleContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
+void WebUIContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
                                                   const gfx::Size& new_size) {
   DCHECK_EQ(web_contents(), source);
   if (host_)
@@ -88,7 +88,7 @@ void BubbleContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
 }
 
 content::KeyboardEventProcessingResult
-BubbleContentsWrapper::PreHandleKeyboardEvent(
+WebUIContentsWrapper::PreHandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(web_contents(), source);
@@ -101,20 +101,20 @@ BubbleContentsWrapper::PreHandleKeyboardEvent(
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool BubbleContentsWrapper::HandleKeyboardEvent(
+bool WebUIContentsWrapper::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(web_contents(), source);
   return host_ ? host_->HandleKeyboardEvent(source, event) : false;
 }
 
-bool BubbleContentsWrapper::HandleContextMenu(
+bool WebUIContentsWrapper::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return host_ ? host_->HandleContextMenu(render_frame_host, params) : true;
 }
 
-std::unique_ptr<content::EyeDropper> BubbleContentsWrapper::OpenEyeDropper(
+std::unique_ptr<content::EyeDropper> WebUIContentsWrapper::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
   BrowserWindow* window =
@@ -122,13 +122,13 @@ std::unique_ptr<content::EyeDropper> BubbleContentsWrapper::OpenEyeDropper(
   return window->OpenEyeDropper(frame, listener);
 }
 
-content::WebContents* BubbleContentsWrapper::OpenURLFromTab(
+content::WebContents* WebUIContentsWrapper::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
   return host_ ? host_->OpenURLFromTab(source, params) : nullptr;
 }
 
-void BubbleContentsWrapper::RequestMediaAccessPermission(
+void WebUIContentsWrapper::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
@@ -138,7 +138,7 @@ void BubbleContentsWrapper::RequestMediaAccessPermission(
   }
 }
 
-void BubbleContentsWrapper::RunFileChooser(
+void WebUIContentsWrapper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
@@ -147,7 +147,7 @@ void BubbleContentsWrapper::RunFileChooser(
   }
 }
 
-void BubbleContentsWrapper::PrimaryPageChanged(content::Page& page) {
+void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
   content::RenderWidgetHostView* render_widget_host_view =
       web_contents_->GetRenderWidgetHostView();
   if (!webui_resizes_host_ || !render_widget_host_view)
@@ -157,44 +157,44 @@ void BubbleContentsWrapper::PrimaryPageChanged(content::Page& page) {
                                             gfx::Size(INT_MAX, INT_MAX));
 }
 
-void BubbleContentsWrapper::PrimaryMainFrameRenderProcessGone(
+void WebUIContentsWrapper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   CloseUI();
 }
 
-void BubbleContentsWrapper::ShowUI() {
+void WebUIContentsWrapper::ShowUI() {
   if (host_)
     host_->ShowUI();
 }
 
-void BubbleContentsWrapper::CloseUI() {
+void WebUIContentsWrapper::CloseUI() {
   if (host_)
     host_->CloseUI();
 }
 
-void BubbleContentsWrapper::ShowContextMenu(
+void WebUIContentsWrapper::ShowContextMenu(
     gfx::Point point,
     std::unique_ptr<ui::MenuModel> menu_model) {
   if (host_)
     host_->ShowCustomContextMenu(point, std::move(menu_model));
 }
 
-void BubbleContentsWrapper::HideContextMenu() {
+void WebUIContentsWrapper::HideContextMenu() {
   if (host_)
     host_->HideCustomContextMenu();
 }
 
-base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {
+base::WeakPtr<WebUIContentsWrapper::Host> WebUIContentsWrapper::GetHost() {
   return host_;
 }
 
-void BubbleContentsWrapper::SetHost(
-    base::WeakPtr<BubbleContentsWrapper::Host> host) {
+void WebUIContentsWrapper::SetHost(
+    base::WeakPtr<WebUIContentsWrapper::Host> host) {
   DCHECK(!web_contents_->IsCrashed());
   host_ = std::move(host);
 }
 
-void BubbleContentsWrapper::SetWebContentsForTesting(
+void WebUIContentsWrapper::SetWebContentsForTesting(
     std::unique_ptr<content::WebContents> web_contents) {
   web_contents_->SetDelegate(nullptr);
   web_contents_ = std::move(web_contents);

@@ -26,7 +26,7 @@ CompanionSidePanelWebView::CompanionSidePanelWebView(Profile* profile)
           base::RepeatingClosure(),
           base::RepeatingClosure(),
           std::make_unique<
-              BubbleContentsWrapperT<CompanionSidePanelUntrustedUI>>(
+              WebUIContentsWrapperT<CompanionSidePanelUntrustedUI>>(
               GURL(chrome::kChromeUIUntrustedCompanionSidePanelURL),
               profile,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,

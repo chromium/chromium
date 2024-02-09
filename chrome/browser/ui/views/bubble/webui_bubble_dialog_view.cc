@@ -50,7 +50,7 @@ END_METADATA
 
 WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
-    base::WeakPtr<BubbleContentsWrapper> contents_wrapper,
+    base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
     const std::optional<gfx::Rect>& anchor_rect,
     views::BubbleBorder::Arrow arrow)
     : BubbleDialogDelegateView(anchor_view, arrow),
