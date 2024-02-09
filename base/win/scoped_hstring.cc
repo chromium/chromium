@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/utf_string_conversions.h"
 
 namespace base {
@@ -53,7 +53,7 @@ ScopedHString ScopedHString::Create(std::wstring_view str) {
 }
 
 // static
-ScopedHString ScopedHString::Create(StringPiece str) {
+ScopedHString ScopedHString::Create(std::string_view str) {
   return Create(UTF8ToWide(str));
 }
 
