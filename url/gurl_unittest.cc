@@ -1181,7 +1181,6 @@ TEST(GURLTest, ContentForNonStandardURLs) {
       // content not the scheme.
       {"view-source:http://example.com/path", "http://example.com/path"},
       {"blob:http://example.com/GUID", "http://example.com/GUID"},
-      {"blob://http://example.com/GUID", "//http://example.com/GUID"},
       {"blob:http://user:password@example.com/GUID",
        "http://user:password@example.com/GUID"},
 
@@ -1207,6 +1206,35 @@ TEST(GURLTest, ContentForNonStandardURLs) {
   }
 }
 
+TEST_P(GURLTypedTest, ContentForNonStandardURLs) {
+  struct TestCase {
+    const std::string_view url;
+    const std::string_view expected;
+  };
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "http//example.com/GUID"},
+        {"git://host/path#fragment", "host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
+      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
+    }
+  } else {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
+        {"git://host/path#fragment", "//host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
+      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
+    }
+  }
+}
+
 // Tests that the URL path is properly extracted for unusual URLs. This can be
 // complex in cases such as multiple schemes (view-source:http:) or when
 // octothorpes ('#') are involved.
@@ -1220,7 +1248,6 @@ TEST(GURLTest, PathForNonStandardURLs) {
        "this is arbitrary content"},
       {"view-source:http://example.com/path", "http://example.com/path"},
       {"blob:http://example.com/GUID", "http://example.com/GUID"},
-      {"blob://http://example.com/GUID", "//http://example.com/GUID"},
       {"blob:http://user:password@example.com/GUID",
        "http://user:password@example.com/GUID"},
 
@@ -1236,6 +1263,33 @@ TEST(GURLTest, PathForNonStandardURLs) {
   for (const auto& test : cases) {
     GURL url(test.url);
     EXPECT_EQ(test.expected, url.path()) << test.url;
+  }
+}
+
+TEST_P(GURLTypedTest, PathForNonStandardURLs) {
+  struct TestCase {
+    const std::string_view url;
+    const std::string_view expected;
+  };
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//example.com/GUID"},
+        {"git://host/path#fragment", "/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.path(), test.expected) << test.url;
+    }
+  } else {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
+        {"git://host/path#fragment", "//host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.path(), test.expected) << test.url;
+    }
   }
 }
 
