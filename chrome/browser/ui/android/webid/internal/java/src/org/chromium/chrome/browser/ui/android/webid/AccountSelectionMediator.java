@@ -117,6 +117,7 @@ class AccountSelectionMediator {
     private ClientIdMetadata mClientMetadata;
     private String mRpContext;
     private IdentityCredentialTokenError mError;
+    private boolean mRequestPermission;
 
     // All of the user's accounts.
     private List<Account> mAccounts;
@@ -277,7 +278,8 @@ class AccountSelectionMediator {
                 mIdpMetadata,
                 mClientMetadata,
                 /* isAutoReauthn= */ false,
-                mRpContext);
+                mRpContext,
+                mRequestPermission);
     }
 
     private PropertyModel createHeaderItem(
@@ -408,7 +410,8 @@ class AccountSelectionMediator {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext) {
+            String rpContext,
+            boolean requestPermission) {
         showPlaceholderIcon(idpMetadata);
         mSelectedAccount = null;
         if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
@@ -422,7 +425,8 @@ class AccountSelectionMediator {
                 idpMetadata,
                 clientMetadata,
                 isAutoReauthn,
-                rpContext);
+                rpContext,
+                requestPermission);
         setComponentShowTime(SystemClock.elapsedRealtime());
         showBrandIcon(idpMetadata);
     }
@@ -502,7 +506,8 @@ class AccountSelectionMediator {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext) {
+            String rpContext,
+            boolean requestPermission) {
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mIdpForDisplay = idpForDisplay;
@@ -510,6 +515,7 @@ class AccountSelectionMediator {
         mIdpMetadata = idpMetadata;
         mClientMetadata = clientMetadata;
         mRpContext = rpContext;
+        mRequestPermission = requestPermission;
 
         if (mSelectedAccount != null) {
             accounts = Arrays.asList(mSelectedAccount);
@@ -527,8 +533,9 @@ class AccountSelectionMediator {
         boolean isDataSharingConsentVisible = false;
         Callback<Account> continueButtonCallback = null;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
-            // Only show the user data sharing consent text for sign up.
-            isDataSharingConsentVisible = !mSelectedAccount.isSignIn();
+            // Only show the user data sharing consent text for sign up and only
+            // if we're asked to request permission.
+            isDataSharingConsentVisible = !mSelectedAccount.isSignIn() && mRequestPermission;
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -712,7 +719,7 @@ class AccountSelectionMediator {
 
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
-        if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
+        if (oldSelectedAccount == null && !mSelectedAccount.isSignIn() && mRequestPermission) {
             showAccountsInternal(
                     mTopFrameForDisplay,
                     mIframeForDisplay,
@@ -721,7 +728,8 @@ class AccountSelectionMediator {
                     mIdpMetadata,
                     mClientMetadata,
                     /* isAutoReauthn= */ false,
-                    mRpContext);
+                    mRpContext,
+                    mRequestPermission);
             return;
         }
 

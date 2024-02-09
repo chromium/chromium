@@ -184,7 +184,8 @@ public class AccountSelectionCoordinator
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext) {
+            String rpContext,
+            boolean requestPermission) {
         mMediator.showAccounts(
                 topFrameEtldPlusOne,
                 iframeEtldPlusOne,
@@ -193,7 +194,8 @@ public class AccountSelectionCoordinator
                 idpMetadata,
                 clientMetadata,
                 isAutoReauthn,
-                rpContext);
+                rpContext,
+                requestPermission);
     }
 
     @Override

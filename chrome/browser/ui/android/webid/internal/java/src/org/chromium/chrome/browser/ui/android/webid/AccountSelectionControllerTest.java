@@ -209,7 +209,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
@@ -242,7 +243,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Brand icon should be transparent placeholder icon. This is useful so that the header text
@@ -272,7 +274,8 @@ public class AccountSelectionControllerTest {
                 idpMetadataNoBrandIconUrl,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertNull(headerModel.get(IDP_BRAND_ICON));
@@ -293,7 +296,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
@@ -309,7 +313,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
         assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
         assertNull(mSheetAccountItems.get(1).model.get(AVATAR));
@@ -335,7 +340,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
         assertEquals("Incorrect account", CARL, mSheetAccountItems.get(0).model.get(ACCOUNT));
         assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
@@ -371,7 +377,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         assertEquals(3, countAllItems()); // Header + two Accounts
         assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
     }
@@ -386,7 +393,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         assertEquals(3, countAllItems()); // Header + Account + Continue Button
         assertEquals(1, mSheetAccountItems.size());
         assertEquals("Incorrect account", ANA, mSheetAccountItems.get(0).model.get(ACCOUNT));
@@ -400,7 +408,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         assertEquals(3, countAllItems()); // Header + Account + Continue Button
         assertEquals(1, mSheetAccountItems.size());
         assertEquals("Incorrect account", BOB, mSheetAccountItems.get(0).model.get(ACCOUNT));
@@ -417,7 +426,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         verify(mMockBottomSheetController, times(1)).requestShowContent(any(), eq(true));
 
         assertFalse(mMediator.wasDismissed());
@@ -434,7 +444,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
@@ -464,7 +475,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
@@ -488,7 +500,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
@@ -505,7 +518,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
@@ -522,7 +536,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
@@ -541,7 +556,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         mMediator.onAccountSelected(NEW_USER);
 
         assertFalse(mMediator.wasDismissed());
@@ -562,7 +578,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         mMediator.onAccountSelected(NEW_USER);
 
         pressBack();
@@ -587,7 +604,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ true,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // Auto reauthenticates if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
@@ -607,7 +625,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ true,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // Auto reauthenticates even if dismissed.
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
@@ -629,7 +648,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // For new user we expect header + account + consent text + continue btn
         assertEquals(4, countAllItems());
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
@@ -654,6 +674,44 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
+    public void testNewUserWithoutRequestPermission() {
+        mMediator.showAccounts(
+                TEST_ETLD_PLUS_ONE,
+                TEST_ETLD_PLUS_ONE_1,
+                TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(NEW_USER),
+                IDP_METADATA,
+                CLIENT_ID_METADATA,
+                /* isAutoReauthn= */ false,
+                /* rpContext= */ "signin",
+                /* requestPermission= */ false);
+        // Because requestPermission is false, we expect header + account + continue btn
+        assertEquals(3, countAllItems());
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+    }
+
+    @Test
+    public void testMultiAccountSkipConsentSheetWithoutRequestPermission() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                TEST_ETLD_PLUS_ONE,
+                TEST_ETLD_PLUS_ONE_1,
+                TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(NEW_USER, BOB),
+                IDP_METADATA,
+                CLIENT_ID_METADATA,
+                /* isAutoReauthn= */ false,
+                /* rpContext= */ "signin",
+                /* requestPermission= */ false);
+        mMediator.onAccountSelected(NEW_USER);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, NEW_USER);
+        assertFalse(mMediator.wasDismissed());
+        mMediator.close();
+        assertTrue(mMediator.wasDismissed());
+    }
+
+    @Test
     public void testShowVerifySheetExplicitSignin() {
         for (String rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
@@ -666,7 +724,8 @@ public class AccountSelectionControllerTest {
                     IDP_METADATA,
                     CLIENT_ID_METADATA,
                     /* isAutoReauthn= */ false,
-                    rpContext);
+                    rpContext,
+                    /* requestPermission= */ true);
             mMediator.showVerifySheet(ANA);
 
             assertEquals(1, mSheetAccountItems.size());
@@ -689,7 +748,8 @@ public class AccountSelectionControllerTest {
                     IDP_METADATA,
                     CLIENT_ID_METADATA,
                     /* isAutoReauthn= */ true,
-                    rpContext);
+                    rpContext,
+                    /* requestPermission= */ true);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -857,7 +917,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
         listener.keyboardVisibilityChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
@@ -878,7 +939,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         mMediator.getTabObserver().onInteractabilityChanged(mTab, false);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, false);
         mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
@@ -897,7 +959,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         // We pass null as |mMediatior| does not really care about where we navigate to.
         mMediator.getTabObserver().onDidStartNavigationInPrimaryMainFrame(mTab, null);
         assertTrue(mMediator.wasDismissed());
@@ -915,7 +978,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
         listener.keyboardVisibilityChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
@@ -941,7 +1005,8 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA,
                 CLIENT_ID_METADATA,
                 /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin");
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
         mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);

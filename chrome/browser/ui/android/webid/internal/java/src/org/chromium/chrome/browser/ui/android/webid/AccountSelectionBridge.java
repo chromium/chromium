@@ -97,7 +97,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param clientIdMetadata is the metadata of the RP.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
+     *     the FedCM prompt: "signin", "continue", etc.
+     * @param requestPermission A {@link boolean} indicating whether we need to request permission
+     *     from the user to share their data with the IDP, if the user is not a returning user.
      */
     @CalledByNative
     private void showAccounts(
@@ -108,7 +110,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientIdMetadata,
             boolean isAutoReauthn,
-            String rpContext) {
+            String rpContext,
+            boolean requestPermission) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(
                 topFrameForDisplay,
@@ -118,7 +121,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 idpMetadata,
                 clientIdMetadata,
                 isAutoReauthn,
-                rpContext);
+                rpContext,
+                requestPermission);
     }
 
     /**

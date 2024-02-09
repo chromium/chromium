@@ -166,7 +166,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -189,7 +190,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -212,7 +214,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -285,7 +288,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
@@ -463,7 +467,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -519,7 +524,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -555,7 +561,8 @@ public class AccountSelectionIntegrationTest {
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
-                            /* rpContext= */ "signin");
+                            /* rpContext= */ "signin",
+                            /* requestPermission= */ true);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -577,7 +584,8 @@ public class AccountSelectionIntegrationTest {
                                         IDP_METADATA_WITH_ADD_ACCOUNT,
                                         mClientIdMetadata,
                                         /* isAutoReauthn= */ false,
-                                        /* rpContext= */ "signin");
+                                        /* rpContext= */ "signin",
+                                        /* requestPermission= */ true);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }

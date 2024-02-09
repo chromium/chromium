@@ -52,6 +52,7 @@ public interface AccountSelectionComponent {
 
     /**
      * Displays the given accounts in a new bottom sheet.
+     *
      * @param topFrameEtldPlusOne The {@link String} for the relying party's top frame.
      * @param iframeEtldPlusOne The {@link String} for the relying party's iframe.
      * @param idpEtldPlusOne The {@link String} for the identity provider.
@@ -60,8 +61,9 @@ public interface AccountSelectionComponent {
      * @param clientMetadata Metadata related to relying party.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
-     *
+     *     the FedCM prompt: "signin", "continue", etc.
+     * @param requestPermission A {@link boolean} indicating whether we need to request permission
+     *     from the user to share their data with the IDP, if the user is not a returning user.
      */
     void showAccounts(
             String topFrameEtldPlusOne,
@@ -71,7 +73,8 @@ public interface AccountSelectionComponent {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext);
+            String rpContext,
+            boolean requestPermission);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of
