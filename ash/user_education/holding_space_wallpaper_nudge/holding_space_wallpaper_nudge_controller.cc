@@ -39,6 +39,7 @@
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
@@ -140,6 +141,48 @@ WallpaperView* GetWallpaperViewNearestPoint(
                  GetDisplayNearestPoint(location_in_screen).id()))
       ->wallpaper_widget_controller()
       ->wallpaper_view();
+}
+
+// TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+// into the production metrics code path when cleaning up the experiment.
+void RecordPinInteraction(const std::vector<const HoldingSpaceItem*>& items,
+                          holding_space_metrics::EventSource event_source) {
+  using holding_space_metrics::EventSource;
+  using holding_space_wallpaper_nudge_metrics::Interaction;
+
+  std::optional<Interaction> interaction;
+
+  switch (event_source) {
+    case EventSource::kHoldingSpaceBubble:
+      NOTREACHED_NORETURN();
+    case EventSource::kHoldingSpaceItem:
+      interaction = Interaction::kPinnedFileFromPinButton;
+      break;
+    case EventSource::kHoldingSpaceItemContextMenu:
+      interaction = Interaction::kPinnedFileFromContextMenu;
+      break;
+    case EventSource::kHoldingSpaceTray:
+      interaction = Interaction::kPinnedFileFromHoldingSpaceDrop;
+      break;
+    case EventSource::kFilesApp:
+      interaction = Interaction::kPinnedFileFromFilesApp;
+      break;
+    case EventSource::kTest:
+      CHECK_IS_TEST();
+      break;
+    case EventSource::kWallpaper:
+      interaction = Interaction::kPinnedFileFromWallpaperDrop;
+      break;
+  }
+
+  for (const HoldingSpaceItem* _ : items) {
+    holding_space_wallpaper_nudge_metrics::RecordInteraction(
+        Interaction::kPinnedFileFromAnySource);
+    if (interaction.has_value()) {
+      holding_space_wallpaper_nudge_metrics::RecordInteraction(
+          interaction.value());
+    }
+  }
 }
 
 // Highlight -------------------------------------------------------------------
@@ -514,12 +557,29 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   }
 
   // holding_space_metrics::Observer:
+  // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+  // into the production metrics code path when cleaning up the experiment.
   void OnHoldingSpaceItemActionRecorded(
       const std::vector<const HoldingSpaceItem*>& items,
       holding_space_metrics::ItemAction action,
       holding_space_metrics::EventSource event_source) override {
-    // TODO(http://b/311411775): Record wallpaper nudge experiment metrics.
-    // See `holding_space_wallpaper_nudge_metrics::RecordInteraction()`.
+    using holding_space_metrics::ItemAction;
+
+    switch (action) {
+      case ItemAction::kPin:
+        RecordPinInteraction(items, event_source);
+        break;
+      case ItemAction::kCancel:
+      case ItemAction::kCopy:
+      case ItemAction::kDrag:
+      case ItemAction::kLaunch:
+      case ItemAction::kPause:
+      case ItemAction::kRemove:
+      case ItemAction::kResume:
+      case ItemAction::kShowInFolder:
+      case ItemAction::kUnpin:
+        break;
+    }
   }
 
   // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms

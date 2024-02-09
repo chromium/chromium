@@ -4,6 +4,7 @@
 
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,6 +18,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -75,9 +77,12 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::ash::holding_space_metrics::EventSource;
+using ::ash::holding_space_metrics::ItemAction;
+using ::ash::holding_space_metrics::PodAction;
 using ::ash::holding_space_wallpaper_nudge_metrics::Interaction;
 using ::base::Bucket;
-using ::base::BucketsAre;
+using ::base::BucketsAreArray;
 using ::testing::_;
 using ::testing::AnyOf;
 using ::testing::Conditional;
@@ -1521,51 +1526,120 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that when the production holding space metrics code path records a
-// histogram indicating that a file was dropped on holding space, the
-// corresponding interaction histogram in the wallpaper nudge experiment
-// metrics code path is also recorded.
+// Verifies that when item action histograms are recorded from the production
+// holding space metrics code path, the corresponding interaction histograms
+// from the wallpaper nudge experiment metrics code path are also recorded.
 TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
-       RecordsInteraction_DroppedFileOnHoldingSpace) {
-  base::HistogramTester histogram_tester;
+       RecordsInteractionWhenRecordingItemAction) {
+  struct TestCase {
+    ItemAction item_action;
+    EventSource event_source;
+    std::vector<Interaction> expected_interactions;
+  };
 
-  // Whenever the production holding space metrics code path records a histogram
-  // to reflect that a file was dropped on holding space...
-  holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kDragAndDropToPin);
+  // Set up `test_cases`.
+  const std::array<TestCase, 6u> test_cases = {
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource,
+                                    Interaction::kPinnedFileFromPinButton}},
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kHoldingSpaceItemContextMenu,
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource,
+                                    Interaction::kPinnedFileFromContextMenu}},
+      TestCase{.item_action = ItemAction::kPin,
+               .event_source = EventSource::kHoldingSpaceTray,
+               .expected_interactions =
+                   {Interaction::kPinnedFileFromAnySource,
+                    Interaction::kPinnedFileFromHoldingSpaceDrop}},
+      TestCase{.item_action = ItemAction::kPin,
+               .event_source = EventSource::kFilesApp,
+               .expected_interactions = {Interaction::kPinnedFileFromAnySource,
+                                         Interaction::kPinnedFileFromFilesApp}},
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kTest,
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource}},
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kWallpaper,
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource,
+                                    Interaction::kPinnedFileFromWallpaperDrop}},
+  };
 
-  // ...record the appropriate interaction histogram in the wallpaper nudge
-  // experiment metrics code path iff the nudge is enabled.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
-      Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
-                  BucketsAre(Bucket(Interaction::kDroppedFileOnHoldingSpace,
-                                    /*count=*/1u)),
-                  IsEmpty()));
+  // Set up holding space `items`.
+  const std::unique_ptr<HoldingSpaceItem> item_0 = CreateHoldingSpaceItem(
+      HoldingSpaceItem::Type::kDownload, base::FilePath("foo"));
+  const std::unique_ptr<HoldingSpaceItem> item_1 = CreateHoldingSpaceItem(
+      HoldingSpaceItem::Type::kDownload, base::FilePath("bar"));
+  const std::vector<const HoldingSpaceItem*> items = {item_0.get(),
+                                                      item_1.get()};
+
+  // Verify expectations for each `test_case`.
+  for (const TestCase& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+
+    // Whenever an item action histogram is recorded from the production
+    // holding space metrics code path...
+    holding_space_metrics::RecordItemAction(items, test_case.item_action,
+                                            test_case.event_source);
+
+    // ...the corresponding interaction histogram from the wallpaper nudge
+    // experiment metrics code path should also be recorded iff the nudge is
+    // enabled.
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
+                Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
+                            BucketsAreArray(([&]() {
+                              std::vector<Bucket> buckets;
+                              for (Interaction interaction :
+                                   test_case.expected_interactions) {
+                                buckets.emplace_back(interaction, items.size());
+                              }
+                              return buckets;
+                            })()),
+                            IsEmpty()));
+  }
 }
 
-// Verifies that when the production holding space metrics code path records a
-// histogram indicating that holding space was opened, the corresponding
-// interaction histogram in the wallpaper nudge experiment metrics code path is
-// also recorded.
+// Verifies that when pod action histograms are recorded from the production
+// holding space metrics code path, the corresponding interaction histograms
+// from the wallpaper nudge experiment metrics code path are also recorded.
 TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
-       RecordsInteraction_OpenedHoldingSpace) {
-  base::HistogramTester histogram_tester;
+       RecordsInteractionWhenRecordingPodAction) {
+  struct TestCase {
+    PodAction pod_action;
+    Interaction expected_interaction;
+  };
 
-  // Whenever the production holding space metrics code path records a histogram
-  // to reflect that holding space was opened...
-  holding_space_metrics::RecordPodAction(
-      holding_space_metrics::PodAction::kShowBubble);
+  // Set up `kTestCases`.
+  constexpr std::array<TestCase, 2u> kTestCases = {
+      TestCase{.pod_action = PodAction::kDragAndDropToPin,
+               .expected_interaction = Interaction::kDroppedFileOnHoldingSpace},
+      TestCase{.pod_action = PodAction::kShowBubble,
+               .expected_interaction = Interaction::kOpenedHoldingSpace},
+  };
 
-  // ...record the appropriate interaction histogram in the wallpaper nudge
-  // experiment metrics code path iff the nudge is enabled.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
-              Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
-                          BucketsAre(Bucket(Interaction::kOpenedHoldingSpace,
-                                            /*count=*/1u)),
-                          IsEmpty()));
+  // Verify expectations for each `test_case`.
+  for (const TestCase& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
+
+    // Whenever a pod action histogram is recorded from the production
+    // holding space metrics code path...
+    holding_space_metrics::RecordPodAction(test_case.pod_action);
+
+    // ...the corresponding interaction histogram from the wallpaper nudge
+    // experiment metrics code path should also be recorded iff the nudge is
+    // enabled.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Ash.HoldingSpaceWallpaperNudge.Interaction.Count"),
+        Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
+                    BucketsAre(Bucket(test_case.expected_interaction, 1u)),
+                    IsEmpty()));
+  }
 }
 
 // HoldingSpaceWallpaperNudgePlaceholderTest -----------------------------------
