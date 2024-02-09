@@ -348,14 +348,16 @@ void AuctionDownloader::OnResponseStarted(
         dict.Add("requestId", request_id_);
         if (response_head.headers) {
           dict.Add("statusCode", response_head.headers->response_code());
-          auto header_dict = dict.AddDictionary("headers");
+          auto header_array = dict.AddArray("headers");
 
           size_t header_iterator = 0;
           std::string header_name;
           std::string header_value;
           while (response_head.headers->EnumerateHeaderLines(
               &header_iterator, &header_name, &header_value)) {
-            header_dict.Add(perfetto::DynamicString(header_name), header_value);
+            auto item_dict = header_array.AppendDictionary();
+            item_dict.Add("name", header_name);
+            item_dict.Add("value", header_value);
           }
         }
         dict.Add("mimeType", response_head.mime_type);

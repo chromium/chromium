@@ -11,16 +11,40 @@ ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
-    headers : {
-        Ad-Auction-Allowed : true
-        Connection : Keep-Alive
-        Content-Length : 598
-        Content-Type : application/javascript
-        Date : <date>
-        Keep-Alive : timeout=10
-        Server : Apache
-        X-Powered-By : <x-powered-by>
-    }
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>
@@ -62,16 +86,40 @@ ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
-    headers : {
-        Ad-Auction-Allowed : true
-        Connection : Keep-Alive
-        Content-Length : 522
-        Content-Type : application/javascript
-        Date : <date>
-        Keep-Alive : timeout=10
-        Server : Apache
-        X-Powered-By : <x-powered-by>
-    }
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>

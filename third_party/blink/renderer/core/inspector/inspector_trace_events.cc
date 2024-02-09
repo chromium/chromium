@@ -722,9 +722,11 @@ static void CreateLayoutRoot(perfetto::TracedValue context,
 
 static void SetHeaders(perfetto::TracedValue context,
                        const HTTPHeaderMap& headers) {
-  auto dict = std::move(context).WriteDictionary();
+  auto array = std::move(context).WriteArray();
   for (auto& header : headers) {
-    dict.Add(perfetto::DynamicString(header.key.Ascii()), header.value);
+    auto item_dict = array.AppendDictionary();
+    item_dict.Add("name", header.key);
+    item_dict.Add("value", header.value);
   }
 }
 
