@@ -3666,7 +3666,14 @@
         {}
        ]
       ]
-     }
+     },
+     "trailing-declaration-crash.html": [
+      "54b9a13220112407d31097632e45fc94685d486e",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css-paint-api": {
      "column-count-crash.https.html": [
@@ -7969,6 +7976,15 @@
      ]
     },
     "text": {
+     "crashtests": {
+      "textlength-zwj-crash.svg": [
+       "547e919b7d00c4d4384b5dae6db89939ca2219f0",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "reftests": {
       "text-display-contents-crash.html": [
        "04b6a7e7cf8c6714f6c51c75ef6355102089428e",
@@ -141483,6 +141499,19 @@
         {}
        ]
       ],
+      "alignment-in-subgridded-axes-002.html": [
+       "68f1b3d43c7af410b43226c7e869b1b1e673213a",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/alignment-in-subgridded-axes-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "auto-track-sizing-001.html": [
        "4a946e6feb4dbf4c9c348896ad69a2c81232c17c",
        [
@@ -142413,6 +142442,19 @@
         [
          [
           "/css/css-grid/subgrid/subgrid-baseline-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "subgrid-baseline-012.html": [
+       "e6348411f5fedbbc9ab6bb7d15ff4ec4998b3ef6",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -323710,6 +323752,10 @@
        "69e071c758b65724d49af23ecd7d3d77d1970e3c",
        []
       ],
+      "alignment-in-subgridded-axes-002-ref.html": [
+       "5e2f1cbac3213b127111b65a97ce3f40a5243697",
+       []
+      ],
       "auto-track-sizing-001-ref.html": [
        "81c6d184021cac8e7a0df0402a42a082c675e62a",
        []
@@ -342165,6 +342211,18 @@
       "a0f6add684a57f394f2dd97b163a3ca9fc61a1ef",
       []
      ],
+     "calc-size": {
+      "animation": {
+       "calc-size-width-interpolation.tentative-expected.txt": [
+        "3541504e188c9b1aadab2965ce499f164cb1d690",
+        []
+       ]
+      },
+      "calc-size-width.tentative-expected.txt": [
+       "8b44b9c67c4af4438c1df74250c3005a9a85bb53",
+       []
+      ]
+     },
      "calc-text-indent-1-ref.html": [
       "71c0b48d6eee5eb7a09b440f934e24d1f912e680",
       []
@@ -349715,7 +349773,7 @@
      ]
     },
     "common.js": [
-     "70367b2efff769b3b34121958c0be682ea005820",
+     "97d7da542bc74d6a4c0b60eb84b529d0435908be",
      []
     ],
     "constants.js": [
@@ -350241,6 +350299,10 @@
     "ranges": {
      "Range-mutations.js": [
       "23c013ac6a1d7a1563739afe50f151af49b4ffa6",
+      []
+     ],
+     "Range-surroundContents-expected.txt": [
+      "6ecba9c6c183928e7a3bfa65a8fb42df352816de",
       []
      ],
      "Range-test-iframe.html": [
@@ -395017,6 +395079,10 @@
     "role": {
      "ReadMe.md": [
       "eb89da7846bec8a2611446dac153e16484937111",
+      []
+     ],
+     "generic-roles-expected.txt": [
+      "9cbbb87c61b339bffd46069521e69c8df033679f",
       []
      ]
     },
@@ -442316,6 +442382,13 @@
        null,
        {}
       ]
+     ],
+     "property-interpolations.html": [
+      "878f46375b7505df39034580154c0491e0cee365",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-animations": {
@@ -471793,6 +471866,31 @@
        {}
       ]
      ],
+     "calc-size": {
+      "animation": {
+       "calc-size-width-interpolation.tentative.html": [
+        "7254951db32c61f5d7da2e70427d3524b635e209",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
+      "calc-size-parsing.tentative.html": [
+       "fec24aaed13989e49dc2225847d51734bd523a3d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "calc-size-width.tentative.html": [
+       "228f526752fc800681bb3950ee87908c29994792",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "calc-time-values.html": [
       "60bcdcba594d8300091120100dfe8d878f8ff708",
       [
@@ -475581,7 +475679,7 @@
       ]
      ],
      "scroll-zoom.html": [
-      "1fe4a8acc4ab10633ecb65001d24dbef132289ed",
+      "85808887fd348ff11a5e3b6b34e3982a271384df",
       [
        null,
        {}
@@ -478270,6 +478368,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "open-closed-pseudo.html": [
+      "9301fd2f41624ceae62378547fc735f71ff72d95",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "parsing": {
@@ -482868,7 +482975,7 @@
       ]
      ],
      "Node-properties.html": [
-      "10f92e7d7e857f71a4edde1f8e5e5811fe55e21a",
+      "5fc2c65a8fe718266fba727314729352f3d694cf",
       [
        null,
        {}
@@ -483600,7 +483707,7 @@
       ]
      ],
      "Range-cloneContents.html": [
-      "6064151f62d44307a081e735f1d688c4cafae718",
+      "92d8c0f9d2e9a4259aa097b1cd8bad98bfea7d15",
       [
        null,
        {
@@ -483677,7 +483784,7 @@
       ]
      ],
      "Range-deleteContents.html": [
-      "40dc400125075e5f0422faa56705266a0c2652b7",
+      "6f695ae7bf9bbfc834b3a4d986996da4332296bc",
       [
        null,
        {
@@ -483869,7 +483976,7 @@
       ]
      ],
      "Range-surroundContents.html": [
-      "c9d47fcbad0dee917be90468a9e844d6c51c4b78",
+      "a656db0049145685f1a94c7836ce03512819464a",
       [
        null,
        {
@@ -566738,6 +566845,13 @@
        ]
       ],
       "the-autofocus-attribute": {
+       "autofocus-area.html": [
+        "e1ff72eb61ebf4b5924daeca7897582779783a82",
+        [
+         null,
+         {}
+        ]
+       ],
        "autofocus-dialog.html": [
         "08a0913f42ff91f62af9b19e8c9a3959b63caffa",
         [
@@ -650246,6 +650360,15 @@
        }
       ]
      ],
+     "generic-roles.html": [
+      "9a67312dd8cfbfdf2cb194cc5ac1d40b3c20afab",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "grid-roles.html": [
       "c40771ba9f2e6825e3d120b70bd2eb5d2231bf28",
       [
@@ -659327,7 +659450,7 @@
        ]
       ],
       "osc-basic-waveform.html": [
-       "b34c96855fdbb26428c64ed879d41ec787fb8d85",
+       "abd1ff8d0e5d8453bfbfd1e37dc7c36ef4337f40",
        [
         null,
         {}
@@ -709965,7 +710088,7 @@
        },
        "fetch_error": {
         "fetch_error.py": [
-         "35e78d8d02eba377eb97affab0dba2cb8d47269d",
+         "025da87c928df9a2966a08a31884d83304d57f0a",
          [
           null,
           {}
