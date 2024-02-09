@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/webauthn/AuthenticatorIncognitoConfirmationBottomsheet.java",
     "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
     "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorConfirmationFactory.java",
+    "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorFactory.java",
     "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
   ]
   deps = [
@@ -30,11 +31,13 @@ android_library("java") {
     "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//content/public/android:content_main_dex_java",
+    "//mojo/public/java:bindings_java",
     "//services/device/public/java:device_feature_list_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]

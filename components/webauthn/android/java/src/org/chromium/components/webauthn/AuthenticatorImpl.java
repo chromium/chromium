@@ -92,9 +92,9 @@ public final class AuthenticatorImpl implements Authenticator {
             FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
             RenderFrameHost renderFrameHost,
-            Origin topOrigin,
-            @WebauthnMode int mode) {
+            Origin topOrigin) {
         assert renderFrameHost != null;
+        assert WebauthnModeProvider.getInstance().getWebauthnMode() != WebauthnMode.NONE;
 
         mContext = context;
         mIntentSender = intentSender;
@@ -102,8 +102,6 @@ public final class AuthenticatorImpl implements Authenticator {
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
         mTopOrigin = topOrigin;
         mCreateConfirmationUiDelegate = createConfirmationUiDelegate;
-
-        WebauthnModeProvider.getInstance().setWebauthnMode(mode);
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {

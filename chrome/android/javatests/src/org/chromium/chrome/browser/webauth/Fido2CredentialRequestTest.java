@@ -77,7 +77,6 @@ import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnModeProvider;
-import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
@@ -733,8 +732,7 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -749,6 +747,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
@@ -763,12 +762,7 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext,
-                        mIntentSender,
-                        createConfirmationUiDelegate,
-                        mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -784,6 +778,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
@@ -798,12 +793,7 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext,
-                        mIntentSender,
-                        createConfirmationUiDelegate,
-                        mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -818,6 +808,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertTrue(wasCalled[0]);
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        authenticator.close();
     }
 
     @Test
@@ -829,8 +820,7 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mOrigin);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -844,6 +834,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
@@ -1308,8 +1299,7 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.extensions.userVerificationMethods = true;
@@ -1325,6 +1315,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
@@ -1336,8 +1327,7 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithPrf());
         PrfValues prfValues = new PrfValues();
@@ -1361,6 +1351,7 @@ public class Fido2CredentialRequestTest {
         Fido2ApiTestHelper.validatePrfResults(
                 mCallback.getGetAssertionResponse().extensions.prfResults);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
@@ -1372,8 +1363,7 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin,
-                        WebauthnMode.CHROME);
+                        mOrigin);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1386,6 +1376,7 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        authenticator.close();
     }
 
     @Test
