@@ -2602,6 +2602,246 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       GetCurrentText_HasProperParagraphBreaksAcrossLinks) {
+  std::string marker_html_tag = "::marker";
+  std::u16string bullet1 = u"1.";
+  std::u16string sentence1 = u"Earth";
+  std::u16string sentence2 = u",";
+  std::u16string sentence3 = u" sky,";
+  std::u16string sentence4 = u"day";
+  std::u16string bullet2 = u"2.";
+  std::u16string sentence5 = u",";
+  std::u16string sentence6 = u"night.";
+  std::u16string sentence7 = u"Sound and silence, ";
+  std::u16string bullet3 = u"3.";
+  std::u16string sentence8 = u"dark";
+  std::u16string sentence9 = u"and";
+  std::u16string sentence10 = u"light.";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData list_marker1;
+  list_marker1.id = 2;
+  list_marker1.role = ax::mojom::Role::kListMarker;
+  list_marker1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  marker_html_tag);
+  list_marker1.SetName(bullet1);
+  list_marker1.SetNameFrom(ax::mojom::NameFrom::kContents);
+  list_marker1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  ui::AXNodeData static_text1;
+  static_text1.id = 3;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 12;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 50;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+
+  ui::AXNodeData static_text4;
+  static_text4.id = 16;
+  static_text4.role = ax::mojom::Role::kStaticText;
+  static_text4.SetNameChecked(sentence4);
+
+  ui::AXNodeData list_marker2;
+  list_marker2.id = 4;
+  list_marker2.role = ax::mojom::Role::kListMarker;
+  list_marker2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  marker_html_tag);
+  list_marker2.SetName(bullet2);
+  list_marker2.SetNameFrom(ax::mojom::NameFrom::kContents);
+  list_marker2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  ui::AXNodeData static_text5;
+  static_text5.id = 55;
+  static_text5.role = ax::mojom::Role::kStaticText;
+  static_text5.SetNameChecked(sentence5);
+
+  ui::AXNodeData static_text6;
+  static_text6.id = 600;
+  static_text6.role = ax::mojom::Role::kStaticText;
+  static_text6.SetNameChecked(sentence6);
+
+  ui::AXNodeData static_text7;
+  static_text7.id = 700;
+  static_text7.role = ax::mojom::Role::kStaticText;
+  static_text7.SetNameChecked(sentence7);
+
+  ui::AXNodeData list_marker3;
+  list_marker3.id = 27;
+  list_marker3.role = ax::mojom::Role::kListMarker;
+  list_marker3.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  marker_html_tag);
+  list_marker3.SetName(bullet3);
+  list_marker3.SetNameFrom(ax::mojom::NameFrom::kContents);
+  list_marker3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  ui::AXNodeData static_text8;
+  static_text8.id = 18;
+  static_text8.role = ax::mojom::Role::kStaticText;
+  static_text8.SetNameChecked(sentence8);
+
+  ui::AXNodeData static_text9;
+  static_text9.id = 120;
+  static_text9.role = ax::mojom::Role::kStaticText;
+  static_text9.SetNameChecked(sentence9);
+
+  ui::AXNodeData static_text10;
+  static_text10.id = 13;
+  static_text10.role = ax::mojom::Role::kStaticText;
+  static_text10.SetNameChecked(sentence10);
+
+  ui::AXNodeData root;
+  root.id = 10;
+  root.child_ids = {list_marker1.id, static_text1.id, static_text2.id,
+                    static_text3.id, static_text4.id, list_marker2.id,
+                    static_text5.id, static_text6.id, static_text7.id,
+                    list_marker3.id, static_text8.id, static_text9.id,
+                    static_text10.id};
+  update.root_id = root.id;
+
+  update.nodes = {root,         list_marker1, static_text1, static_text2,
+                  static_text3, static_text4, list_marker2, static_text5,
+                  static_text6, static_text7, list_marker3, static_text8,
+                  static_text9, static_text10};
+  OnActiveAXTreeIDChanged(id_1);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled(
+      id_1, {root.id, list_marker1.id, static_text1.id, static_text2.id,
+             static_text3.id, static_text4.id, list_marker2.id, static_text5.id,
+             static_text6.id, static_text7.id, list_marker3.id, static_text8.id,
+             static_text9.id, static_text10.id});
+  InitAXPosition(list_marker1.id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0], list_marker1.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)bullet1.length());
+
+  // Move to the next segment.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 5);
+
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  EXPECT_EQ(next_node_ids[1], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[1]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[1]), (int)sentence2.length());
+
+  EXPECT_EQ(next_node_ids[2], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[2]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[2]), (int)sentence3.length());
+
+  EXPECT_EQ(next_node_ids[3], static_text4.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[3]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[3]), (int)sentence4.length());
+
+  EXPECT_EQ(next_node_ids[4], list_marker2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[4]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[4]), (int)bullet2.length());
+
+  // Move to the next segment.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 4);
+
+  EXPECT_EQ(next_node_ids[0], static_text5.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence5.length());
+
+  EXPECT_EQ(next_node_ids[1], static_text6.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[1]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[1]), (int)sentence6.length());
+
+  EXPECT_EQ(next_node_ids[2], static_text7.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[2]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[2]), (int)sentence7.length());
+
+  EXPECT_EQ(next_node_ids[3], list_marker3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[3]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[3]), (int)bullet3.length());
+
+  // Move to the next segment.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 3);
+
+  EXPECT_EQ(next_node_ids[0], static_text8.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence8.length());
+
+  EXPECT_EQ(next_node_ids[1], static_text9.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[1]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[1]), (int)sentence9.length());
+
+  EXPECT_EQ(next_node_ids[2], static_text10.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[2]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[2]), (int)sentence10.length());
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetCurrentText_HasProperParagraphBreaks) {
+  std::u16string sentence1 = u"This is a sentence that's split across a \n";
+  std::u16string sentence2 = u"paragraph, so we want to break the node.";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData static_text1;
+  static_text1.id = 3;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 12;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData root;
+  root.id = 10;
+  root.child_ids = {static_text1.id, static_text2.id};
+  update.root_id = root.id;
+
+  update.nodes = {root, static_text1, static_text2};
+  OnActiveAXTreeIDChanged(id_1);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled(id_1, {root.id, static_text1.id, static_text2.id});
+  InitAXPosition(static_text1.id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next segment.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+
+  // Nodes are empty at the end of the new tree.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_SentenceSplitAcrossParagraphsWithoutParagraphRoles) {
   std::u16string header_text = u"Header Text\n";
   std::u16string paragraph_text1 = u"Paragraph one.\n";

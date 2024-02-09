@@ -1326,6 +1326,11 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     return new_position;
   }
 
+  if (new_position->AtStartOfParagraph() &&
+      (current_granularity.node_ids.size() > 0)) {
+    return new_position;
+  }
+
   bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
   // If the node is a leaf, use the parent node instead.
   ui::AXNode* anchor_node =
@@ -1355,6 +1360,14 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
 
     new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
+
+    // We need to check for the beginning of the paragraph within the loop
+    // in case the first node was a non-text node and we've skipped ahead in
+    // the AXPosition.
+    if (new_position->AtStartOfParagraph() &&
+        (current_granularity.node_ids.size() > 0)) {
+      return new_position;
+    }
 
     is_leaf = anchor_node->IsChildOfLeaf();
     if (is_leaf) {
