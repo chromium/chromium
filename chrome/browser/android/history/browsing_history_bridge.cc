@@ -116,6 +116,9 @@ void BrowsingHistoryBridge::OnQueryComplete(
         url::GURLAndroid::FromNativeGURL(env, entry.url),
         base::android::ConvertUTF16ToJavaString(env, domain),
         base::android::ConvertUTF16ToJavaString(env, entry.title),
+        entry.app_id
+            ? base::android::ConvertUTF8ToJavaString(env, *entry.app_id)
+            : nullptr,
         most_recent_java_timestamp,
         base::android::ToJavaLongArray(env, native_timestamps),
         entry.blocked_visit);
@@ -130,6 +133,7 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url,
+    const JavaParamRef<jstring>& j_app_id,
     const JavaParamRef<jlongArray>& j_native_timestamps) {
   BrowsingHistoryService::HistoryEntry entry;
   entry.url = *url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -137,6 +141,9 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
   std::vector<int64_t> timestamps;
   base::android::JavaLongArrayToInt64Vector(env, j_native_timestamps,
                                             &timestamps);
+  entry.app_id = j_app_id
+                     ? base::android::ConvertJavaStringToUTF8(env, j_app_id)
+                     : history::kNoAppIdFilter;
   entry.all_timestamps.insert(timestamps.begin(), timestamps.end());
 
   items_to_remove_.push_back(entry);

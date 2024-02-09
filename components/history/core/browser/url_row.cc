@@ -167,7 +167,8 @@ URLResult::URLResult(URLResult&& other) noexcept
       content_annotations_(other.content_annotations_),
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
-      blocked_visit_(other.blocked_visit_) {}
+      blocked_visit_(other.blocked_visit_),
+      app_id_(std::move(other.app_id_)) {}
 
 URLResult::~URLResult() = default;
 
@@ -180,6 +181,7 @@ void URLResult::SwapResult(URLResult* other) {
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);
+  std::swap(app_id_, other->app_id_);
 }
 
 // static

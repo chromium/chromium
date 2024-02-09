@@ -160,11 +160,13 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     public static HistoryItem createHistoryItem(int which, long timestamp) {
         long[] nativeTimestamps = {timestamp * 1000};
+        String appId = null;
         if (which == 0) {
             return new HistoryItem(
                     JUnitTestGURLs.SEARCH_URL,
                     "www.google.com",
                     "Google",
+                    appId,
                     timestamp,
                     nativeTimestamps,
                     false);
@@ -173,17 +175,25 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     JUnitTestGURLs.EXAMPLE_URL,
                     "www.example.com",
                     "Foo",
+                    appId,
                     timestamp,
                     nativeTimestamps,
                     false);
         } else if (which == 2) {
             return new HistoryItem(
-                    JUnitTestGURLs.URL_1, "www.one.com", "Bar", timestamp, nativeTimestamps, false);
+                    JUnitTestGURLs.URL_1,
+                    "www.one.com",
+                    "Bar",
+                    appId,
+                    timestamp,
+                    nativeTimestamps,
+                    false);
         } else if (which == 3) {
             return new HistoryItem(
                     JUnitTestGURLs.URL_2,
                     "www.two.com",
                     "News",
+                    appId,
                     timestamp,
                     nativeTimestamps,
                     false);
@@ -192,6 +202,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     JUnitTestGURLs.URL_3,
                     "www.three.com",
                     "Engineering",
+                    appId,
                     timestamp,
                     nativeTimestamps,
                     false);
@@ -200,6 +211,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
                     JUnitTestGURLs.INITIAL_URL,
                     "initial.com",
                     "Cannot Visit",
+                    appId,
                     timestamp,
                     nativeTimestamps,
                     true);

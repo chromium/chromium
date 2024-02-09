@@ -667,6 +667,7 @@ struct ExpireHistoryArgs {
   std::set<GURL> urls;
   base::Time begin_time;
   base::Time end_time;
+  absl::optional<std::string> restrict_app_id;
 };
 
 // Represents the time range of a history deletion. If `IsValid()` is false,

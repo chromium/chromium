@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,11 +18,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for BrowsingHistoryBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,5 +58,29 @@ public class BrowsingHistoryBridgeTest {
 
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testAppIdPropagatesForDeletion() {
+        // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
+        // object, and later gets passed down when marking the item for removal.
+        HistoryContentManager contentManager = mock(HistoryContentManager.class);
+        HistoryAdapter adapter =
+                new HistoryAdapter(
+                        contentManager,
+                        mBrowsingHistoryBridge,
+                        new ObservableSupplierImpl<>(),
+                        (vg) -> null);
+        mBrowsingHistoryBridge.setObserver(adapter);
+
+        List<HistoryItem> items = new ArrayList<>();
+        long[] timestamps = new long[0];
+        String appId = "org.chromium.dino.Trex";
+        BrowsingHistoryBridge.createHistoryItemAndAddToList(
+                items, GURL.emptyGURL(), "domain.com", "title", appId, 0, timestamps, false);
+        mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
+
+        adapter.markItemForRemoval(items.get(0));
+        verify(mNativeMocks).markItemForRemoval(anyLong(), any(), any(), eq(appId), any());
     }
 }

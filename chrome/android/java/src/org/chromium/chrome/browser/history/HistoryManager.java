@@ -283,6 +283,7 @@ public class HistoryManager
                                             clusterVisit.getRawUrl(),
                                             null,
                                             null,
+                                            null,
                                             clusterVisit.getTimestamp(),
                                             new long[] {clusterVisit.getTimestamp()},
                                             false);
@@ -293,6 +294,7 @@ public class HistoryManager
                                 item =
                                         new HistoryItem(
                                                 duplicateVisit.getUrl(),
+                                                null,
                                                 null,
                                                 null,
                                                 duplicateVisit.getTimestamp(),

@@ -2711,6 +2711,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     }
 
     url_result.set_visit_time(visit.visit_time);
+    url_result.set_app_id(visit.app_id);
 
     VisitContentAnnotations content_annotations;
     db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
@@ -2750,6 +2751,7 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
     for (const auto& visit : visits) {
       URLResult url_result(text_match);
       url_result.set_visit_time(visit.visit_time);
+      url_result.set_app_id(visit.app_id);
 
       VisitContentAnnotations content_annotations;
       db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
@@ -3453,7 +3455,7 @@ void HistoryBackend::ExpireHistory(
     bool update_first_recorded_time = false;
 
     for (const auto& expire : expire_list) {
-      expirer_.ExpireHistoryBetween(expire.urls, kNoAppIdFilter,
+      expirer_.ExpireHistoryBetween(expire.urls, expire.restrict_app_id,
                                     expire.begin_time, expire.end_time, true);
 
       if (expire.begin_time < first_recorded_time_)
