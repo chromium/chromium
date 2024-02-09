@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
+#include "content/renderer/accessibility/annotations/ax_annotator.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,7 +36,8 @@ class ContentClient;
 // updated on a page. This class is then responsible for retrieving the
 // automatic label for all images and notifying the RenderAccessibility that
 // owns it to update the relevant image annotations.
-class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
+class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
+                                        public base::CheckedObserver {
  public:
   explicit AXImageAnnotator(
       RenderAccessibilityImpl* const render_accessibility);
@@ -45,12 +47,13 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
 
   void Annotate(const blink::WebDocument& document,
                 ui::AXTreeUpdate* update,
-                bool load_complete);
-  void EnableAnnotations();
-  void CancelAnnotations();
-  uint32_t GetAXModeToEnableAnnotations();
-  ax::mojom::Action GetAXActionToEnableAnnotations();
-  void AddDebuggingAttributes(const std::vector<ui::AXTreeUpdate>& updates);
+                bool load_complete) override;
+  void EnableAnnotations() override;
+  void CancelAnnotations() override;
+  uint32_t GetAXModeToEnableAnnotations() override;
+  ax::mojom::Action GetAXActionToEnableAnnotations() override;
+  void AddDebuggingAttributes(
+      const std::vector<ui::AXTreeUpdate>& updates) override;
 
   static void IgnoreProtocolChecksForTesting();
 

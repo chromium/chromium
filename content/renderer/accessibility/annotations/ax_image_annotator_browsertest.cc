@@ -108,14 +108,14 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     auto annotator =
         std::make_unique<TestAXImageAnnotator>(GetRenderAccessibilityImpl());
     annotator->BindAnnotatorForTesting(mock_annotator().GetRemote());
-    GetRenderAccessibilityImpl()->ax_annotators_manager_->ax_image_annotator_ =
-        std::move(annotator);
+    GetRenderAccessibilityImpl()
+        ->ax_annotators_manager_->AddAnnotatorForTesting(std::move(annotator));
     AXImageAnnotator::IgnoreProtocolChecksForTesting();
   }
 
   void TearDown() override {
     GetRenderAccessibilityImpl()
-        ->ax_annotators_manager_->ax_image_annotator_.release();
+        ->ax_annotators_manager_->ClearAnnotatorsForTesting();
     RenderAccessibilityImplTest::TearDown();
   }
 

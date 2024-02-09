@@ -18,7 +18,7 @@ class WebDocument;
 }  // namespace blink
 
 namespace content {
-class AXImageAnnotator;
+class AXAnnotator;
 class RenderAccessibilityImpl;
 
 class CONTENT_EXPORT AXAnnotatorsManager {
@@ -51,11 +51,13 @@ class CONTENT_EXPORT AXAnnotatorsManager {
  private:
   friend class AXImageAnnotatorTest;
 
+  void AddAnnotatorForTesting(std::unique_ptr<AXAnnotator>);
+  void ClearAnnotatorsForTesting();
+
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityImpl, ExperimentalRenderer> render_accessibility_;
 
-  // Manages the automatic image annotations, if enabled.
-  std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
+  std::vector<std::unique_ptr<AXAnnotator>> ax_annotators_;
 };
 
 }  // namespace content
