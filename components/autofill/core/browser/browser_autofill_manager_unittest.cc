@@ -7487,7 +7487,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
 }
 
 // Ensure that email fields without existing plus addresses for the domain, but
-// with the feature enabled, still offer creation of a new plus address.
+// with the feature enabled, still offer creation of a new plus address if their
+// value is empty.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
   EXPECT_CALL(plus_address_delegate(),
@@ -7516,6 +7517,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                                      Suggestion::Icon::kPlusAddress,
                                      PopupItemId::kCreateNewPlusAddress),
                           _, _, _, _));
+
+  // Check that no suggestions are offered if the focused field is not empty
+  // and there is no existing plus address.
+  form.fields[0].value = u"pp";
+  GetAutofillSuggestions(form, form.fields[0]);
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
 // Test that plus address inputs are forced to !should_autocomplete
