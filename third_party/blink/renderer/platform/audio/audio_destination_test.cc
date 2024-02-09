@@ -59,6 +59,7 @@ class TestPlatform : public TestingPlatformSupport {
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
+      std::optional<float> sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
     CHECK(webaudio_device_ != nullptr)
         << "Calling CreateAudioDevice (via AudioDestination::Create) multiple "
@@ -125,16 +126,7 @@ class AudioDestinationTest
     // Calculate the expected number of frames to be consumed to produce
     // |request_frames| frames.
     int exact_frames_required = request_frames;
-    if (destination->SampleRate() !=
-        Platform::Current()->AudioHardwareSampleRate()) {
-      exact_frames_required =
-          std::ceil(request_frames * destination->SampleRate() /
-                    Platform::Current()->AudioHardwareSampleRate());
-      // The internal resampler requires media::SincResampler::KernelSize() / 2
-      // more frames to flush the output. See sinc_resampler.cc for details.
-      exact_frames_required +=
-          media::SincResampler::KernelSizeFromRequestFrames(request_frames) / 2;
-    }
+
     const int expected_frames_processed =
         std::ceil(exact_frames_required /
                   static_cast<double>(destination->RenderQuantumFrames())) *

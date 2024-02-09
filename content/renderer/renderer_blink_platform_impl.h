@@ -126,6 +126,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
+      std::optional<float> sample_rate,
       media::AudioRendererSink::RenderCallback* callback) override;
   bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
                            const char* audio_file_data,

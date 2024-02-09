@@ -33,7 +33,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -306,7 +305,7 @@ bool AudioDestination::IsPlaying() {
 }
 
 double AudioDestination::SampleRate() const {
-  return context_sample_rate_;
+  return web_audio_device_->SampleRate();
 }
 
 uint32_t AudioDestination::CallbackBufferSize() const {
@@ -348,15 +347,12 @@ AudioDestination::AudioDestination(
           Platform::Current()->CreateAudioDevice(sink_descriptor,
                                                  number_of_output_channels,
                                                  latency_hint,
+                                                 context_sample_rate,
                                                  this)),
       callback_buffer_size_(
           web_audio_device_ ? web_audio_device_->FramesPerBuffer() : 0),
       number_of_output_channels_(number_of_output_channels),
       render_quantum_frames_(render_quantum_frames),
-      context_sample_rate_(
-          context_sample_rate.has_value()
-              ? context_sample_rate.value()
-              : (web_audio_device_ ? web_audio_device_->SampleRate() : 0)),
       fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
                                            kFIFOSize,
                                            render_quantum_frames)),
@@ -401,61 +397,7 @@ AudioDestination::AudioDestination(
   }
 
   // Check if the requested buffer size is too large.
-  DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
-
-  double scale_factor = 1.0;
-
-  if (context_sample_rate_ != web_audio_device_->SampleRate()) {
-    scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
-    SendLogMessage(String::Format("%s => (resampling from %0.f Hz to %0.f Hz)",
-                                  __func__, context_sample_rate.value(),
-                                  web_audio_device_->SampleRate()));
-
-    resampler_ = std::make_unique<MediaMultiChannelResampler>(
-        number_of_output_channels, scale_factor, render_quantum_frames,
-        CrossThreadBindRepeating(&AudioDestination::ProvideResamplerInput,
-                                 CrossThreadUnretained(this)));
-    resampler_bus_ =
-        media::AudioBus::CreateWrapper(render_bus_->NumberOfChannels());
-    for (unsigned int i = 0; i < render_bus_->NumberOfChannels(); ++i) {
-      resampler_bus_->SetChannelData(i, render_bus_->Channel(i)->MutableData());
-    }
-    resampler_bus_->set_frames(render_bus_->length());
-  } else {
-    SendLogMessage(String::Format(
-        "%s => (no resampling: context sample rate set to %0.f Hz)", __func__,
-        context_sample_rate_));
-  }
-
-  // Record the sizes if we successfully created an output device.
-  // Histogram for audioHardwareBufferSize
-  base::UmaHistogramSparse(
-      "WebAudio.AudioDestination.HardwareBufferSize",
-      static_cast<int>(Platform::Current()->AudioHardwareBufferSize()));
-
-  // Histogram for the actual callback size used.  Typically, this is the same
-  // as audioHardwareBufferSize, but can be adjusted depending on some
-  // heuristics below.
-  base::UmaHistogramSparse("WebAudio.AudioDestination.CallbackBufferSize",
-                           callback_buffer_size_);
-
-  base::UmaHistogramSparse("WebAudio.AudioContext.HardwareSampleRate",
-                           web_audio_device_->SampleRate());
-
-  // Record the selected sample rate and ratio if the sampleRate was given.  The
-  // ratio is recorded as a percentage, rounded to the nearest percent.
-  if (context_sample_rate.has_value()) {
-    // The actual supplied `context_sample_rate` is probably a small set
-    // including 44100, 48000, 22050, and 2400 Hz.  Other valid values range
-    // from 3000 to 384000 Hz, but are not expected to be used much.
-    base::UmaHistogramSparse("WebAudio.AudioContextOptions.sampleRate",
-                             context_sample_rate.value());
-    // From the expected values above and the common HW sample rates, we expect
-    // the most common ratios to be the set 0.5, 44100/48000, and 48000/44100.
-    // Other values are possible but seem unlikely.
-    base::UmaHistogramSparse("WebAudio.AudioContextOptions.sampleRateRatio",
-                             static_cast<int32_t>(100.0 * scale_factor + 0.5));
-  }
+  CHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
 }
 
 void AudioDestination::SetDeviceState(DeviceState state) {
@@ -525,13 +467,9 @@ void AudioDestination::RequestRender(size_t frames_requested,
       output_position_.position = 0.0;
     }
 
-    if (resampler_) {
-      resampler_->ResampleInternal(RenderQuantumFrames(), resampler_bus_.get());
-    } else {
-      // Process WebAudio graph and push the rendered output to FIFO.
-      callback_->Render(render_bus_.get(), RenderQuantumFrames(),
-                        output_position_, metric_reporter_.GetMetric());
-    }
+    // Process WebAudio graph and push the rendered output to FIFO.
+    callback_->Render(render_bus_.get(), RenderQuantumFrames(),
+                      output_position_, metric_reporter_.GetMetric());
 
     fifo_->Push(render_bus_.get());
   }
@@ -539,12 +477,6 @@ void AudioDestination::RequestRender(size_t frames_requested,
   frames_elapsed_ += frames_requested;
 
   metric_reporter_.EndTrace();
-}
-
-void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
-                                             AudioBus* dest) {
-  callback_->Render(dest, RenderQuantumFrames(), output_position_,
-                    metric_reporter_.GetMetric());
 }
 
 void AudioDestination::SendLogMessage(const String& message) const {
