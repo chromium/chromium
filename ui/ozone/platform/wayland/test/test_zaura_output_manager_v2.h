@@ -32,6 +32,10 @@ class TestZAuraOutputManagerV2 : public GlobalObject {
   // Sends the activated event for the given output.
   void SendActivated(TestOutput* test_output);
 
+  // Called after a test output has been destroyed. The test manager will send
+  // a done event if `send_done_on_config_change_` is true.
+  void OnTestOutputGlobalDestroy(TestOutput* test_output);
+
   void set_send_done_on_config_change(bool send_done_on_config_change) {
     send_done_on_config_change_ = send_done_on_config_change;
   }

@@ -77,4 +77,11 @@ void TestZAuraOutputManagerV2::SendActivated(TestOutput* test_output) {
       test_output->GetOutputName(wl_resource_get_client(resource())));
 }
 
+void TestZAuraOutputManagerV2::OnTestOutputGlobalDestroy(
+    TestOutput* test_output) {
+  if (send_done_on_config_change_) {
+    SendDone();
+  }
+}
+
 }  // namespace wl

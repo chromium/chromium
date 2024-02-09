@@ -17,13 +17,12 @@ namespace {
 constexpr uint32_t kOutputVersion = 2;
 }
 
-TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback)
-    : TestOutput(std::move(flush_metrics_callback), TestOutputMetrics()) {}
+TestOutput::TestOutput(Delegate* delegate)
+    : TestOutput(delegate, TestOutputMetrics()) {}
 
-TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback,
-                       TestOutputMetrics metrics)
+TestOutput::TestOutput(Delegate* delegate, TestOutputMetrics metrics)
     : GlobalObject(&wl_output_interface, nullptr, kOutputVersion),
-      flush_metrics_callback_(std::move(flush_metrics_callback)),
+      delegate_(delegate),
       metrics_(std::move(metrics)) {}
 
 TestOutput::~TestOutput() = default;
@@ -98,7 +97,7 @@ int64_t TestOutput::GetDisplayId() const {
 }
 
 void TestOutput::Flush() {
-  flush_metrics_callback_.Run(this, metrics_);
+  delegate_->OnTestOutputFlush(this, metrics_);
 
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";
@@ -121,6 +120,11 @@ void TestOutput::Flush() {
   }
 
   wl_output_send_done(resource());
+}
+
+void TestOutput::DestroyGlobal() {
+  GlobalObject::DestroyGlobal();
+  delegate_->OnTestOutputGlobalDestroy(this);
 }
 
 // Notifies clients about the changes in the output configuration via server

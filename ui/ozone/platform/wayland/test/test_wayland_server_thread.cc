@@ -50,9 +50,7 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
       client_destroy_listener_(this),
       config_(config),
       compositor_(config.compositor_version),
-      output_(base::BindRepeating(
-          &TestWaylandServerThread::OnTestOutputMetricsFlush,
-          base::Unretained(this))),
+      output_(this),
       zcr_text_input_extension_v1_(config.text_input_extension_version),
       controller_(FROM_HERE) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -239,7 +237,7 @@ TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
   return nullptr;
 }
 
-void TestWaylandServerThread::OnTestOutputMetricsFlush(
+void TestWaylandServerThread::OnTestOutputFlush(
     TestOutput* test_output,
     const TestOutputMetrics& metrics) {
   if (zaura_output_manager_.resource()) {
@@ -247,6 +245,13 @@ void TestWaylandServerThread::OnTestOutputMetricsFlush(
   }
   if (zaura_output_manager_v2_.resource()) {
     zaura_output_manager_v2_.SendOutputMetrics(test_output, metrics);
+  }
+}
+
+void TestWaylandServerThread::OnTestOutputGlobalDestroy(
+    TestOutput* test_output) {
+  if (zaura_output_manager_v2_.resource()) {
+    zaura_output_manager_v2_.OnTestOutputGlobalDestroy(test_output);
   }
 }
 

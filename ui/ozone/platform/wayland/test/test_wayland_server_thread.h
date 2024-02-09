@@ -87,7 +87,8 @@ struct TestServerListener {
 
 class TestSelectionDeviceManager;
 
-class TestWaylandServerThread : public base::Thread,
+class TestWaylandServerThread : public TestOutput::Delegate,
+                                public base::Thread,
                                 base::MessagePumpLibevent::FdWatcher {
  public:
   class OutputDelegate;
@@ -127,10 +128,7 @@ class TestWaylandServerThread : public base::Thread,
   }
 
   TestOutput* CreateAndInitializeOutput(TestOutputMetrics metrics = {}) {
-    auto output = std::make_unique<TestOutput>(
-        base::BindRepeating(&TestWaylandServerThread::OnTestOutputMetricsFlush,
-                            base::Unretained(this)),
-        std::move(metrics));
+    auto output = std::make_unique<TestOutput>(this, std::move(metrics));
     if (output_.aura_shell_enabled()) {
       output->set_aura_shell_enabled();
     }
@@ -140,6 +138,11 @@ class TestWaylandServerThread : public base::Thread,
     globals_.push_back(std::move(output));
     return output_ptr;
   }
+
+  // TestOutput::Delegate:
+  void OnTestOutputFlush(TestOutput* test_output,
+                         const TestOutputMetrics& metrics) override;
+  void OnTestOutputGlobalDestroy(TestOutput* test_output) override;
 
   // Called when the Flush() is called for a `test_output`. When called sends
   // the corresponding events for the `metrics` to clients of the

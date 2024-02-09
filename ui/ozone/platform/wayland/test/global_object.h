@@ -35,7 +35,7 @@ class GlobalObject {
 
   // Can be used by clients to explicitly destroy global objects and send
   // global_remove event.
-  void DestroyGlobal();
+  virtual void DestroyGlobal();
 
   // Called from Bind() to send additional information to clients.
   virtual void OnBind() {}

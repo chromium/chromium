@@ -28,16 +28,18 @@ namespace wl {
 // default.
 class TestOutput : public GlobalObject {
  public:
-  // A callback that allows clients to respond to a Flush() of a given
-  // TestOutput's metrics_. This is called immediately before Flush() sends
-  // metrics events to clients.
-  using FlushMetricsCallback =
-      base::RepeatingCallback<void(TestOutput* TestOutput,
-                                   const TestOutputMetrics& metrics)>;
+  class Delegate {
+   public:
+    // Called immediately before Flush() sends metrics events to clients.
+    virtual void OnTestOutputFlush(TestOutput* test_output,
+                                   const TestOutputMetrics& metrics) = 0;
 
-  explicit TestOutput(FlushMetricsCallback flush_metrics_callback);
-  TestOutput(FlushMetricsCallback flush_metrics_callback,
-             TestOutputMetrics metrics);
+    // Called immediately after the test output's global is destroyed.
+    virtual void OnTestOutputGlobalDestroy(TestOutput* test_output) = 0;
+  };
+
+  explicit TestOutput(Delegate* delegate);
+  TestOutput(Delegate* delegate, TestOutputMetrics metrics);
   TestOutput(const TestOutput&) = delete;
   TestOutput& operator=(const TestOutput&) = delete;
   ~TestOutput() override;
@@ -89,7 +91,8 @@ class TestOutput : public GlobalObject {
     suppress_implicit_flush_ = suppress_implicit_flush;
   }
 
- protected:
+  // GlobalObject:
+  void DestroyGlobal() override;
   void OnBind() override;
 
  private:
@@ -100,8 +103,8 @@ class TestOutput : public GlobalObject {
   // be explicitly called to propagate pending metrics.
   bool suppress_implicit_flush_ = false;
 
-  // Called immediately before Flush() sends metrics events to clients.
-  FlushMetricsCallback flush_metrics_callback_;
+  // The delegate strictly outlives TestOutput instances.
+  const raw_ptr<Delegate> delegate_;
 
   TestOutputMetrics metrics_;
 

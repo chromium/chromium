@@ -1889,6 +1889,6 @@ INSTANTIATE_TEST_SUITE_P(
     Values(wl::ServerConfig{
         .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
         .aura_output_manager_protocol =
-            wl::AuraOutputManagerProtocol::kEnabledV1}));
+            wl::AuraOutputManagerProtocol::kEnabledV2}));
 
 }  // namespace ui
