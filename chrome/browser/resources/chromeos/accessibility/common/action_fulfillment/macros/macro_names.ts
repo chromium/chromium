@@ -10,7 +10,12 @@
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  * Ensure this enum stays in sync with the CrosDictationMacroName enum in
- * tools/metrics/histograms/enums.xml.
+ * tools/metrics/histograms/metadata/accessibility/enums.xml for any
+ * Dictation-specific macros.
+ *
+ * Every Accessibility feature that uses macros must add its own macro
+ * names to this list, even if those macros are defined within feature-
+ * specific code.
  */
 export enum MacroName {
   UNSPECIFIED = 0,
@@ -67,7 +72,7 @@ export enum MacroName {
   NEW_LINE = 15,
 
   // Stops dictation.
-  STOP_LISTENING = 16,
+  TOGGLE_DICTATION = 16,
 
   // Delete one word.
   DELETE_PREV_WORD = 17,
@@ -123,5 +128,6 @@ export enum MacroName {
   // Repeats the last executed macro.
   REPEAT = 34,
 
-  // Any new actions should match with Voice Access's semantic tags.
+  // Any new actions should match with Voice Access's semantic tags where
+  // possible.
 }

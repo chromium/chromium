@@ -927,7 +927,7 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="UNSELECT_TEXT"/>
   <int value="14" label="LIST_COMMANDS"/>
   <int value="15" label="NEW_LINE"/>
-  <int value="16" label="STOP_LISTENING"/>
+  <int value="16" label="TOGGLE_DICTATION"/>
   <int value="17" label="DELETE_PREV_WORD"/>
   <int value="18" label="DELETE_PREV_SENT"/>
   <int value="19" label="NAV_NEXT_WORD"/>

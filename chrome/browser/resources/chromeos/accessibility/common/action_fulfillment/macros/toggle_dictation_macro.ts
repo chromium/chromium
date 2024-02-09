@@ -5,10 +5,13 @@
 import {Macro, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
-/** Class that implements a macro to stop Dictation. */
-export class StopListeningMacro extends Macro {
+/**
+ * Class that implements a macro to toggle Dictation. When run by Dictation,
+ * this will stop listening (since it had to be listening to execute the macro).
+ */
+export class ToggleDictationMacro extends Macro {
   constructor() {
-    super(MacroName.STOP_LISTENING);
+    super(MacroName.TOGGLE_DICTATION);
   }
 
   override run(): RunMacroResult {

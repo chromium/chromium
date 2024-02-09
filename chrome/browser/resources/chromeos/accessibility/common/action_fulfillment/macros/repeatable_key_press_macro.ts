@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '/common/event_generator.js';
-import {KeyCodeData} from '/common/key_code.js';
-
+import {EventGenerator} from '../../event_generator.js';
+import {KeyCodeData} from '../../key_code.js';
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
-import {LocaleInfo} from '../locale_info.js';
 
 import {CheckContextResult, Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
@@ -73,33 +71,39 @@ export class DeletePreviousCharacterMacro extends RepeatableKeyPressMacro {
 
 /** Macro to navigate to the previous character. */
 export class NavPreviousCharMacro extends RepeatableKeyPressMacro {
+  private isRTLLocale_: boolean;
   /** @param repeat The number of characters to move. */
-  constructor(inputController: InputController, repeat: number = 1) {
+  constructor(
+      inputController: InputController, isRTLLocale: boolean,
+      repeat: number = 1) {
     super(
         MacroName.NAV_PREV_CHAR, repeat,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
+    this.isRTLLocale_ = isRTLLocale;
   }
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        LocaleInfo.isRTLLocale() ? KeyCodeData.RIGHT.code :
-                                   KeyCodeData.LEFT.code);
+        this.isRTLLocale_ ? KeyCodeData.RIGHT.code : KeyCodeData.LEFT.code);
   }
 }
 
 /** Macro to navigate to the next character. */
 export class NavNextCharMacro extends RepeatableKeyPressMacro {
+  private isRTLLocale_: boolean;
   /** @param repeat The number of characters to move. */
-  constructor(inputController: InputController, repeat: number = 1) {
+  constructor(
+      inputController: InputController, isRTLLocale: boolean,
+      repeat: number = 1) {
     super(
         MacroName.NAV_NEXT_CHAR, repeat,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
+    this.isRTLLocale_ = isRTLLocale;
   }
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        LocaleInfo.isRTLLocale() ? KeyCodeData.LEFT.code :
-                                   KeyCodeData.RIGHT.code);
+        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code);
   }
 }
 
@@ -209,18 +213,19 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to unselect text. */
 export class UnselectTextMacro extends RepeatableKeyPressMacro {
-  constructor(inputController: InputController) {
+  private isRTLLocale_: boolean;
+  constructor(inputController: InputController, isRTLLocale: boolean) {
     super(
         MacroName.UNSELECT_TEXT, /*repeat=*/ 1,
         new ContextChecker(inputController)
             .add(Context.EMPTY_EDITABLE)
             .add(Context.NO_SELECTION));
+    this.isRTLLocale_ = isRTLLocale;
   }
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        LocaleInfo.isRTLLocale() ? KeyCodeData.LEFT.code :
-                                   KeyCodeData.RIGHT.code);
+        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code);
   }
 }
 
@@ -240,34 +245,38 @@ export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
 
 /** Macro to navigate to the next word. */
 export class NavNextWordMacro extends RepeatableKeyPressMacro {
+  private isRTLLocale_: boolean;
   /** @param repeat The number of words to move. */
-  constructor(inputController: InputController, repeat = 1) {
+  constructor(
+      inputController: InputController, isRTLLocale: boolean, repeat = 1) {
     super(
         MacroName.NAV_NEXT_WORD, repeat,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
+    this.isRTLLocale_ = isRTLLocale;
   }
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        LocaleInfo.isRTLLocale() ? KeyCodeData.LEFT.code :
-                                   KeyCodeData.RIGHT.code,
+        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code,
         {ctrl: true});
   }
 }
 
 /** Macro to navigate to the previous word. */
 export class NavPrevWordMacro extends RepeatableKeyPressMacro {
+  private isRTLLocale_: boolean;
   /** @param repeat The number of words to move. */
-  constructor(inputController: InputController, repeat = 1) {
+  constructor(
+      inputController: InputController, isRTLLocale: boolean, repeat = 1) {
     super(
         MacroName.NAV_PREV_WORD, repeat,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
+    this.isRTLLocale_ = isRTLLocale;
   }
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        LocaleInfo.isRTLLocale() ? KeyCodeData.RIGHT.code :
-                                   KeyCodeData.LEFT.code,
+        this.isRTLLocale_ ? KeyCodeData.RIGHT.code : KeyCodeData.LEFT.code,
         {ctrl: true});
   }
 }

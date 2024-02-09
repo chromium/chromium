@@ -4,7 +4,7 @@
 
 import {Context} from '../context_checker.js';
 
-import {Macro, MacroError, CheckContextResult} from './macro.js';
+import {CheckContextResult, Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Implements a macro that repeats the last executed macro. */

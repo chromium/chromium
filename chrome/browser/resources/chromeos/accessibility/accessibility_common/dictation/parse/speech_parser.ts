@@ -6,8 +6,9 @@
  * @fileoverview Handles speech parsing for dictation.
  */
 
-import {InputController} from '../input_controller.js';
-import {Macro} from '../macros/macro.js';
+import {InputController} from '/common/action_fulfillment/input_controller.js';
+import {Macro} from '/common/action_fulfillment/macros/macro.js';
+
 import {MetricsUtils} from '../metrics_utils.js';
 
 import {InputTextStrategy} from './input_text_strategy.js';

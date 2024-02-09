@@ -7,21 +7,22 @@
  * semantic parser.
  */
 
-import {InputController} from '../input_controller.js';
+import {InputController} from '/common/action_fulfillment/input_controller.js';
+import {DeletePrevSentMacro} from '/common/action_fulfillment/macros/delete_prev_sent_macro.js';
+import {InputTextViewMacro} from '/common/action_fulfillment/macros/input_text_view_macro.js';
+import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
+import {NavNextSentMacro, NavPrevSentMacro} from '/common/action_fulfillment/macros/nav_sent_macro.js';
+import {RepeatMacro} from '/common/action_fulfillment/macros/repeat_macro.js';
+import * as RepeatableKeyPressMacro from '/common/action_fulfillment/macros/repeatable_key_press_macro.js';
+import {SmartDeletePhraseMacro} from '/common/action_fulfillment/macros/smart_delete_phrase_macro.js';
+import {SmartInsertBeforeMacro} from '/common/action_fulfillment/macros/smart_insert_before_macro.js';
+import {SmartReplacePhraseMacro} from '/common/action_fulfillment/macros/smart_replace_phrase_macro.js';
+import {SmartSelectBetweenMacro} from '/common/action_fulfillment/macros/smart_select_between_macro.js';
+
+import {ToggleDictationMacro} from '../../../common/action_fulfillment/macros/toggle_dictation_macro.js';
 import {LocaleInfo} from '../locale_info.js';
-import {DeletePrevSentMacro} from '../macros/delete_prev_sent_macro.js';
-import {InputTextViewMacro} from '../macros/input_text_view_macro.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
-import {Macro} from '../macros/macro.js';
-import {MacroName} from '../macros/macro_names.js';
-import {NavNextSentMacro, NavPrevSentMacro} from '../macros/nav_sent_macro.js';
-import {RepeatMacro} from '../macros/repeat_macro.js';
-import * as RepeatableKeyPressMacro from '../macros/repeatable_key_press_macro.js';
-import {SmartDeletePhraseMacro} from '../macros/smart_delete_phrase_macro.js';
-import {SmartInsertBeforeMacro} from '../macros/smart_insert_before_macro.js';
-import {SmartReplacePhraseMacro} from '../macros/smart_replace_phrase_macro.js';
-import {SmartSelectBetweenMacro} from '../macros/smart_select_between_macro.js';
-import {StopListeningMacro} from '../macros/stop_listening_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
 import * as PumpkinConstants from './pumpkin/pumpkin_constants.js';
@@ -173,7 +174,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
       const argument = hypothesis.actionArgumentList[i];
       // See Variable Argument Placeholders in voiceaccess.patterns_template.
       if (argument.name === PumpkinConstants.HypothesisArgumentName.SEM_TAG) {
-        tag = MacroName[argument.value];
+        // Map Pumpkin's STOP_LISTENING to generic TOGGLE_DICTATION macro.
+        // When this is run by Dictation, it always stops.
+        if (argument.value === 'STOP_LISTENING') {
+          tag = MacroName.TOGGLE_DICTATION;
+        } else {
+          tag = MacroName[argument.value];
+        }
       } else if (
           argument.name === PumpkinConstants.HypothesisArgumentName.NUM_ARG) {
         repeat = argument.value;
@@ -200,10 +207,10 @@ export class PumpkinParseStrategy extends ParseStrategy {
             this.getInputController(), repeat);
       case MacroName.NAV_PREV_CHAR:
         return new RepeatableKeyPressMacro.NavPreviousCharMacro(
-            this.getInputController(), repeat);
+            this.getInputController(), LocaleInfo.isRTLLocale(), repeat);
       case MacroName.NAV_NEXT_CHAR:
         return new RepeatableKeyPressMacro.NavNextCharMacro(
-            this.getInputController(), repeat);
+            this.getInputController(), LocaleInfo.isRTLLocale(), repeat);
       case MacroName.NAV_PREV_LINE:
         return new RepeatableKeyPressMacro.NavPreviousLineMacro(
             this.getInputController(), repeat);
@@ -227,11 +234,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
             this.getInputController());
       case MacroName.UNSELECT_TEXT:
         return new RepeatableKeyPressMacro.UnselectTextMacro(
-            this.getInputController());
+            this.getInputController(),
+            LocaleInfo.isRTLLocale(),
+        );
       case MacroName.LIST_COMMANDS:
         return new ListCommandsMacro();
-      case MacroName.STOP_LISTENING:
-        return new StopListeningMacro();
+      case MacroName.TOGGLE_DICTATION:
+        return new ToggleDictationMacro();
       case MacroName.DELETE_PREV_WORD:
         return new RepeatableKeyPressMacro.DeletePrevWordMacro(
             this.getInputController(), repeat);
@@ -239,10 +248,10 @@ export class PumpkinParseStrategy extends ParseStrategy {
         return new DeletePrevSentMacro(this.getInputController());
       case MacroName.NAV_NEXT_WORD:
         return new RepeatableKeyPressMacro.NavNextWordMacro(
-            this.getInputController(), repeat);
+            this.getInputController(), LocaleInfo.isRTLLocale(), repeat);
       case MacroName.NAV_PREV_WORD:
         return new RepeatableKeyPressMacro.NavPrevWordMacro(
-            this.getInputController(), repeat);
+            this.getInputController(), LocaleInfo.isRTLLocale(), repeat);
       case MacroName.SMART_DELETE_PHRASE:
         return new SmartDeletePhraseMacro(this.getInputController(), text);
       case MacroName.SMART_REPLACE_PHRASE:

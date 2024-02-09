@@ -52,7 +52,7 @@ export interface RunMacroResult {
 }
 
 /**
- * An interface for a Dictation Macro, which can determine if intents are
+ * An interface for an Accessibility Macro, which can determine if intents are
  * actionable and execute them.
  * @abstract
  */

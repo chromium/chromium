@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EditableNodeData, InputController} from '/common/action_fulfillment/input_controller.js';
 import {EventHandler} from '/common/event_handler.js';
 
 import {EditingUtil} from './editing_util.js';
@@ -18,13 +19,6 @@ interface SurroundingInfo {
   focus: number;
   offset: number;
   text: string;
-}
-
-interface EditableNodeData {
-  node: AutomationNode;
-  value: string;
-  selStart: number;
-  selEnd: number;
 }
 
 /** A helper class that waits for automation and IME events. */
@@ -77,11 +71,15 @@ class AutomationImeEventWaiter {
 }
 
 /** InputController handles interaction with input fields for Dictation. */
-export class InputController {
+// TODO(b/307904022): Remove dependency on chrome.input.ime and depend fully on
+// Automation instead, then
+// TODO(b/324316493): Refactor logic that isn't specific to Dictation into
+// common InputController.
+export class InputControllerImpl extends InputController {
   private stopDictationCallback_: () => void;
   private focusHandler_: FocusHandler;
   private activeImeContextId_: number =
-      InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+      InputControllerImpl.NO_ACTIVE_IME_CONTEXT_ID_;
   private onConnectCallback_: (() => void)|null = null;
   private onFocusListener_:
       ((context: chrome.input.ime.InputContext) => void)|null = null;
@@ -99,6 +97,7 @@ export class InputController {
    */
   private previousImeEngineId_ = '';
   constructor(stopDictationCallback: () => void, focusHandler: FocusHandler) {
+    super();
     this.stopDictationCallback_ = stopDictationCallback;
     this.focusHandler_ = focusHandler;
 
@@ -134,7 +133,7 @@ export class InputController {
   /** Whether this is the active IME and has a focused input. */
   isActive(): boolean {
     return this.activeImeContextId_ !==
-        InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+        InputControllerImpl.NO_ACTIVE_IME_CONTEXT_ID_;
   }
 
   /**
@@ -157,9 +156,9 @@ export class InputController {
     this.previousImeEngineId_ = method;
     // Add AccessibilityCommon as an input method and activate it.
     chrome.languageSettingsPrivate.addInputMethod(
-        InputController.IME_ENGINE_ID);
+        InputControllerImpl.IME_ENGINE_ID);
     chrome.inputMethodPrivate.setCurrentInputMethod(
-        InputController.IME_ENGINE_ID);
+        InputControllerImpl.IME_ENGINE_ID);
   }
 
   /**
@@ -168,7 +167,7 @@ export class InputController {
    */
   disconnect(): void {
     // Clean up IME state and reset to the previous IME method.
-    this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+    this.activeImeContextId_ = InputControllerImpl.NO_ACTIVE_IME_CONTEXT_ID_;
     chrome.inputMethodPrivate.setCurrentInputMethod(this.previousImeEngineId_);
     this.previousImeEngineId_ = '';
     this.surroundingInfo_ = null;
@@ -216,7 +215,7 @@ export class InputController {
   private onImeBlur_(contextId: number): void {
     if (contextId === this.activeImeContextId_) {
       // Clean up context ID immediately. We can no longer use this context.
-      this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+      this.activeImeContextId_ = InputControllerImpl.NO_ACTIVE_IME_CONTEXT_ID_;
       this.surroundingInfo_ = null;
       this.stopDictationCallback_();
     }
@@ -228,7 +227,8 @@ export class InputController {
    */
   private onSurroundingTextChanged_(
       engineID: string, surroundingInfo: SurroundingInfo): void {
-    if (engineID !== InputController.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID) {
+    if (engineID !==
+        InputControllerImpl.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID) {
       return;
     }
 
@@ -270,7 +270,7 @@ export class InputController {
     const deleteSurroundingText: () => void = () => {
       chrome.input.ime.deleteSurroundingText({
         contextID: this.activeImeContextId_,
-        engineID: InputController.IME_ENGINE_ID,
+        engineID: InputControllerImpl.IME_ENGINE_ID,
         length,
         offset,
       });
@@ -519,7 +519,7 @@ export class InputController {
   }
 }
 
-export namespace InputController {
+export namespace InputControllerImpl {
   /** The IME engine ID for AccessibilityCommon. */
   export const IME_ENGINE_ID =
       '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
