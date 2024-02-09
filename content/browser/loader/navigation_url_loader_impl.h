@@ -239,9 +239,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Current URL that is being navigated, updated after redirection.
   GURL url_;
 
-  // Redirect URL chain.
-  std::vector<GURL> url_chain_;
-
   const int frame_tree_node_id_;
   const GlobalRequestID global_request_id_;
   net::RedirectInfo redirect_info_;

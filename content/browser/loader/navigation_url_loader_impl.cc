@@ -584,8 +584,9 @@ void NavigationURLLoaderImpl::CreateInterceptors(
 
 void NavigationURLLoaderImpl::Restart() {
   // Cancel all inflight early hints preloads except for same origin redirects.
-  if (!IsSameOriginRedirect(url_chain_))
+  if (!IsSameOriginRedirect(resource_request_->navigation_redirect_chain)) {
     early_hints_manager_.reset();
+  }
 
   // Clear `url_loader_` if it's not the default one (network). This allows
   // the restarted request to use a new loader, instead of, e.g., reusing the
@@ -595,10 +596,14 @@ void NavigationURLLoaderImpl::Restart() {
   // if the redirected URL's scheme and the previous URL scheme don't match in
   // their use or disuse of the network service loader.
   if (!default_loader_used_ ||
-      (url_chain_.size() > 1 && network::IsURLHandledByNetworkService(
-                                    url_chain_[url_chain_.size() - 1]) !=
-                                    network::IsURLHandledByNetworkService(
-                                        url_chain_[url_chain_.size() - 2]))) {
+      (resource_request_->navigation_redirect_chain.size() > 1 &&
+       network::IsURLHandledByNetworkService(
+           resource_request_->navigation_redirect_chain
+               [resource_request_->navigation_redirect_chain.size() - 1]) !=
+           network::IsURLHandledByNetworkService(
+               resource_request_->navigation_redirect_chain
+                   [resource_request_->navigation_redirect_chain.size() -
+                    2]))) {
     if (url_loader_) {
       url_loader_->ResetForFollowRedirect(
           *resource_request_.get(), url_loader_removed_headers_,
@@ -744,7 +749,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
 
   if (network::IsURLHandledByNetworkService(resource_request_->url)) {
     default_loader_used_ = true;
-    url_chain_.push_back(resource_request_->url);
     return network_loader_factory_;
   }
 
@@ -758,9 +762,13 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
 
   if (!base::Contains(known_schemes_, resource_request_->url.scheme())) {
     std::optional<url::Origin> initiating_origin;
-    if (url_chain_.size() > 1) {
-      initiating_origin =
-          url::Origin::Create(url_chain_[url_chain_.size() - 2]);
+    if (resource_request_->navigation_redirect_chain.size() > 1) {
+      // The last URL in `navigation_redirect_chain` is an external-protocol URL
+      // (if handled by `HandleExternalProtocol`), and the second-to-last URL is
+      // the URL that initiated the redirect to the external-protocol URL.
+      initiating_origin = url::Origin::Create(
+          resource_request_->navigation_redirect_chain
+              [resource_request_->navigation_redirect_chain.size() - 2]);
     } else {
       initiating_origin = resource_request_->request_initiator;
     }
@@ -804,7 +812,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
                           network::WeakWrapperSharedURLLoaderFactory>(
                       non_network_factory.get()));
   }
-  url_chain_.push_back(resource_request_->url);
   return factory;
 }
 
@@ -972,7 +979,8 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
   // Record navigation loader response metrics.  We don't want to record the
   // metrics for requests that had redirects to avoid adding noise to the
   // latency measurements.
-  if (resource_request_->is_outermost_main_frame && url_chain_.size() == 1) {
+  if (resource_request_->is_outermost_main_frame &&
+      resource_request_->navigation_redirect_chain.size() == 1) {
     RecordReceivedResponseUkmForOutermostMainFrame();
   }
 
@@ -1562,7 +1570,6 @@ void NavigationURLLoaderImpl::FollowRedirect(
   resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
   resource_request_->navigation_redirect_chain.push_back(
       redirect_info_.new_url);
-  url_chain_.push_back(redirect_info_.new_url);
 
   // Need to cache modified headers for `url_loader_` since it doesn't use
   // `resource_request_` during redirect.
