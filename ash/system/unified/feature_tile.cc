@@ -636,7 +636,7 @@ void FeatureTile::UpdateLabelForDownloadState() {
   }
 }
 
-BEGIN_METADATA(FeatureTile, views::Button)
+BEGIN_METADATA(FeatureTile)
 END_METADATA
 
 }  // namespace ash

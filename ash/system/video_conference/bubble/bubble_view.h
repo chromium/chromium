@@ -27,8 +27,9 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // The bubble that contains controls for camera and microphone effects,
 // and for easy navigation to apps performing video/audio capture.
 class ASH_EXPORT BubbleView : public TrayBubbleView {
+  METADATA_HEADER(BubbleView, TrayBubbleView)
+
  public:
-  METADATA_HEADER(BubbleView);
   explicit BubbleView(const InitParams& init_params,
                       const MediaApps& media_apps,
                       VideoConferenceTrayController* controller);

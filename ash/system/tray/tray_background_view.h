@@ -43,8 +43,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
                                       public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
                                       public VirtualKeyboardModel::Observer {
+  METADATA_HEADER(TrayBackgroundView, views::Button)
+
  public:
-  METADATA_HEADER(TrayBackgroundView);
 
   // Inherit from this class to be notified of events that happen for a specific
   // `TrayBackgroundView`.

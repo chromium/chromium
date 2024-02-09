@@ -24,9 +24,9 @@ class ConnectionScheduler;
 // An interstitial view represeting that connection to the phone has been
 // interrupted.
 class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(PhoneDisconnectedView);
+  METADATA_HEADER(PhoneDisconnectedView, PhoneHubContentView)
 
+ public:
   explicit PhoneDisconnectedView(
       phonehub::ConnectionScheduler* connection_scheduler);
   PhoneDisconnectedView(const PhoneDisconnectedView&) = delete;

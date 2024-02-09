@@ -135,7 +135,7 @@ bool OnboardingView::IsOnboardingViewStartedFromNudge() {
   return delegate_->IsPhoneHubIconClickedWhenNudgeVisible();
 }
 
-BEGIN_METADATA(OnboardingView, views::View)
+BEGIN_METADATA(OnboardingView)
 END_METADATA
 
 }  // namespace ash

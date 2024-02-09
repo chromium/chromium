@@ -332,7 +332,7 @@ int TrayDetailedView::GetHeightForWidth(int width) const {
   return height();
 }
 
-BEGIN_METADATA(TrayDetailedView, views::View)
+BEGIN_METADATA(TrayDetailedView)
 END_METADATA
 
 }  // namespace ash

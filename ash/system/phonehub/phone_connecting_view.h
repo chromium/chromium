@@ -19,9 +19,9 @@ class PhoneHubInterstitialView;
 // your phone either for the first time after user has opted in or for resuming
 // an interrupted connection.
 class ASH_EXPORT PhoneConnectingView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(PhoneConnectingView);
+  METADATA_HEADER(PhoneConnectingView, PhoneHubContentView)
 
+ public:
   PhoneConnectingView();
   PhoneConnectingView(const PhoneConnectingView&) = delete;
   PhoneConnectingView& operator=(const PhoneConnectingView&) = delete;

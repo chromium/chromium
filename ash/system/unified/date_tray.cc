@@ -167,7 +167,7 @@ void DateTray::HideGlanceableBubble() {
   SetIsActive(false);
 }
 
-BEGIN_METADATA(DateTray, views::Button)
+BEGIN_METADATA(DateTray)
 END_METADATA
 
 }  // namespace ash

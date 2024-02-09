@@ -20,9 +20,9 @@ namespace ash {
 // A toggle button configured for the system tray menu's layout. Also gets the
 // colors from AshColorProvider.
 class ASH_EXPORT TrayToggleButton : public views::ToggleButton {
- public:
-  METADATA_HEADER(TrayToggleButton);
+  METADATA_HEADER(TrayToggleButton, views::ToggleButton)
 
+ public:
   // Creates a button that invokes `callback` when pressed. Sets the accessible
   // name to the string with resource id `accessible_name_id`, unless that
   // parameter is nullopt. If `use_empty_border` is false, adds an empty border

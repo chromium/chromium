@@ -58,8 +58,9 @@ constexpr int kMarginBetweenGlanceables = 8;
 // The container view of time management glanceables, which includes Tasks and
 // Classroom.
 class TimeManagementContainer : public views::FlexLayoutView {
+  METADATA_HEADER(TimeManagementContainer, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(TimeManagementContainer);
   TimeManagementContainer() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -89,7 +90,7 @@ class TimeManagementContainer : public views::FlexLayoutView {
   }
 };
 
-BEGIN_METADATA(TimeManagementContainer, views::FlexLayoutView)
+BEGIN_METADATA(TimeManagementContainer)
 END_METADATA
 
 // The view that parents glanceable bubbles. It's a flex layout view that
@@ -97,6 +98,8 @@ END_METADATA
 // container bounds changes to the bubble view.
 class ContainerView : public views::FlexLayoutView,
                       public views::FocusChangeListener {
+  METADATA_HEADER(ContainerView, views::FlexLayoutView)
+
  public:
   using HeightChangeCallback = base::RepeatingCallback<void(int height_delta)>;
   ContainerView(const base::RepeatingClosure& preferred_size_change_callback,
@@ -189,6 +192,9 @@ class ContainerView : public views::FlexLayoutView,
   base::RepeatingClosure preferred_size_change_callback_;
   HeightChangeCallback height_change_callback_;
 };
+
+BEGIN_METADATA(ContainerView)
+END_METADATA
 
 }  // namespace
 
@@ -483,7 +489,7 @@ void GlanceableTrayBubbleView::ClipScrollViewHeight(
                                     kMarginBetweenGlanceables);
 }
 
-BEGIN_METADATA(GlanceableTrayBubbleView, TrayBubbleView)
+BEGIN_METADATA(GlanceableTrayBubbleView)
 END_METADATA
 
 }  // namespace ash

@@ -71,7 +71,7 @@ void BluetoothDisabledView::LearnMoreButtonPressed() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-BEGIN_METADATA(BluetoothDisabledView, views::View)
+BEGIN_METADATA(BluetoothDisabledView)
 END_METADATA
 
 }  // namespace ash

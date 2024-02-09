@@ -146,7 +146,7 @@ void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
   SetIsActive(is_visible);
 }
 
-BEGIN_METADATA(VirtualKeyboardTray, TrayBackgroundView);
+BEGIN_METADATA(VirtualKeyboardTray);
 END_METADATA
 
 }  // namespace ash

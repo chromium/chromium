@@ -35,9 +35,9 @@ class UnifiedSystemTrayController;
 // The `QuickSettingsView` contains the quick settings controls
 class ASH_EXPORT QuickSettingsView : public views::View,
                                      public PaginationModelObserver {
- public:
-  METADATA_HEADER(QuickSettingsView);
+  METADATA_HEADER(QuickSettingsView, views::View)
 
+ public:
   explicit QuickSettingsView(UnifiedSystemTrayController* controller);
 
   QuickSettingsView(const QuickSettingsView&) = delete;

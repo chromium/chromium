@@ -24,9 +24,9 @@ class UnifiedSystemTrayController;
 // itself invisible when its child views do not need to be shown. When both
 // buttons are shown uses a two-column side-by-side layout.
 class ASH_EXPORT QuickSettingsHeader : public views::View {
- public:
-  METADATA_HEADER(QuickSettingsHeader);
+  METADATA_HEADER(QuickSettingsHeader, views::View)
 
+ public:
   explicit QuickSettingsHeader(UnifiedSystemTrayController* controller);
   QuickSettingsHeader(const QuickSettingsHeader&) = delete;
   QuickSettingsHeader& operator=(const QuickSettingsHeader&) = delete;

@@ -25,9 +25,9 @@ enum class StudentAssignmentsListType {
 
 // class ClassroomBubbleStudentView : public views::View {
 class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
- public:
-  METADATA_HEADER(ClassroomBubbleStudentView);
+  METADATA_HEADER(ClassroomBubbleStudentView, ClassroomBubbleBaseView)
 
+ public:
   ClassroomBubbleStudentView();
   ClassroomBubbleStudentView(const ClassroomBubbleStudentView&) = delete;
   ClassroomBubbleStudentView& operator=(const ClassroomBubbleStudentView&) =

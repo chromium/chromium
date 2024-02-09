@@ -117,9 +117,9 @@ class ASH_EXPORT VideoConferenceTray
       public TrayBackgroundView,
       public VideoConferenceTrayController::Observer,
       public VideoConferenceTrayEffectsManager::Observer {
- public:
-  METADATA_HEADER(VideoConferenceTray);
+  METADATA_HEADER(VideoConferenceTray, TrayBackgroundView)
 
+ public:
   explicit VideoConferenceTray(Shelf* shelf);
   VideoConferenceTray(const VideoConferenceTray&) = delete;
   VideoConferenceTray& operator=(const VideoConferenceTray&) = delete;

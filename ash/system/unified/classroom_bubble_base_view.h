@@ -31,9 +31,9 @@ struct GlanceablesClassroomAssignment;
 
 class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
                                            public views::ViewObserver {
- public:
-  METADATA_HEADER(ClassroomBubbleBaseView);
+  METADATA_HEADER(ClassroomBubbleBaseView, GlanceableTrayChildBubble)
 
+ public:
   // TODO(b:283370907): Add classroom glanceable contents.
   explicit ClassroomBubbleBaseView(
       std::unique_ptr<ui::ComboboxModel> combobox_model);

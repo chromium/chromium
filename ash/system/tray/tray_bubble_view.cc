@@ -694,7 +694,7 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
   }
 }
 
-BEGIN_METADATA(TrayBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(TrayBubbleView)
 END_METADATA
 
 }  // namespace ash

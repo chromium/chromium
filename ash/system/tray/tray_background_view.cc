@@ -1181,7 +1181,7 @@ void TrayBackgroundView::StartPulseAnimationCoolDownTimer() {
                      base::Unretained(this)));
 }
 
-BEGIN_METADATA(TrayBackgroundView, views::Button)
+BEGIN_METADATA(TrayBackgroundView)
 END_METADATA
 
 }  // namespace ash

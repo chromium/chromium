@@ -166,7 +166,7 @@ void StatusAreaOverflowButtonTray::ResetStateToCollapsed() {
   icon_->ToggleState(state_);
 }
 
-BEGIN_METADATA(StatusAreaOverflowButtonTray, TrayBackgroundView);
+BEGIN_METADATA(StatusAreaOverflowButtonTray);
 END_METADATA
 
 }  // namespace ash

@@ -17,9 +17,9 @@ class GlanceablesErrorMessageView;
 
 // Child bubble of the `GlanceableTrayBubbleView`.
 class ASH_EXPORT GlanceableTrayChildBubble : public views::View {
- public:
-  METADATA_HEADER(GlanceableTrayChildBubble);
+  METADATA_HEADER(GlanceableTrayChildBubble, views::View)
 
+ public:
   // `for_glanceables_container` - whether the bubble should be styled as a
   // bubble in the glanceables container. `CalendarView` is a
   // `GlanceablesTrayChildBubble` and if the glanceblae view flag is

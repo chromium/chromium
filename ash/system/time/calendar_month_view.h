@@ -25,9 +25,9 @@ namespace ash {
 // the date is not in the current month view's month.
 class CalendarDateCellView : public CalendarViewController::Observer,
                              public views::LabelButton {
- public:
-  METADATA_HEADER(CalendarDateCellView);
+  METADATA_HEADER(CalendarDateCellView, views::LabelButton)
 
+ public:
   CalendarDateCellView(CalendarViewController* calendar_view_controller,
                        base::Time date,
                        base::TimeDelta time_difference,

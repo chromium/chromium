@@ -25,9 +25,9 @@ class VirtualKeyboardTray : public TrayBackgroundView,
                             public AccessibilityObserver,
                             public KeyboardControllerObserver,
                             public ShellObserver {
- public:
-  METADATA_HEADER(VirtualKeyboardTray);
+  METADATA_HEADER(VirtualKeyboardTray, TrayBackgroundView)
 
+ public:
   VirtualKeyboardTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
   VirtualKeyboardTray(const VirtualKeyboardTray&) = delete;
   VirtualKeyboardTray& operator=(const VirtualKeyboardTray&) = delete;

@@ -27,9 +27,9 @@ constexpr int kLinuxReturnToAppButtonSpacing = 12;
 // The return to app button that is used for Linux apps displayed in
 // `LinuxAppsBubbleView` with customized spacing/padding.
 class LinuxReturnToAppButton : public ReturnToAppButtonBase {
- public:
-  METADATA_HEADER(LinuxReturnToAppButton);
+  METADATA_HEADER(LinuxReturnToAppButton, ReturnToAppButtonBase)
 
+ public:
   explicit LinuxReturnToAppButton(
       const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app)
       : ReturnToAppButtonBase(
@@ -54,7 +54,7 @@ class LinuxReturnToAppButton : public ReturnToAppButtonBase {
   ~LinuxReturnToAppButton() override = default;
 };
 
-BEGIN_METADATA(LinuxReturnToAppButton, views::Button);
+BEGIN_METADATA(LinuxReturnToAppButton)
 END_METADATA
 
 }  // namespace
@@ -89,7 +89,7 @@ gfx::Size LinuxAppsBubbleView::CalculatePreferredSize() const {
   return views::View::CalculatePreferredSize();
 }
 
-BEGIN_METADATA(LinuxAppsBubbleView, TrayBubbleView);
+BEGIN_METADATA(LinuxAppsBubbleView);
 END_METADATA
 
 }  // namespace ash::video_conference

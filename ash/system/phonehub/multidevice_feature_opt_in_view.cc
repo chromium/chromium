@@ -183,7 +183,7 @@ void MultideviceFeatureOptInView::ClosePhoneHubBubble() {
       ->CloseBubble();
 }
 
-BEGIN_METADATA(MultideviceFeatureOptInView, views::View)
+BEGIN_METADATA(MultideviceFeatureOptInView)
 END_METADATA
 
 }  // namespace ash

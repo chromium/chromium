@@ -63,7 +63,7 @@ void CustomShapeButton::PaintCustomShapePath(gfx::Canvas* canvas) {
   canvas->DrawPath(CreateCustomShapePath(GetLocalBounds()), flags);
 }
 
-BEGIN_METADATA(CustomShapeButton, views::ImageButton)
+BEGIN_METADATA(CustomShapeButton)
 END_METADATA
 
 }  // namespace ash

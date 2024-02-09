@@ -59,9 +59,9 @@ class VerticalDateView : public views::View {
 // Tray view used to display the current date or time based on the passed in
 // `Type`. Exported for tests.
 class ASH_EXPORT TimeView : public views::View, public ClockObserver {
- public:
-  METADATA_HEADER(TimeView);
+  METADATA_HEADER(TimeView, views::View)
 
+ public:
   enum class ClockLayout {
     HORIZONTAL_CLOCK,
     VERTICAL_CLOCK,

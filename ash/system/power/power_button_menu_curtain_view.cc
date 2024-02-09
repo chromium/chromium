@@ -187,7 +187,7 @@ void PowerButtonMenuCurtainView::OnImplicitAnimationsCompleted() {
   }
 }
 
-BEGIN_METADATA(PowerButtonMenuCurtainView, views::FlexLayoutView)
+BEGIN_METADATA(PowerButtonMenuCurtainView)
 END_METADATA
 
 }  // namespace ash

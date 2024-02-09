@@ -32,9 +32,9 @@ class GlanceableTrayBubble;
 // TODO(b:277268122) update documentation.
 class ASH_EXPORT DateTray : public TrayBackgroundView,
                             public UnifiedSystemTray::Observer {
- public:
-  METADATA_HEADER(DateTray);
+  METADATA_HEADER(DateTray, TrayBackgroundView)
 
+ public:
   DateTray(Shelf* shelf, UnifiedSystemTray* tray);
   DateTray(const DateTray&) = delete;
   DateTray& operator=(const DateTray&) = delete;

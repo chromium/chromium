@@ -62,7 +62,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
 
-BEGIN_METADATA(FeaturePodIconButton, IconButton)
+BEGIN_METADATA(FeaturePodIconButton)
 END_METADATA
 
 FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
@@ -210,7 +210,7 @@ void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
       child_width, preferred_size.height());
 }
 
-BEGIN_METADATA(FeaturePodLabelButton, views::Button)
+BEGIN_METADATA(FeaturePodLabelButton)
 END_METADATA
 
 FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
@@ -325,7 +325,7 @@ void FeaturePodButton::OnEnabledChanged() {
   label_button_->SetEnabled(GetEnabled());
 }
 
-BEGIN_METADATA(FeaturePodButton, views::View)
+BEGIN_METADATA(FeaturePodButton)
 END_METADATA
 
 }  // namespace ash

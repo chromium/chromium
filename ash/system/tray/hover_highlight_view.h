@@ -30,6 +30,8 @@ class ViewClickListener;
 // associated ViewClickListener on click. The view can also be forced to
 // maintain a fixed height.
 class ASH_EXPORT HoverHighlightView : public views::Button {
+  METADATA_HEADER(HoverHighlightView, views::Button)
+
  public:
   enum class AccessibilityState {
     // The default accessibility view.
@@ -40,7 +42,6 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
     UNCHECKED_CHECKBOX
   };
 
-  METADATA_HEADER(HoverHighlightView);
   // If |listener| is null then no action is taken on click.
   explicit HoverHighlightView(ViewClickListener* listener);
 

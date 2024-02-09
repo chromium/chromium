@@ -135,7 +135,7 @@ void SystemToastView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   shadow_->SetContentBounds(layer()->bounds());
 }
 
-BEGIN_METADATA(SystemToastView, views::View)
+BEGIN_METADATA(SystemToastView)
 END_METADATA
 
 }  // namespace ash

@@ -338,7 +338,7 @@ void TasksBubbleView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
-BEGIN_METADATA(TasksBubbleView, views::View)
+BEGIN_METADATA(TasksBubbleView)
 END_METADATA
 
 }  // namespace ash

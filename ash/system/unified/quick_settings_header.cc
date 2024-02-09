@@ -92,9 +92,9 @@ void ShowAccountSettings() {
 }  // namespace
 
 class QuickSettingsHeader::ManagedStateView : public views::Button {
- public:
-  METADATA_HEADER(ManagedStateView);
+  METADATA_HEADER(ManagedStateView, views::Button)
 
+ public:
   ManagedStateView(PressedCallback callback,
                    int label_id,
                    const gfx::VectorIcon& icon)
@@ -183,9 +183,9 @@ class QuickSettingsHeader::EnterpriseManagedView
     : public ManagedStateView,
       public EnterpriseDomainObserver,
       public SessionObserver {
- public:
-  METADATA_HEADER(EnterpriseManagedView);
+  METADATA_HEADER(EnterpriseManagedView, ManagedStateView)
 
+ public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller)
       : ManagedStateView(base::BindRepeating(&ShowEnterpriseInfo,
                                              base::Unretained(controller)),
@@ -384,7 +384,7 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   }
 }
 
-BEGIN_METADATA(QuickSettingsHeader, views::View)
+BEGIN_METADATA(QuickSettingsHeader)
 END_METADATA
 
 }  // namespace ash

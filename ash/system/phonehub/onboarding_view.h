@@ -25,9 +25,9 @@ class OnboardingUiTracker;
 // and set up the Phone feature on this device. Note that this class handles
 // both the main onboarding screen and the dismiss prompt together.
 class ASH_EXPORT OnboardingView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(OnboardingView);
+  METADATA_HEADER(OnboardingView, PhoneHubContentView)
 
+ public:
   class Delegate {
    public:
     virtual void HideStatusHeaderView() = 0;

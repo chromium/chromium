@@ -221,7 +221,7 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
   }
 }
 
-BEGIN_METADATA(ClassroomBubbleStudentView, views::View)
+BEGIN_METADATA(ClassroomBubbleStudentView)
 END_METADATA
 
 }  // namespace ash

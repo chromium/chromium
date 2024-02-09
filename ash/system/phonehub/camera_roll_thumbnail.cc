@@ -136,7 +136,7 @@ phone_hub_metrics::CameraRollMediaType CameraRollThumbnail::GetMediaType() {
                      : phone_hub_metrics::CameraRollMediaType::kPhoto;
 }
 
-BEGIN_METADATA(CameraRollThumbnail, views::MenuButton)
+BEGIN_METADATA(CameraRollThumbnail)
 END_METADATA
 
 }  // namespace ash

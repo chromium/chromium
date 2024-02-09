@@ -244,7 +244,7 @@ void ClassroomBubbleBaseView::OnHeaderIconPressed() {
   OpenUrl(GURL(kClassroomHomePage));
 }
 
-BEGIN_METADATA(ClassroomBubbleBaseView, views::View)
+BEGIN_METADATA(ClassroomBubbleBaseView)
 END_METADATA
 
 }  // namespace ash

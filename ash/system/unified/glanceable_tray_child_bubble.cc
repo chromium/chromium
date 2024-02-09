@@ -79,7 +79,7 @@ void GlanceableTrayChildBubble::MaybeDismissErrorMessage() {
   RemoveChildViewT(std::exchange(error_message_, nullptr));
 }
 
-BEGIN_METADATA(GlanceableTrayChildBubble, views::View)
+BEGIN_METADATA(GlanceableTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

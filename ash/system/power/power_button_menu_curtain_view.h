@@ -22,6 +22,8 @@ namespace ash {
 class ASH_EXPORT PowerButtonMenuCurtainView
     : public views::FlexLayoutView,
       public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(PowerButtonMenuCurtainView, views::FlexLayoutView)
+
  public:
   PowerButtonMenuCurtainView();
   PowerButtonMenuCurtainView(const PowerButtonMenuCurtainView&) = delete;
@@ -33,8 +35,6 @@ class ASH_EXPORT PowerButtonMenuCurtainView
 
   // views::View:
   void OnThemeChanged() override;
-
-  METADATA_HEADER(PowerButtonMenuCurtainView);
 
  private:
   void Initialize();

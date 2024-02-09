@@ -32,9 +32,9 @@ class SystemShadow;
 // leading image view, a title text, and up to two buttons placed on the bottom.
 class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
                                    public views::WidgetObserver {
- public:
-  METADATA_HEADER(SystemNudgeView);
+  METADATA_HEADER(SystemNudgeView, views::FlexLayoutView)
 
+ public:
   SystemNudgeView(const AnchoredNudgeData& nudge_data);
   SystemNudgeView(const SystemNudgeView&) = delete;
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;

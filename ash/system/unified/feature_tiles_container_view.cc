@@ -48,8 +48,9 @@ int GetTileWeight(FeatureTile::TileType type) {
 // The row container that holds `FeatureTile` elements. Can hold a single
 // primary tile, two primary tiles, or a primary and two compact tiles.
 class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
+  METADATA_HEADER(RowContainer, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(RowContainer);
   explicit RowContainer(FeatureTilesContainerView* container)
       : container_(container) {
     DCHECK(container_);
@@ -79,8 +80,9 @@ END_METADATA
 // to four rows depending on the available space. More pages will be created if
 // the available tiles do not fit a single page.
 class FeatureTilesContainerView::PageContainer : public views::FlexLayoutView {
+  METADATA_HEADER(PageContainer, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(PageContainer);
   PageContainer() {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -324,7 +326,7 @@ int FeatureTilesContainerView::GetVisibleFeatureTileCount() const {
   return count;
 }
 
-BEGIN_METADATA(FeatureTilesContainerView, views::View)
+BEGIN_METADATA(FeatureTilesContainerView)
 END_METADATA
 
 }  // namespace ash
