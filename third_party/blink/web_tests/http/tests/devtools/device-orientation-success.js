@@ -27,6 +27,9 @@ import {TestRunner} from 'test_runner';
 
       function round(num)
       {
+          if (num === null) {
+              return 'null';
+          }
           return num.toFixed(6);
       }
 
@@ -78,9 +81,11 @@ import {TestRunner} from 'test_runner';
     },
 
     async function removeEmulationDomainSensorOverride(next) {
+      // Wait for an event with null attributes to be fired once the sensor
+      // override is disabled.
+      ConsoleTestRunner.addConsoleSniffer(next);
       await TestRunner.EmulationAgent.setSensorOverrideEnabled(
           false, 'relative-orientation');
-      next();
     },
 
     // Now override the device orientatio data via the DeviceOrientation
