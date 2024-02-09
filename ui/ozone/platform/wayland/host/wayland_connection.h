@@ -54,6 +54,7 @@ class WaylandOutputManager;
 class WaylandSeat;
 class WaylandZAuraShell;
 class WaylandZAuraOutputManager;
+class WaylandZAuraOutputManagerV2;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
 class WaylandZcrTouchpadHaptics;
@@ -204,6 +205,10 @@ class WaylandConnection {
     return zaura_output_manager_.get();
   }
 
+  WaylandZAuraOutputManagerV2* zaura_output_manager_v2() const {
+    return zaura_output_manager_v2_.get();
+  }
+
   WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
 
   WaylandZcrColorManager* zcr_color_manager() const {
@@ -341,6 +346,11 @@ class WaylandConnection {
 
   bool ShouldUseOverlayDelegation() const;
 
+  // True if the client has bound the either aura output manager globals. If
+  // present aura output manager handles the responsibilities of keeping
+  // output metrics up to date and triggering delegate notifications.
+  bool IsUsingZAuraOutputManager() const;
+
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
   void set_tablet_layout_state(display::TabletState tablet_layout_state) {
@@ -382,6 +392,7 @@ class WaylandConnection {
   friend class WaylandOutput;
   friend class WaylandSeat;
   friend class WaylandZAuraOutputManager;
+  friend class WaylandZAuraOutputManagerV2;
   friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
@@ -487,6 +498,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
   std::unique_ptr<WaylandZAuraOutputManager> zaura_output_manager_;
+  std::unique_ptr<WaylandZAuraOutputManagerV2> zaura_output_manager_v2_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;

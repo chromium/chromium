@@ -17,6 +17,7 @@
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
 
+struct wl_client;
 struct wl_resource;
 
 namespace wl {
@@ -42,6 +43,9 @@ class TestOutput : public GlobalObject {
   ~TestOutput() override;
 
   static TestOutput* FromResource(wl_resource* resource);
+
+  // Gets the name of the associated wl_output global.
+  uint64_t GetOutputName(wl_client* client) const;
 
   // Useful only when zaura_shell is supported.
   void set_aura_shell_enabled() { aura_shell_enabled_ = true; }

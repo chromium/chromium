@@ -40,9 +40,11 @@ class GlobalObject {
   // Called from Bind() to send additional information to clients.
   virtual void OnBind() {}
 
+  const wl_global* global() const { return global_.get(); }
+
   // The first resource bound to this global, which is usually all that is
   // useful when testing a simple client.
-  wl_resource* resource() const { return resource_; }
+  wl_resource* resource() { return resource_; }
 
   // Sends the global event to clients.
   static void Bind(wl_client* client,

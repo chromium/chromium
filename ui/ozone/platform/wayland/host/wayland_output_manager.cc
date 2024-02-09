@@ -13,6 +13,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager_v2.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
@@ -47,11 +48,11 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
   // geometry and the scaling factor from the Wayland Compositor.
   wayland_output->Initialize(this);
 
-  // If supported, the zaura_output_manager will have have been bound by this
-  // client before the any wl_output objects. zaura_output_manager subsumes the
-  // responsibilities of xdg_output and aura_output, so avoid unnecessarily
+  // If supported, the aura output manager will have have been bound by this
+  // client before the any wl_output objects. The aura output manager subsumes
+  // the responsibilities of xdg_output and aura_output, so avoid unnecessarily
   // creating the output extensions if present.
-  if (!connection_->zaura_output_manager()) {
+  if (!connection_->IsUsingZAuraOutputManager()) {
     if (connection_->xdg_output_manager_v1()) {
       wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
     }

@@ -33,6 +33,10 @@ TestOutput* TestOutput::FromResource(wl_resource* resource) {
   return GetUserDataAs<TestOutput>(resource);
 }
 
+uint64_t TestOutput::GetOutputName(wl_client* client) const {
+  return wl_global_get_name(global(), client);
+}
+
 void TestOutput::SetPhysicalAndLogicalBounds(const gfx::Rect& bounds) {
   metrics_.wl_physical_size = bounds.size();
   metrics_.wl_origin = bounds.origin();

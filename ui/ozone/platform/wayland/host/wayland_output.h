@@ -70,6 +70,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     Metrics& operator=(Metrics&&);
     ~Metrics();
 
+    bool operator==(const Metrics&) const = default;
+
     Id output_id = 0;
     int64_t display_id = -1;
     gfx::Point origin;
@@ -147,11 +149,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // Called when the wl_output.done event is received and atomically updates
   // `metrics_` based on the previously received output state events.
   void UpdateMetrics();
-
-  // True if the client has bound the zaura_output_manager. If present
-  // zaura_output_manager handles the responsibilities of keeping `metrics_` up
-  // to date and triggering delegate notifications.
-  bool IsUsingZAuraOutputManager() const;
 
   // wl_output_listener callbacks:
   static void OnGeometry(void* data,
