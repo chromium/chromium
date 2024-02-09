@@ -38,7 +38,7 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   const OrderControllerSourceFromWebStateList order_controller_source(*source);
   const OrderController order_controller(order_controller_source);
   source->ActivateWebStateAt(order_controller.DetermineNewActiveIndex(
-      old_active_index, RemovingIndexes::Range(start, count)));
+      old_active_index, RemovingIndexes({.start = start, .count = count})));
 
   for (int n = 0; n < count; ++n) {
     const bool is_pinned = start + n < old_pinned_count;

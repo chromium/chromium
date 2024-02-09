@@ -12,6 +12,10 @@ int RemovingIndexes::EmptyStorage::Count() const {
   return 0;
 }
 
+RemovingIndexes::Range RemovingIndexes::EmptyStorage::Span() const {
+  return {.start = -1, .count = 0};
+}
+
 bool RemovingIndexes::EmptyStorage::ContainsIndex(int index) const {
   return false;
 }
@@ -24,6 +28,10 @@ RemovingIndexes::OneIndexStorage::OneIndexStorage(int index) : index_(index) {}
 
 int RemovingIndexes::OneIndexStorage::Count() const {
   return 1;
+}
+
+RemovingIndexes::Range RemovingIndexes::OneIndexStorage::Span() const {
+  return {.start = index_, .count = 1};
 }
 
 bool RemovingIndexes::OneIndexStorage::ContainsIndex(int index) const {
@@ -42,31 +50,36 @@ int RemovingIndexes::OneIndexStorage::IndexAfterRemoval(int index) const {
   return index;
 }
 
-RemovingIndexes::RangeStorage::RangeStorage(int start, int count)
-    : start_(start), count_(count) {}
+RemovingIndexes::RangeStorage::RangeStorage(Range range) : range_(range) {}
 
 int RemovingIndexes::RangeStorage::Count() const {
-  return count_;
+  return range_.count;
+}
+
+RemovingIndexes::Range RemovingIndexes::RangeStorage::Span() const {
+  return range_;
 }
 
 bool RemovingIndexes::RangeStorage::ContainsIndex(int index) const {
-  return start_ <= index && index < start_ + count_;
+  return range_.start <= index && index < range_.start + range_.count;
 }
 
 int RemovingIndexes::RangeStorage::IndexAfterRemoval(int index) const {
-  if (index < start_) {
+  if (index < range_.start) {
     return index;
   }
 
-  if (index - start_ < count_) {
+  if (index - range_.start < range_.count) {
     return WebStateList::kInvalidIndex;
   }
 
-  return index - count_;
+  return index - range_.count;
 }
 
 RemovingIndexes::VectorStorage::VectorStorage(std::vector<int> indexes)
-    : indexes_(std::move(indexes)) {}
+    : indexes_(std::move(indexes)) {
+  DCHECK_GE(indexes_.size(), 2u);
+}
 
 RemovingIndexes::VectorStorage::~VectorStorage() = default;
 
@@ -84,6 +97,12 @@ int RemovingIndexes::VectorStorage::Count() const {
   return indexes_.size();
 }
 
+RemovingIndexes::Range RemovingIndexes::VectorStorage::Span() const {
+  const int start = indexes_.front();
+  const int count = indexes_.back() + 1 - start;
+  return {.start = start, .count = count};
+}
+
 bool RemovingIndexes::VectorStorage::ContainsIndex(int index) const {
   return std::binary_search(indexes_.begin(), indexes_.end(), index);
 }
@@ -98,6 +117,9 @@ int RemovingIndexes::VectorStorage::IndexAfterRemoval(int index) const {
 
   return WebStateList::kInvalidIndex;
 }
+
+RemovingIndexes::RemovingIndexes(Range range)
+    : removing_(StorageFromRange(range)) {}
 
 RemovingIndexes::RemovingIndexes(std::vector<int> indexes)
     : removing_(StorageFromVector(std::move(indexes))) {}
@@ -115,21 +137,13 @@ RemovingIndexes& RemovingIndexes::operator=(RemovingIndexes&&) = default;
 
 RemovingIndexes::~RemovingIndexes() = default;
 
-// static
-RemovingIndexes RemovingIndexes::Range(int start, int count) {
-  if (count <= 0) {
-    return RemovingIndexes(EmptyStorage());
-  }
-
-  if (count == 1) {
-    return RemovingIndexes(OneIndexStorage(start));
-  }
-
-  return RemovingIndexes(RangeStorage(start, count));
-}
-
 int RemovingIndexes::count() const {
   return absl::visit([](const auto& storage) { return storage.Count(); },
+                     removing_);
+}
+
+RemovingIndexes::Range RemovingIndexes::span() const {
+  return absl::visit([](const auto& storage) { return storage.Span(); },
                      removing_);
 }
 
@@ -143,6 +157,18 @@ int RemovingIndexes::IndexAfterRemoval(int index) const {
   return absl::visit(
       [index](const auto& storage) { return storage.IndexAfterRemoval(index); },
       removing_);
+}
+
+RemovingIndexes::Storage RemovingIndexes::StorageFromRange(Range range) {
+  if (range.count <= 0) {
+    return EmptyStorage();
+  }
+
+  if (range.count == 1) {
+    return OneIndexStorage(range.start);
+  }
+
+  return RangeStorage(range);
 }
 
 RemovingIndexes::Storage RemovingIndexes::StorageFromVector(
@@ -161,7 +187,7 @@ RemovingIndexes::Storage RemovingIndexes::StorageFromVector(
   int start = indexes[0];
   int count = static_cast<int>(indexes.size());
   if (indexes.back() + 1 == start + count) {
-    return RangeStorage(start, count);
+    return RangeStorage(Range{.start = start, .count = count});
   }
 
   return VectorStorage(indexes);

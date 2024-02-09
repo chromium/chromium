@@ -644,7 +644,7 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
 
   const int new_active_index = order_controller.DetermineNewActiveIndex(
       active_index_,
-      RemovingIndexes::Range(start_index, count() - start_index));
+      RemovingIndexes({.start = start_index, .count = count() - start_index}));
 
   ActivateWebStateAtImpl(new_active_index);
 
