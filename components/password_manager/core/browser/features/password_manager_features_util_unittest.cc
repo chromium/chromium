@@ -179,6 +179,8 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOptIn) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kButterOnDesktopFollowup};
   CoreAccountInfo account;
   account.email = "foo@account.com";
   account.gaia = "foo";
@@ -209,11 +211,12 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   // Now the default is saving to the account.
-  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kAccountStore);
 
-  // Change the default store to the profile one.
+  // TODO(b/40943570): Remove this section since setting default password store
+  // will not be possible. Change the default store to the profile one.
   SetDefaultPasswordStore(&pref_service_, &sync_service_,
                           PasswordForm::Store::kProfileStore);
   EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
@@ -338,6 +341,11 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncDisablesAccountStorage) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kButterOnDesktopFollowup};
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -362,7 +370,11 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   ASSERT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+#else
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+#endif
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kAccountStore);
 
@@ -421,7 +433,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
-       OptOutClearsStorePreference) {
+       OptOutAndClearSettingsClearsStorePreference) {
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo account;
@@ -451,6 +463,32 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   // the pref does not get recorded in this histogram!
   histogram_tester.ExpectUniqueSample("PasswordManager.DefaultPasswordStoreSet",
                                       PasswordForm::Store::kProfileStore, 1);
+}
+
+TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+       OptOutSetsProfileStorePreference) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kButterOnDesktopFollowup};
+  CoreAccountInfo account;
+  account.email = "name@account.com";
+  account.gaia = "name";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  // The SyncService is running in transport mode.
+  SetSyncStateTransportActive(account);
+
+  // Opt in.
+  OptInToAccountStorage(&pref_service_, &sync_service_);
+  ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  // Opt out.
+  OptOutOfAccountStorage(&pref_service_, &sync_service_);
+
+  // The default store pref should set to profile store.
+  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 }
 
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,

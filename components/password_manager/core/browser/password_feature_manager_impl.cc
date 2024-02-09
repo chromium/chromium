@@ -97,6 +97,10 @@ void PasswordFeatureManagerImpl::OptInToAccountStorage() {
   features_util::OptInToAccountStorage(pref_service_, sync_service_);
 }
 
+void PasswordFeatureManagerImpl::OptOutOfAccountStorage() {
+  features_util::OptOutOfAccountStorage(pref_service_, sync_service_);
+}
+
 void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {
   features_util::OptOutOfAccountStorageAndClearSettings(pref_service_,
                                                         sync_service_);

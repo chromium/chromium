@@ -171,6 +171,12 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 void OptInToAccountStorage(PrefService* pref_service,
                            syncer::SyncService* sync_service);
 
+// Opts-out from using account storage for passwords for the
+// current signed-in user (unconsented primary account). Addditionally it sets
+// the default password store to kProfileStore.
+void OptOutOfAccountStorage(PrefService* pref_service,
+                            syncer::SyncService* sync_service);
+
 // Clears the opt-in to using account storage for passwords for the
 // current signed-in user (unconsented primary account), as well as all other
 // associated settings (e.g. default store choice).
