@@ -757,7 +757,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 + (void)recordStartupAbsoluteInactiveTabCount:(int)tabCount {
-  base::UmaHistogramCounts100("Tabs.OldCountAtStartup", tabCount);
+  base::UmaHistogramCounts1M("Tabs.OldCountAtStartup2", tabCount);
 }
 
 + (void)recordStartupPinnedTabCount:(int)tabCount {
@@ -789,7 +789,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 + (void)recordStartupOldTabCount:(int)tabCount {
-  base::UmaHistogramCounts100("Tabs.UnusedCountAtStartup", tabCount);
+  base::UmaHistogramCounts1M("Tabs.UnusedCountAtStartup2", tabCount);
 }
 
 + (void)recordStartupDuplicatedTabCount:(int)tabCount {

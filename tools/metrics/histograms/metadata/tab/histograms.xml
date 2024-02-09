@@ -1194,8 +1194,8 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.OldCountAtStartup" units="tabs"
-    expires_after="2024-06-30">
+<histogram name="Tabs.OldCountAtStartup2" units="tabs"
+    expires_after="2025-02-08">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -2252,8 +2252,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.UnusedCountAtStartup" units="tabs"
-    expires_after="2024-07-21">
+<histogram name="Tabs.UnusedCountAtStartup2" units="tabs"
+    expires_after="2025-02-08">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
