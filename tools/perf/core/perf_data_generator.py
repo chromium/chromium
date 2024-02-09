@@ -667,6 +667,11 @@ BUILDERS = {
         'tests': [{
             'isolate':
             'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                # Increase Speedometer iteration count. See the below link for more context:
+                # https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/benchmarks/speedometer2.py;l=105;drc=bd603b89f198fad783b01fb5c739412990db7e01
+                '--iteration-count=30',
+            ],
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',

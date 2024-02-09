@@ -706,7 +706,8 @@
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel6-perf-pgo_map.json",
-          "--ignore-benchmark-exit-code"
+          "--ignore-benchmark-exit-code",
+          "--iteration-count=30"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
