@@ -3317,7 +3317,7 @@
 <translation id="3519564332031442870">Серверная служба печати</translation>
 <translation id="3519938335881974273">Сохранить страницу как…</translation>
 <translation id="3520824492621090923">Зарегистрировать устройство в режиме киоска или цифровой вывески?</translation>
-<translation id="3521388823983121502">Не удалось авторизоваться с помощью сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="3521388823983121502">Не удалось войти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3521405806571557477">Удалить сохраненные данные для <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Изменить размер диска</translation>
 <translation id="3522088408596898827">На диске почти нет места. Освободите пространство и повторите попытку.</translation>
