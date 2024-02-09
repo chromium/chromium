@@ -3980,6 +3980,11 @@ const char kBackGestureRefactorAndroidDescription[] =
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 
+const char kCCTEmbedderSpecialBehaviorTriggerName[] =
+    "CCT embedder special behavior trigger";
+const char kCCTEmbedderSpecialBehaviorTriggerDescription[] =
+    "For testing purposes only.";
+
 const char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 const char kCCTIncognitoAvailableToThirdPartyDescription[] =

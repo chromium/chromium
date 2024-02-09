@@ -2322,6 +2322,9 @@ extern const char kBackGestureRefactorAndroidDescription[];
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 
+extern const char kCCTEmbedderSpecialBehaviorTriggerName[];
+extern const char kCCTEmbedderSpecialBehaviorTriggerDescription[];
+
 extern const char kCCTIncognitoAvailableToThirdPartyName[];
 extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 

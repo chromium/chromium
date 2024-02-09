@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kCreateNewTabInitializeRenderer);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
 BASE_DECLARE_FEATURE(kCCTBrandTransparencyMemoryImprovement);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
+BASE_DECLARE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger);
 BASE_DECLARE_FEATURE(kCCTExtendTrustedCdnPublisher);
 BASE_DECLARE_FEATURE(kCCTFeatureUsage);
 BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);
