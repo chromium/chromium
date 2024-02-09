@@ -194,9 +194,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     passwords_state_.OnPendingPassword(std::move(form_to_save));
   }
 
-  account_email_ = GetAccountForMessageDescription(
-      account_info, passwords_state_.form_manager()->GetPendingCredentials(),
-      update_password);
+  account_email_ = GetAccountForMessageDescription(account_info);
 
   CreateMessage(update_password);
   RecordMessageShownMetrics();
@@ -305,7 +303,10 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password) {
-  if (account_email_.has_value()) {
+  // If password is being updated in the profile storage, don't show the account
+  // even if it's available.
+  if (account_email_.has_value() &&
+      !IsUsingProfileStore(pending_credentials.username_value)) {
     return l10n_util::GetStringFUTF16(
         update_password
             ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
@@ -320,20 +321,11 @@ std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
 
 std::optional<std::string>
 SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
-    const std::optional<AccountInfo>& account_info,
-    const password_manager::PasswordForm& pending_credentials,
-    bool update_password) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    const std::optional<AccountInfo>& account_info) {
   if (!account_info.has_value()) {
     return std::nullopt;
   }
-  // If password is being updated in the profile storage, don't show the account
-  // even if it's available.
-  if (update_password && UsesSplitStoresAndUPMForLocal(profile->GetPrefs()) &&
-      pending_credentials.IsUsingProfileStore()) {
-    return std::nullopt;
-  }
+
   return account_info->CanHaveEmailAddressDisplayed()
              ? account_info.value().email
              : account_info.value().full_name;
@@ -468,17 +460,8 @@ bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
 }
 
 void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
-  // Binding with base::Unretained(this) is safe here because
-  // SaveUpdatePasswordMessageDelegate owns password_edit_dialog_. Callbacks
-  // won't be called after the SaveUpdatePasswordMessageDelegate object is
-  // destroyed.
-  password_edit_dialog_ = password_edit_dialog_factory_.Run(
-      web_contents_.get(),
-      base::BindOnce(
-          &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
-          base::Unretained(this)),
-      base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
-                     base::Unretained(this)));
+  password_edit_dialog_ =
+      password_edit_dialog_factory_.Run(web_contents_.get(), this);
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
@@ -508,6 +491,25 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
   SavePassword();
+}
+
+bool SaveUpdatePasswordMessageDelegate::IsUsingProfileStore(
+    const std::u16string& username) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
+    return !account_email_;
+  }
+
+  auto has_username_in_profile_store = [&username](const auto& form) {
+    return (form->username_value == username) && form->IsUsingProfileStore();
+  };
+  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // rather than current_forms which is best_matches without PSL-matched
+  // credentials.
+  return !account_email_ ||
+         base::ranges::any_of(passwords_state_.GetCurrentForms(),
+                              has_username_in_profile_store);
 }
 
 void SaveUpdatePasswordMessageDelegate::ClearState() {
