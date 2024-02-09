@@ -130,49 +130,6 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   return mtl_texture;
 }
 
-#if BUILDFLAG(USE_DAWN)
-wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
-                                uint32_t shared_image_usage,
-                                const gfx::Size& io_surface_size,
-                                wgpu::TextureFormat wgpu_format,
-                                std::vector<wgpu::TextureFormat> view_formats,
-                                wgpu::TextureUsage wgpu_texture_usage) {
-  const std::string debug_label =
-      "IOSurface(" + CreateLabelForSharedImageUsage(shared_image_usage) + ")";
-
-  wgpu::TextureDescriptor texture_descriptor;
-  texture_descriptor.label = debug_label.c_str();
-  texture_descriptor.format = wgpu_format;
-  texture_descriptor.usage =
-      static_cast<wgpu::TextureUsage>(wgpu_texture_usage);
-  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
-  texture_descriptor.size = {static_cast<uint32_t>(io_surface_size.width()),
-                             static_cast<uint32_t>(io_surface_size.height()),
-                             1};
-  texture_descriptor.mipLevelCount = 1;
-  texture_descriptor.sampleCount = 1;
-  texture_descriptor.viewFormatCount = view_formats.size();
-  texture_descriptor.viewFormats = view_formats.data();
-
-  // We need to have internal usages of CopySrc for copies. If texture is not
-  // for video frame import, which has bi-planar format, we also need
-  // RenderAttachment usage for clears, and TextureBinding for
-  // copyTextureForBrowser.
-  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
-      wgpu_format != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
-  }
-
-  texture_descriptor.nextInChain = &internalDesc;
-
-  return shared_texture_memory.CreateTexture(&texture_descriptor);
-}
-
-#endif
-
 std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
     std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
     const viz::SharedImageFormat format,
@@ -760,7 +717,38 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     return {};
   }
 
+  const std::string debug_label =
+      "IOSurface(" + CreateLabelForSharedImageUsage(usage()) + ")";
+
   usage_ = wgpu_texture_usage;
+
+  wgpu::TextureDescriptor texture_descriptor;
+  texture_descriptor.label = debug_label.c_str();
+  texture_descriptor.format = wgpu_format_;
+  texture_descriptor.usage =
+      static_cast<wgpu::TextureUsage>(wgpu_texture_usage);
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
+  texture_descriptor.size = {static_cast<uint32_t>(io_surface_size_.width()),
+                             static_cast<uint32_t>(io_surface_size_.height()),
+                             1};
+  texture_descriptor.mipLevelCount = 1;
+  texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount = view_formats_.size();
+  texture_descriptor.viewFormats = view_formats_.data();
+
+  // We need to have internal usages of CopySrc for copies. If texture is not
+  // for video frame import, which has bi-planar format, we also need
+  // RenderAttachment usage for clears, and TextureBinding for
+  // copyTextureForBrowser.
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
+      wgpu_format_ != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  }
+
+  texture_descriptor.nextInChain = &internalDesc;
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
@@ -794,9 +782,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  texture_ =
-      CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
-                        wgpu_format_, view_formats_, wgpu_texture_usage);
+  texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
     // NOTE: WebGPU CTS tests intentionally pass in formats that are
     // incompatible with the format of the backing IOSurface to check error
