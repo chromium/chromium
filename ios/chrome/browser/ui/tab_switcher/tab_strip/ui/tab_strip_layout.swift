@@ -384,6 +384,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     cell?.rightSelectedBorderBackgroundViewHidden = hideRightStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
+    layoutAttributes.zIndex = TabStripConstants.TabItem.selectedZIndex
     return layoutAttributes
   }
 
