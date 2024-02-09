@@ -30,12 +30,17 @@ BookmarkLoadDetails::BookmarkLoadDetails()
   // WARNING: order is important here, various places assume the order is
   // constant (but can vary between embedders with the initial visibility
   // of permanent nodes).
+  //
+  // Zero is used as temporary ID for permanent nodes, until an actual value is
+  // loaded from disk or new/default values are allocated in
+  // `PopulateNodeIdsForLocalOrSyncablePermanentNodes()`.
   bb_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateBookmarkBar(max_id_++)));
+      root_node_->Add(BookmarkPermanentNode::CreateBookmarkBar(/*id=*/0)));
   other_folder_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateOtherBookmarks(max_id_++)));
+      root_node_->Add(BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/0)));
   mobile_folder_node_ = static_cast<BookmarkPermanentNode*>(
-      root_node_->Add(BookmarkPermanentNode::CreateMobileBookmarks(max_id_++)));
+      root_node_->Add(BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/0)));
+
   CHECK_EQ(kNumDefaultTopLevelPermanentFolders, root_node_->children().size());
 }
 
@@ -62,10 +67,37 @@ void BookmarkLoadDetails::AddAccountPermanentNodes(
       root_node_->Add(std::move(account_mobile_folder_node)));
 }
 
+void BookmarkLoadDetails::PopulateNodeIdsForLocalOrSyncablePermanentNodes() {
+  CHECK(bb_node_);
+  CHECK(other_folder_node_);
+  CHECK(mobile_folder_node_);
+
+  // AddManagedNode() may only be called after this function.
+  CHECK(!has_managed_node_);
+
+  if (bb_node_->id() == 0) {
+    bb_node_->set_id(max_id_++);
+  }
+
+  if (other_folder_node_->id() == 0) {
+    other_folder_node_->set_id(max_id_++);
+  }
+
+  if (mobile_folder_node_->id() == 0) {
+    mobile_folder_node_->set_id(max_id_++);
+  }
+}
+
 void BookmarkLoadDetails::AddManagedNode(
     std::unique_ptr<BookmarkPermanentNode> managed_node) {
   CHECK(managed_node);
   CHECK(!has_managed_node_);
+
+  // Ensure that `PopulateNodeIdsForLocalOrSyncablePermanentNodes` was invoked
+  // before this function.
+  CHECK_NE(bb_node_->id(), 0);
+  CHECK_NE(other_folder_node_->id(), 0);
+  CHECK_NE(mobile_folder_node_->id(), 0);
 
   has_managed_node_ = true;
   root_node_->Add(std::move(managed_node));

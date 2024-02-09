@@ -103,7 +103,13 @@ class BookmarkLoadDetails {
       std::unique_ptr<BookmarkPermanentNode> account_other_folder_node,
       std::unique_ptr<BookmarkPermanentNode> account_mobile_folder_node);
 
+  // Assigns node IDs for local-or-syncable permanent nodes if not previously
+  // assigned/decoded.
+  void PopulateNodeIdsForLocalOrSyncablePermanentNodes();
+
   // Adds managed nodes. May be called at most once.
+  // PopulateNodeIdsForLocalOrSyncablePermanentNodes() must have been invoked
+  // before this function.
   void AddManagedNode(std::unique_ptr<BookmarkPermanentNode> managed_node);
 
   void CreateIndices();

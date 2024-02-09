@@ -213,6 +213,8 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
       LoadBookmarks(local_or_syncable_file_path, account_file_path);
   CHECK(details);
 
+  details->PopulateNodeIdsForLocalOrSyncablePermanentNodes();
+
   LoadManagedNode(std::move(load_managed_node_callback), *details);
 
   // Building the indices can take a while so it's done on the background
@@ -231,6 +233,7 @@ scoped_refptr<ModelLoader> ModelLoader::CreateForTest(
     LoadManagedNodeCallback load_managed_node_callback,
     BookmarkLoadDetails* details) {
   CHECK(details);
+  details->PopulateNodeIdsForLocalOrSyncablePermanentNodes();
   LoadManagedNode(std::move(load_managed_node_callback), *details);
   details->CreateIndices();
 
