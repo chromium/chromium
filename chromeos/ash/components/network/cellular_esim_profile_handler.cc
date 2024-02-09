@@ -253,8 +253,6 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
 
   NET_LOG(EVENT) << "Finished requesting available profiles";
 
-  // TODO(b/278135630): Emit
-  // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
   CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
       info->profile_paths.size());
 
