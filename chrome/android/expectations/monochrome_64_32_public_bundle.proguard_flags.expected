@@ -546,7 +546,7 @@
 # Also this rule prevents registerIn from being inlined.
 -keepclassmembers class androidx.lifecycle.ReportFragment$LifecycleCallbacks { *; }
 
-# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_java/proguard.txt
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_android_java/proguard.txt
 -keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
     <init>();
 }
