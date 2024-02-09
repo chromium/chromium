@@ -24,7 +24,11 @@ namespace internal {
 
 class BindStateBase;
 
-template <typename Functor, typename... BoundArgs>
+template <bool is_method,
+          bool is_nullable,
+          bool is_callback,
+          typename Functor,
+          typename... BoundArgs>
 struct BindState;
 
 struct BASE_EXPORT BindStateBaseRefCountTraits {
@@ -79,7 +83,11 @@ class BASE_EXPORT BindStateBase
   friend class BindStateHolder;
 
   // Allowlist subclasses that access the destructor of BindStateBase.
-  template <typename Functor, typename... BoundArgs>
+  template <bool is_method,
+            bool is_nullable,
+            bool is_callback,
+            typename Functor,
+            typename... BoundArgs>
   friend struct BindState;
   friend struct ::base::FakeBindState;
 

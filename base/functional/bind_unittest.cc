@@ -1474,22 +1474,6 @@ TEST_F(BindTest, RepeatingWithoutPassed) {
 }
 
 TEST_F(BindTest, CapturelessLambda) {
-  EXPECT_FALSE(internal::IsCallableObject<void>);
-  EXPECT_FALSE(internal::IsCallableObject<int>);
-  EXPECT_FALSE(internal::IsCallableObject<void (*)()>);
-  EXPECT_FALSE(internal::IsCallableObject<void (NoRef::*)()>);
-
-  auto f = [] {};
-  EXPECT_TRUE(internal::IsCallableObject<decltype(f)>);
-
-  int i = 0;
-  auto g = [i] { (void)i; };
-  EXPECT_TRUE(internal::IsCallableObject<decltype(g)>);
-
-  auto h = [](int, double) { return 'k'; };
-  EXPECT_TRUE((std::is_same_v<char(int, double),
-                              internal::ExtractCallableRunType<decltype(h)>>));
-
   EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
   EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
 
@@ -1516,9 +1500,7 @@ TEST_F(BindTest, EmptyFunctor) {
     int operator()() const { return 42; }
   };
 
-  EXPECT_TRUE(internal::IsCallableObject<NonEmptyFunctor>);
-  EXPECT_TRUE(internal::IsCallableObject<EmptyFunctor>);
-  EXPECT_TRUE(internal::IsCallableObject<EmptyFunctorConst>);
+  EXPECT_EQ(42, BindLambdaForTesting(NonEmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctorConst()).Run());
   EXPECT_EQ(42, BindRepeating(EmptyFunctorConst()).Run());

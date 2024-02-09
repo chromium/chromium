@@ -19,7 +19,7 @@
 namespace base {
 
 void NonConstFunctionWithConstObject() {
-  struct S : public RefCounted<S> {
+  struct S : RefCounted<S> {
     void Method() {}
   } s;
   const S* const const_s_ptr = &s;
@@ -38,10 +38,10 @@ void WrongReceiverTypeForNonRefcounted() {
   } a;
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. These types facilitate that.
-  struct B : public A {} b;
-  struct C : public A {} c;
-  struct D : public A {} d;
-  struct E : public A {};
+  struct B : A {} b;
+  struct C : A {} c;
+  struct D : A {} d;
+  struct E : A {};
   A* ptr_a = &a;
   A& ref_a = a;
   raw_ptr<A> rawptr_a(&a);
@@ -84,13 +84,13 @@ void WrongReceiverTypeForNonRefcounted() {
 
 void WrongReceiverTypeForRefcounted() {
   // Refcounted objects must pass a pointer-like `this` argument.
-  struct A : public RefCounted<A> {
+  struct A : RefCounted<A> {
     void Method() const {}
   } a;
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. These types facilitate that.
-  struct B : public A {} b;
-  struct C : public A {};
+  struct B : A {} b;
+  struct C : A {};
   const A const_a;
   B& ref_b = b;
   const C const_c;
@@ -133,7 +133,7 @@ void PassingIncorrectRef() {
 void ArrayAsReceiver() {
   // A method should not be bindable with an array of objects. Users could
   // unintentionally attempt to do this via array->pointer decay.
-  struct S : public RefCounted<S> {
+  struct S : RefCounted<S> {
     void Method() const {}
   };
   S s[2];
@@ -142,7 +142,7 @@ void ArrayAsReceiver() {
 
 void RefCountedArgs() {
   // Refcounted types should not be bound as a raw pointers.
-  struct S : public RefCounted<S> {};
+  struct S : RefCounted<S> {};
   S s;
   const S const_s;
   S* ptr_s = &s;
@@ -254,6 +254,19 @@ void OverloadedFunction() {
   BindRepeating(&F, 1.0f);  // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
 }
 
+void OverloadedOperator() {
+  // It's not possible to bind to a functor with an overloaded `operator()()`.
+  struct A {
+    int operator()(int x) { return x; }
+    A operator()(A a) { return a; }
+  } a;
+  // Using distinct types causes distinct template instantiations, so we get
+  // assertion failures below where we expect. This type facilitates that.
+  struct B : A {} b;
+  BindOnce(a);           // expected-error@*:* {{Could not determine how to invoke functor.}}
+  BindOnce(b, nullptr);  // expected-error@*:* {{Could not determine how to invoke functor.}}
+}
+
 // Define a type that disallows `Unretained()` via the internal customization
 // point, so the next test can use it.
 struct BlockViaCustomizationPoint {};
@@ -293,7 +306,7 @@ void OtherWaysOfPassingDisallowedTypes() {
   } a;
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. This type facilitates that.
-  struct B : public A {} b;
+  struct B : A {} b;
   BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
   BindOnce([] (B&) {}, std::ref(b));         // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
