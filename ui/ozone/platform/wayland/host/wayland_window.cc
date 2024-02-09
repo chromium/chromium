@@ -1014,7 +1014,7 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
 
 bool WaylandWindow::CommitOverlays(
     uint32_t frame_id,
-    int64_t seq,
+    const gfx::FrameData& data,
     std::vector<wl::WaylandOverlayConfig>& overlays) {
   if (overlays.empty()) {
     return true;
@@ -1054,7 +1054,7 @@ bool WaylandWindow::CommitOverlays(
   if (!wayland_overlay_delegation_enabled_) {
     DCHECK_EQ(overlays.size(), 1u);
     frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
-        frame_id, seq, root_surface(), std::move(*overlays.begin())));
+        frame_id, data, root_surface(), std::move(*overlays.begin())));
     return true;
   }
 
@@ -1118,7 +1118,7 @@ bool WaylandWindow::CommitOverlays(
   }
 
   frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
-      frame_id, seq, root_surface(), std::move(root_config),
+      frame_id, data, root_surface(), std::move(root_config),
       std::move(subsurfaces_to_overlays)));
 
   return true;

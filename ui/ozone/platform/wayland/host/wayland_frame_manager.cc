@@ -83,7 +83,7 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 
 WaylandFrame::WaylandFrame(
     uint32_t frame_id,
-    int64_t seq,
+    const gfx::FrameData& data,
     WaylandSurface* root_surface,
     wl::WaylandOverlayConfig root_config,
     base::circular_deque<
@@ -95,7 +95,8 @@ WaylandFrame::WaylandFrame(
       subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
       submission_acked(false),
       presentation_acked(false),
-      seq(seq) {}
+      seq(data.seq),
+      trace_id(data.swap_trace_id) {}
 
 WaylandFrame::WaylandFrame(
     WaylandSurface* root_surface,
@@ -370,6 +371,7 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   surface->set_color_space(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
+  surface->set_frame_trace_id(frame->trace_id);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend

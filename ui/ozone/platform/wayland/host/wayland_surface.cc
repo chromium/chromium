@@ -20,6 +20,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -838,6 +839,23 @@ bool WaylandSurface::ApplyPendingState() {
       needs_commit = true;
     }
     memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
+  }
+
+  if (pending_state_.frame_trace_id >= 0) {
+    bool is_frame_tracing_enabled;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz,benchmark,graphics.pipeline",
+                                       &is_frame_tracing_enabled);
+    if (is_frame_tracing_enabled) {
+      auto* augmented_surface = get_augmented_surface();
+      if (augmented_surface &&
+          augmented_surface_get_version(augmented_surface) >=
+              AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION) {
+        augmented_surface_set_frame_trace_id(
+            augmented_surface, pending_state_.frame_trace_id >> 32,
+            pending_state_.frame_trace_id & 0xffffffff);
+      }
+    }
+    pending_state_.frame_trace_id = -1;
   }
 
   DCHECK_LE(pending_state_.damage_px.size(), 1u);

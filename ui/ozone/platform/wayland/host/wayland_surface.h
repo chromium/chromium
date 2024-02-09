@@ -213,6 +213,10 @@ class WaylandSurface {
     pending_state_.contains_video = contains_video;
   }
 
+  void set_frame_trace_id(int64_t frame_trace_id) {
+    pending_state_.frame_trace_id = frame_trace_id;
+  }
+
   // Creates a wl_subsurface relating this surface and a parent surface,
   // |parent|. Callers take ownership of the wl_subsurface.
   wl::Object<wl_subsurface> CreateSubsurface(WaylandSurface* parent);
@@ -336,6 +340,11 @@ class WaylandSurface {
 
     // Whether or not this surface contains video, for wp_content_type_v1.
     bool contains_video = false;
+
+    // Trace ID used to associate tracing data of the wayland client and server
+    // side for frame submission tracking. It is received from the GPU process
+    // and sent to the wayland server.
+    int64_t frame_trace_id = -1;
   };
 
   // The wayland scale refers to the scale factor between the buffer coordinates
