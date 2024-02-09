@@ -628,6 +628,10 @@ component("base") {
       "Foundation.framework",
       "QuartzCore.framework",
     ]
+
+    weak_frameworks = [
+      "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
+    ]
   }
 
   if (!toolkit_views && !use_aura) {
