@@ -102,7 +102,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 @interface BaseGridViewController () <GridCellDelegate,
                                       GroupGridCellDelegate,
                                       SuggestedActionsViewControllerDelegate,
-                                      UICollectionViewDragDelegate,
                                       UICollectionViewDropDelegate,
                                       UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
