@@ -124,6 +124,10 @@ class GPU_GLES2_EXPORT SharedImageManager
                            scoped_refptr<gfx::D3DSharedFence> external_fence);
 #endif
 
+  // Provides the usage flags supported by the given |mailbox|. Returns nullopt
+  // if no backing is registered for `mailbox`.
+  std::optional<uint32_t> GetUsageForMailbox(const Mailbox& mailbox);
+
   // Called by SharedImageRepresentation in the destructor.
   void OnRepresentationDestroyed(const Mailbox& mailbox,
                                  SharedImageRepresentation* representation);

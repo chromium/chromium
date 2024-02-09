@@ -437,6 +437,19 @@ void SharedImageManager::UpdateExternalFence(
 }
 #endif
 
+std::optional<uint32_t> SharedImageManager::GetUsageForMailbox(
+    const Mailbox& mailbox) {
+  AutoLock autolock(this);
+
+  {
+    auto found = images_.find(mailbox);
+    if (found == images_.end()) {
+      return std::nullopt;
+    }
+    return std::optional<uint32_t>((*found)->usage());
+  }
+}
+
 void SharedImageManager::OnRepresentationDestroyed(
     const Mailbox& mailbox,
     SharedImageRepresentation* representation) {
