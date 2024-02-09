@@ -2491,6 +2491,20 @@ class CSSMathExpressionNodeParser {
   using Flag = CSSMathExpressionNode::Flag;
   using Flags = CSSMathExpressionNode::Flags;
 
+  // A struct containing parser state that varies within the expression tree.
+  struct State {
+    STACK_ALLOCATED();
+
+   public:
+    uint8_t depth;
+
+    static_assert(uint8_t(kMaxExpressionDepth + 1) == kMaxExpressionDepth + 1);
+
+    State() : depth(0) {}
+    State(const State&) = default;
+    State& operator=(const State&) = default;
+  };
+
   CSSMathExpressionNodeParser(
       const CSSParserContext& context,
       const Flags parsing_flags,
@@ -2614,10 +2628,9 @@ class CSSMathExpressionNodeParser {
   }
 
   // https://drafts.csswg.org/css-values-5/#progress-func
-  CSSMathExpressionNode* ParseProgressNotation(
-      CSSValueID function_id,
-      CSSParserTokenRange& tokens,
-      int depth) {
+  CSSMathExpressionNode* ParseProgressNotation(CSSValueID function_id,
+                                               CSSParserTokenRange& tokens,
+                                               State state) {
     if (function_id != CSSValueID::kProgress) {
       return nullptr;
     }
@@ -2625,19 +2638,19 @@ class CSSMathExpressionNodeParser {
     //                         0          1    2          3  4
     HeapVector<Member<const CSSMathExpressionNode>> nodes;
     tokens.ConsumeWhitespace();
-    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, depth)) {
+    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
       nodes.push_back(node);
     }
     if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kFrom) {
       return nullptr;
     }
-    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, depth)) {
+    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
       nodes.push_back(node);
     }
     if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kTo) {
       return nullptr;
     }
-    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, depth)) {
+    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
       nodes.push_back(node);
     }
     if (nodes.size() != 3u) {
@@ -2682,7 +2695,7 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
                                        CSSParserTokenRange& tokens,
-                                       int depth) {
+                                       State state) {
     if (function_id != CSSValueID::kCalcSize ||
         !parsing_flags_.Has(Flag::AllowCalcSize)) {
       return nullptr;
@@ -2709,7 +2722,7 @@ class CSSMathExpressionNodeParser {
       tokens.ConsumeIncludingWhitespace();
       basis = CSSMathExpressionSizingKeywordLiteral::Create(id);
     } else {
-      basis = ParseValueExpression(tokens, depth);
+      basis = ParseValueExpression(tokens, state);
       if (!basis) {
         return nullptr;
       }
@@ -2721,7 +2734,7 @@ class CSSMathExpressionNodeParser {
 
     // TODO(https://crbug.com/313072): Allow the 'size' keyword in the
     // calculation.
-    CSSMathExpressionNode* calculation = ParseValueExpression(tokens, depth);
+    CSSMathExpressionNode* calculation = ParseValueExpression(tokens, state);
     if (!calculation) {
       return nullptr;
     }
@@ -2730,10 +2743,9 @@ class CSSMathExpressionNodeParser {
                                                                calculation);
   }
 
-  CSSMathExpressionNode* ParseMathFunction(
-      CSSValueID function_id,
-      CSSParserTokenRange& tokens,
-      int depth) {
+  CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
+                                           CSSParserTokenRange& tokens,
+                                           State state) {
     if (!IsSupportedMathFunction(function_id)) {
       return nullptr;
     }
@@ -2745,13 +2757,13 @@ class CSSMathExpressionNodeParser {
     }
     if (RuntimeEnabledFeatures::CSSProgressNotationEnabled()) {
       if (CSSMathExpressionNode* progress =
-              ParseProgressNotation(function_id, tokens, depth)) {
+              ParseProgressNotation(function_id, tokens, state)) {
         return progress;
       }
     }
     if (RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
       if (CSSMathExpressionNode* calc_size =
-              ParseCalcSize(function_id, tokens, depth)) {
+              ParseCalcSize(function_id, tokens, state)) {
         return calc_size;
       }
     }
@@ -2842,7 +2854,7 @@ class CSSMathExpressionNodeParser {
       }
 
       tokens.ConsumeWhitespace();
-      CSSMathExpressionNode* node = ParseValueExpression(tokens, depth);
+      CSSMathExpressionNode* node = ParseValueExpression(tokens, state);
       if (!node) {
         return nullptr;
       }
@@ -3013,7 +3025,7 @@ class CSSMathExpressionNodeParser {
   }
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenRange& tokens,
-                                        int depth) {
+                                        State state) {
     if (tokens.AtEnd()) {
       return nullptr;
     }
@@ -3023,7 +3035,7 @@ class CSSMathExpressionNodeParser {
       CSSParserTokenRange inner_range = tokens.ConsumeBlock();
       tokens.ConsumeWhitespace();
       inner_range.ConsumeWhitespace();
-      CSSMathExpressionNode* result = ParseValueExpression(inner_range, depth);
+      CSSMathExpressionNode* result = ParseValueExpression(inner_range, state);
       if (!result || !inner_range.AtEnd()) {
         return nullptr;
       }
@@ -3036,7 +3048,7 @@ class CSSMathExpressionNodeParser {
       CSSParserTokenRange inner_range = tokens.ConsumeBlock();
       tokens.ConsumeWhitespace();
       inner_range.ConsumeWhitespace();
-      return ParseMathFunction(function_id, inner_range, depth);
+      return ParseMathFunction(function_id, inner_range, state);
     }
 
     return ParseValue(tokens);
@@ -3044,12 +3056,12 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseValueMultiplicativeExpression(
       CSSParserTokenRange& tokens,
-      int depth) {
+      State state) {
     if (tokens.AtEnd()) {
       return nullptr;
     }
 
-    CSSMathExpressionNode* result = ParseValueTerm(tokens, depth);
+    CSSMathExpressionNode* result = ParseValueTerm(tokens, state);
     if (!result) {
       return nullptr;
     }
@@ -3062,7 +3074,7 @@ class CSSMathExpressionNodeParser {
       }
       tokens.ConsumeIncludingWhitespace();
 
-      CSSMathExpressionNode* rhs = ParseValueTerm(tokens, depth);
+      CSSMathExpressionNode* rhs = ParseValueTerm(tokens, state);
       if (!rhs) {
         return nullptr;
       }
@@ -3080,13 +3092,13 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseAdditiveValueExpression(
       CSSParserTokenRange& tokens,
-      int depth) {
+      State state) {
     if (tokens.AtEnd()) {
       return nullptr;
     }
 
     CSSMathExpressionNode* result =
-        ParseValueMultiplicativeExpression(tokens, depth);
+        ParseValueMultiplicativeExpression(tokens, state);
     if (!result) {
       return nullptr;
     }
@@ -3107,7 +3119,7 @@ class CSSMathExpressionNodeParser {
       tokens.ConsumeIncludingWhitespace();
 
       CSSMathExpressionNode* rhs =
-          ParseValueMultiplicativeExpression(tokens, depth);
+          ParseValueMultiplicativeExpression(tokens, state);
       if (!rhs) {
         return nullptr;
       }
@@ -3129,13 +3141,12 @@ class CSSMathExpressionNodeParser {
     return result;
   }
 
-  CSSMathExpressionNode* ParseValueExpression(
-      CSSParserTokenRange& tokens,
-      int depth) {
-    if (++depth > kMaxExpressionDepth) {
+  CSSMathExpressionNode* ParseValueExpression(CSSParserTokenRange& tokens,
+                                              State state) {
+    if (++state.depth > kMaxExpressionDepth) {
       return nullptr;
     }
-    return ParseAdditiveValueExpression(tokens, depth);
+    return ParseAdditiveValueExpression(tokens, state);
   }
 
   const CSSParserContext& context_;
@@ -3435,8 +3446,9 @@ CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
   CSSMathExpressionNodeParser parser(context, parsing_flags,
                                      allowed_anchor_queries,
                                      color_channel_keyword_values);
+  CSSMathExpressionNodeParser::State state;
   CSSMathExpressionNode* result =
-      parser.ParseMathFunction(function_id, tokens, 0);
+      parser.ParseMathFunction(function_id, tokens, state);
 
   // TODO(pjh0718): Do simplificiation for result above.
   return result;
