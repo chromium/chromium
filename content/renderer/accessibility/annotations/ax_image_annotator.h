@@ -23,9 +23,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace blink {
-
 class WebAXObject;
-
+class WebDocument;
 }  // namespace blink
 
 namespace content {
@@ -38,29 +37,26 @@ class ContentClient;
 // owns it to update the relevant image annotations.
 class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
  public:
-  AXImageAnnotator(
-      RenderAccessibilityImpl* const render_accessibility,
-      mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
-
+  explicit AXImageAnnotator(
+      RenderAccessibilityImpl* const render_accessibility);
   AXImageAnnotator(const AXImageAnnotator&) = delete;
   AXImageAnnotator& operator=(const AXImageAnnotator&) = delete;
-
   ~AXImageAnnotator() override;
 
-  std::string GetImageAnnotation(blink::WebAXObject& image) const;
-  ax::mojom::ImageAnnotationStatus GetImageAnnotationStatus(
-      blink::WebAXObject& image) const;
-  bool HasAnnotationInCache(blink::WebAXObject& image) const;
-  bool HasImageInCache(const blink::WebAXObject& image) const;
+  void Annotate(const blink::WebDocument& document,
+                ui::AXTreeUpdate* update,
+                bool load_complete);
+  void EnableAnnotations();
+  void CancelAnnotations();
+  uint32_t GetAXModeToEnableAnnotations();
+  ax::mojom::Action GetAXActionToEnableAnnotations();
+  void AddDebuggingAttributes(const std::vector<ui::AXTreeUpdate>& updates);
 
-  void OnImageAdded(blink::WebAXObject& image);
-  void OnImageUpdated(blink::WebAXObject& image);
-  void OnImageRemoved(blink::WebAXObject& image);
-
-  static int GetLengthAfterRemovingStopwords(const std::string& image_name);
-  static bool ImageNameHasMostlyStopwords(const std::string& image_name);
+  static void IgnoreProtocolChecksForTesting();
 
  private:
+  friend class AXImageAnnotatorTest;
+
   // Keeps track of the image data and the automatic annotation for each image.
   class ImageInfo final {
    public:
@@ -89,6 +85,26 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
     ax::mojom::ImageAnnotationStatus status_;
     std::optional<std::string> annotation_;
   };
+
+  void BindAnnotatorForTesting(
+      mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
+
+  void AddImageAnnotations(const blink::WebDocument& document,
+                           ui::AXTreeUpdate* update);
+  void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
+
+  std::string GetImageAnnotation(blink::WebAXObject& image) const;
+  ax::mojom::ImageAnnotationStatus GetImageAnnotationStatus(
+      blink::WebAXObject& image) const;
+  bool HasAnnotationInCache(blink::WebAXObject& image) const;
+  bool HasImageInCache(const blink::WebAXObject& image) const;
+
+  void OnImageAdded(blink::WebAXObject& image);
+  void OnImageUpdated(blink::WebAXObject& image);
+  void OnImageRemoved(blink::WebAXObject& image);
+
+  static int GetLengthAfterRemovingStopwords(const std::string& image_name);
+  static bool ImageNameHasMostlyStopwords(const std::string& image_name);
 
   // Retrieves the image data from the renderer.
   static SkBitmap GetImageData(const blink::WebAXObject& image);
@@ -127,6 +143,10 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   //
   // The key is retrieved using WebAXObject::AxID().
   std::unordered_map<int, ImageInfo> image_annotations_;
+
+  // Whether or not we've injected a stylesheet in this document
+  // (only when debugging flags are enabled, never under normal circumstances).
+  bool has_injected_stylesheet_ = false;
 
   // This member needs to be last because it should destructed first.
   base::WeakPtrFactory<AXImageAnnotator> weak_factory_{this};

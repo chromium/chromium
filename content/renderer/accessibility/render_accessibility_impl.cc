@@ -154,7 +154,6 @@ void RenderAccessibilityImpl::DidCreateNewDocument() {
 
 void RenderAccessibilityImpl::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  ax_annotators_manager_->set_has_injected_stylesheet(false);
   MaybeSendUKM();
   slowest_serialization_time_ = base::TimeDelta();
   ukm_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -532,7 +531,8 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
       AddPluginTreeToUpdate(&update, mark_plugin_subtree_dirty);
     }
 
-    ax_annotators_manager_->Annotate(document, &update);
+    ax_annotators_manager_->Annotate(document, &update,
+                                     had_load_complete_messages);
   }
 
   if (had_end_of_test_event) {
@@ -545,10 +545,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
       // immediately.
       HandleAXEvent(end_of_test);
     }
-  }
-
-  if (had_load_complete_messages) {
-    ax_annotators_manager_->set_has_injected_stylesheet(false);
   }
 
   return need_to_send_location_changes;
@@ -648,8 +644,7 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
     return false;
   }
 
-  ax_annotators_manager_->AddImageAnnotationDebuggingAttributes(
-      updates_and_events->updates);
+  ax_annotators_manager_->AddDebuggingAttributes(updates_and_events->updates);
 
   CHECK(reset_token_);
   render_accessibility_manager_->HandleAccessibilityEvents(

@@ -14,7 +14,6 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace blink {
-class WebAXObject;
 class WebDocument;
 }  // namespace blink
 
@@ -30,44 +29,33 @@ class CONTENT_EXPORT AXAnnotatorsManager {
   AXAnnotatorsManager& operator=(const AXAnnotatorsManager&) = delete;
   ~AXAnnotatorsManager();
 
-  void set_has_injected_stylesheet(bool has_injected_stylesheet) {
-    has_injected_stylesheet_ = has_injected_stylesheet;
-  }
+  // Annotate the document with the given updates. |load_complete| is a boolean
+  // denoting whether this annotate call was the result of a load complete.
+  void Annotate(const blink::WebDocument& document,
+                ui::AXTreeUpdate* update,
+                bool load_complete);
 
-  void Annotate(const blink::WebDocument& document, ui::AXTreeUpdate* update);
-
-  // Update AXAnnotators based on a changed accessibility mode.
-  void AccessibilityModeChanged(ui::AXMode old_mode, ui::AXMode new_mode);
-
+  // Cancel any in-progress annotations.
   void CancelAnnotations();
 
+  // Enables annotations if the accessibility mode for this feature is turned
+  // on, otherwise cancels annotations.
+  void AccessibilityModeChanged(ui::AXMode old_mode, ui::AXMode new_mode);
+
+  // Enables annotations if the action for this feature is fired.
   void PerformAction(ax::mojom::Action action);
 
-  void AddImageAnnotationDebuggingAttributes(
-      const std::vector<ui::AXTreeUpdate>& updates);
-
-  static void IgnoreProtocolChecksForTesting();
+  // Add any additional debugging attributes.
+  void AddDebuggingAttributes(const std::vector<ui::AXTreeUpdate>& updates);
 
  private:
   friend class AXImageAnnotatorTest;
-
-  // Creates and takes ownership of an instance of the class that automatically
-  // labels images for accessibility.
-  void CreateAXImageAnnotator();
-
-  void AddImageAnnotations(const blink::WebDocument& document,
-                           ui::AXTreeUpdate* update);
-  void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
 
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityImpl, ExperimentalRenderer> render_accessibility_;
 
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
-
-  // Whether or not we've injected a stylesheet in this document
-  // (only when debugging flags are enabled, never under normal circumstances).
-  bool has_injected_stylesheet_ = false;
 };
 
 }  // namespace content
