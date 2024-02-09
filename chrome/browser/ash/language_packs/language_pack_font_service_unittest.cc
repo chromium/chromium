@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/language_packs/language_pack_font_service.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -63,7 +64,31 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnJapaneseLocaleChange) {
+struct ValidFontLanguageTestCase {
+  std::string test_name;
+  std::string_view preferred_languages_one_locale;
+  std::string_view preferred_languages_two_locales;
+  std::string dlc_prefix;
+  std::string dlc_path;
+};
+
+class ValidFontLanguageTest
+    : public LanguagePackFontServiceTest,
+      public testing::WithParamInterface<ValidFontLanguageTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    LanguagePackFontServiceTest,
+    ValidFontLanguageTest,
+    testing::ValuesIn<ValidFontLanguageTestCase>(
+        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja",
+          "/path/for/ja"}}),
+    [](const testing::TestParamInfo<ValidFontLanguageTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -74,7 +99,8 @@ TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnJapaneseLocaleChange) {
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
                                  base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
@@ -82,11 +108,13 @@ TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnJapaneseLocaleChange) {
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
-                                   StartsWith("extrafonts-ja"))));
+                                   StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_F(LanguagePackFontServiceTest,
-       InstallJapaneseOnlyOnceOnMultipleJapaneseLocaleChange) {
+TEST_P(ValidFontLanguageTest,
+       InstallValidLanguageOnlyOnceOnMultipleValidLanguageLocalesChange) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -97,7 +125,8 @@ TEST_F(LanguagePackFontServiceTest,
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
                                  base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja,ja-JP");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_two_locales);
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
@@ -105,7 +134,7 @@ TEST_F(LanguagePackFontServiceTest,
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
-                                   StartsWith("extrafonts-ja"))));
+                                   StartsWith(test_case.dlc_prefix))));
 }
 
 TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
@@ -132,7 +161,10 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnInitWithJapaneseLocale) {
+TEST_P(ValidFontLanguageTest,
+       InstallValidLanguageOnInitWithValidLanguageLocale) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -143,7 +175,8 @@ TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnInitWithJapaneseLocale) {
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
     dlcservice_client.set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_one_locale);
 
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
@@ -155,11 +188,13 @@ TEST_F(LanguagePackFontServiceTest, InstallJapaneseOnInitWithJapaneseLocale) {
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
-                                   StartsWith("extrafonts-ja"))));
+                                   StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_F(LanguagePackFontServiceTest,
-       InstallJapaneseOnlyOnceOnInitWithMultipleJapaneseLocales) {
+TEST_P(ValidFontLanguageTest,
+       InstallValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -170,7 +205,8 @@ TEST_F(LanguagePackFontServiceTest,
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
     dlcservice_client.set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja,ja-JP");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_two_locales);
 
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
@@ -182,10 +218,10 @@ TEST_F(LanguagePackFontServiceTest,
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
-                                   StartsWith("extrafonts-ja"))));
+                                   StartsWith(test_case.dlc_prefix))));
 }
 
-constexpr std::string kJapaneseFontPath = "/path/to/ja";
+constexpr std::string kUnusedDlcPath = "/path/to/unused/dlc";
 
 TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
   FakeDlcserviceClient dlcservice_client;
@@ -198,7 +234,7 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
-    state.set_root_path(kJapaneseFontPath);
+    state.set_root_path(kUnusedDlcPath);
     dlcservice_client.set_dlc_state(std::move(state));
   }
   prefs->SetString(language::prefs::kPreferredLanguages, "zz");
@@ -209,7 +245,9 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LanguagePackFontServiceTest, AddNothingOnJapaneseLocaleChange) {
+TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -220,14 +258,15 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnJapaneseLocaleChange) {
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
-    state.set_root_path(kJapaneseFontPath);
+    state.set_root_path(test_case.dlc_path);
     dlcservice_client.set_dlc_state(std::move(state));
   }
   prefs->SetString(language::prefs::kPreferredLanguages, "zz");
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
                                  base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -242,7 +281,7 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
-    state.set_root_path(kJapaneseFontPath);
+    state.set_root_path(kUnusedDlcPath);
     dlcservice_client.set_dlc_state(std::move(state));
   }
   prefs->SetString(language::prefs::kPreferredLanguages, "zz,xx");
@@ -253,7 +292,9 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LanguagePackFontServiceTest, AddJapaneseOnInitWithJapaneseLocale) {
+TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -261,15 +302,16 @@ TEST_F(LanguagePackFontServiceTest, AddJapaneseOnInitWithJapaneseLocale) {
   MockAddFontDir add_font_dir;
   ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
   EXPECT_CALL(add_font_dir, Call)
-      .With(FieldsAre(Property(&base::FilePath::value, kJapaneseFontPath)))
+      .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
       .Times(1);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
-    state.set_root_path(kJapaneseFontPath);
+    state.set_root_path(test_case.dlc_path);
     dlcservice_client.set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_one_locale);
 
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
@@ -277,8 +319,10 @@ TEST_F(LanguagePackFontServiceTest, AddJapaneseOnInitWithJapaneseLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LanguagePackFontServiceTest,
-       AddJapaneseOnlyOnceOnInitWithMultipleJapaneseLocales) {
+TEST_P(ValidFontLanguageTest,
+       AddValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
   FakeDlcserviceClient dlcservice_client;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -286,15 +330,16 @@ TEST_F(LanguagePackFontServiceTest,
   MockAddFontDir add_font_dir;
   ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
   EXPECT_CALL(add_font_dir, Call)
-      .With(FieldsAre(Property(&base::FilePath::value, kJapaneseFontPath)))
+      .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
       .Times(1);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
-    state.set_root_path(kJapaneseFontPath);
+    state.set_root_path(test_case.dlc_path);
     dlcservice_client.set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,ja,ja-JP");
+  prefs->SetString(language::prefs::kPreferredLanguages,
+                   test_case.preferred_languages_two_locales);
 
   LanguagePackFontService service(
       prefs, base::BindRepeating(&MockAddFontDir::Call,
