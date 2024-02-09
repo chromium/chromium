@@ -140,7 +140,7 @@ public class PageInsightsCoordinator {
      * @param opened {@code true} if other bottom UI just opened; {@code false} if closed.
      */
     public void onBottomUiStateChanged(boolean opened) {
-        mMediator.onBottomUiStateChanged(opened);
+        mMediator.onOtherBottomSheetStateChanged(opened);
     }
 
     /** Returns the controller for the Page Insights bottom sheet. */

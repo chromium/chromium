@@ -94,10 +94,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final Context mContext;
 
     // BottomSheetController for other bottom sheet UIs.
-    private final BottomSheetController mBottomUiController;
+    private final BottomSheetController mOtherBottomSheetController;
 
     // Observers other bottom sheet UI state.
-    private final BottomSheetObserver mBottomUiObserver;
+    private final BottomSheetObserver mOtherBottomSheetObserver;
 
     // Bottom browser controls resizer. Used to resize web contents to move up bottom-aligned
     // elements such as cookie dialog.
@@ -159,10 +159,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // Caches the sheet height at the current state. Avoids the repeated call to resize the content
     // if the size hasn't changed since.
     private int mCachedSheetHeight;
-
-    // Whether the sheet was hidden due to another bottom sheet UI, and needs to be restored
-    // when notified when the UI was closed.
-    private boolean mShouldRestore;
 
     // Amount of time to wait before triggering the sheet automatically. Can be overridden
     // for testing.
@@ -232,7 +228,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<Profile> profileSupplier,
             ManagedBottomSheetController bottomSheetController,
-            BottomSheetController bottomUiController,
+            BottomSheetController otherBottomSheetController,
             ExpandedSheetHelper expandedSheetHelper,
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
@@ -258,7 +254,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         mWillHandleBackPressSupplier,
                         mOnBottomSheetTouchHandler);
         mSheetController = bottomSheetController;
-        mBottomUiController = bottomUiController;
+        mOtherBottomSheetController = otherBottomSheetController;
         mExpandedSheetHelper = expandedSheetHelper;
         mHandler = new Handler(Looper.getMainLooper());
         mBrowserControlsSizer = browserControlsSizer;
@@ -281,14 +277,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (mInMotionSupplier != null) {
             mInMotionSupplier.addObserver(mInMotionCallback);
         }
-        mBottomUiObserver =
+        mOtherBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     @Override
                     public void onSheetStateChanged(@SheetState int newState, int reason) {
-                        onBottomUiStateChanged(newState >= SheetState.PEEK);
+                        onOtherBottomSheetStateChanged(newState >= SheetState.PEEK);
                     }
                 };
-        bottomUiController.addObserver(mBottomUiObserver);
+        otherBottomSheetController.addObserver(mOtherBottomSheetObserver);
         mIsPageInsightsEnabledSupplier = isPageInsightsEnabledSupplier;
         mPageInsightsConfigProvider = pageInsightsConfigProvider;
         mPageInsightsDataLoader = new PageInsightsDataLoader();
@@ -362,13 +358,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 mControlsStateProvider.getBrowserControlHiddenRatio());
     }
 
-    void onBottomUiStateChanged(boolean opened) {
+    void onOtherBottomSheetStateChanged(boolean opened) {
         if (opened && shouldHideContent()) {
             mSheetController.hideContent(mSheetContent, true);
-            mShouldRestore = true;
-        } else if (!opened && mShouldRestore) {
-            mSheetController.requestShowContent(mSheetContent, true);
-            mShouldRestore = false;
         }
     }
 
@@ -802,7 +794,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     void destroy() {
         cancelAutoTrigger();
-        mBottomUiController.removeObserver(mBottomUiObserver);
+        mOtherBottomSheetController.removeObserver(mOtherBottomSheetObserver);
         mControlsStateProvider.removeObserver(mBrowserControlsObserver);
         mSheetController.removeObserver(this);
         if (mTabObservable.get() != null) {
