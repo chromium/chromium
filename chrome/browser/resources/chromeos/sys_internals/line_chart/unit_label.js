@@ -14,7 +14,7 @@ export class UnitLabel {
   constructor(/** Array<string> */ units, /** number */ unitBase) {
     /** @const {Array<string>} - See |getSuitableUnit()|. */
     this.units_ = units;
-    if (units.length == 0) {
+    if (units.length === 0) {
       console.warn('LineChart.UnitLabel: Length of units must greater than 0.');
     }
 
@@ -93,8 +93,8 @@ export class UnitLabel {
       console.warn('Precision must be between 0 and 20.');
       return;
     }
-    if (this.height_ == height && this.fontHeight_ == fontHeight &&
-        this.precision_ == precision) {
+    if (this.height_ === height && this.fontHeight_ === fontHeight &&
+        this.precision_ === precision) {
       return;
     }
 
@@ -109,7 +109,7 @@ export class UnitLabel {
    * @param {number} maxValue
    */
   setMaxValue(maxValue) {
-    if (this.maxValueCache_ == maxValue) {
+    if (this.maxValueCache_ === maxValue) {
       return;
     }
     this.maxValueCache_ = maxValue;
@@ -155,7 +155,7 @@ export class UnitLabel {
     }
     this.isCache_ = true;
 
-    if (this.maxValue_ == 0) {
+    if (this.maxValue_ === 0) {
       return;
     }
 
