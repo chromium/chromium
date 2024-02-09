@@ -443,16 +443,13 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
   if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    switch (delegate_->GetSyncAccountStateForPrefs()) {
-      case SyncPrefs::SyncAccountState::kSyncing:
-        return prefs_->GetEncryptionBootstrapToken();
-      case SyncPrefs::SyncAccountState::kNotSignedIn:
-        return std::string();
-      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
-        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-            delegate_->GetSyncAccountInfoForPrefs().gaia);
-        return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
+    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+    if (gaia_id.empty()) {
+      return std::string();
     }
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+    CHECK(gaia_id_hash.IsValid());
+    return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
   }
   return prefs_->GetEncryptionBootstrapToken();
 }
@@ -460,21 +457,17 @@ std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
   if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    switch (delegate_->GetSyncAccountStateForPrefs()) {
-      case SyncPrefs::SyncAccountState::kSyncing:
-        prefs_->SetEncryptionBootstrapToken(token);
-        return;
-      case SyncPrefs::SyncAccountState::kNotSignedIn:
-        // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
-        DUMP_WILL_BE_NOTREACHED_NORETURN()
-            << "Must not set passphrase while signed out";
-        return;
-      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
-        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-            delegate_->GetSyncAccountInfoForPrefs().gaia);
-        prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
-        return;
+    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+    if (gaia_id.empty()) {
+      // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Must not set passphrase while signed out";
+      return;
     }
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+    CHECK(gaia_id_hash.IsValid());
+    prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
+    return;
   }
   prefs_->SetEncryptionBootstrapToken(token);
 }

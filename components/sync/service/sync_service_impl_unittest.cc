@@ -1398,6 +1398,41 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
       sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
 }
 
+TEST_F(SyncServiceImplTest,
+       DisableSyncOnClientClearsPassphrasePrefForSyncingAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  // Clear sync from the dashboard.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = NOT_MY_BIRTHDAY;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref cleared when sync is cleared from
+  // dashboard.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+}
+
 TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 

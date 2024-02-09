@@ -588,9 +588,11 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
   sync_user_settings->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
+  signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
-            sync_prefs_->GetEncryptionBootstrapToken());
-  sync_prefs_->ClearEncryptionBootstrapToken();
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+  sync_prefs_->ClearEncryptionBootstrapTokenForAccount(gaia_id_hash);
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 

@@ -574,6 +574,15 @@ void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
 void SyncPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);
+  if (IsInitialSyncFeatureSetupComplete()) {
+    // When Sync-the-feature gets turned off, the user's encryption bootstrap
+    // token should be cleared. However, at this point it's hard to determine
+    // the right account, since the user is already signed out. For simplicity,
+    // just clear all existing bootstrap tokens (in practice, there will almost
+    // always be at most one anyway).
+    KeepAccountSettingsPrefsOnlyForUsers(
+        {}, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+  }
 }
 
 std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
