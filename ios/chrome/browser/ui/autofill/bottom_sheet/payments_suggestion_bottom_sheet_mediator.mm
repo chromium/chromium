@@ -211,7 +211,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(NSString*)backendIdentifier {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
   if (!_webStateList) {
     return;
   }
@@ -249,8 +249,15 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                       minorValue:nil
               displayDescription:nil
                             icon:nil
-                     popupItemId:autofill::PopupItemId::kCreditCardEntry
-               backendIdentifier:backendIdentifier
+                     popupItemId:
+                         ((base::FeatureList::IsEnabled(
+                               autofill::features::
+                                   kAutofillEnableVirtualCards) &&
+                           ([creditCardData recordType] ==
+                            autofill::CreditCard::RecordType::kVirtualCard))
+                              ? autofill::PopupItemId::kVirtualCreditCardEntry
+                              : autofill::PopupItemId::kCreditCardEntry)
+               backendIdentifier:[creditCardData backendIdentifier]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(

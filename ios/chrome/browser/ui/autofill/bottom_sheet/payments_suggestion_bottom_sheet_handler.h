@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+
 // Handler for the payments bottom sheet's context menu.
 @protocol PaymentsSuggestionBottomSheetHandler
 
@@ -17,7 +19,7 @@
 
 // Handles tapping the primary button. The selected credit card's backend
 // identifier must be provided.
-- (void)primaryButtonTapped:(NSString*)backendIdentifier;
+- (void)primaryButtonTapped:(CreditCardData*)creditCardData;
 
 // Handles tapping the secondary button.
 - (void)secondaryButtonTapped;
