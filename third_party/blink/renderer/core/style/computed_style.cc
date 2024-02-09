@@ -2584,8 +2584,7 @@ blink::Color ComputedStyle::GetInternalForcedCurrentColor(
     return GetCurrentColor(is_current_color);
   }
   return InternalForcedColor().Resolve(blink::Color(), UsedColorScheme(),
-                                       is_current_color,
-                                       /* is_forced_color */ true);
+                                       is_current_color);
 }
 
 blink::Color ComputedStyle::GetInternalForcedVisitedCurrentColor(
@@ -2595,8 +2594,7 @@ blink::Color ComputedStyle::GetInternalForcedVisitedCurrentColor(
     return GetInternalVisitedCurrentColor(is_current_color);
   }
   return InternalForcedVisitedColor().Resolve(blink::Color(), UsedColorScheme(),
-                                              is_current_color,
-                                              /* is_forced_color */ true);
+                                              is_current_color);
 }
 
 bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {

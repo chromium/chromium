@@ -4983,7 +4983,7 @@ const blink::Color InternalForcedBackgroundColor::ColorIncludingFallback(
   bool result_is_current_color;
   blink::Color result = style.InternalForcedBackgroundColor().ResolveWithAlpha(
       forced_current_color, style.UsedColorScheme(), alpha,
-      &result_is_current_color, /* is_forced_color */ true);
+      &result_is_current_color);
 
   if (is_current_color) {
     *is_current_color = alpha_is_current_color || result_is_current_color;

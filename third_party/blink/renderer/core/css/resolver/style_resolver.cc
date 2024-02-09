@@ -2819,6 +2819,24 @@ void StyleResolver::PropagateStyleToViewport() {
       new_viewport_style_builder.AccessBackgroundLayers() = background_layers;
       new_viewport_style_builder.SetImageRendering(image_rendering);
     }
+
+    // https://github.com/w3c/csswg-drafts/issues/6307
+    // In forced colors mode, the internal forced background color is
+    // propagated from the root element to the viewport.
+    if (IsForcedColorsModeEnabled()) {
+      Color internal_forced_background_color =
+          document_element_style
+              ? document_element_style->VisitedDependentColor(
+                    GetCSSPropertyInternalForcedBackgroundColor())
+              : Color::kTransparent;
+      if (viewport_style.VisitedDependentColor(
+              GetCSSPropertyInternalForcedBackgroundColor()) !=
+          internal_forced_background_color) {
+        changed = true;
+        new_viewport_style_builder.SetInternalForcedBackgroundColor(
+            StyleColor(internal_forced_background_color));
+      }
+    }
   }
 
   // Overflow

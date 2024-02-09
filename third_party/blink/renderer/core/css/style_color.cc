@@ -228,8 +228,7 @@ StyleColor::~StyleColor() {
 
 Color StyleColor::Resolve(const Color& current_color,
                           mojom::blink::ColorScheme color_scheme,
-                          bool* is_current_color,
-                          bool is_forced_color) const {
+                          bool* is_current_color) const {
   if (IsUnresolvedColorMixFunction()) {
     return color_or_unresolved_color_mix_.unresolved_color_mix->Resolve(
         current_color);
@@ -241,8 +240,7 @@ Color StyleColor::Resolve(const Color& current_color,
   if (IsCurrentColor()) {
     return current_color;
   }
-  if (EffectiveColorKeyword() != CSSValueID::kInvalid ||
-      (is_forced_color && IsSystemColorIncludingDeprecated())) {
+  if (EffectiveColorKeyword() != CSSValueID::kInvalid) {
     return ColorFromKeyword(color_keyword_, color_scheme);
   }
   return GetColor();
@@ -251,16 +249,23 @@ Color StyleColor::Resolve(const Color& current_color,
 Color StyleColor::ResolveWithAlpha(Color current_color,
                                    mojom::blink::ColorScheme color_scheme,
                                    int alpha,
-                                   bool* is_current_color,
-                                   bool is_forced_color) const {
-  Color color =
-      Resolve(current_color, color_scheme, is_current_color, is_forced_color);
+                                   bool* is_current_color) const {
+  Color color = Resolve(current_color, color_scheme, is_current_color);
   // TODO(crbug.com/1333988) This looks unfriendly to CSS Color 4.
   return Color(color.Red(), color.Green(), color.Blue(), alpha);
 }
 
+StyleColor StyleColor::ResolveSystemColor(
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
+  CHECK(IsSystemColor());
+  Color color = ColorFromKeyword(color_keyword_, color_scheme, color_provider);
+  return StyleColor(color, color_keyword_);
+}
+
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
-                                   mojom::blink::ColorScheme color_scheme) {
+                                   mojom::blink::ColorScheme color_scheme,
+                                   const ui::ColorProvider* color_provider) {
   if (const char* value_name = getValueName(keyword)) {
     if (const NamedColor* named_color = FindColor(
             value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
@@ -271,7 +276,7 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
   // TODO(samomekarajr): Pass in the actual color provider from the Page via the
   // Document.
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
-                                             /*color_provider=*/nullptr);
+                                             color_provider);
 }
 
 bool StyleColor::IsColorKeyword(CSSValueID id) {
