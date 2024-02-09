@@ -15,7 +15,7 @@ import {getTemplate} from './local_web_approvals_after.html.js';
 
 const LocalWebApprovalsAfterBase = I18nMixin(PolymerElement);
 
-export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
+export class LocalWebApprovalsAfter extends LocalWebApprovalsAfterBase {
   static get is() {
     return 'local-web-approvals-after';
   }
@@ -62,4 +62,4 @@ export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
 }
 
 customElements.define(
-    LocalWebApprovalsAfterElement.is, LocalWebApprovalsAfterElement);
+    LocalWebApprovalsAfter.is, LocalWebApprovalsAfter);
