@@ -401,6 +401,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
 
     // New metrics for this setting pref have not yet been implemented.
+    // TODO(b/324480501) Remove this zero-arg usage once all pref-based settings
+    // are handled.
     if (!settingMetric) {
       recordSettingChange();
       return;
