@@ -4741,8 +4741,6 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   if (!obj)
     return;
 
-  // TODO(chrishtr): handle |subtree|, or remove subtree as an option, as it
-  // isn't used very often and there are other possibilities.
   obj->SetAncestorsHaveDirtyDescendants();
 
   // If the content is inside the popup, mark the owning element dirty.
