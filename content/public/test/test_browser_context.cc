@@ -28,7 +28,7 @@ TestBrowserContext::TestBrowserContext(
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI))
       << "Please construct content::BrowserTaskEnvironment before "
       << "constructing TestBrowserContext instances.  "
-      << BrowserThread::GetDCheckCurrentlyOnErrorMessage(BrowserThread::UI);
+      << BrowserThread::GetCurrentlyOnErrorMessage(BrowserThread::UI);
 
   if (browser_context_dir_path.empty()) {
     EXPECT_TRUE(browser_context_dir_.CreateUniqueTempDir());
@@ -41,7 +41,7 @@ TestBrowserContext::~TestBrowserContext() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI))
       << "Please destruct content::TestBrowserContext before destructing "
       << "the BrowserTaskEnvironment instance.  "
-      << BrowserThread::GetDCheckCurrentlyOnErrorMessage(BrowserThread::UI);
+      << BrowserThread::GetCurrentlyOnErrorMessage(BrowserThread::UI);
 
   NotifyWillBeDestroyed();
   ShutdownStoragePartitions();
