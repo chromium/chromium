@@ -19,4 +19,8 @@ void NotifyStartWithURL() {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
+void NotifyCredentialExtensionUsed() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+}
 }  // namespace default_browser

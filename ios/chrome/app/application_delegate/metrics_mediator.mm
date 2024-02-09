@@ -28,6 +28,7 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -280,8 +281,7 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
                                    kCredentialExtensionPasswordUseCount] ||
           [key isEqualToString:app_group::
                                    kCredentialExtensionQuickPasswordUseCount]) {
-        LogLikelyInterestedDefaultBrowserUserActivity(
-            DefaultPromoTypeMadeForIOS);
+        default_browser::NotifyCredentialExtensionUsed();
       }
     }
   }

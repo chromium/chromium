@@ -13,6 +13,9 @@ void NotifyStartWithWidget();
 // Records all necessary information for Chrome start with URL event.
 void NotifyStartWithURL();
 
+// Record all necessary information for Credential Extension use.
+void NotifyCredentialExtensionUsed();
+
 }  // namespace default_browser
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_
