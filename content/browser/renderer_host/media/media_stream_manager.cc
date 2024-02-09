@@ -565,25 +565,6 @@ const blink::MediaStreamDevice* GetStreamDevice(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-static void NotifyMultiCaptureStopped(const std::string& label) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* const service = chromeos::LacrosService::Get();
-  if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
-      !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
-    LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
-    return;
-  }
-  crosapi::mojom::MultiCaptureService* const multi_capture_service =
-      service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
-  multi_capture_service->MultiCaptureStopped(label);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
-#endif
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace
 
 // MediaStreamManager::DeviceRequest represents a request to either enumerate
@@ -739,7 +720,7 @@ class MediaStreamManager::DeviceRequest {
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
-    NotifyMultiCaptureStateChanged(new_state);
+    NotifyMultiCaptureStateChanged(requesting_render_frame_host_id, new_state);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     MediaObserver* media_observer =
@@ -978,36 +959,33 @@ class MediaStreamManager::DeviceRequest {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  static void NotifyMultiCaptureStarted(const std::string& label,
-                                        const url::Origin& origin) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* const service = chromeos::LacrosService::Get();
-    if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
-        !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
-      LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
-      return;
-    }
-    crosapi::mojom::MultiCaptureService* const multi_capture_service =
-        service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
-    multi_capture_service->MultiCaptureStarted(label, origin.host());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    content::GetMultiCaptureService().NotifyMultiCaptureStarted(label, origin);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
+  void NotifyMultiCaptureStateChanged(GlobalRenderFrameHostId frame_host_id,
+                                      MediaRequestState new_state) {
     if (!IsGetAllScreensMedia()) {
       return;
     }
     switch (new_state) {
       case MediaRequestState::MEDIA_REQUEST_STATE_OPENING:
         GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(NotifyMultiCaptureStarted, label_,
-                                      salt_and_origin.origin()));
+            FROM_HERE,
+            base::BindOnce(
+                [](GlobalRenderFrameHostId renderer_id, std::string label) {
+                  GetContentClient()->browser()->NotifyMultiCaptureStateChanged(
+                      renderer_id, label,
+                      ContentBrowserClient::MultiCaptureChanged::kStarted);
+                },
+                frame_host_id, label_));
         break;
       case MediaRequestState::MEDIA_REQUEST_STATE_ERROR:
         GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(NotifyMultiCaptureStopped, label_));
+            FROM_HERE,
+            base::BindOnce(
+                [](GlobalRenderFrameHostId renderer_id, std::string label) {
+                  GetContentClient()->browser()->NotifyMultiCaptureStateChanged(
+                      renderer_id, label,
+                      ContentBrowserClient::MultiCaptureChanged::kStopped);
+                },
+                frame_host_id, label_));
         break;
       case MediaRequestState::MEDIA_REQUEST_STATE_CLOSING:
       case MediaRequestState::MEDIA_REQUEST_STATE_NOT_REQUESTED:
@@ -1019,7 +997,6 @@ class MediaStreamManager::DeviceRequest {
         break;
     }
   }
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Mark true if the MediaStreamDevice of |MediaStreamType| type should be
@@ -2545,7 +2522,14 @@ void MediaStreamManager::DeleteRequest(
   if (request_it->second->IsGetAllScreensMedia()) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(NotifyMultiCaptureStopped, request_it->first));
+        base::BindOnce(
+            [](GlobalRenderFrameHostId renderer_id, std::string label) {
+              GetContentClient()->browser()->NotifyMultiCaptureStateChanged(
+                  renderer_id, label,
+                  ContentBrowserClient::MultiCaptureChanged::kStopped);
+            },
+            request_it->second->requesting_render_frame_host_id,
+            request_it->first));
   }
 #endif
 

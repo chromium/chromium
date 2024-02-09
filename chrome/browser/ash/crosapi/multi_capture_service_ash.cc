@@ -32,6 +32,13 @@ void MultiCaptureServiceAsh::MultiCaptureStarted(const std::string& label,
                                                     /*port=*/443));
 }
 
+void MultiCaptureServiceAsh::MultiCaptureStartedFromApp(
+    const std::string& label,
+    const std::string& app_id,
+    const std::string& app_name) {
+  GetMultiCaptureClient()->MultiCaptureStartedFromApp(label, app_id, app_name);
+}
+
 void MultiCaptureServiceAsh::MultiCaptureStopped(const std::string& label) {
   GetMultiCaptureClient()->MultiCaptureStopped(label);
 }

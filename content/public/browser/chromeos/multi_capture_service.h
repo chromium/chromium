@@ -31,6 +31,9 @@ class CONTENT_EXPORT MultiCaptureService
 
   void NotifyMultiCaptureStarted(const std::string& label,
                                  const url::Origin& origin);
+  void NotifyMultiCaptureStartedFromApp(const std::string& label,
+                                        const std::string& app_id,
+                                        const std::string& app_name);
   void NotifyMultiCaptureStopped(const std::string& label);
 
  private:

@@ -71,9 +71,9 @@ class AudioInputDeviceManager;
 class AudioServiceListener;
 class FakeMediaStreamUIProxy;
 class MediaStreamUIProxy;
+class PermissionControllerImpl;
 class VideoCaptureManager;
 class VideoCaptureProvider;
-class PermissionControllerImpl;
 
 enum TransferState { KEPT_ALIVE, GOT_OPEN_DEVICE };
 

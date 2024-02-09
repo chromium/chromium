@@ -31,13 +31,24 @@ void MultiCaptureServiceClient::RemoveObserver(Observer* observer) {
 
 void MultiCaptureServiceClient::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.MultiCaptureStarted(label, origin);
+  }
+}
+
+void MultiCaptureServiceClient::MultiCaptureStartedFromApp(
+    const std::string& label,
+    const std::string& app_id,
+    const std::string& app_short_name) {
+  for (Observer& observer : observers_) {
+    observer.MultiCaptureStartedFromApp(label, app_id, app_short_name);
+  }
 }
 
 void MultiCaptureServiceClient::MultiCaptureStopped(const std::string& label) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.MultiCaptureStopped(label);
+  }
 }
 
 }  // namespace ash
