@@ -60,6 +60,13 @@ size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
                                         pixmap.GetBufferFormat());
 }
 
+bool IsExoTexture(std::string_view label) {
+  // TODO(crbug.com/40263319): Replace this hacky way of detecting exo shared
+  // images with an explicit bool in a shared image info struct marking at as
+  // exo-imported.
+  return label.starts_with(gpu::kExoTextureLabelPrefix);
+}
+
 }  // namespace
 
 class OzoneImageBacking::VaapiOzoneImageRepresentation
@@ -128,6 +135,10 @@ void OzoneImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 
 scoped_refptr<gfx::NativePixmap> OzoneImageBacking::GetNativePixmap() {
   return pixmap_;
+}
+
+bool OzoneImageBacking::IsImportedFromExo() {
+  return imported_from_exo_;
 }
 
 gfx::GpuMemoryBufferHandle OzoneImageBacking::GetGpuMemoryBufferHandle() {
@@ -460,7 +471,8 @@ OzoneImageBacking::OzoneImageBacking(
           features::kEnablePerContextGLTextureCache)),
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
-      use_passthrough_(use_passthrough) {
+      use_passthrough_(use_passthrough),
+      imported_from_exo_(IsExoTexture(this->debug_label())) {
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
                       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);

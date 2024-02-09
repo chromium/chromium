@@ -506,10 +506,12 @@ bool SharedImageManager::OnMemoryDump(
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     size_t total_size = 0;
     size_t total_purgeable_size = 0;
+    size_t total_non_exo_size = 0;
     for (auto& backing : images_) {
       size_t size = backing->GetEstimatedSizeForMemoryDump();
       total_size += size;
       total_purgeable_size += backing->IsPurgeable() ? size : 0;
+      total_non_exo_size += backing->IsImportedFromExo() ? 0 : size;
     }
 
     base::trace_event::MemoryAllocatorDump* dump =
@@ -520,6 +522,9 @@ bool SharedImageManager::OnMemoryDump(
     dump->AddScalar("purgeable_size",
                     base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                     total_purgeable_size);
+    dump->AddScalar("non_exo_size",
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    total_non_exo_size);
 
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;

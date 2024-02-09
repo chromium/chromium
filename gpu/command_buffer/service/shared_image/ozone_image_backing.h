@@ -65,6 +65,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+  bool IsImportedFromExo() override;
 
   enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };
 
@@ -192,6 +193,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   scoped_refptr<SharedContextState> context_state_;
   const GpuDriverBugWorkarounds workarounds_;
   bool use_passthrough_;
+  const bool imported_from_exo_ = false;
 };
 
 }  // namespace gpu

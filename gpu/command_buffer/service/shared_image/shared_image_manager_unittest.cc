@@ -96,7 +96,7 @@ TEST(SharedImageManagerTest, MemoryDumps) {
 
   auto* dump = pmd.GetAllocatorDump("gpu/shared_images");
   ASSERT_NE(nullptr, dump);
-  ASSERT_EQ(dump->entries().size(), 2u);
+  ASSERT_EQ(dump->entries().size(), 3u);
 
   for (const auto& entry : dump->entries()) {
     if (entry.name == "size") {
@@ -106,14 +106,22 @@ TEST(SharedImageManagerTest, MemoryDumps) {
       EXPECT_EQ(entry.entry_type,
                 base::trace_event::MemoryAllocatorDump::Entry::kUint64);
       EXPECT_EQ(entry.value_uint64, kSizeBytes1 + kSizeBytes2);
-    } else {
-      EXPECT_EQ(entry.name, "purgeable_size");
+    } else if (entry.name == "purgeable_size") {
       EXPECT_EQ(entry.units,
                 base::trace_event::MemoryAllocatorDump::kUnitsBytes);
       EXPECT_EQ(entry.entry_type,
                 base::trace_event::MemoryAllocatorDump::Entry::kUint64);
       // Nothing is purgeable.
       EXPECT_EQ(entry.value_uint64, 0u);
+    } else if (entry.name == "non_exo_size") {
+      EXPECT_EQ(entry.units,
+                base::trace_event::MemoryAllocatorDump::kUnitsBytes);
+      EXPECT_EQ(entry.entry_type,
+                base::trace_event::MemoryAllocatorDump::Entry::kUint64);
+      // Nothing is purgeable.
+      EXPECT_EQ(entry.value_uint64, kSizeBytes1 + kSizeBytes2);
+    } else {
+      FAIL() << "Unexpected memory dump entry name: " << entry.name;
     }
   }
 }

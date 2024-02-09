@@ -11,6 +11,8 @@
 
 namespace gpu {
 
+const char kExoTextureLabelPrefix[] = "ExoTexture";
+
 bool IsValidClientUsage(uint32_t usage) {
   constexpr int32_t kClientMax = (LAST_CLIENT_USAGE << 1) - 1;
   return 0 < usage && usage <= kClientMax;

@@ -88,6 +88,11 @@ enum SharedImageUsage : uint32_t {
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
+// This is used as the debug_label prefix for all shared images created by
+// importing buffers in Exo. This prefix is checked in the GPU process when
+// reporting if memory for shared images is attributed to exo imports or not.
+GPU_EXPORT extern const char kExoTextureLabelPrefix[];
+
 // Returns true if usage is a valid client usage.
 GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
 
