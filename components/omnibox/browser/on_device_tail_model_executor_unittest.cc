@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -400,8 +401,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
       auto words =
           base::SplitString(predictions[i].suggestion, base::kWhitespaceASCII,
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      EXPECT_TRUE(std::find(words.begin(), words.end(), "login") !=
-                  words.end());
+      EXPECT_FALSE(base::Contains(words, "login"));
     }
   }
 }
