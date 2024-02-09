@@ -1321,6 +1321,12 @@
       base_feature: "none",
     },
     {
+      // This feature makes the <dialog> element close properly when its "open"
+      // attribute is removed. https://github.com/whatwg/html/issues/5802
+      name: "DialogCloseWhenOpenRemoved",
+      status: "experimental",
+    },
+    {
       name: "DialogNewFocusBehavior",
       status: "experimental",
     },
