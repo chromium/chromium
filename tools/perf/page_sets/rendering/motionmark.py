@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
+from telemetry import benchmark
+from telemetry import story
 
 from page_sets.rendering import rendering_story
 from page_sets.rendering import story_tags
@@ -12,18 +14,22 @@ class MotionMarkPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.MOTIONMARK]
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  EXTRA_BROWSER_ARGS = None
 
   def __init__(self,
                page_set,
                shared_page_state_class=shared_page_state.SharedMobilePageState,
                name_suffix='',
                extra_browser_args=None):
-    super(MotionMarkPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        make_javascript_deterministic=False,
-        extra_browser_args=['--report-silk-details', '--disable-top-sites'])
+    extra_browser_args = ['--report-silk-details', '--disable-top-sites']
+    if self.EXTRA_BROWSER_ARGS is not None:
+      extra_browser_args.append(self.EXTRA_BROWSER_ARGS)
+    super(MotionMarkPage,
+          self).__init__(page_set=page_set,
+                         shared_page_state_class=shared_page_state_class,
+                         name_suffix=name_suffix,
+                         make_javascript_deterministic=False,
+                         extra_browser_args=extra_browser_args)
     self._score = 0
     self._scoreLowerBound = 0
     self._scoreUpperBound = 0
@@ -331,3 +337,19 @@ class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_suits'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Suits',
                                                         1299)
+
+
+@benchmark.Info(emails=['chrome-skia-graphite@google.com'],
+                component='Internals>GPU>Internals')
+class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
+  BASE_NAME = 'motionmark_ramp_composite_graphite'
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC]
+  EXTRA_BROWSER_ARGS = '--enable-features=SkiaGraphite'
+
+
+@benchmark.Info(emails=['chrome-skia-graphite@google.com'],
+                component='Internals>GPU>Internals')
+class MotionMarkRampCompositeGanesh(MotionMarkRampComposite):
+  BASE_NAME = 'motionmark_ramp_composite_ganesh'
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC]
+  EXTRA_BROWSER_ARGS = '--disable-features=SkiaGraphite'

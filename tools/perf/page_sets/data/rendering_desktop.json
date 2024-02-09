@@ -283,7 +283,13 @@
             "DEFAULT": "rendering_desktop_678d668480.wprgo"
         },
         "motionmark_ramp_composite": {
-            "DEFAULT": "rendering_desktop_fbb9b88a02.wprgo"
+            "DEFAULT": "rendering_desktop_03d1943487.wprgo"
+        },
+        "motionmark_ramp_composite_ganesh": {
+            "DEFAULT": "rendering_desktop_03d1943487.wprgo"
+        },
+        "motionmark_ramp_composite_graphite": {
+            "DEFAULT": "rendering_desktop_03d1943487.wprgo"
         },
         "motionmark_ramp_design": {
             "DEFAULT": "rendering_desktop_678d668480.wprgo"
