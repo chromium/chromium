@@ -97,14 +97,21 @@ void RaceNetworkRequestWriteBufferManager::ArmOrNotify() {
   watcher_.ArmOrNotify();
 }
 
-MojoResult RaceNetworkRequestWriteBufferManager::WriteData(
+std::tuple<MojoResult, size_t> RaceNetworkRequestWriteBufferManager::WriteData(
     base::span<const char> read_buffer) {
-  uint32_t num_bytes = read_buffer.size();
-  MojoResult result = producer_->WriteData(read_buffer.data(), &num_bytes,
-                                           MOJO_WRITE_DATA_FLAG_NONE);
+  // In order to use |MOJO_WRITE_DATA_FLAG_ALL_OR_NONE| flag to write data, the
+  // read buffer data size should be smaller than the write buffer size.
+  // Otherwise we can't finish the write operation nad `WriteData()` always
+  // return |MOJO_RESULT_OUT_OF_RANGE|.
+  auto buffer = read_buffer.size() > data_pipe_buffer_size_
+                    ? read_buffer.subspan(0, data_pipe_buffer_size_)
+                    : read_buffer;
+  uint32_t num_bytes = buffer.size();
+  MojoResult result = producer_->WriteData(buffer.data(), &num_bytes,
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   num_bytes_written_ += num_bytes;
 
-  return result;
+  return {result, num_bytes};
 }
 
 size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteData(
