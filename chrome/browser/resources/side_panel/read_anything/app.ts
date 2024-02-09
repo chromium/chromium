@@ -444,12 +444,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // first text node.
     this.firstTextNodeSetForReadAloud = -1;
 
-    this.refreshContent();
-  }
-
-  // Refreshes the content. This should only be called from the UI to avoid
-  // clearing state, such as the first text node.
-  private refreshContent() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
