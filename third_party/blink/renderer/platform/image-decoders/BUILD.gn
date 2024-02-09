@@ -115,6 +115,10 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform:test_support",
   ]
 
+  if (is_win || is_mac || (is_linux && !is_castos)) {
+    deps += [ "//ui/base:pixel_diff_test_support" ]
+  }
+
   if (enable_av1_decoder) {
     sources += [ "avif/avif_image_decoder_test.cc" ]
 
