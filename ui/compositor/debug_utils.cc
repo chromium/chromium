@@ -89,6 +89,11 @@ void PrintLayerHierarchyImp(const Layer* layer,
     }
   }
 
+  if (!layer->rounded_corner_radii().IsEmpty()) {
+    *out << "\n" << property_indent_str;
+    *out << "rounded-corners-radii" << layer->rounded_corner_radii().ToString();
+  }
+
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();
 
   if (mask) {
