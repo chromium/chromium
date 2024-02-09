@@ -1981,10 +1981,11 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 }
 
 void Widget::LayoutRootViewIfNecessary() {
-  TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
-               GetName());
-  if (root_view_ && root_view_->needs_layout())
+  if (root_view_ && root_view_->needs_layout()) {
+    TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
+                 GetName());
     root_view_->LayoutImmediately();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

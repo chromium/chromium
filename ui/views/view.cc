@@ -3428,12 +3428,16 @@ bool View::HasLayoutManager() const {
 }
 
 void View::LayoutImmediately(bool collect_trace) {
-  if (collect_trace) {
-    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
-  }
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
-  Layout(PassKey());
+  if (collect_trace) {
+    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
+    // Layout run separately in if and else statement since we need to keep the
+    // trace event in the correct scope.
+    Layout(PassKey());
+  } else {
+    Layout(PassKey());
+  }
 }
 
 // Input -----------------------------------------------------------------------
