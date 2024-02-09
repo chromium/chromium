@@ -58,7 +58,7 @@ class PatternAttributes final {
   SVGUnitTypes::SVGUnitType PatternContentUnits() const {
     return pattern_content_units_;
   }
-  AffineTransform PatternTransform() const { return pattern_transform_; }
+  const AffineTransform& PatternTransform() const { return pattern_transform_; }
   const SVGPatternElement* PatternContentElement() const {
     return pattern_content_element_.Get();
   }
