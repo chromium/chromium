@@ -9,6 +9,10 @@
 
 namespace ash {
 
+// View IDs
+inline constexpr int kNotificationInlineSettingsCancelButton = 1101;
+inline constexpr int kNotificationTurnOffNotificationsButton = 1102;
+
 inline constexpr int kGroupedCollapsedSummaryLabelSpacing = 6;
 inline constexpr int kGroupedCollapsedSummaryTitleLength = 150;
 inline constexpr int kGroupedCollapsedSummaryMessageLength = 250;

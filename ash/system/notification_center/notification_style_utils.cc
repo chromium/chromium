@@ -193,6 +193,7 @@ std::unique_ptr<views::FlexLayoutView> CreateInlineSettingsViewForMessageView(
                           base::Unretained(message_view)),
       l10n_util::GetStringUTF16(
           IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
+  turn_off_notifications_button->SetID(kNotificationTurnOffNotificationsButton);
   inline_settings_view->AddChildView(std::move(turn_off_notifications_button));
   auto cancel_button =
       notification_style_utils::GenerateNotificationLabelButton(
@@ -201,8 +202,8 @@ std::unique_ptr<views::FlexLayoutView> CreateInlineSettingsViewForMessageView(
               base::Unretained(message_view)),
           l10n_util::GetStringUTF16(
               IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT));
+  cancel_button->SetID(kNotificationInlineSettingsCancelButton);
   inline_settings_view->AddChildView(std::move(cancel_button));
-  inline_settings_view->SetVisible(false);
   return inline_settings_view;
 }
 

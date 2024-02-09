@@ -164,6 +164,7 @@ ConversationNotificationView::CreateMainContainer(
   if (inline_settings_enabled()) {
     inline_settings_view_ = center_content_container->AddChildView(
         notification_style_utils::CreateInlineSettingsViewForMessageView(this));
+    inline_settings_view_->SetVisible(false);
   }
 
   main_container->AddChildView(std::move(app_icon_container));

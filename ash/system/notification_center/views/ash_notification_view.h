@@ -303,8 +303,6 @@ class ASH_EXPORT AshNotificationView
   raw_ptr<views::View> collapsed_summary_view_ = nullptr;
   raw_ptr<message_center::NotificationControlButtonsView>
       control_buttons_view_ = nullptr;
-  raw_ptr<views::LabelButton> turn_off_notifications_button_ = nullptr;
-  raw_ptr<views::LabelButton> inline_settings_cancel_button_ = nullptr;
   raw_ptr<views::View> snooze_button_spacer_ = nullptr;
   raw_ptr<IconButton> snooze_button_ = nullptr;
 
