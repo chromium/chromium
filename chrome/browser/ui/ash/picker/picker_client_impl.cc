@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,21 +51,6 @@ void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
   }
   // TODO: b/316936723 - Add better handling of errors.
   std::move(callback).Run(std::string());
-}
-
-void OnCrosSearchResultsUpdated(
-    PickerClientImpl::CrosSearchResultsCallback callback,
-    ash::AppListSearchResultType result_type,
-    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  std::vector<ash::PickerSearchResult> picker_results;
-
-  picker_results.reserve(results.size());
-  for (std::unique_ptr<ChromeSearchResult>& result : results) {
-    // TODO: b/316936687 - Handle results for each provider.
-    picker_results.push_back(ash::PickerSearchResult::Text(result->title()));
-  }
-
-  callback.Run(result_type, std::move(picker_results));
 }
 
 }  // namespace
@@ -145,7 +131,30 @@ void PickerClientImpl::StartCrosSearch(const std::u16string& query,
   CHECK(search_engine_);
   search_engine_->StartSearch(
       query, app_list::SearchOptions(),
-      base::BindRepeating(&OnCrosSearchResultsUpdated, std::move(callback)));
+      base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
+                          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PickerClientImpl::OnCrosSearchResultsUpdated(
+    PickerClientImpl::CrosSearchResultsCallback callback,
+    ash::AppListSearchResultType result_type,
+    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+  std::vector<ash::PickerSearchResult> picker_results;
+  picker_results.reserve(results.size());
+  for (std::unique_ptr<ChromeSearchResult>& result : results) {
+    CHECK(result);
+    // TODO: b/316936687 - Handle results for each provider.
+    std::optional<GURL> result_url =
+        app_list_controller_delegate_.GetUrlForSearchResult(*result);
+    if (result_url.has_value()) {
+      picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
+          *result_url, result->icon().icon));
+    } else {
+      picker_results.push_back(ash::PickerSearchResult::Text(result->title()));
+    }
+  }
+
+  callback.Run(result_type, std::move(picker_results));
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
@@ -188,6 +197,15 @@ PickerClientImpl::PickerAppListControllerDelegate::
     PickerAppListControllerDelegate() = default;
 PickerClientImpl::PickerAppListControllerDelegate::
     ~PickerAppListControllerDelegate() = default;
+
+std::optional<GURL>
+PickerClientImpl::PickerAppListControllerDelegate::GetUrlForSearchResult(
+    ChromeSearchResult& result) {
+  last_opened_url_ = std::nullopt;
+  // This may call `OpenURL`, which will set `last_opened_url_`.
+  result.Open(0);
+  return std::exchange(last_opened_url_, std::nullopt);
+}
 
 void PickerClientImpl::PickerAppListControllerDelegate::DismissView() {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -245,5 +263,5 @@ void PickerClientImpl::PickerAppListControllerDelegate::OpenURL(
     const GURL& url,
     ui::PageTransition transition,
     WindowOpenDisposition disposition) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  last_opened_url_ = url;
 }

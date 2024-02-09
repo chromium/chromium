@@ -7,8 +7,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -18,6 +21,7 @@
 #include "url/gurl.h"
 
 class Profile;
+class ChromeSearchResult;
 
 namespace app_list {
 class SearchEngine;
@@ -68,6 +72,11 @@ class PickerClientImpl
     PickerAppListControllerDelegate();
     ~PickerAppListControllerDelegate() override;
 
+    // Returns the URL for the given search result.
+    // TODO: b/324154130 - Remove this once we have an API to get the URL from
+    // CrOS Search.
+    std::optional<GURL> GetUrlForSearchResult(ChromeSearchResult& result);
+
     // AppListControllerDelegate overrides:
     void DismissView() override;
     aura::Window* GetAppListWindow() override;
@@ -83,7 +92,15 @@ class PickerClientImpl
                  const GURL& url,
                  ui::PageTransition transition,
                  WindowOpenDisposition disposition) override;
+
+   private:
+    std::optional<GURL> last_opened_url_;
   };
+
+  void OnCrosSearchResultsUpdated(
+      CrosSearchResultsCallback callback,
+      ash::AppListSearchResultType result_type,
+      std::vector<std::unique_ptr<ChromeSearchResult>> results);
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
