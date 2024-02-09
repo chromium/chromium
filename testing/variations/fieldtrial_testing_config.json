@@ -10974,6 +10974,21 @@
             ]
         }
     ],
+    "MacAllowBackgroundingRenderProcesses": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MacAllowBackgroundingRenderProcesses"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacImmersiveFullscreen": [
         {
             "platforms": [
