@@ -1602,7 +1602,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();
@@ -1684,7 +1684,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();

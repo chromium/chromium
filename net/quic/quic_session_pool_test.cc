@@ -464,7 +464,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     size_t socket_count = socket_factory_->udp_client_socket_ports().size();
 
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -575,14 +575,14 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     // Set up first socket data provider.
     MockQuicData socket_data1(version_);
-    socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data1.AddReadPauseForever();
     socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
     // Set up second socket data provider that is used after
     // migration.
     MockQuicData socket_data2(version_);
     client_maker_.set_connection_id(kNewCID);
-    socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data2.AddReadPauseForever();
     int packet_num = 1;
     socket_data2.AddWrite(SYNCHRONOUS,
                           ConstructInitialSettingsPacket(packet_num++));
@@ -808,7 +808,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     // Create a session and verify that the cached state is loaded.
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -842,7 +842,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     // Create a session and verify that the cached state is loaded.
     MockQuicData socket_data2(version_);
-    socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data2.AddReadPauseForever();
     client_maker_.Reset();
     socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -1036,7 +1036,7 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1073,7 +1073,7 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1112,7 +1112,7 @@ TEST_P(QuicSessionPoolTest, SyncCreateZeroRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1138,7 +1138,7 @@ TEST_P(QuicSessionPoolTest, AsyncCreateZeroRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1169,7 +1169,7 @@ TEST_P(QuicSessionPoolTest, AsyncZeroRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1202,7 +1202,7 @@ TEST_P(QuicSessionPoolTest, DefaultInitialRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1224,7 +1224,7 @@ TEST_P(QuicSessionPoolTest, FactoryDestroyedWhenJobPending) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1251,7 +1251,7 @@ TEST_P(QuicSessionPoolTest, RequireConfirmation) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1285,7 +1285,7 @@ TEST_P(QuicSessionPoolTest, RequireConfirmationAsyncQuicSession) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1323,7 +1323,7 @@ TEST_P(QuicSessionPoolTest, DontRequireConfirmationFromSameIP) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1356,7 +1356,7 @@ TEST_P(QuicSessionPoolTest, CachedInitialRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1417,7 +1417,7 @@ TEST_P(QuicSessionPoolTest, CachedInitialRttWithNetworkAnonymizationKey) {
         true);
 
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     socket_data.AddWrite(SYNCHRONOUS,
                          packet_maker.MakeInitialSettingsPacket(1));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1454,7 +1454,7 @@ TEST_P(QuicSessionPoolTest, 2gInitialRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1481,7 +1481,7 @@ TEST_P(QuicSessionPoolTest, 3gInitialRtt) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1503,7 +1503,7 @@ TEST_P(QuicSessionPoolTest, GoAway) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1567,7 +1567,7 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
         true);
 
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     socket_data.AddWrite(SYNCHRONOUS,
                          packet_maker.MakeInitialSettingsPacket(1));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1617,7 +1617,7 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     SCOPED_TRACE(i);
 
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
     socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
     socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -1653,13 +1653,13 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1796,7 +1796,7 @@ TEST_P(QuicSessionPoolTest, PoolingWithServerMigration) {
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   client_maker_.set_connection_id(cid_on_old_path);
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
@@ -1833,12 +1833,12 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1891,7 +1891,7 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
   Initialize();
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1928,7 +1928,7 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
 TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   Initialize();
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -1975,12 +1975,12 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   Initialize();
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2037,12 +2037,12 @@ TEST_P(QuicSessionPoolTest, Goaway) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2107,7 +2107,7 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
                                                 /*unidirectional=*/false));
   socket_data.AddWrite(SYNCHRONOUS,
                        client_maker_.MakeAckPacket(packet_num++, 2, 1));
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   HttpRequestInfo request_info;
@@ -2217,7 +2217,7 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
   scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
   Initialize();
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
@@ -2241,7 +2241,7 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
 TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
   Initialize();
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
@@ -2269,7 +2269,7 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -2280,7 +2280,7 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2330,7 +2330,7 @@ TEST_P(QuicSessionPoolTest,
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -2349,7 +2349,7 @@ TEST_P(QuicSessionPoolTest,
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2385,7 +2385,7 @@ TEST_P(QuicSessionPoolTest,
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -2404,7 +2404,7 @@ TEST_P(QuicSessionPoolTest,
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2445,7 +2445,7 @@ TEST_P(QuicSessionPoolTest,
                                             "192.168.0.1", "");
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -2464,7 +2464,7 @@ TEST_P(QuicSessionPoolTest,
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2502,7 +2502,7 @@ TEST_P(QuicSessionPoolTest,
                                             "192.168.0.1", "");
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -2522,7 +2522,7 @@ TEST_P(QuicSessionPoolTest,
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2568,7 +2568,7 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data.AddWrite(SYNCHRONOUS,
@@ -2617,7 +2617,7 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -2628,7 +2628,7 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2700,16 +2700,16 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   quic_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
   MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -2784,7 +2784,7 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -2853,7 +2853,7 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
       ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
 
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   int packet_num = 1;
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_num++));
@@ -2872,7 +2872,7 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
   // in-flight SETTINGS and requests will be retransmitted. Since data is
@@ -2883,7 +2883,7 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeAckAndDataPacket(
                           packet_num++, GetQpackDecoderStreamId(), 2, 2, false,
@@ -2998,7 +2998,7 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
       ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
 
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   int packet_num = 1;
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_num++));
@@ -3027,7 +3027,7 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
 
   quic_data2.AddWrite(ASYNC,
                       client_maker_.MakeCombinedRetransmissionPacket(
@@ -3146,7 +3146,7 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), task_runner.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -3222,7 +3222,7 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -3237,12 +3237,12 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   // Connectivity probe to be sent on the new path.
   quic_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
 
   if (migrate_idle_sessions) {
-    quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+    quic_data1.AddReadPauseForever();
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     quic_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataAndRstPacket(
@@ -3326,7 +3326,7 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -3408,7 +3408,7 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
       quic::test::TestConnectionId(12345678);
   MockQuicData socket_data(version_);
   if (migrate_idle_sessions) {
-    failed_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    failed_socket_data.AddReadPauseForever();
     int packet_num = 1;
     failed_socket_data.AddWrite(SYNCHRONOUS,
                                 ConstructInitialSettingsPacket(packet_num++));
@@ -3426,7 +3426,7 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
 
     // Set up second socket data provider that is used after migration.
     client_maker_.set_connection_id(cid_on_new_path);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+    socket_data.AddReadPauseForever();
     socket_data.AddWrite(SYNCHRONOUS,
                          client_maker_.MakeCombinedRetransmissionPacket(
                              {3, 1, 2}, packet_num++));
@@ -3438,7 +3438,7 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
         client_maker_.MakeRetireConnectionIdPacket(packet_num++, 0u));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
   } else {
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     int packet_num = 1;
     socket_data.AddWrite(SYNCHRONOUS,
                          ConstructInitialSettingsPacket(packet_num++));
@@ -3506,7 +3506,7 @@ TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -3568,7 +3568,7 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -3590,10 +3590,10 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
     // Connectivity probe to be sent on the new path.
     quic_data1.AddWrite(
         SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
-    quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+    quic_data1.AddReadPause();
     // Connectivity probe to receive from the server.
     quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
-    quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+    quic_data1.AddReadPauseForever();
     // in-flight SETTINGS and requests will be retransmitted. Since data is
     // already sent on the new address, ping will no longer be sent.
     quic_data1.AddWrite(ASYNC, client_maker_.MakeRetransmissionPacket(
@@ -3652,7 +3652,7 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNoOpenStreams(
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData default_socket_data(version_);
-  default_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  default_socket_data.AddReadPauseForever();
   int packet_num = 1;
   default_socket_data.AddWrite(SYNCHRONOUS,
                                ConstructInitialSettingsPacket(packet_num++));
@@ -3731,7 +3731,7 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkDisconnected(
 
   int packet_number = 1;
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_number++));
   socket_data.AddWrite(
@@ -3793,7 +3793,7 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkDisconnected(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -3863,7 +3863,7 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -3929,7 +3929,7 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -4004,7 +4004,7 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -4022,7 +4022,7 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // First connectivity probe to receive from the server, which will complete
   // connection migraiton on path degrading.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
@@ -4040,7 +4040,7 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  5, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
                        packet_number++, GetQpackDecoderStreamId(), 5, 1, false,
@@ -4163,7 +4163,7 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -4185,7 +4185,7 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
   // in-flight SETTINGS and requests will be retransmitted. Since data is
@@ -4198,7 +4198,7 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
                        packet_number++, GetQpackDecoderStreamId(), 2, 2, false,
@@ -4317,11 +4317,11 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
                       ConstructGetRequestPacket(
                           packet_number++,
                           GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   quic_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddReadPauseForever();
 
   // Set up the second socket data provider that is used for path validation.
   MockQuicData quic_data2(version_);
@@ -4333,7 +4333,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   ++packet_number;  // Account for the packet encountering write error.
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
 
   // Connection ID is retired on the old path.
@@ -4444,18 +4444,18 @@ TEST_P(QuicSessionPoolTest,
                       ConstructGetRequestPacket(
                           packet_number++,
                           GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   quic_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddReadPauseForever();
 
   // Set up the second socket data provider that is used for path validation.
   MockQuicData quic_data2(version_);
   client_maker_.set_connection_id(cid_on_path2);
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
   packet_number++;  // Account for packet encountering write error.
 
@@ -4468,7 +4468,7 @@ TEST_P(QuicSessionPoolTest,
   // A socket will be created for a new path, but there would be no write
   // due to lack of new connection ID.
   MockQuicData quic_data3(version_);
-  quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Pause
+  quic_data3.AddReadPauseForever();
 
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -4569,7 +4569,7 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), task_runner.get());
 
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   quic_data1.AddWrite(
       SYNCHRONOUS, ConstructGetRequestPacket(
@@ -4585,14 +4585,14 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeConnectivityProbingPacket(2));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   quic_data2.AddWrite(
       ASYNC, client_maker_.MakeAckAndPingPacket(4,
                                                 /*largest_received=*/2,
@@ -4600,7 +4600,7 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                        5, /*sequence_number=*/0u));
   quic_data2.AddRead(ASYNC, server_maker_.MakeAckPacket(3, 5, 1));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(ASYNC, client_maker_.MakeDataPacket(
                                  6, GetQpackDecoderStreamId(), false,
                                  StreamCancellationQpackDecoderInstruction(0)));
@@ -4718,7 +4718,7 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(ASYNC,
                       client_maker_.MakeDummyCHLOPacket(packet_number++));
   // Change the encryption level after handshake is confirmed.
@@ -4733,9 +4733,9 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
   client_maker_.set_connection_id(kNewCID);
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request.
@@ -4797,7 +4797,7 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(ASYNC,
                       client_maker_.MakeDummyCHLOPacket(packet_number++));
   // Change the encryption level after handshake is confirmed.
@@ -4810,7 +4810,7 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
   // preferred address.
   MockQuicData quic_data2(version_);
   client_maker_.set_connection_id(kNewCID);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   // One PATH_CHALLENGE + 2 retires.
   for (size_t i = 0; i < quic::QuicPathValidator::kMaxRetryTimes + 1; ++i) {
     quic_data2.AddWrite(
@@ -4881,7 +4881,7 @@ TEST_P(QuicSessionPoolTest, PortMigrationDisabledOnPathDegrading) {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -4979,7 +4979,7 @@ TEST_P(QuicSessionPoolTest,
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // hanging read
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -5005,7 +5005,7 @@ TEST_P(QuicSessionPoolTest,
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_number));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Stateless reset to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeStatelessResetPacket());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -5129,13 +5129,13 @@ TEST_P(
   Initialize();
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddWrite(ASYNC, OK);
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddWrite(ASYNC, OK);
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -5257,9 +5257,9 @@ TEST_P(QuicSessionPoolTest,
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
 
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -5312,7 +5312,7 @@ TEST_P(
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
@@ -5372,13 +5372,13 @@ TEST_P(
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
 
   MockQuicData quic_data2(version_);
   quic_data2.AddConnect(ASYNC, ERR_UNEXPECTED);
@@ -5449,16 +5449,16 @@ TEST_P(QuicSessionPoolTest,
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
 
   MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
 
   quic_data.AddSocketDataToFactory(socket_factory_.get());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -5528,13 +5528,13 @@ TEST_P(QuicSessionPoolTest,
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -5592,16 +5592,16 @@ TEST_P(QuicSessionPoolTest,
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
 
   MockQuicData quic_data2(version_);
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
 
   quic_data.AddSocketDataToFactory(socket_factory_.get());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -5679,13 +5679,13 @@ void QuicSessionPoolTestBase::
 
   int packet_num = 1;
   MockQuicData quic_data(version_);
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   MockQuicData quic_data2(version_);
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
@@ -5697,7 +5697,7 @@ void QuicSessionPoolTestBase::
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeDataPacket(
                           packet_num++, GetQpackDecoderStreamId(), false,
@@ -5809,7 +5809,7 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -5828,7 +5828,7 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
   // Ping packet to send after migration is completed.
@@ -5836,7 +5836,7 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeAckAndRetireConnectionIdPacket(
                           packet_number++,
@@ -5976,7 +5976,7 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
 
   int packet_number = 1;
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_number++));
   quic_data1.AddWrite(SYNCHRONOUS,
@@ -6030,7 +6030,7 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
         SYNCHRONOUS,
         client_maker_.MakeConnectivityProbingPacket(packet_number));
     packet_number++;
-    quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+    quic_data2.AddReadPause();
     // Connectivity probe to receive from the server.
     quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
                                   server_packet_num++));
@@ -6073,7 +6073,7 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
       quic_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeAckPacket(packet_number++, 9, 9));
     }
-    quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // EOF.
+    quic_data2.AddReadPauseForever();
     quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
     EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumDegradingSessions(factory_.get()));
@@ -6159,14 +6159,14 @@ TEST_P(QuicSessionPoolTest,
                       ConstructGetRequestPacket(
                           packet_number++,
                           GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   // The client session will receive the response first and closes its only
   // stream.
   quic_data1.AddRead(ASYNC,
                      ConstructOkResponsePacket(
                          1, GetNthClientInitiatedBidirectionalStreamId(0),
                          /*fin = */ true));
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPauseForever();
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Set up the second socket data provider that is used after migration.
@@ -6178,10 +6178,10 @@ TEST_P(QuicSessionPoolTest,
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(2));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   // Ping packet to send after migration is completed.
   quic_data2.AddWrite(
       ASYNC, client_maker_.MakeAckAndPingPacket(packet_number++, 2, 1));
@@ -6316,11 +6316,11 @@ TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data.AddReadPause();
   quic_data.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeAckAndDataPacket(
                          packet_num++, GetQpackDecoderStreamId(), 1, 1, false,
@@ -6444,7 +6444,7 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
                      ConstructOkResponsePacket(
                          2, GetNthClientInitiatedBidirectionalStreamId(0),
                          true));  // keep sending version.
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddReadPauseForever();
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Set up the second socket data provider that is used after migration.
@@ -6455,7 +6455,7 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
                                        packet_number++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(3));
   // Ping packet to send after migration is completed.
@@ -6473,7 +6473,7 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeAckPacket(packet_number++, 1, 3, 1));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -6570,7 +6570,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
       ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
 
   MockQuicData quic_data1(version_);
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddReadPauseForever();
   int packet_num = 1;
   quic_data1.AddWrite(SYNCHRONOUS,
                       ConstructInitialSettingsPacket(packet_num++));
@@ -6589,7 +6589,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
-  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
   // in-flight SETTINGS and requests will be retransmitted. Since data is
@@ -6602,7 +6602,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeAckAndDataPacket(
                           packet_num++, GetQpackDecoderStreamId(), 2, 2, false,
@@ -6716,13 +6716,13 @@ TEST_P(QuicSessionPoolTest,
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddWrite(ASYNC, OK);
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddWrite(ASYNC, OK);
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -6843,14 +6843,14 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithNoNewNetwork) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause for path degrading signal.
+  quic_data.AddReadPause();
 
   // The rest of the data will still flow in the original socket as there is no
   // new network after path degrading.
   quic_data.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeAckAndDataPacket(
                          packet_num++, GetQpackDecoderStreamId(), 1, 1, false,
@@ -6939,7 +6939,7 @@ void QuicSessionPoolTestBase::TestMigrateSessionEarlyNonMigratableStream(
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -6954,12 +6954,12 @@ void QuicSessionPoolTestBase::TestMigrateSessionEarlyNonMigratableStream(
   // Connectivity probe to be sent on the new path.
   quic_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
-  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddReadPause();
   // Connectivity probe to receive from the server.
   quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
 
   if (migrate_idle_sessions) {
-    quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+    quic_data1.AddReadPauseForever();
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     quic_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataAndRstPacket(
@@ -7045,7 +7045,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -7122,7 +7122,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), task_runner.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -7156,7 +7156,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -7292,7 +7292,7 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), task_runner.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   int peer_packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
@@ -7329,7 +7329,7 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
                      ConstructOkResponsePacket(
                          peer_packet_num++,
                          GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request QuicHttpStream.
@@ -7398,7 +7398,7 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   // Connectivity probe to receive from the server.
   quic_data3.AddRead(
       ASYNC, server_maker_.MakeConnectivityProbingPacket(peer_packet_num++));
-  quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data3.AddReadPauseForever();
   // There is no other data to retransmit as they have been acknowledged by
   // the packet containing NEW_CONNECTION_ID frame from the server.
   quic_data3.AddWrite(ASYNC, client_maker_.MakeAckPacket(
@@ -7464,7 +7464,7 @@ TEST_P(QuicSessionPoolTest,
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(ASYNC, client_maker_.MakeDummyCHLOPacket(1));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -7524,7 +7524,7 @@ void QuicSessionPoolTestBase::TestNoAlternateNetworkBeforeHandshake(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(ASYNC, client_maker_.MakeDummyCHLOPacket(1));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -7620,7 +7620,7 @@ void QuicSessionPoolTestBase::
 
   // Socket data for connection on the default network.
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(ASYNC, client_maker_.MakeDummyCHLOPacket(1));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -7629,7 +7629,7 @@ void QuicSessionPoolTestBase::
   int packet_num = 1;
   socket_data2.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDummyCHLOPacket(packet_num++));
-  socket_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data2.AddReadPause();
   // Change the encryption level after handshake is confirmed.
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   socket_data2.AddWrite(ASYNC, ConstructInitialSettingsPacket(packet_num++));
@@ -7640,7 +7640,7 @@ void QuicSessionPoolTestBase::
   socket_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   int probing_packet_num = packet_num++;
   socket_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                          packet_num++,
@@ -7660,7 +7660,7 @@ void QuicSessionPoolTestBase::
   MockQuicData probing_data(version_);
   quic::QuicConnectionId cid_on_path1 = quic::test::TestConnectionId(1234567);
   client_maker_.set_connection_id(cid_on_path1);
-  probing_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  probing_data.AddReadPauseForever();
   probing_data.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeConnectivityProbingPacket(probing_packet_num));
@@ -7767,7 +7767,7 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -7786,7 +7786,7 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -7830,7 +7830,7 @@ TEST_P(QuicSessionPoolTest,
 
   // Socket data for connection on the default network.
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
   socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -7840,7 +7840,7 @@ TEST_P(QuicSessionPoolTest,
   int packet_num = 1;
   socket_data2.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDummyCHLOPacket(packet_num++));
-  socket_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data2.AddReadPause();
   // Change the encryption level after handshake is confirmed.
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   socket_data2.AddWrite(ASYNC, ConstructInitialSettingsPacket(packet_num++));
@@ -7851,7 +7851,7 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(
       SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
                        packet_num++, GetQpackDecoderStreamId(), 1, 1, false,
@@ -7923,7 +7923,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteError(
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -7975,7 +7975,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteError(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -8035,7 +8035,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddWrite(write_error_mode, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -8142,7 +8142,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -8173,7 +8173,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -8292,7 +8292,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
   int packet_number = 1;
   MockQuicData socket_data(version_);
 
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_number++));
   socket_data.AddWrite(write_error_mode, ERR_ADDRESS_UNREACHABLE);
@@ -8325,7 +8325,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -8435,7 +8435,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
 
   int packet_number = 1;
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_number++));
   socket_data.AddWrite(write_error_mode,
@@ -8477,7 +8477,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -8587,14 +8587,14 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNonMigratableStream(
   int packet_num = 1;
   if (migrate_idle_sessions) {
     // The socket data provider for the original socket before migration.
-    failed_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    failed_socket_data.AddReadPauseForever();
     failed_socket_data.AddWrite(SYNCHRONOUS,
                                 ConstructInitialSettingsPacket(packet_num++));
     failed_socket_data.AddWrite(write_error_mode, ERR_ADDRESS_UNREACHABLE);
     failed_socket_data.AddSocketDataToFactory(socket_factory_.get());
 
     // Set up second socket data provider that is used after migration.
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+    socket_data.AddReadPauseForever();
     client_maker_.set_connection_id(cid_on_new_path);
     // Increment packet number to account for packet write error on the old
     // path. Also save the packet in client_maker_ for constructing the
@@ -8620,7 +8620,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNonMigratableStream(
                                                    /*sequence_number=*/0u));
     socket_data.AddSocketDataToFactory(socket_factory_.get());
   } else {
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     socket_data.AddWrite(write_error_mode, ERR_ADDRESS_UNREACHABLE);
     socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -8705,7 +8705,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMigrationDisabled(
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddWrite(write_error_mode, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -8787,7 +8787,7 @@ void QuicSessionPoolTestBase::TestMigrationOnMultipleWriteErrors(
   // Set up the socket data used by the original network, which encounters a
   // write error.
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   int packet_num = 1;
   socket_data1.AddWrite(SYNCHRONOUS,
                         ConstructInitialSettingsPacket(packet_num++));
@@ -8801,14 +8801,14 @@ void QuicSessionPoolTestBase::TestMigrationOnMultipleWriteErrors(
   MockQuicData failed_quic_data2(version_);
   quic::QuicConnectionId cid_on_new_path =
       quic::test::TestConnectionId(12345678);
-  failed_quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  failed_quic_data2.AddReadPauseForever();
   failed_quic_data2.AddWrite(write_error_mode_on_new_network, ERR_FAILED);
   failed_quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Set up the third socket data used by original network, which
   // - encounters a write error again.
   MockQuicData failed_quic_data1(version_);
-  failed_quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  failed_quic_data1.AddReadPauseForever();
   failed_quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -8897,7 +8897,7 @@ TEST_P(QuicSessionPoolTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(ASYNC, client_maker_.MakeDummyCHLOPacket(1));
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -8929,7 +8929,7 @@ void QuicSessionPoolTestBase::
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -8983,7 +8983,7 @@ void QuicSessionPoolTestBase::
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -9079,7 +9079,7 @@ void QuicSessionPoolTestBase::
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -9134,7 +9134,7 @@ void QuicSessionPoolTestBase::
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -9237,7 +9237,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -9294,7 +9294,7 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.MakeRetransmissionAndRetireConnectionIdPacket(
                        packet_num++,
@@ -9385,12 +9385,12 @@ TEST_P(QuicSessionPoolTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddWrite(
       ASYNC, ERR_ADDRESS_UNREACHABLE,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -9430,7 +9430,7 @@ TEST_P(QuicSessionPoolTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -9502,7 +9502,7 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -9550,7 +9550,7 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -9627,7 +9627,7 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -9675,7 +9675,7 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -9762,7 +9762,7 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
                                  peer_packet_num++, cid_on_new_path,
                                  /*sequence_number=*/1u,
                                  /*retire_prior_to=*/0u));
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -9785,7 +9785,7 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immediately.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -9804,13 +9804,13 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -9920,7 +9920,7 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
                                  peer_packet_num++, cid_on_new_path,
                                  /*sequence_number=*/1u,
                                  /*retire_prior_to=*/0u));
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -9944,7 +9944,7 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -9962,13 +9962,13 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -10073,7 +10073,7 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -10088,13 +10088,13 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -10198,7 +10198,7 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -10215,7 +10215,7 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -10317,7 +10317,7 @@ TEST_P(QuicSessionPoolTest,
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -10332,13 +10332,13 @@ TEST_P(QuicSessionPoolTest,
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -10444,7 +10444,7 @@ TEST_P(QuicSessionPoolTest,
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -10461,7 +10461,7 @@ TEST_P(QuicSessionPoolTest,
       ASYNC, ConstructServerDataPacket(
                  3, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  header + "hello!"));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read.
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeDataPacket(
                             packet_num++, GetQpackDecoderStreamId(), false,
@@ -10599,7 +10599,7 @@ TEST_P(QuicSessionPoolTest,
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
 
-  socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  socket_data1.AddReadPause();
   socket_data1.AddRead(ASYNC, ERR_FAILED);  // Read error to close connection.
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
@@ -10699,7 +10699,7 @@ void QuicSessionPoolTestBase::
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
@@ -10762,7 +10762,7 @@ void QuicSessionPoolTestBase::
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(ASYNC,
                         client_maker_.MakeCombinedRetransmissionPacket(
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
@@ -10864,7 +10864,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
       server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid1,
                                               /*sequence_number=*/1u,
                                               /*retire_prior_to=*/0u));
-  default_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  default_socket_data.AddReadPauseForever();
   int packet_num = 1;
   default_socket_data.AddWrite(SYNCHRONOUS,
                                ConstructInitialSettingsPacket(packet_num++));
@@ -10896,7 +10896,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/2u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
                                                      /*sequence_number=*/3u,
@@ -10908,7 +10908,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/3u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
                                                      /*sequence_number=*/4u,
@@ -10920,7 +10920,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/4u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,
                                                      /*sequence_number=*/5u,
@@ -10932,7 +10932,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/5u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid6,
                                                      /*sequence_number=*/6u,
@@ -10944,7 +10944,7 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/6u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid7,
                                                      /*sequence_number=*/7u,
@@ -10955,32 +10955,32 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
 
   // Set up probing socket for migrating back to the default network.
   MockQuicData quic_data(version_);                // retry count: 0.
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data1(version_);                // retry count: 1
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data2(version_);                // retry count: 2
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data3(version_);                // retry count: 3
-  quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data3.AddReadPauseForever();
   quic_data3.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data3.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data4(version_);                // retry count: 4
-  quic_data4.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data4.AddReadPauseForever();
   quic_data4.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data4.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data5(version_);                // retry count: 5
-  quic_data5.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data5.AddReadPauseForever();
   quic_data5.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data5.AddSocketDataToFactory(socket_factory_.get());
 
@@ -11072,7 +11072,7 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
       server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid1,
                                               /*sequence_number=*/1u,
                                               /*retire_prior_to=*/0u));
-  default_socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  default_socket_data.AddReadPauseForever();
   int packet_num = 1;
   default_socket_data.AddWrite(SYNCHRONOUS,
                                ConstructInitialSettingsPacket(packet_num++));
@@ -11093,7 +11093,7 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
   alternate_socket_data.AddWrite(ASYNC,
                                  client_maker_.MakeRetireConnectionIdPacket(
                                      packet_num++, /*sequence_number=*/0u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid2,
                                                      /*sequence_number=*/2u,
@@ -11105,7 +11105,7 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/2u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
                                                      /*sequence_number=*/3u,
@@ -11117,7 +11117,7 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/3u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
                                                      /*sequence_number=*/4u,
@@ -11129,7 +11129,7 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  /*largest_received=*/peer_packet_num - 1,
                  /*smallest_received=*/1,
                  /*sequence_number=*/4u));
-  alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
+  alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,
                                                      /*sequence_number=*/5u,
@@ -11140,27 +11140,27 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
 
   // Set up probing socket for migrating back to the default network.
   MockQuicData quic_data(version_);                // retry count: 0.
-  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data.AddReadPauseForever();
   quic_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data1(version_);                // retry count: 1
-  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data1.AddReadPauseForever();
   quic_data1.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data2(version_);                // retry count: 2
-  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data3(version_);                // retry count: 3
-  quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data3.AddReadPauseForever();
   quic_data3.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data3.AddSocketDataToFactory(socket_factory_.get());
 
   MockQuicData quic_data4(version_);                // retry count: 4
-  quic_data4.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
+  quic_data4.AddReadPauseForever();
   quic_data4.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data4.AddSocketDataToFactory(socket_factory_.get());
 
@@ -11232,7 +11232,7 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
   client_maker_.set_save_packet_frames(true);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   int packet_num = 1;
   socket_data1.AddWrite(SYNCHRONOUS,
                         ConstructInitialSettingsPacket(packet_num++));
@@ -11301,7 +11301,7 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
   socket_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -11365,7 +11365,7 @@ TEST_P(QuicSessionPoolTest, ServerMigrationNonMigratableStream) {
 
   int packet_num = 1;
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(
@@ -11509,7 +11509,7 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv6ToIPv4Fails) {
 
   // Set up only socket data provider.
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   int packet_num = 1;
   socket_data1.AddWrite(SYNCHRONOUS,
                         ConstructInitialSettingsPacket(packet_num++));
@@ -11585,7 +11585,7 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv6Fails) {
 
   // Set up only socket data provider.
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   int packet_num = 1;
   socket_data1.AddWrite(SYNCHRONOUS,
                         ConstructInitialSettingsPacket(packet_num++));
@@ -11645,13 +11645,13 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -11703,13 +11703,13 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -11849,7 +11849,7 @@ TEST_P(QuicSessionPoolTest, EnableNotLoadFromDiskCache) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -11884,13 +11884,13 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12305,7 +12305,7 @@ TEST_P(QuicSessionPoolTest,
 
     // Create a session and verify that the cached state is loaded.
     MockQuicData socket_data(version_);
-    socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+    socket_data.AddReadPauseForever();
     client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
     // For the close socket message.
@@ -12447,7 +12447,7 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12641,7 +12641,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12707,12 +12707,12 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12787,12 +12787,12 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSecureDnsPolicy) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12858,12 +12858,12 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -12942,12 +12942,12 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13018,12 +13018,12 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   MockQuicData socket_data1(version_);
-  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddReadPauseForever();
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13149,7 +13149,7 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesRequestPriority) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13172,7 +13172,7 @@ TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13214,7 +13214,7 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesParams) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13406,7 +13406,7 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncAsync) {
   factory_->set_is_quic_known_to_work_on_current_network(false);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_FAILED);
   socket_data.AddWrite(ASYNC, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -13437,7 +13437,7 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncAsync) {
       host_resolution_callback.callback()));
 
   EXPECT_FALSE(callback_.have_result());
-  socket_data.GetSequencedSocketData()->Resume();
+  socket_data.Resume();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_.have_result());
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, callback_.WaitForResult());
@@ -13486,7 +13486,7 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncAsync) {
   factory_->set_is_quic_known_to_work_on_current_network(false);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_FAILED);
   socket_data.AddWrite(ASYNC, ERR_FAILED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -13503,7 +13503,7 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncAsync) {
   EXPECT_FALSE(host_resolution_callback.have_result());
 
   EXPECT_FALSE(callback_.have_result());
-  socket_data.GetSequencedSocketData()->Resume();
+  socket_data.Resume();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_.have_result());
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, callback_.WaitForResult());
@@ -13571,12 +13571,12 @@ TEST_P(QuicSessionPoolTest, Tag) {
 
   // Prepare to establish two QUIC sessions.
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   client_maker_.Reset();
   MockQuicData socket_data2(version_);
-  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13639,7 +13639,7 @@ TEST_P(QuicSessionPoolTest, ReadErrorClosesConnection) {
 
   MockQuicData socket_data(version_);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_CONNECTION_REFUSED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13668,7 +13668,7 @@ TEST_P(QuicSessionPoolTest, MessageTooBigReadErrorDoesNotCloseConnection) {
 
   MockQuicData socket_data(version_);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_MSG_TOO_BIG);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13697,7 +13697,7 @@ TEST_P(QuicSessionPoolTest, ZeroLengthReadDoesNotCloseConnection) {
 
   MockQuicData socket_data(version_);
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, 0);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13730,7 +13730,7 @@ TEST_P(QuicSessionPoolTest, DnsAliasesCanBeAccessedFromStream) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13759,7 +13759,7 @@ TEST_P(QuicSessionPoolTest, NoAdditionalDnsAliases) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13788,7 +13788,7 @@ TEST_P(QuicSessionPoolTest, DoNotUseDnsAliases) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -13904,7 +13904,7 @@ void QuicSessionPoolTestBase::TestRequireDnsHttpsAlpn(
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14067,7 +14067,7 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14127,7 +14127,7 @@ TEST_P(QuicSessionPoolTest, EchGrease) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14160,7 +14160,7 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromAltSvc) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14195,7 +14195,7 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14237,7 +14237,7 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14278,7 +14278,7 @@ TEST_P(QuicSessionPoolTest, EchSvcbReliant) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -14314,7 +14314,7 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   MockQuicData socket_data(version_);
-  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddReadPauseForever();
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
