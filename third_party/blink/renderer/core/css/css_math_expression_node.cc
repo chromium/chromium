@@ -2497,10 +2497,11 @@ class CSSMathExpressionNodeParser {
 
    public:
     uint8_t depth;
+    bool allow_size_keyword;
 
     static_assert(uint8_t(kMaxExpressionDepth + 1) == kMaxExpressionDepth + 1);
 
-    State() : depth(0) {}
+    State() : depth(0), allow_size_keyword(false) {}
     State(const State&) = default;
     State& operator=(const State&) = default;
   };
@@ -2712,6 +2713,7 @@ class CSSMathExpressionNodeParser {
     CSSMathExpressionNode* basis = nullptr;
 
     CSSValueID id = tokens.Peek().Id();
+    bool basis_is_any = id == CSSValueID::kAny;
     if (id != CSSValueID::kInvalid &&
         (id == CSSValueID::kAny ||
          css_parsing_utils::ValidWidthOrHeightKeyword(id, context_))) {
@@ -2726,14 +2728,15 @@ class CSSMathExpressionNodeParser {
       if (!basis) {
         return nullptr;
       }
+      // TODO(https://crbug.com/313072): If basis is a calc-size()
+      // expression whose basis is 'any', set basis_is_any to true.
     }
 
     if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
       return nullptr;
     }
 
-    // TODO(https://crbug.com/313072): Allow the 'size' keyword in the
-    // calculation.
+    state.allow_size_keyword = !basis_is_any;
     CSSMathExpressionNode* calculation = ParseValueExpression(tokens, state);
     if (!calculation) {
       return nullptr;
@@ -2952,7 +2955,7 @@ class CSSMathExpressionNodeParser {
   }
 
  private:
-  CSSMathExpressionNode* ParseValue(CSSParserTokenRange& tokens) {
+  CSSMathExpressionNode* ParseValue(CSSParserTokenRange& tokens, State state) {
     CSSParserToken token = tokens.ConsumeIncludingWhitespace();
     if (token.Id() == CSSValueID::kInfinity) {
       return CSSMathExpressionNumericLiteral::Create(
@@ -2976,6 +2979,9 @@ class CSSMathExpressionNodeParser {
     if (token.Id() == CSSValueID::kE) {
       return CSSMathExpressionNumericLiteral::Create(
           M_E, CSSPrimitiveValue::UnitType::kNumber);
+    }
+    if (state.allow_size_keyword && token.Id() == CSSValueID::kSize) {
+      return CSSMathExpressionSizingKeywordLiteral::Create(CSSValueID::kSize);
     }
     if (!(token.GetType() == kNumberToken ||
           (token.GetType() == kPercentageToken &&
@@ -3051,7 +3057,7 @@ class CSSMathExpressionNodeParser {
       return ParseMathFunction(function_id, inner_range, state);
     }
 
-    return ParseValue(tokens);
+    return ParseValue(tokens, state);
   }
 
   CSSMathExpressionNode* ParseValueMultiplicativeExpression(
