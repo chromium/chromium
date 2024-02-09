@@ -435,6 +435,7 @@ class PLATFORM_EXPORT Length {
 
    public:
     const Length::AnchorEvaluator* anchor_evaluator = nullptr;
+    std::optional<float> size_keyword_basis = std::nullopt;
   };
 
   float NonNanCalculatedValue(float max_value, const EvaluationInput&) const;

@@ -48,8 +48,11 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 
 float CalculationExpressionSizingKeywordNode::Evaluate(
     float max_value,
-    const Length::EvaluationInput&) const {
-  // TODO(https://crbug.com/313072): Write this.
+    const Length::EvaluationInput& input) const {
+  if (keyword_ == Keyword::kSize) {
+    CHECK(input.size_keyword_basis);
+    return *input.size_keyword_basis;
+  }
   return 0.0f;
 }
 
@@ -424,10 +427,10 @@ float CalculationExpressionOperationNode::Evaluate(
     }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
-      // float basis = children_[0]->Evaluate(max_value, input);
-      // TODO(https://crbug.com/313072): pass basis to computation of
-      // calculation!
-      return children_[1]->Evaluate(max_value, input);
+      Length::EvaluationInput calculation_input(input);
+      calculation_input.size_keyword_basis =
+          children_[0]->Evaluate(max_value, input);
+      return children_[1]->Evaluate(max_value, calculation_input);
     }
     case CalculationOperator::kInvalid:
       break;
