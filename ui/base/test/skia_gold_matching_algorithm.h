@@ -99,6 +99,37 @@ class SobelSkiaGoldMatchingAlgorithm : public FuzzySkiaGoldMatchingAlgorithm {
 //   2. the set of golden images for the test must only contain a single image.
 // This algorithm is used in Ash pixel testing to facilitate the gold image
 // revision update.
+// The main difference between this and `ExactSkiaGoldMatchingAlgorithm` is:
+// * ExactSkiaGoldMatchingAlgorithm
+//   Your test can match multiple valid Gold images. For a test run, if the
+//   pixel output is one of the Gold images, we consider it's valid and test
+//   would pass.
+//   Any committers can approve a new Gold image. The new Gold image would be
+//   added to the valid Gold images set.
+//
+// * PositiveIfOnlyImageAlgorithm
+//   There is only 1 valid Gold image. No one can approve a new Gold image if
+//   there is already a Gold image. In order to updating the Gold image, you
+//   need to add a revision to the screenshot name, so it's treated as a new
+//   test from Gold's perspective.
+//
+// Say you have a button pixel test with screenshot name `pwd_manager_button1`.
+// With ExactSkiaGoldMatchingAlgorithm:
+//   When a cl updates all button styles, the cl owner may approve all new
+//   styles via Skia Gold, gets a button style owner to approve it, and merges
+//   the change.
+//   In this case, the feature owner(pwd manager UI owner) would not get
+//   notified. If you as feature owner don't want this behavior, you can use
+// PositiveIfOnlyImageAlgorithm:
+//   Your screenshot name would be `pwd_manager_button1.rev0`. When a cl updates
+//   all button styles, the cl owner need to edit your test case, change the
+//   screenshot name to `pwd_manager_button1.rev1`, and seek feature owner's
+//   approval for the test case change. In this way, feature owner would know
+//   the UI changes.
+//
+// This algorithm would increase the Gold image maintenance cost. Toolkit owners
+// who regularly update styles might be hindered as they need to edit all test
+// cases. So use your best judgement for the algorithm you choose.
 class PositiveIfOnlyImageAlgorithm : public SkiaGoldMatchingAlgorithm {
  public:
   PositiveIfOnlyImageAlgorithm();
