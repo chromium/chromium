@@ -667,6 +667,44 @@ public class StripLayoutHelperManagerTest {
         assertFalse("Views are not empty after tab strip transition.", views.isEmpty());
     }
 
+    @Test
+    public void testCalculateScrimOpacityDuringTransition_Show() {
+        // Test hide->show transition with simulated values.
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX);
+        float actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(20f);
+        float expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.5f);
+        assertEquals(expected, actual, 0f);
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.25f);
+        assertEquals(expected, actual, 0f);
+        // If an unexpected source happened to update the compositor frame during strip transition
+        // when the yOffset=0, ignore this update.
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(0f);
+        assertEquals(expected, actual, 0f);
+        mStripLayoutHelperManager.onTransitionFinished();
+    }
+
+    @Test
+    public void testCalculateScrimOpacityDuringTransition_Hide() {
+        // Test show->hide transition with simulated values.
+        mStripLayoutHelperManager.onHeightChanged(0);
+        float actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        float expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.25f);
+        assertEquals(expected, actual, 0f);
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(20f);
+        expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.5f);
+        assertEquals(expected, actual, 0f);
+        // If an unexpected source happened to update the compositor frame during strip transition
+        // when the yOffset=-10, ignore this update.
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        assertEquals(expected, actual, 0f);
+        mStripLayoutHelperManager.onTransitionFinished();
+    }
+
     private void doTestTabStripTransition_Show(int scrimColor) {
         // Assume tab strip is hidden from the beginning.
         mTabStripHeightSupplier.set(0);

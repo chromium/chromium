@@ -159,6 +159,7 @@ public class StripLayoutHelperManager
     private Context mContext;
     private boolean mTabStripObscured;
     private boolean mIsHidden;
+    private float mStripTransitionScrimOpacity;
     private boolean mIsTransitioning;
     private final ToolbarManager mToolbarManager;
     private TabStripSceneLayer mTabStripTreeProvider;
@@ -675,25 +676,44 @@ public class StripLayoutHelperManager
     public void onHeightChanged(int newHeight) {
         mIsTransitioning = true;
         mIsHidden = newHeight == 0;
+        mStripTransitionScrimOpacity = mIsHidden ? 0f : 1f;
     }
 
     @Override
     public void onTransitionFinished() {
         mIsTransitioning = false;
+        mStripTransitionScrimOpacity = 0f;
     }
 
     private boolean duringTabStripTransition() {
         return mIsTransitioning;
     }
 
-    private float calculateScrimOpacityDuringTransition(float visibleHeight) {
+    @VisibleForTesting
+    float calculateScrimOpacityDuringTransition(float visibleHeight) {
         if (!duringTabStripTransition()) {
             return 0.0f;
         }
 
         // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
         float ratio = 1 - visibleHeight / mHeight;
-        return TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
+        float newOpacity = TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
+
+        // There is a known issue where the scrim opacity for a hide->show transition incorrectly
+        // gets updated to 1f (when yOffset = 0) in concluding frame updates during the transition,
+        // thereby making the transition janky (b/324130906). This could be due to frame updates
+        // initiated potentially by other sources before a timely dispatch of #onTransitionFinished.
+        // The following logic is to prevent such jank from surfacing in both directions of
+        // transition.
+        // If the tab strip is hiding, new opacity should be >= current opacity; if the tab strip is
+        // showing, new opacity should be <= current opacity. Otherwise, ignore the new value and
+        // use the current value.
+        if ((mIsHidden && newOpacity >= mStripTransitionScrimOpacity)
+                || (!mIsHidden && newOpacity <= mStripTransitionScrimOpacity)) {
+            mStripTransitionScrimOpacity = newOpacity;
+        }
+
+        return mStripTransitionScrimOpacity;
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
