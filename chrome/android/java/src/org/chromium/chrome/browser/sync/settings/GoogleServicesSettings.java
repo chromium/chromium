@@ -241,7 +241,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
         if (mContextualSearch != null) {
             boolean isContextualSearchEnabled =
-                    !ContextualSearchManager.isContextualSearchDisabled();
+                    !ContextualSearchManager.isContextualSearchDisabled(getProfile());
             mContextualSearch.setSummary(
                     isContextualSearchEnabled ? R.string.text_on : R.string.text_off);
         }

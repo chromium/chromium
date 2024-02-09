@@ -70,8 +70,6 @@ public class ContextualSearchSelectionController {
     /** A means of accessing the currently active tab. */
     private final Supplier<Tab> mTabSupplier;
 
-    private ContextualSearchPolicy mPolicy;
-
     /**
      * The current selected text, either from tap or longpress, or {@code null} when the selection
      * has been programatically cleared.
@@ -155,14 +153,6 @@ public class ContextualSearchSelectionController {
         mTabSupplier = tabSupplier;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mContainsWordPattern = Pattern.compile(CONTAINS_WORD_PATTERN);
-    }
-
-    /**
-     * Sets the policy handler so we can delegate policy decisions.
-     * @param policy A {@link ContextualSearchPolicy} for policy decisions.
-     */
-    public void setPolicy(ContextualSearchPolicy policy) {
-        mPolicy = policy;
     }
 
     /** Notifies that the base page has started loading a page. */

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextualsearch;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -53,17 +52,23 @@ public class ContextualSearchPolicyTest {
     @Mock private ContextualSearchFakeServer mMockServer;
 
     private ContextualSearchPolicy mPolicy;
+    private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(() -> mPolicy = new ContextualSearchPolicy(null, mMockServer));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPolicy = new ContextualSearchPolicy(null, mMockServer);
+
+                    mProfile = Profile.getLastUsedRegularProfile();
+                    mPolicy.setProfile(mProfile);
+                });
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Clear Prefs
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
@@ -75,7 +80,7 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Clear Prefs
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
@@ -85,8 +90,7 @@ public class ContextualSearchPolicyTest {
     /** Call on the UI thread to set up all the conditions needed for sending the URL. */
     private void setupAllConditionsToSendUrl() {
         mPolicy.overrideDecidedStateForTesting(true);
-        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile(), true);
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(mProfile, true);
         try {
             when(mMockServer.getBasePageUrl()).thenReturn(new GURL("https://someUrl"));
         } catch (Exception e) {
@@ -135,7 +139,7 @@ public class ContextualSearchPolicyTest {
                 () -> {
                     setupAllConditionsToSendUrl();
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                            Profile.getLastUsedRegularProfile(), false);
+                            mProfile, false);
                     Assert.assertFalse(mPolicy.doSendBasePageUrl());
                 });
     }
@@ -163,8 +167,7 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TemplateUrlService templateUrlService =
-                            TemplateUrlServiceFactory.getForProfile(
-                                    Profile.getLastUsedRegularProfile());
+                            TemplateUrlServiceFactory.getForProfile(mProfile);
                     TemplateUrl defaultSearchEngine =
                             templateUrlService.getDefaultSearchEngineTemplateUrl();
                     setupAllConditionsToSendUrl();
@@ -183,9 +186,10 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mPolicy.isUserUndecided());
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, false);
                     Assert.assertFalse(mPolicy.isUserUndecided());
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchUninitialized());
+                    Assert.assertTrue(
+                            ContextualSearchPolicy.isContextualSearchUninitialized(mProfile));
                 });
     }
 
@@ -196,9 +200,9 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mPolicy.isUserUndecided());
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(true);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, true);
                     Assert.assertFalse(mPolicy.isUserUndecided());
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchEnabled());
+                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchEnabled(mProfile));
                 });
     }
 
@@ -210,20 +214,26 @@ public class ContextualSearchPolicyTest {
                 () -> {
                     Assert.assertTrue(mPolicy.isPromoAvailable());
                     Assert.assertEquals(
-                            0, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
+                            0,
+                            ContextualSearchPolicy.getContextualSearchPromoCardShownCount(
+                                    mProfile));
 
                     // Promo show 1 time and promo is still available.
-                    ContextualSearchPolicy.onPromoShown();
+                    ContextualSearchPolicy.onPromoShown(mProfile);
                     Assert.assertTrue(mPolicy.isPromoAvailable());
                     Assert.assertEquals(
-                            1, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
+                            1,
+                            ContextualSearchPolicy.getContextualSearchPromoCardShownCount(
+                                    mProfile));
 
                     // After promo show 3 times, promo is not available.
-                    ContextualSearchPolicy.onPromoShown();
-                    ContextualSearchPolicy.onPromoShown();
+                    ContextualSearchPolicy.onPromoShown(mProfile);
+                    ContextualSearchPolicy.onPromoShown(mProfile);
                     Assert.assertFalse(mPolicy.isPromoAvailable());
                     Assert.assertEquals(
-                            3, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
+                            3,
+                            ContextualSearchPolicy.getContextualSearchPromoCardShownCount(
+                                    mProfile));
                 });
     }
 
@@ -234,15 +244,18 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Default is not fully opted in.
-                    Assert.assertFalse(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    Assert.assertFalse(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
                     // Choose not to opt in.
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
-                    Assert.assertFalse(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, false);
+                    Assert.assertFalse(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
                     // Choose to opt in.
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(true);
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, true);
+                    Assert.assertTrue(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
                 });
     }
 
@@ -253,22 +266,26 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Default is not fully opted in.
-                    Assert.assertFalse(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    Assert.assertFalse(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
                     // Choose to fully opt in.
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(true);
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, true);
+                    Assert.assertTrue(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
                     // Choose to disable Contextual Search.
-                    ContextualSearchPolicy.setContextualSearchState(false);
+                    ContextualSearchPolicy.setContextualSearchState(mProfile, false);
                     // The Contextual Search pref is disabled, but opt-in pref should still be
                     // enabled since it is not disabled explicitly.
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchDisabled());
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchDisabled(mProfile));
+                    Assert.assertTrue(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
                     // Enable the Contextual Search again.
-                    ContextualSearchPolicy.setContextualSearchState(true);
-                    Assert.assertTrue(ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                    ContextualSearchPolicy.setContextualSearchState(mProfile, true);
+                    Assert.assertTrue(
+                            ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
                 });
     }
 
@@ -280,10 +297,10 @@ public class ContextualSearchPolicyTest {
                 () -> {
                     Assert.assertFalse(mPolicy.shouldPreviousGestureResolve());
 
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(true);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, true);
                     Assert.assertTrue(mPolicy.shouldPreviousGestureResolve());
 
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, false);
                     Assert.assertFalse(mPolicy.shouldPreviousGestureResolve());
                 });
     }
@@ -296,10 +313,10 @@ public class ContextualSearchPolicyTest {
                 () -> {
                     Assert.assertFalse(mPolicy.isContextualSearchFullyEnabled());
 
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(true);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, true);
                     Assert.assertTrue(mPolicy.isContextualSearchFullyEnabled());
 
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(mProfile, false);
                     Assert.assertFalse(mPolicy.isContextualSearchFullyEnabled());
                 });
     }

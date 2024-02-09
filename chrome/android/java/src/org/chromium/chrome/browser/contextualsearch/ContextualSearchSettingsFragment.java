@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -36,31 +37,34 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
         ChromeSwitchPreference seeBetterResultsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_WAS_FULLY_ENABLED_SWITCH);
 
-        boolean isContextualSearchEnabled = !ContextualSearchPolicy.isContextualSearchDisabled();
+        Profile profile = getProfile();
+        boolean isContextualSearchEnabled =
+                !ContextualSearchPolicy.isContextualSearchDisabled(profile);
         contextualSearchSwitch.setChecked(isContextualSearchEnabled);
 
         contextualSearchSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                    ContextualSearchPolicy.setContextualSearchState((boolean) newValue);
+                    ContextualSearchPolicy.setContextualSearchState(profile, (boolean) newValue);
                     ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
                     seeBetterResultsSwitch.setVisible((boolean) newValue);
                     return true;
                 });
 
         contextualSearchSwitch.setManagedPreferenceDelegate(
-                new ChromeManagedPreferenceDelegate(getProfile()) {
+                new ChromeManagedPreferenceDelegate(profile) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return ContextualSearchPolicy.isContextualSearchDisabledByPolicy();
+                        return ContextualSearchPolicy.isContextualSearchDisabledByPolicy(profile);
                     }
                 });
 
         seeBetterResultsSwitch.setChecked(
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(profile));
         seeBetterResultsSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     ContextualSearchUma.logPrivacyOptInPreferenceChange((boolean) newValue);
-                    ContextualSearchPolicy.setContextualSearchFullyOptedIn((boolean) newValue);
+                    ContextualSearchPolicy.setContextualSearchFullyOptedIn(
+                            profile, (boolean) newValue);
                     return true;
                 });
 
