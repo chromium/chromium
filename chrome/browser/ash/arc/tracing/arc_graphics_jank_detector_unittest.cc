@@ -129,4 +129,35 @@ TEST_F(ArcGraphicsJankDetectorTest, FixedRate) {
   EXPECT_EQ(1, jank_count);
 }
 
+TEST_F(ArcGraphicsJankDetectorTest, CheckEnoughSamples) {
+  ArcGraphicsJankDetector detector(
+      base::BindRepeating([](const base::Time& timestamp) {
+        // Do nothing.
+      }));
+
+  base::Time now = base::Time::Now();
+  const base::TimeDelta interval_normal =
+      ArcGraphicsJankDetector::kPauseDetectionThreshold / 4;
+
+  std::vector<base::Time> samples;
+  for (int i = 0; i < ArcGraphicsJankDetector::kWarmUpSamples; ++i) {
+    samples.emplace_back(now);
+    now += interval_normal;
+  }
+  EXPECT_EQ(ArcGraphicsJankDetector::IsEnoughSamplesToDetect(samples.size()),
+            false);
+  for (size_t i = 0; i < ArcGraphicsJankDetector::kSamplesForRateDetection;
+       ++i) {
+    samples.emplace_back(now);
+    now += interval_normal;
+  }
+  EXPECT_EQ(ArcGraphicsJankDetector::IsEnoughSamplesToDetect(samples.size()),
+            true);
+
+  for (const auto& sample : samples) {
+    detector.OnSample(sample);
+  }
+  EXPECT_EQ(ArcGraphicsJankDetector::Stage::kActive, detector.stage());
+}
+
 }  // namespace arc

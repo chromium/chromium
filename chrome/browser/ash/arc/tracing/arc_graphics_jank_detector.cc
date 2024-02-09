@@ -8,8 +8,12 @@
 
 namespace arc {
 
-// static
-constexpr base::TimeDelta ArcGraphicsJankDetector::kPauseDetectionThreshold;
+namespace {
+
+// Threshold relative to the normal rate to consider the current frame as a
+// jank if its duration longer than this threshold.
+constexpr int kJankDetectionThresholdPercent = 190;
+}  // namespace
 
 ArcGraphicsJankDetector::ArcGraphicsJankDetector(const JankCallback& callback)
     : callback_(callback) {
@@ -17,6 +21,10 @@ ArcGraphicsJankDetector::ArcGraphicsJankDetector(const JankCallback& callback)
 }
 
 ArcGraphicsJankDetector::~ArcGraphicsJankDetector() = default;
+
+bool ArcGraphicsJankDetector::IsEnoughSamplesToDetect(size_t num_samples) {
+  return num_samples >= (kWarmUpSamples + kSamplesForRateDetection);
+}
 
 void ArcGraphicsJankDetector::Reset() {
   stage_ = Stage::kWarmUp;
