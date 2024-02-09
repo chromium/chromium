@@ -74,11 +74,6 @@ class CORE_EXPORT InspectorAnimationAgent final
 
   std::unique_ptr<protocol::Animation::Animation> BuildObjectForAnimation(
       blink::Animation&);
-  std::unique_ptr<protocol::Animation::Animation> BuildObjectForAnimation(
-      blink::Animation&,
-      String,
-      std::unique_ptr<protocol::Animation::KeyframesRule> keyframe_rule =
-          nullptr);
   double NormalizedStartTime(blink::Animation&);
   DocumentTimeline& ReferenceTimeline();
   blink::Animation* AnimationClone(blink::Animation*);
