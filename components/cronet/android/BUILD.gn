@@ -1949,19 +1949,22 @@ action("dependencies_checks") {
   inputs = [ "//components/cronet/android/dependencies.txt" ]
   sources = [
     "$_gn_path",
-    "//components/cronet/tools/check_cronet_dependencies.sh",
   ]
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
+  deps = [ ":cronet_sample_apk" ]
+  abs_deps = []
+  foreach(dep, deps) {
+    abs_deps += [get_label_info(dep, "label_no_toolchain")]
+  }
   args = [
-    "--new_dependencies_script",
-    rebase_path("//components/cronet/tools/check_cronet_dependencies.sh",
-                root_build_dir),
-    "--old_dependencies",
+    "--root-deps",
+    string_join(" ", abs_deps),
+    "--old-dependencies",
     rebase_path(inputs[0], root_build_dir),
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
   ]
-  deps = [ ":cronet_sample_apk" ]
+
 }
 
 group("cronet_non_test_package") {
