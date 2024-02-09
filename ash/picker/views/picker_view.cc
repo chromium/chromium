@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -280,6 +281,13 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
+  if (category == PickerCategory::kEmojis) {
+    if (auto* widget = GetWidget()) {
+      widget->Close();
+    }
+    ui::ShowEmojiPanel();
+    return;
+  }
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   contents_view_->SetActivePage(category_view_);
