@@ -663,6 +663,7 @@ try_.builder(
     # regression in compiler or toolchain.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
 )
 
 try_.builder(
