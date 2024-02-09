@@ -185,9 +185,24 @@ class GbmDeviceWrapper {
     return gbm_device_->CreateBufferFromHandle(fourcc_format, size,
                                                std::move(handle));
   }
+  std::vector<uint64_t> intel_media_compressed_modifiers_;
 
  private:
   GbmDeviceWrapper() {
+    // If the Intel media compression feature flag is enabled, we can have
+    // the list of known Intel media compression modifiers ready for minigbm
+    // to try allocating a corresponding buffer later in the video decoding
+    // path.
+    const bool is_intel_media_compression_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+        base::FeatureList::IsEnabled(features::kEnableIntelMediaCompression);
+#elif BUILDFLAG(IS_LINUX)
+        false;
+#endif
+    if (is_intel_media_compression_enabled) {
+      intel_media_compressed_modifiers_ = GetIntelMediaCompressedModifiers();
+      CHECK(!intel_media_compressed_modifiers_.empty());
+    }
     constexpr char kRenderNodeFilePrefix[] = "/dev/dri/renderD";
     constexpr int kMinRenderNodeNum = 128;
 
@@ -232,8 +247,26 @@ class GbmDeviceWrapper {
                                                  gfx::BufferUsage buffer_usage)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     uint32_t flags = ui::BufferUsageToGbmFlags(buffer_usage);
-    std::unique_ptr<ui::GbmBuffer> buffer =
-        gbm_device_->CreateBuffer(fourcc_format, size, flags);
+    std::unique_ptr<ui::GbmBuffer> buffer;
+    // Currently, Intel media compression is expected to be supported only for
+    // NV12/P010 clear content hardware decoding.
+    const bool is_media_compressed_supported_format =
+        fourcc_format == DRM_FORMAT_NV12 || fourcc_format == DRM_FORMAT_P010;
+    // We ask minigbm to try allocating a buffer with the known Intel media
+    // compression modifiers. If that fails, we fallback to the usual
+    // allocation path in which we let minigbm choose the best modifier.
+    if (!intel_media_compressed_modifiers_.empty() &&
+        is_media_compressed_supported_format &&
+        buffer_usage == gfx::BufferUsage::SCANOUT_VDA_WRITE) {
+      // Currently, Intel media compression is expected to be supported only for
+      // NV12/P010 clear content hardware decoding.
+      buffer = gbm_device_->CreateBufferWithModifiers(
+          fourcc_format, size, flags, intel_media_compressed_modifiers_);
+      if (buffer)
+        return buffer;
+    }
+
+    buffer = gbm_device_->CreateBuffer(fourcc_format, size, flags);
     if (buffer)
       return buffer;
 
