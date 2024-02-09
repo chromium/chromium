@@ -1210,7 +1210,7 @@ export declare namespace uPlot {
 
     interface FilterableOrthoLines extends OrthoLines {
       /**
-       * can filter which splits render lines. e.g splits.map(v => v % 2 == 0 ?
+       * can filter which splits render lines. e.g splits.map(v => v % 2 === 0 ?
        * v : null)
        */
       filter?: Filter;
@@ -1281,7 +1281,7 @@ export declare namespace uPlot {
 
     /**
      * can filter which splits are passed to axis.values() for rendering. e.g
-     * splits.map(v => v % 2 == 0 ? v : null)
+     * splits.map(v => v % 2 === 0 ? v : null)
      */
     filter?: Axis.Filter;
 
@@ -1316,7 +1316,7 @@ export declare namespace uPlot {
 
       /**
        * fires after each initial and subsequent series addition (discern via
-       * self.status == 0 or 1)
+       * self.status === 0 or 1)
        */
       addSeries?: (self: uPlot, seriesIdx: number) => void;
 

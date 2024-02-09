@@ -174,7 +174,7 @@ class NetworkStateUiElement extends PolymerElement {
       } else {
         for (let j = 0; j < field.length; ++j) {
           value = this.getOncProperty_(state, field[j]);
-          if (value != undefined) {
+          if (value !== undefined) {
             break;
           }
         }

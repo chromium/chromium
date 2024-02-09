@@ -103,7 +103,7 @@ class NetworkLogsUiElement extends NetworkLogsUiElementBase {
 
   private onShillDebuggingChanged_() {
     const shillDebugging = this.shillDebugging_;
-    if (!shillDebugging || shillDebugging == 'unknown') {
+    if (!shillDebugging || shillDebugging === 'unknown') {
       return;
     }
     this.browserProxy_.setShillDebugging(shillDebugging).then(([
