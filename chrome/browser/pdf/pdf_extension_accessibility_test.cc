@@ -79,6 +79,7 @@
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
@@ -1282,8 +1283,8 @@ class PDFOCRIntegrationTest
   void SetUpOnMainThread() override {
     PDFExtensionAccessibilityTest::SetUpOnMainThread();
 
-    screen_ai::ScreenAIInstallState::GetInstance()
-        ->SetComponentFolderForTesting();
+    screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
+        screen_ai::GetLatestComponentBinaryPath().DirName());
 
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
     EnableScreenReader(true);
