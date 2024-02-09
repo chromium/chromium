@@ -12578,30 +12578,6 @@
             ]
         }
     ],
-    "OmniboxMlUrlScoringDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_fullModel_120523",
-                    "params": {
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxOnClobberFocusTypeOnContent": [
         {
             "platforms": [

@@ -600,24 +600,29 @@ TEST_F(AutocompleteControllerTest, UpdateResult_Ranking) {
                   "history400",
               }));
 
-  // Shortcut boosted suggestions should be ranked above searches, even if
-  // they're scored lower.
-  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
-                  CreateHistoryUrlMlScoredMatch("history800", true, 800, 1),
-                  CreateHistoryUrlMlScoredMatch("history850", true, 850, 1),
-                  CreateSearchMatch("search700", true, 700),
-                  CreateSearchMatch("search750", true, 750),
-                  CreateBoostedShortcutMatch("shortcut600", 600, 1),
-                  CreateBoostedShortcutMatch("shortcut650", 650, 1),
-              }),
-              testing::ElementsAreArray({
-                  "history850",
-                  "shortcut650",
-                  "shortcut600",
-                  "search750",
-                  "search700",
-                  "history800",
-              }));
+  // Shortcut boosting is re-distributed when ML Scoring is enabled.  That is
+  // tested in the `MlRanking` test below.
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_config;
+  if (!scoped_config.GetMLConfig().ml_url_scoring) {
+    // Shortcut boosted suggestions should be ranked above searches, even if
+    // they're scored lower.
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateHistoryUrlMlScoredMatch("history800", true, 800, 1),
+                    CreateHistoryUrlMlScoredMatch("history850", true, 850, 1),
+                    CreateSearchMatch("search700", true, 700),
+                    CreateSearchMatch("search750", true, 750),
+                    CreateBoostedShortcutMatch("shortcut600", 600, 1),
+                    CreateBoostedShortcutMatch("shortcut650", 650, 1),
+                }),
+                testing::ElementsAreArray({
+                    "history850",
+                    "shortcut650",
+                    "shortcut600",
+                    "search750",
+                    "search700",
+                    "history800",
+                }));
+  }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
@@ -1740,7 +1745,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
                 CreateSearchMatch("search", true, 200),
                 CreateAutocompleteMatch("history",
                                         AutocompleteMatchType::HISTORY_CLUSTER,
-                                        false, false, 1000, 1),
+                                        false, false, 1000, std::nullopt),
             },
             FakeAutocompleteController::CreateInput(u"test", false, true)),
         testing::ElementsAreArray({

@@ -48,7 +48,8 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
         match.allowed_to_be_default_match);
 
     // Populate query-URL matching signals if not set.
-    if (!match.scoring_signals->has_total_url_match_length()) {
+    if (!match.scoring_signals->has_total_url_match_length() &&
+        !match.destination_url.is_empty()) {
       PopulateQueryUrlMatchingSignals(
           lower_raw_terms, lower_terms_to_word_starts_offsets,
           match.destination_url, &*match.scoring_signals);

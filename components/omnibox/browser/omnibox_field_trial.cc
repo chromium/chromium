@@ -1000,7 +1000,7 @@ const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForLogging(
 const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForMlScoring(
     &omnibox::kMlUrlScoring,
     "enable_scoring_signals_annotators_for_ml_scoring",
-    false);
+    true);
 
 // If true, runs the ML scoring model but does not assign new relevance scores
 // to the URL suggestions and does not rerank them.
@@ -1032,7 +1032,7 @@ MLConfig::MLConfig() {
                                "MlUrlScoringShortcutDocumentSignals", false)
           .Get() ||
       base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
-                               "MlUrlScoringShortcutDocumentSignals", false)
+                               "MlUrlScoringShortcutDocumentSignals", true)
           .Get();
 
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
