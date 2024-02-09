@@ -167,6 +167,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         GetStatisticName("PresentDeviation2", category));
     base::StatisticsRecorder::ForgetHistogramForTesting(
         GetStatisticName("RenderQuality2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("JanksPerMinute2", category));
   }
 
   // Ensures that tracing is ready to begin, which means up to the point that
@@ -383,6 +385,7 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
   EXPECT_EQ(216L, ReadFocusStatistics("PresentDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
+  EXPECT_EQ(0L, ReadFocusStatistics("JanksPerMinute2"));
   arc_widget->Close();
 
   arc_widget = PrepareArcFocusAppTracing();
@@ -426,6 +429,7 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
     EXPECT_EQ(216L, ReadStatistics("PresentDeviation2", application.name));
     EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
+    EXPECT_EQ(0L, ReadStatistics("JanksPerMinute2", application.name));
     arc_widget->Close();
   }
 }

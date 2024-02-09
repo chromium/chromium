@@ -68,6 +68,15 @@ void ReportQuality(const std::string& category_name, double quality) {
       GetHistogramName(category_name, "RenderQuality2"), sample);
 }
 
+void ReportJanksPerMinute(const std::string& category_name,
+                          double janks_per_minute) {
+  DCHECK(!category_name.empty());
+  DCHECK_GE(janks_per_minute, 0);
+  base::UmaHistogramCounts100(
+      GetHistogramName(category_name, "JanksPerMinute2"),
+      static_cast<int>(std::round(janks_per_minute)));
+}
+
 }  // namespace
 
 UmaPerfReporting::UmaPerfReporting() : weak_ptr_factory_(this) {}
@@ -100,13 +109,15 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
             << ", perceived_fps: " << result->perceived_fps
             << ", commit_deviation: " << result->commit_deviation
             << ", present_deviation: " << result->present_deviation
-            << ", render_quality: " << result->render_quality;
+            << ", render_quality: " << result->render_quality
+            << ", janks_per_minute: " << result->janks_per_minute;
 
     ReportFPS(category, result->fps);
     ReportPerceivedFPS(category, result->perceived_fps);
     ReportCommitDeviation(category, result->commit_deviation);
     ReportPresentDeviation(category, result->present_deviation);
     ReportQuality(category, result->render_quality);
+    ReportJanksPerMinute(category, result->janks_per_minute);
 
     reported_categories_.insert(category);
   }
