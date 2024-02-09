@@ -13,7 +13,7 @@
 
 namespace content {
 
-class DigitalCredentialProvider;
+class DigitalIdentityProvider;
 class FederatedIdentityModalDialogViewDelegate;
 
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
@@ -31,7 +31,7 @@ class WebIdTestContentBrowserClient
   std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController(WebContents* web_contents) override;
 
-  std::unique_ptr<DigitalCredentialProvider> CreateDigitalCredentialProvider()
+  std::unique_ptr<DigitalIdentityProvider> CreateDigitalIdentityProvider()
       override;
 
   // This needs to be called once for every WebID invocation. If there is a
@@ -39,8 +39,8 @@ class WebIdTestContentBrowserClient
   void SetIdentityRequestDialogController(
       std::unique_ptr<IdentityRequestDialogController> controller);
 
-  void SetDigitalCredentialProvider(
-      std::unique_ptr<DigitalCredentialProvider> provider);
+  void SetDigitalIdentityProvider(
+      std::unique_ptr<DigitalIdentityProvider> provider);
 
   void SetIdentityRegistry(
       WebContents* web_contents,
@@ -52,13 +52,13 @@ class WebIdTestContentBrowserClient
     return test_dialog_controller_.get();
   }
 
-  DigitalCredentialProvider* GetDigitalCredentialProviderForTests() {
-    return test_digital_credential_provider_.get();
+  DigitalIdentityProvider* GetDigitalIdentityProviderForTests() {
+    return test_digital_identity_provider_.get();
   }
 
  private:
   std::unique_ptr<IdentityRequestDialogController> test_dialog_controller_;
-  std::unique_ptr<DigitalCredentialProvider> test_digital_credential_provider_;
+  std::unique_ptr<DigitalIdentityProvider> test_digital_identity_provider_;
 };
 
 }  // namespace content

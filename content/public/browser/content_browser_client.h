@@ -230,7 +230,7 @@ class FontAccessDelegate;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
-class DigitalCredentialProvider;
+class DigitalIdentityProvider;
 class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
@@ -2566,8 +2566,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   CreateIdentityRequestDialogController(WebContents* web_contents);
 
   // Creates a digital credential provider to fetch from native apps.
-  virtual std::unique_ptr<DigitalCredentialProvider>
-  CreateDigitalCredentialProvider();
+  virtual std::unique_ptr<DigitalIdentityProvider>
+  CreateDigitalIdentityProvider();
 
   // Returns true if JS dialogs from an iframe with different origin from the
   // main frame should be disallowed.

@@ -19,7 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
-#include "content/browser/webid/test/mock_digital_credential_provider.h"
+#include "content/browser/webid/test/mock_digital_identity_provider.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
@@ -249,7 +249,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
-    SetTestDigitalCredentialProvider();
+    SetTestDigitalIdentityProvider();
     SetTestModalDialogViewDelegate();
   }
 
@@ -321,9 +321,9 @@ class WebIdBrowserTest : public ContentBrowserTest {
         std::move(controller));
   }
 
-  void SetTestDigitalCredentialProvider() {
-    auto provider = std::make_unique<MockDigitalCredentialProvider>();
-    test_browser_client_->SetDigitalCredentialProvider(std::move(provider));
+  void SetTestDigitalIdentityProvider() {
+    auto provider = std::make_unique<MockDigitalIdentityProvider>();
+    test_browser_client_->SetDigitalIdentityProvider(std::move(provider));
   }
 
   void SetTestModalDialogViewDelegate() {
@@ -889,9 +889,9 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        RequestDigitalCredentials) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-  MockDigitalCredentialProvider* digital_credential_provider =
-      static_cast<MockDigitalCredentialProvider*>(
-          test_browser_client_->GetDigitalCredentialProviderForTests());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
 
   const char request[] = R"(
   {
@@ -916,10 +916,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   }
   )";
 
-  EXPECT_CALL(*digital_credential_provider,
-              RequestDigitalCredential(_, _, IsJson(request), _))
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
-          [](DigitalCredentialProvider::DigitalCredentialCallback callback) {
+          [](DigitalIdentityProvider::DigitalCredentialCallback callback) {
             std::move(callback).Run("test-mdoc");
           }));
 
@@ -957,9 +956,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 // API.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-  MockDigitalCredentialProvider* digital_credential_provider =
-      static_cast<MockDigitalCredentialProvider*>(
-          test_browser_client_->GetDigitalCredentialProviderForTests());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
 
   const char request[] = R"(
   {
@@ -971,10 +970,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
   }
   )";
 
-  EXPECT_CALL(*digital_credential_provider,
-              RequestDigitalCredential(_, _, IsJson(request), _))
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
-          [](DigitalCredentialProvider::DigitalCredentialCallback callback) {
+          [](DigitalIdentityProvider::DigitalCredentialCallback callback) {
             std::move(callback).Run("test-mdoc");
           }));
 
@@ -999,9 +997,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        OnlyOneInFlightDigitalCredentialRequestIsAllowed) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-  MockDigitalCredentialProvider* digital_credential_provider =
-      static_cast<MockDigitalCredentialProvider*>(
-          test_browser_client_->GetDigitalCredentialProviderForTests());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
 
   std::string script = R"(
         (async () => {
@@ -1030,10 +1028,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
         }) ()
     )";
 
-  EXPECT_CALL(*digital_credential_provider,
-              RequestDigitalCredential(_, _, _, _))
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
       .WillOnce(WithArg<3>(
-          [&](DigitalCredentialProvider::DigitalCredentialCallback callback) {
+          [&](DigitalIdentityProvider::DigitalCredentialCallback callback) {
             EXPECT_EQ(
                 "a JavaScript error: \"AbortError: Only one "
                 "navigator.credentials.get request may be outstanding at one "

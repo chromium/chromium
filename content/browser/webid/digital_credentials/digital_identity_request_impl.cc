@@ -7,7 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -144,7 +144,7 @@ void DigitalIdentityRequestImpl::Request(
 
   auto request = BuildRequest(std::move(digital_credential_provider));
 
-  provider_->RequestDigitalCredential(
+  provider_->Request(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(), request,
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -154,14 +154,14 @@ void DigitalIdentityRequestImpl::Abort() {
   // TODO(https://crbug.com/1416939): Implement.
 }
 
-std::unique_ptr<DigitalCredentialProvider>
+std::unique_ptr<DigitalIdentityProvider>
 DigitalIdentityRequestImpl::CreateProvider() {
   // A provider may only be created in browser tests by this moment.
-  std::unique_ptr<DigitalCredentialProvider> provider =
-      GetContentClient()->browser()->CreateDigitalCredentialProvider();
+  std::unique_ptr<DigitalIdentityProvider> provider =
+      GetContentClient()->browser()->CreateDigitalIdentityProvider();
 
   if (!provider) {
-    return DigitalCredentialProvider::Create();
+    return DigitalIdentityProvider::Create();
   }
   return provider;
 }

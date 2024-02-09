@@ -5,7 +5,7 @@
 package org.chromium.content_public.browser.test.util;
 
 import org.chromium.base.Promise;
-import org.chromium.content.browser.webid.DigitalCredentialProvider;
+import org.chromium.content.browser.webid.DigitalIdentityProvider;
 import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 
 /** Used to mock IdentityCredentialsDelegate in tests. */
@@ -19,6 +19,6 @@ public class DigitalCredentialProviderUtils {
     }
 
     public static void setDelegateForTesting(MockIdentityCredentialsDelegate delegate) {
-        DigitalCredentialProvider.setDelegateForTesting(delegate);
+        DigitalIdentityProvider.setDelegateForTesting(delegate);
     }
 }

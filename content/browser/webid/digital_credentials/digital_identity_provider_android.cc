@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/digital_credential_provider_android.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider_android.h"
 
 #include <jni.h>
 
@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "content/public/android/content_jni_headers/DigitalCredentialProvider_jni.h"
+#include "content/public/android/content_jni_headers/DigitalIdentityProvider_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -21,20 +21,20 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-DigitalCredentialProviderAndroid::DigitalCredentialProviderAndroid() {
+DigitalIdentityProviderAndroid::DigitalIdentityProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
-  j_digital_credential_provider_android_.Reset(
-      Java_DigitalCredentialProvider_create(env,
+  j_digital_identity_provider_android_.Reset(
+      Java_DigitalIdentityProvider_create(env,
                                             reinterpret_cast<intptr_t>(this)));
 }
 
-DigitalCredentialProviderAndroid::~DigitalCredentialProviderAndroid() {
+DigitalIdentityProviderAndroid::~DigitalIdentityProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
-  Java_DigitalCredentialProvider_destroy(
-      env, j_digital_credential_provider_android_);
+  Java_DigitalIdentityProvider_destroy(
+      env, j_digital_identity_provider_android_);
 }
 
-void DigitalCredentialProviderAndroid::RequestDigitalCredential(
+void DigitalIdentityProviderAndroid::Request(
     WebContents* web_contents,
     const url::Origin& origin,
     const base::Value::Dict& request,
@@ -54,19 +54,19 @@ void DigitalCredentialProviderAndroid::RequestDigitalCredential(
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
   }
 
-  Java_DigitalCredentialProvider_requestDigitalCredential(
-      env, j_digital_credential_provider_android_, j_window, j_origin,
+  Java_DigitalIdentityProvider_request(
+      env, j_digital_identity_provider_android_, j_window, j_origin,
       j_request);
 }
 
-void DigitalCredentialProviderAndroid::OnReceive(JNIEnv* env, jstring j_dc) {
+void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env, jstring j_dc) {
   std::string vc = ConvertJavaStringToUTF8(env, j_dc);
   if (callback_) {
     std::move(callback_).Run(vc);
   }
 }
 
-void DigitalCredentialProviderAndroid::OnError(JNIEnv* env) {
+void DigitalIdentityProviderAndroid::OnError(JNIEnv* env) {
   if (callback_) {
     std::move(callback_).Run("");
   }

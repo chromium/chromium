@@ -13,13 +13,13 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Class for issuing request to the Identity Credentials Manager in GMS core. */
 @JNINamespace("content")
-public class DigitalCredentialProvider {
-    private static final String TAG = "DigitalCredentialProvider";
-    private long mDigitalCredentialProvider;
+public class DigitalIdentityProvider {
+    private static final String TAG = "DigitalIdentityProvider";
+    private long mDigitalIdentityProvider;
     private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegateImpl();
 
-    private DigitalCredentialProvider(long dcProvider) {
-        mDigitalCredentialProvider = dcProvider;
+    private DigitalIdentityProvider(long digitalIdentityProvider) {
+        mDigitalIdentityProvider = digitalIdentityProvider;
     }
 
     public static void setDelegateForTesting(IdentityCredentialsDelegate mock) {
@@ -30,13 +30,13 @@ public class DigitalCredentialProvider {
 
     // Methods that are called by native implementation
     @CalledByNative
-    private static DigitalCredentialProvider create(long dcProvider) {
-        return new DigitalCredentialProvider(dcProvider);
+    private static DigitalIdentityProvider create(long digitalIdentityProvider) {
+        return new DigitalIdentityProvider(digitalIdentityProvider);
     }
 
     @CalledByNative
     private void destroy() {
-        mDigitalCredentialProvider = 0;
+        mDigitalIdentityProvider = 0;
     }
 
     /**
@@ -47,28 +47,28 @@ public class DigitalCredentialProvider {
      * @param request The request.
      */
     @CalledByNative
-    void requestDigitalCredential(WindowAndroid window, String origin, String request) {
+    void request(WindowAndroid window, String origin, String request) {
         sCredentials
                 .get(window.getActivity().get(), origin, request)
                 .then(
                         data -> {
-                            if (mDigitalCredentialProvider != 0) {
-                                DigitalCredentialProviderJni.get()
-                                        .onReceive(mDigitalCredentialProvider, new String(data));
+                            if (mDigitalIdentityProvider != 0) {
+                                DigitalIdentityProviderJni.get()
+                                        .onReceive(mDigitalIdentityProvider, new String(data));
                             }
                         },
                         e -> {
-                            if (mDigitalCredentialProvider != 0) {
-                                DigitalCredentialProviderJni.get()
-                                        .onError(mDigitalCredentialProvider);
+                            if (mDigitalIdentityProvider != 0) {
+                                DigitalIdentityProviderJni.get()
+                                        .onError(mDigitalIdentityProvider);
                             }
                         });
     }
 
     @NativeMethods
     interface Natives {
-        void onReceive(long nativeDigitalCredentialProviderAndroid, String dc);
+        void onReceive(long nativeDigitalIdentityProviderAndroid, String digitalIdentity);
 
-        void onError(long nativeDigitalCredentialProviderAndroid);
+        void onError(long nativeDigitalIdentityProviderAndroid);
     }
 }

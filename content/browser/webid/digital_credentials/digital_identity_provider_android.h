@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_CREDENTIAL_PROVIDER_ANDROID_H_
-#define CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_CREDENTIAL_PROVIDER_ANDROID_H_
+#ifndef CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
+#define CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
@@ -19,37 +19,37 @@ namespace content {
 
 class WebContents;
 
-// Android specific implementation of `DigitalCredentialProvider`. It
-// communicates with native apps via JNI. Once an vc is returned from Android
+// Android specific implementation of `DigitalIdentityProvider`. It
+// communicates with native apps via JNI. Once an identity is returned from Android
 // apps, it sends it back to the browser where the API is initiated.
-class CONTENT_EXPORT DigitalCredentialProviderAndroid
-    : public DigitalCredentialProvider {
+class CONTENT_EXPORT DigitalIdentityProviderAndroid
+    : public DigitalIdentityProvider {
  public:
-  DigitalCredentialProviderAndroid();
-  ~DigitalCredentialProviderAndroid() override;
+  DigitalIdentityProviderAndroid();
+  ~DigitalIdentityProviderAndroid() override;
 
-  DigitalCredentialProviderAndroid(const DigitalCredentialProviderAndroid&) =
+  DigitalIdentityProviderAndroid(const DigitalIdentityProviderAndroid&) =
       delete;
-  DigitalCredentialProviderAndroid& operator=(
-      const DigitalCredentialProviderAndroid&) = delete;
+  DigitalIdentityProviderAndroid& operator=(
+      const DigitalIdentityProviderAndroid&) = delete;
 
   // Implementation of corresponding JNI methods in
-  // DigitalCredentialProviderAndroid.Natives.*
+  // DigitalIdentityProviderAndroid.Natives.*
   void OnReceive(JNIEnv*, jstring vc);
   void OnError(JNIEnv*);
 
   // Triggers a request for a digital credential.
-  void RequestDigitalCredential(WebContents* web_contents,
+  void Request(WebContents* web_contents,
                                 const url::Origin& origin,
                                 const base::Value::Dict& request,
                                 DigitalCredentialCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject>
-      j_digital_credential_provider_android_;
+      j_digital_identity_provider_android_;
   DigitalCredentialCallback callback_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_CREDENTIAL_PROVIDER_ANDROID_H_
+#endif  // CONTENT_BROWSER_WEBID_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_PROVIDER_ANDROID_H_

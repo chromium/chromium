@@ -18,7 +18,7 @@
 
 namespace content {
 
-class DigitalCredentialProvider;
+class DigitalIdentityProvider;
 class RenderFrameHost;
 
 // DigitalIdentityRequestImpl handles mojo connections from the renderer to
@@ -54,9 +54,9 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
 
   void CompleteRequest(const std::string& response);
 
-  std::unique_ptr<DigitalCredentialProvider> CreateProvider();
+  std::unique_ptr<DigitalIdentityProvider> CreateProvider();
 
-  std::unique_ptr<DigitalCredentialProvider> provider_;
+  std::unique_ptr<DigitalIdentityProvider> provider_;
   RequestCallback callback_;
 
   base::WeakPtrFactory<DigitalIdentityRequestImpl> weak_ptr_factory_{this};
