@@ -591,23 +591,6 @@ int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
         return libyuv_result;
       }
 
-      // TODO(b/322549084): libyuv currently outputs in P010, but the conversion
-      // is requesting P016LE. This loop converts between the two formats by
-      // downshifting by 6. This is not performant and the downshift should
-      // be moved into the libyuv conversion, or the compositor needs to support
-      // P010.
-      std::vector<int> planes = {VideoFrame::kYPlane, VideoFrame::kUVPlane};
-      for (int plane : planes) {
-        uint16_t* data_plane =
-            reinterpret_cast<uint16_t*>(output->GetWritableVisibleData(plane));
-        const int32_t pixels_in_plane =
-            output->visible_rect().height() * output->stride(plane) >>
-            VideoFrame::SampleSize(output->format(), plane).height();
-
-        for (int32_t i = 0; i < pixels_in_plane; ++i) {
-          data_plane[i] >>= 6;
-        }
-      }
       return 0;
     }
   }
