@@ -695,6 +695,38 @@ TEST_F(CustomizeChromePageHandlerTest, OpenThirdPartyThemePage) {
       1);
 }
 
+TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCategoryPage) {
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  handler().OpenChromeWebStoreCategoryPage(
+      side_panel::mojom::ChromeWebStoreCategory::kWorkflowPlanning);
+  ASSERT_EQ(1, browser().tab_strip_model()->count());
+  ASSERT_EQ(
+      "https://chromewebstore.google.com/category/extensions/productivity/"
+      "workflow",
+      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
+
+  ASSERT_EQ(histogram_tester().GetBucketCount(
+                "NewTabPage.ChromeWebStoreOpen",
+                NtpChromeWebStoreOpen::kWorkflowPlanningCategoryPage),
+            1);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCollectionPage) {
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  handler().OpenChromeWebStoreCollectionPage(
+      side_panel::mojom::ChromeWebStoreCollection::kWrittingEssentials);
+  ASSERT_EQ(1, browser().tab_strip_model()->count());
+  ASSERT_EQ("https://chromewebstore.google.com/collection/writing_essentials",
+            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
+
+  ASSERT_EQ(histogram_tester().GetBucketCount(
+                "NewTabPage.ChromeWebStoreOpen",
+                NtpChromeWebStoreOpen::kWritingEssentialsCollectionPage),
+            1);
+}
+
 TEST_F(CustomizeChromePageHandlerTest, SetDailyRefreshCollectionId) {
   EXPECT_CALL(mock_ntp_custom_background_service_, SetCustomBackgroundInfo)
       .Times(1);

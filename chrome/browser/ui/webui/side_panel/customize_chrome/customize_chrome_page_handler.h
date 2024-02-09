@@ -44,7 +44,10 @@ class Profile;
 enum class NtpChromeWebStoreOpen {
   kAppearance = 0,
   kCollections = 1,
-  kMaxValue = kCollections,
+  kWritingEssentialsCollectionPage = 2,
+  kWorkflowPlanningCategoryPage = 3,
+  kShoppingCategoryPage = 4,
+  kMaxValue = kShoppingCategoryPage,
 };
 
 class CustomizeChromePageHandler
@@ -91,6 +94,10 @@ class CustomizeChromePageHandler
   void UpdateTheme() override;
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;
+  void OpenChromeWebStoreCategoryPage(
+      side_panel::mojom::ChromeWebStoreCategory category) override;
+  void OpenChromeWebStoreCollectionPage(
+      side_panel::mojom::ChromeWebStoreCollection collection) override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;

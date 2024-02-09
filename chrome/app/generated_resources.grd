@@ -7875,6 +7875,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL" desc="A color scheme mode option for browser system mode, which follows the OS color scheme mode in customize chrome side panel.">
         Device
       </message>
+      <message name="IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'shopping' category page of the Chrome webstore.">
+        Find coupons
+      </message>
+      <message name="IDS_NTP_WEBSTORE_WRITTING_HELP_COLLECTION_LABEL" desc="The message displayed on the button that redirects users to the 'writing help' collection page of the Chrome webstore.">
+        Get writing help
+      </message>
+       <message name="IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'productivity' category page of the Chrome webstore.">
+        Increase your productivity
+      </message>
       <message name="IDS_NTP_WEBSTORE_TOAST_MESSAGE" desc="The message displayed on the New Tab Page toast that directs users to the Chrome webstore themes.">
         You can find older colors in the Chrome Web Store
       </message>
