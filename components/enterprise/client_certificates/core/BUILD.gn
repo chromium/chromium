@@ -10,6 +10,7 @@ source_set("core") {
   public = [
     "certificate_store.h",
     "client_identity.h",
+    "prefs.h",
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
@@ -23,6 +24,7 @@ source_set("core") {
     "ec_private_key.h",
     "ec_private_key_factory.cc",
     "ec_private_key_factory.h",
+    "prefs.cc",
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
@@ -36,7 +38,10 @@ source_set("core") {
     "//crypto",
   ]
 
-  deps = [ "//net" ]
+  deps = [
+    "//components/prefs",
+    "//net",
+  ]
 
   friend = [ ":unit_tests" ]
 

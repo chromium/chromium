@@ -6390,6 +6390,10 @@ static_library("browser") {
     deps += [ "//components/enterprise/idle" ]
   }
 
+  if (is_win || is_mac) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+
   if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
