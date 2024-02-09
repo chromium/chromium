@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -328,6 +329,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
+  std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      card_unmask_authentication_selection_controller_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;

@@ -386,6 +386,9 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
     Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
+    Verify it's you
+  </message>
   <if expr="is_android or is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
       Enter your CVC
@@ -406,9 +409,6 @@
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
-      Verify it's you
     </message>
   </if>
   <if expr="is_ios">

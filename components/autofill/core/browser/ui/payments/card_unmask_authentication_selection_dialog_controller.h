@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_
 
 #include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-
-namespace ui {
-class ImageModel;
-}
 
 namespace autofill {
 
@@ -52,11 +48,6 @@ class CardUnmaskAuthenticationSelectionDialogController {
   virtual const std::vector<CardUnmaskChallengeOption>& GetChallengeOptions()
       const = 0;
 
-  // Returns the corresponding authentication mode icon for the given challenge
-  // option.
-  virtual ui::ImageModel GetAuthenticationModeIcon(
-      const CardUnmaskChallengeOption& challenge_option) const = 0;
-
   // Returns the text that describes the authentication mode choice, for
   // example: text message, email.
   virtual std::u16string GetAuthenticationModeLabel(
@@ -83,4 +74,5 @@ class CardUnmaskAuthenticationSelectionDialogController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_H_

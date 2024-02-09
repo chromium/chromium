@@ -17,6 +17,8 @@ class AutofillErrorDialogController;
 class AutofillErrorDialogView;
 class AutofillProgressDialogController;
 class AutofillProgressDialogView;
+class CardUnmaskAuthenticationSelectionDialogController;
+class CardUnmaskAuthenticationSelectionDialog;
 
 // Factory function for creating and showing the autofill progress dialog
 // view.
@@ -36,6 +38,12 @@ AutofillProgressDialogView* CreateAndShowProgressDialog(
 base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
     AutofillErrorDialogController* controller,
     content::WebContents* web_contents);
+
+// Factory function for the card unmask view creates and shows the dialog.
+CardUnmaskAuthenticationSelectionDialog*
+CreateAndShowCardUnmaskAuthenticationSelectionDialog(
+    content::WebContents* web_contents,
+    CardUnmaskAuthenticationSelectionDialogController* controller);
 
 }  // namespace autofill
 

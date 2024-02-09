@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"

@@ -2,42 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller.h"
 
 namespace autofill {
 
 class CardUnmaskAuthenticationSelectionDialog;
 
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
-    : public CardUnmaskAuthenticationSelectionDialogController,
-      public content::WebContentsUserData<
-          CardUnmaskAuthenticationSelectionDialogControllerImpl> {
+    : public CardUnmaskAuthenticationSelectionDialogController {
  public:
+  CardUnmaskAuthenticationSelectionDialogControllerImpl();
   CardUnmaskAuthenticationSelectionDialogControllerImpl(
       const CardUnmaskAuthenticationSelectionDialogControllerImpl&) = delete;
   CardUnmaskAuthenticationSelectionDialogControllerImpl& operator=(
       const CardUnmaskAuthenticationSelectionDialogControllerImpl&) = delete;
   ~CardUnmaskAuthenticationSelectionDialogControllerImpl() override;
 
-  // Get the controller instance given the |web_contents|. If it does not exist,
-  // create one.
-  static CardUnmaskAuthenticationSelectionDialogControllerImpl* GetOrCreate(
-      content::WebContents* web_contents);
+  // Callback for creating and showing an authentication selection dialog.
+  using CreateAndShowCallback =
+      base::OnceCallback<CardUnmaskAuthenticationSelectionDialog*(
+          CardUnmaskAuthenticationSelectionDialogController*)>;
 
   void ShowDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
       base::OnceCallback<void(const std::string&)>
           confirm_unmasking_method_callback,
-      base::OnceClosure cancel_unmasking_closure);
+      base::OnceClosure cancel_unmasking_closure,
+      CreateAndShowCallback create_and_show_callback);
   // Called when we receive a server response after the user accepts (clicks the
   // ok button) on a challenge option. |server_success| represents a successful
   // server response, where true means success and false means an error was
@@ -52,8 +51,6 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   std::u16string GetContentHeaderText() const override;
   const std::vector<CardUnmaskChallengeOption>& GetChallengeOptions()
       const override;
-  ui::ImageModel GetAuthenticationModeIcon(
-      const CardUnmaskChallengeOption& challenge_option) const override;
   std::u16string GetAuthenticationModeLabel(
       const CardUnmaskChallengeOption& challenge_option) const override;
   std::u16string GetContentFooterText() const override;
@@ -82,14 +79,7 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
     challenge_options_ = challenge_options;
   }
 
- protected:
-  explicit CardUnmaskAuthenticationSelectionDialogControllerImpl(
-      content::WebContents* web_contents);
-
  private:
-  friend class content::WebContentsUserData<
-      CardUnmaskAuthenticationSelectionDialogControllerImpl>;
-
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
 
@@ -124,10 +114,9 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOptionType selected_challenge_option_type_ =
       CardUnmaskChallengeOptionType::kUnknownType;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CONTROLLER_IMPL_H_
