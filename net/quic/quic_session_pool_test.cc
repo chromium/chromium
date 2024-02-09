@@ -35,6 +35,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/session_usage.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -12866,12 +12867,21 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  auto proxy_chain1 = ProxyChain::FromSchemeHostAndPort(
-      ProxyServer::SCHEME_QUIC, "proxy1", 443);
+  auto proxy_chain1 = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxy1",
+                                         443),
+  });
+  EXPECT_TRUE(proxy_chain1.IsValid());
+  auto proxy_chain2 = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxy2",
+                                         443),
+  });
+  EXPECT_TRUE(proxy_chain2.IsValid());
+  EXPECT_NE(proxy_chain1, proxy_chain2);
+
   RequestBuilder builder1(this);
   builder1.destination = destination;
   builder1.proxy_chain = proxy_chain1;
-  builder1.secure_dns_policy = SecureDnsPolicy::kAllow;
   builder1.url = url1;
   EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
@@ -12881,12 +12891,9 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
       HasActiveSession(origin1_, NetworkAnonymizationKey(), proxy_chain1));
 
   TestCompletionCallback callback2;
-  auto proxy_chain2 = ProxyChain::FromSchemeHostAndPort(
-      ProxyServer::SCHEME_QUIC, "proxy2", 443);
   RequestBuilder builder2(this);
   builder2.destination = destination;
   builder2.proxy_chain = proxy_chain2;
-  builder2.secure_dns_policy = SecureDnsPolicy::kDisable;
   builder2.url = url2;
   builder2.callback = callback2.callback();
   EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
@@ -12947,7 +12954,6 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   RequestBuilder builder1(this);
   builder1.destination = destination;
   builder1.session_usage = SessionUsage::kDestination;
-  builder1.secure_dns_policy = SecureDnsPolicy::kAllow;
   builder1.url = url1;
   EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
@@ -12959,7 +12965,6 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   RequestBuilder builder2(this);
   builder2.destination = destination;
   builder2.session_usage = SessionUsage::kProxy;
-  builder2.secure_dns_policy = SecureDnsPolicy::kDisable;
   builder2.url = url2;
   builder2.callback = callback2.callback();
   EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
