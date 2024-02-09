@@ -272,9 +272,10 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kArt,
-      title: 'Classic art',
-      text: `A painting of a <${SeaPenTemplateChip.kArtFeature}> in the <${
-          SeaPenTemplateChip.kArtMovement}> style`,
+      title: loadTimeData.getString('seaPenTemplateTitleArt'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateArt', `<${SeaPenTemplateChip.kArtFeature}>`,
+          `<${SeaPenTemplateChip.kArtMovement}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
@@ -285,83 +286,100 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kArtFeatureCanyon,
-              translation: 'canyon',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureMountain,
-              translation: 'mountain',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureMountain'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureBeach,
-              translation: 'beach',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureBeach'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCave,
-              translation: 'cave',
+              translation: loadTimeData.getString('seaPenOptionArtFeatureCave'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCliff,
-              translation: 'cliff',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCliff'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureForest,
-              translation: 'forest',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureForest'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureGlacier,
-              translation: 'glacier',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureGlacier'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureIsland,
-              translation: 'tropical island',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureIsland'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureJungle,
-              translation: 'jungle',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureJungle'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureLake,
-              translation: 'lake',
+              translation: loadTimeData.getString('seaPenOptionArtFeatureLake'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureMeadow,
-              translation: 'meadow',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureOcean,
-              translation: 'vast ocean',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureOcean'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureRiver,
-              translation: 'river',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureRiver'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureDune,
-              translation: 'sand dune',
+              translation: loadTimeData.getString('seaPenOptionArtFeatureDune'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureSwamp,
-              translation: 'swamp',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureValley,
-              translation: 'valley',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureValley'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureWaterfall,
-              translation: 'waterfall',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureWaterfall'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureField,
-              translation: 'field of flowers ',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureField'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCityscape,
-              translation: 'cityscape',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureCityscape'),
             },
             {
               value: SeaPenTemplateOption.kArtFeatureVillage,
-              translation: 'village',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtFeatureVillage'),
             },
           ],
         ],
@@ -370,59 +388,73 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kArtMovementAvantGarde,
-              translation: 'avant-garde',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementAvantGarde'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementRealist,
-              translation: 'realist',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementRealist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementExpressionist,
-              translation: 'expressionist',
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementExpressionist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementImpressionist,
-              translation: 'impressionist',
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementImpressionist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementPostImpressionist,
-              translation: 'post-impressionist',
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementPostImpressionist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementArtNouveau,
-              translation: 'art nouveau',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementArtNouveau'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementBaroque,
-              translation: 'baroque',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementBaroque'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementBauhaus,
-              translation: 'bauhaus',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementBauhaus'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementClassicist,
-              translation: 'classicist',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementClassicist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementWatercolor,
-              translation: 'watercolor',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementWatercolor'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementAbstract,
-              translation: 'abstract',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementAbstract'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementPointillist,
-              translation: 'pointillist',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementPointillist'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementGraphicDesign,
-              translation: 'graphic design',
+              translation: loadTimeData.getString(
+                  'seaPenOptionArtMovementGraphicDesign'),
             },
             {
               value: SeaPenTemplateOption.kArtMovementModernArt,
-              translation: 'modern art',
+              translation:
+                  loadTimeData.getString('seaPenOptionArtMovementModernArt'),
             },
           ],
         ],
