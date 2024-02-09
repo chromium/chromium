@@ -610,8 +610,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   void OnChromeTerminating() override { session_observer_.Reset(); }
 
   void OnSessionStateChanged(session_manager::SessionState state) override {
-    // This override is only meant to happen right after session start.
-    if (state != session_manager::SessionState::ACTIVE) {
+    // Eligibility is only determined on primary account activation.
+    if (!user_education_util::IsPrimaryAccountActive()) {
       return;
     }
 

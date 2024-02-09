@@ -3738,6 +3738,44 @@
             ]
         }
     ],
+    "ChromeOSHoldingSpaceWallpaperNudge": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDropToPin",
+                    "params": {
+                        "drop-to-pin": "true",
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "HoldingSpaceWallpaperNudge"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutDropToPin",
+                    "params": {
+                        "drop-to-pin": "false",
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "HoldingSpaceWallpaperNudge"
+                    ]
+                },
+                {
+                    "name": "Counterfactual",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "HoldingSpaceWallpaperNudge"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSIgnoreUiGainsOnAGC": [
         {
             "platforms": [
