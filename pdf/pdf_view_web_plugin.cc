@@ -274,8 +274,7 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
 std::unique_ptr<PdfAccessibilityDataHandler>
 PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
     PdfAccessibilityActionHandler* action_handler,
-    PdfAccessibilityImageFetcher* image_fetcher,
-    blink::WebPluginContainer* plugin_container) {
+    PdfAccessibilityImageFetcher* image_fetcher) {
   return nullptr;
 }
 
@@ -285,7 +284,9 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     const blink::WebPluginParams& params)
     : client_(std::move(client)),
       pdf_service_(std::move(pdf_service)),
-      initial_params_(params) {
+      initial_params_(params),
+      pdf_accessibility_data_handler_(
+          client_->CreateAccessibilityDataHandler(this, this)) {
   DCHECK(pdf_service_);
   pdf_service_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
@@ -295,18 +296,12 @@ PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK(container);
   client_->SetPluginContainer(container);
+
   DCHECK_EQ(container->Plugin(), this);
-
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, container);
-
   return InitializeCommon();
 }
 
 bool PdfViewWebPlugin::InitializeForTesting() {
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, nullptr);
-
   return InitializeCommon();
 }
 

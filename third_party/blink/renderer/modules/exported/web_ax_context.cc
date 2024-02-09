@@ -63,6 +63,13 @@ void WebAXContext::SerializeLocationChanges(uint32_t reset_token) const {
   private_->GetAXObjectCache().SerializeLocationChanges(reset_token);
 }
 
+WebAXObject WebAXContext::GetPluginRoot() {
+  if (!HasActiveDocument()) {
+    return WebAXObject();
+  }
+  return WebAXObject(private_->GetAXObjectCache().GetPluginRoot());
+}
+
 bool WebAXContext::SerializeEntireTree(
     size_t max_node_count,
     base::TimeDelta timeout,
@@ -80,20 +87,18 @@ bool WebAXContext::SerializeEntireTree(
 }
 
 void WebAXContext::SerializeDirtyObjectsAndEvents(
-    WebPluginContainer* plugin_container,
+    bool has_plugin_tree_source,
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
-    bool& need_to_send_location_changes,
-    bool& mark_plugin_subtree_dirty) {
+    bool& need_to_send_location_changes) {
   CHECK(HasActiveDocument());
 
   ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
   private_->GetAXObjectCache().SerializeDirtyObjectsAndEvents(
-      plugin_container, updates, events, had_end_of_test_event,
-      had_load_complete_messages, need_to_send_location_changes,
-      mark_plugin_subtree_dirty);
+      has_plugin_tree_source, updates, events, had_end_of_test_event,
+      had_load_complete_messages, need_to_send_location_changes);
 }
 
 void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,

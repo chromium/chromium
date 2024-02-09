@@ -41,7 +41,6 @@
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -5129,13 +5128,12 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
-    WebPluginContainer* plugin_container,
+    bool has_plugin_tree_source,
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
-    bool& need_to_send_location_changes,
-    bool& should_reset_plugin_serializer) {
+    bool& need_to_send_location_changes) {
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be
   // queued up.
@@ -5192,14 +5190,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
     // If there's a plugin, force the tree data to be generated in every
     // message so the plugin can merge its own tree data changes.
-    if (plugin_container) {
+    if (has_plugin_tree_source)
       update.has_tree_data = true;
-
-      if (!ax_tree_serializer_->IsInClientTree(
-              Get(plugin_container->GetElement()))) {
-        should_reset_plugin_serializer = true;
-      }
-    }
 
     bool success = ax_tree_serializer_->SerializeChanges(obj, &update);
 

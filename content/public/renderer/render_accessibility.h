@@ -34,6 +34,8 @@ class CONTENT_EXPORT RenderAccessibility {
   // reference to it, due to its large object size (128 bytes).
   virtual ui::AXTreeID GetTreeIDForPluginHost() const = 0;
   virtual void SetPluginTreeSource(PluginAXTreeSource* source) = 0;
+  virtual void ShowPluginContextMenu() = 0;
+  virtual void OnPluginRootNodeUpdated() = 0;
 
   virtual void RecordInaccessiblePdfUkm() = 0;
 

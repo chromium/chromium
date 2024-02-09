@@ -501,6 +501,15 @@ class MODULES_EXPORT AXObjectCacheImpl
   // called, it will only retrieve objects that have changed since now.
   void SerializeLocationChanges(uint32_t reset_token) override;
 
+  // Searches the accessibility tree for plugin's root object and returns it.
+  // Returns an empty WebAXObject if no root object is present.
+  AXObject* GetPluginRoot() override {
+    ax_tree_source_->Freeze();
+    AXObject* result = ax_tree_source_->GetPluginRoot();
+    ax_tree_source_->Thaw();
+    return result;
+  }
+
   bool SerializeEntireTree(
       size_t max_node_count,
       base::TimeDelta timeout,
@@ -516,13 +525,13 @@ class MODULES_EXPORT AXObjectCacheImpl
           ax::mojom::blink::Action::kNone,
       const std::vector<ui::AXEventIntent>& event_intents = {}) override;
 
-  void SerializeDirtyObjectsAndEvents(WebPluginContainer* plugin_container,
-                                      std::vector<ui::AXTreeUpdate>& updates,
-                                      std::vector<ui::AXEvent>& events,
-                                      bool& had_end_of_test_event,
-                                      bool& had_load_complete_messages,
-                                      bool& need_to_send_location_changes,
-                                      bool& mark_plugin_subtree_dirty) override;
+  void SerializeDirtyObjectsAndEvents(
+      bool has_plugin_tree_source,
+      std::vector<ui::AXTreeUpdate>& updates,
+      std::vector<ui::AXEvent>& events,
+      bool& had_end_of_test_event,
+      bool& had_load_complete_messages,
+      bool& need_to_send_location_changes) override;
 
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>& nodes) override;

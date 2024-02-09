@@ -312,9 +312,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(std::unique_ptr<PdfAccessibilityDataHandler>,
               CreateAccessibilityDataHandler,
-              (PdfAccessibilityActionHandler*,
-               PdfAccessibilityImageFetcher*,
-               blink::WebPluginContainer*),
+              (PdfAccessibilityActionHandler*, PdfAccessibilityImageFetcher*),
               (override));
 };
 

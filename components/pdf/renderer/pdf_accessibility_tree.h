@@ -33,10 +33,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-namespace blink {
-class WebPluginContainer;
-}  // namespace blink
-
 namespace chrome_pdf {
 
 class PdfAccessibilityActionHandler;
@@ -175,8 +171,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   PdfAccessibilityTree(
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-      blink::WebPluginContainer* plugin_container);
+      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -235,7 +230,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
                      ui::AXNodeData* out_data) const override;
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
       const ui::AXNode& target_node) override;
-  blink::WebPluginContainer* GetPluginContainer() override;
 
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
@@ -337,10 +331,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // is true, even if the accessibility state is `AccessibilityState::kLoaded`.
   void MaybeHandleAccessibilityChange(bool always_load_or_reload_accessibility);
 
-  // Marks the plugin container dirty to ensure serialization of the PDF
-  // contents.
-  void MarkPluginContainerDirty();
-
   // Returns a weak pointer for an instance of this class.
   base::WeakPtr<PdfAccessibilityTree> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -359,8 +349,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
       action_handler_;
   const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher, ExperimentalRenderer>
       image_fetcher_;
-  const raw_ptr<blink::WebPluginContainer, ExperimentalRenderer>
-      plugin_container_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied
