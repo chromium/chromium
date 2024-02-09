@@ -53,6 +53,7 @@ TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
       &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kTransparent,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
@@ -86,6 +87,7 @@ TEST_F(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
       &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kTransparent,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
@@ -113,7 +115,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbar) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
@@ -133,7 +135,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNonNinePatch) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   // We should create PaintedScrollbarLayer instead of
@@ -156,7 +158,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNinePatch) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPaintedOverlay,
@@ -176,12 +178,14 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item1a(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer1 = display_item1a.CreateOrReuseLayer(nullptr);
 
   ScrollbarDisplayItem display_item1b(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_EQ(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));
@@ -190,6 +194,7 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item2(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar2,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should create new layer for a different scrollbar.
   EXPECT_NE(layer1.get(), display_item2.CreateOrReuseLayer(layer1.get()));
@@ -203,6 +208,7 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item1c(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_NE(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));

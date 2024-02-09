@@ -3125,17 +3125,16 @@ std::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
   // a result we do async hit test on any surface layers that
   bool assume_overlap = false;
   for (const auto* layer : base::Reversed(*active_tree())) {
-    // Viz hit test needs to collect information for pointer-events: none OOPIFs
-    // as well. Now Layer::HitTestable ignores pointer-events property, but this
-    // early out will not work correctly if we integrate has_pointer_events_none
-    // into Layer::HitTestable, so we make sure we don't skip surface layers
-    // that draws content but has pointer-events: none property.
-    if (!(layer->HitTestable() ||
-          (layer->is_surface_layer() && layer->draws_content())))
-      continue;
-
     if (layer->is_surface_layer()) {
       const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
+      // We should not skip a non-hit-testable surface layer if
+      // - it has pointer-events: none because viz hit test needs to know the
+      //   information to ensure all descendant OOPIFs to ignore hit tests; or
+      // - it draws content to track overlaps.
+      if (!layer->HitTestable() && !layer->draws_content() &&
+          !surface_layer->has_pointer_events_none()) {
+        continue;
+      }
       // If a surface layer is created not by child frame compositor or the
       // frame owner has pointer-events: none property, the surface layer
       // becomes not hit testable. We should not generate data for it.
@@ -3196,6 +3195,11 @@ std::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
                             device_scale_factor);
       continue;
     }
+
+    if (!layer->HitTestable()) {
+      continue;
+    }
+
     // TODO(sunxd): Submit all overlapping layer bounds as hit test regions.
     // Also investigate if we can use visible layer rect as overlapping regions.
     num_iterated_layers++;

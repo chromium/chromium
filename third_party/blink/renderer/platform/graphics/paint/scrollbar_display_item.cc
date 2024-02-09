@@ -25,6 +25,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     const gfx::Rect& visual_rect,
     scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
     CompositorElementId element_id,
+    cc::HitTestOpaqueness hit_test_opaqueness,
     RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client_id,
@@ -34,7 +35,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
                   paint_invalidation_reason,
                   /*draws_content*/ true),
       data_(new Data{std::move(scrollbar), std::move(scroll_translation),
-                     element_id}) {
+                     element_id, hit_test_opaqueness}) {
   DCHECK(IsScrollbar());
   CHECK(!data_->scroll_translation_ ||
         data_->scroll_translation_->ScrollNode());
@@ -85,10 +86,7 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
   auto layer = cc::ScrollbarLayerBase::CreateOrReuse(scrollbar, existing_layer);
   layer->SetIsDrawable(true);
   layer->SetContentsOpaque(IsOpaque());
-  // Android scrollbars can't be interacted with by user input.
-  layer->SetHitTestOpaqueness(scrollbar->IsSolidColor()
-                                  ? cc::HitTestOpaqueness::kTransparent
-                                  : cc::HitTestOpaqueness::kOpaque);
+  layer->SetHitTestOpaqueness(data_->hit_test_opaqueness_);
   layer->SetElementId(data_->element_id_);
   layer->SetScrollElementId(
       data_->scroll_translation_
@@ -139,7 +137,8 @@ void ScrollbarDisplayItem::Record(
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
     scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
-    CompositorElementId element_id) {
+    CompositorElementId element_id,
+    cc::HitTestOpaqueness hit_test_opaqueness) {
   PaintController& paint_controller = context.GetPaintController();
   // Must check PaintController::UseCachedItemIfPossible before this function.
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
@@ -148,7 +147,7 @@ void ScrollbarDisplayItem::Record(
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect,
-      std::move(scroll_translation), element_id,
+      std::move(scroll_translation), element_id, hit_test_opaqueness,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
 }

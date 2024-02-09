@@ -2066,9 +2066,10 @@
       implied_by: ["HitTestTransparency"],
     },
     {
-      // Whether we use cc::HitTestOpaqueness::kTransparent for
-      // non-hit-testable objects, e.g. with pointer-events:none.
+      // Whether we use cc::HitTestOpaqueness::kTransparent on cc::Layer
+      // for non-hit-testable objects e.g. with pointer-events:none.
       name: "HitTestTransparency",
+      status: "experimental",
     },
     {
       name: "HrefTranslate",

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINTER_H_
 
+#include "base/auto_reset.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -56,6 +57,8 @@ class ObjectPainter {
   void RecordHitTestData(const PaintInfo&,
                          const gfx::Rect& paint_rect,
                          const DisplayItemClient&);
+
+  cc::HitTestOpaqueness GetHitTestOpaqueness() const;
 
   // If true, we should record hit test data for the second purpose described
   // above. As an optimization, some callers of RecordHitTestData() doesn't

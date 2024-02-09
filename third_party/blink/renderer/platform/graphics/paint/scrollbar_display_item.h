@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCROLLBAR_DISPLAY_ITEM_H_
 
 #include "base/dcheck_is_on.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -36,6 +37,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
       const gfx::Rect& visual_rect,
       scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
       CompositorElementId element_id,
+      cc::HitTestOpaqueness,
       RasterEffectOutset outset,
       PaintInvalidationReason paint_invalidation_reason =
           PaintInvalidationReason::kJustCreated);
@@ -69,7 +71,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
       scoped_refptr<cc::Scrollbar>,
       const gfx::Rect& visual_rect,
       scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
-      CompositorElementId element_id);
+      CompositorElementId element_id,
+      cc::HitTestOpaqueness);
 
   bool IsOpaque() const;
 
@@ -91,6 +94,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
     scoped_refptr<cc::Scrollbar> scrollbar_;
     scoped_refptr<const TransformPaintPropertyNode> scroll_translation_;
     CompositorElementId element_id_;
+    cc::HitTestOpaqueness hit_test_opaqueness_;
     // This is lazily created for non-composited scrollbar.
     mutable PaintRecord record_;
 

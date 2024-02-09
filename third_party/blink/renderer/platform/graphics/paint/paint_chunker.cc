@@ -276,7 +276,8 @@ void PaintChunker::CreateScrollHitTestChunk(
     const PaintChunk::Id& id,
     const DisplayItemClient& client,
     const TransformPaintPropertyNode* scroll_translation,
-    const gfx::Rect& rect) {
+    const gfx::Rect& rect,
+    cc::HitTestOpaqueness hit_test_opaqueness) {
 #if DCHECK_IS_ON()
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
       id.type == DisplayItem::Type::kPluginScrollHitTest ||
@@ -302,10 +303,7 @@ void PaintChunker::CreateScrollHitTestChunk(
   DCHECK(created_new_chunk);
 
   auto& chunk = chunks_->back();
-  // Assume all scroll hit tests are opaque to hit test.
-  // TODO(crbug.com/1470484): Consider rounded corners for opaqueness of
-  // scroll hit test.
-  UnionBounds(rect, cc::HitTestOpaqueness::kOpaque);
+  UnionBounds(rect, hit_test_opaqueness);
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = rect;

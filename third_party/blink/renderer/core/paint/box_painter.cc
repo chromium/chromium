@@ -59,16 +59,18 @@ void BoxPainter::RecordScrollHitTestData(
   //
   // Note that if it is visibility: hidden, then the style.Visibility()
   // check above will fail and we will already have returned.
-  if (!style.VisibleToHitTesting()) {
+  if (!RuntimeEnabledFeatures::HitTestTransparencyEnabled() &&
+      !style.VisibleToHitTesting()) {
     auto& paint_controller = paint_info.context.GetPaintController();
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest, nullptr,
-        VisualRect(fragment->PaintOffset()));
+        VisualRect(fragment->PaintOffset()), cc::HitTestOpaqueness::kMixed);
     return;
   }
 
   // If there is an associated scroll node, emit scroll hit test data.
   const auto* properties = fragment->PaintProperties();
+  auto hit_test_opaqueness = ObjectPainter(layout_box_).GetHitTestOpaqueness();
   if (properties && properties->Scroll()) {
     DCHECK(properties->ScrollTranslation());
     // We record scroll hit test data in the local border box properties
@@ -93,12 +95,15 @@ void BoxPainter::RecordScrollHitTestData(
 #endif
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,
-        properties->ScrollTranslation(), VisualRect(fragment->PaintOffset()));
+        properties->ScrollTranslation(), VisualRect(fragment->PaintOffset()),
+        hit_test_opaqueness);
   }
 
-  ScrollableAreaPainter(*layout_box_.GetScrollableArea())
-      .RecordResizerScrollHitTestData(paint_info.context,
-                                      fragment->PaintOffset());
+  if (hit_test_opaqueness != cc::HitTestOpaqueness::kTransparent) {
+    ScrollableAreaPainter(*layout_box_.GetScrollableArea())
+        .RecordResizerScrollHitTestData(paint_info.context,
+                                        fragment->PaintOffset());
+  }
 }
 
 gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
