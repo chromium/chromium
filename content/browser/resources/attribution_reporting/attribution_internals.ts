@@ -38,8 +38,7 @@ function compareDefault<T extends Comparable>(a: T, b: T): number {
 
 type CompareFunc<V> = (a: V, b: V) => number;
 
-function undefinedFirst<V extends Comparable>(f: CompareFunc<V>):
-    CompareFunc<V|undefined> {
+function undefinedFirst<V>(f: CompareFunc<V>): CompareFunc<V|undefined> {
   return (a: V|undefined, b: V|undefined): number => {
     if (a === undefined && b === undefined) {
       return 0;
@@ -72,133 +71,114 @@ function bigintReplacer(_key: string, value: any): any {
 
 type RenderFunc<V> = (e: HTMLElement, v: V) => void;
 
-function setInnerText(e: HTMLElement, v: any): void {
-  e.innerText = v;
+interface Valuable<V> {
+  readonly compare?: CompareFunc<V>;
+  readonly render: RenderFunc<V>;
 }
 
-abstract class ValueColumn<T, V> implements Column<T> {
-  constructor(
-      private readonly header: string,
-      protected readonly getValue: (row: T) => V,
-  ) {}
+function allowingUndefined<V>({render, compare}: Valuable<V>):
+    Valuable<V|undefined> {
+  return {
+    compare: compare ? undefinedFirst(compare) : undefined,
+    render: (td: HTMLElement, v: V|undefined) => {
+      if (v !== undefined) {
+        render(td, v);
+      }
+    },
+  };
+}
 
-  abstract render(td: HTMLElement, row: T): void;
+class ValueColumn<T> implements Column<T> {
+  static of<T, K extends keyof T>(
+      header: string, key: K,
+      {render, compare}: Valuable<T[K]>): ValueColumn<T> {
+    return new ValueColumn<T>(
+        header, (td, row) => render(td, row[key]),
+        compare ? (a, b) => compare(a[key], b[key]) : undefined);
+  }
+
+  constructor(
+      private readonly header: string, readonly render: RenderFunc<T>,
+      readonly compare?: CompareFunc<T>) {}
 
   renderHeader(th: HTMLElement): void {
     th.innerText = this.header;
   }
 }
 
-class ComparableColumn<T, V> extends ValueColumn<T, V> {
-  constructor(
-      header: string,
-      getValue: (row: T) => V,
-      private readonly compareValues: CompareFunc<V>,
-      private readonly renderValue: RenderFunc<V>,
-  ) {
-    super(header, getValue);
-  }
-
-  render(td: HTMLElement, row: T): void {
-    this.renderValue(td, this.getValue(row));
-  }
-
-  compare(a: T, b: T): number {
-    return this.compareValues(this.getValue(a), this.getValue(b));
-  }
-}
-
-function dateColumn<T>(header: string, getValue: (row: T) => Date): Column<T> {
-  return new ComparableColumn(header, getValue, compareDefault, (td, v) => {
+const asDate: Valuable<Date> = {
+  compare: compareDefault,
+  render: (td: HTMLElement, v: Date) => {
     const time = td.ownerDocument.createElement('time');
     time.dateTime = v.toISOString();
     time.innerText = v.toLocaleString();
     td.append(time);
-  });
-}
+  },
+};
 
 const numberClass: string = 'number';
 
-function numberColumn<T, V extends bigint|number|undefined>(
-    header: string,
-    getValue: (row: T) => V,
-    formatValue: (v: NonNullable<V>) => string = (v) => `${v}`,
-    ): Column<T> {
-  return new ComparableColumn(
-      header, getValue, undefinedFirst(compareDefault), (td, v) => {
-        if (v !== undefined) {
-          td.classList.add(numberClass);
-          td.innerText = formatValue(v);
-        }
-      });
+const asNumber: Valuable<bigint|number> = {
+  compare: compareDefault,
+  render: (td: HTMLElement, v: bigint|number) => {
+    td.classList.add(numberClass);
+    td.innerText = v.toString();
+  },
+};
+
+function asCustomNumber<V extends bigint|number>(fmt: (v: V) => string):
+    Valuable<V> {
+  return {
+    compare: compareDefault,
+    render: (td: HTMLElement, v: V) => {
+      td.classList.add(numberClass);
+      td.innerText = fmt(v);
+    },
+  };
 }
 
-function stringOrBoolColumn<T, V extends string|boolean>(
-    header: string, getValue: (row: T) => V): Column<T> {
-  return new ComparableColumn(header, getValue, compareDefault, setInnerText);
-}
+const asStringOrBool: Valuable<string|boolean> = {
+  compare: compareDefault,
+  render: (td: HTMLElement, v: string|boolean) => td.innerText = v.toString(),
+};
 
-class CodeColumn<T> extends ValueColumn<T, string> {
-  constructor(header: string, getValue: (row: T) => string) {
-    super(header, getValue);
-  }
-
-  override render(td: HTMLElement, row: T): void {
+const asCode: Valuable<string> = {
+  render: (td: HTMLElement, v: string) => {
     const code = td.ownerDocument.createElement('code');
-    code.innerText = this.getValue(row);
+    code.innerText = v;
 
     const pre = td.ownerDocument.createElement('pre');
     pre.append(code);
 
     td.append(pre);
-  }
+  },
+};
+
+function asList<V>({render, compare}: Valuable<V>): Valuable<V[]> {
+  return {
+    compare: compare ? compareLexicographic(compare) : undefined,
+    render: (td: HTMLElement, vs: V[]) => {
+      if (vs.length === 0) {
+        return;
+      }
+
+      const ul = td.ownerDocument.createElement('ul');
+
+      for (const v of vs) {
+        const li = td.ownerDocument.createElement('li');
+        render(li, v);
+        ul.append(li);
+      }
+
+      td.append(ul);
+    },
+  };
 }
 
-class ListColumn<T, V> extends ValueColumn<T, V[]> {
-  readonly compare?: (a: T, b: T) => number;
-
-  constructor(
-      header: string,
-      getValue: (row: T) => V[],
-      private readonly renderItem: RenderFunc<V> = setInnerText,
-      private readonly tdClass?: string,
-      compareValues?: CompareFunc<V>,
-  ) {
-    super(header, getValue);
-
-    if (compareValues) {
-      const cmp = compareLexicographic(compareValues);
-      this.compare = (a, b) => cmp(this.getValue(a), this.getValue(b));
-    }
-  }
-
-  override render(td: HTMLElement, row: T): void {
-    const values = this.getValue(row);
-    if (values.length === 0) {
-      return;
-    }
-
-    if (this.tdClass !== undefined) {
-      td.classList.add(this.tdClass);
-    }
-
-    const ul = td.ownerDocument.createElement('ul');
-
-    values.forEach(value => {
-      const li = td.ownerDocument.createElement('li');
-      this.renderItem(li, value);
-      ul.append(li);
-    });
-
-    td.append(ul);
-  }
-}
-
-function renderDL<T>(
-    td: HTMLElement, row: T, cols: ReadonlyArray<Column<T>>): void {
+function renderDL<T>(td: HTMLElement, row: T, cols: Iterable<Column<T>>): void {
   const dl = td.ownerDocument.createElement('dl');
 
-  cols.forEach(col => {
+  for (const col of cols) {
     const dt = td.ownerDocument.createElement('dt');
     col.renderHeader(dt);
 
@@ -206,14 +186,14 @@ function renderDL<T>(
     col.render(dd, row);
 
     dl.append(dt, dd);
-  });
+  }
 
   td.append(dl);
 }
 
 function renderUrl(
     td: HTMLElement, url: string,
-    renderAnchor: RenderFunc<string> = setInnerText): void {
+    renderAnchor: RenderFunc<string> = (td, v) => td.innerText = v): void {
   const a = td.ownerDocument.createElement('a');
   a.target = '_blank';
   a.href = url;
@@ -221,32 +201,33 @@ function renderUrl(
   td.append(a);
 }
 
-function urlColumn<T>(
-    header: string, getValue: (row: T) => string,
-    renderAnchor: RenderFunc<string> = setInnerText): Column<T> {
-  return new ComparableColumn(
-      header, getValue, compareDefault,
-      (td, url) => renderUrl(td, url, renderAnchor));
-}
+const asUrl: Valuable<string> = {
+  compare: compareDefault,
+  render: renderUrl,
+};
 
 const debugPathPattern: RegExp =
     /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
 
-function reportUrlColumn<T extends Report>(): Column<T> {
-  return urlColumn('Report URL', (row) => row.reportUrl, (a, url) => {
-    const [pre, post] = url.split(debugPathPattern, 2);
-    if (pre === undefined || post === undefined) {
-      a.innerText = url;
-      return;
-    }
+const reportUrlColumn: Column<Report> =
+    ValueColumn.of('Report URL', 'reportUrl', {
+      compare: compareDefault,
+      render: (td: HTMLElement, url: string) => renderUrl(
+          td, url,
+          (a, url) => {
+            const [pre, post] = url.split(debugPathPattern, 2);
+            if (pre === undefined || post === undefined) {
+              a.innerText = url;
+              return;
+            }
 
-    const span = a.ownerDocument.createElement('span');
-    span.classList.add('debug-url');
-    span.innerText = 'debug';
+            const span = a.ownerDocument.createElement('span');
+            span.classList.add('debug-url');
+            span.innerText = 'debug';
 
-    a.append(pre, span, post);
-  });
-}
+            a.append(pre, span, post);
+          }),
+    });
 
 class Selectable {
   readonly input: HTMLInputElement;
@@ -269,11 +250,11 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
     this.selectAll.title = 'Select All';
     this.selectAll.addEventListener('input', () => {
       const checked = this.selectAll.checked;
-      this.model.getRows().forEach((row) => {
+      for (const row of this.model.getRows()) {
         if (!row.input.disabled) {
           row.input.checked = checked;
         }
-      });
+      }
       this.notifySelectionChanged(checked);
     });
 
@@ -290,29 +271,24 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
   }
 
   onChange(): void {
-    let anySelectable = false;
     let anySelected = false;
     let anyUnselected = false;
 
-    this.model.getRows().forEach((row) => {
+    for (const row of this.model.getRows()) {
       // addEventListener deduplicates, so only one event will be fired per
       // input.
       row.input.addEventListener('input', this.listener);
 
-      if (row.input.disabled) {
-        return;
+      if (!row.input.disabled) {
+        if (row.input.checked) {
+          anySelected = true;
+        } else {
+          anyUnselected = true;
+        }
       }
+    }
 
-      anySelectable = true;
-
-      if (row.input.checked) {
-        anySelected = true;
-      } else {
-        anyUnselected = true;
-      }
-    });
-
-    this.selectAll.disabled = !anySelectable;
+    this.selectAll.disabled = !anySelected && !anyUnselected;
     this.selectAll.checked = anySelected && !anyUnselected;
     this.selectAll.indeterminate = anySelected && anyUnselected;
 
@@ -384,41 +360,37 @@ class SourceTableModel extends ArrayTableModel<Source> {
   constructor() {
     super(
         [
-          numberColumn('Source Event ID', (e) => e.sourceEventId),
-          stringOrBoolColumn('Status', (e) => e.status),
-          urlColumn('Source Origin', (e) => e.sourceOrigin),
-          new ListColumn(
-              'Destinations', (e) => e.destinations, renderUrl,
-              /*tdClass=*/ undefined, compareDefault),
-          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
-          dateColumn('Registration Time', (e) => e.sourceTime),
-          dateColumn('Expiry Time', (e) => e.expiryTime),
-          new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
-          dateColumn(
-              'Aggregatable Report Window Time',
-              (e) => e.aggregatableReportWindowTime),
-          numberColumn(
-              'Max Event Level Reports', (e) => e.maxEventLevelReports),
-          stringOrBoolColumn('Source Type', (e) => e.sourceType),
-          numberColumn('Priority', (e) => e.priority),
-          new CodeColumn<Source>('Filter Data', (e) => e.filterData),
-          new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
-          stringOrBoolColumn(
-              'Trigger Data Matching', (e) => e.triggerDataMatching),
-          numberColumn(
-              'Event-Level Epsilon', (e) => e.eventLevelEpsilon,
-              (v) => v.toFixed(3)),
-          numberColumn(
-              'Aggregatable Budget Consumed',
-              (e) => e.aggregatableBudgetConsumed,
-              (v) => `${v} / ${BUDGET_PER_SOURCE}`),
-          numberColumn('Debug Key', (e) => e.debugKey),
-          stringOrBoolColumn('Debug Cookie Set', (e) => e.debugCookieSet),
-          new ListColumn(
-              'Dedup Keys', (e) => e.dedupKeys, setInnerText, numberClass),
-          new ListColumn(
-              'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys,
-              setInnerText, numberClass),
+          ValueColumn.of('Source Event ID', 'sourceEventId', asNumber),
+          ValueColumn.of('Status', 'status', asStringOrBool),
+          ValueColumn.of('Source Origin', 'sourceOrigin', asUrl),
+          ValueColumn.of('Destinations', 'destinations', asList(asUrl)),
+          ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
+          ValueColumn.of('Registration Time', 'sourceTime', asDate),
+          ValueColumn.of('Expiry Time', 'expiryTime', asDate),
+          ValueColumn.of('Trigger Specs', 'triggerSpecs', asCode),
+          ValueColumn.of(
+              'Aggregatable Report Window Time', 'aggregatableReportWindowTime',
+              asDate),
+          ValueColumn.of(
+              'Max Event Level Reports', 'maxEventLevelReports', asNumber),
+          ValueColumn.of('Source Type', 'sourceType', asStringOrBool),
+          ValueColumn.of('Priority', 'priority', asNumber),
+          ValueColumn.of('Filter Data', 'filterData', asCode),
+          ValueColumn.of('Aggregation Keys', 'aggregationKeys', asCode),
+          ValueColumn.of(
+              'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
+          ValueColumn.of(
+              'Event-Level Epsilon', 'eventLevelEpsilon',
+              asCustomNumber((v: number) => v.toFixed(3))),
+          ValueColumn.of(
+              'Aggregatable Budget Consumed', 'aggregatableBudgetConsumed',
+              asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+          ValueColumn.of('Debug Key', 'debugKey', allowingUndefined(asNumber)),
+          ValueColumn.of('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
+          ValueColumn.of('Dedup Keys', 'dedupKeys', asList(asNumber)),
+          ValueColumn.of(
+              'Aggregatable Dedup Keys', 'aggregatableDedupKeys',
+              asList(asNumber)),
         ],
         5,  // Sort by registration time by default.
         'No sources.',
@@ -447,14 +419,16 @@ class Registration {
 
 class RegistrationTableModel<T extends Registration> extends
     ArrayTableModel<T> {
-  constructor(contextOriginTitle: string, cols: Array<Column<T>>) {
+  constructor(contextOriginTitle: string, cols: Iterable<Column<T>>) {
     super(
         [
-          dateColumn('Time', (e) => e.time),
-          urlColumn(contextOriginTitle, (e) => e.contextOrigin),
-          urlColumn('Reporting Origin', (e) => e.reportingOrigin),
-          new CodeColumn<T>('Registration JSON', (e) => e.registrationJson),
-          numberColumn('Cleared Debug Key', (e) => e.clearedDebugKey),
+          ValueColumn.of('Time', 'time', asDate),
+          ValueColumn.of(contextOriginTitle, 'contextOrigin', asUrl),
+          ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
+          ValueColumn.of('Registration JSON', 'registrationJson', asCode),
+          ValueColumn.of(
+              'Cleared Debug Key', 'clearedDebugKey',
+              allowingUndefined(asNumber)),
           ...cols,
         ],
         0,  // Sort by time by default.
@@ -477,8 +451,8 @@ class Trigger extends Registration {
 }
 
 const VERIFICATION_COLS: ReadonlyArray<Column<TriggerVerification>> = [
-  stringOrBoolColumn('Token', e => e.token),
-  stringOrBoolColumn('Report ID', e => e.aggregatableReportId),
+  ValueColumn.of('Token', 'token', asStringOrBool),
+  ValueColumn.of('Report ID', 'aggregatableReportId', asStringOrBool),
 ];
 
 class ReportVerificationColumn implements Column<Trigger> {
@@ -487,17 +461,18 @@ class ReportVerificationColumn implements Column<Trigger> {
   }
 
   render(td: HTMLElement, row: Trigger): void {
-    row.verifications.forEach(verification => {
+    for (const verification of row.verifications) {
       renderDL(td, verification, VERIFICATION_COLS);
-    });
+    }
   }
 }
 
 class TriggerTableModel extends RegistrationTableModel<Trigger> {
   constructor() {
     super('Destination', [
-      stringOrBoolColumn('Event-Level Result', (e) => e.eventLevelResult),
-      stringOrBoolColumn('Aggregatable Result', (e) => e.aggregatableResult),
+      ValueColumn.of('Event-Level Result', 'eventLevelResult', asStringOrBool),
+      ValueColumn.of(
+          'Aggregatable Result', 'aggregatableResult', asStringOrBool),
       new ReportVerificationColumn(),
     ]);
   }
@@ -518,8 +493,8 @@ class SourceRegistrationTableModel extends
     RegistrationTableModel<SourceRegistration> {
   constructor() {
     super('Source Origin', [
-      stringOrBoolColumn('Type', (e) => e.type),
-      stringOrBoolColumn('Status', (e) => e.status),
+      ValueColumn.of('Type', 'type', asStringOrBool),
+      ValueColumn.of('Status', 'status', asStringOrBool),
     ]);
   }
 }
@@ -576,13 +551,13 @@ class Report extends Selectable {
 
 class EventLevelReport extends Report {
   reportPriority: bigint;
-  attributedTruthfully: boolean;
+  randomizedReport: boolean;
 
   constructor(mojo: WebUIReport) {
     super(mojo);
 
     this.reportPriority = mojo.data.eventLevelData!.priority;
-    this.attributedTruthfully = mojo.data.eventLevelData!.attributedTruthfully;
+    this.randomizedReport = !mojo.data.eventLevelData!.attributedTruthfully;
   }
 }
 
@@ -620,15 +595,15 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
 
   constructor(
       container: HTMLElement, private readonly handler: HandlerInterface,
-      cols: Array<Column<T>>) {
+      cols: Iterable<Column<T>>) {
     super(
         [
-          stringOrBoolColumn('Status', (e) => e.status),
-          reportUrlColumn(),
-          dateColumn('Trigger Time', (e) => e.triggerTime),
-          dateColumn('Report Time', (e) => e.reportTime),
+          ValueColumn.of('Status', 'status', asStringOrBool),
+          reportUrlColumn,
+          ValueColumn.of('Trigger Time', 'triggerTime', asDate),
+          ValueColumn.of('Report Time', 'reportTime', asDate),
           ...cols,
-          new CodeColumn<T>('Report Body', (e) => e.reportBody),
+          ValueColumn.of('Report Body', 'reportBody', asCode),
         ],
         4,  // Sort by report time by default; the extra column is added below
         'No sent or pending reports.',
@@ -721,11 +696,11 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
    */
   private sendReports_(): void {
     const ids: ReportID[] = [];
-    this.storedReports.forEach((report) => {
+    for (const report of this.storedReports) {
       if (!report.input.disabled && report.input.checked) {
         ids.push(report.id);
       }
-    });
+    }
 
     if (ids.length === 0) {
       return;
@@ -784,13 +759,15 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
   constructor() {
     super(
         [
-          dateColumn('Timestamp', (e) => e.timestamp),
-          stringOrBoolColumn('Registration Type', (e) => e.registrationType),
-          urlColumn('Registration URL', (e) => e.registrationUrl),
-          urlColumn('Top-Level Origin', (e) => e.topLevelOrigin),
-          stringOrBoolColumn('Debug Key Allowed', (e) => e.debugKeyAllowed),
-          stringOrBoolColumn('Debug Reporting', (e) => e.debugReporting),
-          stringOrBoolColumn('Result', (e) => e.result),
+          ValueColumn.of('Timestamp', 'timestamp', asDate),
+          ValueColumn.of(
+              'Registration Type', 'registrationType', asStringOrBool),
+          ValueColumn.of('Registration URL', 'registrationUrl', asUrl),
+          ValueColumn.of('Top-Level Origin', 'topLevelOrigin', asUrl),
+          ValueColumn.of(
+              'Debug Key Allowed', 'debugKeyAllowed', asStringOrBool),
+          ValueColumn.of('Debug Reporting', 'debugReporting', asStringOrBool),
+          ValueColumn.of('Result', 'result', asStringOrBool),
         ],
         0,
         'No OS registrations.',
@@ -823,10 +800,10 @@ class DebugReportTableModel extends ArrayTableModel<DebugReport> {
   constructor() {
     super(
         [
-          dateColumn('Time', (e) => e.time),
-          urlColumn('URL', (e) => e.url),
-          stringOrBoolColumn('Status', (e) => e.status),
-          new CodeColumn<DebugReport>('Body', (e) => e.body),
+          ValueColumn.of('Time', 'time', asDate),
+          ValueColumn.of('URL', 'url', asUrl),
+          ValueColumn.of('Status', 'status', asStringOrBool),
+          ValueColumn.of('Body', 'body', asCode),
         ],
         0,  // Sort by report time by default.
         'No verbose debug reports.',
@@ -989,18 +966,20 @@ class AttributionInternals implements ObserverInterface {
   constructor() {
     this.eventLevelReports = new ReportTableModel(
         document.querySelector('#event-level-report-controls')!, this.handler, [
-          numberColumn('Report Priority', (e) => e.reportPriority),
-          stringOrBoolColumn(
-              'Randomized Report', (e) => !e.attributedTruthfully),
+          ValueColumn.of('Report Priority', 'reportPriority', asNumber),
+          ValueColumn.of(
+              'Randomized Report', 'randomizedReport', asStringOrBool),
         ]);
 
     this.aggregatableReports = new ReportTableModel(
         document.querySelector('#aggregatable-report-controls')!, this.handler,
         [
-          new CodeColumn('Histograms', (e) => e.contributions),
-          stringOrBoolColumn('Verification Token', (e) => e.verificationToken),
-          urlColumn('Aggregation Coordinator', (e) => e.aggregationCoordinator),
-          stringOrBoolColumn('Null Report', (e) => e.isNullReport),
+          ValueColumn.of('Histograms', 'contributions', asCode),
+          ValueColumn.of(
+              'Verification Token', 'verificationToken', asStringOrBool),
+          ValueColumn.of(
+              'Aggregation Coordinator', 'aggregationCoordinator', asUrl),
+          ValueColumn.of('Null Report', 'isNullReport', asStringOrBool),
         ]);
 
     installUnreadIndicator(
@@ -1149,23 +1128,23 @@ class AttributionInternals implements ObserverInterface {
   }
 
   private updateSources(): void {
-    this.handler.getActiveSources().then((response) => {
-      this.sources.setRows(response.sources.map((mojo) => new Source(mojo)));
+    this.handler.getActiveSources().then(({sources}) => {
+      this.sources.setRows(sources.map((mojo) => new Source(mojo)));
     });
   }
 
   private updateReports(): void {
-    this.handler.getReports().then(response => {
+    this.handler.getReports().then(({reports}) => {
       const eventLevelReports: EventLevelReport[] = [];
       const aggregatableReports: AggregatableAttributionReport[] = [];
 
-      response.reports.forEach(report => {
+      for (const report of reports) {
         if (report.data.eventLevelData !== undefined) {
           eventLevelReports.push(new EventLevelReport(report));
         } else if (report.data.aggregatableAttributionData !== undefined) {
           aggregatableReports.push(new AggregatableAttributionReport(report));
         }
-      });
+      }
 
       this.eventLevelReports.setStoredReports(eventLevelReports);
       this.aggregatableReports.setStoredReports(aggregatableReports);
@@ -1173,8 +1152,8 @@ class AttributionInternals implements ObserverInterface {
   }
 }
 
-function installUnreadIndicator(
-    model: TableModel<any>, tab: HTMLElement): void {
+function installUnreadIndicator<T>(
+    model: TableModel<T>, tab: HTMLElement): void {
   model.rowsChangedListeners.add(() => {
     if (!tab.hasAttribute('selected') && !model.empty()) {
       tab.classList.add('unread');
@@ -1185,7 +1164,7 @@ function installUnreadIndicator(
 document.addEventListener('DOMContentLoaded', function() {
   const tabBox = document.querySelector('cr-tab-box')!;
   tabBox.addEventListener('selected-index-change', e => {
-    const tabs = document.querySelectorAll<HTMLElement>('div[slot=\'tab\']');
+    const tabs = document.querySelectorAll<HTMLElement>('div[slot="tab"]');
     tabs[(e as CustomEvent<number>).detail]!.classList.remove('unread');
   });
 
