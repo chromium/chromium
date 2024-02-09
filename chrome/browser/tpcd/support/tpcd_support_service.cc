@@ -121,6 +121,22 @@ void TpcdTrialService::Update3pcdTrialSettings(
         ContentSettingsType::TPCD_TRIAL, matches_pair);
   }
 
+  SyncTpcdTrialSettingsToNetworkService(settings_map);
+}
+
+void TpcdTrialService::ClearTpcdTrialSettings() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser_context_);
+  CHECK(settings_map);
+
+  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
+  SyncTpcdTrialSettingsToNetworkService(settings_map);
+}
+
+void TpcdTrialService::SyncTpcdTrialSettingsToNetworkService(
+    HostContentSettingsMap* settings_map) {
   ContentSettingsForOneType tpcd_trial_settings =
       settings_map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 
@@ -129,15 +145,6 @@ void TpcdTrialService::Update3pcdTrialSettings(
       ->SetContentSettings(ContentSettingsType::TPCD_TRIAL,
                            std::move(tpcd_trial_settings),
                            base::NullCallback());
-}
-
-void TpcdTrialService::ClearTpcdTrialSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context_);
-  CHECK(settings_map);
-
-  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 }
 
 void TpcdTrialService::OnStatusChanged(const url::Origin& origin,

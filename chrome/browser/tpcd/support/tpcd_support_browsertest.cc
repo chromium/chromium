@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -38,91 +39,6 @@ using content::URLLoaderInterceptor;
 using content::WebContents;
 
 namespace tpcd::trial {
-namespace {
-
-const char kTestTokenPublicKey[] =
-    "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=,fMS4mpO6buLQ/QMd+zJmxzty/"
-    "VQ6B1EUZqoCU04zoRU=";
-
-const char kTrialEnabledDomain[] = "example.test";
-const char kTrialEnabledSubdomain[] = "sub.example.test";
-const char kTrialEnabledIframePath[] = "origin-trial-iframe";
-const char kEmbeddedScriptPagePath[] =
-    "tpcd/page_with_cross_site_tpcd_support_ot.html";
-const char kSubdomainMatchingEmbeddedScriptPagePath[] =
-    "tpcd/page_with_cross_site_tpcd_support_ot_with_subdomain_matching.html";
-// Origin Trials token for `kTrialEnabledSite` generated with:
-// tools/origin_trials/generate_token.py  https://example.test Tpcd
-// --expire-days 5000
-const char kTrialToken[] =
-    "A1F5vUG256mdaDWxcpAddjWWg7LdOPuoEBswgFVy8b3j0ejT56eJ+e+"
-    "IBocST6j2C8nYcnDm6gkd5O7M3FMo4AIAAABPeyJvcmlnaW4iOiAiaHR0cHM6Ly"
-    "9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYXR1cmUiOiAiVHBjZCIsICJleHBpcnkiO"
-    "iAyMTI0MzA4MDY1fQ==";
-
-// Origin Trials token for `kTrialEnabledSite` (and all its subdomains)
-// generated with:
-// tools/origin_trials/generate_token.py https://example.test Tpcd
-// --is-subdomain --expire-days 5000
-const char kTrialSubdomainMatchingToken[] =
-    "AwvUTouERi5ZSbMQGkQhzRCxh3hWd4mu1/"
-    "d8CPaQGC3LGmelPVjpqV8VPvKHXNB6ES337b3xvLRsQ6Z/"
-    "5TAjdQAAAABkeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYXR1cm"
-    "UiOiAiVHBjZCIsICJleHBpcnkiOiAyMTMwODYwOTA1LCAiaXNTdWJkb21haW4iOiB0cnVlfQ="
-    "=";
-
-// Origin Trials token for `kTrialEnabledSiteSubdomain` (and all its subdomains)
-// generated with:
-// tools/origin_trials/generate_token.py https://sub.example.test Tpcd
-// --is-subdomain --expire-days 5000
-const char kSubdomainTrialSubdomainMatchingToken[] =
-    "A1XUCMiQfJGkSpeUIg7HmIpY9YtNoANQivDQYA8DLujoJhNovnyi0Fu2huOKeooMwHvfPecmA/"
-    "8uJbrgH28T6A8AAABoeyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0OjQ0MyIs"
-    "ICJmZWF0dXJlIjogIlRwY2QiLCAiZXhwaXJ5IjogMjEzMzk2NzQwOCwgImlzU3ViZG9tYWluIj"
-    "ogdHJ1ZX0=";
-
-class ContentSettingChangeObserver : public content_settings::Observer {
- public:
-  explicit ContentSettingChangeObserver(
-      content::BrowserContext* browser_context,
-      const GURL request_url,
-      const GURL partition_url,
-      ContentSettingsType setting_type)
-      : browser_context_(browser_context),
-        request_url_(request_url),
-        partition_url_(partition_url),
-        setting_type_(setting_type) {
-    HostContentSettingsMapFactory::GetForProfile(browser_context_)
-        ->AddObserver(this);
-  }
-
-  ~ContentSettingChangeObserver() override {
-    HostContentSettingsMapFactory::GetForProfile(browser_context_)
-        ->RemoveObserver(this);
-  }
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // content_settings::Observer overrides:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override {
-    if (content_type_set.Contains(setting_type_) &&
-        primary_pattern.Matches(request_url_) &&
-        secondary_pattern.Matches(partition_url_)) {
-      run_loop_.Quit();
-    }
-  }
-
-  raw_ptr<content::BrowserContext> browser_context_;
-  base::RunLoop run_loop_;
-  GURL request_url_;
-  GURL partition_url_;
-  ContentSettingsType setting_type_;
-};
-
-}  // namespace
 
 class TpcdTrialBrowserTest : public PlatformBrowserTest {
  public:
@@ -184,6 +100,11 @@ class TpcdTrialBrowserTest : public PlatformBrowserTest {
   PrefService* GetPrefs() {
     return user_prefs::UserPrefs::Get(
         GetActiveWebContents()->GetBrowserContext());
+  }
+
+  content::RenderFrameHost* GetIFrame() {
+    content::WebContents* web_contents = GetActiveWebContents();
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
@@ -275,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
                                        nullptr),
             CONTENT_SETTING_ALLOW);
 
-  // TODO (crbug.com/1466156): Actually attempt to read cookies for
-  // `kTrialEnabledSite` as a third-party.
+  // Write a third-party cookie from the |kTrialEnabledSite| iframe.
+  AccessCookieViaJsIn(web_contents, GetIFrame());
 
   // Check cookie access for `kTrialEnabledSite` with a different path.
   GURL enabled_site_diff_path =
@@ -357,8 +278,8 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
                                        nullptr),
             CONTENT_SETTING_ALLOW);
 
-  // TODO (crbug.com/1466156): Actually attempt to read cookies for
-  // `kTrialEnabledSiteSubdomain` as a third-party.
+  // Write a third-party cookie from the |kTrialEnabledSiteSubdomain| iframe.
+  AccessCookieViaJsIn(web_contents, GetIFrame());
 
   // Check cookie access for `kTrialEnabledSiteSubdomain` with a different path.
   EXPECT_EQ(settings->GetCookieSetting(

@@ -166,6 +166,8 @@ static_library("test_support") {
     "../browser/signin/test_signin_client_builder.h",
     "../browser/tpcd/experiment/mock_experiment_manager.cc",
     "../browser/tpcd/experiment/mock_experiment_manager.h",
+    "../browser/tpcd/support/trial_test_utils.cc",
+    "../browser/tpcd/support/trial_test_utils.h",
     "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
@@ -2338,6 +2340,7 @@ if (!is_android) {
       "../browser/tpcd/metadata/updater_service_browsertest.cc",
       "../browser/tpcd/support/top_level_trial_service_browsertest.cc",
       "../browser/tpcd/support/tpcd_support_browsertest.cc",
+      "../browser/tpcd/support/validity_service_browsertest.cc",
 
       # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
       # "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",

@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -39,13 +40,6 @@ using content::WebContents;
 
 namespace tpcd::trial {
 namespace {
-
-const char kTestTokenPublicKey[] =
-    "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=,fMS4mpO6buLQ/QMd+zJmxzty/"
-    "VQ6B1EUZqoCU04zoRU=";
-
-const char kTrialEnabledDomain[] = "example.test";
-const char kTrialEnabledSubdomain[] = "sub.example.test";
 
 // Origin Trials token for `kTrialEnabledSite` generated with:
 // tools/origin_trials/generate_token.py  https://example.test TopLevelTpcd
@@ -86,47 +80,6 @@ const char kSubdomainTopLevelTrialSubdomainMatchingToken[] =
     "IbnFBxzGXwMAAABweyJvcmlnaW4iOiAiaHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0OjQ0MyIsIC"
     "JmZWF0dXJlIjogIlRvcExldmVsVHBjZCIsICJleHBpcnkiOiAyMTM5MzM4NTIzLCAiaXNTdWJk"
     "b21haW4iOiB0cnVlfQ==";
-
-class ContentSettingChangeObserver : public content_settings::Observer {
- public:
-  explicit ContentSettingChangeObserver(
-      content::BrowserContext* browser_context,
-      const GURL request_url,
-      const GURL partition_url,
-      ContentSettingsType setting_type)
-      : browser_context_(browser_context),
-        request_url_(request_url),
-        partition_url_(partition_url),
-        setting_type_(setting_type) {
-    HostContentSettingsMapFactory::GetForProfile(browser_context_)
-        ->AddObserver(this);
-  }
-
-  ~ContentSettingChangeObserver() override {
-    HostContentSettingsMapFactory::GetForProfile(browser_context_)
-        ->RemoveObserver(this);
-  }
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // content_settings::Observer overrides:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override {
-    if (content_type_set.Contains(setting_type_) &&
-        primary_pattern.Matches(request_url_) &&
-        secondary_pattern.Matches(partition_url_)) {
-      run_loop_.Quit();
-    }
-  }
-
-  raw_ptr<content::BrowserContext> browser_context_;
-  base::RunLoop run_loop_;
-  GURL request_url_;
-  GURL partition_url_;
-  ContentSettingsType setting_type_;
-};
 
 }  // namespace
 
