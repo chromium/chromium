@@ -273,7 +273,6 @@ class WPTAdapter:
         if verbose_level >= 3:
             runner_options.webdriver_args.extend([
                 '--verbose',
-                '--log-path=-',
             ])
 
         if self.using_upstream_wpt:
