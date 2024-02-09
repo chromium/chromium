@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   void EnableRecvOptimization() override;
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
+  net::DscpAndEcn GetLastTos() const override;
 
   // DatagramSocket implementation.
   void Close() override;
@@ -91,7 +92,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
+  int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override;
   void SetMsgConfirm(bool confirm) override;
   const net::NetLogWithSource& NetLog() const override;
 

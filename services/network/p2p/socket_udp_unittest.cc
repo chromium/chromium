@@ -149,7 +149,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   int SetDoNotFragment() override { return net::OK; }
 
-  int SetRecvEcn() override { return net::OK; }
+  int SetRecvTos() override { return net::OK; }
 
   void SetMsgConfirm(bool confirm) override {}
 
@@ -226,7 +226,17 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     return net::ERR_NOT_IMPLEMENTED;
   }
 
+  int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override {
+    NOTIMPLEMENTED();
+    return net::ERR_NOT_IMPLEMENTED;
+  }
+
   void DetachFromThread() override { NOTIMPLEMENTED(); }
+
+  net::DscpAndEcn GetLastTos() const override {
+    NOTIMPLEMENTED();
+    return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
+  }
 
  private:
   net::IPEndPoint address_;

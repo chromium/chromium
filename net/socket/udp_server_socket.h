@@ -42,7 +42,7 @@ class NET_EXPORT UDPServerSocket : public DatagramServerSocket {
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
   void SetMsgConfirm(bool confirm) override;
   void Close() override;
   int GetPeerAddress(IPEndPoint* address) const override;
@@ -58,7 +58,9 @@ class NET_EXPORT UDPServerSocket : public DatagramServerSocket {
   int SetMulticastTimeToLive(int time_to_live) override;
   int SetMulticastLoopbackMode(bool loopback) override;
   int SetDiffServCodePoint(DiffServCodePoint dscp) override;
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
   void DetachFromThread() override;
+  DscpAndEcn GetLastTos() const override;
 
  private:
   UDPSocket socket_;

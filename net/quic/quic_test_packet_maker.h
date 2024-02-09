@@ -11,6 +11,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_frame_data_producer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
@@ -276,7 +278,8 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       uint64_t first_received,
       uint64_t largest_received,
-      uint64_t smallest_received);
+      uint64_t smallest_received,
+      std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataPacket(
       uint64_t packet_number,
@@ -422,6 +425,8 @@ class QuicTestPacketMaker {
                                  spdy::Http2HeaderBlock headers,
                                  size_t* encoded_data_length);
 
+  void set_ecn_codepoint(quic::QuicEcnCodepoint ecn) { ecn_codepoint_ = ecn; }
+
  private:
   // Initialize header of next packet to build.
   void InitializeHeader(uint64_t packet_number);
@@ -452,7 +457,8 @@ class QuicTestPacketMaker {
   void AddQuicAckFrame(uint64_t largest_received, uint64_t smallest_received);
   void AddQuicAckFrame(uint64_t first_received,
                        uint64_t largest_received,
-                       uint64_t smallest_received);
+                       uint64_t smallest_received,
+                       std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
   void AddQuicRstStreamFrame(quic::QuicStreamId stream_id,
                              quic::QuicRstStreamErrorCode error_code);
   void AddQuicConnectionCloseFrame(quic::QuicErrorCode quic_error,
@@ -527,6 +533,10 @@ class QuicTestPacketMaker {
   quic::QuicPacketHeader header_;
   quic::QuicFrames frames_;
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
+
+  // Explicit Congestion Notification (ECN) codepoint to use when making
+  // packets.
+  quic::QuicEcnCodepoint ecn_codepoint_ = quic::ECN_NOT_ECT;
 };
 
 }  // namespace net::test

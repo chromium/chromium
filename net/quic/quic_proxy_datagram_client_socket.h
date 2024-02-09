@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   int GetLocalAddress(IPEndPoint* address) const override;
   void UseNonBlockingIO() override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
   void SetMsgConfirm(bool confirm) override;
   const NetLogWithSource& NetLog() const override;
 

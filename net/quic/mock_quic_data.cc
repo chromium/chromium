@@ -17,9 +17,16 @@ void MockQuicData::AddConnect(IoMode mode, int rv) {
 }
 
 void MockQuicData::AddRead(IoMode mode,
+                           std::unique_ptr<quic::QuicReceivedPacket> packet) {
+  reads_.emplace_back(mode, packet->data(), packet->length(),
+                      sequence_number_++,
+                      static_cast<uint8_t>(packet->ecn_codepoint()));
+  packets_.push_back(std::move(packet));
+}
+void MockQuicData::AddRead(IoMode mode,
                            std::unique_ptr<quic::QuicEncryptedPacket> packet) {
   reads_.emplace_back(mode, packet->data(), packet->length(),
-                      sequence_number_++);
+                      sequence_number_++, /*tos=*/0);
   packets_.push_back(std::move(packet));
 }
 void MockQuicData::AddRead(IoMode mode, int rv) {

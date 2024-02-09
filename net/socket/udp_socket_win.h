@@ -264,7 +264,7 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   // Requests that packets received by this socket have the ECN bit set. Returns
   // a network error code if there was a problem.
-  int SetRecvEcn();
+  int SetRecvTos();
 
   // This is a no-op on Windows.
   void SetMsgConfirm(bool confirm);
@@ -346,6 +346,14 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // initialization is in progress.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
 
+  // Requests that packets sent by this socket have the DSCP and/or ECN
+  // bits set. Returns a network error code if there was a problem. If
+  // DSCP_NO_CHANGE or ECN_NO_CHANGE are set, will preserve those parts of
+  // the original setting.
+  // ECN values other than 0 must not be used outside of tests, without
+  // appropriate congestion control.
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn);
+
   // Sets IPV6_V6ONLY on the socket. If this flag is true, the socket will be
   // restricted to only IPv6; false allows both IPv4 and IPv6 traffic.
   int SetIPv6Only(bool ipv6_only);
@@ -371,6 +379,10 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
     return multicast_interface_;
   }
   bool get_use_non_blocking_io_for_testing() { return use_non_blocking_io_; }
+
+  // For now, no support for Windows TOS reporting to Quiche
+  // TODO(crbug.com/1521435): Add windows support for ECN.
+  DscpAndEcn GetLastTos() const { return {DSCP_DEFAULT, ECN_DEFAULT}; }
 
  private:
   enum SocketOptions {

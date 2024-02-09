@@ -768,7 +768,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
   }
 
   if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
-    rv = socket->SetRecvEcn();
+    rv = socket->SetRecvTos();
     if (rv != OK) {
       OnFinishConnectAndConfigureSocketError(
           std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
@@ -861,7 +861,7 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
   }
 
   if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
-    rv = socket->SetRecvEcn();
+    rv = socket->SetRecvTos();
     if (rv != OK) {
       HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
       return rv;

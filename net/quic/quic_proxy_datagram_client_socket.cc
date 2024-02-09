@@ -110,7 +110,7 @@ int QuicProxyDatagramClientSocket::SetDoNotFragment() {
   return ERR_NOT_IMPLEMENTED;
 }
 
-int QuicProxyDatagramClientSocket::SetRecvEcn() {
+int QuicProxyDatagramClientSocket::SetRecvTos() {
   NOTREACHED();
   return ERR_NOT_IMPLEMENTED;
 }

@@ -32,7 +32,9 @@ class MockQuicData {
   void AddConnect(IoMode mode, int rv);
 
   // Adds a read at the next sequence number which will read |packet|
-  // synchronously or asynchronously based on |mode|.
+  // synchronously or asynchronously based on |mode|. The QuicReceivedPacket
+  // version includes an ECN codepoint.
+  void AddRead(IoMode mode, std::unique_ptr<quic::QuicReceivedPacket> packet);
   void AddRead(IoMode mode, std::unique_ptr<quic::QuicEncryptedPacket> packet);
 
   // Adds a read at the next sequence number which will return |rv| either

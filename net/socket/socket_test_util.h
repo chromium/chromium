@@ -128,7 +128,8 @@ struct MockReadWrite {
         result(0),
         data(nullptr),
         data_len(0),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write failure (no data).
   MockReadWrite(IoMode io_mode, int result)
@@ -136,7 +137,8 @@ struct MockReadWrite {
         result(result),
         data(nullptr),
         data_len(0),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write failure (no data), with sequence information.
   MockReadWrite(IoMode io_mode, int result, int seq)
@@ -144,7 +146,8 @@ struct MockReadWrite {
         result(result),
         data(nullptr),
         data_len(0),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
 
   // Asynchronous read/write success (inferred data length).
   explicit MockReadWrite(const char* data)
@@ -152,7 +155,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success (inferred data length).
   MockReadWrite(IoMode io_mode, const char* data)
@@ -160,7 +164,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success.
   MockReadWrite(IoMode io_mode, const char* data, int data_len)
@@ -168,7 +173,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(data_len),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success (inferred data length) with sequence information.
   MockReadWrite(IoMode io_mode, int seq, const char* data)
@@ -176,7 +182,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
 
   // Read/write success with sequence information.
   MockReadWrite(IoMode io_mode, const char* data, int data_len, int seq)
@@ -184,7 +191,21 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(data_len),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
+
+  // Read/write success with sequence and TOS information.
+  MockReadWrite(IoMode io_mode,
+                const char* data,
+                int data_len,
+                int seq,
+                uint8_t tos_byte)
+      : mode(io_mode),
+        result(0),
+        data(data),
+        data_len(data_len),
+        sequence_number(seq),
+        tos(tos_byte) {}
 
   IoMode mode;
   int result;
@@ -196,6 +217,9 @@ struct MockReadWrite {
   // an ERR_IO_PENDING is returned.
   int sequence_number;  // The sequence number at which a read is allowed
                         // to occur.
+
+  // The TOS byte of the datagram, for datagram sockets only.
+  uint8_t tos;
 };
 
 typedef MockReadWrite<MOCK_READ> MockRead;
@@ -974,7 +998,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
 
   // DatagramSocket implementation.
   void Close() override;
@@ -999,6 +1024,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   void SetMsgConfirm(bool confirm) override {}
+  DscpAndEcn GetLastTos() const override;
 
   // AsyncSocket implementation.
   void OnReadComplete(const MockRead& data) override;
@@ -1053,6 +1079,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   SocketTag tag_;
   bool data_transferred_ = false;
   bool tagged_before_data_transferred_ = true;
+
+  uint8_t last_tos_ = 0;
 
   base::WeakPtrFactory<MockUDPClientSocket> weak_factory_{this};
 };

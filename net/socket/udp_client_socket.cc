@@ -219,8 +219,12 @@ int UDPClientSocket::SetDoNotFragment() {
   return socket_.SetDoNotFragment();
 }
 
-int UDPClientSocket::SetRecvEcn() {
-  return socket_.SetRecvEcn();
+int UDPClientSocket::SetRecvTos() {
+  return socket_.SetRecvTos();
+}
+
+int UDPClientSocket::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  return socket_.SetTos(dscp, ecn);
 }
 
 void UDPClientSocket::SetMsgConfirm(bool confirm) {
@@ -260,6 +264,10 @@ int UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
     adopted_opened_socket_ = true;
   }
   return rv;
+}
+
+DscpAndEcn UDPClientSocket::GetLastTos() const {
+  return socket_.GetLastTos();
 }
 
 }  // namespace net
