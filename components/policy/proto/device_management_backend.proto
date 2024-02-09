@@ -4463,13 +4463,20 @@ message BrowserPublicKeyUploadRequest {
 
   // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
   optional bytes public_key = 1;
+
   // Signature of the new public key signed using the existing key, empty for
   // initial upload.
   optional bytes signature = 2;
+
   // Trust Level of the key.
   optional KeyTrustLevel key_trust_level = 3;
+
   // Type of the key.
   optional KeyType key_type = 4;
+
+  // Whether the server should create a client certificate for that public key
+  // and return it as part of the response or not.
+  optional bool provision_certificate = 5;
 }
 
 // Response from server to device for cert upload request.
@@ -4482,6 +4489,10 @@ message BrowserPublicKeyUploadResponse {
     INVALID_SIGNATURE = 2;
   }
   optional ResponseCode response_code = 1;
+
+  // If the request had `provision_certificate` as true, this property will
+  // contain the X.509 client certificate in PEM format.
+  optional string pem_encoded_certificate = 2;
 }
 
 // Additional detail about the error which can be used to clarify user messaging
