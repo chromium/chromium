@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -134,6 +135,7 @@ public final class WebApkActivityTest {
     /** Test a permission dialog can be correctly presented. */
     @Test
     @LargeTest
+    @DisabledTest(message = "The test is flaky, see b/324471058.")
     public void testShowPermissionPrompt() throws TimeoutException {
         EmbeddedTestServer server = mActivityTestRule.getEmbeddedTestServerRule().getServer();
         String url = server.getURL("/content/test/data/android/permission_navigation.html");
