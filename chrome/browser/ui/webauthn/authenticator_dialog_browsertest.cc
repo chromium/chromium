@@ -703,6 +703,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "touchid") {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+    } else if (name == "gpm_onboarding") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
     } else {
       NOTREACHED();
     }
@@ -782,6 +785,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_create) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_onboarding) {
   ShowAndVerifyUi();
 }
 

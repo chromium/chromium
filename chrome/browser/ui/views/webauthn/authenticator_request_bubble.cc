@@ -71,6 +71,18 @@ constexpr BubbleContents kTrustThisComputerContents = {
     .on_ok = &AuthenticatorRequestDialogModel::OnTrustThisComputer,
 };
 
+constexpr BubbleContents kGPMOnboardingContents = {
+    .illustration_light_id = IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT,
+    .title =
+        u"Start using passkeys with your Google Password Manager "
+        u"(UNTRANSLATED)",
+    .body =
+        u"We'll create a passkey for you to sign in to example.com "
+        u"(UNTRANSLATED)",
+    .show_footer = true,
+    .on_ok = &AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted,
+};
+
 class AuthenticatorRequestBubbleDelegate
     : public views::BubbleDialogDelegate,
       public AuthenticatorRequestDialogModel::Observer {
@@ -123,6 +135,8 @@ class AuthenticatorRequestBubbleDelegate
         return &kTrustThisComputerContents;
       case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
         return &kGPMTouchID;
+      case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
+        return &kGPMOnboardingContents;
       default:
         NOTREACHED();
         return nullptr;

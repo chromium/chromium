@@ -161,6 +161,7 @@ class AuthenticatorRequestDialogModel
     kRecoverSecurityDomain,
     kTrustThisComputer,
     kGPMCreate,
+    kGPMOnboarding,
     kWaitingForEnclave,
 
     // User verification prompt for GPM for demo purposes.
@@ -549,6 +550,10 @@ class AuthenticatorRequestDialogModel
   // OnAttestationPermissionResponse is called when the user either allows or
   // disallows an attestation permission request.
   void OnAttestationPermissionResponse(bool attestation_permission_granted);
+
+  // Called when the user accepts a bubble confirming that they want to start
+  // using passkeys.
+  void OnGPMOnboardingAccepted();
 
   // These functions are currently placeholders.
   void OnGPMCreate() {}
