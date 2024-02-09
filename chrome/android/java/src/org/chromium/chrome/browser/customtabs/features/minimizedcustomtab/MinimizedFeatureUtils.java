@@ -153,7 +153,6 @@ public class MinimizedFeatureUtils {
     }
 
     private static boolean isDeviceExcluded() {
-        assert sManufacturerExcludeList == null;
         sManufacturerExcludeList = new HashSet<>();
         String listStr = MANUFACTURER_EXCLUDE_LIST.getValue();
         if (!TextUtils.isEmpty(listStr)) {
