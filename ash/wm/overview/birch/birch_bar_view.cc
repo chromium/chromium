@@ -26,9 +26,11 @@ namespace {
 constexpr int kMaxChipsNum = 4;
 // The spacing between chips and chips rows.
 constexpr int kChipSpacing = 8;
-// Horizontal margins between the chips row container and the birch bar.
-constexpr int kBarHorizontalMarginsNoShelf = 32;
-constexpr int kBarHorizontalMarginsWithShelf = 64;
+// Horizontal paddings of the bar container.
+constexpr int kContainerHorizontalPaddingNoShelf = 32;
+constexpr int kContainerHorizontalPaddingWithShelf = 64;
+// The bottom padding of bar container.
+constexpr int kContainerBottomPadding = 16;
 // The height of the chips.
 constexpr int kChipHeight = 64;
 // The optimal chip width for large screen.
@@ -41,7 +43,7 @@ constexpr int kLargeScreenThreshold = 1450;
 int GetChipSpace(int available_size, int chips_num) {
   return chips_num
              ? (available_size - (chips_num - 1) * kChipSpacing) / chips_num
-             : 0;
+             : available_size;
 }
 
 }  // namespace
@@ -52,30 +54,46 @@ BirchBarView::BirchBarView(aura::Window* root_window)
   using MainAxisAlignment = views::BoxLayout::MainAxisAlignment;
   using CrossAxisAlignment = views::BoxLayout::CrossAxisAlignment;
   views::Builder<views::BoxLayoutView>(this)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(MainAxisAlignment::kCenter)
-      .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
-      .AddChildren(
-          views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&chips_row_container_)
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetMainAxisAlignment(MainAxisAlignment::kCenter)
-              .SetCrossAxisAlignment(CrossAxisAlignment::kStart)
-              .SetBetweenChildSpacing(kChipSpacing)
-              .AddChildren(
-                  views::Builder<views::BoxLayoutView>()
-                      .CopyAddressTo(&primary_row_)
-                      .SetMainAxisAlignment(MainAxisAlignment::kStart)
-                      .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
-                      .SetBetweenChildSpacing(kChipSpacing),
-                  views::Builder<views::BoxLayoutView>()
-                      .CopyAddressTo(&secondary_row_)
-                      .SetMainAxisAlignment(MainAxisAlignment::kStart)
-                      .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
-                      .SetBetweenChildSpacing(kChipSpacing)))
+      .SetCrossAxisAlignment(CrossAxisAlignment::kStart)
+      .SetBetweenChildSpacing(kChipSpacing)
+      .AddChildren(views::Builder<views::BoxLayoutView>()
+                       .CopyAddressTo(&primary_row_)
+                       .SetMainAxisAlignment(MainAxisAlignment::kStart)
+                       .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
+                       .SetBetweenChildSpacing(kChipSpacing),
+                   views::Builder<views::BoxLayoutView>()
+                       .CopyAddressTo(&secondary_row_)
+                       .SetMainAxisAlignment(MainAxisAlignment::kStart)
+                       .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
+                       .SetBetweenChildSpacing(kChipSpacing))
       .BuildChildren();
 }
 
 BirchBarView::~BirchBarView() = default;
+
+gfx::Insets BirchBarView::GetContainerPaddings() const {
+  // Calculate the insets according to the shelf position.
+  const ShelfAlignment shelf_alignment =
+      Shelf::ForWindow(root_window_)->alignment();
+  const int left_inset = shelf_alignment == ShelfAlignment::kLeft
+                             ? kContainerHorizontalPaddingWithShelf
+                             : kContainerHorizontalPaddingNoShelf;
+  const int right_inset = shelf_alignment == ShelfAlignment::kRight
+                              ? kContainerHorizontalPaddingWithShelf
+                              : kContainerHorizontalPaddingNoShelf;
+  return gfx::Insets::TLBR(0, left_inset, kContainerBottomPadding, right_inset);
+}
+
+void BirchBarView::UpdateAvailableSpace(int available_space) {
+  if (available_space_ == available_space) {
+    return;
+  }
+
+  available_space_ = available_space;
+  Relayout();
+}
 
 void BirchBarView::AddChip(
     const ui::ImageModel& icon,
@@ -123,24 +141,6 @@ void BirchBarView::RemoveChip(BirchChipButton* chip) {
   Relayout();
 }
 
-gfx::Insets BirchBarView::GetInsets() const {
-  // Calculate the insets according to the shelf position.
-  const ShelfAlignment shelf_alignment =
-      Shelf::ForWindow(root_window_)->alignment();
-  const int left_inset = shelf_alignment == ShelfAlignment::kLeft
-                             ? kBarHorizontalMarginsWithShelf
-                             : kBarHorizontalMarginsNoShelf;
-  const int right_inset = shelf_alignment == ShelfAlignment::kRight
-                              ? kBarHorizontalMarginsWithShelf
-                              : kBarHorizontalMarginsNoShelf;
-  return gfx::Insets::TLBR(0, left_inset, 0, right_inset);
-}
-
-void BirchBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // Relayout when available space changes.
-  Relayout();
-}
-
 gfx::Size BirchBarView::GetChipSize() const {
   const gfx::Rect display_bounds = display::Screen::GetScreen()
                                        ->GetDisplayNearestWindow(root_window_)
@@ -156,7 +156,7 @@ gfx::Size BirchBarView::GetChipSize() const {
 
   // Otherwise, the bar tends to fill the longest side of the display with 4
   // chips.
-  const int horizontal_insets = GetInsets().width();
+  const int horizontal_insets = GetContainerPaddings().width();
   const int chip_width =
       GetChipSpace(max_display_dim - horizontal_insets, kMaxChipsNum);
   return gfx::Size(chip_width, kChipHeight);
@@ -165,8 +165,7 @@ gfx::Size BirchBarView::GetChipSize() const {
 BirchBarView::LayoutType BirchBarView::GetExpectedLayoutType() const {
   // Calculate the expected layout type according to the chip space estimated by
   // current available space and number of chips.
-  const int chip_space =
-      GetChipSpace(GetContentsBounds().width(), chips_.size());
+  const int chip_space = GetChipSpace(available_space_, chips_.size());
   return chip_space < chip_size_.width() ? LayoutType::kTwoByTwo
                                          : LayoutType::kOneByFour;
 }
@@ -192,8 +191,7 @@ void BirchBarView::Relayout() {
         secondary_row_->RemoveChildViewT(chips_in_secondary.front()));
   }
 
-  // Invalidate the layout from chips row container.
-  chips_row_container_->InvalidateLayout();
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(BirchBarView, views::BoxLayoutView)
