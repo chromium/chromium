@@ -16621,6 +16621,7 @@ from previous Chrome versions.
   <int value="-1858245344" label="CcoTest1:enabled"/>
   <int value="-1856902397" label="LoadingWithMojo:enabled"/>
   <int value="-1856118202" label="AdvancedDocumentScanAPI:disabled"/>
+  <int value="-1856080892" label="UseAdHocSigningForWebAppShims:disabled"/>
   <int value="-1855347512" label="FormControlsRefresh:disabled"/>
   <int value="-1855339525"
       label="CompressionDictionaryTransportRequireKnownRootCert:enabled"/>
@@ -17733,6 +17734,7 @@ from previous Chrome versions.
       label="AssistantNonPersonalizedVoiceSearch:disabled"/>
   <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
   <int value="-1340055960" label="enable-streamlined-hosted-apps"/>
+  <int value="-1339679303" label="UseAdHocSigningForWebAppShims:enabled"/>
   <int value="-1338701593"
       label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>

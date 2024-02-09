@@ -72,6 +72,12 @@ BASE_FEATURE(kAppShimLaunchChromeSilently,
 BASE_FEATURE(kAppShimNotificationAttribution,
              "AppShimNotificationAttribution",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, app shims used by PWAs will be signed with an ad-hoc signature
+// https://crbug.com/40276068
+BASE_FEATURE(kUseAdHocSigningForWebAppShims,
+             "UseAdHocSigningForWebAppShims",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

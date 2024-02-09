@@ -8070,8 +8070,19 @@
     "expiry_milestone": 125
   },
   {
+    "name": "use-adhoc-signing-for-web-app-shims",
+    "owners": [
+      "markrowe@chromium.org",
+      "chrome-platform-security@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "use-android-staging-smds",
-    "owners": [ "cros-connectivity@google.com", "chadduffin@chromium.org"],
+    "owners": [
+      "cros-connectivity@google.com",
+      "chadduffin@chromium.org"
+    ],
     // This flag is required for cellular tests that involve SM-DS to be able
     // to test against the Android staging SM-DS.
     "expiry_milestone": -1

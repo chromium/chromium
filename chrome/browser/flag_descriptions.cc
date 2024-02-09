@@ -5435,6 +5435,13 @@ const char kSystemColorChooserName[] = "System Color Chooser";
 const char kSystemColorChooserDescription[] =
     "Enables a button that launches the macOS native color chooser.";
 
+const char kUseAdHocSigningForWebAppShimsName[] =
+    "Use Ad-hoc Signing for Web App Shims";
+const char kUseAdHocSigningForWebAppShimsDescription[] =
+    "Ad-hoc code signing ensures that each PWA app shim has a unique identity. "
+    "This allows macOS subsystems to correctly distinguish between multiple "
+    "PWAs. Only enabled on macOS 11.7 and later.";
+
 #endif
 
 // Windows and Mac -------------------------------------------------------------

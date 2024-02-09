@@ -3139,6 +3139,9 @@ extern const char kSwapBackquoteKeysInISOKeyboardDescription[];
 extern const char kSystemColorChooserName[];
 extern const char kSystemColorChooserDescription[];
 
+extern const char kUseAdHocSigningForWebAppShimsName[];
+extern const char kUseAdHocSigningForWebAppShimsDescription[];
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // Windows and Mac ------------------------------------------------------------
