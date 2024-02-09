@@ -171,9 +171,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       case DesktopMediaID::TYPE_SCREEN:
         for (SCDisplay* display in content.displays) {
           if (source_.id == display.displayID) {
-            NSArray<SCWindow*>* exclude_windows = nil;
             filter = [[SCContentFilter alloc] initWithDisplay:display
-                                             excludingWindows:exclude_windows];
+                                             excludingWindows:@[]];
             stream_config_content_size_ =
                 gfx::Size(display.width, display.height);
             break;
