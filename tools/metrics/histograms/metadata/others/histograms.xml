@@ -8390,16 +8390,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Process.Sandbox.StartSandboxedWin.TotalDuration"
+<histogram name="Process.Sandbox.StartSandboxedWin.{Event}Duration"
     units="microseconds" expires_after="2024-06-30">
   <owner>ajgo@chromium.org</owner>
   <owner>src/sandbox/policy/win/OWNERS</owner>
   <summary>
-    Duration of StartSandboxedProcess() including the time Windows spends
-    starting the suspended process. Emitted on a successful launch of a
-    sandboxed process on Windows. Only emitted where a high-resolution timer is
-    available (see Windows.HasHighResolutionTimeTicks).
+    Duration of {Event} within StartSandboxedProcess() including the time
+    Windows spends starting the suspended process. Emitted on a successful
+    launch of a sandboxed process on Windows. Only emitted where a
+    high-resolution timer is available (see Windows.HasHighResolutionTimeTicks).
   </summary>
+  <token key="Event">
+    <variant name="CreatePolicy"/>
+    <variant name="GeneratePolicy"/>
+    <variant name="PostSpawnTarget"/>
+    <variant name="SpawnTarget"/>
+    <variant name="Total" summary="the total time"/>
+  </token>
 </histogram>
 
 <histogram name="PushMessaging.DeliveryStatus" enum="PushEventStatus"
