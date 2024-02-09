@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
@@ -256,11 +257,7 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
     return;
   }
 
-  bool should_fetch_tail_suggestions =
-      (base::GetFieldTrialParamByFeatureAsBool(
-           omnibox::kOnDeviceTailModel, "MixHeadAndTailSuggestions", false) ||
-       params->suggestions.empty());
-  if (!should_fetch_tail_suggestions) {
+  if (!ShouldFetchTailSuggestions(*params)) {
     AllSearchDone(std::move(params));
     return;
   }
@@ -373,4 +370,30 @@ std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
   return model_update_listener != nullptr
              ? model_update_listener->head_model_filename()
              : "";
+}
+
+// static
+bool OnDeviceHeadProvider::ShouldFetchTailSuggestions(
+    const OnDeviceHeadProviderParams& params) {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kOnDeviceTailModel, "EnableForSingleWordPrefix", false)) {
+    std::string sanitized_input = SanitizeInput(params.input.text());
+    // Determines if the prefix contains multiple words by checking if it has
+    // whitespaces; Note this does not work when the prefix is not using
+    // whitespace as delimiter, e.g. CJK languages.
+    bool is_single_word_prefix = !base::Contains(sanitized_input, " ");
+    if (is_single_word_prefix) {
+      return false;
+    }
+  }
+
+  // Always triggers tail model when head suggestion does not present.
+  if (params.suggestions.empty()) {
+    return true;
+  }
+
+  // Now allows triggering tail model even if head suggestions are available, if
+  // the flag is set.
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kOnDeviceTailModel, "MixHeadAndTailSuggestions", false);
 }
