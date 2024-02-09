@@ -38,6 +38,11 @@ std::string UnescapeStringForHTML(const std::string& string);
 // if not feasible.
 std::optional<double> GetRatio(const std::optional<double>& value1,
                                const std::optional<double>& value2);
+
+// Get the display text for |unit_amount|, showing precision up to three decimal
+// places. The amount is rounded if necessary.
+std::string BuildRoundedUnitAmountDisplayText(double unit_amount);
+
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_UTILS_H_

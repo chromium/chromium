@@ -65,6 +65,7 @@ class QuickAnswersUtteranceEventDelegate
 enum class TypographyToken {
   kCrosBody2,
   kCrosBody2Italic,
+  kCrosButton1,
   kCrosButton2,
   kCrosDisplay5,
   kCrosTitle1

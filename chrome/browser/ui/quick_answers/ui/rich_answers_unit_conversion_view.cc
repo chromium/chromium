@@ -21,6 +21,33 @@
 
 namespace quick_answers {
 
+namespace {
+
+void AddAlternativeUnits(views::View* container_view,
+                         const UnitConversionResult& unit_conversion_result) {
+  for (const UnitConversion& unit_conversion :
+       unit_conversion_result.alternative_unit_conversions_list) {
+    double dest_amount = unit_conversion.ConvertSourceAmountToDestAmount(
+        unit_conversion_result.source_amount);
+
+    std::string dest_amount_text =
+        BuildRoundedUnitAmountDisplayText(dest_amount);
+
+    views::BoxLayoutView* box_layout_view =
+        container_view->AddChildView(CreateHorizontalBoxLayoutView());
+    box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+        dest_amount_text, GetFontList(TypographyToken::kCrosButton1),
+        kContentTextWidth,
+        /*is_multi_line=*/false, cros_tokens::kCrosSysOnSurface));
+    box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+        unit_conversion.dest_rule().unit_name(),
+        GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
+        /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+  }
+}
+
+}  // namespace
+
 // RichAnswersUnitConversionView
 // -----------------------------------------------------------
 
@@ -49,8 +76,11 @@ void RichAnswersUnitConversionView::InitLayout() {
 
   MaybeAddFormulaInformation();
 
-  // Separator.
-  content_view_->AddChildView(CreateSeparatorView());
+  if (!unit_conversion_result_.alternative_unit_conversions_list.empty()) {
+    content_view_->AddChildView(CreateSeparatorView());
+
+    AddAlternativeUnits(content_view_, unit_conversion_result_);
+  }
 }
 
 void RichAnswersUnitConversionView::AddConversionResultText() {

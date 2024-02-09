@@ -6,12 +6,13 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-double GetRatio(double value1, double value2) {
+double MaybeGetRatio(double value1, double value2) {
   if (value1 == quick_answers::kInvalidRateTermValue ||
       value2 == quick_answers::kInvalidRateTermValue) {
     return quick_answers::kInvalidRateTermValue;
@@ -162,13 +163,13 @@ std::optional<UnitConversion> UnitConversion::Create(
 }
 bool UnitConversion::operator<(const UnitConversion& other) const {
   double linear_term_ratio =
-      GetRatio(source_rule_.term_a(), dest_rule_.term_a());
+      MaybeGetRatio(source_rule_.term_a(), dest_rule_.term_a());
   if (linear_term_ratio == kInvalidRateTermValue) {
     return false;
   }
 
   double other_linear_term_ratio =
-      GetRatio(other.source_rule_.term_a(), other.dest_rule_.term_a());
+      MaybeGetRatio(other.source_rule_.term_a(), other.dest_rule_.term_a());
   if (other_linear_term_ratio == kInvalidRateTermValue) {
     return true;
   }
@@ -202,7 +203,11 @@ std::optional<std::string> UnitConversion::GetConversionFormulaText() const {
   // value is the numerator) or division (when the target unit |term_a| value
   // is the numerator).
   double conversion_term_a =
-      GetRatio(source_rule_.term_a(), dest_rule_.term_a());
+      MaybeGetRatio(source_rule_.term_a(), dest_rule_.term_a());
+
+  if (conversion_term_a == kInvalidRateTermValue) {
+    return std::nullopt;
+  }
 
   // Check if the conversion term is a decimal number. If it is, an
   // approximation qualifier (i.e. "for an approximate result, ...") will be
@@ -214,22 +219,10 @@ std::optional<std::string> UnitConversion::GetConversionFormulaText() const {
   int formula_message_id =
       GetFormulaMessageId(is_multiply_formula, is_approximate_formula);
 
-  // We use |kResultValueTemplate| (i.e. '%.6g') in the `base::StringPrintf`
-  // call below. Precision with `g` is the number of significant digits, not the
-  // number of decimal places.
-  //
-  // We would like to show a conversion term rounded to a maximum of three
-  // decimal places. This rounding calculation here will drop the values of the
-  // fourth decimal place and later, turning them into trailing zeros that
-  // `base::StringPrintf` will remove when formatting.
-  double rounded_conversion_term_a =
-      std::round(conversion_term_a * 1000) / 1000.0;
-
   return l10n_util::GetStringFUTF8(
       formula_message_id,
       base::UTF8ToUTF16(base::ToLowerASCII(source_rule_.category())),
-      base::UTF8ToUTF16(
-          base::StringPrintf(kResultValueTemplate, rounded_conversion_term_a)));
+      base::UTF8ToUTF16(BuildRoundedUnitAmountDisplayText(conversion_term_a)));
 }
 
 UnitConversionResult::UnitConversionResult() = default;
