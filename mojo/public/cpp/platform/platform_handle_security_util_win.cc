@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_util.h"
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
@@ -33,12 +32,18 @@ FileHandleSecurityErrorCallback& GetErrorCallback() {
 #if DCHECK_IS_ON()
 
 std::wstring GetPathFromHandle(HANDLE handle) {
-  std::wstring full_path;
-  DWORD result = ::GetFinalPathNameByHandleW(
-      handle, base::WriteInto(&full_path, MAX_PATH + 1), MAX_PATH + 1, 0);
+  std::wstring full_path(MAX_PATH - 1, '\0');
+  // Note: the math here is a bit messy. `basic_string` guarantees that enough
+  // space is reserved so that index may be any value between 0 and size()
+  // inclusive. However, `GetFinalPathNameByHandleW()` and `MAX_PATH` include
+  // the NUL terminator as part of the size (e.g. MAX_PATH is 3 characters for
+  // the drive letter, 256 characters for the path, and 1 character for NUL),
+  // hence `- 1` for the `resize()` calls.
+  DWORD result =
+      ::GetFinalPathNameByHandleW(handle, full_path.data(), MAX_PATH, 0);
   if (result > MAX_PATH) {
-    result = ::GetFinalPathNameByHandleW(
-        handle, base::WriteInto(&full_path, result), result, 0);
+    full_path.resize(result - 1);
+    result = ::GetFinalPathNameByHandleW(handle, full_path.data(), result, 0);
   }
   if (!result) {
     PLOG(ERROR) << "Could not get full path for handle " << handle;
