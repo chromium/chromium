@@ -24,31 +24,6 @@ CSSMathExpressionNode* NumberNode(double number) {
 
 }  // namespace
 
-bool InterpolableDouble::Equals(const InterpolableValue& other) const {
-  return value_.Value() == To<InterpolableDouble>(other).value_.Value();
-}
-
-void InterpolableDouble::Interpolate(const InterpolableValue& to,
-                                     const double progress,
-                                     InterpolableValue& result) const {
-  const auto& to_number = To<InterpolableDouble>(to);
-  auto& result_number = To<InterpolableDouble>(result);
-  result_number.Set(value_.Interpolate(to_number.Value(), progress));
-}
-
-void InterpolableDouble::Scale(double scale) {
-  value_.Scale(scale);
-}
-
-void InterpolableDouble::Add(const InterpolableValue& other) {
-  value_.Add(To<InterpolableDouble>(other).value_.Value());
-}
-
-void InterpolableDouble::AssertCanInterpolateWith(
-    const InterpolableValue& other) const {
-  DCHECK(other.IsDouble());
-}
-
 InterpolableNumber::InterpolableNumber(double value) {
   SetDouble(value);
 }

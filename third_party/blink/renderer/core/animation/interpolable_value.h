@@ -108,46 +108,6 @@ class CORE_EXPORT InlinedInterpolableDouble final {
   double value_ = 0.;
 };
 
-class CORE_EXPORT InterpolableDouble final : public InterpolableValue {
- public:
-  InterpolableDouble() = default;
-  explicit InterpolableDouble(double value) : value_(value) {
-    static_assert(std::is_trivially_destructible_v<InterpolableDouble>,
-                  "Require trivial destruction for faster sweeping");
-  }
-
-  double Value() const { return value_.Value(); }
-  void Set(double value) { value_.Set(value); }
-
-  // InterpolableValue
-  void Interpolate(const InterpolableValue& to,
-                   const double progress,
-                   InterpolableValue& result) const final;
-  bool IsDouble() const final { return true; }
-  bool Equals(const InterpolableValue& other) const final;
-  void Scale(double scale) final;
-  void Add(const InterpolableValue& other) final;
-  void AssertCanInterpolateWith(const InterpolableValue& other) const final;
-
-  InterpolableDouble* Clone() const { return RawClone(); }
-  InterpolableDouble* CloneAndZero() const { return RawCloneAndZero(); }
-
-  void Trace(Visitor* v) const override {
-    InterpolableValue::Trace(v);
-    v->Trace(value_);
-  }
-
- private:
-  InterpolableDouble* RawClone() const final {
-    return MakeGarbageCollected<InterpolableDouble>(value_.Value());
-  }
-  InterpolableDouble* RawCloneAndZero() const final {
-    return MakeGarbageCollected<InterpolableDouble>(0);
-  }
-
-  InlinedInterpolableDouble value_;
-};
-
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  public:
   InterpolableNumber() = default;
@@ -261,13 +221,6 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   InterpolableList* RawCloneAndZero() const final;
 
   HeapVector<Member<InterpolableValue>> values_;
-};
-
-template <>
-struct DowncastTraits<InterpolableDouble> {
-  static bool AllowFrom(const InterpolableValue& value) {
-    return value.IsDouble();
-  }
 };
 
 template <>
