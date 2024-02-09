@@ -1166,10 +1166,9 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
       !EqualIgnoringASCIICase(value, keywords::kManual)) {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Found a 'popover' attribute with an invalid value."));
+    AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                      mojom::blink::ConsoleMessageLevel::kWarning,
+                      "Found a 'popover' attribute with an invalid value.");
     UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeInvalid);
   }
   if (HasPopoverAttribute()) {
@@ -1764,11 +1763,11 @@ void HTMLElement::HidePopoverInternal(
         stack_containing_this->back() != this) {
       CHECK(PopoverType() == PopoverValueType::kAuto ||
             PopoverType() == PopoverValueType::kHint);
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "The `beforetoggle` event handler for a popover triggered another "
-          "popover to be shown. This is not recommended."));
+          "popover to be shown. This is not recommended.");
       HideAllPopoversUntil(this, document, focus_behavior,
                            HidePopoverTransitionBehavior::kNoEventsNoWaiting);
     }
@@ -2394,9 +2393,8 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       return true;
     } else {
       String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
+      AddConsoleMessage(mojom::ConsoleMessageSource::kJavaScript,
+                        mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
   } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
@@ -2408,9 +2406,8 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       return true;
     } else {
       String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
+      AddConsoleMessage(mojom::ConsoleMessageSource::kJavaScript,
+                        mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
   } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
