@@ -60,8 +60,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   LoginEventRecorder::Get()->AddLoginTimeMarker("OnAuthSuccess", false);
   delegate_->ReportOnAuthSuccessMetrics();
   auto mount_state = user_context.GetMountState();
-  if (mount_state &&
-      (*mount_state == UserContext::MountState::kNewPersistent)) {
+  if (mount_state && *mount_state == UserContext::MountState::kNewPersistent) {
     // In rare cases (e.g. due to disk cleanup mechanism) it is possible that
     // user's cryptohome is deleted, but information in `Local State` still
     // assumes that user exists.

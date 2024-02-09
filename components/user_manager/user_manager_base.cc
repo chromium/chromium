@@ -345,6 +345,19 @@ void UserManagerBase::CleanStaleUserInformationFor(
     known_user.RemovePrefs(account_id);
     known_user.SaveKnownUser(account_id);
   }
+  // For users with actual online identity we need
+  // to remove them from the user list as well, otherwise
+  // they would be incorrectly detected as "existing" later.
+  // For Kiosk/MGS users it is actually expected for User object
+  // to exist even if no cryptohome is present for the user.
+  const User* user = FindUserInList(account_id);
+  if (!user) {
+    return;
+  }
+  if (!User::TypeHasGaiaAccount(user->GetType())) {
+    return;
+  }
+  RemoveUserFromList(account_id);
 }
 
 void UserManagerBase::RemoveUserFromListImpl(
