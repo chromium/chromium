@@ -501,6 +501,12 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="kUpstreamNoInternet: Hotspot disabled due to upstream network
              has no Internet connectivity."/>
+  <int value="9"
+      label="kDownstreamLinkDisconnect: Hotspot disabled due to downsteam
+             link disconnected."/>
+  <int value="10"
+      label="kDownstreamNetworkDisconnect: Hotspot disabled due to downstream
+             network disconnected."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">

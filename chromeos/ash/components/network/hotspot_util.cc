@@ -122,6 +122,14 @@ hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
     return DisableReason::kUpstreamNoInternet;
   }
 
+  if (idle_reason == shill::kTetheringIdleReasonDownstreamLinkDisconnect) {
+    return DisableReason::kDownstreamLinkDisconnect;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonDownstreamNetworkDisconnect) {
+    return DisableReason::kDownstreamNetworkDisconnect;
+  }
+
   NET_LOG(ERROR) << "Unexpected idle reason: " << idle_reason;
   return DisableReason::kInternalError;
 }
