@@ -79,6 +79,7 @@ class WebAuthnCredManDelegate;
 
 namespace password_manager {
 
+class AffiliationService;
 class FieldInfoManager;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
@@ -321,6 +322,9 @@ class PasswordManagerClient {
 
   // Gets the sync service associated with this client.
   virtual const syncer::SyncService* GetSyncService() const = 0;
+
+  // Gets the affiliation service associated with this client.
+  virtual AffiliationService* GetAffiliationService() = 0;
 
   // Returns the profile PasswordStore associated with this instance.
   virtual PasswordStoreInterface* GetProfilePasswordStore() const = 0;

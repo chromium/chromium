@@ -24,6 +24,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+using password_manager::AffiliationService;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStoreInterface;
@@ -177,6 +178,11 @@ PrefService* WebViewPasswordManagerClient::GetLocalStatePrefs() const {
 const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService()
     const {
   return sync_service_;
+}
+
+AffiliationService* WebViewPasswordManagerClient::GetAffiliationService() {
+  // Not used on IOS web view.
+  return nullptr;
 }
 
 PasswordStoreInterface* WebViewPasswordManagerClient::GetProfilePasswordStore()

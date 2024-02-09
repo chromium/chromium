@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
@@ -707,6 +708,11 @@ const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
     return SyncServiceFactory::GetForProfile(profile_);
   }
   return nullptr;
+}
+
+password_manager::AffiliationService*
+ChromePasswordManagerClient::GetAffiliationService() {
+  return AffiliationServiceFactory::GetForProfile(profile_);
 }
 
 password_manager::PasswordStoreInterface*

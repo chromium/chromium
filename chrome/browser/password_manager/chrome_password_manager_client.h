@@ -204,6 +204,7 @@ class ChromePasswordManagerClient
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
+  password_manager::AffiliationService* GetAffiliationService() override;
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;
   password_manager::PasswordStoreInterface* GetAccountPasswordStore()
