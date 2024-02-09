@@ -323,6 +323,8 @@ void SyncServiceImpl::Initialize() {
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
       GetSyncAccountStateForPrefs(),
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+  sync_prefs_.MaybeMigrateCustomPassphrasePref(
+      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
 
   if (!IsLocalSyncEnabled()) {
     const bool account_info_fully_loaded =

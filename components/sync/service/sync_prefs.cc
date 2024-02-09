@@ -59,6 +59,10 @@ constexpr char kPasswordsPerAccountPrefMigrationDone[] =
 constexpr char kSyncToSigninMigrationState[] =
     "sync.sync_to_signin_migration_state";
 
+// State of the migration done by MaybeMigrateCustomPassphrasePref().
+constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
+    "sync.encryption_bootstrap_token_per_account_migration_done";
+
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
 constexpr int kMigratedPart2AndFullyDone = 2;
@@ -180,6 +184,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // account.
   registry->RegisterDictionaryPref(
       prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+  // For migration only, tracks if the EncryptionBootstrapToken is migrated.
+  registry->RegisterBooleanPref(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
 
   registry->RegisterBooleanPref(prefs::internal::kSyncManaged, false);
   registry->RegisterIntegerPref(
@@ -973,6 +980,46 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
     return true;
   }
   return false;
+}
+
+void SyncPrefs::MaybeMigrateCustomPassphrasePref(
+    const signin::GaiaIdHash& gaia_id_hash) {
+  if (!base::FeatureList::IsEnabled(
+          kSyncRememberCustomPassphraseAfterSignout)) {
+    pref_service_->ClearPref(
+        kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
+    return;
+  }
+
+  if (pref_service_->GetBoolean(
+          kSyncEncryptionBootstrapTokenPerAccountMigrationDone)) {
+    return;
+  }
+  pref_service_->SetBoolean(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, true);
+
+  if (gaia_id_hash == signin::GaiaIdHash::FromGaiaId("")) {
+    // Do not migrate if gaia_id is empty; no signed in user.
+    return;
+  }
+
+  CHECK(gaia_id_hash.IsValid());
+  const std::string& token =
+      pref_service_->GetString(prefs::internal::kSyncEncryptionBootstrapToken);
+  if (token.empty()) {
+    // No custom passphrase is used, or it is not set.
+    return;
+  }
+  {
+    ScopedDictPrefUpdate update_account_passphrase_dict(
+        pref_service_,
+        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
+    all_accounts.Set(gaia_id_hash.ToBase64(), token);
+  }
+  CHECK(GetEncryptionBootstrapTokenForAccount(gaia_id_hash) ==
+        GetEncryptionBootstrapToken());
+  return;
 }
 
 // static
