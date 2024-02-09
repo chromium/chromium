@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
@@ -13,6 +12,7 @@
 #import "components/optimization_guide/core/optimization_guide_store.h"
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -87,8 +87,8 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
   base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-      GetApplicationContext()->GetLocalState(), model_downloads_dir);
+  optimization_guide::IOSChromePredictionModelStore::GetInstance()->Initialize(
+      model_downloads_dir);
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()

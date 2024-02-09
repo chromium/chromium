@@ -6,14 +6,13 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_manager.h"
-#include "components/optimization_guide/core/prediction_model_store.h"
 
 void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
   base::FilePath model_downloads_dir;
@@ -21,6 +20,6 @@ void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
   // Create and initialize the install-wide model store.
-  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-      g_browser_process->local_state(), model_downloads_dir);
+  optimization_guide::ChromePredictionModelStore::GetInstance()->Initialize(
+      model_downloads_dir);
 }

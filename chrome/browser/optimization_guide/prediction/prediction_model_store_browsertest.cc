@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -170,7 +171,8 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   base::FilePath GetModelStoreBaseDir() {
-    return PredictionModelStore::GetInstance()->GetBaseStoreDirForTesting();
+    return ChromePredictionModelStore::GetInstance()
+        ->GetBaseStoreDirForTesting();
   }
 
   size_t ComputeModelsInStore() {
