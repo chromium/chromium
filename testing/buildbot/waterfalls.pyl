@@ -5890,7 +5890,7 @@
           },
         },
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_tests_without_baremetal_tests',
         },
       },
     },

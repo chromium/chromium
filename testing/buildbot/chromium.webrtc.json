@@ -479,8 +479,7 @@
         "name": "capture_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
-            "pool": "WebRTC-chromium"
+            "os": "Windows-10"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
