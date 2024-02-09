@@ -912,6 +912,64 @@ TEST_F(FasterSplitScreenTest, OnCrashOnDisplayChange) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests that autosnapping a window with minimum size doesn't crash. Regression
+// test for http://b/324483718.
+TEST_F(FasterSplitScreenTest, SnapWindowWithMinimumSize) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+
+  // 1 - Test min size > 1/3 scenario.
+  // Set `w2` min size to be > 1/3 of the display width.
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &delegate, /*id=*/-1, gfx::Rect(800, 600)));
+  int min_width = 396;
+  delegate.set_minimum_size(gfx::Size(min_width, 0));
+
+  // Snap `w1` to primary 2/3.
+  WindowState* window_state = WindowState::Get(w1.get());
+  const WindowSnapWMEvent snap_type(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      /*snap_action_source=*/WindowSnapActionSource::kTest);
+  window_state->OnWMEvent(&snap_type);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Select `w2` from overview.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+
+  // Test it gets snapped at its minimum size.
+  EXPECT_EQ(min_width, w2->GetBoundsInScreen().width());
+
+  MaximizeToClearTheSession(w2.get());
+
+  // 2 - Test min size > 1/2 scenario.
+  // Set `w2` min size to be > 1/2 of the display width.
+  min_width = 450;
+  delegate.set_minimum_size(gfx::Size(min_width, 0));
+
+  // Snap `w1` to primary 1/2.
+  const WindowSnapWMEvent snap_default(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      /*snap_action_source=*/WindowSnapActionSource::kTest);
+  window_state->OnWMEvent(&snap_default);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Select `w2` from overview.
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+
+  // Test it gets snapped at its minimum size.
+  EXPECT_EQ(min_width, w2->GetBoundsInScreen().width());
+}
+
 // Tests that the snapped window bounds will be refreshed on display changes to
 // preserve the snap ratio.
 TEST_F(FasterSplitScreenTest, WindowBoundsRefreshedOnDisplayChanges) {

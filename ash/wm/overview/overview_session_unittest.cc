@@ -10532,11 +10532,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // larger.)
 TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        SnapWindowWithMinimumSizeTest) {
-  // The divider is 8 thick. For the default divider position, the remaining 792
-  // of the work area on the first root window is divided into 396 on each side,
-  // and the remaining 791 of the work area on the second root window is divided
-  // into 395 on the left and 396 on the right (the left side is what matters).
-  UpdateDisplay("800x600,799x600");
+  UpdateDisplay("800x600,750x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   const gfx::Rect bounds_within_root1(0, 0, 400, 400);
@@ -10557,8 +10553,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                     ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     EXPECT_TRUE(SplitViewController::Get(root_windows[1])
                     ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
-    // Either root window can accommodate a minimum size 395 wide.
-    delegate->set_minimum_size(gfx::Size(395, 0));
+    // Either root window can accommodate a minimum size < 1/2 of the
+    // work area width.
+    delegate->set_minimum_size(gfx::Size(375, 0));
     EXPECT_TRUE(SplitViewController::Get(root_windows[0])
                     ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     EXPECT_TRUE(SplitViewController::Get(root_windows[1])
@@ -10570,8 +10567,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
     EXPECT_FALSE(
         SplitViewController::Get(root_windows[1])
             ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
-    // Neither root window can accommodate a minimum size 397 wide.
-    delegate->set_minimum_size(gfx::Size(397, 0));
+    // Neither root window can accommodate a minimum size > 1/2 of the work area
+    // width.
+    delegate->set_minimum_size(gfx::Size(401, 0));
     EXPECT_FALSE(
         SplitViewController::Get(root_windows[0])
             ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));

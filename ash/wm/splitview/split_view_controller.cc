@@ -551,9 +551,13 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
   if (!is_to_be_restored_window && !wm::CanActivateWindow(window))
     return false;
 
+  // We only need to consider the divider width in tablet mode or Snap Groups.
+  const int divider_delta =
+      ShouldConsiderDivider() ? kSplitviewDividerShortSideLength / 2 : 0;
+
   return GetMinimumWindowLength(window, IsLayoutHorizontal(window)) <=
          GetDividerPositionUpperLimit(root_window_) * snap_ratio -
-             kSplitviewDividerShortSideLength / 2;
+             divider_delta;
 }
 
 bool SplitViewController::CanKeepCurrentSnapRatio(
