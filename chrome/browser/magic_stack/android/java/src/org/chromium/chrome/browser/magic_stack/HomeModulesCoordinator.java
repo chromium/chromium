@@ -48,14 +48,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
-    private int mCurrentOrientation;
     private int mItemPerScreen;
     private Set<Integer> mEnabledModuleList;
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
 
+    /** It is non-null for tablets. */
     @Nullable private UiConfig mUiConfig;
+
+    /** It is non-null for tablets. */
     @Nullable private DisplayStyleObserver mDisplayStyleObserver;
+
     @Nullable private Callback<Profile> mOnProfileAvailableObserver;
 
     /**
@@ -106,7 +109,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mPageIndicatorDecoration =
                 new CirclePagerIndicatorDecoration(
                         activity,
-                        mUiConfig,
                         mModuleDelegateHost.getStartMargin(),
                         SemanticColorUtils.getDefaultIconColorSecondary(activity),
                         activity.getColor(
@@ -137,13 +139,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mSnapHelper.attachToRecyclerView(mRecyclerView);
         }
 
-        // When the screen is rotated, an event of display style change is also triggered.
-        mCurrentOrientation = activity.getResources().getConfiguration().orientation;
-
         // Setup an observer of mUiConfig on tablets.
         mDisplayStyleObserver =
                 newDisplayStyle -> {
-                    boolean wasSnapHelperAttached = mIsSnapHelperAttached;
                     mItemPerScreen =
                             CirclePagerIndicatorDecoration.getItemPerScreen(newDisplayStyle);
                     if (mItemPerScreen > 1) {
@@ -162,15 +160,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mPageIndicatorDecoration.onDisplayStyleChanged(
                             mModuleDelegateHost.getStartMargin(), mItemPerScreen);
 
-                    int newOrientation = activity.getResources().getConfiguration().orientation;
-                    // Redraws the recyclerview when either the screen is rotated or the width
-                    // of the window in which the magic stack is shown has changed.
-                    if (wasSnapHelperAttached != mIsSnapHelperAttached
-                            || mCurrentOrientation != newOrientation) {
-                        mCurrentOrientation = newOrientation;
-                        // Makes the recyclerview to redraw all items.
-                        mRecyclerView.invalidateItemDecorations();
-                    }
+                    // Redraws the recyclerview when display style is changed on tablets.
+                    mRecyclerView.invalidateItemDecorations();
                 };
         mUiConfig.addObserver(mDisplayStyleObserver);
         mPageIndicatorDecoration.onDisplayStyleChanged(

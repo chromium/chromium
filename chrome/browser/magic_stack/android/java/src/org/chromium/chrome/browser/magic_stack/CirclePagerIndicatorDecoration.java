@@ -17,12 +17,10 @@ import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 
 /** Circle pager indicator for recyclerview. */
@@ -45,8 +43,9 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
     /** Padding between indicators in pixel. */
     private final float mIndicatorItemPaddingPx;
 
+    private final int mModuleInternalPaddingPx;
+
     private final Paint mPaint = new Paint();
-    private final UiConfig mUiConfig;
     private final boolean mIsTablet;
 
     /** The start margin of the recyclerview in pixel. */
@@ -57,17 +56,14 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
 
     /**
      * @param context The {@link Context} that the application is running.
-     * @param uiConfig The instance of {@link UiConfig}.
      * @param startMarginPx The start margin of the first item of the recyclerview.
      */
     public CirclePagerIndicatorDecoration(
             @NonNull Context context,
-            @Nullable UiConfig uiConfig,
             int startMarginPx,
             int colorActive,
             int colorInactive,
             boolean isTablet) {
-        mUiConfig = uiConfig;
         mStartMarginPx = startMarginPx;
         mColorActive = colorActive;
         mColorInactive = colorInactive;
@@ -87,6 +83,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         mIndicatorHeightPx =
                 (int) mIndicatorItemDiameterPx
                         + resources.getDimensionPixelSize(R.dimen.page_indicator_top_margin);
+        mModuleInternalPaddingPx = resources.getDimensionPixelSize(R.dimen.module_internal_padding);
     }
 
     @Override
@@ -206,6 +203,9 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
             // If showing one item per screen, the view's width should match the parent
             // recyclerview.
             marginLayoutParams.width = MATCH_PARENT;
+            if (mItemPerScreen == 1) {
+                updateMargin(view, marginLayoutParams);
+            }
             return;
         }
 
@@ -216,9 +216,16 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         // Updates the width of the view.
         outRect.left = isFirstPosition ? 0 : (int) mIndicatorItemPaddingPx;
         int width =
-                (int) (parent.getMeasuredWidth() - mIndicatorItemPaddingPx * (mItemPerScreen - 1))
+                (parent.getMeasuredWidth() - mModuleInternalPaddingPx * (mItemPerScreen - 1))
                         / mItemPerScreen;
         marginLayoutParams.width = width;
+        updateMargin(view, marginLayoutParams);
+    }
+
+    private void updateMargin(View view, MarginLayoutParams marginLayoutParams) {
+        marginLayoutParams.setMarginEnd(mStartMarginPx);
+        marginLayoutParams.setMarginStart(mStartMarginPx);
+        view.setLayoutParams(marginLayoutParams);
     }
 
     void onDisplayStyleChanged(int startMarginPx, int itemPerScreen) {
