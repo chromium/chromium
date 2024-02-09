@@ -805,9 +805,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                         safetyCheckModuleOrderIndex != NSNotFound);
 
   if (safetyCheckModuleOrderIndex != NSNotFound) {
-    _magicStackModuleOrder[safetyCheckModuleOrderIndex] =
-        @(int(self.safetyCheckModuleContainer.type));
-
     [self logTopModuleImpressionForType:self.safetyCheckModuleContainer.type];
 
     [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
@@ -1320,9 +1317,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // situations where modules can become available to show in the Magic Stack
 // after initial view construction in no predictable order.
 - (void)insertModuleIntoMagicStack:(MagicStackModuleContainer*)moduleToInsert {
-  if (!_magicStack) {
-    // If the MagicStack hasn't been instantiated yet, the module will be
-    // inserted later.
+  if (!_magicStack || !_magicStackRankReceived) {
+    // If the MagicStack hasn't been instantiated yet or ranking has not been
+    // received yet, the module will be inserted later.
     return;
   }
 
