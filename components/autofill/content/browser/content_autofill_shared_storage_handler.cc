@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/content_autofill_shared_storage_handler.h"
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/autofill_shared_storage.pb.h"
@@ -29,7 +30,8 @@ std::u16string EncodeServerCardDataForSharedStorage(
     card_data_proto->set_expiration_year(card->expiration_year());
   }
 
-  return base::UTF8ToUTF16(card_list_proto.SerializeAsString());
+  return base::ASCIIToUTF16(
+      base::Base64Encode(card_list_proto.SerializeAsString()));
 }
 
 }  // namespace

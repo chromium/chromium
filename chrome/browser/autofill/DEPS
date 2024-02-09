@@ -7,5 +7,8 @@ include_rules = [
 specific_include_rules = {
   "PersonalDataManagerTest\.java": [
     '+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/test/TestImageFetcher.java',
+  ],
+  "content_autofill_shared_storage_handler_browsertest.cc": [
+    '+components/services/storage/shared_storage',
   ]
 }
