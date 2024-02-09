@@ -2027,6 +2027,7 @@ chromium-metrics-reviews@google.com.
   <int value="1211" label="ScreenCaptureLocation"/>
   <int value="1212" label="AllowDomainsForAppsList"/>
   <int value="1213" label="ChromeForTestingAllowed"/>
+  <int value="1214" label="GoogleLocationServicesEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

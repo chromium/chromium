@@ -365,6 +365,7 @@ source_set("browser_tests") {
       "test/audio_output_allowed_browsertest.cc",
       "test/note_taking_on_lock_screen_policy_browsertest.cc",
       "test/power_sounds_policy_browsertest.cc",
+      "test/privacy_hub_policy_browsertest.cc",
       "test/screenshot_policy_browsertest.cc",
       "test/session_length_limit_policy_browsertest.cc",
       "test/suggested_content_policy_browsertest.cc",

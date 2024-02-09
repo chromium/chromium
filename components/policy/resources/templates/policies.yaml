@@ -1212,6 +1212,7 @@ policies:
   1211: ScreenCaptureLocation
   1212: AllowedDomainsForAppsList
   1213: ChromeForTestingAllowed
+  1214: GoogleLocationServicesEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
