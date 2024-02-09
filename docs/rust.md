@@ -249,6 +249,12 @@ file, rooted in the `gen` output directory, use
 #include "the/path/to/the/rust/file.rs.h"
 ```
 
+# Debugging hints
+
+There are not yet Rust wrappers for Chromium's base logging APIs. We recommend
+use of Rust's standard [`eprintln`](https://doc.rust-lang.org/std/macro.eprintln.html)
+and [`dbg`](https://doc.rust-lang.org/std/macro.dbg.html) macros.
+
 # Using VSCode
 
 1. Ensure you're using the `rust-analyzer` extension for VSCode, rather than
