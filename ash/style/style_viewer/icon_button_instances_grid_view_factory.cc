@@ -105,7 +105,7 @@ CreateIconButtonInstancesGridView() {
         builder.SetType(type_info.type)
             .SetVectorIcon(&kSettingsIcon)
             .SetAccessibleName(type_info.name)
-            .SetToggelable(type_info.is_toggled)
+            .SetTogglable(type_info.is_toggled)
             .SetEnabled(type_info.is_enabled)
             .SetBorder(/*has_border*/ true);
         if (type_info.bg_img) {

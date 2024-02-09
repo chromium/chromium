@@ -201,6 +201,9 @@ std::unique_ptr<IconButton> IconButton::Builder::Build() {
   auto button = std::make_unique<IconButton>(
       std::move(callback_), type_, icon_, accessible_name,
       /*is_togglable=*/is_togglable_, /*has_border=*/has_border_);
+  if (view_id_.has_value()) {
+    button->SetID(*view_id_);
+  }
   if (enabled_.has_value()) {
     button->SetEnabled(*enabled_);
   }
@@ -239,12 +242,16 @@ IconButton::Builder& IconButton::Builder::SetAccessibleName(
   accessible_name_ = accessible_name;
   return *this;
 }
-IconButton::Builder& IconButton::Builder::SetToggelable(bool is_togglable) {
+IconButton::Builder& IconButton::Builder::SetTogglable(bool is_togglable) {
   is_togglable_ = is_togglable;
   return *this;
 }
 IconButton::Builder& IconButton::Builder::SetBorder(bool has_border) {
   has_border_ = has_border;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetViewId(int view_id) {
+  view_id_ = view_id;
   return *this;
 }
 IconButton::Builder& IconButton::Builder::SetEnabled(bool enabled) {
@@ -254,6 +261,11 @@ IconButton::Builder& IconButton::Builder::SetEnabled(bool enabled) {
 IconButton::Builder& IconButton::Builder::SetBackgroundImage(
     const gfx::ImageSkia& background_image) {
   background_image_ = background_image;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetBackgroundColor(
+    ui::ColorId background_color) {
+  background_color_ = background_color;
   return *this;
 }
 
