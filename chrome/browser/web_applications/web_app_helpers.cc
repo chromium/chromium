@@ -14,6 +14,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -145,7 +146,7 @@ bool IsValidWebAppUrl(const GURL& app_url) {
   return app_url.SchemeIs(url::kHttpScheme) ||
          app_url.SchemeIs(url::kHttpsScheme) ||
          app_url.SchemeIs("chrome-extension") ||
-         (app_url.SchemeIs("chrome") &&
+         (app_url.SchemeIs(content::kChromeUIScheme) &&
           ((app_url.host() == password_manager::kChromeUIPasswordManagerHost) ||
            ValidChromeUrlHosts().contains(app_url.host())));
 }

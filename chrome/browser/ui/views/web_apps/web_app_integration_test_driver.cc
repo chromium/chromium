@@ -424,7 +424,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Site A",
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"},
-      .base_url = "chrome://webapps_integration_tests"}},
+      .base_url = content::GetWebUIURLString("webapps_integration_tests")}},
 };
 
 struct DisplayConfig {
