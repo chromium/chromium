@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #include "url/gurl.h"
 
+class RemovingIndexes;
 class WebStateListDelegate;
 class WebStateListObserver;
 
@@ -270,6 +271,11 @@ class WebStateList {
   // Makes the WebState at the specified index the active WebState.
   void ActivateWebStateAt(int index);
 
+  // Closes and destroys all WebStates at `removing_indexes`. The `close_flags`
+  // is a bitwise combination of ClosingFlags values.
+  void CloseWebStatesAtIndices(int close_flags,
+                               RemovingIndexes removing_indexes);
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -286,7 +292,7 @@ class WebStateList {
  private:
   friend class ScopedBatchOperation;
 
-  class DetachParams;
+  struct DetachParams;
   class WebStateWrapper;
 
   // Locks the WebStateList for mutation. This methods checks that the list is
@@ -322,20 +328,17 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   //
   // Assumes that the WebStateList is locked.
-  std::unique_ptr<web::WebState> DetachWebStateAtImpl(
-      int index,
-      const DetachParams& params);
+  std::unique_ptr<web::WebState> DetachWebStateAtImpl(int index,
+                                                      int new_active_index,
+                                                      DetachParams params);
 
-  // Closes and destroys all WebStates after `start_index`. The `close_flags`
-  // is a bitwise combination of ClosingFlags values. WebStateList is locked
-  // inside the method.
-  void CloseAllWebStatesAfterIndex(int start_index, int close_flags);
-
-  // Closes and destroys all WebStates after `start_index`. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
+  // Detaches all WebStates at `removing_indexes`. Returns a vector with all the
+  // detached WebStates to the caller (abandoning ownership).
   //
   // Assumes that the WebStateList is locked.
-  void CloseAllWebStatesAfterIndexImpl(int start_index, int close_flags);
+  std::vector<std::unique_ptr<web::WebState>> DetachWebStatesAtIndicesImpl(
+      RemovingIndexes removing_indexes,
+      DetachParams detach_params);
 
   // Makes the WebState at the specified index the active WebState.
   //

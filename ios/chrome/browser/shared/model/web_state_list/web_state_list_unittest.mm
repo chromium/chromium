@@ -8,6 +8,7 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "base/supports_user_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -23,6 +24,9 @@ const char kURL0[] = "https://chromium.org/0";
 const char kURL1[] = "https://chromium.org/1";
 const char kURL2[] = "https://chromium.org/2";
 const char kURL3[] = "https://chromium.org/3";
+const char kURL4[] = "https://chromium.org/4";
+const char kURL5[] = "https://chromium.org/5";
+const char kURL6[] = "https://chromium.org/6";
 
 // WebStateList observer that records which events have been called by the
 // WebStateList.
@@ -39,42 +43,82 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Reset statistics whether events have been called.
   void ResetStatistics() {
-    web_state_inserted_ = false;
-    web_state_moved_ = false;
-    web_state_replaced_ = false;
-    web_state_detached_ = false;
-    web_state_activated_ = false;
-    pinned_state_changed_ = false;
-    batch_operation_started_ = false;
-    batch_operation_ended_ = false;
-    web_state_list_destroyed_ = false;
+    web_state_inserted_count_ = 0;
+    web_state_moved_count_ = 0;
+    web_state_replaced_count_ = 0;
+    web_state_detached_count_ = 0;
+    web_state_activated_count_ = 0;
+    pinned_state_changed_count_ = 0;
+    batch_operation_started_count_ = 0;
+    batch_operation_ended_count_ = 0;
+    web_state_list_destroyed_count_ = 0;
   }
 
   // Returns whether the insertion operation was invoked.
-  bool web_state_inserted() const { return web_state_inserted_; }
+  bool web_state_inserted() const { return web_state_inserted_count_ != 0; }
+
+  // Returns the number of insertion operations.
+  int web_state_inserted_count() const { return web_state_moved_count_; }
 
   // Returns whether the move operation was invoked.
-  bool web_state_moved() const { return web_state_moved_; }
+  bool web_state_moved() const { return web_state_moved_count_ != 0; }
+
+  // Returns the number of move operations.
+  int web_state_moved_count() const { return web_state_moved_count_; }
 
   // Returns whether the replacement operation was invoked.
-  bool web_state_replaced() const { return web_state_replaced_; }
+  bool web_state_replaced() const { return web_state_replaced_count_ != 0; }
+
+  // Returns the number of replacement operations.
+  int web_state_replaced_count() const { return web_state_replaced_count_; }
 
   // Returns whether a WebState was detached.
-  bool web_state_detached() const { return web_state_detached_; }
+  bool web_state_detached() const { return web_state_detached_count_ != 0; }
+
+  // Returns the number of WebState detached.
+  int web_state_detached_count() const { return web_state_detached_count_; }
 
   // Returns whether a WebState was activated.
-  bool web_state_activated() const { return web_state_activated_; }
+  bool web_state_activated() const { return web_state_activated_count_ != 0; }
+
+  // Returns the number of WebState activation.
+  int web_state_activated_count() const { return web_state_activated_count_; }
 
   // Returns whether the pinned state was updated.
-  bool pinned_state_changed() const { return pinned_state_changed_; }
+  bool pinned_state_changed() const { return pinned_state_changed_count_ != 0; }
+
+  // Returns the number of WebState pin changes.
+  int pinned_state_changed_count() const { return pinned_state_changed_count_; }
 
   // Returns whether WillBeginBatchOperation was invoked.
-  bool batch_operation_started() const { return batch_operation_started_; }
+  bool batch_operation_started() const {
+    return batch_operation_started_count_ != 0;
+  }
+
+  // Returns the number of times WillBeginBatchOperation was invoked.
+  int batch_operation_started_count() const {
+    return batch_operation_started_count_;
+  }
 
   // Returns whether BatchOperationEnded was invoked.
-  bool batch_operation_ended() const { return batch_operation_ended_; }
+  bool batch_operation_ended() const {
+    return batch_operation_ended_count_ != 0;
+  }
 
-  bool web_state_list_destroyed() const { return web_state_list_destroyed_; }
+  // Returns the number of times BatchOperationEnded was invoked.
+  int batch_operation_ended_count() const {
+    return batch_operation_ended_count_;
+  }
+
+  // Returns whether WebStateListDestroyed was invoked.
+  bool web_state_list_destroyed() const {
+    return web_state_list_destroyed_count_ != 0;
+  }
+
+  // Returns the number of times WebStateListDestroyed was invoked.
+  int web_state_list_destroyed_count() const {
+    return web_state_list_destroyed_count_;
+  }
 
   // WebStateListObserver implementation.
   void WebStateListDidChange(WebStateList* web_state_list,
@@ -83,57 +127,57 @@ class WebStateListTestObserver : public WebStateListObserver {
     switch (change.type()) {
       case WebStateListChange::Type::kStatusOnly: {
         if (status.pinned_state_change) {
-          pinned_state_changed_ = true;
+          ++pinned_state_changed_count_;
         }
         // The activation is handled after this switch statement.
         break;
       }
       case WebStateListChange::Type::kDetach:
         EXPECT_TRUE(web_state_list->IsMutating());
-        web_state_detached_ = true;
+        ++web_state_detached_count_;
         break;
       case WebStateListChange::Type::kMove:
         EXPECT_TRUE(web_state_list->IsMutating());
-        web_state_moved_ = true;
+        ++web_state_moved_count_;
         break;
       case WebStateListChange::Type::kReplace:
         EXPECT_TRUE(web_state_list->IsMutating());
-        web_state_replaced_ = true;
+        ++web_state_replaced_count_;
         break;
       case WebStateListChange::Type::kInsert:
         EXPECT_TRUE(web_state_list->IsMutating());
-        web_state_inserted_ = true;
+        ++web_state_inserted_count_;
         break;
     }
 
     if (status.active_web_state_change()) {
-      web_state_activated_ = true;
+      ++web_state_activated_count_;
     }
   }
 
   void WillBeginBatchOperation(WebStateList* web_state_list) override {
-    batch_operation_started_ = true;
+    ++batch_operation_started_count_;
   }
 
   void BatchOperationEnded(WebStateList* web_state_list) override {
-    batch_operation_ended_ = true;
+    ++batch_operation_ended_count_;
   }
 
   void WebStateListDestroyed(WebStateList* web_state_list) override {
-    web_state_list_destroyed_ = true;
+    ++web_state_list_destroyed_count_;
     observation_.RemoveObservation(web_state_list);
   }
 
  private:
-  bool web_state_inserted_ = false;
-  bool web_state_moved_ = false;
-  bool web_state_replaced_ = false;
-  bool web_state_detached_ = false;
-  bool web_state_activated_ = false;
-  bool pinned_state_changed_ = false;
-  bool batch_operation_started_ = false;
-  bool batch_operation_ended_ = false;
-  bool web_state_list_destroyed_ = false;
+  int web_state_inserted_count_ = 0;
+  int web_state_moved_count_ = 0;
+  int web_state_replaced_count_ = 0;
+  int web_state_detached_count_ = 0;
+  int web_state_activated_count_ = 0;
+  int pinned_state_changed_count_ = 0;
+  int batch_operation_started_count_ = 0;
+  int batch_operation_ended_count_ = 0;
+  int web_state_list_destroyed_count_ = 0;
   base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
       observation_{this};
 };
@@ -184,18 +228,33 @@ class FakeNavigationManager : public web::FakeNavigationManager {
 // A WebStateListDelegate that records the last inserted/activated WebState.
 class TestWebStateListDelegate final : public WebStateListDelegate {
  public:
+  void ResetStatistics() {
+    inserted_web_state_count_ = 0;
+    activated_web_state_count_ = 0;
+
+    last_inserted_web_state_ = nullptr;
+    last_activated_web_state_ = nullptr;
+  }
+
+  int InsertedWebStateCount() const { return inserted_web_state_count_; }
+  int ActivatedWebStateCount() const { return activated_web_state_count_; }
+
   web::WebState* LastInsertedWebState() { return last_inserted_web_state_; }
   web::WebState* LastActivatedWebState() { return last_activated_web_state_; }
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) final {
+    ++inserted_web_state_count_;
     last_inserted_web_state_ = web_state;
   }
   void WillActivateWebState(web::WebState* web_state) final {
+    ++activated_web_state_count_;
     last_activated_web_state_ = web_state;
   }
 
  private:
+  int inserted_web_state_count_ = 0;
+  int activated_web_state_count_ = 0;
   raw_ptr<web::WebState> last_inserted_web_state_;
   raw_ptr<web::WebState> last_activated_web_state_;
 };
@@ -204,7 +263,7 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
 
 class WebStateListTest : public PlatformTest {
  public:
-  WebStateListTest() : web_state_list_(&web_state_list_delegate_) {
+  WebStateListTest() : web_state_list_(&delegate_) {
     observer_.Observe(&web_state_list_);
   }
 
@@ -212,7 +271,7 @@ class WebStateListTest : public PlatformTest {
   WebStateListTest& operator=(const WebStateListTest&) = delete;
 
  protected:
-  TestWebStateListDelegate web_state_list_delegate_;
+  TestWebStateListDelegate delegate_;
   WebStateList web_state_list_;
   WebStateListTestObserver observer_;
 
@@ -237,14 +296,6 @@ class WebStateListTest : public PlatformTest {
   void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     web_state_list_.InsertWebState(std::move(web_state));
   }
-
-  web::WebState* LastInsertedWebState() {
-    return web_state_list_delegate_.LastInsertedWebState();
-  }
-
-  web::WebState* LastActivatedWebState() {
-    return web_state_list_delegate_.LastActivatedWebState();
-  }
 };
 
 // Tests that empty() matches count() != 0.
@@ -255,8 +306,8 @@ TEST_F(WebStateListTest, IsEmpty) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_inserted());
   ASSERT_EQ(1, web_state_list_.count());
@@ -268,8 +319,8 @@ TEST_F(WebStateListTest, InsertUrlSingle) {
   AppendNewWebState(kURL0);
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_inserted());
   ASSERT_EQ(1, web_state_list_.count());
@@ -282,22 +333,22 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   web_state_list_.InsertWebState(CreateWebState(kURL1),
                                  WebStateList::InsertionParams::AtIndex(0));
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   web_state_list_.InsertWebState(CreateWebState(kURL2),
                                  WebStateList::InsertionParams::AtIndex(1));
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(1));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(1));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_inserted());
   ASSERT_EQ(3, web_state_list_.count());
@@ -312,14 +363,15 @@ TEST_F(WebStateListTest, ActivateWebState) {
   EXPECT_EQ(nullptr, web_state_list_.GetActiveWebState());
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   web_state_list_.ActivateWebStateAt(0);
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetWebStateAt(0));
 
   EXPECT_TRUE(observer_.web_state_activated());
   ASSERT_EQ(1, web_state_list_.count());
@@ -334,8 +386,9 @@ TEST_F(WebStateListTest, InsertActivate) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   ASSERT_GE(web_state_list_.count(), 1);
-  EXPECT_EQ(LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
-  EXPECT_EQ(LastActivatedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastInsertedWebState(), web_state_list_.GetWebStateAt(0));
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetWebStateAt(0));
 
   EXPECT_TRUE(observer_.web_state_inserted());
   EXPECT_TRUE(observer_.web_state_activated());
@@ -619,7 +672,7 @@ TEST_F(WebStateListTest, ReplaceWebStateAt) {
   std::unique_ptr<web::WebState> old_web_state(
       web_state_list_.ReplaceWebStateAt(1, CreateWebState(kURL2)));
 
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_replaced());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -646,7 +699,8 @@ TEST_F(WebStateListTest, ReplaceActiveWebStateAt) {
   std::unique_ptr<web::WebState> old_web_state(
       web_state_list_.ReplaceWebStateAt(1, CreateWebState(kURL2)));
 
-  EXPECT_EQ(LastActivatedWebState(), web_state_list_.GetWebStateAt(1));
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetWebStateAt(1));
 
   EXPECT_TRUE(observer_.web_state_replaced());
   EXPECT_TRUE(observer_.web_state_activated());
@@ -673,7 +727,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexBeginning) {
   observer_.ResetStatistics();
   web_state_list_.DetachWebStateAt(0);
 
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -699,7 +753,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   observer_.ResetStatistics();
   web_state_list_.DetachWebStateAt(1);
 
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -725,7 +779,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   observer_.ResetStatistics();
   web_state_list_.DetachWebStateAt(2);
 
-  EXPECT_EQ(LastActivatedWebState(), nullptr);
+  EXPECT_EQ(delegate_.LastActivatedWebState(), nullptr);
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_FALSE(observer_.web_state_activated());
@@ -742,7 +796,8 @@ TEST_F(WebStateListTest, DetachActiveWebState) {
   AppendNewWebState(kURL2);
   web_state_list_.ActivateWebStateAt(0);
 
-  EXPECT_EQ(LastActivatedWebState(), web_state_list_.GetActiveWebState());
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetActiveWebState());
 
   // Sanity check before closing WebState.
   EXPECT_EQ(3, web_state_list_.count());
@@ -755,7 +810,8 @@ TEST_F(WebStateListTest, DetachActiveWebState) {
   web_state_list_.DetachWebStateAt(0);
 
   // Note: this is a different WebState.
-  EXPECT_EQ(LastActivatedWebState(), web_state_list_.GetActiveWebState());
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetActiveWebState());
 
   EXPECT_TRUE(observer_.web_state_detached());
   EXPECT_TRUE(observer_.web_state_activated());
@@ -1016,6 +1072,44 @@ TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
   web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing a non-continuous range of WebStates.
+TEST_F(WebStateListTest, CloseWebStatesAtIndices) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+  AppendNewWebState(kURL3);
+  AppendNewWebState(kURL4);
+  AppendNewWebState(kURL5);
+  AppendNewWebState(kURL6);
+
+  web_state_list_.ActivateWebStateAt(3);
+
+  // Sanity check before closing WebStates.
+  EXPECT_EQ(7, web_state_list_.count());
+  EXPECT_EQ(3, web_state_list_.active_index());
+
+  delegate_.ResetStatistics();
+  observer_.ResetStatistics();
+  web_state_list_.CloseWebStatesAtIndices(WebStateList::CLOSE_USER_ACTION,
+                                          RemovingIndexes{2, 3, 4, 6});
+
+  // Check that the correct elements have been closed, and that the
+  // active WebState is the expected one.
+  ASSERT_EQ(3, web_state_list_.count());
+  EXPECT_EQ(2, web_state_list_.active_index());
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL0);
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL5);
+
+  // Check the delegate has only been called once, with the expected WebState
+  // and that the observer has been called exactly once per removed WebState.
+  EXPECT_EQ(delegate_.LastActivatedWebState(),
+            web_state_list_.GetWebStateAt(2));
+  EXPECT_EQ(1, delegate_.ActivatedWebStateCount());
+  EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(4, observer_.web_state_detached_count());
 }
 
 // Tests closing one webstate.
@@ -1314,7 +1408,7 @@ TEST_F(WebStateListTest,
 TEST_F(WebStateListTest, WebStateListDestroyed) {
   // Using a local WebStateList to observe its destruction.
   std::unique_ptr<WebStateList> web_state_list =
-      std::make_unique<WebStateList>(&web_state_list_delegate_);
+      std::make_unique<WebStateList>(&delegate_);
   observer_.Observe(web_state_list.get());
   EXPECT_FALSE(observer_.web_state_list_destroyed());
   web_state_list.reset();
@@ -1324,7 +1418,7 @@ TEST_F(WebStateListTest, WebStateListDestroyed) {
 TEST_F(WebStateListTest, WebStateListAsWeakPtr) {
   // Using a local WebStateList to observe its destruction.
   std::unique_ptr<WebStateList> web_state_list =
-      std::make_unique<WebStateList>(&web_state_list_delegate_);
+      std::make_unique<WebStateList>(&delegate_);
   base::WeakPtr<WebStateList> weak_web_state_list = web_state_list->AsWeakPtr();
   EXPECT_TRUE(weak_web_state_list);
   web_state_list.reset();
