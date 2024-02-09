@@ -5,11 +5,10 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -18,14 +17,11 @@ import static org.mockito.ArgumentMatchers.matches;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import android.view.View;
-
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.espresso.Espresso;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,10 +30,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,8 +44,11 @@ import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.BookmarkTestRule;
+import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -98,29 +99,44 @@ public class AccountBookmarkTest {
         checkTopLevelAccountFoldersDisplayed();
     }
 
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    @DisabledTest(
+            message =
+                    "Enable this test when reading list is available w/o restart crbug.com/1510547")
+    public void testOpenFromReadingListAndNavigateBack() throws Exception {
+        mSyncTestRule.setSelectedTypes(true, null);
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountReadingListFolder() != null);
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(
+                mBookmarkManagerCoordinator.getRecyclerViewForTesting());
+
+        runOnUiThreadBlocking(
+                () ->
+                        mBookmarkModel.addToReadingList(
+                                mBookmarkModel.getAccountReadingListFolder(),
+                                "test",
+                                new GURL("https://test.com")));
+
+        BookmarkTestUtil.getRecyclerRowViewInteraction(
+                        "Reading list", /* isAccountBookmark= */ true)
+                .perform(click());
+        onView(withText("test")).perform(click());
+        Espresso.pressBack();
+        onView(withText("test")).check(matches(isDisplayed()));
+    }
+
     private void checkTopLevelAccountFoldersDisplayed() {
         checkToolbarTitleMatches("Bookmarks");
         onView(withText("In your Google Account")).check(matches(isDisplayed()));
-        getRecyclerViewItem("Mobile bookmarks", true).check(matches(isDisplayed()));
+        BookmarkTestUtil.getRecyclerRowViewInteraction("Mobile bookmarks", true)
+                .check(matches(isDisplayed()));
         onView(withText("Only on this device")).check(matches(isDisplayed()));
-        getRecyclerViewItem("Mobile bookmarks", false).check(matches(isDisplayed()));
-        getRecyclerViewItem("Reading list", false).check(matches(isDisplayed()));
-    }
-
-    private ViewInteraction getRecyclerViewItem(String text, boolean isAccountBookmark) {
-        return onView(getRecyclerItemMatcher(text, isAccountBookmark));
-    }
-
-    private Matcher<View> getRecyclerItemMatcher(String text, boolean isAccountBookmark) {
-        ViewMatchers.Visibility visibility =
-                isAccountBookmark ? ViewMatchers.Visibility.GONE : ViewMatchers.Visibility.VISIBLE;
-        return allOf(
-                withId(R.id.container),
-                hasDescendant(withText(text)),
-                hasDescendant(
-                        allOf(
-                                withId(R.id.local_bookmark_image),
-                                withEffectiveVisibility(visibility))));
+        BookmarkTestUtil.getRecyclerRowViewInteraction("Mobile bookmarks", false)
+                .check(matches(isDisplayed()));
+        BookmarkTestUtil.getRecyclerRowViewInteraction("Reading list", false)
+                .check(matches(isDisplayed()));
     }
 
     // Checks the toolbar title against the given string.

@@ -624,7 +624,7 @@ public class BookmarkUtils {
      * @return The parent {@link BookmarkId} that the user used the last time or null if the user
      *     has never selected a parent folder to use.
      */
-    static BookmarkId getLastUsedParent() {
+    public static @Nullable BookmarkId getLastUsedParent() {
         SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
         if (!preferences.contains(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT)) return null;
 

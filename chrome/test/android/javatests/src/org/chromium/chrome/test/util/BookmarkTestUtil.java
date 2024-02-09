@@ -6,9 +6,16 @@ package org.chromium.chrome.test.util;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
+
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.core.IsInstanceOf;
@@ -16,6 +23,7 @@ import org.hamcrest.core.IsInstanceOf;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
@@ -174,5 +182,23 @@ public class BookmarkTestUtil {
                     }
                     return false;
                 });
+    }
+
+    /**
+     * Returns the {@link ViewInteraction} for a bookmark row with the given text and account-ness.
+     * The return value can be used to make assertions about.
+     */
+    public static ViewInteraction getRecyclerRowViewInteraction(
+            String text, boolean isAccountBookmark) {
+        ViewMatchers.Visibility visibility =
+                isAccountBookmark ? ViewMatchers.Visibility.GONE : ViewMatchers.Visibility.VISIBLE;
+        return onView(
+                allOf(
+                        withId(R.id.container),
+                        hasDescendant(withText(text)),
+                        hasDescendant(
+                                allOf(
+                                        withId(R.id.local_bookmark_image),
+                                        withEffectiveVisibility(visibility)))));
     }
 }

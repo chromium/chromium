@@ -164,7 +164,6 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -1185,10 +1184,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeCreateIncognitoTabSnapshotController));
-            if (BackPressManager.isEnabled()) {
-                PostTask.postTask(TaskTraits.UI_DEFAULT, this::initializeBackPressHandlers);
-            }
-
+            // Always call into this function, even if BackPressManager is disabled to initialize
+            // back press managers which reduce code duplication in this class.
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::initializeBackPressHandlers);
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
@@ -3100,9 +3098,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
-            ReadingListUtils.showReadingList(currentTab.isIncognito());
+            assert mReadingListBackPressHandler != null;
+            mReadingListBackPressHandler.handleBackPress();
             BackPressManager.record(BackPressHandler.Type.SHOW_READING_LIST);
-            if (webContents != null) webContents.dispatchBeforeUnload(false);
             return true;
         }
 
@@ -3176,6 +3174,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void initializeBackPressHandlers() {
+        // Initialize some back press handlers early to reduce code duplication.
+        mReadingListBackPressHandler =
+                new ReadingListBackPressHandler(getActivityTabProvider(), mBookmarkModelSupplier);
+
+        if (!BackPressManager.isEnabled()) {
+            return;
+        }
+
         mBackPressManager.setHasSystemBackArm(true);
         if (mReturnToChromeBackPressHandler == null && !isTablet()) {
             mIsHandleTabSwitcherShownEnabled =
@@ -3193,9 +3199,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
         }
-        if (mReadingListBackPressHandler == null && !isTablet()) {
-            mReadingListBackPressHandler =
-                    new ReadingListBackPressHandler(getActivityTabProvider());
+        if (!isTablet()) {
             mBackPressManager.addHandler(
                     mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
         }
