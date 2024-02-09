@@ -363,6 +363,9 @@ const DELEGATE: ClientApiDelegate = {
     }
     await ocrUntrustedPageHandler?.pageMetadataUpdated(metadata);
   },
+  async pageContentsUpdated(dirtyPageId: string) {
+    await ocrUntrustedPageHandler?.pageContentsUpdated(dirtyPageId);
+  },
   async viewportUpdated(viewportBox: Rect, scaleFactor: number) {
     await ocrUntrustedPageHandler?.viewportUpdated(
         {
