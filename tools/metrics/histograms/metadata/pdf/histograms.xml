@@ -87,6 +87,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
+    expires_after="2024-11-30">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the type of postMessage() call made to the PDF viewer.
+  </summary>
+</histogram>
+
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
     expires_after="2024-06-30">
   <owner>nigi@chromium.org</owner>
