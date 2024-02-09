@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
 #include "components/user_manager/include_exclude_account_id_filter.h"
@@ -471,6 +472,12 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
+
+  // Sets affiliation status for the user identified with `account_id`
+  // judging by `user_affiliation_ids` and device affiliation IDs.
+  virtual void SetUserAffiliation(
+      const AccountId& account_id,
+      const base::flat_set<std::string>& user_affiliation_ids) = 0;
 
   // Returns true when the browser has crashed and restarted during the current
   // user's session.
