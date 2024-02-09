@@ -6,41 +6,13 @@
 
 #include <string>
 
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "content/public/test/browser_test.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/webid/fake_delegate.h"
-#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
-#include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/views/chrome_views_test_base.h"
-#include "components/constrained_window/constrained_window_views.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/color_parser.h"
-#include "content/public/common/content_features.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/views/controls/button/checkbox.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/test/button_test_api.h"
-#include "ui/views/view.h"
-#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -97,20 +69,32 @@ std::vector<std::string> GetChildClassNames(views::View* parent) {
 
 }  // namespace
 
-class AccountSelectionModalViewTest : public ChromeViewsTestBase {
+class AccountSelectionModalViewTest : public DialogBrowserTest {
  public:
-  AccountSelectionModalViewTest() = default;
+  AccountSelectionModalViewTest() {
+    test_shared_url_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_);
+  }
+  AccountSelectionModalViewTest(const AccountSelectionModalViewTest&) =
+      delete;
+  AccountSelectionModalViewTest& operator=(
+      const AccountSelectionModalViewTest&) = delete;
+  ~AccountSelectionModalViewTest() override = default;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    dialog_ = new AccountSelectionModalView(
+        kTopFrameETLDPlusOne, kIdpETLDPlusOne,
+        blink::mojom::RpContext::kSignIn,
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        shared_url_loader_factory(), /*observer=*/nullptr,
+        /*widget_observer=*/nullptr);
+  }
 
  protected:
   void CreateAccountSelectionModal() {
-    anchor_widget_ = CreateTestWidget();
-    anchor_widget_->Show();
-
-    dialog_ = new AccountSelectionModalView(
-        kTopFrameETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
-        /*browser=*/nullptr, shared_url_loader_factory(),
-        /*observer=*/nullptr,
-        /*widget_observer=*/nullptr);
+    ShowUi("");
   }
 
   void CreateSingleAccountPicker(
@@ -128,8 +112,6 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     dialog_->ShowSingleAccountConfirmDialog(
         kTopFrameETLDPlusOne, /*iframe_for_display=*/absl::nullopt, account,
         idp_data, show_back_button);
-    constrained_window::CreateBrowserModalDialogViews(
-        dialog_->AsDialogDelegate(), anchor_widget_->GetNativeWindow());
   }
 
   void CreateMultiAccountPicker(
@@ -149,8 +131,6 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
         CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data);
-    constrained_window::CreateBrowserModalDialogViews(
-        dialog_->AsDialogDelegate(), anchor_widget_->GetNativeWindow());
   }
 
   void CheckAccountRow(views::View* row, const std::string& account_suffix) {
@@ -266,24 +246,6 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     CheckAccountRows(accounts, kAccountSuffixes);
   }
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kFedCm);
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    delegate_ = std::make_unique<FakeDelegate>(test_web_contents_.get());
-    test_shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
-    SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
-    ChromeViewsTestBase::SetUp();
-  }
-
-  void TearDown() override {
-    anchor_widget_.reset();
-    feature_list_.Reset();
-    ChromeViewsTestBase::TearDown();
-  }
-
   AccountSelectionModalView* dialog() { return dialog_; }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
@@ -291,25 +253,17 @@ class AccountSelectionModalViewTest : public ChromeViewsTestBase {
     return test_shared_url_loader_factory_;
   }
 
-  raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
-
  private:
-  base::test::ScopedFeatureList feature_list_;
-  TestingProfile profile_;
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories_;
-  std::unique_ptr<content::WebContents> test_web_contents_;
-  std::unique_ptr<views::Widget> anchor_widget_;
-  std::unique_ptr<FakeDelegate> delegate_;
+  raw_ptr<AccountSelectionModalView> dialog_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-TEST_F(AccountSelectionModalViewTest, SingleAccount) {
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn);
 }
 
-TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn);
 }

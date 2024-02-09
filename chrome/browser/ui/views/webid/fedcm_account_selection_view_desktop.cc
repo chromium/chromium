@@ -442,7 +442,8 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
     blink::mojom::RpMode rp_mode,
     bool show_auto_reauthn_checkbox,
     bool has_modal_support) {
-  Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
+  content::WebContents* web_contents = delegate_->GetWebContents();
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
   // Reject the API if the browser is not found or its tab strip model does not
   // exist, as we require those to show UI. It is unclear why there are callers
@@ -455,7 +456,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
 
   if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
     return new AccountSelectionModalView(
-        top_frame_etld_plus_one, idp_title, rp_context, browser,
+        top_frame_etld_plus_one, idp_title, rp_context, web_contents,
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
         this, this);
   }
@@ -465,7 +466,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
 
   return new AccountSelectionBubbleView(
       top_frame_etld_plus_one, iframe_etld_plus_one, idp_title, rp_context,
-      show_auto_reauthn_checkbox, browser, anchor_view,
+      show_auto_reauthn_checkbox, web_contents, anchor_view,
       SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
       this, this);
 }

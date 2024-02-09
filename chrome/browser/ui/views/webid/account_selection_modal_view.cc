@@ -19,6 +19,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,15 +48,15 @@ AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& top_frame_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    Browser* browser,
+    content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccountSelectionViewBase::Observer* observer,
     views::WidgetObserver* widget_observer)
-    : AccountSelectionViewBase(browser,
+    : AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
                                std::move(url_loader_factory)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetOwnedByWidget(true);
   set_margins(gfx::Insets::VH(kDialogMargin, kDialogMargin));
   set_fixed_width(kDialogWidth);
@@ -76,18 +77,27 @@ AccountSelectionModalView::AccountSelectionModalView(
 AccountSelectionModalView::~AccountSelectionModalView() {}
 
 void AccountSelectionModalView::InitDialogWidget() {
-  if (!browser_ || !widget_observer_) {
+  if (!web_contents_) {
     return;
   }
 
-  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
-      this->AsDialogDelegate(), browser_->window()->GetNativeWindow());
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      GetWidget(),
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
+          ->delegate()
+          ->GetWebContentsModalDialogHost());
 
   if (!widget) {
     return;
   }
 
-  widget->AddObserver(widget_observer_);
+  // Add the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    widget->AddObserver(widget_observer_);
+  }
+
   dialog_widget_ = widget->GetWeakPtr();
 }
 
@@ -208,12 +218,15 @@ void AccountSelectionModalView::ShowErrorDialog(
 }
 
 void AccountSelectionModalView::CloseDialog() {
-  if (!dialog_widget_ || !widget_observer_) {
+  if (!dialog_widget_) {
     return;
   }
 
   CancelDialog();
-  dialog_widget_->RemoveObserver(widget_observer_);
+  // Remove the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    dialog_widget_->RemoveObserver(widget_observer_);
+  }
   dialog_widget_.reset();
 }
 

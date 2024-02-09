@@ -26,7 +26,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      Browser* browser,
+      content::WebContents* web_contents,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AccountSelectionViewBase::Observer* observer,
       views::WidgetObserver* widget_observer);
