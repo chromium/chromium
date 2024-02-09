@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -77,9 +78,9 @@ class ManifestBuilder {
 class ScopedBundledIsolatedWebApp {
  public:
   ScopedBundledIsolatedWebApp(
-      const ManifestBuilder& manifest_builder,
       const web_package::SignedWebBundleId& web_bundle_id,
-      base::ScopedTempFile&& bundle_file);
+      const std::vector<uint8_t> serialized_bundle,
+      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
 
   ~ScopedBundledIsolatedWebApp();
 
@@ -98,16 +99,16 @@ class ScopedBundledIsolatedWebApp {
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
 
  private:
-  ManifestBuilder manifest_builder_;
   web_package::SignedWebBundleId web_bundle_id_;
   base::ScopedTempFile bundle_file_;
+  std::optional<ManifestBuilder> manifest_builder_;
 };
 
 class ScopedProxyIsolatedWebApp {
  public:
   ScopedProxyIsolatedWebApp(
-      const ManifestBuilder& manifest_builder,
-      std::unique_ptr<net::EmbeddedTestServer> proxy_server);
+      std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
 
   ~ScopedProxyIsolatedWebApp();
 
@@ -124,8 +125,8 @@ class ScopedProxyIsolatedWebApp {
       const web_package::SignedWebBundleId& web_bundle_id);
 
  private:
-  ManifestBuilder manifest_builder_;
   std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
+  std::optional<ManifestBuilder> manifest_builder_;
 };
 
 // A builder for Isolated Web Apps that supports adding resources from disk
@@ -218,13 +219,11 @@ class IsolatedWebAppBuilder {
   std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
       const web_package::WebBundleSigner::KeyPair& key_pair);
 
-  // Creates and signs a .swbn file and saves it at the given path. The caller
-  // must ensure the bundle is deleted when the test ends.
+  // Creates and signs a .swbn file and returns its serialized contents.
   //
   // Prefer the BuildBundle overloads that return a ScopedBundledIsolatedWebApp.
-  web_package::SignedWebBundleId BuildBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair,
-      const base::FilePath& bundle_path);
+  std::vector<uint8_t> BuildInMemoryBundle(
+      const web_package::WebBundleSigner::KeyPair& key_pair);
 
  private:
   using ResourceBody = absl::variant<base::FilePath, std::string>;

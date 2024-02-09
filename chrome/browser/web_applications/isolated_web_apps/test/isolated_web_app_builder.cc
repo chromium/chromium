@@ -31,6 +31,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -106,12 +107,13 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 }  // namespace
 
 ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
-    const ManifestBuilder& manifest_builder,
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::ScopedTempFile&& bundle_file)
-    : manifest_builder_(manifest_builder),
-      web_bundle_id_(web_bundle_id),
-      bundle_file_(std::move(bundle_file)) {}
+    const std::vector<uint8_t> serialized_bundle,
+    std::optional<ManifestBuilder> manifest_builder)
+    : web_bundle_id_(web_bundle_id), manifest_builder_(manifest_builder) {
+  CHECK(bundle_file_.Create());
+  CHECK(base::WriteFile(bundle_file_.path(), serialized_bundle));
+}
 
 ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() = default;
 
@@ -126,27 +128,29 @@ ScopedBundledIsolatedWebApp::Install(Profile* profile) {
 }
 
 void ScopedBundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+  CHECK(manifest_builder_.has_value());
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
   ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
+      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
 }
 
 ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
-    const ManifestBuilder& manifest_builder,
-    std::unique_ptr<net::EmbeddedTestServer> proxy_server)
-    : manifest_builder_(manifest_builder),
-      proxy_server_(std::move(proxy_server)) {}
+    std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+    std::optional<ManifestBuilder> manifest_builder)
+    : proxy_server_(std::move(proxy_server)),
+      manifest_builder_(manifest_builder) {}
 
 ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
 
 void ScopedProxyIsolatedWebApp::FakeInstallPageState(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id) {
+  CHECK(manifest_builder_.has_value());
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
   ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
+      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
@@ -339,6 +343,10 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
     std::string_view resource_path,
     std::string_view content,
     std::string_view content_type) {
+  CHECK(net::HttpUtil::IsValidHeaderValue(content_type))
+      << "Invalid Content-Type: \"" << content_type
+      << "\". Did you swap the `content` and `content_type` parameters "
+      << "to IsolatedWebAppBuilder::AddResource?";
   return AddResource(
       resource_path, content,
       {{net::HttpRequestHeaders::kContentType, std::string(content_type)}});
@@ -425,8 +433,8 @@ IsolatedWebAppBuilder::BuildAndStartProxyServer() {
   auto server = std::make_unique<net::EmbeddedTestServer>();
   server->RegisterRequestHandler(handler);
   CHECK(server->Start());
-  return std::make_unique<ScopedProxyIsolatedWebApp>(manifest_builder_,
-                                                     std::move(server));
+  return std::make_unique<ScopedProxyIsolatedWebApp>(std::move(server),
+                                                     manifest_builder_);
 }
 
 std::unique_ptr<ScopedBundledIsolatedWebApp>
@@ -436,17 +444,14 @@ IsolatedWebAppBuilder::BuildBundle() {
 
 std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
-  base::ScopedTempFile temp_file;
-  CHECK(temp_file.Create());
-  web_package::SignedWebBundleId web_bundle_id =
-      BuildBundle(key_pair, temp_file.path());
   return std::make_unique<ScopedBundledIsolatedWebApp>(
-      manifest_builder_, web_bundle_id, std::move(temp_file));
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          key_pair.public_key),
+      BuildInMemoryBundle(key_pair), manifest_builder_);
 }
 
-web_package::SignedWebBundleId IsolatedWebAppBuilder::BuildBundle(
-    const web_package::WebBundleSigner::KeyPair& key_pair,
-    const base::FilePath& bundle_path) {
+std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
+    const web_package::WebBundleSigner::KeyPair& key_pair) {
   Validate();
   web_package::WebBundleBuilder builder;
   for (const auto& resource : resources_) {
@@ -471,14 +476,8 @@ web_package::SignedWebBundleId IsolatedWebAppBuilder::BuildBundle(
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
       manifest_builder_.ToJson());
 
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair.public_key);
-
-  std::vector<uint8_t> signed_bundle = web_package::WebBundleSigner::SignBundle(
-      builder.CreateBundle(), {key_pair});
-  CHECK(base::WriteFile(bundle_path, signed_bundle));
-  return web_bundle_id;
+  return web_package::WebBundleSigner::SignBundle(builder.CreateBundle(),
+                                                  {key_pair});
 }
 
 void IsolatedWebAppBuilder::Validate() {

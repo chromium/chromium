@@ -135,6 +135,9 @@ class IsolatedWebAppUpdateManagerBrowserTest
 
     auto key_pair =
         web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey);
+    auto bundle_id = web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+        key_pair.public_key);
+    url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
 
     auto builder = IsolatedWebAppBuilder(
         ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"));
@@ -168,13 +171,16 @@ class IsolatedWebAppUpdateManagerBrowserTest
           }));
         });
       )");
-    web_package::SignedWebBundleId bundle_id =
-        builder.BuildBundle(key_pair, temp_dir_.Append(kBundle304FileName));
-    url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
+    base::FilePath bundle_304_path = temp_dir_.Append(kBundle304FileName);
+    std::vector<uint8_t> bundle_304_contents =
+        builder.BuildInMemoryBundle(key_pair);
+    CHECK(base::WriteFile(bundle_304_path, bundle_304_contents));
 
-    IsolatedWebAppBuilder(
-        ManifestBuilder().SetName("app-7.0.6").SetVersion("7.0.6"))
-        .AddHtml("/", R"(
+    base::FilePath bundle_706_path = temp_dir_.Append(kBundle706FileName);
+    std::vector<uint8_t> bundle_706_contents =
+        IsolatedWebAppBuilder(
+            ManifestBuilder().SetName("app-7.0.6").SetVersion("7.0.6"))
+            .AddHtml("/", R"(
                 <head>
                   <title>7.0.6</title>
                 </head>
@@ -182,7 +188,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
                   <h1>Hello from version 7.0.6</h1>
                 </body>
             )")
-        .BuildBundle(key_pair, temp_dir_.Append(kBundle706FileName));
+            .BuildInMemoryBundle(key_pair);
+    CHECK(base::WriteFile(bundle_706_path, bundle_706_contents));
 
     EXPECT_TRUE(base::WriteFile(
         temp_dir_.Append(kUpdateManifestFileName),
