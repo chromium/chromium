@@ -1147,6 +1147,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher"
+    enum="Boolean" expires_after="2024-03-25">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Whether or not Chrome was launched by the Legacy Browser Support for Edge
+    extension's native host. This indicates an automatic Edge=&gt;Chrome or
+    IE=&gt;Chrome transition. Recorded whenever Chrome is launched by any means.
+    Only recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="BrowserSwitcher.Decision" enum="BooleanBrowserSwitch"
     expires_after="2024-03-05">
   <owner>nicolaso@chromium.org</owner>

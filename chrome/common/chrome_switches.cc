@@ -797,6 +797,10 @@ const char kEnableProfileShortcutManager[] = "enable-profile-shortcut-manager";
 // for accessibility software (see https://crbug.com/1072735).
 extern const char kFromInstaller[] = "from-installer";
 
+// Indicates that this launch of the browser originated from the Legacy Browser
+// Support for Edge extension's native host. This is recorded in UMA.
+extern const char kFromBrowserSwitcher[] = "from-browser-switcher";
+
 // Makes Windows happy by allowing it to show "Enable access to this program"
 // checkbox in Add/Remove Programs->Set Program Access and Defaults. This only
 // shows an error box because the only way to hide Chrome is by uninstalling
