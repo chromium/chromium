@@ -300,7 +300,12 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool ShouldRevalidateStaleResponse() const;
   virtual bool CanUseCacheValidator() const;
   base::TimeDelta FreshnessLifetime() const;
-  bool IsCacheValidator() const { return is_revalidating_; }
+  bool IsCacheValidator() const {
+    return revalidation_status_ == RevalidationStatus::kRevalidating;
+  }
+  bool HasSuccessfulRevalidation() const {
+    return revalidation_status_ == RevalidationStatus::kRevalidated;
+  }
   bool HasCacheControlNoStoreHeader() const;
   bool MustReloadDueToVaryHeader(const ResourceRequest& new_request) const;
 
@@ -538,7 +543,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   String cache_identifier_;
 
   bool link_preload_;
-  bool is_revalidating_;
   bool is_alive_;
   bool is_add_remove_client_prohibited_;
   bool is_revalidation_start_forbidden_ = false;
@@ -546,6 +550,15 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool stale_revalidation_started_ = false;
   bool is_preloaded_by_early_hints_ = false;
   bool is_loaded_from_memory_cache_ = false;
+
+  enum class RevalidationStatus {
+    kNoRevalidatingOrFailed,  // not in revalidate procedure or
+                              // revalidate failed.
+    kRevalidating,            // in revalidate process, waiting for
+                              // network response
+    kRevalidated,             // revalidate success by 304 Not Modified
+  };
+  RevalidationStatus revalidation_status_;
 
   ResourceIntegrityDisposition integrity_disposition_;
   SubresourceIntegrity::ReportInfo integrity_report_info_;

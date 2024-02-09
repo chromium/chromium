@@ -148,9 +148,9 @@ Resource::Resource(const ResourceRequestHead& request,
       decoded_size_(0),
       cache_identifier_(MemoryCache::DefaultCacheIdentifier()),
       link_preload_(false),
-      is_revalidating_(false),
       is_alive_(false),
       is_add_remove_client_prohibited_(false),
+      revalidation_status_(RevalidationStatus::kNoRevalidatingOrFailed),
       integrity_disposition_(ResourceIntegrityDisposition::kNotChecked),
       options_(options),
       response_timestamp_(Now()),
@@ -250,7 +250,7 @@ void Resource::MarkClientFinished(ResourceClient* client) {
 
 void Resource::AppendData(const char* data, size_t length) {
   TRACE_EVENT1("blink", "Resource::appendData", "length", length);
-  DCHECK(!is_revalidating_);
+  DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
   if (options_.data_buffering_policy == kBufferData) {
     if (data_)
@@ -269,7 +269,7 @@ void Resource::NotifyDataReceived(const char* data, size_t length) {
 }
 
 void Resource::SetResourceBuffer(scoped_refptr<SharedBuffer> resource_buffer) {
-  DCHECK(!is_revalidating_);
+  DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
   DCHECK_EQ(options_.data_buffering_policy, kBufferData);
   data_ = std::move(resource_buffer);
@@ -327,7 +327,7 @@ static bool NeedsSynchronousCacheHit(ResourceType type,
 void Resource::FinishAsError(const ResourceError& error,
                              base::SingleThreadTaskRunner* task_runner) {
   error_ = error;
-  is_revalidating_ = false;
+  revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
 
   if (IsMainThread())
     MemoryCache::Get()->Remove(this);
@@ -365,7 +365,7 @@ void Resource::FinishAsError(const ResourceError& error,
 
 void Resource::Finish(base::TimeTicks load_response_end,
                       base::SingleThreadTaskRunner* task_runner) {
-  DCHECK(!is_revalidating_);
+  DCHECK(!IsCacheValidator());
   load_response_end_ = load_response_end;
   if (!ErrorOccurred())
     status_ = ResourceStatus::kCached;
@@ -502,15 +502,16 @@ void Resource::SetRevalidatingRequest(const ResourceRequestHead& request) {
   SECURITY_CHECK(!is_unused_preload_);
   DCHECK(!request.IsNull());
   CHECK(!is_revalidation_start_forbidden_);
-  is_revalidating_ = true;
+  revalidation_status_ = RevalidationStatus::kRevalidating;
   resource_request_ = request;
   status_ = ResourceStatus::kNotStarted;
 }
 
 bool Resource::WillFollowRedirect(const ResourceRequest& new_request,
                                   const ResourceResponse& redirect_response) {
-  if (is_revalidating_)
+  if (IsCacheValidator()) {
     RevalidationFailed();
+  }
   redirect_chain_.push_back(RedirectPair(new_request, redirect_response));
   return true;
 }
@@ -521,7 +522,7 @@ void Resource::SetResponse(const ResourceResponse& response) {
 
 void Resource::ResponseReceived(const ResourceResponse& response) {
   response_timestamp_ = Now();
-  if (is_revalidating_) {
+  if (IsCacheValidator()) {
     if (IsSuccessfulRevalidationResponse(response)) {
       RevalidationSucceeded(response);
       return;
@@ -535,7 +536,7 @@ void Resource::ResponseReceived(const ResourceResponse& response) {
 }
 
 void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
-  DCHECK(!is_revalidating_);
+  DCHECK(!IsCacheValidator());
 }
 
 String Resource::ReasonNotDeletable() const {
@@ -599,7 +600,7 @@ void Resource::AddClient(ResourceClient* client,
 
   WillAddClientOrObserver();
 
-  if (is_revalidating_) {
+  if (IsCacheValidator()) {
     clients_.insert(client);
     return;
   }
@@ -722,8 +723,9 @@ void Resource::FinishPendingClients() {
     // When revalidation starts after waiting clients are scheduled and
     // before they are added here. In such cases, we just add the clients
     // to |clients_| without DidAddClient(), as in Resource::AddClient().
-    if (!is_revalidating_)
+    if (!IsCacheValidator()) {
       DidAddClient(client);
+    }
   }
 
   // It is still possible for the above loop to finish a new client
@@ -946,7 +948,7 @@ void Resource::RevalidationSucceeded(
     response_.SetHttpHeaderField(header.key, header.value);
   }
 
-  is_revalidating_ = false;
+  revalidation_status_ = RevalidationStatus::kRevalidated;
 }
 
 void Resource::RevalidationFailed() {
@@ -955,7 +957,7 @@ void Resource::RevalidationFailed() {
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
   integrity_report_info_.Clear();
   DestroyDecodedDataForFailedRevalidation();
-  is_revalidating_ = false;
+  revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
 }
 
 void Resource::MarkAsPreload() {

@@ -992,7 +992,10 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
-  if (cached_metadata && cached_metadata->size()) {
+  // Not SetSerializedCachedMetadata in a successful revalidation
+  // because resource content would not expect to be changed.
+  if (!resource_->HasSuccessfulRevalidation() && cached_metadata &&
+      cached_metadata->size()) {
     resource_->SetSerializedCachedMetadata(std::move(*cached_metadata));
   }
 
