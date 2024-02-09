@@ -78,6 +78,12 @@ double CSSMathFunctionValue::ComputeDegrees() const {
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
+double CSSMathFunctionValue::ComputeDegrees(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK_EQ(kCalcAngle, expression_->Category());
+  return ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+}
+
 double CSSMathFunctionValue::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   // |CSSToLengthConversionData| only resolves relative length units, but not
