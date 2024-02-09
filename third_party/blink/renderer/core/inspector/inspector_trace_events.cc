@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -127,16 +128,16 @@ void InspectorTraceEvents::WillSendRequest(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const ResourceLoaderOptions&,
-    ResourceType,
+    ResourceType resource_type,
     RenderBlockingBehavior render_blocking_behavior,
     base::TimeTicks timestamp) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
       "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
       timestamp, "data", [&](perfetto::TracedValue ctx) {
-        inspector_send_request_event::Data(std::move(ctx), execution_context,
-                                           loader, request.InspectorId(), frame,
-                                           request, render_blocking_behavior);
+        inspector_send_request_event::Data(
+            std::move(ctx), execution_context, loader, request.InspectorId(),
+            frame, request, resource_type, render_blocking_behavior);
       });
 }
 
@@ -849,12 +850,16 @@ void inspector_send_request_event::Data(
     uint64_t identifier,
     LocalFrame* frame,
     const ResourceRequest& request,
+    ResourceType resource_type,
     RenderBlockingBehavior render_blocking_behavior) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("requestId", IdentifiersFactory::RequestId(loader, identifier));
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("url", request.Url().GetString());
   dict.Add("requestMethod", request.HttpMethod());
+  String resource_type_string = InspectorPageAgent::ResourceTypeJson(
+      InspectorPageAgent::ToResourceType(resource_type));
+  dict.Add("resourceType", resource_type_string);
   String render_blocking_string =
       GetRenderBlockingStringFromBehavior(render_blocking_behavior);
   if (!render_blocking_string.IsNull()) {
@@ -896,6 +901,7 @@ void inspector_send_navigation_request_event::Data(
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("url", url.GetString());
   dict.Add("requestMethod", http_method);
+  dict.Add("resourceType", protocol::Network::ResourceTypeEnum::Document);
   const char* priority =
       ResourcePriorityString(ResourceLoadPriority::kVeryHigh);
   if (priority)

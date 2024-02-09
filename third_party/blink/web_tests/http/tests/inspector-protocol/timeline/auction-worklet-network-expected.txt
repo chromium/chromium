@@ -5,6 +5,7 @@ Tracing complete
 https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:
 ResourceSendRequest {
     requestId : <string>
+    resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
 }
 ResourceReceiveResponse {
@@ -80,6 +81,7 @@ ResourceFinish {
 https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php:
 ResourceSendRequest {
     requestId : <string>
+    resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
 }
 ResourceReceiveResponse {

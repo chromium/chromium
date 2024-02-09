@@ -1,7 +1,6 @@
 Tests the data of Network request lifecycle trace events
 Recording started
 Tracing complete
-Got ResourceWillSendRequest event:
 Object: {
 	args: {
 		data: {
@@ -9,14 +8,13 @@ Object: {
 		}
 	}
 	cat: string
-	name: string
+	name: ResourceWillSendRequest
 	ph: string
 	pid: number
 	s: string
 	tid: number
 	ts: number
 }
-Got ResourceSendRequest event:
 Object: {
 	args: {
 		data: {
@@ -24,18 +22,18 @@ Object: {
 			priority: string
 			requestId: string
 			requestMethod: string
+			resourceType: Document
 			url: string
 		}
 	}
 	cat: string
-	name: string
+	name: ResourceSendRequest
 	ph: string
 	pid: number
 	s: string
 	tid: number
 	ts: number
 }
-Got ResourceReceiveResponse event:
 Object: {
 	args: {
 		data: {
@@ -45,39 +43,39 @@ Object: {
 			fromServiceWorker: boolean
 			headers: [
 				{
-					name: string
+					name: Date
 					value: string
 				}
 				{
-					name: string
+					name: Last-Modified
 					value: string
 				}
 				{
-					name: string
+					name: Server
 					value: string
 				}
 				{
-					name: string
+					name: ETag
 					value: string
 				}
 				{
-					name: string
+					name: Content-Type
 					value: string
 				}
 				{
-					name: string
+					name: Connection
 					value: string
 				}
 				{
-					name: string
+					name: Accept-Ranges
 					value: string
 				}
 				{
-					name: string
+					name: Keep-Alive
 					value: string
 				}
 				{
-					name: string
+					name: Content-Length
 					value: string
 				}
 			]
@@ -107,14 +105,13 @@ Object: {
 		}
 	}
 	cat: string
-	name: string
+	name: ResourceReceiveResponse
 	ph: string
 	pid: number
 	s: string
 	tid: number
 	ts: number
 }
-Got ResourceReceivedData event:
 Object: {
 	args: {
 		data: {
@@ -124,14 +121,13 @@ Object: {
 		}
 	}
 	cat: string
-	name: string
+	name: ResourceReceivedData
 	ph: string
 	pid: number
 	s: string
 	tid: number
 	ts: number
 }
-Got ResourceFinish event:
 Object: {
 	args: {
 		data: {
@@ -143,7 +139,332 @@ Object: {
 		}
 	}
 	cat: string
-	name: string
+	name: ResourceFinish
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			renderBlocking: string
+			requestId: string
+			requestMethod: string
+			resourceType: Script
+			url: string
+		}
+	}
+	cat: string
+	name: ResourceSendRequest
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			fromCache: boolean
+			fromServiceWorker: boolean
+			headers: [
+				{
+					name: Date
+					value: string
+				}
+				{
+					name: Server
+					value: string
+				}
+				{
+					name: Connection
+					value: string
+				}
+				{
+					name: Keep-Alive
+					value: string
+				}
+				{
+					name: Content-Length
+					value: string
+				}
+				{
+					name: Content-Type
+					value: string
+				}
+			]
+			mimeType: string
+			requestId: string
+			responseTime: number
+			statusCode: number
+			timing: {
+				connectEnd: number
+				connectStart: number
+				dnsEnd: number
+				dnsStart: number
+				proxyEnd: number
+				proxyStart: number
+				pushEnd: number
+				pushStart: number
+				receiveHeadersEnd: number
+				receiveHeadersStart: number
+				requestTime: number
+				sendEnd: number
+				sendStart: number
+				sslEnd: number
+				sslStart: number
+				workerReady: number
+				workerStart: number
+			}
+		}
+	}
+	cat: string
+	name: ResourceReceiveResponse
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			decodedBodyLength: number
+			didFail: boolean
+			encodedDataLength: number
+			requestId: string
+		}
+	}
+	cat: string
+	name: ResourceFinish
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			requestId: string
+			requestMethod: string
+			resourceType: Image
+			url: string
+		}
+	}
+	cat: string
+	name: ResourceSendRequest
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			fromCache: boolean
+			fromServiceWorker: boolean
+			headers: [
+				{
+					name: Date
+					value: string
+				}
+				{
+					name: Server
+					value: string
+				}
+				{
+					name: Connection
+					value: string
+				}
+				{
+					name: Keep-Alive
+					value: string
+				}
+				{
+					name: Content-Length
+					value: string
+				}
+				{
+					name: Content-Type
+					value: string
+				}
+			]
+			mimeType: string
+			requestId: string
+			responseTime: number
+			statusCode: number
+			timing: {
+				connectEnd: number
+				connectStart: number
+				dnsEnd: number
+				dnsStart: number
+				proxyEnd: number
+				proxyStart: number
+				pushEnd: number
+				pushStart: number
+				receiveHeadersEnd: number
+				receiveHeadersStart: number
+				requestTime: number
+				sendEnd: number
+				sendStart: number
+				sslEnd: number
+				sslStart: number
+				workerReady: number
+				workerStart: number
+			}
+		}
+	}
+	cat: string
+	name: ResourceReceiveResponse
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			requestId: string
+		}
+	}
+	cat: string
+	name: ResourceReceivedData
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			decodedBodyLength: number
+			didFail: boolean
+			encodedDataLength: number
+			finishTime: number
+			requestId: string
+		}
+	}
+	cat: string
+	name: ResourceFinish
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			renderBlocking: string
+			requestId: string
+			requestMethod: string
+			resourceType: Stylesheet
+			url: string
+		}
+	}
+	cat: string
+	name: ResourceSendRequest
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			fromCache: boolean
+			fromServiceWorker: boolean
+			headers: [
+				{
+					name: Date
+					value: string
+				}
+				{
+					name: Server
+					value: string
+				}
+				{
+					name: Connection
+					value: string
+				}
+				{
+					name: Keep-Alive
+					value: string
+				}
+				{
+					name: Content-Length
+					value: string
+				}
+				{
+					name: Content-Type
+					value: string
+				}
+			]
+			mimeType: string
+			requestId: string
+			responseTime: number
+			statusCode: number
+			timing: {
+				connectEnd: number
+				connectStart: number
+				dnsEnd: number
+				dnsStart: number
+				proxyEnd: number
+				proxyStart: number
+				pushEnd: number
+				pushStart: number
+				receiveHeadersEnd: number
+				receiveHeadersStart: number
+				requestTime: number
+				sendEnd: number
+				sendStart: number
+				sslEnd: number
+				sslStart: number
+				workerReady: number
+				workerStart: number
+			}
+		}
+	}
+	cat: string
+	name: ResourceReceiveResponse
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Object: {
+	args: {
+		data: {
+			decodedBodyLength: number
+			didFail: boolean
+			encodedDataLength: number
+			requestId: string
+		}
+	}
+	cat: string
+	name: ResourceFinish
 	ph: string
 	pid: number
 	s: string

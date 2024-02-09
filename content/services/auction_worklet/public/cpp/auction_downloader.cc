@@ -192,6 +192,10 @@ AuctionDownloader::AuctionDownloader(
         auto dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", request_id_);
         dict.Add("url", source_url.spec());
+        // Value derived from CDP ResourceType enum:
+        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
+        // TODO: Import the enum strings directly
+        dict.Add("resourceType", "Other");
       });
 
   // Abort on redirects.

@@ -7,65 +7,50 @@
   const tracingHelper = new TracingHelper(testRunner, session);
 
   await dp.Page.enable();
+  await dp.Network.enable();
 
-  let resourceSendRequest;
-  let resourceWillSendRequest;
-  let resourceReceiveResponse;
-  let resourceReceivedData;
-  let resourceFinish;
+  await tracingHelper.startTracing('devtools.timeline');
 
-  const MAX_ATTEMPTS = 3;
-  for (let attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
-    await tracingHelper.startTracing('devtools.timeline');
-    dp.Page.navigate(
-        {url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'});
+  dp.Page.navigate(
+      {url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'});
 
-    // Wait for the DOM to be interactive.
-    await dp.Page.onceLoadEventFired();
+  await new Promise(resolve => {
+    let count = 0;
+    dp.Network.onResponseReceived(() => {
+        ++count;
+        if (count === 4) resolve();
+    });
+  });
 
-    const timelineEvents = await tracingHelper.stopTracing(/devtools.timeline/);
+  const timelineEvents = await tracingHelper.stopTracing(/devtools.timeline/);
 
-    // Find and test all events of the lifecycle of the request for the
-    // HTML document.
-    resourceSendRequest = timelineEvents.find(
-        event => event.name === 'ResourceSendRequest' &&
-            event.args.data.url.includes('basic.html'));
-    resourceWillSendRequest = timelineEvents.find(
-        event =>
-            eventBelongsToDocumentRequest(event, 'ResourceWillSendRequest'));
-    resourceReceiveResponse = timelineEvents.find(
-        event =>
-            eventBelongsToDocumentRequest(event, 'ResourceReceiveResponse'));
-    resourceReceivedData = timelineEvents.find(
-        event => eventBelongsToDocumentRequest(event, 'ResourceReceivedData'));
-    resourceFinish = timelineEvents.find(
-        event => eventBelongsToDocumentRequest(event, 'ResourceFinish'));
+  const eventNames = new Set(['ResourceSendRequest', 'ResourceWillSendRequest', 'ResourceReceiveResponse', 'ResourceReceivedData', 'ResourceFinish']);
+  const eventsByRequestId = new Map();
+  const requestIdToUrl = new Map();
 
-    if (resourceSendRequest && resourceWillSendRequest &&
-        resourceReceiveResponse && resourceReceivedData && resourceFinish) {
-      break;
+  for (const event of timelineEvents) {
+    if (!eventNames.has(event.name)) {
+        continue;
+    };
+    if (!event.args.data.requestId) continue;
+    const events = eventsByRequestId.get(event.args.data.requestId) || [];
+    events.push(event);
+    eventsByRequestId.set(event.args.data.requestId, events);
+
+    if (event.args.data.url) {
+        requestIdToUrl.set(event.args.data.requestId, event.args.data.url);
+    };
+  }
+
+  const orderedKeys = Array.from(requestIdToUrl.entries())
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .map(r => r[0]);
+  for (const key of orderedKeys) {
+    const events = eventsByRequestId.get(key);
+    for (const event of events) {
+      tracingHelper.logEventShape(event, [], ['name', 'resourceType'])
     }
   }
 
-  testRunner.log('Got ResourceWillSendRequest event:');
-  tracingHelper.logEventShape(resourceWillSendRequest)
-
-  testRunner.log('Got ResourceSendRequest event:');
-  tracingHelper.logEventShape(resourceSendRequest)
-
-  testRunner.log('Got ResourceReceiveResponse event:');
-  tracingHelper.logEventShape(resourceReceiveResponse)
-
-  testRunner.log('Got ResourceReceivedData event:');
-  tracingHelper.logEventShape(resourceReceivedData)
-
-  testRunner.log('Got ResourceFinish event:');
-  tracingHelper.logEventShape(resourceFinish)
-
   testRunner.completeTest();
-
-  function eventBelongsToDocumentRequest(event, expectedName) {
-    return event.name === expectedName &&
-        event.args.data.requestId === resourceSendRequest.args.data.requestId;
-  }
 });
