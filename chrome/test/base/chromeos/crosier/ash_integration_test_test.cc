@@ -11,7 +11,7 @@ namespace {
 class AshIntegrationTestTest : public AshIntegrationTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveAshTest::SetUpCommandLine(command_line);
+    AshIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);
   }
 };
