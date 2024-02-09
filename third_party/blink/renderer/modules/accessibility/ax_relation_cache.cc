@@ -873,14 +873,14 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
-  // TODO(accessibility) Restore this optimization, which is currently failing
-  // on All/DumpAccessibilityTreeTest.AccessibilityDisabledWithSubtree/blink.
-  // if (AXObject* obj = Get(node)) {
-  //   if (!obj->IsUsedForLabelOrDescription()) {
-  //     // Nothing to do, as this node is not part of a label or description.
-  //     return;
-  //   }
-  // }
+  // Shortcut: used cached value to determine whether this node contributes to
+  // a name or description. Return early if not.
+  if (AXObject* obj = Get(node)) {
+    if (!obj->IsUsedForLabelOrDescription()) {
+      // Nothing to do, as this node is not part of a label or description.
+      return;
+    }
+  }
 
   // Walk up ancestor chain from node and refresh text of any related content.
   // TODO(crbug.com/1109265): It's very likely this loop should only walk the
@@ -907,7 +907,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     // should also handle text changed events when descendant content changes.
     if (current_node != node) {
       AXObject* obj = Get(current_node);
-      if (obj && obj->LastKnownIsIncludedInTreeValue() &&
+      if (obj &&
+          (!obj->LastKnownIsIgnoredValue() || obj->CanSetFocusAttribute()) &&
           obj->SupportsNameFromContents(/*recursive=*/false) &&
           !obj->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
