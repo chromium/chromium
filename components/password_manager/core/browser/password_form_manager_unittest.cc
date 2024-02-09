@@ -4451,6 +4451,29 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
 }
 
+TEST_F(PasswordFormManagerTestWithMockedSaver,
+       SaveStartedAfterFormFetcherIsReady) {
+  FormData submitted_form = observed_form_;
+  std::u16string new_username = saved_match_.username_value + u"1";
+  std::u16string new_password = saved_match_.password_value + u"1";
+  submitted_form.fields[kUsernameFieldIndex].value = new_username;
+  submitted_form.fields[kPasswordFieldIndex].value = new_password;
+  EXPECT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+
+  fetcher_->Fetch();
+  form_manager_->Save();
+
+  PasswordForm saved_form;
+  EXPECT_CALL(*mock_password_save_manager(),
+              Save(FormDataPointeeEqualTo(observed_form_),
+                   FormHasPassword(new_password)))
+      .WillOnce(SaveArg<1>(&saved_form));
+  EXPECT_CALL(client_, UpdateFormManagers());
+  fetcher_->NotifyFetchCompleted();
+  EXPECT_THAT(*form_manager_->GetSubmittedForm(), FormHasUniqueKey(saved_form));
+}
+
 TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameEmptyStore) {
   fetcher_->NotifyFetchCompleted();
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);

@@ -463,6 +463,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // already different for the landing page.
   bool is_saving_allowed_ = true;
 
+  // Stores if Save() was called when FormFetcher was in WAITING state.
+  // In that case we should schedule a Save() call, when FormFecher is ready.
+  bool should_schedule_save_for_later_ = false;
+
   // A password field that is used for generation.
   autofill::FieldRendererId generation_element_;
 };

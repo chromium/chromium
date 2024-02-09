@@ -412,7 +412,11 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 }
 
 void PasswordFormManager::Save() {
-  CHECK_EQ(form_fetcher_->GetState(), FormFetcher::State::NOT_WAITING);
+  if (form_fetcher_->GetState() == FormFetcher::State::WAITING) {
+    should_schedule_save_for_later_ = true;
+    return;
+  }
+
   CHECK(!client_->IsOffTheRecord());
   if (IsBlocklisted()) {
     password_save_manager_->Unblocklist(ConstructObservedFormDigest());
@@ -443,8 +447,8 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
   if (!new_username.empty()) {
     // Try to find `new_username` in the usernames `parsed_submitted_form_`
     // knows about. Set `votes_uploader_`'s UsernameChangeState depending on
-    // whether the username is present or not. Also set `username_element` if it
-    // is a known username.
+    // whether the username is present or not. Also set `username_element` if
+    // it is a known username.
     const auto& alternative_usernames =
         parsed_submitted_form_->all_alternative_usernames;
     auto alternative_username_it = base::ranges::find(
@@ -476,8 +480,8 @@ void PasswordFormManager::OnUpdatePasswordFromPrompt(
   parsed_submitted_form_->password_element.clear();
   parsed_submitted_form_->password_element_renderer_id = FieldRendererId();
 
-  // The user updated a password from the prompt. It means that heuristics were
-  // wrong. So clear new password, since it is likely wrong.
+  // The user updated a password from the prompt. It means that heuristics
+  // were wrong. So clear new password, since it is likely wrong.
   parsed_submitted_form_->new_password_value.clear();
   parsed_submitted_form_->new_password_element.clear();
   parsed_submitted_form_->new_password_element_renderer_id = FieldRendererId();
@@ -567,16 +571,17 @@ void PasswordFormManager::MoveCredentialsToAccountStore() {
 }
 
 void PasswordFormManager::BlockMovingCredentialsToAccountStore() {
-  // Nothing to do if there is no signed in user or the credentials are already
-  // blocked for moving.
-  if (!IsMovableToAccountStore())
+  // Nothing to do if there is no signed in user or the credentials are
+  // already blocked for moving.
+  if (!IsMovableToAccountStore()) {
     return;
+  }
   const std::string gaia_id =
       client_->GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
-  // The above call to IsMovableToAccountStore() guarantees there is a signed in
-  // user.
+  // The above call to IsMovableToAccountStore() guarantees there is a signed
+  // in user.
   DCHECK(!gaia_id.empty());
   password_save_manager_->BlockMovingToAccountStoreFor(
       GaiaIdHash::FromGaiaId(gaia_id));
@@ -598,8 +603,9 @@ void PasswordFormManager::PresaveGeneratedPassword(
 }
 
 void PasswordFormManager::PasswordNoLongerGenerated() {
-  if (!HasGeneratedPassword())
+  if (!HasGeneratedPassword()) {
     return;
+  }
 
   password_save_manager_->PasswordNoLongerGenerated();
 }
@@ -828,6 +834,11 @@ void PasswordFormManager::OnFetchCompleted() {
     FillNow();
   } else if (!async_predictions_waiter_.IsActive()) {
     DelayFillForServerSidePredictions();
+  }
+
+  if (should_schedule_save_for_later_) {
+    should_schedule_save_for_later_ = false;
+    Save();
   }
 }
 
