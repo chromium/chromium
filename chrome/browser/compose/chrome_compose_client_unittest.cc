@@ -153,8 +153,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution,
-         compose::features::kComposeTextOutputAnimation},
+         optimization_guide::features::kOptimizationGuideModelExecution},
         {});
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
@@ -659,9 +658,13 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 }
 
-TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      optimization_guide::features::kOptimizationGuideOnDeviceModel);
+TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {optimization_guide::features::kOptimizationGuideOnDeviceModel,
+       compose::features::kComposeTextOutputAnimation},
+      {});
+
   base::HistogramTester histogram_tester;
 
   const std::string input = "a user typed this";
@@ -730,8 +733,7 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
 TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kOptimizationGuideOnDeviceModel},
-      {compose::features::kComposeTextOutputAnimation});
+      {optimization_guide::features::kOptimizationGuideOnDeviceModel}, {});
   base::HistogramTester histogram_tester;
 
   const std::string input = "a user typed this";
@@ -767,8 +769,11 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      optimization_guide::features::kOptimizationGuideOnDeviceModel);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {optimization_guide::features::kOptimizationGuideOnDeviceModel,
+       compose::features::kComposeTextOutputAnimation},
+      {});
   base::HistogramTester histogram_tester;
 
   const std::string input = "a user typed this";
