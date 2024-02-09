@@ -1187,7 +1187,7 @@ if (enable_java_templates && is_android) {
       arsc_output = _resource_arsc_output
       min_sdk_version = default_min_sdk_version
       target_sdk_version = android_sdk_version
-      forward_variables_from(invoker, ["override_target_sdk"])
+      forward_variables_from(invoker, [ "override_target_sdk" ])
     }
 
     # apkbuilder step needed only to add android assets to the .ap_ file.
@@ -2368,6 +2368,7 @@ if (enable_java_templates && is_android) {
             "expected_android_manifest_version_code_offset",
             "manifest_package",
             "max_sdk_version",
+            "override_target_sdk",
             "package_id",
             "png_to_webp",
             "r_java_root_package_name",
@@ -2377,7 +2378,6 @@ if (enable_java_templates && is_android) {
             "shared_resources",
             "shared_resources_allowlist_locales",
             "uses_split",
-            "override_target_sdk"
           ])
       android_manifest = _android_manifest
       android_manifest_dep = ":$_merge_manifest_target"
@@ -4358,6 +4358,8 @@ if (enable_java_templates && is_android) {
         if (!defined(requires_android)) {
           requires_android = true
         }
+        include_java_resources = !defined(invoker.include_java_resources) ||
+                                 invoker.include_java_resources
         supports_android = true
         jar_path = "$_output_path/classes.jar"
         aar_path = invoker.aar_path
