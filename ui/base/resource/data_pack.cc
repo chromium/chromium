@@ -310,7 +310,16 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     }
   }
 
-  // 3) Verify the aliases are within the appropriate bounds.
+  // 3) Verify the entries are ordered correctly.
+  for (size_t i = 0; i < resource_count_; ++i) {
+    if (resource_table_[i].file_offset > resource_table_[i + 1].file_offset) {
+      LOG(ERROR) << "Data pack file corruption: "
+                 << "Entry #" << i + 1 << " before Entry #" << i << ".";
+      return false;
+    }
+  }
+
+  // 4) Verify the aliases are within the appropriate bounds.
   for (size_t i = 0; i < alias_count_; ++i) {
     if (alias_table_[i].entry_index >= resource_count_) {
       LOG(ERROR) << "Data pack file corruption: "
@@ -426,6 +435,14 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
     LOG(ERROR) << "Entry #" << entry_index << " in data pack points off end "
                << "of file. This should have been caught when loading. Was the "
                << "file modified?";
+    return false;
+  }
+  if (target->file_offset > next_entry->file_offset) {
+    size_t entry_index = target - resource_table_;
+    size_t next_index = next_entry - resource_table_;
+    LOG(ERROR) << "Entry #" << next_index << " in data pack is before Entry #"
+               << entry_index << ". This should have been caught when loading. "
+               << "Was the file modified?";
     return false;
   }
 
