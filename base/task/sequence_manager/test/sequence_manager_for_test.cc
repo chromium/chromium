@@ -87,8 +87,10 @@ bool SequenceManagerForTest::HasImmediateWork() const {
 
 size_t SequenceManagerForTest::PendingTasksCount() const {
   size_t task_count = 0;
-  for (auto* const queue : main_thread_only().active_queues)
+  for (internal::TaskQueueImpl* const queue :
+       main_thread_only().active_queues) {
     task_count += queue->GetNumberOfPendingTasks();
+  }
   return task_count;
 }
 

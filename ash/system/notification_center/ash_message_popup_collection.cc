@@ -485,7 +485,7 @@ void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {
 
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
     views::Widget* widget) {
-  for (auto* popup_widget : tracked_widgets_) {
+  for (views::Widget* popup_widget : tracked_widgets_) {
     if (widget == popup_widget) {
       return true;
     }

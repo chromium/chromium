@@ -1004,7 +1004,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   if (!widget || !widget->GetNativeView() || widget->GetRootView() != view())
     return ChildWidgetsResult();
 
-  std::set<Widget*> owned_widgets;
+  std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
   Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
 
   std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;

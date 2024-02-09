@@ -132,7 +132,8 @@ class TransactionalLevelDBTransaction
   // TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase loaded
   // iterators.
   base::flat_set<TransactionalLevelDBIterator*> loaded_iterators_;
-  std::set<TransactionalLevelDBIterator*> evicted_iterators_;
+  std::set<raw_ptr<TransactionalLevelDBIterator, SetExperimental>>
+      evicted_iterators_;
   bool is_evicting_all_loaded_iterators_ = false;
 
   base::WeakPtrFactory<TransactionalLevelDBTransaction> weak_factory_{this};

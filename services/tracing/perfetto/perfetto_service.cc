@@ -148,7 +148,7 @@ void PerfettoService::AddActiveServicePid(base::ProcessId pid) {
     base::AutoLock lock(active_service_pids_lock_);
     active_service_pids_.insert(pid);
   }
-  for (auto* tracing_session : tracing_sessions_) {
+  for (ConsumerHost::TracingSession* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidAdded(pid);
   }
 }
@@ -159,7 +159,7 @@ void PerfettoService::RemoveActiveServicePid(base::ProcessId pid) {
     active_service_pids_.erase(pid);
   }
   num_active_connections_.erase(pid);
-  for (auto* tracing_session : tracing_sessions_) {
+  for (ConsumerHost::TracingSession* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidRemoved(pid);
   }
 }
@@ -175,7 +175,7 @@ void PerfettoService::RemoveActiveServicePidIfNoActiveConnections(
 
 void PerfettoService::SetActiveServicePidsInitialized() {
   active_service_pids_initialized_ = true;
-  for (auto* tracing_session : tracing_sessions_) {
+  for (ConsumerHost::TracingSession* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidsInitialized();
   }
 }
@@ -198,7 +198,7 @@ void PerfettoService::RequestTracingSession(
   // through RequestTracingSession before creating a new TracingSession.
   // Not running the callback means we'll drop any connection requests and deny
   // the creation of the tracing session.
-  for (auto* tracing_session : tracing_sessions_) {
+  for (ConsumerHost::TracingSession* tracing_session : tracing_sessions_) {
     if (!tracing_session->tracing_enabled()) {
       continue;
     }

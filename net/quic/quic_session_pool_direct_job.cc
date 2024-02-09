@@ -351,7 +351,7 @@ int QuicSessionPool::DirectJob::DoConfirmConnection(int rv) {
         net_log_.AddEvent(
             NetLogEventType::QUIC_SESSION_POOL_JOB_RETRY_ON_ALTERNATE_NETWORK);
         // Notify requests that connection on the default network failed.
-        for (auto* request : requests()) {
+        for (QuicSessionRequest* request : requests()) {
           request->OnConnectionFailedOnDefaultNetwork();
         }
         DVLOG(1) << "Retry connection on alternate network: " << network_;
@@ -413,7 +413,7 @@ void QuicSessionPool::DirectJob::OnResolveHostComplete(int rv) {
   io_state_ = STATE_RESOLVE_HOST_COMPLETE;
   rv = DoLoop(rv);
 
-  for (auto* request : requests()) {
+  for (QuicSessionRequest* request : requests()) {
     request->OnHostResolutionComplete(rv);
   }
 
@@ -429,7 +429,7 @@ void QuicSessionPool::DirectJob::OnCreateSessionComplete(int rv) {
       HistogramProtocolErrorLocation(
           JobProtocolErrorLocation::kCreateSessionFailedAsync);
     }
-    for (auto* request : requests()) {
+    for (QuicSessionRequest* request : requests()) {
       request->OnQuicSessionCreationComplete(rv);
     }
     if (!callback_.is_null()) {
@@ -442,7 +442,7 @@ void QuicSessionPool::DirectJob::OnCreateSessionComplete(int rv) {
   io_state_ = STATE_CREATE_SESSION_COMPLETE;
   rv = DoLoop(rv);
 
-  for (auto* request : requests()) {
+  for (QuicSessionRequest* request : requests()) {
     request->OnQuicSessionCreationComplete(rv);
   }
 

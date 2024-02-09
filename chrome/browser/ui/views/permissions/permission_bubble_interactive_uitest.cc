@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
    public:
     NoWidgetsWaiter() {
       EXPECT_NE(views::test::WidgetTest::GetAllWidgets().size(), 0U);
-      for (auto* widget : views::test::WidgetTest::GetAllWidgets()) {
+      for (views::Widget* widget : views::test::WidgetTest::GetAllWidgets()) {
         widget->AddObserver(this);
       }
     }

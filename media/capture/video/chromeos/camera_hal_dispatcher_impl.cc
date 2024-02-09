@@ -229,7 +229,7 @@ void CameraHalDispatcherImpl::BindCameraServiceOnProxyThread(
   // Set up the Mojo channels for clients which registered before cros camera
   // service starts or that have disconnected from the camera module because the
   // cros camera service stopped.
-  for (auto* client_observer : client_observers_) {
+  for (CameraClientObserver* client_observer : client_observers_) {
     EstablishMojoChannel(client_observer);
   }
 }

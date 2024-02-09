@@ -589,7 +589,7 @@ void WorkspaceLayoutManager::MaybeUpdateA11yFloatingPanelOrPipBounds() const {
         ->accessibility_controller()
         ->UpdateFloatingPanelBoundsIfNeeded();
   }
-  for (auto* window : windows_) {
+  for (aura::Window* window : windows_) {
     WindowState* window_state = WindowState::Get(window);
     if (window_state->IsPip()) {
       Shell::Get()->pip_controller()->UpdatePipBounds();

@@ -90,7 +90,7 @@ void ScopedIphFeatureList::Reset() {
 
   // Decrement the individual feature refcounts for each feature that was
   // previously added.
-  for (auto* feature : added_features_) {
+  for (const base::Feature* feature : added_features_) {
     allowed->DecrementFeatureAllowedCount(feature->name);
   }
   added_features_.clear();

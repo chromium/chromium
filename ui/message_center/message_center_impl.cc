@@ -243,7 +243,7 @@ Notification* MessageCenterImpl::FindParentNotification(
       if (notifications.size() < 4) {
         return nullptr;
       }
-      for (auto* n : notifications) {
+      for (Notification* n : notifications) {
         if (n->group_parent() || n->group_child()) {
           continue;
         }

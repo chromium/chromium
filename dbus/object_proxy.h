@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -352,7 +353,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // Known name owner of the well-known bus name represented by |service_name_|.
   std::string service_name_owner_;
 
-  std::set<DBusPendingCall*> pending_calls_;
+  std::set<raw_ptr<DBusPendingCall, SetExperimental>> pending_calls_;
 };
 
 }  // namespace dbus

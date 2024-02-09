@@ -66,7 +66,7 @@ class CONTENT_EXPORT AudibleMetrics {
   // Stores all the web contents that are currently audible. We add a web
   // contents to the set when it becomes currently audible and remove it when it
   // is no longer audible.
-  std::set<const WebContents*> audible_web_contents_;
+  std::set<raw_ptr<const WebContents, SetExperimental>> audible_web_contents_;
 };
 
 }  // namespace content

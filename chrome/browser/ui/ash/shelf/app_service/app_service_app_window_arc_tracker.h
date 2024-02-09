@@ -167,7 +167,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // the windows in |arc_window_candidates_| will be checked and attach the task
   // id. Once the window is assigned a task id, the window is removed from
   // |arc_window_candidates_|.
-  std::set<aura::Window*> arc_window_candidates_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> arc_window_candidates_;
 
   int active_task_id_ = arc::kNoTaskId;
   int active_session_id_ = arc::kNoTaskId;

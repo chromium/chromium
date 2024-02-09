@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
@@ -66,7 +67,7 @@ class VirtualFidoDiscoveryFactory
   base::WeakPtr<VirtualAuthenticatorManagerImpl> weak_authenticator_manager_;
 
   // Individual discoveries are owned by the FidoRequestHandler.
-  std::set<VirtualFidoDiscovery*> discoveries_;
+  std::set<raw_ptr<VirtualFidoDiscovery, SetExperimental>> discoveries_;
 };
 
 }  // namespace content

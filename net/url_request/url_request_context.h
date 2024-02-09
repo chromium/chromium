@@ -182,7 +182,7 @@ class NET_EXPORT URLRequestContext final {
 
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
-  std::set<const URLRequest*>* url_requests() const {
+  std::set<raw_ptr<const URLRequest, SetExperimental>>* url_requests() const {
     return url_requests_.get();
   }
 
@@ -355,7 +355,8 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
 
-  std::unique_ptr<std::set<const URLRequest*>> url_requests_;
+  std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
+      url_requests_;
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;

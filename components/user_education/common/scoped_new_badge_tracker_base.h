@@ -123,7 +123,8 @@ class ScopedNewBadgeTrackerBase {
 
  private:
   const raw_ptr<feature_engagement::Tracker> tracker_;
-  std::set<const base::Feature*> active_badge_features_;
+  std::set<raw_ptr<const base::Feature, SetExperimental>>
+      active_badge_features_;
 };
 
 }  // namespace user_education

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -28,9 +29,10 @@ namespace ui {
 
 namespace {
 
-void TransferConsumer(GestureConsumer* current_consumer,
-                      GestureConsumer* new_consumer,
-                      std::set<GestureConsumer*>& consumers) {
+void TransferConsumer(
+    GestureConsumer* current_consumer,
+    GestureConsumer* new_consumer,
+    std::set<raw_ptr<GestureConsumer, SetExperimental>>& consumers) {
   consumers.erase(current_consumer);
   if (!new_consumer) {
     current_consumer->reset_gesture_provider();
@@ -353,8 +355,8 @@ void GestureRecognizerImpl::CancelActiveTouchesExceptImpl(
   // Do not iterate directly over |consumers_| because canceling
   // active touches may cause the consumer to be removed from
   // |consumers_|. See https://crbug.com/651258 for more info.
-  std::set<GestureConsumer*> consumers(consumers_);
-  for (auto* consumer : consumers) {
+  std::set<raw_ptr<GestureConsumer, SetExperimental>> consumers(consumers_);
+  for (GestureConsumer* consumer : consumers) {
     if (consumer != not_cancelled) {
       CancelActiveTouchesImpl(consumer);
     }

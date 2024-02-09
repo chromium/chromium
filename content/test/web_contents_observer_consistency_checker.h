@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_player_id.h"
@@ -106,7 +107,7 @@ class WebContentsObserverConsistencyChecker
   std::set<GlobalRoutingID> live_routes_;
   std::set<GlobalRoutingID> deleted_routes_;
 
-  std::set<NavigationHandle*> ongoing_navigations_;
+  std::set<raw_ptr<NavigationHandle, SetExperimental>> ongoing_navigations_;
   std::vector<MediaPlayerId> active_media_players_;
 
   std::map<RenderFrameHost*, std::unique_ptr<TestInputEventObserver>>

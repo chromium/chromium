@@ -425,7 +425,7 @@ class BubbleDialogDelegateView::CloseOnDeactivatePin::Pins {
   }
 
  protected:
-  std::set<CloseOnDeactivatePin*> pins_;
+  std::set<raw_ptr<CloseOnDeactivatePin, SetExperimental>> pins_;
   base::WeakPtrFactory<Pins> weak_ptr_factory_{this};
 };
 

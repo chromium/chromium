@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -107,7 +108,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   // Used by GetAllItems and the corresponding callback.
   std::vector<MultipleItemCallback> multiple_item_get_callbacks_;
   OfflineItemList aggregated_items_;
-  std::set<OfflineContentProvider*> pending_providers_;
+  std::set<raw_ptr<OfflineContentProvider, SetExperimental>> pending_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

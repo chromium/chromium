@@ -749,7 +749,7 @@ void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
   if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return;
   }
-  for (auto* button : buttons_) {
+  for (NotifierButton* button : buttons_) {
     if (button->notifier_id() == notifier_id) {
       button->UpdateIconImage(icon);
       return;

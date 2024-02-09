@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -131,7 +132,8 @@ class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
 
     // For all the other tabs connected to this one, notify them that they
     // should get rid of counts related to this one.
-    for (auto* other_tab_handle : tabs_connected_to_this_one_) {
+    for (const TabPageDecorator::TabHandle* other_tab_handle :
+         tabs_connected_to_this_one_) {
       TabConnectednessData* other_data = TabConnectednessData::Get(
           PageNodeImpl::FromNode(other_tab_handle->page_node()));
       other_data->RemoveFromCounts(tab_handle_);
@@ -204,7 +206,8 @@ class TabConnectednessData : public NodeAttachedDataImpl<TabConnectednessData> {
   // have this tab's TabHandle in their `switch_counts_` map. This is used when
   // this tab is being deleted to notify those other tabs that they should
   // remove it and its associated counts from their internal members.
-  std::set<const TabPageDecorator::TabHandle*> tabs_connected_to_this_one_;
+  std::set<raw_ptr<const TabPageDecorator::TabHandle, SetExperimental>>
+      tabs_connected_to_this_one_;
 
   // The total amount of times the user switched from this tab to any other.
   // This is equal to the sum of all of the values in `switch_counts_`.

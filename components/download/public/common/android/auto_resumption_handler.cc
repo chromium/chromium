@@ -191,7 +191,7 @@ void AutoResumptionHandler::ResumeDownloadImmediately() {
   if (!config_->is_auto_resumption_enabled_in_native)
     return;
 
-  for (auto* download : std::move(downloads_to_retry_)) {
+  for (download::DownloadItem* download : std::move(downloads_to_retry_)) {
     if (ShouldResumeNow(download))
       download->Resume(false);
     else

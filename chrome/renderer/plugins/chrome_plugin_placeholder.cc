@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -78,12 +79,14 @@ class PlaceholderSet : public base::SupportsUserData::Data {
     return set;
   }
 
-  std::set<ChromePluginPlaceholder*>& placeholders() { return placeholders_; }
+  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>>& placeholders() {
+    return placeholders_;
+  }
 
  private:
   PlaceholderSet() = default;
 
-  std::set<ChromePluginPlaceholder*> placeholders_;
+  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>> placeholders_;
 };
 
 }  // namespace
@@ -185,8 +188,9 @@ void ChromePluginPlaceholder::ForEach(
     const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback) {
   PlaceholderSet* set = PlaceholderSet::Get(render_frame);
   if (set) {
-    for (auto* placeholder : set->placeholders())
+    for (ChromePluginPlaceholder* placeholder : set->placeholders()) {
       callback.Run(placeholder);
+    }
   }
 }
 

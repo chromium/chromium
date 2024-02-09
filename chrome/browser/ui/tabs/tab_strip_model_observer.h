@@ -442,7 +442,7 @@ class TabStripModelObserver {
   virtual ~TabStripModelObserver();
 
  private:
-  std::set<TabStripModel*> observed_models_;
+  std::set<raw_ptr<TabStripModel, SetExperimental>> observed_models_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_

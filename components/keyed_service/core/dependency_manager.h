@@ -133,7 +133,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // These pointers are most likely invalid, but we keep track of their
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
-  std::set<void*> dead_context_pointers_;
+  std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
 
 #if DCHECK_IS_ON()
   bool context_services_created_ = false;

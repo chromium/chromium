@@ -53,7 +53,7 @@ class ChromeKeyboardBoundsObserver
   bool ShouldEnableInsets(aura::Window* window);
 
   const raw_ptr<aura::Window> keyboard_window_;
-  std::set<views::Widget*> observed_widgets_;
+  std::set<raw_ptr<views::Widget, SetExperimental>> observed_widgets_;
   gfx::Rect occluded_bounds_in_screen_;
 };
 

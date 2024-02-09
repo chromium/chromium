@@ -328,7 +328,7 @@ class BASE_EXPORT SequenceManagerImpl
     //   internal scheduling code does not expect queues to be pulled
     //   from underneath.
 
-    std::set<internal::TaskQueueImpl*> active_queues;
+    std::set<raw_ptr<internal::TaskQueueImpl, SetExperimental>> active_queues;
 
     std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
         queues_to_delete;

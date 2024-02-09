@@ -246,7 +246,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
 #if DCHECK_IS_ON()
         {
           // The tab must be in the set of tabs in transit.
-          size_t num_removed = tabs_in_transit_.erase(contents.contents);
+          size_t num_removed = tabs_in_transit_.erase(contents.contents.get());
           DCHECK_EQ(num_removed, 1u);
         }
 #endif

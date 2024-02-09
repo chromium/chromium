@@ -113,7 +113,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
  private:
   friend class WorkspaceControllerTestApi;
-  typedef std::set<aura::Window*> WindowSet;
+  typedef std::set<raw_ptr<aura::Window, SetExperimental>> WindowSet;
 
   // Observes changes in windows in the FloatingWindowObserver, and
   // notifies WorkspaceLayoutManager to update the accessibility panels and pip

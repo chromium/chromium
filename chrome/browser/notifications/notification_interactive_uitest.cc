@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(3u, notifications.size());
-  for (const auto* notification : notifications) {
+  for (const message_center::Notification* notification : notifications) {
     EXPECT_EQ(u"My Title", notification->title());
     EXPECT_EQ(u"My Body", notification->message());
   }

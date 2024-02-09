@@ -119,10 +119,10 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // Browsers for which OnBrowserAdded() was called, but not OnBrowserRemoved().
   // Used to validate that OnBrowserAdded() is invoked before
   // OnTabStripModelChanged().
-  std::set<Browser*> known_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> known_browsers_;
   // Tabs that are removed from one browser and are getting reinserted into
   // another.
-  std::set<content::WebContents*> tabs_in_transit_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> tabs_in_transit_;
 #endif
 };
 

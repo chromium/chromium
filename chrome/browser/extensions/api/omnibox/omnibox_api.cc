@@ -255,7 +255,7 @@ gfx::Image OmniboxAPI::GetOmniboxIcon(const std::string& extension_id) {
 void OmniboxAPI::OnTemplateURLsLoaded() {
   // Register keywords for pending extensions.
   template_url_subscription_ = {};
-  for (const auto* i : pending_extensions_) {
+  for (const Extension* i : pending_extensions_) {
     url_service_->RegisterOmniboxKeyword(
         i->id(), i->short_name(), OmniboxInfo::GetKeyword(i),
         GetTemplateURLStringForExtension(i->id()),

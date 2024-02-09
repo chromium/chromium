@@ -88,7 +88,7 @@ class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
 
   raw_ptr<ImmersiveFullscreenController> controller_;
 
-  std::set<aura::Window*> bubbles_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> bubbles_;
 
   // Lock which keeps the top-of-window views revealed based on whether any of
   // |bubbles_| is visible.

@@ -89,7 +89,8 @@ class UnloadController : public WebContentsCollection::Observer,
   void CancelWindowClose();
 
  private:
-  typedef std::set<content::WebContents*> UnloadListenerSet;
+  typedef std::set<raw_ptr<content::WebContents, SetExperimental>>
+      UnloadListenerSet;
 
   // WebContentsCollection::Observer:
   void RenderProcessGone(content::WebContents* web_contents,

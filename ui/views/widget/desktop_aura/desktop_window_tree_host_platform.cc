@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -403,10 +404,11 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
 
   // If we have children, close them. Use a copy for iteration because they'll
   // remove themselves.
-  std::set<DesktopWindowTreeHostPlatform*> window_children_copy =
-      window_children_;
-  for (auto* child : window_children_copy)
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+      window_children_copy = window_children_;
+  for (DesktopWindowTreeHostPlatform* child : window_children_copy) {
     child->CloseNow();
+  }
   DCHECK(window_children_.empty());
 
   // If we have a parent, remove ourselves from its children list.

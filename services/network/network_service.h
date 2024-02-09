@@ -439,7 +439,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // including ones it does not own.
   // TODO(mmenke): Once the NetworkService always owns NetworkContexts, merge
   // this with |owned_network_contexts_|.
-  std::set<NetworkContext*> network_contexts_;
+  std::set<raw_ptr<NetworkContext, SetExperimental>> network_contexts_;
 
   std::unique_ptr<NetworkServiceProxyAllowList>
       network_service_proxy_allow_list_;

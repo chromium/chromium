@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -61,7 +62,8 @@ class MediaRequests {
 
  private:
   // Web contents which are accessing the cemera or microphone.
-  using WebContents = std::set<const content::WebContents*>;
+  using WebContents =
+      std::set<raw_ptr<const content::WebContents, SetExperimental>>;
 
   // Maps one app id to a set of web contents.
   using AppIdToWebContents = std::map<std::string, WebContents>;

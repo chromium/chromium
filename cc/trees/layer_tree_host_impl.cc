@@ -2821,8 +2821,9 @@ void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
     layer->DidDraw(resource_provider_.get());
   }
 
-  for (auto* it : video_frame_controllers_)
+  for (VideoFrameController* it : video_frame_controllers_) {
     it->DidDrawFrame();
+  }
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {
@@ -3022,8 +3023,9 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
 
   image_animation_controller_.WillBeginImplFrame(args);
 
-  for (auto* it : video_frame_controllers_)
+  for (VideoFrameController* it : video_frame_controllers_) {
     it->OnBeginFrame(args);
+  }
 
   bool recent_frame_had_no_damage =
       consecutive_frame_with_damage_count_ < settings_.damaged_frame_limit;
@@ -4937,8 +4939,10 @@ void LayerTreeHostImpl::RemoveLatencyInfoSwapPromiseMonitor(
 }
 
 void LayerTreeHostImpl::NotifyLatencyInfoSwapPromiseMonitors() {
-  for (auto* monitor : latency_info_swap_promise_monitor_)
+  for (LatencyInfoSwapPromiseMonitor* monitor :
+       latency_info_swap_promise_monitor_) {
     monitor->OnSetNeedsRedrawOnImpl();
+  }
 }
 
 bool LayerTreeHostImpl::IsOwnerThread() const {

@@ -72,8 +72,9 @@ void ClientGpuMemoryBufferManager::TearDownThread() {
 void ClientGpuMemoryBufferManager::DisconnectGpuOnThread() {
   gpu_.reset();
   gpu_direct_.reset();
-  for (auto* waiter : pending_allocation_waiters_)
+  for (base::WaitableEvent* waiter : pending_allocation_waiters_) {
     waiter->Signal();
+  }
   pending_allocation_waiters_.clear();
 }
 

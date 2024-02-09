@@ -240,7 +240,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // We can optionally have a parent which can order us to close, or own
   // children who we're responsible for closing when we CloseNow().
   raw_ptr<DesktopWindowTreeHostPlatform> window_parent_ = nullptr;
-  std::set<DesktopWindowTreeHostPlatform*> window_children_;
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+      window_children_;
 
   // Used for tab dragging in move loop requests.
   WindowMoveClientPlatform window_move_client_;

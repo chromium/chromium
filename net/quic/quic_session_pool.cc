@@ -1153,13 +1153,13 @@ void QuicSessionPool::OnJobComplete(Job* job, int rv) {
     auto session_it = active_sessions_.find(job->key().session_key());
     CHECK(session_it != active_sessions_.end());
     QuicChromiumClientSession* session = session_it->second;
-    for (auto* request : iter->second->requests()) {
+    for (QuicSessionRequest* request : iter->second->requests()) {
       // Do not notify |request| yet.
       request->SetSession(session->CreateHandle(job->key().destination()));
     }
   }
 
-  for (auto* request : iter->second->requests()) {
+  for (QuicSessionRequest* request : iter->second->requests()) {
     // Even though we're invoking callbacks here, we don't need to worry
     // about |this| being deleted, because the pool is owned by the
     // profile which can not be deleted via callbacks.

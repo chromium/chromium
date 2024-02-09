@@ -27,6 +27,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -241,13 +242,14 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
 // icon requests to calculate the max icon loading requests count.
 class FakeArcAppIcon : public ArcAppIcon {
  public:
-  FakeArcAppIcon(content::BrowserContext* context,
-                 const std::string& app_id,
-                 int size_in_dip,
-                 ArcAppIcon::Observer* observer,
-                 ArcAppIcon::IconType icon_type,
-                 std::set<ArcAppIcon*>& arc_app_icon_requests,
-                 size_t& max_arc_app_icon_request_count)
+  FakeArcAppIcon(
+      content::BrowserContext* context,
+      const std::string& app_id,
+      int size_in_dip,
+      ArcAppIcon::Observer* observer,
+      ArcAppIcon::IconType icon_type,
+      std::set<raw_ptr<ArcAppIcon, SetExperimental>>& arc_app_icon_requests,
+      size_t& max_arc_app_icon_request_count)
       : ArcAppIcon(context, app_id, size_in_dip, observer, icon_type),
         arc_app_icon_requests_(arc_app_icon_requests),
         max_arc_app_icon_request_count_(max_arc_app_icon_request_count) {}
@@ -282,7 +284,8 @@ class FakeArcAppIcon : public ArcAppIcon {
     ArcAppIcon::OnIconRead(std::move(read_result));
   }
 
-  const raw_ref<std::set<ArcAppIcon*>> arc_app_icon_requests_;
+  const raw_ref<std::set<raw_ptr<ArcAppIcon, SetExperimental>>>
+      arc_app_icon_requests_;
   const raw_ref<size_t> max_arc_app_icon_request_count_;
 };
 
@@ -290,8 +293,9 @@ class FakeArcAppIcon : public ArcAppIcon {
 // FakeArcAppIcon.
 class FakeArcAppIconFactory : public arc::ArcAppIconFactory {
  public:
-  FakeArcAppIconFactory(std::set<ArcAppIcon*>& arc_app_icon_requests,
-                        size_t& max_arc_app_icon_request_count)
+  FakeArcAppIconFactory(
+      std::set<raw_ptr<ArcAppIcon, SetExperimental>>& arc_app_icon_requests,
+      size_t& max_arc_app_icon_request_count)
       : arc::ArcAppIconFactory(),
         arc_app_icon_requests_(arc_app_icon_requests),
         max_arc_app_icon_request_count_(max_arc_app_icon_request_count) {}
@@ -313,7 +317,8 @@ class FakeArcAppIconFactory : public arc::ArcAppIconFactory {
   }
 
  private:
-  const raw_ref<std::set<ArcAppIcon*>> arc_app_icon_requests_;
+  const raw_ref<std::set<raw_ptr<ArcAppIcon, SetExperimental>>>
+      arc_app_icon_requests_;
   const raw_ref<size_t> max_arc_app_icon_request_count_;
 };
 
@@ -1219,7 +1224,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure icon_update_callback_;
   int icon_updated_count_;
-  std::set<ArcAppIcon*> arc_app_icon_requests_;
+  std::set<raw_ptr<ArcAppIcon, SetExperimental>> arc_app_icon_requests_;
   size_t max_arc_app_icon_request_count_ = 0;
 };
 

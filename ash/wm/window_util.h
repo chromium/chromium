@@ -54,7 +54,7 @@ ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
 // window tree. Windows which are descendants of a different root window will be
 // returned in an arbitrary order relative to each-other.
 ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
-    std::set<aura::Window*> window_set);
+    std::set<raw_ptr<aura::Window, SetExperimental>> window_set);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();

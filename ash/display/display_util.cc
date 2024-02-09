@@ -209,7 +209,7 @@ std::u16string ConvertRefreshRateToString16(float refresh_rate) {
 std::u16string GetDisplayErrorNotificationMessageForTest() {
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  for (auto* const notification : notifications) {
+  for (message_center::Notification* const notification : notifications) {
     if (notification->id() == kDisplayErrorNotificationId) {
       return notification->message();
     }

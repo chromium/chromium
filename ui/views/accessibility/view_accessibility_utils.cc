@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -23,11 +24,11 @@ Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
   if (!focused_view)
     return nullptr;
 
-  std::set<Widget*> child_widgets;
+  std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
   Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),
                              &child_widgets);
-  const auto i =
-      base::ranges::find_if(child_widgets, [focused_view](auto* child_widget) {
+  const auto i = base::ranges::find_if(
+      child_widgets, [focused_view](Widget* child_widget) {
         return IsFocusedChildWidget(child_widget, focused_view);
       });
   return (i == child_widgets.cend()) ? nullptr : *i;

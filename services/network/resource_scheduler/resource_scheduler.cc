@@ -860,7 +860,8 @@ class ResourceScheduler::Client
     const size_t kMaxSameHostCount =
         GetMaxNumDelayableRequestsPerHostPerClient();
     size_t same_host_count = 0;
-    for (const auto* in_flight_request : in_flight_requests_) {
+    for (const ScheduledResourceRequestImpl* in_flight_request :
+         in_flight_requests_) {
       if (active_request_host == in_flight_request->scheme_host_port()) {
         same_host_count++;
         if (same_host_count >= kMaxSameHostCount) {

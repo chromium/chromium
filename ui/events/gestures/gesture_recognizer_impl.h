@@ -122,7 +122,7 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   // Convenience method to find the GestureEventHelper that can dispatch events
   // to a specific |consumer|.
   GestureEventHelper* FindDispatchHelperForConsumer(GestureConsumer* consumer);
-  std::set<GestureConsumer*> consumers_;
+  std::set<raw_ptr<GestureConsumer, SetExperimental>> consumers_;
 
   // Maps an event via its |unique_event_id| to the corresponding gesture
   // provider. This avoids any invalid reference while routing ACKs for events

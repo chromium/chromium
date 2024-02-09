@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -373,7 +374,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   mojo::Receiver<cros::mojom::CrosCameraServiceObserver>
       camera_service_observer_receiver_;
 
-  std::set<CameraClientObserver*> client_observers_;
+  std::set<raw_ptr<CameraClientObserver, SetExperimental>> client_observers_;
 
   TokenManager token_manager_;
 

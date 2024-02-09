@@ -84,7 +84,7 @@ class CC_EXPORT TilesWithResourceIterator {
 
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
-  std::set<Tile*> visited_;
+  std::set<raw_ptr<Tile, SetExperimental>> visited_;
 
   // Created when GetCurrentAsPrioritizedTile() is called.
   std::optional<PrioritizedTile> prioritized_tile_;

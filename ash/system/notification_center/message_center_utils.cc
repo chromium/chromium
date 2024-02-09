@@ -103,7 +103,7 @@ size_t GetNotificationCount() {
   return base::ranges::count_if(
       message_center::MessageCenter::Get()
           ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore),
-      [](auto* notification) {
+      [](message_center::Notification* notification) {
         const std::string& notifier = notification->notifier_id().id;
 
         // Don't count these notifications since we have

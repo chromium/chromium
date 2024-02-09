@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -159,7 +160,7 @@ void ScriptContextSet::ForEach(
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   // We copy the context list, because calling into javascript may modify it
   // out from under us.
-  std::set<ScriptContext*> contexts_copy = contexts_;
+  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_copy = contexts_;
 
   for (ScriptContext* context : contexts_copy) {
     // For the same reason as above, contexts may become invalid while we run.

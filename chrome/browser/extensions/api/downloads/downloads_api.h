@@ -432,7 +432,8 @@ class ExtensionDownloadsEventRouter
 
   raw_ptr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
-  std::set<const extensions::Extension*> ui_disabling_extensions_;
+  std::set<raw_ptr<const extensions::Extension, SetExperimental>>
+      ui_disabling_extensions_;
 
   base::Time last_checked_removal_;
 

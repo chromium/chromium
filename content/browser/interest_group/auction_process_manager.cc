@@ -354,8 +354,9 @@ void AuctionProcessManager::OnWorkletProcessUnusable(
     return;
 
   // All the pending requests for the same origin as the oldest pending request.
-  std::set<ProcessHandle*>* pending_requests = &(*GetPendingRequestMap(
-      worklet_process->worklet_type()))[queue->front()->origin_];
+  std::set<raw_ptr<ProcessHandle, SetExperimental>>* pending_requests =
+      &(*GetPendingRequestMap(
+          worklet_process->worklet_type()))[queue->front()->origin_];
 
   // Walk through all requests that can be served by the same process as the
   // next bidder process in the queue, assigning them a process. This code does

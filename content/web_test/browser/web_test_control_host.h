@@ -383,9 +383,12 @@ class WebTestControlHost : public WebContentsObserver,
   base::ScopedMultiSourceObservation<RenderProcessHost,
                                      RenderProcessHostObserver>
       render_process_host_observations_{this};
-  std::set<RenderProcessHost*> all_observed_render_process_hosts_;
-  std::set<RenderProcessHost*> main_window_render_process_hosts_;
-  std::set<RenderViewHost*> main_window_render_view_hosts_;
+  std::set<raw_ptr<RenderProcessHost, SetExperimental>>
+      all_observed_render_process_hosts_;
+  std::set<raw_ptr<RenderProcessHost, SetExperimental>>
+      main_window_render_process_hosts_;
+  std::set<raw_ptr<RenderViewHost, SetExperimental>>
+      main_window_render_view_hosts_;
 
   // Changes reported by WebTestRuntimeFlagsChanged() that have accumulated
   // since PrepareForWebTest (i.e. changes that need to be sent to a fresh

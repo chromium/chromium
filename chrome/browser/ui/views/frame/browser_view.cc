@@ -425,7 +425,7 @@ bool GetGestureCommand(ui::GestureEvent* event, int* command) {
 bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
   views::Widget::Widgets widgets;
   views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
-  for (auto* widget : widgets) {
+  for (views::Widget* widget : widgets) {
     if (widget == parent_widget)
       continue;
     if (widget->IsModal())
@@ -2411,7 +2411,7 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
   views::Widget::Widgets widgets;
   views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
   return base::ranges::any_of(widgets, [point_in_screen_coords,
-                                        anchor_widget](auto* widget) {
+                                        anchor_widget](views::Widget* widget) {
     return widget != anchor_widget && widget->IsVisible() &&
            widget->GetWindowBoundsInScreen().Contains(point_in_screen_coords);
   });

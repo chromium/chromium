@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   void AddDataSource(DataSourceBase*);
   // Returns a copy of the set of currently registered data sources. Can be
   // called on any thread.
-  std::set<DataSourceBase*> data_sources();
+  std::set<raw_ptr<DataSourceBase, SetExperimental>> data_sources();
 
   // Attempt to enable startup tracing for the current process and given
   // producer. Returns false on failure, e.g. because another concurrent tracing
@@ -319,7 +319,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   base::Lock data_sources_lock_;
   // The canonical set of DataSourceBases alive in this process. These will be
   // registered with the tracing service.
-  std::set<DataSourceBase*> data_sources_;
+  std::set<raw_ptr<DataSourceBase, SetExperimental>> data_sources_;
 
   // A PerfettoProducer that connects to the chrome Perfetto service through
   // mojo.

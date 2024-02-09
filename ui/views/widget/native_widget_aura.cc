@@ -1411,8 +1411,9 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
 
   // First notify all the widgets that they are being disassociated
   // from their previous parent.
-  for (auto* widget : widgets)
+  for (Widget* widget : widgets) {
     widget->NotifyNativeViewHierarchyWillChange();
+  }
 
   Widget* child_widget = Widget::GetWidgetForNativeView(native_view);
 
@@ -1424,8 +1425,9 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
   }
 
   // And now, notify them that they have a brand new parent.
-  for (auto* widget : widgets)
+  for (Widget* widget : widgets) {
     widget->NotifyNativeViewHierarchyChanged();
+  }
 }
 
 // static

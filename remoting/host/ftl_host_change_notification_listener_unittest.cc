@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -80,7 +81,8 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
 
   MockListener mock_listener_;
   MockSignalStrategy signal_strategy_;
-  std::set<SignalStrategy::Listener*> signal_strategy_listeners_;
+  std::set<raw_ptr<SignalStrategy::Listener, SetExperimental>>
+      signal_strategy_listeners_;
   std::unique_ptr<FtlHostChangeNotificationListener>
       ftl_host_change_notification_listener_;
 };

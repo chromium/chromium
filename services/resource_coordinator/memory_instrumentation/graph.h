@@ -230,7 +230,7 @@ class GlobalDumpGraph {
 
    private:
     std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
-    std::set<const Node*> visited_;
+    std::set<raw_ptr<const Node, SetExperimental>> visited_;
   };
 
   // An iterator-esque class which yields nodes in a depth-first post order.
@@ -246,7 +246,7 @@ class GlobalDumpGraph {
 
    private:
     std::vector<raw_ptr<Node, VectorExperimental>> to_visit_;
-    std::set<Node*> visited_;
+    std::set<raw_ptr<Node, SetExperimental>> visited_;
     std::vector<raw_ptr<Node, VectorExperimental>> path_;
   };
 

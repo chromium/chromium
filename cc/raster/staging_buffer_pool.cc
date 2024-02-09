@@ -163,7 +163,7 @@ bool StagingBufferPool::OnMemoryDump(
                     MemoryAllocatorDump::kUnitsBytes,
                     staging_buffer_usage_in_bytes_);
   } else {
-    for (const auto* buffer : buffers_) {
+    for (const StagingBuffer* buffer : buffers_) {
       buffer->OnMemoryDump(
           pmd, buffer->format,
           base::Contains(free_buffers_, buffer,

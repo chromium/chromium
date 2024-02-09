@@ -28,7 +28,8 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
   TestExtensionActionAPIObserver(
       content::BrowserContext* context,
       const ExtensionId& extension_id,
-      const std::set<content::WebContents*>& contents_to_observe);
+      const std::set<raw_ptr<content::WebContents, SetExperimental>>&
+          contents_to_observe);
 
   TestExtensionActionAPIObserver(const TestExtensionActionAPIObserver&) =
       delete;
@@ -62,7 +63,7 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
       scoped_observation_{this};
 
   // An optional set of web contents to observe for extension action updates.
-  std::set<content::WebContents*> contents_to_observe_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> contents_to_observe_;
 };
 
 }  // namespace extensions

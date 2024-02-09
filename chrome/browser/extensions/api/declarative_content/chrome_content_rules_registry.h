@@ -144,7 +144,7 @@ class ChromeContentRulesRegistry
   static bool EvaluateConditionForTab(const ContentCondition* condition,
                                       content::WebContents* tab);
 
-  std::set<const ContentRule*> GetMatchingRules(
+  std::set<raw_ptr<const ContentRule, SetExperimental>> GetMatchingRules(
       content::WebContents* tab) const;
 
   // Evaluates the conditions for |tab| based on the tab state and matching CSS
@@ -166,7 +166,9 @@ class ChromeContentRulesRegistry
   // This lets us call Revert as appropriate. Note that this is expected to have
   // a key-value pair for every WebContents the registry is tracking, even if
   // the value is the empty set.
-  std::map<content::WebContents*, std::set<const ContentRule*>> active_rules_;
+  std::map<content::WebContents*,
+           std::set<raw_ptr<const ContentRule, SetExperimental>>>
+      active_rules_;
 
   // The evaluators responsible for creating predicates and tracking
   // predicate-related state.
@@ -177,7 +179,7 @@ class ChromeContentRulesRegistry
 
   // Contains WebContents which require rule evaluation. Only used while
   // |evaluation_disposition_| is DEFER.
-  std::set<content::WebContents*> evaluation_pending_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> evaluation_pending_;
 };
 
 }  // namespace extensions

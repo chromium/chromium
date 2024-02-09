@@ -82,7 +82,8 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    std::set<content::WebContents*>& evaluation_requests() {
+    std::set<raw_ptr<content::WebContents, SetExperimental>>&
+    evaluation_requests() {
       return evaluation_requests_;
     }
 
@@ -98,7 +99,8 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
     }
 
    private:
-    std::set<content::WebContents*> evaluation_requests_;
+    std::set<raw_ptr<content::WebContents, SetExperimental>>
+        evaluation_requests_;
   };
 
   DeclarativeContentIsBookmarkedConditionTrackerTest() {

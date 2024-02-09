@@ -337,7 +337,8 @@ class NetworkService::DelayedDohProbeActivator {
   // service. Intended to be called on expiration of |doh_probes_timer_| to
   // activate probes for contexts registered during the initial delay.
   void ActivateAllDohProbes() {
-    for (auto* network_context : network_service_->network_contexts_) {
+    for (NetworkContext* network_context :
+         network_service_->network_contexts_) {
       MaybeActivateDohProbes(network_context);
     }
   }
@@ -700,7 +701,7 @@ void NetworkService::ConfigureStubHostResolver(
 void NetworkService::DisableQuic() {
   quic_disabled_ = true;
 
-  for (auto* network_context : network_contexts_) {
+  for (NetworkContext* network_context : network_contexts_) {
     network_context->DisableQuic();
   }
 }
@@ -826,7 +827,7 @@ void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
 #if BUILDFLAG(IS_ANDROID)
 void NetworkService::OnApplicationStateChange(
     base::android::ApplicationState state) {
-  for (auto* network_context : network_contexts_) {
+  for (NetworkContext* network_context : network_contexts_) {
     for (auto const& listener : network_context->app_status_listeners()) {
       listener->Notify(state);
     }
@@ -892,7 +893,7 @@ void NetworkService::SetCtEnforcementEnabled(
     bool enabled,
     SetCtEnforcementEnabledCallback callback) {
   ct_enforcement_enabled_ = enabled;
-  for (auto* context : network_contexts_) {
+  for (NetworkContext* context : network_contexts_) {
     context->url_request_context()
         ->transport_security_state()
         ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);

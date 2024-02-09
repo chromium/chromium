@@ -2169,7 +2169,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // All live RenderWidgetHostImpls that are created by this object and may
   // outlive it.
-  std::set<RenderWidgetHostImpl*> created_widgets_;
+  std::set<raw_ptr<RenderWidgetHostImpl, SetExperimental>> created_widgets_;
 
   // Process id of the shown fullscreen widget, or kInvalidUniqueID if there is
   // no fullscreen widget.
@@ -2325,7 +2325,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores a set of frames that are fullscreen.
   // See https://fullscreen.spec.whatwg.org.
-  std::set<RenderFrameHostImpl*> fullscreen_frames_;
+  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> fullscreen_frames_;
 
   // Store an ID for the frame that is currently fullscreen, or an invalid ID if
   // there is none.

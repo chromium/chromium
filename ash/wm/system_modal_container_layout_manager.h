@@ -123,7 +123,7 @@ class ASH_EXPORT SystemModalContainerLayoutManager
 
   // Windows contained in this set are centered. Windows are automatically
   // added to this based on IsBoundsCentered().
-  std::set<const aura::Window*> windows_to_center_;
+  std::set<raw_ptr<const aura::Window, SetExperimental>> windows_to_center_;
 
   // An observer to update position of modals when display work area changes.
   display::ScopedDisplayObserver display_observer_{this};

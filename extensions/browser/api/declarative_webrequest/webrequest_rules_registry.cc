@@ -60,7 +60,8 @@ std::set<const WebRequestRule*> WebRequestRulesRegistry::GetMatches(
 
   // 1st phase -- add all rules with some conditions without UrlFilter
   // attributes.
-  for (const auto* rule : rules_with_untriggered_conditions_) {
+  for (const DeclarativeRule<WebRequestCondition, WebRequestAction>* rule :
+       rules_with_untriggered_conditions_) {
     if (rule->conditions().IsFulfilled(base::MatcherStringPattern::kInvalidId,
                                        request_data))
       result.insert(rule);

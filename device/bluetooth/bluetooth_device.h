@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -824,7 +825,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   std::vector<GattConnectionCallback> create_gatt_connection_callbacks_;
 
   // BluetoothGattConnection objects keeping the GATT connection alive.
-  std::set<BluetoothGattConnection*> gatt_connections_;
+  std::set<raw_ptr<BluetoothGattConnection, SetExperimental>> gatt_connections_;
 
   GattServiceMap gatt_services_;
   bool gatt_services_discovery_complete_;

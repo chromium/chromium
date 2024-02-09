@@ -235,7 +235,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // PendingRequestQueue is assigned a process, all requests that can use the
   // same process are assigned the same process. This map is used to manage that
   // without searching through the entire queue.
-  using PendingRequestMap = std::map<url::Origin, std::set<ProcessHandle*>>;
+  using PendingRequestMap =
+      std::map<url::Origin, std::set<raw_ptr<ProcessHandle, SetExperimental>>>;
 
   // Contains running processes. Worklet processes are refcounted, and
   // automatically remove themselves from this list when destroyed.

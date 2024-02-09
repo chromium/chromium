@@ -81,8 +81,8 @@ class NativeWebContentsModalDialogManagerViews
   gfx::NativeWindow dialog_;
   raw_ptr<web_modal::WebContentsModalDialogHost> host_ = nullptr;
   bool host_destroying_ = false;
-  std::set<views::Widget*> observed_widgets_;
-  std::set<views::Widget*> shown_widgets_;
+  std::set<raw_ptr<views::Widget, SetExperimental>> observed_widgets_;
+  std::set<raw_ptr<views::Widget, SetExperimental>> shown_widgets_;
 };
 
 }  // namespace constrained_window

@@ -195,7 +195,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::unique_ptr<TrustedSignals> trusted_signals;
 
     // The batched Requests this is for.
-    std::set<RequestImpl*> requests;
+    std::set<raw_ptr<RequestImpl, SetExperimental>> requests;
   };
 
   // Adds `request` to `queued_requests_`, and starts `timer_` if needed.
@@ -221,7 +221,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   // All live requests that haven't yet been assigned to a
   // BatchedTrustedSignalsRequest.
-  std::set<RequestImpl*> queued_requests_;
+  std::set<raw_ptr<RequestImpl, SetExperimental>> queued_requests_;
 
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>

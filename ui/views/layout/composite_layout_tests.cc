@@ -303,7 +303,7 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
 
   const View* main_button() const { return children()[children().size() - 1]; }
 
-  std::set<const View*> visible_views_;
+  std::set<raw_ptr<const View, SetExperimental>> visible_views_;
 };
 
 BEGIN_METADATA(SimulatedExtensionsContainer)

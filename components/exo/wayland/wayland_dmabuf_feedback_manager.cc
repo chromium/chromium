@@ -257,7 +257,9 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
 
   Surface* GetSurface() { return surface_; }
   WaylandDmabufFeedback* GetFeedback() { return feedback_.get(); }
-  std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> GetFeedbackRefs() {
+  std::set<
+      raw_ptr<WaylandDmabufSurfaceFeedbackResourceWrapper, SetExperimental>>
+  GetFeedbackRefs() {
     return surface_feedback_refs_;
   }
 
@@ -265,7 +267,9 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
   const raw_ptr<WaylandDmabufFeedbackManager> feedback_manager_;
   const raw_ptr<Surface> surface_;
   std::unique_ptr<WaylandDmabufFeedback> const feedback_;
-  std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> surface_feedback_refs_;
+  std::set<
+      raw_ptr<WaylandDmabufSurfaceFeedbackResourceWrapper, SetExperimental>>
+      surface_feedback_refs_;
 };
 
 // Simple helper class to use a surface feedback with multiple resource objects
@@ -528,7 +532,8 @@ void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
     return;
   }
 
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }
@@ -561,7 +566,8 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
   }
 
   feedback->ClearScanoutTranche();
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }
@@ -576,7 +582,8 @@ void WaylandDmabufFeedbackManager::MaybeResendFeedback(Surface* surface) {
   auto* feedback = surface_feedback->GetFeedback();
   feedback->MaybeAddScanoutTranche(surface);
 
-  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+  for (WaylandDmabufSurfaceFeedbackResourceWrapper* feedback_ref :
+       surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }
 }

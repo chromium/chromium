@@ -911,7 +911,7 @@ bool TransportClientSocketPool::CloseOneIdleConnectionInHigherLayeredPool() {
   // This pool doesn't have any idle sockets. It's possible that a pool at a
   // higher layer is holding one of this sockets active, but it's actually idle.
   // Query the higher layers.
-  for (auto* higher_pool : higher_pools_) {
+  for (HigherLayeredPool* higher_pool : higher_pools_) {
     if (higher_pool->CloseOneIdleConnection())
       return true;
   }

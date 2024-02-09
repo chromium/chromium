@@ -74,7 +74,9 @@ class NET_EXPORT WindowsSystemProxyResolutionService
       std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver,
       NetLog* net_log);
 
-  typedef std::set<WindowsSystemProxyResolutionRequest*> PendingRequests;
+  typedef std::set<
+      raw_ptr<WindowsSystemProxyResolutionRequest, SetExperimental>>
+      PendingRequests;
 
   [[nodiscard]] bool ContainsPendingRequest(
       WindowsSystemProxyResolutionRequest* req);

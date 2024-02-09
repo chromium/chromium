@@ -489,7 +489,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       std::map<QuicChromiumClientSession*, QuicSessionAliasKey>;
   using AliasSet = std::set<QuicSessionAliasKey>;
   using SessionAliasMap = std::map<QuicChromiumClientSession*, AliasSet>;
-  using SessionSet = std::set<QuicChromiumClientSession*>;
+  using SessionSet =
+      std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>;
   using IPAliasMap = std::map<IPEndPoint, SessionSet>;
   using SessionPeerIPMap = std::map<QuicChromiumClientSession*, IPEndPoint>;
   using JobMap = std::map<QuicSessionKey, std::unique_ptr<Job>>;

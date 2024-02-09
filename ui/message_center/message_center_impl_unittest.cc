@@ -1355,7 +1355,7 @@ TEST_F(MessageCenterImplTest, FindNotificationsByAppId) {
   }
 
   for (std::string app_id : {app_id1, app_id2}) {
-    for (auto* notification :
+    for (Notification* notification :
          message_center()->FindNotificationsByAppId(app_id)) {
       EXPECT_EQ(app_id, notification->notifier_id().id);
     }

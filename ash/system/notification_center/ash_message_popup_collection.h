@@ -222,7 +222,7 @@ class ASH_EXPORT AshMessagePopupCollection
   // Outlives this class.
   raw_ptr<Shelf> shelf_;
 
-  std::set<views::Widget*> tracked_widgets_;
+  std::set<raw_ptr<views::Widget, SetExperimental>> tracked_widgets_;
 
   // Tracks the smoothness of popup animation.
   std::optional<ui::ThroughputTracker> animation_tracker_;

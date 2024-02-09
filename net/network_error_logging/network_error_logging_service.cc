@@ -307,7 +307,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // Policies in the map are unowned; they are pointers to the original in
   // the PolicyMap.
   using WildcardPolicyMap =
-      std::map<WildcardNelPolicyKey, std::set<const NelPolicy*>>;
+      std::map<WildcardNelPolicyKey,
+               std::set<raw_ptr<const NelPolicy, SetExperimental>>>;
 
   PolicyMap policies_;
   WildcardPolicyMap wildcard_policies_;

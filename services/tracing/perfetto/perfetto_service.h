@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -95,7 +96,8 @@ class PerfettoService : public mojom::PerfettoService {
   std::unique_ptr<perfetto::TracingService> service_;
   mojo::ReceiverSet<mojom::PerfettoService, uint32_t> receivers_;
   mojo::UniqueReceiverSet<mojom::ProducerHost, uint32_t> producer_receivers_;
-  std::set<ConsumerHost::TracingSession*> tracing_sessions_;  // Not owned.
+  std::set<raw_ptr<ConsumerHost::TracingSession, SetExperimental>>
+      tracing_sessions_;  // Not owned.
   // Protects access to |active_service_pids_|. We need this lock because
   // CustomEventRecorder calls active_service_pids() from a possibly different
   // thread on incremental state reset.

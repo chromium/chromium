@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/fake_translate_agent.h"
@@ -124,7 +125,8 @@ class TranslateManagerRenderViewHostAndroidTest
  private:
   // The infobars that have been removed.
   // WARNING: the pointers point to deleted objects, use only for comparison.
-  std::set<infobars::InfoBarDelegate*> removed_infobars_;
+  std::set<raw_ptr<infobars::InfoBarDelegate, SetExperimental>>
+      removed_infobars_;
 
   FakeTranslateAgent fake_agent_;
 };

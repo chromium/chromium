@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -188,7 +189,8 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
                .size() == 0;
   }
 
-  std::set<content::RenderFrameHost*> live_original_frames_;
+  std::set<raw_ptr<content::RenderFrameHost, SetExperimental>>
+      live_original_frames_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

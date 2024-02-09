@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace feature_engagement::test {
@@ -84,7 +85,7 @@ class ScopedIphFeatureList {
 
   bool active_ = false;
   base::test::ScopedFeatureList feature_list_;
-  std::set<const base::Feature*> added_features_;
+  std::set<raw_ptr<const base::Feature, SetExperimental>> added_features_;
 };
 
 }  // namespace feature_engagement::test

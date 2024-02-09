@@ -546,8 +546,9 @@ ash::ShelfID AppServiceAppWindowArcTracker::GetShelfId(aura::Window* window) {
 }
 
 void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
-  for (auto* window : arc_window_candidates_)
+  for (aura::Window* window : arc_window_candidates_) {
     AttachControllerToWindow(window);
+  }
 }
 
 void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {

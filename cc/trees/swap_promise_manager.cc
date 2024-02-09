@@ -35,8 +35,10 @@ void SwapPromiseManager::RemoveLatencyInfoSwapPromiseMonitor(
 }
 
 void SwapPromiseManager::NotifyLatencyInfoSwapPromiseMonitors() {
-  for (auto* monitor : latency_info_swap_promise_monitors_)
+  for (LatencyInfoSwapPromiseMonitor* monitor :
+       latency_info_swap_promise_monitors_) {
     monitor->OnSetNeedsCommitOnMain();
+  }
 }
 
 void SwapPromiseManager::WillCommit() {

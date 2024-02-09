@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -797,7 +798,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   void Detach(WebContents* source);
 
   // The WebContents that this is currently a delegate for.
-  std::set<WebContents*> attached_contents_;
+  std::set<raw_ptr<WebContents, SetExperimental>> attached_contents_;
 };
 
 }  // namespace content

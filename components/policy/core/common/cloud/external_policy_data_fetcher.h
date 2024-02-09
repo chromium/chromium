@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -107,7 +108,7 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> cloned_url_loader_factory_;
 
   // Set that owns all currently running Jobs.
-  typedef std::set<Job*> JobSet;
+  typedef std::set<raw_ptr<Job, SetExperimental>> JobSet;
   JobSet jobs_;
 
   base::WeakPtrFactory<ExternalPolicyDataFetcher> weak_factory_{this};

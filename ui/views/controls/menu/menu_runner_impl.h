@@ -83,7 +83,7 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   std::unique_ptr<MenuItemView> menu_;
 
   // Any sibling menus. Does not include |menu_|. We own these too.
-  std::set<MenuItemView*> sibling_menus_;
+  std::set<raw_ptr<MenuItemView, SetExperimental>> sibling_menus_;
 
   // Are we in run waiting for it to return?
   bool running_ = false;

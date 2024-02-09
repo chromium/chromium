@@ -202,13 +202,13 @@ aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
 }
 
 std::vector<aura::Window*> SortWindowsBottomToTop(
-    std::set<aura::Window*> window_set) {
+    std::set<raw_ptr<aura::Window, SetExperimental>> window_set) {
   std::vector<aura::Window*> ordered;
   std::vector<aura::Window*> root_windows;
   std::stack<aura::Window*> stack;
 
   // Collect unique root windows and put them on the stack.
-  for (auto* window : window_set) {
+  for (aura::Window* window : window_set) {
     // The call to `GetRootWindow` here traverses up the window tree to the
     // root, so this is technically quadratic time in the worst case, but is
     // effectively linear time for shallow trees, which are common.

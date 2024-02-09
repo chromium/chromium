@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -834,10 +835,12 @@ void IndexedDBTransaction::CloseOpenCursors() {
 
   // IndexedDBCursor::Close() indirectly mutates |open_cursors_|, when it calls
   // IndexedDBTransaction::UnregisterOpenCursor().
-  std::set<IndexedDBCursor*> open_cursors = std::move(open_cursors_);
+  std::set<raw_ptr<IndexedDBCursor, SetExperimental>> open_cursors =
+      std::move(open_cursors_);
   open_cursors_.clear();
-  for (auto* cursor : open_cursors)
+  for (IndexedDBCursor* cursor : open_cursors) {
     cursor->Close();
+  }
 }
 
 std::vector<PartitionedLockManager::PartitionedLockRequest>

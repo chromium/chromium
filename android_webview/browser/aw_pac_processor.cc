@@ -387,7 +387,7 @@ AwPacProcessor::~AwPacProcessor() {
 
 void AwPacProcessor::Destroy(base::WaitableEvent* event) {
   // Cancel all unfinished jobs to unblock calling thread.
-  for (auto* job : jobs_) {
+  for (Job* job : jobs_) {
     job->Cancel();
   }
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -49,7 +50,7 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
  private:
   safe_browsing::ThreatMetadata GetSimulatedMetadataOrSafe(const GURL& url);
 
-  std::set<Client*> pending_clients_;
+  std::set<raw_ptr<Client, SetExperimental>> pending_clients_;
   std::map<GURL, safe_browsing::ThreatMetadata>
       url_to_simulated_threat_metadata_;
   bool simulate_timeout_ = false;

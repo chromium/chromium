@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -312,7 +313,7 @@ void PerfettoTracedProcess::AddDataSource(DataSourceBase* data_source) {
   }
 }
 
-std::set<PerfettoTracedProcess::DataSourceBase*>
+std::set<raw_ptr<PerfettoTracedProcess::DataSourceBase, SetExperimental>>
 PerfettoTracedProcess::data_sources() {
   base::AutoLock lock(data_sources_lock_);
   return data_sources_;
@@ -500,7 +501,7 @@ void PerfettoTracedProcess::SetupSystemTracing(
       FROM_HERE, base::BindOnce([]() {
         PerfettoTracedProcess* traced_process = PerfettoTracedProcess::Get();
         base::AutoLock lock(traced_process->data_sources_lock_);
-        for (auto* data_source : traced_process->data_sources_) {
+        for (DataSourceBase* data_source : traced_process->data_sources_) {
           traced_process->system_producer()->NewDataSourceAdded(data_source);
         }
       }));

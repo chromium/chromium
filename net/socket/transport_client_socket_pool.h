@@ -795,7 +795,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   // Pools that create connections through |this|.  |this| will try to close
   // their idle sockets when it stalls.  Must be empty on destruction.
-  std::set<HigherLayeredPool*> higher_pools_;
+  std::set<raw_ptr<HigherLayeredPool, SetExperimental>> higher_pools_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
 

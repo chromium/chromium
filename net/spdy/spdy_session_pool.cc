@@ -655,7 +655,7 @@ void SpdySessionPool::RemoveAliases(const SpdySessionKey& key) {
 
 SpdySessionPool::WeakSessionList SpdySessionPool::GetCurrentSessions() const {
   WeakSessionList current_sessions;
-  for (auto* session : sessions_) {
+  for (SpdySession* session : sessions_) {
     current_sessions.push_back(session->GetWeakPtr());
   }
   return current_sessions;

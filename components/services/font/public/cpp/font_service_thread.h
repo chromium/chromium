@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
@@ -195,7 +196,8 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   // gets an error during this time all events in |pending_waitable_events_| are
   // signaled. This is necessary as when the pipe is closed the callbacks are
   // never received.
-  std::set<base::WaitableEvent*> pending_waitable_events_;
+  std::set<raw_ptr<base::WaitableEvent, SetExperimental>>
+      pending_waitable_events_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

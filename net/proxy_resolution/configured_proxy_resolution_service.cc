@@ -1088,7 +1088,7 @@ void ConfiguredProxyResolutionService::SetReady() {
       weak_ptr_factory_.GetWeakPtr();
 
   auto pending_requests_copy = pending_requests_;
-  for (auto* req : pending_requests_copy) {
+  for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
     if (!ContainsPendingRequest(req))
       continue;
 

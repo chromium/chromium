@@ -140,7 +140,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
   raw_ptr<ExtensionIdSet, ExperimentalRenderer> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
-  std::set<ScriptContext*> contexts_;
+  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
 
   // Whether the script context set is associated with the renderer active on
   // the Chrome OS lock screen.

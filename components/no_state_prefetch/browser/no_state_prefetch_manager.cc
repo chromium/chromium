@@ -183,7 +183,7 @@ NoStatePrefetchManager::~NoStatePrefetchManager() {
   DCHECK(active_prefetches_.empty());
   DCHECK(to_delete_prefetches_.empty());
 
-  for (auto* host : prerender_process_hosts_) {
+  for (content::RenderProcessHost* host : prerender_process_hosts_) {
     host->RemoveObserver(this);
   }
 }

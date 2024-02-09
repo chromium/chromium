@@ -234,7 +234,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // Set of registered RemotingBridges, maintained by RegisterBridge() and
   // DeregisterBridge(). These pointers are always valid while they are in this
   // set.
-  std::set<RemotingBridge*> bridges_;
+  std::set<raw_ptr<RemotingBridge, SetExperimental>> bridges_;
 
   // When non-null, an active remoting session is taking place, with this
   // pointing to the RemotingBridge being used to communicate with the source.

@@ -940,7 +940,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // will remove itself from this list when it gets destroyed or becomes
   // inactive by calling DiscoverySessionBecameInactive(), hence no pointers to
   // deallocated sessions are kept.
-  std::set<BluetoothDiscoverySession*> discovery_sessions_;
+  std::set<raw_ptr<BluetoothDiscoverySession, SetExperimental>>
+      discovery_sessions_;
 
  private:
   // This is the callback for all OS level calls to StartScanWithFilter,

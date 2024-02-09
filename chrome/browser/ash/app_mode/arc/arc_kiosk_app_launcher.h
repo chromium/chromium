@@ -61,7 +61,7 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
   const std::string app_id_;
   const raw_ptr<ArcAppListPrefs> prefs_;
   int task_id_ = -1;
-  std::set<aura::Window*> windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> windows_;
   // Not owning the delegate, delegate owns this class.
   const raw_ptr<Delegate> delegate_;
 };

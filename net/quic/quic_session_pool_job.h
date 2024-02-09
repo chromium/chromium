@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_QUIC_SESSION_POOL_JOB_H_
 #define NET_QUIC_QUIC_SESSION_POOL_JOB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_error_details.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
@@ -59,7 +60,9 @@ class QuicSessionPool::Job {
 
   const QuicSessionAliasKey& key() const { return key_; }
   const NetLogWithSource& net_log() const { return net_log_; }
-  const std::set<QuicSessionRequest*>& requests() { return requests_; }
+  const std::set<raw_ptr<QuicSessionRequest, SetExperimental>>& requests() {
+    return requests_;
+  }
   RequestPriority priority() const { return priority_; }
 
  protected:
@@ -76,7 +79,7 @@ class QuicSessionPool::Job {
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;
   const NetLogWithSource net_log_;
-  std::set<QuicSessionRequest*> requests_;
+  std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
 };
 
 }  // namespace net

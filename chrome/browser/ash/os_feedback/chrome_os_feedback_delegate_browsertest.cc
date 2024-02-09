@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -876,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   LaunchFeedbackDialog();
   gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
-  std::set<views::Widget*> owned_widgets_pre_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
@@ -887,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenDiagnosticsApp();
 
-  std::set<views::Widget*> owned_widgets_post_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
@@ -921,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
 
-  std::set<views::Widget*> owned_widgets_pre_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
@@ -932,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
 
   feedback_delegate.OpenMetricsDialog();
 
-  std::set<views::Widget*> owned_widgets_post_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
@@ -948,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   gfx::NativeWindow feedback_window =
       feedback_browser->window()->GetNativeWindow();
 
-  std::set<views::Widget*> owned_widgets_pre_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
@@ -959,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenSystemInfoDialog();
 
-  std::set<views::Widget*> owned_widgets_post_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 
@@ -974,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
-  std::set<views::Widget*> owned_widgets_pre_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
 
   EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
@@ -985,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   feedback_delegate.OpenSystemInfoDialog();
 
-  std::set<views::Widget*> owned_widgets_post_dialog;
+  std::set<raw_ptr<views::Widget, SetExperimental>> owned_widgets_post_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window,
                                     &owned_widgets_post_dialog);
 

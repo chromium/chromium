@@ -87,7 +87,7 @@ class WindowReorderer::AssociationObserver : public aura::WindowObserver {
   // Not owned.
   raw_ptr<WindowReorderer> reorderer_;
 
-  std::set<aura::Window*> windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> windows_;
 };
 
 WindowReorderer::AssociationObserver::AssociationObserver(

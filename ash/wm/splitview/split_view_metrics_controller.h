@@ -265,7 +265,7 @@ class SplitViewMetricsController : public SplitViewObserver,
   // stage, so their window states cannot be observed when are inserted into
   // `observed_windows_` list. This set contains the windows recovered by window
   // restored whose window states have not been observed yet.
-  std::set<aura::Window*> no_state_observed_windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> no_state_observed_windows_;
 
   // Start time of clamshell and tablet split view. When stop recording, the
   // start time will be set to `base::TimeTicks::Max()`. This is also used as an

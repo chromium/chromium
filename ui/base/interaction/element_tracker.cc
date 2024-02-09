@@ -179,7 +179,7 @@ class ElementTracker::GarbageCollector {
   }
 
   const raw_ptr<ElementTracker> tracker_;
-  std::set<ElementData*> candidates_;
+  std::set<raw_ptr<ElementData, SetExperimental>> candidates_;
   int frame_count_ = 0;
 };
 

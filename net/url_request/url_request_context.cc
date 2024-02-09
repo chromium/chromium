@@ -52,7 +52,8 @@ namespace net {
 
 URLRequestContext::URLRequestContext(
     base::PassKey<URLRequestContextBuilder> pass_key)
-    : url_requests_(std::make_unique<std::set<const URLRequest*>>()),
+    : url_requests_(std::make_unique<
+                    std::set<raw_ptr<const URLRequest, SetExperimental>>>()),
       bound_network_(handles::kInvalidNetworkHandle) {}
 
 URLRequestContext::~URLRequestContext() {

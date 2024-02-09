@@ -112,7 +112,8 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   FrameStatusMap frame_statuses_;
 
   // The frames currently being injected into, so long as that frame is valid.
-  std::set<content::RenderFrame*> active_injection_frames_;
+  std::set<raw_ptr<content::RenderFrame, SetExperimental>>
+      active_injection_frames_;
 
   // The collection of RFOHelpers.
   std::vector<std::unique_ptr<RFOHelper>> rfo_helpers_;
