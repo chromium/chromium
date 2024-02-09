@@ -34,6 +34,8 @@ target(link_target_type, "renderer") {
   ]
 
   sources = [
+    "accessibility/annotations/ax_annotators_manager.cc",
+    "accessibility/annotations/ax_annotators_manager.h",
     "accessibility/annotations/ax_image_annotator.cc",
     "accessibility/annotations/ax_image_annotator.h",
     "accessibility/annotations/ax_image_stopwords.cc",

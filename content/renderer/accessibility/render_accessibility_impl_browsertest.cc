@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/test/render_view_test.h"
+#include "content/renderer/accessibility/annotations/ax_annotators_manager.h"
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
@@ -1306,14 +1307,15 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     ui::AXMode mode = ui::kAXModeComplete;
     mode.set_mode(ui::AXMode::kLabelImages, true);
     SetMode(mode);
-    GetRenderAccessibilityImpl()->ax_image_annotator_ =
+    GetRenderAccessibilityImpl()->ax_annotators_manager_->ax_image_annotator_ =
         std::make_unique<TestAXImageAnnotator>(GetRenderAccessibilityImpl(),
                                                mock_annotator().GetRemote());
-    RenderAccessibilityImpl::IgnoreProtocolChecksForTesting();
+    AXAnnotatorsManager::IgnoreProtocolChecksForTesting();
   }
 
   void TearDown() override {
-    GetRenderAccessibilityImpl()->ax_image_annotator_.release();
+    GetRenderAccessibilityImpl()
+        ->ax_annotators_manager_->ax_image_annotator_.release();
     RenderAccessibilityImplTest::TearDown();
   }
 
