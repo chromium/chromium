@@ -273,7 +273,10 @@
     Block
   </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION" desc="Explanatory text for the Manage Topics settings page" translateable="false">
-    Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK1">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
+    Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics.
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK" desc="Learn more text for the Manage Topics Page" translateable="false">
+    <ph name="BEGIN_LINK1">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Leran more' link in the manage topics page description." translateable="false">
     Learn more about managing your ad privacy in Chrome.

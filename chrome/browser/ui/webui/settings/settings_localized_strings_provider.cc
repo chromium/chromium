@@ -2081,6 +2081,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2},
       {"manageTopicsPageDescription",
        IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION},
+      {"manageTopicsPageLearnMoreLink",
+       IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK},
       {"manageTopicsHeading", IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING},
       {"manageTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION},
@@ -2122,9 +2124,9 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                  g_browser_process->GetApplicationLocale())
                                  .spec())));
   html_source->AddString(
-      "manageTopicsPageDescription",
+      "manageTopicsPageLearnMoreLink",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION,
+          IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK,
           base::ASCIIToUTF16(
               chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL),
           l10n_util::GetStringUTF16(

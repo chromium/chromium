@@ -33,7 +33,10 @@
 
 </style>
 <div id="explanationText">
-  $i18nRaw{manageTopicsPageDescription}
+  $i18n{manageTopicsPageDescription}
+  <span id="learnMoreLink">
+    $i18nRaw{manageTopicsPageLearnMoreLink}
+  </span>
 </div>
 <template is="dom-repeat" items="[[firstLevelTopicsList_]]">
   <div class="topic-toggle-row" on-click="onToggleRowClick_" actionable>
