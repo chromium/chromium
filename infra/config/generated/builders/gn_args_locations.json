@@ -123,7 +123,6 @@
     "lacros-arm-generic-rel-skylab": "ci/lacros-arm-generic-rel-skylab/gn-args.json",
     "lacros-arm64-generic-rel": "ci/lacros-arm64-generic-rel/gn-args.json",
     "lacros-arm64-generic-rel-skylab": "ci/lacros-arm64-generic-rel-skylab/gn-args.json",
-    "linux-ash-chromium-generator-rel": "ci/linux-ash-chromium-generator-rel/gn-args.json",
     "linux-cfm-rel": "ci/linux-cfm-rel/gn-args.json",
     "linux-chromeos-dbg": "ci/linux-chromeos-dbg/gn-args.json",
     "linux-chromeos-rel": "ci/linux-chromeos-rel/gn-args.json",
