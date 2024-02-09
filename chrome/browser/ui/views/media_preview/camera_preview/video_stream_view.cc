@@ -83,8 +83,10 @@ void VideoStreamView::ClearFrame() {
 
 void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
   if (!latest_frame_) {
-    gfx::RectF base_rect(width(), height());
-    canvas->DrawRoundRect(base_rect, rounded_radius_, cc::PaintFlags());
+    gfx::RectF background_rect(width(), height());
+    cc::PaintFlags background_flags;
+    background_flags.setAntiAlias(true);
+    canvas->DrawRoundRect(background_rect, rounded_radius_, background_flags);
     return;
   }
 
@@ -106,6 +108,7 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   // Select high quality frame scaling.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
+  flags.setAntiAlias(true);
   media::VideoTransformation transformation;
   transformation.mirrored = true;
   video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(),
