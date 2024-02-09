@@ -599,45 +599,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   EXPECT_EQ(2U, cards_metadata[0].use_count);
 }
 
-// If the server sends the same cards again, they should not change on the
-// client even if the cards on the client are unmasked.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
-                       SameUpdatesAreIgnoredWhenLocalCardsUnmasked) {
-  GetFakeServer()->SetWalletData(
-      {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
-                            kDefaultBillingAddressID),
-       CreateDefaultSyncPaymentsCustomerData()});
-  ASSERT_TRUE(SetupSync());
-
-  // Check we have the card locally.
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
-  EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard, cards[0]->record_type());
-
-  // Unmask the card (the full card number has to start with "34" to match the
-  // type of the masked card which is by default AMEX in the tests).
-  UnmaskServerCard(0, *cards[0], u"3404000300020001");
-
-  // Keep the same data (only change the customer data to force the FakeServer
-  // to send the full update).
-  GetFakeServer()->SetWalletData(
-      {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
-                            kDefaultBillingAddressID),
-       CreateSyncPaymentsCustomerData("different")});
-
-  WaitForPaymentsCustomerData(/*customer_id=*/"different", pdm);
-
-  // Make sure the data is present on the client.
-  cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
-  EXPECT_EQ(CreditCard::RecordType::kFullServerCard, cards[0]->record_type());
-  EXPECT_EQ("different", pdm->GetPaymentsCustomerData()->customer_id);
-}
-
 // Wallet data should get cleared from the database when the wallet sync type
 // flag is disabled.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {

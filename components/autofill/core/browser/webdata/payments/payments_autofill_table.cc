@@ -97,11 +97,6 @@ constexpr std::string_view kCardArtUrl = "card_art_url";
 constexpr std::string_view kProductDescription = "product_description";
 constexpr std::string_view kProductTermsUrl = "product_terms_url";
 
-constexpr std::string_view kUnmaskedCreditCardsTable = "unmasked_credit_cards";
-// kId = "id"
-// kCardNumberEncrypted = "card_number_encrypted"
-constexpr std::string_view kUnmaskDate = "unmask_date";
-
 constexpr std::string_view kServerCardCloudTokenDataTable =
     "server_card_cloud_token_data";
 // kId = "id"
@@ -447,8 +442,8 @@ WebDatabaseTable::TypeKey PaymentsAutofillTable::GetTypeKey() const {
 
 bool PaymentsAutofillTable::CreateTablesIfNecessary() {
   return InitCreditCardsTable() && InitLocalIbansTable() &&
-         InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
-         InitServerCardMetadataTable() && InitPaymentsCustomerDataTable() &&
+         InitMaskedCreditCardsTable() && InitServerCardMetadataTable() &&
+         InitPaymentsCustomerDataTable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
          InitVirtualCardUsageDataTable() && InitStoredCvcTable() &&
@@ -475,9 +470,6 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 85:
       *update_compatible_version = false;
       return MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard();
-    case 86:
-      *update_compatible_version = false;
-      return MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns();
     case 87:
       *update_compatible_version = false;
       return MigrateToVersion87AddCreditCardNicknameColumn();
@@ -534,6 +526,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 124:
       *update_compatible_version = true;
       return MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
+    case 125:
+      *update_compatible_version = true;
+      return MigrateToVersion125DeleteFullServerCardsTable();
   }
   return true;
 }
@@ -809,6 +804,7 @@ bool PaymentsAutofillTable::RemoveCreditCard(const std::string& guid) {
 }
 
 bool PaymentsAutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
+  // TODO(crbug.com/1497734): Remove this method entirely.
   DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
   DCHECK(!credit_card.number().empty());
   DCHECK(!credit_card.server_id().empty());
@@ -894,47 +890,24 @@ bool PaymentsAutofillTable::GetServerCreditCards(
       });
 
   sql::Statement s;
-  SelectBuilder(db_, s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
-                {kCardNumberEncrypted,
-                 kLastFour,
-                 base::StrCat({"masked.", kId}),
-                 base::StrCat({"metadata.", kUseCount}),
-                 base::StrCat({"metadata.", kUseDate}),
-                 kNetwork,
-                 kNameOnCard,
-                 kExpMonth,
-                 kExpYear,
-                 base::StrCat({"metadata.", kBillingAddressId}),
-                 kBankName,
-                 kNickname,
-                 kCardIssuer,
-                 kCardIssuerId,
-                 kInstrumentId,
-                 kVirtualCardEnrollmentState,
-                 kVirtualCardEnrollmentType,
-                 kCardArtUrl,
-                 kProductDescription,
-                 kProductTermsUrl},
-                "LEFT OUTER JOIN unmasked_credit_cards USING (id) "
-                "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
+  SelectBuilder(
+      db_, s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
+      {kLastFour, base::StrCat({"masked.", kId}),
+       base::StrCat({"metadata.", kUseCount}),
+       base::StrCat({"metadata.", kUseDate}), kNetwork, kNameOnCard, kExpMonth,
+       kExpYear, base::StrCat({"metadata.", kBillingAddressId}), kBankName,
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
+       kProductDescription, kProductTermsUrl},
+      "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
   while (s.Step()) {
     int index = 0;
 
-    // If the card_number_encrypted field is nonempty, we can assume this card
-    // is a full card, otherwise it's masked.
-    std::u16string full_card_number =
-        UnencryptValueFromColumn(s, index++, *autofill_table_encryptor_);
     std::u16string last_four = s.ColumnString16(index++);
-    CreditCard::RecordType record_type =
-        full_card_number.empty() ? CreditCard::RecordType::kMaskedServerCard
-                                 : CreditCard::RecordType::kFullServerCard;
     std::string server_id = s.ColumnString(index++);
-    std::unique_ptr<CreditCard> card =
-        std::make_unique<CreditCard>(record_type, server_id);
-    card->SetRawInfo(CREDIT_CARD_NUMBER,
-                     record_type == CreditCard::RecordType::kMaskedServerCard
-                         ? last_four
-                         : full_card_number);
+    std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>(
+        CreditCard::RecordType::kMaskedServerCard, server_id);
+    card->SetRawInfo(CREDIT_CARD_NUMBER, last_four);
     card->set_use_count(s.ColumnInt64(index++));
     card->set_use_date(base::Time::FromInternalValue(s.ColumnInt64(index++)));
     // Modification date is not tracked for server cards. Explicitly set it here
@@ -942,13 +915,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_modification_date(base::Time());
 
     std::string card_network = s.ColumnString(index++);
-    if (record_type == CreditCard::RecordType::kMaskedServerCard) {
-      // The issuer network must be set after setting the number to override the
-      // autodetected issuer network.
-      card->SetNetworkForMaskedCard(card_network.c_str());
-    } else {
-      DCHECK_EQ(CreditCard::GetCardNetwork(full_card_number), card_network);
-    }
+    // The issuer network must be set after setting the number to override the
+    // autodetected issuer network.
+    card->SetNetworkForMaskedCard(card_network.c_str());
 
     card->SetRawInfo(CREDIT_CARD_NAME_FULL, s.ColumnString16(index++));
     card->SetRawInfo(CREDIT_CARD_EXP_MONTH, s.ColumnString16(index++));
@@ -986,10 +955,7 @@ void PaymentsAutofillTable::SetServerCreditCards(
 
   AddMaskedCreditCards(credit_cards);
 
-  // Delete all items in the unmasked table that aren't in the new set.
-  Delete(db_, kUnmaskedCreditCardsTable,
-         "id NOT IN (SELECT id FROM masked_credit_cards)");
-  // Do the same for metadata.
+  // Delete all items in the metadata table that aren't in the new set.
   Delete(db_, kServerCardMetadataTable,
          "id NOT IN (SELECT id FROM masked_credit_cards)");
 
@@ -1244,10 +1210,6 @@ void PaymentsAutofillTable::SetServerCardsData(
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
   }
-
-  // Delete all items in the unmasked table that aren't in the new set.
-  Delete(db_, kUnmaskedCreditCardsTable,
-         "id NOT IN (SELECT id FROM masked_credit_cards)");
 
   transaction.Commit();
 }
@@ -1610,13 +1572,12 @@ bool PaymentsAutofillTable::ClearAllServerData() {
 
   bool changed = false;
   for (std::string_view table_name :
-       {kMaskedCreditCardsTable, kMaskedIbansTable, kUnmaskedCreditCardsTable,
-        kServerCardMetadataTable, kPaymentsCustomerDataTable,
-        kServerCardCloudTokenDataTable, kOfferDataTable,
-        kOfferEligibleInstrumentTable, kOfferMerchantDomainTable,
-        kVirtualCardUsageDataTable, kMaskedCreditCardBenefitsTable,
-        kBenefitMerchantDomainsTable, kMaskedBankAccountsTable,
-        kMaskedBankAccountsMetadataTable}) {
+       {kMaskedCreditCardsTable, kMaskedIbansTable, kServerCardMetadataTable,
+        kPaymentsCustomerDataTable, kServerCardCloudTokenDataTable,
+        kOfferDataTable, kOfferEligibleInstrumentTable,
+        kOfferMerchantDomainTable, kVirtualCardUsageDataTable,
+        kMaskedCreditCardBenefitsTable, kBenefitMerchantDomainsTable,
+        kMaskedBankAccountsTable, kMaskedBankAccountsMetadataTable}) {
     Delete(db_, table_name);
     changed |= db_->GetLastChangeCount() > 0;
   }
@@ -1677,17 +1638,7 @@ bool PaymentsAutofillTable::RemoveAutofillDataModifiedBetween(
                 "last_updated_timestamp >= ? AND last_updated_timestamp < ?");
   s_cvc.BindInt64(0, delete_begin_t);
   s_cvc.BindInt64(1, delete_end_t);
-  if (!s_cvc.Run()) {
-    return false;
-  }
-
-  // Remove unmasked credit cards in the time range.
-  sql::Statement s_unmasked_cards;
-  DeleteBuilder(db_, s_unmasked_cards, kUnmaskedCreditCardsTable,
-                "unmask_date >= ? AND unmask_date < ?");
-  s_unmasked_cards.BindInt64(0, delete_begin.ToInternalValue());
-  s_unmasked_cards.BindInt64(1, delete_end.ToInternalValue());
-  return s_unmasked_cards.Run();
+  return s_cvc.Run();
 }
 
 bool PaymentsAutofillTable::RemoveOriginURLsModifiedBetween(
@@ -1750,14 +1701,6 @@ bool PaymentsAutofillTable::MigrateToVersion85AddCardIssuerColumnToMaskedCreditC
   // default value to ISSUER_UNKNOWN.
   return AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kCardIssuer,
                               "INTEGER DEFAULT 0");
-}
-
-bool PaymentsAutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         DropColumn(db_, kUnmaskedCreditCardsTable, kUseCount) &&
-         DropColumn(db_, kUnmaskedCreditCardsTable, kUseDate) &&
-         transaction.Commit();
 }
 
 bool PaymentsAutofillTable::MigrateToVersion87AddCreditCardNicknameColumn() {
@@ -1988,6 +1931,10 @@ bool PaymentsAutofillTable::
          transaction.Commit();
 }
 
+bool PaymentsAutofillTable::MigrateToVersion125DeleteFullServerCardsTable() {
+  return DropTableIfExists(db_, "unmasked_credit_cards");
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db_->transaction_nesting(), 0);
@@ -2032,17 +1979,7 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
 
 void PaymentsAutofillTable::AddUnmaskedCreditCard(const std::string& id,
                                           const std::u16string& full_number) {
-  sql::Statement s;
-  InsertBuilder(db_, s, kUnmaskedCreditCardsTable,
-                {kId, kCardNumberEncrypted, kUnmaskDate});
-  s.BindString(0, id);
-
-  std::string encrypted_data;
-  autofill_table_encryptor_->EncryptString16(full_number, &encrypted_data);
-  s.BindBlob(1, encrypted_data);
-  s.BindInt64(2, AutofillClock::Now().ToInternalValue());  // unmask_date
-
-  s.Run();
+  // TODO(crbug.com/1497734): Remove this method entirely.
 }
 
 bool PaymentsAutofillTable::DeleteFromMaskedCreditCards(const std::string& id) {
@@ -2051,8 +1988,8 @@ bool PaymentsAutofillTable::DeleteFromMaskedCreditCards(const std::string& id) {
 }
 
 bool PaymentsAutofillTable::DeleteFromUnmaskedCreditCards(const std::string& id) {
-  DeleteWhereColumnEq(db_, kUnmaskedCreditCardsTable, kId, id);
-  return db_->GetLastChangeCount() > 0;
+  // TODO(crbug.com/1497734): Remove this method entirely.
+  return false;
 }
 
 bool PaymentsAutofillTable::InitCreditCardsTable() {
@@ -2116,13 +2053,6 @@ bool PaymentsAutofillTable::InitMaskedIbansMetadataTable() {
       {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
        {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
        {kUseDate, "INTEGER NOT NULL DEFAULT 0"}});
-}
-
-bool PaymentsAutofillTable::InitUnmaskedCreditCardsTable() {
-  return CreateTableIfNotExists(db_, kUnmaskedCreditCardsTable,
-                                {{kId, "VARCHAR"},
-                                 {kCardNumberEncrypted, "VARCHAR"},
-                                 {kUnmaskDate, "INTEGER NOT NULL DEFAULT 0"}});
 }
 
 bool PaymentsAutofillTable::InitServerCardMetadataTable() {

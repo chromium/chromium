@@ -86,8 +86,6 @@ struct ServerCvc {
 //                      of a short description and an ID, but not full payment
 //                      information. Writing to this table is done by sync and
 //                      on successful save of card to the server.
-//                      When a server card is unmasked, it will stay here and
-//                      will additionally be added in unmasked_credit_cards.
 //
 //   id                 String assigned by the server to identify this card.
 //                      This is a legacy version of instrument_id and is opaque
@@ -127,19 +125,6 @@ struct ServerCvc {
 //                      kNetwork denotes that it is a network-level enrollment.
 //   product_terms_url  Issuer terms of service to be displayed on the settings
 //                      page.
-// -----------------------------------------------------------------------------
-// unmasked_credit_cards
-//                      When a masked credit credit card is unmasked and the
-//                      full number is downloaded or when the full number is
-//                      available upon saving card to server, it will be stored
-//                      here.
-//
-//   id                 Server ID. This can be joined with the id in the
-//                      masked_credit_cards table to get the rest of the data.
-//   card_number_encrypted
-//                      Full card number, encrypted.
-//   unmask_date        The date this card was unmasked in units of
-//                      Time::ToInternalValue. Added in version 64.
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -408,7 +393,10 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // credit card to remove.
   bool RemoveCreditCard(const std::string& guid);
 
-  // Adds to the masked_credit_cards and unmasked_credit_cards tables.
+  // Adds to the masked_credit_cards table.
+  //
+  // TODO(crbug.com/1497734): Remove this method entirely; server cards should
+  // only be added via AddCreditCard.
   bool AddFullServerCreditCard(const CreditCard& credit_card);
 
   // Retrieves a credit card with guid |guid|.
@@ -420,13 +408,14 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   virtual bool GetServerCreditCards(
       std::vector<std::unique_ptr<CreditCard>>& credit_cards) const;
 
-  // Replaces all server credit cards with the given vector. Unmasked cards
-  // present in the new list will be preserved (even if the input is MASKED).
+  // Replaces all server credit cards with the given vector.
   void SetServerCreditCards(const std::vector<CreditCard>& credit_cards);
 
   // Cards synced from the server may be "masked" (only last 4 digits
   // available) or "unmasked" (everything is available). These functions set
   // that state.
+  //
+  // TODO(crbug.com/1497734): Remove these methods entirely.
   bool UnmaskServerCreditCard(const CreditCard& masked,
                               const std::u16string& full_number);
   bool MaskServerCreditCard(const std::string& id);
@@ -564,7 +553,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion83RemoveServerCardTypeColumn();
   bool MigrateToVersion84AddNicknameColumn();
   bool MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard();
-  bool MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns();
   bool MigrateToVersion87AddCreditCardNicknameColumn();
   bool MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
   bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
@@ -584,6 +572,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
   bool
   MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
+  bool MigrateToVersion125DeleteFullServerCardsTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -591,6 +580,8 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   void AddMaskedCreditCards(const std::vector<CreditCard>& credit_cards);
 
   // Adds to |unmasked_credit_cards|.
+  //
+  // TODO(crbug.com/1497734): This method is now a no-op and should be removed.
   void AddUnmaskedCreditCard(const std::string& id,
                              const std::u16string& full_number);
 

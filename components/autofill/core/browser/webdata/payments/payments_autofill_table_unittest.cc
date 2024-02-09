@@ -870,12 +870,13 @@ TEST_F(PaymentsAutofillTableTest, RemoveOriginURLsModifiedBetween) {
 
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
   std::vector<CreditCard> inputs;
-  inputs.emplace_back(CreditCard::RecordType::kFullServerCard, "a123");
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
-  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
-  inputs[0].set_card_issuer(CreditCard::Issuer::kGoogle);
+  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4444");
+  inputs[0].SetNetworkForMaskedCard(kVisaCard);
+  inputs[0].set_card_issuer(CreditCard::Issuer::kExternalIssuer);
   inputs[0].set_instrument_id(321);
   inputs[0].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
@@ -927,7 +928,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
   EXPECT_TRUE(outputs[0]->nickname().empty());
   EXPECT_EQ(nickname, outputs[1]->nickname());
 
-  EXPECT_EQ(CreditCard::Issuer::kGoogle, outputs[0]->card_issuer());
+  EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[0]->card_issuer());
   EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[1]->card_issuer());
   EXPECT_EQ("", outputs[0]->issuer_id());
   EXPECT_EQ("amex", outputs[1]->issuer_id());
@@ -1212,43 +1213,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData_ExistingMetadata) {
   EXPECT_THAT(outputs, ElementsAre(input));
 }
 
-TEST_F(PaymentsAutofillTableTest, MaskUnmaskServerCards) {
-  std::u16string masked_number(u"1111");
-  std::vector<CreditCard> inputs;
-  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
-  inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jay Johnson");
-  inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
-  inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
-  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, masked_number);
-  inputs[0].SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(table_.get(), inputs);
-
-  // Unmask the number. The full number should be available.
-  std::u16string full_number(u"4111111111111111");
-  ASSERT_TRUE(table_->UnmaskServerCreditCard(inputs[0], full_number));
-
-  std::vector<std::unique_ptr<CreditCard>> outputs;
-  table_->GetServerCreditCards(outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_TRUE(CreditCard::RecordType::kFullServerCard ==
-              outputs[0]->record_type());
-  EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-
-  outputs.clear();
-
-  // Re-mask the number, we should only get the last 4 digits out.
-  ASSERT_TRUE(table_->MaskServerCreditCard(inputs[0].server_id()));
-  table_->GetServerCreditCards(outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_TRUE(CreditCard::RecordType::kMaskedServerCard ==
-              outputs[0]->record_type());
-  EXPECT_EQ(masked_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-
-  outputs.clear();
-}
-
-// Calling SetServerCreditCards should replace all existing cards, but unmasked
-// cards should not be re-masked.
+// Calling SetServerCreditCards should replace all existing cards.
 TEST_F(PaymentsAutofillTableTest, SetServerCardModify) {
   // Add a masked card.
   CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -1262,33 +1227,6 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardModify) {
   inputs.push_back(masked_card);
   test::SetServerCreditCards(table_.get(), inputs);
 
-  // Now unmask it.
-  std::u16string full_number = u"4111111111111111";
-  table_->UnmaskServerCreditCard(masked_card, full_number);
-
-  // The card should now be unmasked.
-  std::vector<std::unique_ptr<CreditCard>> outputs;
-  table_->GetServerCreditCards(outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_TRUE(outputs[0]->record_type() ==
-              CreditCard::RecordType::kFullServerCard);
-  EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-
-  outputs.clear();
-
-  // Call set again with the masked number.
-  inputs[0] = masked_card;
-  test::SetServerCreditCards(table_.get(), inputs);
-
-  // The card should stay unmasked.
-  table_->GetServerCreditCards(outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_TRUE(outputs[0]->record_type() ==
-              CreditCard::RecordType::kFullServerCard);
-  EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-
-  outputs.clear();
-
   // Set inputs that do not include our old card.
   CreditCard random_card(CreditCard::RecordType::kMaskedServerCard, "b456");
   random_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -1300,25 +1238,13 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardModify) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   // We should have only the new card, the other one should have been deleted.
+  std::vector<std::unique_ptr<CreditCard>> outputs;
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(outputs[0]->record_type() ==
               CreditCard::RecordType::kMaskedServerCard);
   EXPECT_EQ(random_card.server_id(), outputs[0]->server_id());
   EXPECT_EQ(u"2222", outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-
-  outputs.clear();
-
-  // Putting back the original card masked should make it masked (this tests
-  // that the unmasked data was really deleted).
-  inputs[0] = masked_card;
-  test::SetServerCreditCards(table_.get(), inputs);
-  table_->GetServerCreditCards(outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_TRUE(outputs[0]->record_type() ==
-              CreditCard::RecordType::kMaskedServerCard);
-  EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(u"1111", outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
 
   outputs.clear();
 }
@@ -1388,80 +1314,6 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress
   EXPECT_NE(base::Time(), outputs[0]->use_date());
   EXPECT_EQ(base::Time(), outputs[0]->modification_date());
   EXPECT_EQ("1", outputs[0]->billing_address_id());
-  outputs.clear();
-}
-
-// Tests that deleting time ranges re-masks server credit cards that were
-// unmasked in that time.
-TEST_F(PaymentsAutofillTableTest, DeleteUnmaskedCard) {
-  // This isn't the exact unmasked time, since the database will use the
-  // current time that it is called. The code below has to be approximate.
-  base::Time unmasked_time = AutofillClock::Now();
-
-  // Add a masked card.
-  std::u16string masked_number = u"1111";
-  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard, "a123");
-  masked_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
-  masked_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
-  masked_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
-  masked_card.SetRawInfo(CREDIT_CARD_NUMBER, masked_number);
-  masked_card.SetNetworkForMaskedCard(kVisaCard);
-
-  std::vector<CreditCard> inputs;
-  inputs.push_back(masked_card);
-  table_->SetServerCreditCards(inputs);
-
-  // Unmask it.
-  std::u16string full_number = u"4111111111111111";
-  table_->UnmaskServerCreditCard(masked_card, full_number);
-
-  // Delete data in a range a year in the future.
-  std::vector<std::unique_ptr<CreditCard>> credit_cards;
-  ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      unmasked_time + base::Days(365), unmasked_time + base::Days(530),
-      &credit_cards));
-
-  // This should not affect the unmasked card (should be unmasked).
-  std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(CreditCard::RecordType::kFullServerCard, outputs[0]->record_type());
-  EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-  outputs.clear();
-
-  // Delete data in the range of the last 24 hours.
-  // Fudge |now| to make sure it's strictly greater than the |now| that
-  // the database uses.
-  base::Time now = AutofillClock::Now() + base::Seconds(1);
-  ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(now - base::Days(1),
-                                                        now, &credit_cards));
-
-  // This should re-mask.
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard,
-            outputs[0]->record_type());
-  EXPECT_EQ(masked_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-  outputs.clear();
-
-  // Unmask again, the card should be back.
-  table_->UnmaskServerCreditCard(masked_card, full_number);
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(CreditCard::RecordType::kFullServerCard, outputs[0]->record_type());
-  EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
-  outputs.clear();
-
-  // Delete all data.
-  ASSERT_TRUE(table_->RemoveAutofillDataModifiedBetween(
-      base::Time(), base::Time::Max(), &credit_cards));
-
-  // Should be masked again.
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard,
-            outputs[0]->record_type());
-  EXPECT_EQ(masked_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
   outputs.clear();
 }
 

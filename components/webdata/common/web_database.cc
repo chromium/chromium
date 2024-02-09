@@ -16,8 +16,11 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 124;
+const int WebDatabase::kCurrentVersionNumber = 125;
 
+// TODO(crbug.com/324468207): Decide and document a process for updating this
+// number, i.e. what our deprecation strategy is for older versions of the
+// database.
 const int WebDatabase::kDeprecatedVersionNumber = 82;
 
 const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
@@ -45,10 +48,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 124 deletes 'payment_instruments', 'payment_instruments_meetadata',
-// 'payment_instrument_supported_rails', 'bank_accounts' table and thus is no
-// longer compatible with version 123.
-const int kCompatibleVersionNumber = 124;
+// Version 125 deletes the 'unmasked_credit_cards' table, and thus is no longer
+// compatible with version 124.
+const int kCompatibleVersionNumber = 125;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
