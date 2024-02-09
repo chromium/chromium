@@ -230,6 +230,16 @@ INSTANTIATE_TEST_SUITE_P(AccessibilityFeaturesApiTestReadPermission,
                          ::testing::Values(TestConfig{Permission::kReadOnly,
                                                       ManifestVersion::kTwo}));
 
+INSTANTIATE_TEST_SUITE_P(AccessibilityFeaturesApiTestWritePermissionV3,
+                         AccessibilityFeaturesApiTest,
+                         ::testing::Values(TestConfig{
+                             Permission::kWriteOnly, ManifestVersion::kThree}));
+
+INSTANTIATE_TEST_SUITE_P(AccessibilityFeaturesApiTestReadPermissionV3,
+                         AccessibilityFeaturesApiTest,
+                         ::testing::Values(TestConfig{
+                             Permission::kReadOnly, ManifestVersion::kThree}));
+
 // Tests that an extension with read permission can read accessibility features
 // state, while an extension that doesn't have the permission cannot.
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
@@ -261,17 +271,20 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
+
+  bool is_mv2 = GetParam().version == ManifestVersion::kTwo;
   EXPECT_TRUE(RunExtensionTest(
       GetTestExtensionPath(),
-      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = is_mv2}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
+  bool is_mv2 = GetParam().version == ManifestVersion::kTwo;
   EXPECT_FALSE(
       RunExtensionTest(GetTestExtensionPath(),
-                       {.custom_arg = "{}", .launch_as_platform_app = true},
-                       {.load_as_component = true}))
+                       {.custom_arg = "{}", .launch_as_platform_app = is_mv2},
+                       {.load_as_component = is_mv2}))
       << message_;
 }
 
@@ -308,10 +321,12 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
+
+  bool is_mv2 = GetParam().version == ManifestVersion::kTwo;
   EXPECT_TRUE(RunExtensionTest(
       GetTestExtensionPath(),
-      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true},
-      {.load_as_component = true}))
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = is_mv2},
+      {.load_as_component = is_mv2}))
       << message_;
 }
 
@@ -353,11 +368,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("setterTest", enabled_features, disabled_features,
                               &test_arg));
-
+  bool is_mv2 = GetParam().version == ManifestVersion::kTwo;
   // The test extension attempts to flip all feature values.
   ASSERT_TRUE(RunExtensionTest(
       GetTestExtensionPath(),
-      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = is_mv2}))
       << message_;
 
   // The test tries to flip the feature states.
@@ -405,9 +420,13 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, ObserveFeatures) {
   // time, when gets all expected events. This is done so the extension is
   // running when the accessibility features are flipped; otherwise, the
   // extension may not see events.
+
+  bool is_mv2 = GetParam().version == ManifestVersion::kTwo;
+  const char* extension_path = is_mv2 ? kTestExtensionPathReadPermission
+                                      : kTestExtensionPathReadPermissionV3;
   ASSERT_TRUE(RunExtensionTest(
-      kTestExtensionPathReadPermission,
-      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
+      extension_path,
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = is_mv2}))
       << message_;
 
   // This should flip all features.

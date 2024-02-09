@@ -1,0 +1,13 @@
+{
+  // chrome-extension://lbgjohhgghbkcgejgklgcmfijhbheflf/
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDasz2sLsAlmcF0v7/FGwzWVP/T+CLhvWpojKckVp8RH0bN/x3HvQ8FUweTymsaLbqxMHn8LbMOYt9uvLg7MuUcs0puzo7vPEwW7FPwLdIke2Fth+uXgkBFUFvtrOoAyIXmiRRFoIi9qfNVQOvIz0nv0c7UEKoHT3UnT0ekxSl7lwIDAQAB",
+  "name": "A test extension for accessibilityFeatures API; no modify",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "test_runner.js"
+  },
+  "permissions": [
+    "accessibilityFeatures.modify"
+  ]
+}
