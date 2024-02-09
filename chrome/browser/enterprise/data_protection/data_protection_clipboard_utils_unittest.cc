@@ -198,6 +198,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
                     "sources": {
                       "urls": ["source.com"]
                     },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
@@ -221,6 +224,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
                                                            R"({
                     "sources": {
                       "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
                     },
                     "restrictions": [
                       {"class": "CLIPBOARD", "level": "BLOCK"}

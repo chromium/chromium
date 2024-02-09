@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace data_protection {
+namespace enterprise_data_protection {
 
 class DataControlsClipboardUtilsBrowserTest
     : public InProcessBrowserTest,
@@ -35,6 +35,8 @@ class DataControlsClipboardUtilsBrowserTest
 
   void OnConstructed(data_controls::DataControlsDialog* dialog) override {
     constructed_dialog_ = dialog;
+    EXPECT_TRUE(expected_dialog_type_);
+    EXPECT_EQ(dialog->type(), expected_dialog_type_);
 
     dialog_close_loop_ = std::make_unique<base::RunLoop>();
     dialog_close_callback_ = dialog_close_loop_->QuitClosure();
@@ -70,10 +72,15 @@ class DataControlsClipboardUtilsBrowserTest
     dialog_close_loop_->Run();
   }
 
+  void set_expected_dialog_type(data_controls::DataControlsDialog::Type type) {
+    expected_dialog_type_ = type;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<base::RunLoop> dialog_close_loop_;
   base::OnceClosure dialog_close_callback_;
+  std::optional<data_controls::DataControlsDialog::Type> expected_dialog_type_;
 
   raw_ptr<data_controls::DataControlsDialog> constructed_dialog_ = nullptr;
 };
@@ -81,7 +88,7 @@ class DataControlsClipboardUtilsBrowserTest
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_NoSource) {
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
-  enterprise_data_protection::PasteIfAllowedByPolicy(
+  PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(absl::nullopt),
       /*destination=*/
       content::ClipboardEndpoint(
@@ -103,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_SameSource) {
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
-  enterprise_data_protection::PasteIfAllowedByPolicy(
+  PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://google.com")),
           base::BindLambdaForTesting(
@@ -136,9 +143,11 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
                   })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
-  enterprise_data_protection::PasteIfAllowedByPolicy(
+  PasteIfAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(absl::nullopt),
       /*destination=*/
       content::ClipboardEndpoint(
@@ -169,6 +178,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                       {"class": "CLIPBOARD", "level": "BLOCK"}
                     ]
                   })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   // By making a new profile for this test, we ensure we can prevent pasting to
   // it by having the rule set in the source profile.
@@ -182,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   }
 
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
-  enterprise_data_protection::PasteIfAllowedByPolicy(
+  PasteIfAllowedByPolicy(
       /*destination=*/content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://foo.com")),
           base::BindLambdaForTesting(
@@ -206,4 +217,48 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-}  // namespace data_protection
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  auto data = future.Get<std::u16string>();
+  EXPECT_EQ(data, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  WaitForDialogToClose();
+  EXPECT_FALSE(future.IsReady());
+}
+
+}  // namespace enterprise_data_protection

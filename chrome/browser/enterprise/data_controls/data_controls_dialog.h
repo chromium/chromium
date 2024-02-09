@@ -89,6 +89,8 @@ class DataControlsDialog : public views::DialogDelegate {
   bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
 
+  Type type() const;
+
  private:
   DataControlsDialog(Type type,
                      base::OnceCallback<void(bool bypassed)> callback);
