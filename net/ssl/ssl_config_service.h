@@ -6,6 +6,7 @@
 #define NET_SSL_SSL_CONFIG_SERVICE_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -117,7 +118,7 @@ class NET_EXPORT SSLConfigService {
   // removed in a future release. Please leave a comment on
   // https://crbug.com/855690 if you believe this is needed.
   virtual bool CanShareConnectionWithClientCerts(
-      const std::string& hostname) const = 0;
+      std::string_view hostname) const = 0;
 
   // Add an observer of this service.
   void AddObserver(Observer* observer);

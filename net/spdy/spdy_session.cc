@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -731,8 +732,8 @@ void SpdyStreamRequest::OnConfirmHandshakeComplete(int rv) {
 bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
                           const SSLInfo& ssl_info,
                           const SSLConfigService& ssl_config_service,
-                          const std::string& old_hostname,
-                          const std::string& new_hostname) {
+                          std::string_view old_hostname,
+                          std::string_view new_hostname) {
   // Pooling is prohibited if the server cert is not valid for the new domain,
   // and for connections on which client certs were sent. It is also prohibited
   // when channel ID was sent if the hosts are from different eTLDs+1.
@@ -963,7 +964,7 @@ int SpdySession::ParseAlps() {
   return OK;
 }
 
-bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
+bool SpdySession::VerifyDomainAuthentication(std::string_view domain) const {
   if (availability_state_ == STATE_DRAINING)
     return false;
 
@@ -3004,10 +3005,11 @@ void SpdySession::OnAltSvc(
     if (!gurl.SchemeIs(url::kHttpsScheme))
       return;
     SSLInfo ssl_info;
-    if (!GetSSLInfo(&ssl_info))
+    if (!GetSSLInfo(&ssl_info)) {
       return;
+    }
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
-                 host_port_pair().host(), gurl.host())) {
+                 host_port_pair().host(), gurl.host_piece())) {
       return;
     }
     scheme_host_port = url::SchemeHostPort(gurl);

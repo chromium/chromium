@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "crypto/openssl_util.h"
@@ -435,7 +436,7 @@ bool X509Certificate::IsIssuedByEncoded(
 
 // static
 bool X509Certificate::VerifyHostname(
-    const std::string& hostname,
+    std::string_view hostname,
     const std::vector<std::string>& cert_san_dns_names,
     const std::vector<std::string>& cert_san_ip_addrs) {
   DCHECK(!hostname.empty());
@@ -453,8 +454,9 @@ bool X509Certificate::VerifyHostname(
   // Presented identifier(s) == name(s) the server knows itself as, in its cert.
 
   // CanonicalizeHost requires surrounding brackets to parse an IPv6 address.
-  const std::string host_or_ip = hostname.find(':') != std::string::npos ?
-      "[" + hostname + "]" : hostname;
+  const std::string host_or_ip = hostname.find(':') != std::string::npos
+                                     ? base::StrCat({"[", hostname, "]"})
+                                     : std::string(hostname);
   url::CanonHostInfo host_info;
   std::string reference_name = CanonicalizeHost(host_or_ip, &host_info);
 
@@ -566,7 +568,7 @@ bool X509Certificate::VerifyHostname(
   return false;
 }
 
-bool X509Certificate::VerifyNameMatch(const std::string& hostname) const {
+bool X509Certificate::VerifyNameMatch(std::string_view hostname) const {
   std::vector<std::string> dns_names, ip_addrs;
   GetSubjectAltName(&dns_names, &ip_addrs);
   return VerifyHostname(hostname, dns_names, ip_addrs);

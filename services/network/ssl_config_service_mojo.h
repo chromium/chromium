@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SSL_CONFIG_SERVICE_MOJO_H_
 #define SERVICES_NETWORK_SSL_CONFIG_SERVICE_MOJO_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   // net::SSLConfigService implementation:
   net::SSLContextConfig GetSSLContextConfig() override;
   bool CanShareConnectionWithClientCerts(
-      const std::string& hostname) const override;
+      std::string_view hostname) const override;
 
  private:
   mojo::Receiver<mojom::SSLConfigClient> receiver_{this};

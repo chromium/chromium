@@ -18,7 +18,7 @@ class TestSSLConfigService : public SSLConfigService {
 
   SSLContextConfig GetSSLContextConfig() override;
   bool CanShareConnectionWithClientCerts(
-      const std::string& hostname) const override;
+      std::string_view hostname) const override;
 
  private:
   SSLContextConfig config_;

@@ -1393,7 +1393,7 @@ int QuicChromiumClientSession::GetNumSentClientHellos() const {
 }
 
 bool QuicChromiumClientSession::CanPool(
-    const std::string& hostname,
+    std::string_view hostname,
     const QuicSessionKey& other_session_key) const {
   DCHECK(connection()->connected());
   if (!session_key_.CanUseForAliasing(other_session_key)) {

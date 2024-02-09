@@ -13,6 +13,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -318,8 +319,8 @@ class NET_EXPORT SpdySession
   static bool CanPool(TransportSecurityState* transport_security_state,
                       const SSLInfo& ssl_info,
                       const SSLConfigService& ssl_config_service,
-                      const std::string& old_hostname,
-                      const std::string& new_hostname);
+                      std::string_view old_hostname,
+                      std::string_view new_hostname);
 
   // Create a new SpdySession.
   // |spdy_session_key| is the host/port that this session connects to, privacy
@@ -391,7 +392,7 @@ class NET_EXPORT SpdySession
   // TODO(wtc): rename this function and the Net.SpdyIPPoolDomainMatch
   // histogram because this function does more than verifying domain
   // authentication now.
-  bool VerifyDomainAuthentication(const std::string& domain) const;
+  bool VerifyDomainAuthentication(std::string_view domain) const;
 
   // Pushes the given producer into the write queue for
   // |stream|. |stream| is guaranteed to be activated before the
