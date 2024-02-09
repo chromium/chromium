@@ -1868,6 +1868,13 @@ public class CustomTabsConnection {
         return mTrustedPublisherUrlPackage;
     }
 
+    /**
+     * @return Whether the publisher of the URL from a trusted CDN can be shown.
+     */
+    public boolean isTrustedCdnPublisherUrlPackage(@Nullable String urlPackage) {
+        return urlPackage != null && urlPackage.equals(getTrustedCdnPublisherUrlPackage());
+    }
+
     void setTrustedPublisherUrlPackageForTest(@Nullable String packageName) {
         mTrustedPublisherUrlPackage = packageName;
     }

@@ -203,6 +203,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 getWindowAndroid(),
                 getLifecycleDispatcher(),
                 () -> {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.CCT_EXTEND_TRUSTED_CDN_PUBLISHER)) {
+                        return mConnection.isTrustedCdnPublisherUrlPackage(
+                                mIntentDataProvider.getClientPackageName());
+                    }
                     String urlPackage = mConnection.getTrustedCdnPublisherUrlPackage();
                     return urlPackage != null
                             && urlPackage.equals(
