@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -15,23 +16,42 @@
 
 class PrefService;
 
+namespace base {
+class FilePath;
+}
+
 namespace ash::language_packs {
 
+struct PackResult;
+
 // Executes preference-based DLC-font tasks:
+// - On initialisation of this keyed service (which is created with the browser
+//   context), gets the user's web language prefs and adds the fonts available
+//   from DLC to fontconfig.
 // - When user's web language prefs changes, installs the appropriate font DLC.
 class LanguagePackFontService : public KeyedService {
  public:
   explicit LanguagePackFontService(PrefService* prefs);
+  // Used for injecting `gfx::AddAppFontDir` for tests. `add_font_dir` should
+  // return whether the font was added. A warning will be printed to the log if
+  // it was not added, which should never happen.
+  explicit LanguagePackFontService(
+      PrefService* prefs,
+      base::RepeatingCallback<bool(base::FilePath)> add_font_dir);
   ~LanguagePackFontService() override;
 
  private:
   base::flat_set<std::string> GetLanguagePacksForAcceptLanguage();
   void InstallFontDlcs();
+  void AddDlcFontDirsToFontConfigPackCallback(const PackResult& result);
 
   // Not owned by this class
   const raw_ref<PrefService> prefs_;
 
   StringPrefMember pref_accept_language_;
+
+  // Used for dependency injection for tests.
+  base::RepeatingCallback<bool(base::FilePath)> add_font_dir_;
 
   base::WeakPtrFactory<LanguagePackFontService> weak_factory_{this};
 };
