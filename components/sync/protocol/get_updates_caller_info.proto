@@ -15,12 +15,12 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 message GetUpdatesCallerInfo {
-  // This enum was deprecated in M28, and is unused since 2018. But since it's
-  // used in a required field, it's hard to fully remove.
+  // This enum was deprecated in M28, and is unused since 2018.
+  // TODO(crbug.com/41188509): Fully remove it.
   enum GetUpdatesSource {
     UNKNOWN = 0;
   }
-  required GetUpdatesSource source = 1 [deprecated = true];
+  optional GetUpdatesSource source = 1 [deprecated = true, default = UNKNOWN];
 
   // True if notifications were enabled for this GetUpdateMessage.
   // Note: Ideally this would be moved out of GetUpdatesCallerInfo, so that
