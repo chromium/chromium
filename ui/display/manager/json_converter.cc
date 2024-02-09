@@ -29,7 +29,7 @@ const char kDisplayPlacementParentDisplayIdKey[] = "parent_display_id";
 
 bool AddLegacyValuesFromValue(const base::Value::Dict& dict,
                               DisplayLayout* layout) {
-  absl::optional<int> optional_offset = dict.FindInt(kOffsetKey);
+  std::optional<int> optional_offset = dict.FindInt(kOffsetKey);
   if (optional_offset) {
     DisplayPlacement::Position position;
     const std::string* position_str = dict.FindString(kPositionKey);
@@ -53,7 +53,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
     return true;
   }
 
-  absl::optional<bool> field_value = field->GetIfBool();
+  std::optional<bool> field_value = field->GetIfBool();
   if (!field_value)
     return false;
 
@@ -73,7 +73,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
     return true;
   }
 
-  absl::optional<int> field_value = field->GetIfInt();
+  std::optional<int> field_value = field->GetIfInt();
   if (!field_value)
     return false;
 

@@ -188,7 +188,7 @@ DCLayerOverlayImage CreateDCompSurface(
 // the bounds of |image|, or |content_rect_override|, if set.
 std::unique_ptr<DCLayerOverlayParams> CreateParamsFromImage(
     DCLayerOverlayImage image,
-    absl::optional<gfx::RectF> content_rect_override = {}) {
+    std::optional<gfx::RectF> content_rect_override = {}) {
   auto params = std::make_unique<DCLayerOverlayParams>();
   params->content_rect =
       content_rect_override.value_or(gfx::RectF(image.size()));
@@ -1681,8 +1681,8 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     if (!pixel_diff_->CompareScreenshot(
             ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
                 ::testing::UnitTest::GetInstance()->current_test_info(),
-                capture_name.empty() ? absl::nullopt
-                                     : absl::make_optional(capture_name)),
+                capture_name.empty() ? std::nullopt
+                                     : std::make_optional(capture_name)),
             window_readback, matching_algorithm_.get())) {
       ADD_FAILURE_AT(caller_location.file_name(), caller_location.line_number())
           << "Screenshot mismatch for "
@@ -1851,7 +1851,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
     auto& [color, bounds] = colors[i];
     auto overlay = std::make_unique<DCLayerOverlayParams>();
     overlay->quad_rect = bounds;
-    overlay->background_color = absl::optional<SkColor4f>(color);
+    overlay->background_color = std::optional<SkColor4f>(color);
     overlay->z_order = i + 1;
     presenter_->ScheduleDCLayer(std::move(overlay));
   }
@@ -1910,7 +1910,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
 
         auto overlay = std::make_unique<DCLayerOverlayParams>();
         overlay->quad_rect = quad_rect;
-        overlay->background_color = absl::optional<SkColor4f>(overlay_color);
+        overlay->background_color = std::optional<SkColor4f>(overlay_color);
         return overlay;
       }));
 
@@ -2026,7 +2026,7 @@ TEST_F(DCompPresenterSkiaGoldTest,
   for (auto& quad : quads) {
     auto overlay = std::make_unique<DCLayerOverlayParams>();
     overlay->quad_rect = quad;
-    overlay->background_color = absl::optional<SkColor4f>(SkColors::kWhite);
+    overlay->background_color = std::optional<SkColor4f>(SkColors::kWhite);
     overlay->z_order = overlay_z_order;
     overlay->rounded_corner_bounds = bounds;
     presenter_->ScheduleDCLayer(std::move(overlay));

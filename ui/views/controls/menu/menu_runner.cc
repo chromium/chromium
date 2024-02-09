@@ -42,8 +42,8 @@ void MenuRunner::RunMenuAt(
     MenuAnchorPosition anchor,
     ui::MenuSourceType source_type,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners,
-    absl::optional<std::string> show_menu_host_duration_histogram) {
+    std::optional<gfx::RoundedCornersF> corners,
+    std::optional<std::string> show_menu_host_duration_histogram) {
   // Do not attempt to show the menu if the application is currently shutting
   // down. MenuDelegate::OnMenuClosed would not be called.
   if (ViewsDelegate::GetInstance() &&

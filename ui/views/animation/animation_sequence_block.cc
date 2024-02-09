@@ -6,13 +6,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_element.h"

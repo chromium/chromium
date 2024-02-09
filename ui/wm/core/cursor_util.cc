@@ -6,6 +6,7 @@
 
 #include <cfloat>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -248,7 +248,7 @@ struct CursorResourceData {
 
 // Cursor resource data indexed by CursorType. Make sure to respect the order
 // defined at ui/base/cursor/mojom/cursor_type.mojom.
-constexpr absl::optional<CursorResourceData> kNormalCursorResourceData[] = {
+constexpr std::optional<CursorResourceData> kNormalCursorResourceData[] = {
     {{CursorType::kPointer, IDR_AURA_CURSOR_PTR, {4, 4}, {7, 7}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR, {12, 12}, {24, 24}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_HAND, {9, 4}, {19, 8}}},
@@ -370,7 +370,7 @@ constexpr absl::optional<CursorResourceData> kNormalCursorResourceData[] = {
 static_assert(std::size(kNormalCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
-constexpr absl::optional<CursorResourceData> kLargeCursorResourceData[] = {
+constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
     {{CursorType::kPointer, IDR_AURA_CURSOR_BIG_PTR, {10, 10}, {20, 20}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_BIG_CROSSHAIR, {30, 32}, {60, 64}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
@@ -505,11 +505,11 @@ static_assert(std::size(kLargeCursorResourceData) ==
 
 }  // namespace
 
-absl::optional<ui::CursorData> GetCursorData(
+std::optional<ui::CursorData> GetCursorData(
     CursorType type,
     ui::CursorSize size,
     float scale,
-    absl::optional<int> target_cursor_size_in_px,
+    std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation) {
   DCHECK_NE(type, CursorType::kCustom);
 
@@ -518,7 +518,7 @@ absl::optional<ui::CursorData> GetCursorData(
   bool is_animated;
   if (!GetCursorDataFor(size, type, scale, &resource_id, &hotspot,
                         &is_animated)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK_NE(type, CursorType::kNone);
 
@@ -630,7 +630,7 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
 
   // TODO(htts://crbug.com/1190818): currently, kNull is treated as kPointer.
   CursorType t = type == CursorType::kNull ? CursorType::kPointer : type;
-  absl::optional<CursorResourceData> resource =
+  std::optional<CursorResourceData> resource =
       cursor_size == ui::CursorSize::kNormal
           ? kNormalCursorResourceData[static_cast<int>(t)]
           : kLargeCursorResourceData[static_cast<int>(t)];

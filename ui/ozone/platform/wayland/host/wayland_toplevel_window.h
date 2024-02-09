@@ -139,8 +139,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldUpdateWindowShape() const override;
   bool CanSetDecorationInsets() const override;
   void SetOpaqueRegion(
-      absl::optional<std::vector<gfx::Rect>> region_px) override;
-  void SetInputRegion(absl::optional<gfx::Rect> region_px) override;
+      std::optional<std::vector<gfx::Rect>> region_px) override;
+  void SetInputRegion(std::optional<gfx::Rect> region_px) override;
   bool IsClientControlledWindowMovementSupported() const override;
   void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
@@ -297,8 +297,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
-  absl::optional<std::vector<gfx::Rect>> opaque_region_px_;
-  absl::optional<gfx::Rect> input_region_px_;
+  std::optional<std::vector<gfx::Rect>> opaque_region_px_;
+  std::optional<gfx::Rect> input_region_px_;
 
   // Tracks how many the window show state requests by made by the Browser
   // are currently being processed by the Wayland Compositor. In practice,
@@ -313,8 +313,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Information used by the compositor to restore the window state upon
   // creation.
   int32_t restore_session_id_ = 0;
-  absl::optional<int32_t> restore_window_id_ = 0;
-  absl::optional<std::string> restore_window_id_source_;
+  std::optional<int32_t> restore_window_id_ = 0;
+  std::optional<std::string> restore_window_id_source_;
 
   // Information pertaining to a window's persistability.
   bool persistable_ = true;
@@ -324,7 +324,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.
-  absl::optional<int> workspace_ = absl::nullopt;
+  std::optional<int> workspace_ = std::nullopt;
 
   // The z order for the window.
   ZOrderLevel z_order_ = ZOrderLevel::kNormal;
@@ -333,7 +333,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool screen_coordinates_enabled_;
 
   // The last buffer scale sent to the wayland server.
-  absl::optional<float> last_sent_buffer_scale_;
+  std::optional<float> last_sent_buffer_scale_;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 };

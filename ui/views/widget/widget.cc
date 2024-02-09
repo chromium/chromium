@@ -2021,7 +2021,7 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void Widget::SetColorModeOverride(
-    absl::optional<ui::ColorProviderKey::ColorMode> color_mode) {
+    std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
 }
 

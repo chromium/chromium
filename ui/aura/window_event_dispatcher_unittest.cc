@@ -139,7 +139,7 @@ bool IsFocusedWindow(aura::Window* window) {
 
 gfx::Point GetLastTouchPoint(
     aura::Window* window,
-    absl::optional<gfx::Point> fallback = absl::nullopt) {
+    std::optional<gfx::Point> fallback = std::nullopt) {
   return Env::GetInstance()->GetLastPointerPoint(
       ui::mojom::DragEventSource::kTouch, window, fallback);
 }

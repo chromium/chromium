@@ -862,7 +862,7 @@ void SurfaceControl::Transaction::SetDamageRect(const Surface& surface,
 void SurfaceControl::Transaction::SetColorSpace(
     const Surface& surface,
     const gfx::ColorSpace& color_space,
-    const absl::optional<HDRMetadata>& metadata) {
+    const std::optional<HDRMetadata>& metadata) {
   // Populate the data space and brightness ratios.
   uint64_t data_space = ADATASPACE_UNKNOWN;
   float extended_range_brightness_ratio = 1.f;

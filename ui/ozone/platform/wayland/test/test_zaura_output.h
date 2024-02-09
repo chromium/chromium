@@ -8,7 +8,8 @@
 #include <aura-shell-server-protocol.h>
 #include <wayland-client-protocol.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 

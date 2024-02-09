@@ -2412,7 +2412,7 @@ TEST_F(LayerWithDelegateTest, ExternalContent) {
   const auto* surface = static_cast<cc::SurfaceLayer*>(after.get());
   EXPECT_TRUE(after.get());
   EXPECT_NE(before.get(), after.get());
-  EXPECT_EQ(absl::nullopt, surface->deadline_in_frames());
+  EXPECT_EQ(std::nullopt, surface->deadline_in_frames());
 
   allocator.GenerateId();
   child->SetShowSurface(

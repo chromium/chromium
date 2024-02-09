@@ -246,7 +246,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // If the 'display_id' is nullopt or the display does not exist, it will use
   // the display that matches 'bounds'.
   void SetBoundsInternal(const gfx::Rect& bounds,
-                         absl::optional<int64_t> display_id);
+                         std::optional<int64_t> display_id);
 
   base::WeakPtr<internal::NativeWidgetDelegate> delegate_;
   std::unique_ptr<internal::NativeWidgetDelegate> owned_delegate_;

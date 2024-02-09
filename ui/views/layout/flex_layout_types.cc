@@ -72,7 +72,7 @@ class LazySize {
  private:
   const raw_ptr<const View> view_;
   SizeFunc size_func_;
-  mutable absl::optional<gfx::Size> size_;
+  mutable std::optional<gfx::Size> size_;
 };
 
 int LazyDimension::get() const {

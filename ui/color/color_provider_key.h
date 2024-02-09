@@ -5,11 +5,12 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_KEY_H_
 #define UI_COLOR_COLOR_PROVIDER_KEY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/system_theme.h"
 
@@ -142,8 +143,8 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   FrameType frame_type = FrameType::kChromium;
   FrameStyle frame_style = FrameStyle::kDefault;
   UserColorSource user_color_source = UserColorSource::kAccent;
-  absl::optional<SkColor> user_color = absl::nullopt;
-  absl::optional<SchemeVariant> scheme_variant = absl::nullopt;
+  std::optional<SkColor> user_color = std::nullopt;
+  std::optional<SchemeVariant> scheme_variant = std::nullopt;
   scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr;
   // Only dereferenced when populating the ColorMixer. After that, used to
   // compare addresses during lookup.

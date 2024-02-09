@@ -52,10 +52,10 @@ Matcher<FakeGraph> IsWindowGraph(
         parent_viewport_watcher,
     const fuchsia::ui::views::ViewportCreationToken& viewport_creation_token,
     Matcher<std::vector<FakeTransformPtr>> children_transform_matcher) {
-  absl::optional<zx_koid_t> view_token_koid =
+  std::optional<zx_koid_t> view_token_koid =
       base::GetRelatedKoid(viewport_creation_token.value);
   EXPECT_TRUE(view_token_koid.has_value());
-  absl::optional<zx_koid_t> watcher_koid =
+  std::optional<zx_koid_t> watcher_koid =
       base::GetRelatedKoid(parent_viewport_watcher.channel());
   EXPECT_TRUE(watcher_koid.has_value());
 

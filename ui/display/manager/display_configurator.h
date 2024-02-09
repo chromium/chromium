@@ -7,13 +7,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
@@ -304,10 +304,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   chromeos::DisplayPowerState GetRequestedPowerState() const;
 
   void reset_requested_power_state_for_test() {
-    requested_power_state_ = absl::nullopt;
+    requested_power_state_ = std::nullopt;
   }
 
-  absl::optional<chromeos::DisplayPowerState> GetRequestedPowerStateForTest()
+  std::optional<chromeos::DisplayPowerState> GetRequestedPowerStateForTest()
       const {
     return requested_power_state_;
   }
@@ -430,7 +430,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   MultipleDisplayState requested_display_state_;
 
   // Stores the requested power state.
-  absl::optional<chromeos::DisplayPowerState> requested_power_state_;
+  std::optional<chromeos::DisplayPowerState> requested_power_state_;
 
   // The power state used by RunPendingConfiguration(). May be
   // |requested_power_state_| or DISPLAY_POWER_ALL_OFF for suspend.
@@ -443,7 +443,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   int pending_power_flags_;
 
   // Stores the requested refresh rate throttle state.
-  absl::optional<RefreshRateThrottleState> pending_refresh_rate_throttle_state_;
+  std::optional<RefreshRateThrottleState> pending_refresh_rate_throttle_state_;
 
   // List of callbacks from callers waiting for the display configuration to
   // start/finish. Note these callbacks belong to the pending request, not a
@@ -490,7 +490,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Stores the current variable refresh rate enabled state.
   bool current_vrr_state_ = false;
   // Stores the requested variable refresh rate enabled state.
-  absl::optional<bool> pending_vrr_state_;
+  std::optional<bool> pending_vrr_state_;
 
   // This must be the last variable.
   base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_{this};

@@ -153,7 +153,7 @@ std::u16string DialogDelegate::GetDialogButtonLabel(
 
 ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
     ui::DialogButton button) const {
-  absl::optional<ui::ButtonStyle> style = GetParams().button_styles[button];
+  std::optional<ui::ButtonStyle> style = GetParams().button_styles[button];
   if (style.has_value()) {
     return *style;
   }
@@ -402,7 +402,7 @@ void DialogDelegate::SetButtonLabel(ui::DialogButton button,
 }
 
 void DialogDelegate::SetButtonStyle(ui::DialogButton button,
-                                    absl::optional<ui::ButtonStyle> style) {
+                                    std::optional<ui::ButtonStyle> style) {
   if (params_.button_styles[button] == style) {
     return;
   }

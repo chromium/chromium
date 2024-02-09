@@ -5,9 +5,10 @@
 #ifndef UI_OZONE_PUBLIC_PALM_DETECTOR_H_
 #define UI_OZONE_PUBLIC_PALM_DETECTOR_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 

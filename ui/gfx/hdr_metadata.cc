@@ -51,7 +51,7 @@ std::string HdrMetadataExtendedRange::ToString() const {
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimariesExt::kRec2020,
                                                  10000.f, 0.f);
 

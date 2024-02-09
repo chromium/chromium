@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   virtual void SetAutocorrectRange(
       const gfx::Range& range,
       SetAutocorrectRangeDoneCallback callback) = 0;
-  virtual absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() = 0;
+  virtual std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() = 0;
   virtual bool ClearGrammarFragments(const gfx::Range& range) = 0;
   virtual bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragements) = 0;

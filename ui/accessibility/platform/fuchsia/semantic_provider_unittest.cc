@@ -200,7 +200,7 @@ class AXFuchsiaSemanticProviderTest
       semantic_listener_;
   base::FidlErrorEventHandler<fuchsia_accessibility_semantics::SemanticListener>
       semantic_listener_error_handler_;
-  absl::optional<
+  std::optional<
       fidl::ServerBinding<fuchsia_accessibility_semantics::SemanticTree>>
       semantic_tree_binding_;
   std::unique_ptr<AXFuchsiaSemanticProviderDelegate> delegate_;

@@ -53,7 +53,7 @@ struct SizingParams {
   ResizeEdge resize_edge{};
   float aspect_ratio = 0.0f;
   Size min_size;
-  absl::optional<Size> max_size;
+  std::optional<Size> max_size;
   Rect input_rect;
   Rect expected_output_rect;
 
@@ -147,8 +147,8 @@ const SizingParams kSizeRectToSquareAspectRatioTestCases[] = {
 
     // Dragging the top-left resizer left.
     // No max size specified.
-    {ResizeEdge::kTopLeft, kAspectRatioSquare, kMinSizeHorizontal,
-     absl::nullopt, Rect(102, 100, 22, 24), Rect(102, 102, 22, 22)},
+    {ResizeEdge::kTopLeft, kAspectRatioSquare, kMinSizeHorizontal, std::nullopt,
+     Rect(102, 100, 22, 24), Rect(102, 102, 22, 22)},
 };
 
 const SizingParams kSizeRectToHorizontalAspectRatioTestCases[] = {
@@ -175,7 +175,7 @@ const SizingParams kSizeRectToHorizontalAspectRatioTestCases[] = {
     // Dragging the left resizer left.
     // No max size specified.
     {ResizeEdge::kLeft, kAspectRatioHorizontal, kMinSizeHorizontal,
-     absl::nullopt, Rect(96, 100, 48, 22), Rect(96, 98, 48, 24)},
+     std::nullopt, Rect(96, 100, 48, 22), Rect(96, 98, 48, 24)},
 };
 
 const SizingParams kSizeRectToVerticalAspectRatioTestCases[] = {
@@ -199,7 +199,7 @@ const SizingParams kSizeRectToVerticalAspectRatioTestCases[] = {
 
     // Dragging the right resizer right.
     // No max size specified.
-    {ResizeEdge::kRight, kAspectRatioVertical, kMinSizeVertical, absl::nullopt,
+    {ResizeEdge::kRight, kAspectRatioVertical, kMinSizeVertical, std::nullopt,
      Rect(100, 100, 24, 44), Rect(100, 100, 24, 48)},
 };
 

@@ -154,7 +154,7 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   if (collection->format() == gfx::BufferFormat::YUV_420_BIPLANAR) {
     VkSamplerYcbcrModelConversion ycbcr_conversion =
         (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)

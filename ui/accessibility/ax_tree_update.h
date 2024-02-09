@@ -85,7 +85,7 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   // The event intents associated with this tree update.
   std::vector<AXEventIntent> event_intents;
 
-  absl::optional<AXTreeChecks> tree_checks;
+  std::optional<AXTreeChecks> tree_checks;
 
   // Return a multi-line indented string representation, for logging.
   std::string ToString(bool verbose = true) const;

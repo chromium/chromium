@@ -82,29 +82,29 @@ ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
   return display_mode_list;
 }
 
-absl::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
+std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisplayProperties)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value> display_switch_value = base::JSONReader::Read(
+  std::optional<base::Value> display_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kDisplayProperties));
 
   if (!display_switch_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ParseDisplayPanelRadii(&display_switch_value.value());
 }
 
-absl::optional<float> GetVSyncRateMin(const DisplaySnapshot* snapshot,
-                                      const DisplayMode* mode_info) {
+std::optional<float> GetVSyncRateMin(const DisplaySnapshot* snapshot,
+                                     const DisplayMode* mode_info) {
   if (snapshot->vsync_rate_min().has_value()) {
     return mode_info->GetVSyncRateMin(snapshot->vsync_rate_min().value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

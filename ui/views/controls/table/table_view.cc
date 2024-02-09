@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -23,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -299,13 +299,13 @@ size_t TableView::GetRowCount() const {
   return model_ ? model_->RowCount() : 0;
 }
 
-void TableView::Select(absl::optional<size_t> model_row) {
+void TableView::Select(std::optional<size_t> model_row) {
   if (!model_)
     return;
 
   SelectByViewIndex(model_row.has_value()
-                        ? absl::make_optional(ModelToView(model_row.value()))
-                        : absl::nullopt);
+                        ? std::make_optional(ModelToView(model_row.value()))
+                        : std::nullopt);
 }
 
 void TableView::SetSelectionAll(bool select) {
@@ -323,11 +323,10 @@ void TableView::SetSelectionAll(bool select) {
   SetSelectionModel(std::move(selection_model));
 }
 
-absl::optional<size_t> TableView::GetFirstSelectedRow() const {
+std::optional<size_t> TableView::GetFirstSelectedRow() const {
   return selection_model_.empty()
-             ? absl::nullopt
-             : absl::make_optional(
-                   *selection_model_.selected_indices().begin());
+             ? std::nullopt
+             : std::make_optional(*selection_model_.selected_indices().begin());
 }
 
 // TODO(dpenning) : Prevent the last column from being closed. See
@@ -350,8 +349,8 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
           active_visible_column_index_.value() >= visible_columns_.size())
         SetActiveVisibleColumnIndex(
             visible_columns_.empty()
-                ? absl::nullopt
-                : absl::make_optional(visible_columns_.size() - 1));
+                ? std::nullopt
+                : std::make_optional(visible_columns_.size() - 1));
     }
   }
 
@@ -721,7 +720,7 @@ std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
   }
 
   const int x = GetMirroredXInView(p.x());
-  const absl::optional<size_t> column = GetClosestVisibleColumnIndex(*this, x);
+  const std::optional<size_t> column = GetClosestVisibleColumnIndex(*this, x);
   if (!column.has_value() || x < visible_columns_[column.value()].x ||
       x > (visible_columns_[column.value()].x +
            visible_columns_[column.value()].width)) {
@@ -872,9 +871,9 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
   // Determine the currently selected index in terms of the view. We inline the
   // implementation here since ViewToModel() has DCHECKs that fail since the
   // model has changed but |model_to_view_| has not been updated yet.
-  const absl::optional<size_t> previously_selected_model_index =
+  const std::optional<size_t> previously_selected_model_index =
       GetFirstSelectedRow();
-  absl::optional<size_t> previously_selected_view_index =
+  std::optional<size_t> previously_selected_view_index =
       previously_selected_model_index;
   if (previously_selected_model_index.has_value() && GetIsSorted())
     previously_selected_view_index =
@@ -924,7 +923,7 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
 }
 
 gfx::Point TableView::GetKeyboardContextMenuLocation() {
-  absl::optional<size_t> first_selected = GetFirstSelectedRow();
+  std::optional<size_t> first_selected = GetFirstSelectedRow();
   gfx::Rect vis_bounds(GetVisibleBounds());
   int y = vis_bounds.height() / 2;
   if (first_selected.has_value()) {
@@ -1303,7 +1302,7 @@ gfx::Rect TableView::GetPaintBounds(gfx::Canvas* canvas) const {
 
 void TableView::SchedulePaintForSelection() {
   if (selection_model_.size() == 1) {
-    const absl::optional<size_t> first_model_row = GetFirstSelectedRow();
+    const std::optional<size_t> first_model_row = GetFirstSelectedRow();
     SchedulePaintInRect(GetRowBounds(ModelToView(first_model_row.value())));
 
     if (selection_model_.active().has_value() &&
@@ -1324,7 +1323,7 @@ ui::TableColumn TableView::FindColumnByID(int id) const {
 
 void TableView::AdvanceActiveVisibleColumn(AdvanceDirection direction) {
   if (visible_columns_.empty()) {
-    SetActiveVisibleColumnIndex(absl::nullopt);
+    SetActiveVisibleColumnIndex(std::nullopt);
     return;
   }
 
@@ -1344,11 +1343,11 @@ void TableView::AdvanceActiveVisibleColumn(AdvanceDirection direction) {
   }
 }
 
-absl::optional<size_t> TableView::GetActiveVisibleColumnIndex() const {
+std::optional<size_t> TableView::GetActiveVisibleColumnIndex() const {
   return active_visible_column_index_;
 }
 
-void TableView::SetActiveVisibleColumnIndex(absl::optional<size_t> index) {
+void TableView::SetActiveVisibleColumnIndex(std::optional<size_t> index) {
   if (active_visible_column_index_ == index) {
     return;
   }
@@ -1370,7 +1369,7 @@ void TableView::SetActiveVisibleColumnIndex(absl::optional<size_t> index) {
   OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
 }
 
-void TableView::SelectByViewIndex(absl::optional<size_t> view_index) {
+void TableView::SelectByViewIndex(std::optional<size_t> view_index) {
   ui::ListSelectionModel new_selection;
   if (view_index.has_value()) {
     SelectRowsInRangeFrom(view_index.value(), true, &new_selection);
@@ -1403,7 +1402,7 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
     if (!active_visible_column_index_.has_value())
       SetActiveVisibleColumnIndex(size_t{0});
   } else if (!header_row_is_active_) {
-    SetActiveVisibleColumnIndex(absl::nullopt);
+    SetActiveVisibleColumnIndex(std::nullopt);
   }
 
   UpdateFocusRings();
@@ -1417,8 +1416,8 @@ void TableView::AdvanceSelection(AdvanceDirection direction) {
     bool make_header_active =
         header_ && direction == AdvanceDirection::kDecrement;
     header_row_is_active_ = make_header_active;
-    SelectByViewIndex(make_header_active ? absl::nullopt
-                                         : absl::make_optional(size_t{0}));
+    SelectByViewIndex(make_header_active ? std::nullopt
+                                         : std::make_optional(size_t{0}));
     UpdateFocusRings();
     ScheduleUpdateAccessibilityFocusIfNeeded();
     return;
@@ -1432,8 +1431,8 @@ void TableView::AdvanceSelection(AdvanceDirection direction) {
     header_row_is_active_ = make_header_active;
     SelectByViewIndex(
         make_header_active
-            ? absl::nullopt
-            : absl::make_optional(std::max(size_t{1}, view_range_start) - 1));
+            ? std::nullopt
+            : std::make_optional(std::max(size_t{1}, view_range_start) - 1));
   } else {
     header_row_is_active_ = false;
     SelectByViewIndex(
@@ -1596,10 +1595,10 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
     cell_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
 
   auto sort_direction = ax::mojom::SortDirection::kUnsorted;
-  const absl::optional<int> primary_sorted_column_id =
+  const std::optional<int> primary_sorted_column_id =
       sort_descriptors().empty()
-          ? absl::nullopt
-          : absl::make_optional(sort_descriptors()[0].column_id);
+          ? std::nullopt
+          : std::make_optional(sort_descriptors()[0].column_id);
 
   if (column.sortable && primary_sorted_column_id.has_value() &&
       column.id == primary_sorted_column_id.value()) {
@@ -1687,10 +1686,10 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
   DCHECK(header_) << "header_ needs to be instantiated before setting its"
                      "accessibility view.";
 
-  const absl::optional<int> primary_sorted_column_id =
+  const std::optional<int> primary_sorted_column_id =
       sort_descriptors().empty()
-          ? absl::nullopt
-          : absl::make_optional(sort_descriptors()[0].column_id);
+          ? std::nullopt
+          : std::make_optional(sort_descriptors()[0].column_id);
 
   auto ax_header = std::make_unique<AXVirtualView>();
   ui::AXNodeData& header_data = ax_header->GetCustomData();
@@ -1959,9 +1958,9 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
 
 BEGIN_METADATA(TableView)
 ADD_READONLY_PROPERTY_METADATA(size_t, RowCount)
-ADD_READONLY_PROPERTY_METADATA(absl::optional<size_t>, FirstSelectedRow)
+ADD_READONLY_PROPERTY_METADATA(std::optional<size_t>, FirstSelectedRow)
 ADD_READONLY_PROPERTY_METADATA(bool, HasFocusIndicator)
-ADD_PROPERTY_METADATA(absl::optional<size_t>, ActiveVisibleColumnIndex)
+ADD_PROPERTY_METADATA(std::optional<size_t>, ActiveVisibleColumnIndex)
 ADD_READONLY_PROPERTY_METADATA(bool, IsSorted)
 ADD_PROPERTY_METADATA(TableViewObserver*, Observer)
 ADD_READONLY_PROPERTY_METADATA(int, RowHeight)

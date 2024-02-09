@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -169,7 +169,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                             base::TimeTicks timestamp,
                             std::unique_ptr<OSExchangeData> data);
 
-  absl::optional<wl::Serial> GetAndValidateSerialForDrag(
+  std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
 
   void SetOfferedExchangeDataProvider(const OSExchangeData& data);
@@ -207,7 +207,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<mojom::DragEventSource> drag_source_;
+  std::optional<mojom::DragEventSource> drag_source_;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;

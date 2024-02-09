@@ -808,10 +808,10 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   fade_infos_.clear();
 
   struct ChildInfo {
-    absl::optional<size_t> start;
+    std::optional<size_t> start;
     NormalizedRect start_bounds;
     bool start_visible = false;
-    absl::optional<size_t> target;
+    std::optional<size_t> target;
     NormalizedRect target_bounds;
     bool target_visible = false;
   };

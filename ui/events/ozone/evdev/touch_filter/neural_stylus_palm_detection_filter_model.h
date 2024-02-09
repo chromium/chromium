@@ -6,12 +6,12 @@
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_NEURAL_STYLUS_PALM_DETECTION_FILTER_MODEL_H_
 
 #include <cstdint>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -98,7 +98,7 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // model. Currently the model is developed for 120Hz touch devices, so this
   // value must be set to "8 ms" if your device has a different refresh rate.
   // If not set, no resampling is done.
-  absl::optional<base::TimeDelta> resample_period;
+  std::optional<base::TimeDelta> resample_period;
 };
 
 // An abstract model utilized by NueralStylusPalmDetectionFilter.

@@ -240,7 +240,7 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   if (framebuffer_size &&
       !gfx::Rect(size).Contains(gfx::Rect(*framebuffer_size))) {
     return nullptr;
@@ -304,7 +304,7 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
   return supports_native_pixmaps;
 }
 
-absl::optional<gfx::BufferFormat>
+std::optional<gfx::BufferFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
   if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
     return gfx::BufferFormat::BGRA_8888;

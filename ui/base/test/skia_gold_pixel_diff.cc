@@ -257,7 +257,7 @@ SkiaGoldPixelDiff::ScopedSessionCacheForTesting::
 
 // static
 SkiaGoldPixelDiff* SkiaGoldPixelDiff::GetSession(
-    const absl::optional<std::string>& corpus,
+    const std::optional<std::string>& corpus,
     TestEnvironmentMap test_environment) {
   FillInSystemEnvironment(test_environment);
   const std::string corpus_name = corpus.value_or("gtest-pixeltests");
@@ -439,7 +439,7 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
 std::string SkiaGoldPixelDiff::GetGoldenImageName(
     const std::string& test_suite_name,
     const std::string& test_name,
-    const absl::optional<std::string>& suffix) {
+    const std::optional<std::string>& suffix) {
   std::vector<base::StringPiece> parts;
 
   // Test suites can have "/" in their names from a parameterization
@@ -470,7 +470,7 @@ std::string SkiaGoldPixelDiff::GetGoldenImageName(
 // static
 std::string SkiaGoldPixelDiff::GetGoldenImageName(
     const ::testing::TestInfo* test_info,
-    const absl::optional<std::string>& suffix) {
+    const std::optional<std::string>& suffix) {
   return GetGoldenImageName(test_info->test_suite_name(), test_info->name(),
                             suffix);
 }
@@ -576,12 +576,12 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
     base::Time mtime;
   };
   struct DiffLinks {
-    absl::optional<DiffLink> given_image;
-    absl::optional<DiffLink> closest_image;
-    absl::optional<DiffLink> diff_image;
+    std::optional<DiffLink> given_image;
+    std::optional<DiffLink> closest_image;
+    std::optional<DiffLink> diff_image;
   };
 
-  auto AssignIfNewer = [](absl::optional<DiffLink>& image,
+  auto AssignIfNewer = [](std::optional<DiffLink>& image,
                           const base::FilePath& png_path,
                           const base::Time& mtime) {
     if (!image.has_value() || mtime > image->mtime) {
@@ -608,7 +608,7 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
   }
 
   auto FormatPathForTerminalOutput =
-      [](absl::optional<DiffLink>& path) -> absl::optional<std::string> {
+      [](std::optional<DiffLink>& path) -> std::optional<std::string> {
     if (path.has_value()) {
       base::FilePath path_absolute = path.value().png_path;
       if (!path_absolute.IsAbsolute()) {
@@ -625,7 +625,7 @@ void SkiaGoldPixelDiff::GenerateLocalDiff(
               path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
                   .MaybeAsASCII()};
     } else {
-      return absl::nullopt;
+      return std::nullopt;
     }
   };
 

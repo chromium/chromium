@@ -74,14 +74,14 @@ void MockIMEInputContextHandler::SetAutocorrectRange(
   std::move(callback).Run(autocorrect_enabled_);
 }
 
-absl::optional<ui::GrammarFragment>
+std::optional<ui::GrammarFragment>
 MockIMEInputContextHandler::GetGrammarFragmentAtCursor() {
   for (const auto& fragment : grammar_fragments_) {
     if (fragment.range.Contains(cursor_range_)) {
       return fragment;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool MockIMEInputContextHandler::ClearGrammarFragments(

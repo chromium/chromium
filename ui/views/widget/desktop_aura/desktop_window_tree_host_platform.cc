@@ -942,12 +942,12 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
   ScheduleRelayout();
 }
 
-absl::optional<gfx::Size>
+std::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
   return native_widget_delegate_->GetMinimumSize();
 }
 
-absl::optional<gfx::Size>
+std::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
   return native_widget_delegate_->GetMaximumSize();
 }
@@ -962,11 +962,11 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   return window_mask;
 }
 
-absl::optional<ui::OwnedWindowAnchor>
+std::optional<ui::OwnedWindowAnchor>
 DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInDIP() {
   const auto* anchor =
       GetContentWindow()->GetProperty(aura::client::kOwnedWindowAnchor);
-  return anchor ? absl::make_optional(*anchor) : absl::nullopt;
+  return anchor ? std::make_optional(*anchor) : std::nullopt;
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(

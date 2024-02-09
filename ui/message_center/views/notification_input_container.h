@@ -56,7 +56,7 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
 
   // Sets `textfield_`'s placeholder string to `placeholder` or the default if
   // not supplied.
-  void SetPlaceholderText(const absl::optional<std::u16string>& placeholder);
+  void SetPlaceholderText(const std::optional<std::u16string>& placeholder);
 
   // Animates the background, if one exists.
   void AnimateBackground(const ui::Event& event);

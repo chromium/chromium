@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) ChildIteratorBase : public ChildIterator {
   ChildIteratorBase& operator--() override;
   ChildIteratorBase operator--(int);
   gfx::NativeViewAccessible GetNativeViewAccessible() const override;
-  absl::optional<size_t> GetIndexInParent() const override;
+  std::optional<size_t> GetIndexInParent() const override;
   AXPlatformNodeDelegate* get() const override;
   AXPlatformNodeDelegate& operator*() const override;
   AXPlatformNodeDelegate* operator->() const override;

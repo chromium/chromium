@@ -197,8 +197,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   //
   // NOTE: Don't use or modify these properties directly, use the
   // SetLastFocusedNode and GetLastFocusedNode methods instead.
-  static absl::optional<AXNodeID> last_focused_node_id_;
-  static absl::optional<AXTreeID> last_focused_node_tree_id_;
+  static std::optional<AXNodeID> last_focused_node_id_;
+  static std::optional<AXTreeID> last_focused_node_tree_id_;
 
  private:
   friend class TestSingleAXTreeManager;

@@ -1297,7 +1297,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, GetHardwareCapabilities) {
   }
 
   {
-    fake_drm_->SetDriverName(absl::nullopt);
+    fake_drm_->SetDriverName(std::nullopt);
     auto hc = fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase);
     EXPECT_FALSE(hc.is_valid);
 

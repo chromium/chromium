@@ -79,7 +79,7 @@ const KeyboardModifierEventRewriter::RemappedKey* FindRemappedKeyByDomCode(
 }
 
 constexpr KeyboardModifierEventRewriter::RemappedKey kAltGraphRemap = {
-    absl::nullopt,
+    std::nullopt,
     DomKey::ALT_GRAPH,
     VKEY_ALTGR,
     EF_ALTGR_DOWN,
@@ -93,9 +93,8 @@ constexpr KeyboardModifierEventRewriter::RemappedKey kIsoLevel5ShiftMod3Remap =
         EF_MOD3_DOWN | EF_ALTGR_DOWN,
 };
 
-absl::optional<DomCode> RelocateDomCode(
-    DomCode original_code,
-    absl::optional<DomCode> rewritten_code) {
+std::optional<DomCode> RelocateDomCode(DomCode original_code,
+                                       std::optional<DomCode> rewritten_code) {
   if (KeycodeConverter::DomCodeToLocation(original_code) ==
           DomKeyLocation::RIGHT &&
       rewritten_code.has_value()) {

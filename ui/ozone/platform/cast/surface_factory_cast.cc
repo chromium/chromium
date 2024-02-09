@@ -132,7 +132,7 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryCast::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   DCHECK(!framebuffer_size || framebuffer_size == size);
   return base::MakeRefCounted<CastPixmap>();
 }

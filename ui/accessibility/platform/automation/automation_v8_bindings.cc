@@ -556,7 +556,7 @@ void AutomationV8Bindings::SendTreeDestroyedEvent(const AXTreeID& tree_id) {
 
 void AutomationV8Bindings::SendGetTextLocationResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   base::Value::Dict params;
   params.Set("treeID", data.target_tree_id.ToString());
   params.Set("childTreeID", data.child_tree_id.ToString());

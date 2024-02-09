@@ -18,7 +18,7 @@ SlideAnimation::SlideAnimation(AnimationDelegate* target)
 SlideAnimation::~SlideAnimation() = default;
 
 void SlideAnimation::Reset(double value) {
-  direction_ = absl::nullopt;
+  direction_ = std::nullopt;
   value_current_ = value;
   Stop();
 }
@@ -75,7 +75,7 @@ void SlideAnimation::BeginAnimating(Direction direction) {
 void SlideAnimation::AnimateToState(double state) {
   state = Tween::CalculateValue(tween_type_, std::clamp(state, 0.0, 1.0));
   if (state == 1.0)
-    direction_ = absl::nullopt;
+    direction_ = std::nullopt;
 
   value_current_ = value_start_ + (value_end_ - value_start_) * state;
 

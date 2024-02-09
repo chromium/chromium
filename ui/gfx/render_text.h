@@ -12,6 +12,7 @@
 #include <array>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -300,7 +300,7 @@ class GFX_EXPORT RenderText {
   // is cleared and only the last set index will be revealed. If |index| is
   // nullopt or out of range, no char will be revealed. The revealed index is
   // also cleared when SetText or SetObscured is called.
-  void SetObscuredRevealIndex(absl::optional<size_t> index);
+  void SetObscuredRevealIndex(std::optional<size_t> index);
 
   // For obscured (password) fields, the extra spacing between glyphs.
   int obscured_glyph_spacing() const { return obscured_glyph_spacing_; }
@@ -340,12 +340,10 @@ class GFX_EXPORT RenderText {
   ElideBehavior elide_behavior() const { return elide_behavior_; }
 
   // When display text is elided, determines how whitespace is handled.
-  // If absl::nullopt is specified, the default elision for the current elide
+  // If std::nullopt is specified, the default elision for the current elide
   // behavior will be applied.
-  void SetWhitespaceElision(absl::optional<bool> elide_whitespace);
-  absl::optional<bool> whitespace_elision() const {
-    return whitespace_elision_;
-  }
+  void SetWhitespaceElision(std::optional<bool> elide_whitespace);
+  std::optional<bool> whitespace_elision() const { return whitespace_elision_; }
 
   const Rect& display_rect() const { return display_rect_; }
   void SetDisplayRect(const Rect& r);
@@ -836,7 +834,7 @@ class GFX_EXPORT RenderText {
   void reset_cached_cursor_x() { cached_cursor_x_.reset(); }
 
   void set_cached_cursor_x(int x) { cached_cursor_x_ = x; }
-  absl::optional<int> cached_cursor_x() const { return cached_cursor_x_; }
+  std::optional<int> cached_cursor_x() const { return cached_cursor_x_; }
 
   // Fixed width of glyphs. This should only be set in test environments.
   float glyph_width_for_test_ = 0;
@@ -978,7 +976,7 @@ class GFX_EXPORT RenderText {
   // A flag to obscure actual text with asterisks for password fields.
   bool obscured_ = false;
   // The index at which the char should be revealed in the obscured text.
-  absl::optional<size_t> obscured_reveal_index_;
+  std::optional<size_t> obscured_reveal_index_;
 
   // The maximum length of text to display, 0 forgoes a hard limit.
   size_t truncate_length_ = 0;
@@ -997,7 +995,7 @@ class GFX_EXPORT RenderText {
   ElideBehavior elide_behavior_ = NO_ELIDE;
 
   // The behavior for eliding whitespace when eliding or truncating.
-  absl::optional<bool> whitespace_elision_;
+  std::optional<bool> whitespace_elision_;
 
   // True if the text is elided given the current behavior and display area.
   bool text_elided_ = false;
@@ -1056,7 +1054,7 @@ class GFX_EXPORT RenderText {
   int obscured_glyph_spacing_ = 0;
 
   // The cursor position in view space, used to traverse lines of varied widths.
-  absl::optional<int> cached_cursor_x_;
+  std::optional<int> cached_cursor_x_;
 
   // Tell whether or not the |layout_text_| needs an update or is up to date.
   mutable bool layout_text_up_to_date_ = false;

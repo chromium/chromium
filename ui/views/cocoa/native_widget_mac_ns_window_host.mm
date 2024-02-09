@@ -524,10 +524,10 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
   // `SetBounds()` accepts an optional maximum size, while
   // `Widget::GetMaximumSize()` uses an empty size to represent "no maximum
   // size", so we convert between those here.
-  absl::optional<gfx::Size> maximum_size =
+  std::optional<gfx::Size> maximum_size =
       native_widget_mac_->GetWidget()->GetMaximumSize();
   if (maximum_size->IsEmpty()) {
-    maximum_size = absl::nullopt;
+    maximum_size = std::nullopt;
   }
 
   GetNSWindowMojo()->SetBounds(

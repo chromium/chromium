@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -76,32 +76,32 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
 
   // Direct cache control for subclasses that want to override default caching
   // behavior. Use at your own risk.
-  absl::optional<gfx::Size> cached_minimum_size() const {
+  std::optional<gfx::Size> cached_minimum_size() const {
     return cached_minimum_size_;
   }
   void set_cached_minimum_size(
-      const absl::optional<gfx::Size>& minimum_size) const {
+      const std::optional<gfx::Size>& minimum_size) const {
     cached_minimum_size_ = minimum_size;
   }
-  const absl::optional<gfx::Size>& cached_preferred_size() const {
+  const std::optional<gfx::Size>& cached_preferred_size() const {
     return cached_preferred_size_;
   }
   void set_cached_preferred_size(
-      const absl::optional<gfx::Size>& preferred_size) const {
+      const std::optional<gfx::Size>& preferred_size) const {
     cached_preferred_size_ = preferred_size;
   }
-  const absl::optional<gfx::Size>& cached_height_for_width() const {
+  const std::optional<gfx::Size>& cached_height_for_width() const {
     return cached_height_for_width_;
   }
   void set_cached_height_for_width(
-      const absl::optional<gfx::Size>& height_for_width) const {
+      const std::optional<gfx::Size>& height_for_width) const {
     cached_height_for_width_ = height_for_width;
   }
-  const absl::optional<gfx::Size>& cached_layout_size() const {
+  const std::optional<gfx::Size>& cached_layout_size() const {
     return cached_layout_size_;
   }
   void set_cached_layout_size(
-      const absl::optional<gfx::Size>& layout_size) const {
+      const std::optional<gfx::Size>& layout_size) const {
     cached_layout_size_ = layout_size;
   }
   const ProposedLayout& cached_layout() const { return cached_layout_; }
@@ -239,10 +239,10 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
 
   // Do some really simple caching because layout generation can cost as much
   // as 1ms or more for complex views.
-  mutable absl::optional<gfx::Size> cached_minimum_size_;
-  mutable absl::optional<gfx::Size> cached_preferred_size_;
-  mutable absl::optional<gfx::Size> cached_height_for_width_;
-  mutable absl::optional<gfx::Size> cached_layout_size_;
+  mutable std::optional<gfx::Size> cached_minimum_size_;
+  mutable std::optional<gfx::Size> cached_preferred_size_;
+  mutable std::optional<gfx::Size> cached_height_for_width_;
+  mutable std::optional<gfx::Size> cached_layout_size_;
   mutable ProposedLayout cached_layout_;
 };
 

@@ -6,8 +6,9 @@
 
 #include <wayland-server-protocol.h>
 
+#include <optional>
+
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace wl {

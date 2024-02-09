@@ -169,9 +169,9 @@ std::string GetMAWindowRadiusAsCSSNumberInPixels() {
 }  // namespace
 
 // static
-absl::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
+std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
   if (!base::FeatureList::IsEnabled(features::kSystemCaptionStyle))
-    return absl::nullopt;
+    return std::nullopt;
 
   CaptionStyle style;
 

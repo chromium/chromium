@@ -6,8 +6,8 @@
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 
@@ -104,7 +104,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   // Sets the desired background color for repainting when the view is clipped.
   // Defaults to transparent color if unset.
-  void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
+  void SetBackgroundColorWhenClipped(std::optional<SkColor> color);
 
   // Overridden from View:
   void Layout(PassKey) override;
@@ -150,7 +150,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   bool fast_resize_ = false;
 
   // The color to use for repainting the background when the view is clipped.
-  absl::optional<SkColor> background_color_when_clipped_;
+  std::optional<SkColor> background_color_when_clipped_;
 };
 
 }  // namespace views

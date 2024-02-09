@@ -5,13 +5,14 @@
 #include "ui/display/manager/query_content_protection_task.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -63,7 +64,7 @@ class QueryContentProtectionTaskTest : public testing::Test {
     uint32_t protection_mask;
   };
 
-  absl::optional<Response> response_;
+  std::optional<Response> response_;
 };
 
 TEST_F(QueryContentProtectionTaskTest, QueryInternalDisplay) {

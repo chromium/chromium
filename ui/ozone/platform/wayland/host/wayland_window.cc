@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -172,7 +172,7 @@ void WaylandWindow::SetWindowScale(float new_scale) {
   RequestStateFromClient(state);
 }
 
-absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
+std::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   // Child windows don't store entered outputs. Instead, take the window's
   // root parent window and use its preferred output.
   if (parent_window_) {
@@ -194,7 +194,7 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
           ->wayland_screen()
           ->GetOutputIdMatching(GetBoundsInDIP());
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
@@ -220,7 +220,7 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
     DCHECK(output) << " output " << output_id << " not found!";
     DCHECK(preferred_output) << " output " << preferred_id << " not found!";
     if (!output || !preferred_output) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (output->scale_factor() > preferred_output->scale_factor()) {
@@ -550,7 +550,7 @@ void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   if (insets_px) {
     frame_insets_px_ = *insets_px;
   } else {
-    frame_insets_px_ = absl::nullopt;
+    frame_insets_px_ = std::nullopt;
   }
 }
 
@@ -1112,7 +1112,7 @@ bool WaylandWindow::CommitOverlays(
             root_surface()->use_blending(), gfx::Rect(),
             root_surface()->opacity(), gfx::OverlayPriorityHint::kNone,
             rounded_clip_bounds.value_or(gfx::RRectF()),
-            gfx::ColorSpace::CreateSRGB(), absl::nullopt),
+            gfx::ColorSpace::CreateSRGB(), std::nullopt),
         nullptr, root_surface()->buffer_id(), buffer_scale);
   }
 
@@ -1130,9 +1130,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));
 
-  absl::optional<uint32_t> shape =
+  std::optional<uint32_t> shape =
       WaylandCursorShape::ShapeFromType(cursor->type());
-  absl::optional<int32_t> zcr_shape =
+  std::optional<int32_t> zcr_shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts

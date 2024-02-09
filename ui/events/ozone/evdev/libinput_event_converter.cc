@@ -185,28 +185,28 @@ LibInputEventConverter::LibInputContext::~LibInputContext() {
   }
 }
 
-absl::optional<LibInputEventConverter::LibInputContext>
+std::optional<LibInputEventConverter::LibInputContext>
 LibInputEventConverter::LibInputContext::Create() {
   libinput* const li = libinput_path_create_context(&interface_, nullptr);
   if (!li) {
     LOG(ERROR) << "libinput_path_create_context failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional(LibInputEventConverter::LibInputContext(li));
+  return std::make_optional(LibInputEventConverter::LibInputContext(li));
 }
 
-absl::optional<LibInputEventConverter::LibInputDevice>
+std::optional<LibInputEventConverter::LibInputDevice>
 LibInputEventConverter::LibInputContext::AddDevice(
     int id,
     const base::FilePath& path) const {
   auto* const dev = libinput_path_add_device(li_, path.value().c_str());
   if (!dev) {
     LOG(ERROR) << "libinput_path_add_device failed with device: " << path;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional(LibInputDevice(id, dev));
+  return std::make_optional(LibInputDevice(id, dev));
 }
 
 bool LibInputEventConverter::LibInputContext::Dispatch() const {
@@ -222,13 +222,13 @@ int LibInputEventConverter::LibInputContext::Fd() {
   return libinput_get_fd(li_);
 }
 
-absl::optional<LibInputEventConverter::LibInputEvent>
+std::optional<LibInputEventConverter::LibInputEvent>
 LibInputEventConverter::LibInputContext::NextEvent() const {
   libinput_event* const event = libinput_get_event(li_);
   if (!event) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional(LibInputEvent(event));
+  return std::make_optional(LibInputEvent(event));
 }
 
 int LibInputEventConverter::LibInputContext::OpenRestricted(const char* path,

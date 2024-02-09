@@ -353,10 +353,8 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
     variable_refresh_rate_state_ = variable_refresh_rate_state;
   }
 
-  const absl::optional<float>& vsync_rate_min() const {
-    return vsync_rate_min_;
-  }
-  void set_vsync_rate_min(const absl::optional<float>& vsync_rate_min) {
+  const std::optional<float>& vsync_rate_min() const { return vsync_rate_min_; }
+  void set_vsync_rate_min(const std::optional<float>& vsync_rate_min) {
     vsync_rate_min_ = vsync_rate_min;
   }
 
@@ -487,7 +485,7 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   DrmFormatsAndModifiers drm_formats_and_modifiers_;
 
   VariableRefreshRateState variable_refresh_rate_state_;
-  absl::optional<float> vsync_rate_min_;
+  std::optional<float> vsync_rate_min_;
 
   // If you add a new member, you need to update Copy().
 };

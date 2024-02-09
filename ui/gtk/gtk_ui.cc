@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_set>
 #include <utility>

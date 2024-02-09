@@ -47,9 +47,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   struct Params {
     Params();
     ~Params();
-    absl::optional<int> default_button = absl::nullopt;
+    std::optional<int> default_button = std::nullopt;
     bool round_corners = true;
-    absl::optional<int> corner_radius = absl::nullopt;
+    std::optional<int> corner_radius = std::nullopt;
 
     bool draggable = false;
 
@@ -70,7 +70,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
 
     // Styles of each button on this dialog. If empty a style will be derived.
-    absl::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
+    std::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
@@ -233,7 +233,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void set_corner_radius(int corner_radius) {
     params_.corner_radius = corner_radius;
   }
-  const absl::optional<int> corner_radius() const {
+  const std::optional<int> corner_radius() const {
     return params_.corner_radius;
   }
   void set_draggable(bool draggable) { params_.draggable = draggable; }
@@ -247,7 +247,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetButtons(int buttons);
   void SetButtonLabel(ui::DialogButton button, std::u16string label);
   void SetButtonStyle(ui::DialogButton button,
-                      absl::optional<ui::ButtonStyle> style);
+                      std::optional<ui::ButtonStyle> style);
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog

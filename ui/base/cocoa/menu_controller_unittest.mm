@@ -64,7 +64,7 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
   }
 
   void SetVisibility(int command_id, bool visible) {
-    absl::optional<size_t> index =
+    std::optional<size_t> index =
         SimpleMenuModel::GetIndexOfCommandId(command_id);
     items_[ValidateItemIndex(index.value())].visible = visible;
   }

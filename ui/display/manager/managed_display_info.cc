@@ -360,7 +360,7 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       clear_overscan_insets_(false),
       bits_per_channel_(0),
       variable_refresh_rate_state_(kVrrNotCapable),
-      vsync_rate_min_(absl::nullopt) {}
+      vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
                                        const std::string& name,
@@ -383,7 +383,7 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       clear_overscan_insets_(false),
       bits_per_channel_(0),
       variable_refresh_rate_state_(kVrrNotCapable),
-      vsync_rate_min_(absl::nullopt) {}
+      vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
     default;

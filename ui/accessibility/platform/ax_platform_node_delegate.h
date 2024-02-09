@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <new>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -18,7 +19,6 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_split.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
@@ -229,7 +229,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get the index in the parent's list of unignored children. Returns `nullopt`
   // if an unignored parent is unavailable, e.g. if this node is at the root of
   // all accessibility trees.
-  virtual absl::optional<size_t> GetIndexInParent() const;
+  virtual std::optional<size_t> GetIndexInParent() const;
 
   // Get the number of children of this node.
   //
@@ -543,11 +543,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // role, otherwise they return nullopt.
   //
   bool IsTable() const;
-  virtual absl::optional<int> GetTableColCount() const;
-  virtual absl::optional<int> GetTableRowCount() const;
-  virtual absl::optional<int> GetTableAriaColCount() const;
-  virtual absl::optional<int> GetTableAriaRowCount() const;
-  virtual absl::optional<int> GetTableCellCount() const;
+  virtual std::optional<int> GetTableColCount() const;
+  virtual std::optional<int> GetTableRowCount() const;
+  virtual std::optional<int> GetTableAriaColCount() const;
+  virtual std::optional<int> GetTableAriaRowCount() const;
+  virtual std::optional<int> GetTableCellCount() const;
   virtual std::vector<int32_t> GetColHeaderNodeIds() const;
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
@@ -558,21 +558,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Nodes with a table row-like role.
   //
   virtual bool IsTableRow() const;
-  virtual absl::optional<int> GetTableRowRowIndex() const;
+  virtual std::optional<int> GetTableRowRowIndex() const;
 
   //
   // Nodes with a table cell-like role.
   //
   virtual bool IsTableCellOrHeader() const;
-  virtual absl::optional<int> GetTableCellIndex() const;
-  virtual absl::optional<int> GetTableCellColIndex() const;
-  virtual absl::optional<int> GetTableCellRowIndex() const;
-  virtual absl::optional<int> GetTableCellColSpan() const;
-  virtual absl::optional<int> GetTableCellRowSpan() const;
-  virtual absl::optional<int> GetTableCellAriaColIndex() const;
-  virtual absl::optional<int> GetTableCellAriaRowIndex() const;
-  virtual absl::optional<int32_t> GetCellId(int row_index, int col_index) const;
-  virtual absl::optional<int32_t> CellIndexToId(int cell_index) const;
+  virtual std::optional<int> GetTableCellIndex() const;
+  virtual std::optional<int> GetTableCellColIndex() const;
+  virtual std::optional<int> GetTableCellRowIndex() const;
+  virtual std::optional<int> GetTableCellColSpan() const;
+  virtual std::optional<int> GetTableCellRowSpan() const;
+  virtual std::optional<int> GetTableCellAriaColIndex() const;
+  virtual std::optional<int> GetTableCellAriaRowIndex() const;
+  virtual std::optional<int32_t> GetCellId(int row_index, int col_index) const;
+  virtual std::optional<int32_t> CellIndexToId(int cell_index) const;
 
   // Returns true if this node is a cell or a row/column header in an ARIA grid
   // or treegrid.
@@ -584,8 +584,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const;
   virtual bool IsOrderedSet() const;
-  virtual absl::optional<int> GetPosInSet() const;
-  virtual absl::optional<int> GetSetSize() const;
+  virtual std::optional<int> GetPosInSet() const;
+  virtual std::optional<int> GetSetSize() const;
 
   // Computed colors, taking blending into account.
   virtual SkColor GetColor() const;

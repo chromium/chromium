@@ -5,8 +5,9 @@
 #ifndef UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 #define UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -107,7 +108,7 @@ class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
   Tween::Type tween_type_ = Tween::EASE_OUT;
 
   // Current animation direction, or nullopt if not animating.
-  absl::optional<Direction> direction_;
+  std::optional<Direction> direction_;
 
   // Animation values. These are a layer on top of Animation::state_ to
   // provide the reversability.

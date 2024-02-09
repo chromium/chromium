@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -147,17 +147,17 @@ class AX_EXPORT AXComputedNodeData final {
   // The node that is associated with this instance. Weak, owns us.
   const raw_ptr<const AXNode> owner_;
 
-  mutable absl::optional<int> unignored_index_in_parent_;
-  mutable absl::optional<AXNodeID> unignored_parent_id_;
-  mutable absl::optional<int> unignored_child_count_;
-  mutable absl::optional<std::vector<AXNodeID>> unignored_child_ids_;
-  mutable absl::optional<bool> is_descendant_of_leaf_;
-  mutable absl::optional<std::vector<int32_t>> line_starts_;
-  mutable absl::optional<std::vector<int32_t>> line_ends_;
-  mutable absl::optional<std::vector<int32_t>> sentence_starts_;
-  mutable absl::optional<std::vector<int32_t>> sentence_ends_;
-  mutable absl::optional<std::vector<int32_t>> word_starts_;
-  mutable absl::optional<std::vector<int32_t>> word_ends_;
+  mutable std::optional<int> unignored_index_in_parent_;
+  mutable std::optional<AXNodeID> unignored_parent_id_;
+  mutable std::optional<int> unignored_child_count_;
+  mutable std::optional<std::vector<AXNodeID>> unignored_child_ids_;
+  mutable std::optional<bool> is_descendant_of_leaf_;
+  mutable std::optional<std::vector<int32_t>> line_starts_;
+  mutable std::optional<std::vector<int32_t>> line_ends_;
+  mutable std::optional<std::vector<int32_t>> sentence_starts_;
+  mutable std::optional<std::vector<int32_t>> sentence_ends_;
+  mutable std::optional<std::vector<int32_t>> word_starts_;
+  mutable std::optional<std::vector<int32_t>> word_ends_;
 
   // There are two types of "text content". The first takes into
   // account any formatting changes, such as paragraph breaks, that have been
@@ -166,11 +166,11 @@ class AX_EXPORT AXComputedNodeData final {
   // Only one copy (either UTF8 or UTF16) should be cached as each platform
   // should only need one of the encodings. This applies to both text content as
   // well as text content with paragraph breaks.
-  mutable absl::optional<std::string> text_content_with_paragraph_breaks_utf8_;
-  mutable absl::optional<std::u16string>
+  mutable std::optional<std::string> text_content_with_paragraph_breaks_utf8_;
+  mutable std::optional<std::u16string>
       text_content_with_paragraph_breaks_utf16_;
-  mutable absl::optional<std::string> text_content_utf8_;
-  mutable absl::optional<std::u16string> text_content_utf16_;
+  mutable std::optional<std::string> text_content_utf8_;
+  mutable std::optional<std::u16string> text_content_utf16_;
 };
 
 }  // namespace ui

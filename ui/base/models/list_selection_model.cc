@@ -21,7 +21,7 @@ void IncrementFromImpl(size_t index, size_t* value) {
     (*value)++;
 }
 
-void IncrementFromImpl(size_t index, absl::optional<size_t>* value) {
+void IncrementFromImpl(size_t index, std::optional<size_t>* value) {
   if (value->has_value())
     IncrementFromImpl(index, &value->value());
 }
@@ -35,9 +35,9 @@ bool DecrementFromImpl(size_t index, size_t* value) {
   return false;
 }
 
-void DecrementFromImpl(size_t index, absl::optional<size_t>* value) {
+void DecrementFromImpl(size_t index, std::optional<size_t>* value) {
   if (value->has_value() && DecrementFromImpl(index, &value->value()))
-    *value = absl::nullopt;
+    *value = std::nullopt;
 }
 
 void MoveToLowerIndexImpl(size_t old_start,
@@ -103,7 +103,7 @@ void ListSelectionModel::DecrementFrom(size_t index) {
   DecrementFromImpl(index, &active_);
 }
 
-void ListSelectionModel::SetSelectedIndex(absl::optional<size_t> index) {
+void ListSelectionModel::SetSelectedIndex(std::optional<size_t> index) {
   anchor_ = active_ = index;
   selected_indices_.clear();
   if (index.has_value()) {
@@ -120,11 +120,11 @@ bool ListSelectionModel::IsSelected(size_t index) const {
   return base::Contains(selected_indices_, index);
 }
 
-absl::optional<base::Time> ListSelectionModel::GetLastAccessed(
+std::optional<base::Time> ListSelectionModel::GetLastAccessed(
     size_t index) const {
   const auto it = last_accessed_map_.find(index);
   if (it == last_accessed_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second;
@@ -237,7 +237,7 @@ void ListSelectionModel::Move(size_t old_index,
 }
 
 void ListSelectionModel::Clear() {
-  anchor_ = active_ = absl::nullopt;
+  anchor_ = active_ = std::nullopt;
   selected_indices_.clear();
 }
 

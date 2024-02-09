@@ -6,8 +6,9 @@
 
 #include <cursor-shape-v1-client-protocol.h>
 
+#include <optional>
+
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -70,7 +71,7 @@ wp_cursor_shape_device_v1* WaylandCursorShape::GetShapeDevice() {
 }
 
 // static
-absl::optional<uint32_t> WaylandCursorShape::ShapeFromType(CursorType type) {
+std::optional<uint32_t> WaylandCursorShape::ShapeFromType(CursorType type) {
   switch (type) {
     case CursorType::kNull:
       // kNull is an alias for kPointer. Fall through.
@@ -147,7 +148,7 @@ absl::optional<uint32_t> WaylandCursorShape::ShapeFromType(CursorType type) {
       return WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_COPY;
     case CursorType::kNone:
       // To be cleared through wl_pointer.set_cursor.
-      return absl::nullopt;
+      return std::nullopt;
     case CursorType::kNotAllowed:
     case CursorType::kNorthSouthNoResize:
     case CursorType::kEastWestNoResize:
@@ -169,7 +170,7 @@ absl::optional<uint32_t> WaylandCursorShape::ShapeFromType(CursorType type) {
       return WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_GRABBING;
     case CursorType::kCustom:
       // "Custom" means a bitmap cursor, which cannot use the shape API.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

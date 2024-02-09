@@ -5,13 +5,13 @@
 #ifndef UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_id.h"
@@ -154,8 +154,8 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD insets.
   static gfx::Insets GetBorderAndShadowInsets(
-      const absl::optional<int>& shadow_elevation = absl::nullopt,
-      const absl::optional<bool>& draw_border_stroke = absl::nullopt,
+      const std::optional<int>& shadow_elevation = std::nullopt,
+      const std::optional<bool>& draw_border_stroke = std::nullopt,
       Shadow shadow_type = Shadow::STANDARD_SHADOW);
 
   // Draws a border and shadow outside the |rect| on |canvas|. |color_provider|
@@ -184,7 +184,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   // Sets whether to draw the border stroke. Passing `nullopt` uses the default
   // behavior (see comments on `ShouldDrawStroke()` below).
-  void set_draw_border_stroke(absl::optional<bool> draw_border_stroke) {
+  void set_draw_border_stroke(std::optional<bool> draw_border_stroke) {
     draw_border_stroke_ = std::move(draw_border_stroke);
   }
 
@@ -326,14 +326,14 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Cached arrow bounding box, calculated when bounds are calculated.
   mutable gfx::Rect visible_arrow_rect_;
 
-  absl::optional<bool> draw_border_stroke_;
+  std::optional<bool> draw_border_stroke_;
   Shadow shadow_;
-  absl::optional<int> md_shadow_elevation_;
+  std::optional<int> md_shadow_elevation_;
   ui::ColorId color_id_;
-  absl::optional<SkColor> requested_color_;
+  std::optional<SkColor> requested_color_;
   SkColor color_ = gfx::kPlaceholderColor;
   bool avoid_shadow_overlap_ = false;
-  absl::optional<gfx::Insets> insets_;
+  std::optional<gfx::Insets> insets_;
 };
 
 // A Background that clips itself to the specified BubbleBorder and uses the

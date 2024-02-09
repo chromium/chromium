@@ -8,6 +8,7 @@
 #include <atk/atk.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_offset_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 #endif  // defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 30, 0)
 
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 32, 0)
-  absl::optional<gfx::Rect> GetUnclippedHypertextRangeBoundsRect(
+  std::optional<gfx::Rect> GetUnclippedHypertextRangeBoundsRect(
       int start_offset,
       int end_offset);
   bool ScrollSubstringIntoView(AtkScrollType atk_scroll_type,
@@ -240,7 +240,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   // AXPlatformNodeBase overrides.
   bool IsPlatformCheckable() const override;
-  absl::optional<size_t> GetIndexInParent() override;
+  std::optional<size_t> GetIndexInParent() override;
 
   bool IsNameExposed();
 
@@ -283,15 +283,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void TerminateFindInPage();
 
   // If there is a find in page result for the toplevel document of this node,
-  // return it, otherwise return absl::nullopt;
-  absl::optional<FindInPageResultInfo> GetSelectionOffsetsFromFindInPage();
+  // return it, otherwise return std::nullopt;
+  std::optional<FindInPageResultInfo> GetSelectionOffsetsFromFindInPage();
 
   std::pair<int, int> GetSelectionOffsetsForAtk();
 
   // Get the embedded object ("hyperlink") indices for this object in the
   // parent. If this object doesn't have a parent or isn't embedded, return
   // nullopt.
-  absl::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
+  std::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
 
   std::string accessible_name_;
 
@@ -305,8 +305,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   // but the ATK APIs want all offsets to be in "characters," which we
   // understand to be Unicode character offsets. We keep a lazily generated set
   // of Adjustments to convert between UTF-16 and Unicode character offsets.
-  absl::optional<base::OffsetAdjuster::Adjustments> text_unicode_adjustments_ =
-      absl::nullopt;
+  std::optional<base::OffsetAdjuster::Adjustments> text_unicode_adjustments_ =
+      std::nullopt;
 
   void AddAttributeToList(const char* name,
                           const char* value,
@@ -327,7 +327,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
                         AtkRelationType,
                         AXPlatformNode* target);
   bool IsInLiveRegion();
-  absl::optional<std::pair<int, int>> GetEmbeddedObjectIndicesForId(int id);
+  std::optional<std::pair<int, int>> GetEmbeddedObjectIndicesForId(int id);
 
   void ComputeStylesIfNeeded();
   int FindStartOfStyle(int start_offset, ax::mojom::MoveDirection direction);
@@ -384,8 +384,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   std::pair<int32_t, int> GetCurrentCaret() const { return current_caret_; }
 
   // If the given argument can be found as a child of this node, return its
-  // hypertext extents, otherwise return absl::nullopt;
-  absl::optional<std::pair<int, int>> GetHypertextExtentsOfChild(
+  // hypertext extents, otherwise return std::nullopt;
+  std::optional<std::pair<int, int>> GetHypertextExtentsOfChild(
       AXPlatformNodeAuraLinux* child);
 
   // The AtkStateType for a checkable node can vary depending on the role.

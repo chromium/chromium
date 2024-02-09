@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_text_utils.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/i18n/break_iterator.h"
@@ -12,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {

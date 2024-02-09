@@ -339,9 +339,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     const ui::ImageModel& icon,
     Type type,
     ui::MenuSeparatorType separator_style,
-    absl::optional<ui::ColorId> submenu_background_color,
-    absl::optional<ui::ColorId> foreground_color,
-    absl::optional<ui::ColorId> selected_color_id) {
+    std::optional<ui::ColorId> submenu_background_color,
+    std::optional<ui::ColorId> foreground_color,
+    std::optional<ui::ColorId> selected_color_id) {
   DCHECK_NE(type, Type::kEmpty);
   if (!submenu_) {
     CreateSubmenu();
@@ -918,12 +918,12 @@ const gfx::FontList MenuItemView::GetFontList() const {
              : MenuConfig::instance().font_list;
 }
 
-const absl::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
+const std::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
   if (const MenuDelegate* delegate = GetDelegate()) {
     if (const auto& label_color = delegate->GetLabelColor(GetCommand()))
       return label_color;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MenuItemView::UpdateEmptyMenusAndMetrics() {
@@ -1172,7 +1172,7 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
 
 MenuItemView::Colors MenuItemView::CalculateColors(
     bool paint_as_selected) const {
-  const absl::optional<SkColor> label_color_from_delegate = GetMenuLabelColor();
+  const std::optional<SkColor> label_color_from_delegate = GetMenuLabelColor();
   Colors colors;
   colors.fg_color = label_color_from_delegate
                         ? *label_color_from_delegate

@@ -5,11 +5,12 @@
 #ifndef UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_H_
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_H_
 
+#include <stddef.h>
 #include <windows.h>
 
-#include <stddef.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -663,7 +663,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // The aspect ratio for the window. This is only used for sizing operations
   // for the non-client area.
-  absl::optional<float> aspect_ratio_;
+  std::optional<float> aspect_ratio_;
 
   // Size to exclude from aspect ratio calculation.
   gfx::Size excluded_margin_;
@@ -863,7 +863,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   gfx::Size exposed_pixels_;
 
   // Populated if the cursor position is being mocked for testing purposes.
-  absl::optional<gfx::Point> mock_cursor_position_;
+  std::optional<gfx::Point> mock_cursor_position_;
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};

@@ -7,10 +7,11 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
+#include <optional>
+
 #include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 using ui::AXTreeSelector;

@@ -6,10 +6,10 @@
 #define UI_VIEWS_LAYOUT_TABLE_LAYOUT_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_types.h"
@@ -193,7 +193,7 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   // Columns wider than this limit will be ignored when computing linked
   // columns' sizes.
-  absl::optional<int> linked_column_size_limit_;
+  std::optional<int> linked_column_size_limit_;
 
   // Minimum preferred size.
   gfx::Size minimum_size_;

@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
@@ -63,8 +63,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
       const std::u16string& text,
       const gfx::Range& text_range,
       const gfx::Range& selection_range,
-      const absl::optional<ui::GrammarFragment>& fragment,
-      const absl::optional<AutocorrectInfo>& autocorrect) = 0;
+      const std::optional<ui::GrammarFragment>& fragment,
+      const std::optional<AutocorrectInfo>& autocorrect) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().

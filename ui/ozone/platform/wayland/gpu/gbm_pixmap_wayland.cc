@@ -42,7 +42,7 @@ bool GbmPixmapWayland::InitializeBuffer(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> visible_area_size) {
+    std::optional<gfx::Size> visible_area_size) {
   DCHECK(!visible_area_size ||
          ((visible_area_size.value().width() <= size.width()) &&
           (visible_area_size.value().height() <= size.height())));

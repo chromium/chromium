@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
@@ -252,7 +252,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // intercepted.  Returns a ScopedKeyboardHook instance which stops capturing
   // system key events when destroyed.
   std::unique_ptr<ScopedKeyboardHook> CaptureSystemKeyEvents(
-      absl::optional<base::flat_set<ui::DomCode>> codes);
+      std::optional<base::flat_set<ui::DomCode>> codes);
 
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
@@ -303,14 +303,14 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
 #if BUILDFLAG(IS_WIN)
   // Returns whether a host's window is on the current workspace or not,
-  // absl::nullopt if the state is not known.
-  absl::optional<bool> on_current_workspace() const {
+  // std::nullopt if the state is not known.
+  std::optional<bool> on_current_workspace() const {
     return on_current_workspace_;
   }
 
   // Determining if a host's window is on the current workspace can be very
   // expensive COM call on Windows, so this caches that information.
-  void set_on_current_workspace(absl::optional<bool> on_current_workspace) {
+  void set_on_current_workspace(std::optional<bool> on_current_workspace) {
     on_current_workspace_ = on_current_workspace;
   }
 #endif  // BUILDFLAG_(IS_WIN)
@@ -377,7 +377,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
   // Begins capturing system key events.  Returns true if successful.
   virtual bool CaptureSystemKeyEventsImpl(
-      absl::optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
+      std::optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
 
   // Stops capturing system keyboard events.
   virtual void ReleaseSystemKeyEventCapture() = 0;
@@ -448,7 +448,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // This is useful on Windows, where a COM call is required to determine this,
   // which can block the UI. The native window occlusion tracking code already
   // figures this out, so it's cheaper to store the fact here.
-  absl::optional<bool> on_current_workspace_;
+  std::optional<bool> on_current_workspace_;
   SkRegion occluded_region_;
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;

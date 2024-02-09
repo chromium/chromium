@@ -16,13 +16,13 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <tuple>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -128,7 +128,7 @@ class MockDrmDevice : public DrmDevice {
 
     uint32_t type() const;
 
-    absl::optional<const DrmWrapper::Property*> GetProp(uint32_t prop_id) const;
+    std::optional<const DrmWrapper::Property*> GetProp(uint32_t prop_id) const;
     void SetProp(uint32_t prop_id, uint32_t value);
 
     uint32_t id;
@@ -344,8 +344,8 @@ class MockDrmDevice : public DrmDevice {
   bool SetGammaRamp(uint32_t crtc_id,
                     const display::GammaCurve& curve) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
-  absl::optional<std::string> GetDriverName() const override;
-  void SetDriverName(absl::optional<std::string> name);
+  std::optional<std::string> GetDriverName() const override;
+  void SetDriverName(std::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
@@ -391,7 +391,7 @@ class MockDrmDevice : public DrmDevice {
 
   uint32_t current_framebuffer_ = 0;
 
-  absl::optional<std::string> driver_name_ = "mock";
+  std::optional<std::string> driver_name_ = "mock";
 
   std::vector<sk_sp<SkSurface>> buffers_;
 

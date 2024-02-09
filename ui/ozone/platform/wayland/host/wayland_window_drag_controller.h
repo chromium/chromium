@@ -108,7 +108,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     return pointer_grab_owner_;
   }
 
-  absl::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
+  std::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
   const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
 
@@ -176,8 +176,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Returns the serial for the given |drag_source| if |origin| has the
   // corresponding focus, otherwise return null.
-  absl::optional<wl::Serial> GetSerial(mojom::DragEventSource drag_source,
-                                       WaylandToplevelWindow* origin);
+  std::optional<wl::Serial> GetSerial(mojom::DragEventSource drag_source,
+                                      WaylandToplevelWindow* origin);
 
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
@@ -187,7 +187,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<mojom::DragEventSource> drag_source_;
+  std::optional<mojom::DragEventSource> drag_source_;
 
   gfx::Vector2d drag_offset_;
 

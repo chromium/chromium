@@ -28,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 
@@ -1472,42 +1472,42 @@ struct CreateWindowRequest {
   uint16_t border_width{};
   WindowClass c_class{};
   VisualId visual{};
-  absl::optional<Pixmap> background_pixmap{};
-  absl::optional<uint32_t> background_pixel{};
-  absl::optional<Pixmap> border_pixmap{};
-  absl::optional<uint32_t> border_pixel{};
-  absl::optional<Gravity> bit_gravity{};
-  absl::optional<Gravity> win_gravity{};
-  absl::optional<BackingStore> backing_store{};
-  absl::optional<uint32_t> backing_planes{};
-  absl::optional<uint32_t> backing_pixel{};
-  absl::optional<Bool32> override_redirect{};
-  absl::optional<Bool32> save_under{};
-  absl::optional<EventMask> event_mask{};
-  absl::optional<EventMask> do_not_propogate_mask{};
-  absl::optional<ColorMap> colormap{};
-  absl::optional<Cursor> cursor{};
+  std::optional<Pixmap> background_pixmap{};
+  std::optional<uint32_t> background_pixel{};
+  std::optional<Pixmap> border_pixmap{};
+  std::optional<uint32_t> border_pixel{};
+  std::optional<Gravity> bit_gravity{};
+  std::optional<Gravity> win_gravity{};
+  std::optional<BackingStore> backing_store{};
+  std::optional<uint32_t> backing_planes{};
+  std::optional<uint32_t> backing_pixel{};
+  std::optional<Bool32> override_redirect{};
+  std::optional<Bool32> save_under{};
+  std::optional<EventMask> event_mask{};
+  std::optional<EventMask> do_not_propogate_mask{};
+  std::optional<ColorMap> colormap{};
+  std::optional<Cursor> cursor{};
 };
 
 using CreateWindowResponse = Response<void>;
 
 struct ChangeWindowAttributesRequest {
   Window window{};
-  absl::optional<Pixmap> background_pixmap{};
-  absl::optional<uint32_t> background_pixel{};
-  absl::optional<Pixmap> border_pixmap{};
-  absl::optional<uint32_t> border_pixel{};
-  absl::optional<Gravity> bit_gravity{};
-  absl::optional<Gravity> win_gravity{};
-  absl::optional<BackingStore> backing_store{};
-  absl::optional<uint32_t> backing_planes{};
-  absl::optional<uint32_t> backing_pixel{};
-  absl::optional<Bool32> override_redirect{};
-  absl::optional<Bool32> save_under{};
-  absl::optional<EventMask> event_mask{};
-  absl::optional<EventMask> do_not_propogate_mask{};
-  absl::optional<ColorMap> colormap{};
-  absl::optional<Cursor> cursor{};
+  std::optional<Pixmap> background_pixmap{};
+  std::optional<uint32_t> background_pixel{};
+  std::optional<Pixmap> border_pixmap{};
+  std::optional<uint32_t> border_pixel{};
+  std::optional<Gravity> bit_gravity{};
+  std::optional<Gravity> win_gravity{};
+  std::optional<BackingStore> backing_store{};
+  std::optional<uint32_t> backing_planes{};
+  std::optional<uint32_t> backing_pixel{};
+  std::optional<Bool32> override_redirect{};
+  std::optional<Bool32> save_under{};
+  std::optional<EventMask> event_mask{};
+  std::optional<EventMask> do_not_propogate_mask{};
+  std::optional<ColorMap> colormap{};
+  std::optional<Cursor> cursor{};
 };
 
 using ChangeWindowAttributesResponse = Response<void>;
@@ -1591,13 +1591,13 @@ using UnmapSubwindowsResponse = Response<void>;
 
 struct ConfigureWindowRequest {
   Window window{};
-  absl::optional<int32_t> x{};
-  absl::optional<int32_t> y{};
-  absl::optional<uint32_t> width{};
-  absl::optional<uint32_t> height{};
-  absl::optional<uint32_t> border_width{};
-  absl::optional<Window> sibling{};
-  absl::optional<StackMode> stack_mode{};
+  std::optional<int32_t> x{};
+  std::optional<int32_t> y{};
+  std::optional<uint32_t> width{};
+  std::optional<uint32_t> height{};
+  std::optional<uint32_t> border_width{};
+  std::optional<Window> sibling{};
+  std::optional<StackMode> stack_mode{};
 };
 
 using ConfigureWindowResponse = Response<void>;
@@ -2073,58 +2073,58 @@ using FreePixmapResponse = Response<void>;
 struct CreateGCRequest {
   GraphicsContext cid{};
   Drawable drawable{};
-  absl::optional<Gx> function{};
-  absl::optional<uint32_t> plane_mask{};
-  absl::optional<uint32_t> foreground{};
-  absl::optional<uint32_t> background{};
-  absl::optional<uint32_t> line_width{};
-  absl::optional<LineStyle> line_style{};
-  absl::optional<CapStyle> cap_style{};
-  absl::optional<JoinStyle> join_style{};
-  absl::optional<FillStyle> fill_style{};
-  absl::optional<FillRule> fill_rule{};
-  absl::optional<Pixmap> tile{};
-  absl::optional<Pixmap> stipple{};
-  absl::optional<int32_t> tile_stipple_x_origin{};
-  absl::optional<int32_t> tile_stipple_y_origin{};
-  absl::optional<Font> font{};
-  absl::optional<SubwindowMode> subwindow_mode{};
-  absl::optional<Bool32> graphics_exposures{};
-  absl::optional<int32_t> clip_x_origin{};
-  absl::optional<int32_t> clip_y_origin{};
-  absl::optional<Pixmap> clip_mask{};
-  absl::optional<uint32_t> dash_offset{};
-  absl::optional<uint32_t> dashes{};
-  absl::optional<ArcMode> arc_mode{};
+  std::optional<Gx> function{};
+  std::optional<uint32_t> plane_mask{};
+  std::optional<uint32_t> foreground{};
+  std::optional<uint32_t> background{};
+  std::optional<uint32_t> line_width{};
+  std::optional<LineStyle> line_style{};
+  std::optional<CapStyle> cap_style{};
+  std::optional<JoinStyle> join_style{};
+  std::optional<FillStyle> fill_style{};
+  std::optional<FillRule> fill_rule{};
+  std::optional<Pixmap> tile{};
+  std::optional<Pixmap> stipple{};
+  std::optional<int32_t> tile_stipple_x_origin{};
+  std::optional<int32_t> tile_stipple_y_origin{};
+  std::optional<Font> font{};
+  std::optional<SubwindowMode> subwindow_mode{};
+  std::optional<Bool32> graphics_exposures{};
+  std::optional<int32_t> clip_x_origin{};
+  std::optional<int32_t> clip_y_origin{};
+  std::optional<Pixmap> clip_mask{};
+  std::optional<uint32_t> dash_offset{};
+  std::optional<uint32_t> dashes{};
+  std::optional<ArcMode> arc_mode{};
 };
 
 using CreateGCResponse = Response<void>;
 
 struct ChangeGCRequest {
   GraphicsContext gc{};
-  absl::optional<Gx> function{};
-  absl::optional<uint32_t> plane_mask{};
-  absl::optional<uint32_t> foreground{};
-  absl::optional<uint32_t> background{};
-  absl::optional<uint32_t> line_width{};
-  absl::optional<LineStyle> line_style{};
-  absl::optional<CapStyle> cap_style{};
-  absl::optional<JoinStyle> join_style{};
-  absl::optional<FillStyle> fill_style{};
-  absl::optional<FillRule> fill_rule{};
-  absl::optional<Pixmap> tile{};
-  absl::optional<Pixmap> stipple{};
-  absl::optional<int32_t> tile_stipple_x_origin{};
-  absl::optional<int32_t> tile_stipple_y_origin{};
-  absl::optional<Font> font{};
-  absl::optional<SubwindowMode> subwindow_mode{};
-  absl::optional<Bool32> graphics_exposures{};
-  absl::optional<int32_t> clip_x_origin{};
-  absl::optional<int32_t> clip_y_origin{};
-  absl::optional<Pixmap> clip_mask{};
-  absl::optional<uint32_t> dash_offset{};
-  absl::optional<uint32_t> dashes{};
-  absl::optional<ArcMode> arc_mode{};
+  std::optional<Gx> function{};
+  std::optional<uint32_t> plane_mask{};
+  std::optional<uint32_t> foreground{};
+  std::optional<uint32_t> background{};
+  std::optional<uint32_t> line_width{};
+  std::optional<LineStyle> line_style{};
+  std::optional<CapStyle> cap_style{};
+  std::optional<JoinStyle> join_style{};
+  std::optional<FillStyle> fill_style{};
+  std::optional<FillRule> fill_rule{};
+  std::optional<Pixmap> tile{};
+  std::optional<Pixmap> stipple{};
+  std::optional<int32_t> tile_stipple_x_origin{};
+  std::optional<int32_t> tile_stipple_y_origin{};
+  std::optional<Font> font{};
+  std::optional<SubwindowMode> subwindow_mode{};
+  std::optional<Bool32> graphics_exposures{};
+  std::optional<int32_t> clip_x_origin{};
+  std::optional<int32_t> clip_y_origin{};
+  std::optional<Pixmap> clip_mask{};
+  std::optional<uint32_t> dash_offset{};
+  std::optional<uint32_t> dashes{};
+  std::optional<ArcMode> arc_mode{};
 };
 
 using ChangeGCResponse = Response<void>;
@@ -2621,14 +2621,14 @@ struct GetKeyboardMappingReply {
 using GetKeyboardMappingResponse = Response<GetKeyboardMappingReply>;
 
 struct ChangeKeyboardControlRequest {
-  absl::optional<int32_t> key_click_percent{};
-  absl::optional<int32_t> bell_percent{};
-  absl::optional<int32_t> bell_pitch{};
-  absl::optional<int32_t> bell_duration{};
-  absl::optional<uint32_t> led{};
-  absl::optional<LedMode> led_mode{};
-  absl::optional<KeyCode32> key{};
-  absl::optional<AutoRepeatMode> auto_repeat_mode{};
+  std::optional<int32_t> key_click_percent{};
+  std::optional<int32_t> bell_percent{};
+  std::optional<int32_t> bell_pitch{};
+  std::optional<int32_t> bell_duration{};
+  std::optional<uint32_t> led{};
+  std::optional<LedMode> led_mode{};
+  std::optional<KeyCode32> key{};
+  std::optional<AutoRepeatMode> auto_repeat_mode{};
 };
 
 using ChangeKeyboardControlResponse = Response<void>;
@@ -2811,42 +2811,42 @@ class COMPONENT_EXPORT(X11) XProto {
       const uint16_t& border_width = {},
       const WindowClass& c_class = {},
       const VisualId& visual = {},
-      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
-      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
-      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
-      const absl::optional<Gravity>& win_gravity = absl::nullopt,
-      const absl::optional<BackingStore>& backing_store = absl::nullopt,
-      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
-      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
-      const absl::optional<Bool32>& override_redirect = absl::nullopt,
-      const absl::optional<Bool32>& save_under = absl::nullopt,
-      const absl::optional<EventMask>& event_mask = absl::nullopt,
-      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
-      const absl::optional<ColorMap>& colormap = absl::nullopt,
-      const absl::optional<Cursor>& cursor = absl::nullopt);
+      const std::optional<Pixmap>& background_pixmap = std::nullopt,
+      const std::optional<uint32_t>& background_pixel = std::nullopt,
+      const std::optional<Pixmap>& border_pixmap = std::nullopt,
+      const std::optional<uint32_t>& border_pixel = std::nullopt,
+      const std::optional<Gravity>& bit_gravity = std::nullopt,
+      const std::optional<Gravity>& win_gravity = std::nullopt,
+      const std::optional<BackingStore>& backing_store = std::nullopt,
+      const std::optional<uint32_t>& backing_planes = std::nullopt,
+      const std::optional<uint32_t>& backing_pixel = std::nullopt,
+      const std::optional<Bool32>& override_redirect = std::nullopt,
+      const std::optional<Bool32>& save_under = std::nullopt,
+      const std::optional<EventMask>& event_mask = std::nullopt,
+      const std::optional<EventMask>& do_not_propogate_mask = std::nullopt,
+      const std::optional<ColorMap>& colormap = std::nullopt,
+      const std::optional<Cursor>& cursor = std::nullopt);
 
   Future<void> ChangeWindowAttributes(
       const ChangeWindowAttributesRequest& request);
 
   Future<void> ChangeWindowAttributes(
       const Window& window = {},
-      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
-      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
-      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
-      const absl::optional<Gravity>& win_gravity = absl::nullopt,
-      const absl::optional<BackingStore>& backing_store = absl::nullopt,
-      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
-      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
-      const absl::optional<Bool32>& override_redirect = absl::nullopt,
-      const absl::optional<Bool32>& save_under = absl::nullopt,
-      const absl::optional<EventMask>& event_mask = absl::nullopt,
-      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
-      const absl::optional<ColorMap>& colormap = absl::nullopt,
-      const absl::optional<Cursor>& cursor = absl::nullopt);
+      const std::optional<Pixmap>& background_pixmap = std::nullopt,
+      const std::optional<uint32_t>& background_pixel = std::nullopt,
+      const std::optional<Pixmap>& border_pixmap = std::nullopt,
+      const std::optional<uint32_t>& border_pixel = std::nullopt,
+      const std::optional<Gravity>& bit_gravity = std::nullopt,
+      const std::optional<Gravity>& win_gravity = std::nullopt,
+      const std::optional<BackingStore>& backing_store = std::nullopt,
+      const std::optional<uint32_t>& backing_planes = std::nullopt,
+      const std::optional<uint32_t>& backing_pixel = std::nullopt,
+      const std::optional<Bool32>& override_redirect = std::nullopt,
+      const std::optional<Bool32>& save_under = std::nullopt,
+      const std::optional<EventMask>& event_mask = std::nullopt,
+      const std::optional<EventMask>& do_not_propogate_mask = std::nullopt,
+      const std::optional<ColorMap>& colormap = std::nullopt,
+      const std::optional<Cursor>& cursor = std::nullopt);
 
   Future<GetWindowAttributesReply> GetWindowAttributes(
       const GetWindowAttributesRequest& request);
@@ -2894,13 +2894,13 @@ class COMPONENT_EXPORT(X11) XProto {
 
   Future<void> ConfigureWindow(
       const Window& window = {},
-      const absl::optional<int32_t>& x = absl::nullopt,
-      const absl::optional<int32_t>& y = absl::nullopt,
-      const absl::optional<uint32_t>& width = absl::nullopt,
-      const absl::optional<uint32_t>& height = absl::nullopt,
-      const absl::optional<uint32_t>& border_width = absl::nullopt,
-      const absl::optional<Window>& sibling = absl::nullopt,
-      const absl::optional<StackMode>& stack_mode = absl::nullopt);
+      const std::optional<int32_t>& x = std::nullopt,
+      const std::optional<int32_t>& y = std::nullopt,
+      const std::optional<uint32_t>& width = std::nullopt,
+      const std::optional<uint32_t>& height = std::nullopt,
+      const std::optional<uint32_t>& border_width = std::nullopt,
+      const std::optional<Window>& sibling = std::nullopt,
+      const std::optional<StackMode>& stack_mode = std::nullopt);
 
   Future<void> CirculateWindow(const CirculateWindowRequest& request);
 
@@ -3160,57 +3160,57 @@ class COMPONENT_EXPORT(X11) XProto {
   Future<void> CreateGC(
       const GraphicsContext& cid = {},
       const Drawable& drawable = {},
-      const absl::optional<Gx>& function = absl::nullopt,
-      const absl::optional<uint32_t>& plane_mask = absl::nullopt,
-      const absl::optional<uint32_t>& foreground = absl::nullopt,
-      const absl::optional<uint32_t>& background = absl::nullopt,
-      const absl::optional<uint32_t>& line_width = absl::nullopt,
-      const absl::optional<LineStyle>& line_style = absl::nullopt,
-      const absl::optional<CapStyle>& cap_style = absl::nullopt,
-      const absl::optional<JoinStyle>& join_style = absl::nullopt,
-      const absl::optional<FillStyle>& fill_style = absl::nullopt,
-      const absl::optional<FillRule>& fill_rule = absl::nullopt,
-      const absl::optional<Pixmap>& tile = absl::nullopt,
-      const absl::optional<Pixmap>& stipple = absl::nullopt,
-      const absl::optional<int32_t>& tile_stipple_x_origin = absl::nullopt,
-      const absl::optional<int32_t>& tile_stipple_y_origin = absl::nullopt,
-      const absl::optional<Font>& font = absl::nullopt,
-      const absl::optional<SubwindowMode>& subwindow_mode = absl::nullopt,
-      const absl::optional<Bool32>& graphics_exposures = absl::nullopt,
-      const absl::optional<int32_t>& clip_x_origin = absl::nullopt,
-      const absl::optional<int32_t>& clip_y_origin = absl::nullopt,
-      const absl::optional<Pixmap>& clip_mask = absl::nullopt,
-      const absl::optional<uint32_t>& dash_offset = absl::nullopt,
-      const absl::optional<uint32_t>& dashes = absl::nullopt,
-      const absl::optional<ArcMode>& arc_mode = absl::nullopt);
+      const std::optional<Gx>& function = std::nullopt,
+      const std::optional<uint32_t>& plane_mask = std::nullopt,
+      const std::optional<uint32_t>& foreground = std::nullopt,
+      const std::optional<uint32_t>& background = std::nullopt,
+      const std::optional<uint32_t>& line_width = std::nullopt,
+      const std::optional<LineStyle>& line_style = std::nullopt,
+      const std::optional<CapStyle>& cap_style = std::nullopt,
+      const std::optional<JoinStyle>& join_style = std::nullopt,
+      const std::optional<FillStyle>& fill_style = std::nullopt,
+      const std::optional<FillRule>& fill_rule = std::nullopt,
+      const std::optional<Pixmap>& tile = std::nullopt,
+      const std::optional<Pixmap>& stipple = std::nullopt,
+      const std::optional<int32_t>& tile_stipple_x_origin = std::nullopt,
+      const std::optional<int32_t>& tile_stipple_y_origin = std::nullopt,
+      const std::optional<Font>& font = std::nullopt,
+      const std::optional<SubwindowMode>& subwindow_mode = std::nullopt,
+      const std::optional<Bool32>& graphics_exposures = std::nullopt,
+      const std::optional<int32_t>& clip_x_origin = std::nullopt,
+      const std::optional<int32_t>& clip_y_origin = std::nullopt,
+      const std::optional<Pixmap>& clip_mask = std::nullopt,
+      const std::optional<uint32_t>& dash_offset = std::nullopt,
+      const std::optional<uint32_t>& dashes = std::nullopt,
+      const std::optional<ArcMode>& arc_mode = std::nullopt);
 
   Future<void> ChangeGC(const ChangeGCRequest& request);
 
   Future<void> ChangeGC(
       const GraphicsContext& gc = {},
-      const absl::optional<Gx>& function = absl::nullopt,
-      const absl::optional<uint32_t>& plane_mask = absl::nullopt,
-      const absl::optional<uint32_t>& foreground = absl::nullopt,
-      const absl::optional<uint32_t>& background = absl::nullopt,
-      const absl::optional<uint32_t>& line_width = absl::nullopt,
-      const absl::optional<LineStyle>& line_style = absl::nullopt,
-      const absl::optional<CapStyle>& cap_style = absl::nullopt,
-      const absl::optional<JoinStyle>& join_style = absl::nullopt,
-      const absl::optional<FillStyle>& fill_style = absl::nullopt,
-      const absl::optional<FillRule>& fill_rule = absl::nullopt,
-      const absl::optional<Pixmap>& tile = absl::nullopt,
-      const absl::optional<Pixmap>& stipple = absl::nullopt,
-      const absl::optional<int32_t>& tile_stipple_x_origin = absl::nullopt,
-      const absl::optional<int32_t>& tile_stipple_y_origin = absl::nullopt,
-      const absl::optional<Font>& font = absl::nullopt,
-      const absl::optional<SubwindowMode>& subwindow_mode = absl::nullopt,
-      const absl::optional<Bool32>& graphics_exposures = absl::nullopt,
-      const absl::optional<int32_t>& clip_x_origin = absl::nullopt,
-      const absl::optional<int32_t>& clip_y_origin = absl::nullopt,
-      const absl::optional<Pixmap>& clip_mask = absl::nullopt,
-      const absl::optional<uint32_t>& dash_offset = absl::nullopt,
-      const absl::optional<uint32_t>& dashes = absl::nullopt,
-      const absl::optional<ArcMode>& arc_mode = absl::nullopt);
+      const std::optional<Gx>& function = std::nullopt,
+      const std::optional<uint32_t>& plane_mask = std::nullopt,
+      const std::optional<uint32_t>& foreground = std::nullopt,
+      const std::optional<uint32_t>& background = std::nullopt,
+      const std::optional<uint32_t>& line_width = std::nullopt,
+      const std::optional<LineStyle>& line_style = std::nullopt,
+      const std::optional<CapStyle>& cap_style = std::nullopt,
+      const std::optional<JoinStyle>& join_style = std::nullopt,
+      const std::optional<FillStyle>& fill_style = std::nullopt,
+      const std::optional<FillRule>& fill_rule = std::nullopt,
+      const std::optional<Pixmap>& tile = std::nullopt,
+      const std::optional<Pixmap>& stipple = std::nullopt,
+      const std::optional<int32_t>& tile_stipple_x_origin = std::nullopt,
+      const std::optional<int32_t>& tile_stipple_y_origin = std::nullopt,
+      const std::optional<Font>& font = std::nullopt,
+      const std::optional<SubwindowMode>& subwindow_mode = std::nullopt,
+      const std::optional<Bool32>& graphics_exposures = std::nullopt,
+      const std::optional<int32_t>& clip_x_origin = std::nullopt,
+      const std::optional<int32_t>& clip_y_origin = std::nullopt,
+      const std::optional<Pixmap>& clip_mask = std::nullopt,
+      const std::optional<uint32_t>& dash_offset = std::nullopt,
+      const std::optional<uint32_t>& dashes = std::nullopt,
+      const std::optional<ArcMode>& arc_mode = std::nullopt);
 
   Future<void> CopyGC(const CopyGCRequest& request);
 
@@ -3545,14 +3545,14 @@ class COMPONENT_EXPORT(X11) XProto {
       const ChangeKeyboardControlRequest& request);
 
   Future<void> ChangeKeyboardControl(
-      const absl::optional<int32_t>& key_click_percent = absl::nullopt,
-      const absl::optional<int32_t>& bell_percent = absl::nullopt,
-      const absl::optional<int32_t>& bell_pitch = absl::nullopt,
-      const absl::optional<int32_t>& bell_duration = absl::nullopt,
-      const absl::optional<uint32_t>& led = absl::nullopt,
-      const absl::optional<LedMode>& led_mode = absl::nullopt,
-      const absl::optional<KeyCode32>& key = absl::nullopt,
-      const absl::optional<AutoRepeatMode>& auto_repeat_mode = absl::nullopt);
+      const std::optional<int32_t>& key_click_percent = std::nullopt,
+      const std::optional<int32_t>& bell_percent = std::nullopt,
+      const std::optional<int32_t>& bell_pitch = std::nullopt,
+      const std::optional<int32_t>& bell_duration = std::nullopt,
+      const std::optional<uint32_t>& led = std::nullopt,
+      const std::optional<LedMode>& led_mode = std::nullopt,
+      const std::optional<KeyCode32>& key = std::nullopt,
+      const std::optional<AutoRepeatMode>& auto_repeat_mode = std::nullopt);
 
   Future<GetKeyboardControlReply> GetKeyboardControl(
       const GetKeyboardControlRequest& request);

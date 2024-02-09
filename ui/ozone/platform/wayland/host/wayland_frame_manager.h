@@ -86,7 +86,7 @@ struct WaylandFrame {
   wl::Object<struct wp_presentation_feedback> pending_feedback;
   // The actual presentation feedback. May be missing if the callback from the
   // Wayland server has not arrived yet.
-  absl::optional<gfx::PresentationFeedback> feedback = absl::nullopt;
+  std::optional<gfx::PresentationFeedback> feedback = std::nullopt;
   // Whether this frame has had OnPresentation sent for it.
   bool presentation_acked;
 

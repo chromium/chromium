@@ -15,7 +15,7 @@ ViewsTestHelper::GetFallbackTestViewsDelegate() {
 
 void ViewsTestHelper::SetUpTestViewsDelegate(
     TestViewsDelegate* delegate,
-    absl::optional<ViewsDelegate::NativeWidgetFactory> factory) {
+    std::optional<ViewsDelegate::NativeWidgetFactory> factory) {
   if (factory.has_value())
     delegate->set_native_widget_factory(factory.value());
 }

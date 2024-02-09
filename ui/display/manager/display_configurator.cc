@@ -1082,8 +1082,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
   pending_power_flags_ = kSetDisplayPowerNoFlags;
   has_pending_power_state_ = false;
   requested_display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
-  pending_refresh_rate_throttle_state_ = absl::nullopt;
-  pending_vrr_state_ = absl::nullopt;
+  pending_refresh_rate_throttle_state_ = std::nullopt;
+  pending_vrr_state_ = std::nullopt;
 
   DCHECK(in_progress_configuration_callbacks_.empty());
   in_progress_configuration_callbacks_.swap(queued_configuration_callbacks_);

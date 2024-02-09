@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -45,12 +45,12 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   bool operator!=(const ListSelectionModel& other) const;
 
   // See class description for details of the anchor.
-  void set_anchor(absl::optional<size_t> anchor) { anchor_ = anchor; }
-  absl::optional<size_t> anchor() const { return anchor_; }
+  void set_anchor(std::optional<size_t> anchor) { anchor_ = anchor; }
+  std::optional<size_t> anchor() const { return anchor_; }
 
   // See class description for details of active.
-  void set_active(absl::optional<size_t> active) { active_ = active; }
-  absl::optional<size_t> active() const { return active_; }
+  void set_active(std::optional<size_t> active) { active_ = active; }
+  std::optional<size_t> active() const { return active_; }
 
   // True if nothing is selected.
   bool empty() const { return selected_indices_.empty(); }
@@ -71,13 +71,13 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   void DecrementFrom(size_t index);
 
   // Sets the anchor, active and selection to |index|.
-  void SetSelectedIndex(absl::optional<size_t> index);
+  void SetSelectedIndex(std::optional<size_t> index);
 
   // Returns true if |index| is selected.
   bool IsSelected(size_t index) const;
 
   // Returns the last time |index| was accessed.
-  absl::optional<base::Time> GetLastAccessed(size_t index) const;
+  std::optional<base::Time> GetLastAccessed(size_t index) const;
 
   // Adds |index| to the selection. This does not change the active or anchor
   // indices.
@@ -123,8 +123,8 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
  private:
   SelectedIndices selected_indices_;
   std::map<size_t, base::Time> last_accessed_map_;
-  absl::optional<size_t> active_ = absl::nullopt;
-  absl::optional<size_t> anchor_ = absl::nullopt;
+  std::optional<size_t> active_ = std::nullopt;
+  std::optional<size_t> anchor_ = std::nullopt;
 };
 
 }  // namespace ui

@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
     return queried_accessible;
   }
 
-  absl::optional<IA2TextSelection> PropertyNodeToIA2TextSelection(
+  std::optional<IA2TextSelection> PropertyNodeToIA2TextSelection(
       const AXPropertyNode& node) const;
 
   std::vector<IA2TextSelection> PropertyNodeToIA2TextSelectionArray(

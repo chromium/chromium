@@ -6,23 +6,23 @@
 
 #include <cstdint>
 #include <cstring>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 
 namespace ui {
 
 const char kForwardBackMouseButtonPropertyName[] = "ForwardBackMouseButtonCode";
 
-absl::optional<uint32_t> GetForwardBackMouseButtonProperty(const Event& event) {
+std::optional<uint32_t> GetForwardBackMouseButtonProperty(const Event& event) {
   auto* properties = event.properties();
   if (!properties) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto iter = properties->find(kForwardBackMouseButtonPropertyName);
   if (iter == properties->end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CHECK_LE(iter->second.size(), sizeof(uint32_t));

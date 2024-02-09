@@ -4,13 +4,13 @@
 
 #include "ui/base/clipboard/file_info.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -21,7 +21,7 @@ TEST(FileInfoTest, Roundtrip) {
   struct TestCase {
     std::string uri_list;
     std::vector<base::FilePath::StringType> paths;
-    absl::optional<std::string> uri_list_roundtrip;
+    std::optional<std::string> uri_list_roundtrip;
   };
   const TestCase tests[] = {
       // Empty text/uri-list should give empty list.
@@ -83,7 +83,7 @@ TEST(FileInfoTest, Backslashes) {
   struct TestCase {
     base::FilePath::StringType path;
     std::string uri_list;
-    absl::optional<base::FilePath::StringType> path_roundtrip;
+    std::optional<base::FilePath::StringType> path_roundtrip;
   };
   const TestCase tests[] = {
 #if BUILDFLAG(IS_WIN)

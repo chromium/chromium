@@ -227,8 +227,8 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {}
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {}
 #endif
 
 #if BUILDFLAG(IS_WIN)

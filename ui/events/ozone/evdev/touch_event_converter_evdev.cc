@@ -841,7 +841,7 @@ void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
 }
 
 void TouchEventConverterEvdev::RecordSession(base::TimeDelta session_length) {
-  session_start_time_ = absl::nullopt;
+  session_start_time_ = std::nullopt;
   if (session_length.InMilliseconds() <= 0) {
     return;
   }

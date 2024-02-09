@@ -6,10 +6,11 @@
 
 #include <aura-shell-client-protocol.h>
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
@@ -233,9 +234,9 @@ void WaylandPopup::OnSequencePoint(int64_t seq) {
 
 void WaylandPopup::UpdateWindowMask() {
   // Popup doesn't have a shape. Update the opaqueness.
-  auto region = IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(
+  auto region = IsOpaqueWindow() ? std::optional<std::vector<gfx::Rect>>(
                                        {gfx::Rect(latched_state().size_px)})
-                                 : absl::nullopt;
+                                 : std::nullopt;
   root_surface()->set_opaque_region(region);
 }
 

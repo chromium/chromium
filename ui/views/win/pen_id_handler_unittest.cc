@@ -4,11 +4,12 @@
 
 #include "ui/views/win/pen_id_handler.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/win/test_support/fake_ipen_device.h"
 #include "ui/views/win/test_support/fake_ipen_device_statics.h"
 #include "ui/views/win/test_support/fake_ipen_pointer_point_statics.h"
@@ -77,14 +78,14 @@ TEST_F(PenIdHandlerTest, GetGuidMapping) {
   pen_device_statics->SimulatePenEventGenerated(kPointerId3, fake_pen_device_3);
   pen_device_statics->SimulatePenEventGenerated(kPointerId4, fake_pen_device_1);
 
-  const absl::optional<int32_t> id =
+  const std::optional<int32_t> id =
       pen_id_handler.TryGetPenUniqueId(kPointerId1);
 
-  const absl::optional<int32_t> id2 =
+  const std::optional<int32_t> id2 =
       pen_id_handler.TryGetPenUniqueId(kPointerId2);
   EXPECT_NE(id, id2);
 
-  const absl::optional<int32_t> id3 =
+  const std::optional<int32_t> id3 =
       pen_id_handler.TryGetPenUniqueId(kPointerId3);
   EXPECT_NE(id2, id3);
   EXPECT_NE(id, id3);
@@ -138,7 +139,7 @@ TEST_F(PenIdHandlerTest, GetTransducerIdMapping) {
   pointer_point_statics->AddPointerPoint(kPointerId3, p3);
   pointer_point_statics->AddPointerPoint(kPointerId4, p4);
 
-  absl::optional<int32_t> id = pen_id_handler.TryGetPenUniqueId(kPointerId1);
+  std::optional<int32_t> id = pen_id_handler.TryGetPenUniqueId(kPointerId1);
   EXPECT_EQ(id, kPenId0);
 
   // Different serial number to previous should return a new unique id.
@@ -156,19 +157,19 @@ TEST_F(PenIdHandlerTest, GetTransducerIdMapping) {
 
   // Unrecognized id should return a null optional.
   id = pen_id_handler.TryGetPenUniqueId(kPointerId5);
-  EXPECT_EQ(id, absl::nullopt);
+  EXPECT_EQ(id, std::nullopt);
 }
 
 // Simulate statics not being set. This should result in TryGetGuid returning
-// absl::nullopt and TryGetTransducerId returning an invalid Transducer ID.
+// std::nullopt and TryGetTransducerId returning an invalid Transducer ID.
 // Ultimately TryGetPenUniqueId should return null.
 TEST_F(PenIdHandlerTest, PenDeviceStaticsFailedToSet) {
   views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(nullptr, nullptr);
   PenIdHandler pen_id_handler;
-  EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), absl::nullopt);
+  EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), std::nullopt);
   EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),
             PenIdHandler::TransducerId());
-  EXPECT_EQ(pen_id_handler.TryGetPenUniqueId(kPointerId1), absl::nullopt);
+  EXPECT_EQ(pen_id_handler.TryGetPenUniqueId(kPointerId1), std::nullopt);
 }
 
 TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
@@ -179,7 +180,7 @@ TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
       &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
   PenIdHandler pen_id_handler;
 
-  EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), absl::nullopt);
+  EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), std::nullopt);
 
   // When there is a GUID, it should be plumbed.
   const auto fake_pen_device = Microsoft::WRL::Make<FakeIPenDevice>();

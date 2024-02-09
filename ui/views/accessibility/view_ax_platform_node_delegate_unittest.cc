@@ -1066,9 +1066,9 @@ TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 0));
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 3));
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(9, 3));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 0));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 3));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(9, 3));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(-1, 0));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));

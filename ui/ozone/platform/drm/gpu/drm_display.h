@@ -107,7 +107,7 @@ class DrmDisplay {
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
-  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
 };
 

@@ -43,7 +43,7 @@ struct StructTraits<ax::mojom::AXTreeUpdateDataView, ui::AXTreeUpdate> {
     return p.event_intents;
   }
 
-  static const absl::optional<ui::AXTreeChecks> tree_checks(
+  static const std::optional<ui::AXTreeChecks> tree_checks(
       const ui::AXTreeUpdate& p) {
     return p.tree_checks;
   }

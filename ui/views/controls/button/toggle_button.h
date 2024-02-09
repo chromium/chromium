@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -41,13 +42,13 @@ class VIEWS_EXPORT ToggleButton : public Button {
 
   // Sets and gets custom thumb and track colors.
   void SetThumbOnColor(SkColor thumb_on_color);
-  absl::optional<SkColor> GetThumbOnColor() const;
+  std::optional<SkColor> GetThumbOnColor() const;
   void SetThumbOffColor(SkColor thumb_off_color);
-  absl::optional<SkColor> GetThumbOffColor() const;
+  std::optional<SkColor> GetThumbOffColor() const;
   void SetTrackOnColor(SkColor track_on_color);
-  absl::optional<SkColor> GetTrackOnColor() const;
+  std::optional<SkColor> GetTrackOnColor() const;
   void SetTrackOffColor(SkColor track_off_color);
-  absl::optional<SkColor> GetTrackOffColor() const;
+  std::optional<SkColor> GetTrackOffColor() const;
 
   void SetAcceptsEvents(bool accepts_events);
   bool GetAcceptsEvents() const;

@@ -143,16 +143,16 @@ class NotificationTextButton : public views::MdTextButton {
         GetColorProvider()->GetColor(ui::kColorNotificationActionsBackground));
   }
 
-  void SetEnabledTextColors(absl::optional<SkColor> color) override {
+  void SetEnabledTextColors(std::optional<SkColor> color) override {
     color_ = std::move(color);
     views::MdTextButton::SetEnabledTextColors(color_);
     label()->SetAutoColorReadabilityEnabled(true);
   }
 
-  absl::optional<SkColor> color() const { return color_; }
+  std::optional<SkColor> color() const { return color_; }
 
  private:
-  absl::optional<SkColor> color_;
+  std::optional<SkColor> color_;
 };
 
 BEGIN_METADATA(NotificationTextButton)
@@ -216,7 +216,7 @@ class NotificationView::NotificationViewPathGenerator
       const NotificationViewPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds = rect;
     if (!preferred_size_.IsEmpty())
       bounds.set_size(gfx::SizeF(preferred_size_));

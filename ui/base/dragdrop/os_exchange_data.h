@@ -6,17 +6,16 @@
 #define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "build/build_config.h"
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "build/build_config.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
@@ -87,7 +86,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // - track the origin where the drag data came from.
   void MarkRendererTaintedFromOrigin(const url::Origin& origin);
   bool IsRendererTainted() const;
-  absl::optional<url::Origin> GetRendererTaintedOrigin() const;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const;
 
   // Marks drag data as from privileged WebContents. This is used to
   // make sure non-privileged WebContents will not accept drop data from

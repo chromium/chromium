@@ -5691,7 +5691,7 @@ class WidgetShadowTest : public WidgetTest {
   }
 
  protected:
-  absl::optional<Widget::InitParams::Type> override_type_;
+  std::optional<Widget::InitParams::Type> override_type_;
   std::string name_;
   bool force_child_ = false;
 

@@ -8,8 +8,9 @@
 #include <fidl/fuchsia.ui.views/cpp/common_types.h>
 #include <lib/fidl/cpp/binding.h>
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/virtual_keyboard_controller_fuchsia.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method_base.h"
@@ -39,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
   bool IsCandidatePopupOpen() const final;
 
  private:
-  absl::optional<VirtualKeyboardControllerFuchsia> virtual_keyboard_controller_;
+  std::optional<VirtualKeyboardControllerFuchsia> virtual_keyboard_controller_;
 };
 
 }  // namespace ui

@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
   std::u16string GetDropDownSecondaryTextAt(size_t index) const override;
   ui::ImageModel GetIconAt(size_t index) const override;
   bool IsItemSeparatorAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
  private:
   std::vector<Item> items_;

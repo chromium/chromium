@@ -28,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
@@ -456,9 +456,9 @@ class COMPONENT_EXPORT(X11) Input {
       uint32_t motion_size{};
       std::vector<AxisInfo> axes{};
     };
-    absl::optional<Key> key{};
-    absl::optional<Button> button{};
-    absl::optional<Valuator> valuator{};
+    std::optional<Key> key{};
+    std::optional<Button> button{};
+    std::optional<Valuator> valuator{};
   };
 
   struct DeviceName {
@@ -621,12 +621,12 @@ class COMPONENT_EXPORT(X11) Input {
       uint16_t pitch{};
       uint16_t duration{};
     };
-    absl::optional<Keyboard> keyboard{};
-    absl::optional<Pointer> pointer{};
-    absl::optional<String> string{};
-    absl::optional<Integer> integer{};
-    absl::optional<Led> led{};
-    absl::optional<Bell> bell{};
+    std::optional<Keyboard> keyboard{};
+    std::optional<Pointer> pointer{};
+    std::optional<String> string{};
+    std::optional<Integer> integer{};
+    std::optional<Led> led{};
+    std::optional<Bell> bell{};
   };
 
   struct KbdFeedbackCtl {
@@ -755,12 +755,12 @@ class COMPONENT_EXPORT(X11) Input {
       int16_t pitch{};
       int16_t duration{};
     };
-    absl::optional<Keyboard> keyboard{};
-    absl::optional<Pointer> pointer{};
-    absl::optional<String> string{};
-    absl::optional<Integer> integer{};
-    absl::optional<Led> led{};
-    absl::optional<Bell> bell{};
+    std::optional<Keyboard> keyboard{};
+    std::optional<Pointer> pointer{};
+    std::optional<String> string{};
+    std::optional<Integer> integer{};
+    std::optional<Led> led{};
+    std::optional<Bell> bell{};
   };
 
   struct KeyState {
@@ -813,9 +813,9 @@ class COMPONENT_EXPORT(X11) Input {
       ValuatorStateModeMask mode{};
       std::vector<int32_t> valuators{};
     };
-    absl::optional<Key> key{};
-    absl::optional<Button> button{};
-    absl::optional<Valuator> valuator{};
+    std::optional<Key> key{};
+    std::optional<Button> button{};
+    std::optional<Valuator> valuator{};
   };
 
   struct DeviceResolutionState {
@@ -928,11 +928,11 @@ class COMPONENT_EXPORT(X11) Input {
       uint32_t screen{};
       uint32_t following{};
     };
-    absl::optional<Resolution> resolution{};
-    absl::optional<AbsCalib> abs_calib{};
-    absl::optional<Core> core{};
-    absl::optional<Enable> enable{};
-    absl::optional<AbsArea> abs_area{};
+    std::optional<Resolution> resolution{};
+    std::optional<AbsCalib> abs_calib{};
+    std::optional<Core> core{};
+    std::optional<Enable> enable{};
+    std::optional<AbsArea> abs_area{};
   };
 
   struct DeviceResolutionCtl {
@@ -1040,11 +1040,11 @@ class COMPONENT_EXPORT(X11) Input {
       int32_t screen{};
       uint32_t following{};
     };
-    absl::optional<Resolution> resolution{};
-    absl::optional<AbsCalib> abs_calib{};
-    absl::optional<Core> core{};
-    absl::optional<Enable> enable{};
-    absl::optional<AbsArea> abs_area{};
+    std::optional<Resolution> resolution{};
+    std::optional<AbsCalib> abs_calib{};
+    std::optional<Core> core{};
+    std::optional<Enable> enable{};
+    std::optional<AbsArea> abs_area{};
   };
 
   struct GroupInfo {
@@ -1144,10 +1144,10 @@ class COMPONENT_EXPORT(X11) Input {
     struct DetachSlave {
       DeviceId deviceid{};
     };
-    absl::optional<AddMaster> add_master{};
-    absl::optional<RemoveMaster> remove_master{};
-    absl::optional<AttachSlave> attach_slave{};
-    absl::optional<DetachSlave> detach_slave{};
+    std::optional<AddMaster> add_master{};
+    std::optional<RemoveMaster> remove_master{};
+    std::optional<AttachSlave> attach_slave{};
+    std::optional<DetachSlave> detach_slave{};
   };
 
   struct EventMask {
@@ -1281,12 +1281,12 @@ class COMPONENT_EXPORT(X11) Input {
     struct Gesture {
       uint8_t num_touches{};
     };
-    absl::optional<Key> key{};
-    absl::optional<Button> button{};
-    absl::optional<Valuator> valuator{};
-    absl::optional<Scroll> scroll{};
-    absl::optional<Touch> touch{};
-    absl::optional<Gesture> gesture{};
+    std::optional<Key> key{};
+    std::optional<Button> button{};
+    std::optional<Valuator> valuator{};
+    std::optional<Scroll> scroll{};
+    std::optional<Touch> touch{};
+    std::optional<Gesture> gesture{};
   };
 
   struct XIDeviceInfo {
@@ -2165,12 +2165,12 @@ class COMPONENT_EXPORT(X11) Input {
                                      const FeedbackCtl& feedback = {
                                          {},
                                          {},
-                                         absl::nullopt,
-                                         absl::nullopt,
-                                         absl::nullopt,
-                                         absl::nullopt,
-                                         absl::nullopt,
-                                         absl::nullopt});
+                                         std::nullopt,
+                                         std::nullopt,
+                                         std::nullopt,
+                                         std::nullopt,
+                                         std::nullopt,
+                                         std::nullopt});
 
   struct GetDeviceKeyMappingRequest {
     uint8_t device_id{};
@@ -2420,11 +2420,11 @@ class COMPONENT_EXPORT(X11) Input {
       const DeviceControl& control_id = {},
       const uint8_t& device_id = {},
       const DeviceCtl& control = {{},
-                                  absl::nullopt,
-                                  absl::nullopt,
-                                  absl::nullopt,
-                                  absl::nullopt,
-                                  absl::nullopt});
+                                  std::nullopt,
+                                  std::nullopt,
+                                  std::nullopt,
+                                  std::nullopt,
+                                  std::nullopt});
 
   struct ListDevicePropertiesRequest {
     uint8_t device_id{};
@@ -2450,9 +2450,9 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t device_id{};
     PropMode mode{};
     uint32_t num_items{};
-    absl::optional<std::vector<uint8_t>> data8{};
-    absl::optional<std::vector<uint16_t>> data16{};
-    absl::optional<std::vector<uint32_t>> data32{};
+    std::optional<std::vector<uint8_t>> data8{};
+    std::optional<std::vector<uint16_t>> data16{};
+    std::optional<std::vector<uint32_t>> data32{};
   };
 
   using ChangeDevicePropertyResponse = Response<void>;
@@ -2465,9 +2465,9 @@ class COMPONENT_EXPORT(X11) Input {
       const uint8_t& device_id = {},
       const PropMode& mode = {},
       const uint32_t& num_items = {},
-      const absl::optional<std::vector<uint8_t>>& data8 = absl::nullopt,
-      const absl::optional<std::vector<uint16_t>>& data16 = absl::nullopt,
-      const absl::optional<std::vector<uint32_t>>& data32 = absl::nullopt);
+      const std::optional<std::vector<uint8_t>>& data8 = std::nullopt,
+      const std::optional<std::vector<uint16_t>>& data16 = std::nullopt,
+      const std::optional<std::vector<uint32_t>>& data32 = std::nullopt);
 
   struct DeleteDevicePropertyRequest {
     Atom property{};
@@ -2497,9 +2497,9 @@ class COMPONENT_EXPORT(X11) Input {
     uint32_t bytes_after{};
     uint32_t num_items{};
     uint8_t device_id{};
-    absl::optional<std::vector<uint8_t>> data8{};
-    absl::optional<std::vector<uint16_t>> data16{};
-    absl::optional<std::vector<uint32_t>> data32{};
+    std::optional<std::vector<uint8_t>> data8{};
+    std::optional<std::vector<uint16_t>> data16{};
+    std::optional<std::vector<uint32_t>> data32{};
   };
 
   using GetDevicePropertyResponse = Response<GetDevicePropertyReply>;
@@ -2837,9 +2837,9 @@ class COMPONENT_EXPORT(X11) Input {
     Atom property{};
     Atom type{};
     uint32_t num_items{};
-    absl::optional<std::vector<uint8_t>> data8{};
-    absl::optional<std::vector<uint16_t>> data16{};
-    absl::optional<std::vector<uint32_t>> data32{};
+    std::optional<std::vector<uint8_t>> data8{};
+    std::optional<std::vector<uint16_t>> data16{};
+    std::optional<std::vector<uint32_t>> data32{};
   };
 
   using XIChangePropertyResponse = Response<void>;
@@ -2852,9 +2852,9 @@ class COMPONENT_EXPORT(X11) Input {
       const Atom& property = {},
       const Atom& type = {},
       const uint32_t& num_items = {},
-      const absl::optional<std::vector<uint8_t>>& data8 = absl::nullopt,
-      const absl::optional<std::vector<uint16_t>>& data16 = absl::nullopt,
-      const absl::optional<std::vector<uint32_t>>& data32 = absl::nullopt);
+      const std::optional<std::vector<uint8_t>>& data8 = std::nullopt,
+      const std::optional<std::vector<uint16_t>>& data16 = std::nullopt,
+      const std::optional<std::vector<uint32_t>>& data32 = std::nullopt);
 
   struct XIDeletePropertyRequest {
     DeviceId deviceid{};
@@ -2882,9 +2882,9 @@ class COMPONENT_EXPORT(X11) Input {
     Atom type{};
     uint32_t bytes_after{};
     uint32_t num_items{};
-    absl::optional<std::vector<uint8_t>> data8{};
-    absl::optional<std::vector<uint16_t>> data16{};
-    absl::optional<std::vector<uint32_t>> data32{};
+    std::optional<std::vector<uint8_t>> data8{};
+    std::optional<std::vector<uint16_t>> data16{};
+    std::optional<std::vector<uint32_t>> data32{};
   };
 
   using XIGetPropertyResponse = Response<XIGetPropertyReply>;

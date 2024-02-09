@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "skia/ext/skcolorspace_primaries.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/buffer_types.h"
@@ -43,7 +43,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
     float edid_gamma = 2.2;
 
     // HDR static metadata, if available.
-    absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata;
+    std::optional<gfx::HDRStaticMetadata> hdr_static_metadata;
 
     // True if the display's color management is capable of applying color
     // temperature adjustment. If not, then color temperature adjustment
@@ -79,7 +79,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
                   int32_t year_of_manufacture,
                   const gfx::Size& maximum_cursor_size,
                   VariableRefreshRateState variable_refresh_rate_state,
-                  const absl::optional<uint16_t>& vsync_rate_min,
+                  const std::optional<uint16_t>& vsync_rate_min,
                   const DrmFormatsAndModifiers& drm_formats_and_modifiers_);
 
   DisplaySnapshot(const DisplaySnapshot&) = delete;
@@ -118,7 +118,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   const ColorInfo& color_info() const { return color_info_; }
   const gfx::ColorSpace& color_space() const { return color_info_.color_space; }
   uint32_t bits_per_channel() const { return color_info_.bits_per_channel; }
-  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+  const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
     return color_info_.hdr_static_metadata;
   }
   const std::string& display_name() const { return display_name_; }
@@ -139,7 +139,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       VariableRefreshRateState variable_refresh_rate_state) {
     variable_refresh_rate_state_ = variable_refresh_rate_state;
   }
-  const absl::optional<uint16_t>& vsync_rate_min() const {
+  const std::optional<uint16_t>& vsync_rate_min() const {
     return vsync_rate_min_;
   }
   const DrmFormatsAndModifiers& GetDRMFormatsAndModifiers() const {
@@ -276,7 +276,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Whether VRR is enabled, disabled, or not capable on this display.
   VariableRefreshRateState variable_refresh_rate_state_;
   // The minimum supported vsync rate for this display in Hz.
-  const absl::optional<uint16_t> vsync_rate_min_;
+  const std::optional<uint16_t> vsync_rate_min_;
 
   // A list of supported Linux DRM formats and corresponding lists of modifiers
   // for each one.

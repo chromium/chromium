@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -22,7 +23,6 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
@@ -186,7 +186,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // notified.
   //
   // If a null |playback_config| is provided, the default one is used.
-  void Start(absl::optional<PlaybackConfig> playback_config = absl::nullopt);
+  void Start(std::optional<PlaybackConfig> playback_config = std::nullopt);
 
   // Pauses the animation.
   void Pause();
@@ -207,20 +207,20 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // * The animation is currently Stop()ed.
   // * The animation has been Start()ed but a single frame has not been painted
   //   yet.
-  absl::optional<float> GetCurrentProgress() const;
+  std::optional<float> GetCurrentProgress() const;
 
   // Returns the currently playing cycle within the PlaybackConfig's
   // |scheduled_cycles|. Returns nullopt under the same circumstances as
   // GetCurrentProgress().
-  absl::optional<CycleBoundaries> GetCurrentCycleBoundaries() const;
+  std::optional<CycleBoundaries> GetCurrentCycleBoundaries() const;
 
   // Returns the number of animation cycles that have been completed since
   // Play() was called, or nullopt if the animation is currently Stop()ed.
-  absl::optional<int> GetNumCompletedCycles() const;
+  std::optional<int> GetNumCompletedCycles() const;
 
   // Returns the currently active PlaybackConfig, or nullopt if the animation
   // is currently Stop()ed.
-  absl::optional<PlaybackConfig> GetPlaybackConfig() const;
+  std::optional<PlaybackConfig> GetPlaybackConfig() const;
 
   // Paint operations ----------------------------------------------------------
   // Paints the frame of the animation for the given |timestamp| at the given

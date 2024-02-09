@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -1292,8 +1292,8 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   // should be true.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
-  // Setting a absl::nullopt color should make fills opaquely false.
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  // Setting a std::nullopt color should make fills opaquely false.
+  scroll_view->SetBackgroundColor(std::nullopt);
   EXPECT_FALSE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
   child->DestroyLayer();

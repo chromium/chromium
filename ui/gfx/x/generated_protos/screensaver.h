@@ -28,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -154,21 +154,21 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
     WindowClass c_class{};
     uint8_t depth{};
     VisualId visual{};
-    absl::optional<Pixmap> background_pixmap{};
-    absl::optional<uint32_t> background_pixel{};
-    absl::optional<Pixmap> border_pixmap{};
-    absl::optional<uint32_t> border_pixel{};
-    absl::optional<Gravity> bit_gravity{};
-    absl::optional<Gravity> win_gravity{};
-    absl::optional<BackingStore> backing_store{};
-    absl::optional<uint32_t> backing_planes{};
-    absl::optional<uint32_t> backing_pixel{};
-    absl::optional<Bool32> override_redirect{};
-    absl::optional<Bool32> save_under{};
-    absl::optional<EventMask> event_mask{};
-    absl::optional<EventMask> do_not_propogate_mask{};
-    absl::optional<ColorMap> colormap{};
-    absl::optional<Cursor> cursor{};
+    std::optional<Pixmap> background_pixmap{};
+    std::optional<uint32_t> background_pixel{};
+    std::optional<Pixmap> border_pixmap{};
+    std::optional<uint32_t> border_pixel{};
+    std::optional<Gravity> bit_gravity{};
+    std::optional<Gravity> win_gravity{};
+    std::optional<BackingStore> backing_store{};
+    std::optional<uint32_t> backing_planes{};
+    std::optional<uint32_t> backing_pixel{};
+    std::optional<Bool32> override_redirect{};
+    std::optional<Bool32> save_under{};
+    std::optional<EventMask> event_mask{};
+    std::optional<EventMask> do_not_propogate_mask{};
+    std::optional<ColorMap> colormap{};
+    std::optional<Cursor> cursor{};
   };
 
   using SetAttributesResponse = Response<void>;
@@ -185,21 +185,21 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
       const WindowClass& c_class = {},
       const uint8_t& depth = {},
       const VisualId& visual = {},
-      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
-      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
-      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
-      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
-      const absl::optional<Gravity>& win_gravity = absl::nullopt,
-      const absl::optional<BackingStore>& backing_store = absl::nullopt,
-      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
-      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
-      const absl::optional<Bool32>& override_redirect = absl::nullopt,
-      const absl::optional<Bool32>& save_under = absl::nullopt,
-      const absl::optional<EventMask>& event_mask = absl::nullopt,
-      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
-      const absl::optional<ColorMap>& colormap = absl::nullopt,
-      const absl::optional<Cursor>& cursor = absl::nullopt);
+      const std::optional<Pixmap>& background_pixmap = std::nullopt,
+      const std::optional<uint32_t>& background_pixel = std::nullopt,
+      const std::optional<Pixmap>& border_pixmap = std::nullopt,
+      const std::optional<uint32_t>& border_pixel = std::nullopt,
+      const std::optional<Gravity>& bit_gravity = std::nullopt,
+      const std::optional<Gravity>& win_gravity = std::nullopt,
+      const std::optional<BackingStore>& backing_store = std::nullopt,
+      const std::optional<uint32_t>& backing_planes = std::nullopt,
+      const std::optional<uint32_t>& backing_pixel = std::nullopt,
+      const std::optional<Bool32>& override_redirect = std::nullopt,
+      const std::optional<Bool32>& save_under = std::nullopt,
+      const std::optional<EventMask>& event_mask = std::nullopt,
+      const std::optional<EventMask>& do_not_propogate_mask = std::nullopt,
+      const std::optional<ColorMap>& colormap = std::nullopt,
+      const std::optional<Cursor>& cursor = std::nullopt);
 
   struct UnsetAttributesRequest {
     Drawable drawable{};

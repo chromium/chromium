@@ -5,12 +5,12 @@
 #ifndef UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_HEADLESS_H_
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_HEADLESS_H_
 
+#include <stddef.h>
 #include <windows.h>
 
-#include <stddef.h>
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -115,7 +115,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   } window_state_ = kNormal;
 
   gfx::Rect bounds_;
-  absl::optional<gfx::Rect> restored_bounds_;
+  std::optional<gfx::Rect> restored_bounds_;
 };
 
 }  // namespace views

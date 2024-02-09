@@ -120,12 +120,12 @@ PenIdHandler::PenIdHandler() {
 
 PenIdHandler::~PenIdHandler() = default;
 
-absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
+std::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
   if (!PenDeviceApiSupported()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> guid = TryGetGuid(pointer_id);
+  std::optional<std::string> guid = TryGetGuid(pointer_id);
   if (guid.has_value()) {
     auto entry = guid_to_id_map_.insert({guid.value(), current_id_});
     if (entry.second) {
@@ -142,21 +142,21 @@ absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
     return transducer_id_to_id_map_[transducer_id];
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
+std::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   // Override pen device statics if in a test.
   const Microsoft::WRL::ComPtr<IPenDeviceStatics> pen_device_statics =
       get_pen_device_statics ? (*get_pen_device_statics)()
                              : PenIdStatics::GetInstance()->PenDeviceStatics();
 
-  // Return absl::nullopt if we are not in a testing environment and the
+  // Return std::nullopt if we are not in a testing environment and the
   // pen device statics haven't loaded or if statics are null.
   if (!pen_device_statics) {
     TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid no statics",
                          TRACE_EVENT_SCOPE_THREAD);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Microsoft::WRL::ComPtr<IPenDevice> pen_device;
@@ -166,7 +166,7 @@ absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
     TRACE_EVENT_INSTANT0("event",
                          "PenIdHandler::TryGetGuid GetFromPointerId failed",
                          TRACE_EVENT_SCOPE_THREAD);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GUID pen_device_guid;
@@ -174,7 +174,7 @@ absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   if (FAILED(hr)) {
     TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid get_PenId failed",
                          TRACE_EVENT_SCOPE_THREAD);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid successful",

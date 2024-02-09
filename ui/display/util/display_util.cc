@@ -288,7 +288,7 @@ bool HasForceDisplayColorProfile() {
 gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& snapshot_color_space,
     bool allow_high_bit_depth,
-    const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata) {
+    const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata) {
   if (HasForceDisplayColorProfile()) {
     return gfx::DisplayColorSpaces(GetForcedDisplayColorProfile(),
                                    DisplaySnapshot::PrimaryFormat());

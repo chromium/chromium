@@ -81,7 +81,7 @@ gfx::Range SurroundingTextTracker::State::GetSurroundingTextRange() const {
   return {utf16_offset, utf16_offset + surrounding_text.length()};
 }
 
-absl::optional<base::StringPiece16>
+std::optional<base::StringPiece16>
 SurroundingTextTracker::State::GetCompositionText() const {
   if (composition.is_empty()) {
     // Represents no composition. Return empty composition text as a valid
@@ -91,7 +91,7 @@ SurroundingTextTracker::State::GetCompositionText() const {
 
   if (!composition.IsBoundedBy(GetSurroundingTextRange())) {
     // composition range is out of the range. Return error.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::StringPiece16(surrounding_text)

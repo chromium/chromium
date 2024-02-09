@@ -5,6 +5,7 @@
 #ifndef UI_BASE_MODELS_DIALOG_MODEL_FIELD_H_
 #define UI_BASE_MODELS_DIALOG_MODEL_FIELD_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -14,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/combobox_model.h"
@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 
     const std::u16string& text() const { return text_; }
     bool is_emphasized() const { return is_emphasized_; }
-    const absl::optional<Callback>& callback() const { return callback_; }
-    const absl::optional<std::u16string>& accessible_name() const {
+    const std::optional<Callback>& callback() const { return callback_; }
+    const std::optional<std::u16string>& accessible_name() const {
       return accessible_name_;
     }
 
@@ -76,8 +76,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 
     const std::u16string text_;
     const bool is_emphasized_;
-    const absl::optional<Callback> callback_;
-    const absl::optional<std::u16string> accessible_name_;
+    const std::optional<Callback> callback_;
+    const std::optional<std::u16string> accessible_name_;
   };
 
   explicit DialogModelLabel(int message_id);

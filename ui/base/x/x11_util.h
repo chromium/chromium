@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/gfx/icc_profile.h"

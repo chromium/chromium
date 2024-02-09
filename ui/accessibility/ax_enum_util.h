@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_ENUM_UTIL_H_
 #define UI_ACCESSIBILITY_AX_ENUM_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -12,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
@@ -155,7 +155,7 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::ImageAnnotationStatus status);
 AX_BASE_EXPORT const char* ToString(ax::mojom::Dropeffect dropeffect);
 
 template <typename T>
-absl::optional<T> MaybeParseAXEnum(const char* attribute) {
+std::optional<T> MaybeParseAXEnum(const char* attribute) {
   static const base::NoDestructor<base::flat_map<std::string, T>> attr_map([] {
     static_assert(T::kNone == T::kMinValue);
     static_assert(base::to_underlying(T::kNone) == 0);
@@ -177,7 +177,7 @@ absl::optional<T> MaybeParseAXEnum(const char* attribute) {
   if (iter != attr_map->end()) {
     return iter->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Convert from the string representation of an enum defined in ax_enums.mojom

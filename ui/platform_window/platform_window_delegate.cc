@@ -55,12 +55,12 @@ void PlatformWindowDelegate::OnFullscreenTypeChanged(
     PlatformFullscreenType new_type) {}
 #endif
 
-absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
-  return absl::nullopt;
+std::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
+  return std::nullopt;
 }
 
-absl::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
-  return absl::nullopt;
+std::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
+  return std::nullopt;
 }
 
 bool PlatformWindowDelegate::CanMaximize() {
@@ -86,9 +86,9 @@ int64_t PlatformWindowDelegate::OnStateUpdate(const State& old,
   return -1;
 }
 
-absl::optional<OwnedWindowAnchor>
+std::optional<OwnedWindowAnchor>
 PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInDIP() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PlatformWindowDelegate::SetFrameRateThrottleEnabled(bool enabled) {}

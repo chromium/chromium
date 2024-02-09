@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/transform.h"
@@ -196,7 +196,7 @@ class VIEWS_EXPORT AnimationSequenceBlock {
 
   // The block duration.  This will contain nullopt (interpreted as zero) until
   // explicitly set by the caller, at which point it may not be reset.
-  absl::optional<base::TimeDelta> duration_;
+  std::optional<base::TimeDelta> duration_;
 
   // The animation element data for this block. LayerAnimationElements are not
   // used directly because they must be created with a duration, whereas blocks

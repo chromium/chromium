@@ -5,7 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
@@ -63,7 +64,7 @@ GEOMETRY_SKIA_EXPORT AxisTransform2d WindowTransform(int x,
                                                      int height);
 
 // Compute 2D scale if possible, clamped with ClampFloatGeometry().
-GEOMETRY_SKIA_EXPORT absl::optional<Vector2dF>
+GEOMETRY_SKIA_EXPORT std::optional<Vector2dF>
 TryComputeTransform2dScaleComponents(const Transform& transform);
 
 // Compute 2D scale, and fall back to fallback_value if not possible.

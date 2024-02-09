@@ -468,11 +468,11 @@ ClipboardAndroid::~ClipboardAndroid() {
 void ClipboardAndroid::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-absl::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
+std::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(
@@ -688,7 +688,7 @@ void ClipboardAndroid::WriteText(base::StringPiece text) {
 
 void ClipboardAndroid::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */) {
+    std::optional<base::StringPiece> /* source_url */) {
   g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 

@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -113,7 +113,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
 
   // Returns the index of |view|, or nullopt if |view| is not a child of this
   // virtual view.
-  absl::optional<size_t> GetIndexOf(const AXVirtualView* view) const;
+  std::optional<size_t> GetIndexOf(const AXVirtualView* view) const;
 
   //
   // Other methods.
@@ -162,8 +162,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
-  absl::optional<int32_t> GetCellId(int row_index,
-                                    int col_index) const override;
+  std::optional<int32_t> GetCellId(int row_index, int col_index) const override;
 
   // Gets the real View that owns our shallowest virtual ancestor,, if any.
   View* GetOwnerView() const;

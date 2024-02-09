@@ -560,7 +560,7 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
   AXPlatformNodeDelegate detached_delegate;
   AXPlatformNodeBase* detached_node = static_cast<AXPlatformNodeBase*>(
       AXPlatformNode::Create(&detached_delegate));
-  EXPECT_EQ(absl::nullopt, n1->CompareTo(*detached_node));
+  EXPECT_EQ(std::nullopt, n1->CompareTo(*detached_node));
   detached_node->Destroy();
   detached_node = nullptr;
 
@@ -579,7 +579,7 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
       else if (lhs->GetData().id > rhs->GetData().id)
         expected_result = 1;
 
-      EXPECT_NE(absl::nullopt, lhs->CompareTo(*rhs));
+      EXPECT_NE(std::nullopt, lhs->CompareTo(*rhs));
       int actual_result = 0;
       if (lhs->CompareTo(*rhs) < 0)
         actual_result = -1;

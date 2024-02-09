@@ -90,7 +90,7 @@ void AutomationTreeManagerOwner::SendAutomationEvent(
     AXTreeID tree_id,
     const gfx::Point& mouse_location,
     const AXEvent& event,
-    absl::optional<AXEventGenerator::Event> generated_event_type) {
+    std::optional<AXEventGenerator::Event> generated_event_type) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper)
@@ -329,19 +329,19 @@ void AutomationTreeManagerOwner::MaybeSendFocusAndBlur(
   }
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 AutomationTreeManagerOwner::GetAccessibilityFocusedLocation() const {
   if (accessibility_focused_tree_id_ == AXTreeIDUnknown())
-    return absl::nullopt;
+    return std::nullopt;
 
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(accessibility_focused_tree_id_);
   if (!tree_wrapper)
-    return absl::nullopt;
+    return std::nullopt;
 
   AXNode* node = tree_wrapper->GetAccessibilityFocusedNode();
   if (!node)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ComputeGlobalNodeBounds(tree_wrapper, node);
 }
@@ -1131,7 +1131,7 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
     return;
   }
 
-  absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
+  std::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
       GetAccessibilityFocusedLocation();
 
   node->SetLocation(bounds.offset_container_id, bounds.bounds,
@@ -1153,7 +1153,7 @@ void AutomationTreeManagerOwner::DispatchActionResult(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AutomationTreeManagerOwner::DispatchGetTextLocationResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   GetAutomationV8Bindings()->SendGetTextLocationResult(data, rect);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

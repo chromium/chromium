@@ -75,8 +75,8 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD3(SetActiveCompositionForAccessibility,
                void(const gfx::Range&, const std::u16string&, bool));
   MOCK_METHOD2(GetActiveTextInputControlLayoutBounds,
-               void(absl::optional<gfx::Rect>* control_bounds,
-                    absl::optional<gfx::Rect>* selection_bounds));
+               void(std::optional<gfx::Rect>* control_bounds,
+                    std::optional<gfx::Rect>* selection_bounds));
   MOCK_METHOD0(GetTextEditingContext, ui::TextInputClient::EditingContext());
 };
 

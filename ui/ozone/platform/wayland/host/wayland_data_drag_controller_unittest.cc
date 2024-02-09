@@ -1022,7 +1022,7 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
 // Regression test for https://crbug.com/1175083.
 TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-  absl::optional<wl::Serial> mouse_press_serial =
+  std::optional<wl::Serial> mouse_press_serial =
       connection()->serial_tracker().GetSerial(wl::SerialType::kMousePress);
   ASSERT_TRUE(mouse_press_serial.has_value());
 
@@ -1079,7 +1079,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   ASSERT_FALSE(window_manager->GetCurrentTouchFocusedWindow());
 
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-  absl::optional<wl::Serial> mouse_press_serial =
+  std::optional<wl::Serial> mouse_press_serial =
       connection()->serial_tracker().GetSerial(wl::SerialType::kMousePress);
   ASSERT_TRUE(mouse_press_serial.has_value());
   ASSERT_EQ(window_.get(), window_manager->GetCurrentPointerFocusedWindow());

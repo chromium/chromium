@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -185,7 +185,7 @@ class VIEWS_EXPORT AnimationBuilder {
   // start the sequence. next_animation_observer_ is moved to
   // animation_observer_ once .Once() or Repeatedly() is called.
   std::unique_ptr<Observer> next_animation_observer_;
-  absl::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
+  std::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
 
   // Data for the current sequence.
   base::TimeDelta end_;

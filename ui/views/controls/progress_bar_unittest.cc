@@ -124,20 +124,20 @@ TEST_F(ProgressBarTest, OverrideDefaultColors) {
   bar()->SetBackgroundColor(SK_ColorGREEN);
   EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
   EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
-  EXPECT_EQ(absl::nullopt, bar()->GetForegroundColorId());
-  EXPECT_EQ(absl::nullopt, bar()->GetBackgroundColorId());
+  EXPECT_EQ(std::nullopt, bar()->GetForegroundColorId());
+  EXPECT_EQ(std::nullopt, bar()->GetBackgroundColorId());
 }
 
 // Test that if no `preferred_corner_radii` are provided the default radius is
-// 3, and a value of `absl::nullopt` will not round the corners.
+// 3, and a value of `std::nullopt` will not round the corners.
 TEST_F(ProgressBarTest, RoundCornerDefault) {
   // The default bar should have a rounded corner radius of 3.
   EXPECT_EQ(gfx::RoundedCornersF(3), bar()->GetPreferredCornerRadii());
 
-  // Setting `absl::nullopt` for the corner radius should make the bar have no
+  // Setting `std::nullopt` for the corner radius should make the bar have no
   // rounded corners.
   bar()->SetPreferredHeight(12);
-  bar()->SetPreferredCornerRadii(absl::nullopt);
+  bar()->SetPreferredCornerRadii(std::nullopt);
   views::test::RunScheduledLayout(container_view_);
   EXPECT_EQ(gfx::RoundedCornersF(0), bar()->GetPreferredCornerRadii());
   EXPECT_TRUE(bar()->GetPreferredCornerRadii().IsEmpty());

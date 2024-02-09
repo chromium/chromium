@@ -166,7 +166,7 @@ void ZWPTextInputWrapperV1::Activate(WaylandWindow* window,
   if (extended_obj_.get() &&
       wl::get_version_of_object(extended_obj_.get()) >=
           ZCR_EXTENDED_TEXT_INPUT_V1_SET_FOCUS_REASON_SINCE_VERSION) {
-    absl::optional<uint32_t> wayland_focus_reason;
+    std::optional<uint32_t> wayland_focus_reason;
     switch (reason) {
       case ui::TextInputClient::FocusReason::FOCUS_REASON_NONE:
         wayland_focus_reason =

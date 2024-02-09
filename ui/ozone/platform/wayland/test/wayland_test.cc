@@ -136,7 +136,7 @@ void WaylandTestBase::SetKeyboardFocusedWindow(WaylandWindow* window) {
 void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
                                          const gfx::Size& size,
                                          const wl::ScopedWlArray& states,
-                                         absl::optional<uint32_t> serial) {
+                                         std::optional<uint32_t> serial) {
   PostToServerAndWait([size, surface_id, states,
                        serial](wl::TestWaylandServerThread* server) {
     auto* surface = server->GetObject<wl::MockSurface>(surface_id);
@@ -166,7 +166,7 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
 }
 
 void WaylandTestBase::ActivateSurface(uint32_t surface_id,
-                                      absl::optional<uint32_t> serial) {
+                                      std::optional<uint32_t> serial) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(surface_id, {0, 0}, state, serial);
 }

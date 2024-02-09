@@ -77,7 +77,7 @@ void NotificationExample::OnViewAddedToWidget(View* observed_view) {
       std::u16string(), GURL(),
       message_center::NotifierId(
           GURL(), l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_LABEL),
-          /*web_app_id=*/absl::nullopt),
+          /*web_app_id=*/std::nullopt),
       data, base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_small_image(CreateTestImage(gfx::Size(16, 16), cp));
   notification.set_image(CreateTestImage(gfx::Size(320, 240), cp));

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/color_conversions.h"
+
 #include <stdlib.h>
+
+#include <optional>
 #include <tuple>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/color_conversions.h"
 
 namespace gfx {
 

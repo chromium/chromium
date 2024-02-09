@@ -197,7 +197,7 @@ const gfx::FontList& Combobox::GetFontList() const {
   return TypographyProvider::Get().GetFont(kContext, kStyle);
 }
 
-void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
+void Combobox::SetSelectedIndex(std::optional<size_t> index) {
   if (selected_index_ == index)
     return;
   // TODO(pbos): Add (D)CHECKs to validate the selected index.
@@ -330,12 +330,12 @@ size_t Combobox::GetRowCount() {
   return GetModel()->GetItemCount();
 }
 
-absl::optional<size_t> Combobox::GetSelectedRow() {
+std::optional<size_t> Combobox::GetSelectedRow() {
   return selected_index_;
 }
 
-void Combobox::SetSelectedRow(absl::optional<size_t> row) {
-  absl::optional<size_t> prev_index = selected_index_;
+void Combobox::SetSelectedRow(std::optional<size_t> row) {
+  std::optional<size_t> prev_index = selected_index_;
   SetSelectedIndex(row);
   if (selected_index_ != prev_index)
     OnPerformAction();
@@ -405,24 +405,24 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   return true;
 #else
   const auto index_at_or_after = [](ui::ComboboxModel* model,
-                                    size_t index) -> absl::optional<size_t> {
+                                    size_t index) -> std::optional<size_t> {
     for (; index < model->GetItemCount(); ++index) {
       if (!model->IsItemSeparatorAt(index) && model->IsItemEnabledAt(index))
         return index;
     }
-    return absl::nullopt;
+    return std::nullopt;
   };
   const auto index_before = [](ui::ComboboxModel* model,
-                               size_t index) -> absl::optional<size_t> {
+                               size_t index) -> std::optional<size_t> {
     for (; index > 0; --index) {
       const auto prev = index - 1;
       if (!model->IsItemSeparatorAt(prev) && model->IsItemEnabledAt(prev))
         return prev;
     }
-    return absl::nullopt;
+    return std::nullopt;
   };
 
-  absl::optional<size_t> new_index;
+  std::optional<size_t> new_index;
   switch (e.key_code()) {
     // Show the menu on F4 without modifiers.
     case ui::VKEY_F4:
@@ -807,7 +807,7 @@ BEGIN_METADATA(Combobox)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, Callback)
 ADD_PROPERTY_METADATA(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)
-ADD_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
+ADD_PROPERTY_METADATA(std::optional<size_t>, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
 ADD_PROPERTY_METADATA(std::u16string, TooltipTextAndAccessibleName)

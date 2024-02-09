@@ -4,7 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"

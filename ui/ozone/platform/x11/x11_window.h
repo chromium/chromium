@@ -120,8 +120,8 @@ class X11Window : public PlatformWindow,
   bool CanSetDecorationInsets() const override;
   void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetOpaqueRegion(
-      absl::optional<std::vector<gfx::Rect>> region_px) override;
-  void SetInputRegion(absl::optional<gfx::Rect> region_px) override;
+      std::optional<std::vector<gfx::Rect>> region_px) override;
+  void SetInputRegion(std::optional<gfx::Rect> region_px) override;
   void NotifyStartupComplete(const std::string& startup_id) override;
 
   // WorkspaceExtension:
@@ -157,8 +157,8 @@ class X11Window : public PlatformWindow,
   void OnXWindowLostPointerGrab();
   void OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev);
   void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev);
-  absl::optional<gfx::Size> GetMinimumSizeForXWindow();
-  absl::optional<gfx::Size> GetMaximumSizeForXWindow();
+  std::optional<gfx::Size> GetMinimumSizeForXWindow();
+  std::optional<gfx::Size> GetMaximumSizeForXWindow();
   SkPath GetWindowMaskForXWindow();
 
  private:
@@ -195,7 +195,7 @@ class X11Window : public PlatformWindow,
                        const gfx::Vector2d& offset) override;
 
   // XDragDropClient::Delegate
-  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(mojom::DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
@@ -382,7 +382,7 @@ class X11Window : public PlatformWindow,
   // Was this window initialized with the override_redirect window attribute?
   bool override_redirect_ = false;
 
-  absl::optional<std::u16string> window_title_;
+  std::optional<std::u16string> window_title_;
 
   // Whether the window is visible with respect to Aura.
   bool window_mapped_in_client_ = false;
@@ -398,9 +398,9 @@ class X11Window : public PlatformWindow,
   // Whether we used an ARGB visual for our window.
   bool visual_has_alpha_ = false;
 
-  // The workspace containing |xwindow_|.  This will be absl::nullopt when
+  // The workspace containing |xwindow_|.  This will be std::nullopt when
   // _NET_WM_DESKTOP is unset.
-  absl::optional<int> workspace_;
+  std::optional<int> workspace_;
 
   // True if the window should stay on top of most other windows.
   bool is_always_on_top_ = false;

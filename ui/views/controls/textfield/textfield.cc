@@ -213,7 +213,7 @@ base::TimeDelta Textfield::GetCaretBlinkInterval() {
 #elif BUILDFLAG(IS_MAC)
   // If there's insertion point flash rate info in NSUserDefaults, use the
   // blink period derived from that.
-  absl::optional<base::TimeDelta> system_value(
+  std::optional<base::TimeDelta> system_value(
       ui::TextInsertionCaretBlinkPeriodFromDefaults());
   if (system_value)
     return *system_value;
@@ -1660,7 +1660,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
   DoInsertChar(ch);
 
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
-    password_char_reveal_index_ = absl::nullopt;
+    password_char_reveal_index_ = std::nullopt;
     base::TimeDelta duration = GetPasswordRevealDuration(event);
     if (!duration.is_zero()) {
       const size_t change_offset = model_->GetCursorPosition();
@@ -2023,8 +2023,8 @@ bool Textfield::AddGrammarFragments(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void Textfield::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {
   gfx::Rect origin = GetContentsBounds();
   ConvertRectToScreen(this, &origin);
   *control_bounds = origin;
@@ -2635,7 +2635,7 @@ void Textfield::UpdateSelectionBackgroundColor() {
 void Textfield::UpdateAfterChange(
     TextChangeType text_change_type,
     bool cursor_changed,
-    absl::optional<bool> notify_caret_bounds_changed) {
+    std::optional<bool> notify_caret_bounds_changed) {
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_)
       controller_->ContentsChanged(this, GetText());
@@ -2825,7 +2825,7 @@ bool Textfield::ImeEditingAllowed() const {
   return (t != ui::TEXT_INPUT_TYPE_NONE && t != ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-void Textfield::RevealPasswordChar(absl::optional<size_t> index,
+void Textfield::RevealPasswordChar(std::optional<size_t> index,
                                    base::TimeDelta duration) {
   GetRenderText()->SetObscuredRevealIndex(index);
   SchedulePaint();
@@ -2833,10 +2833,10 @@ void Textfield::RevealPasswordChar(absl::optional<size_t> index,
   UpdateCursorViewPosition();
 
   if (index.has_value()) {
-    password_reveal_timer_.Start(FROM_HERE, duration,
-                                 base::BindOnce(&Textfield::RevealPasswordChar,
-                                                weak_ptr_factory_.GetWeakPtr(),
-                                                absl::nullopt, duration));
+    password_reveal_timer_.Start(
+        FROM_HERE, duration,
+        base::BindOnce(&Textfield::RevealPasswordChar,
+                       weak_ptr_factory_.GetWeakPtr(), std::nullopt, duration));
   }
 }
 
@@ -3132,7 +3132,7 @@ void Textfield::StopSelectionDragging() {
     ui::RecordTouchSelectionDrag(selection_drag_type_.value());
   }
   selection_dragging_state_ = SelectionDraggingState::kNone;
-  selection_drag_type_ = absl::nullopt;
+  selection_drag_type_ = std::nullopt;
 }
 
 BEGIN_METADATA(Textfield)

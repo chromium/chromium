@@ -5589,7 +5589,7 @@ TEST_P(InteractionSequenceSubsequenceTest, FirstFailsSecondSucceeds) {
                       InteractionSequence::StepType::kShown,
                       InteractionSequence::AbortedReason::
                           kElementNotVisibleAtStartOfStep)),
-                  testing::Eq(absl::nullopt)))),
+                  testing::Eq(std::nullopt)))),
           FlushEvents());
       break;
     case InteractionSequence::SubsequenceMode::kAtLeastOne:
@@ -5650,7 +5650,7 @@ TEST_P(InteractionSequenceSubsequenceTest, FirstSucceedsSecondFails) {
               InteractionSequence::AbortedReason::kSubsequenceFailed,
               testing::_,
               testing::ElementsAre(
-                  testing::Eq(absl::nullopt),
+                  testing::Eq(std::nullopt),
                   testing::Optional(test::SequenceAbortedMatcher(
                       1, nullptr, element3.identifier(),
                       InteractionSequence::StepType::kShown,

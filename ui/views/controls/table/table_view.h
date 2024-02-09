@@ -150,13 +150,13 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   size_t GetRowCount() const;
 
   // Selects the specified item, making sure it's visible.
-  void Select(absl::optional<size_t> model_row);
+  void Select(std::optional<size_t> model_row);
 
   // Selects all items.
   void SetSelectionAll(bool select);
 
   // Returns the first selected row in terms of the model.
-  absl::optional<size_t> GetFirstSelectedRow() const;
+  std::optional<size_t> GetFirstSelectedRow() const;
 
   const ui::ListSelectionModel& selection_model() const {
     return selection_model_;
@@ -183,9 +183,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   void SetObserver(TableViewObserver* observer);
   TableViewObserver* GetObserver() const;
 
-  absl::optional<size_t> GetActiveVisibleColumnIndex() const;
+  std::optional<size_t> GetActiveVisibleColumnIndex() const;
 
-  void SetActiveVisibleColumnIndex(absl::optional<size_t> index);
+  void SetActiveVisibleColumnIndex(std::optional<size_t> index);
 
   const std::vector<VisibleColumn>& visible_columns() const {
     return visible_columns_;
@@ -366,7 +366,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   void AdvanceActiveVisibleColumn(AdvanceDirection direction);
 
   // Sets the selection to the specified index (in terms of the view).
-  void SelectByViewIndex(absl::optional<size_t> view_index);
+  void SelectByViewIndex(std::optional<size_t> view_index);
 
   // Sets the selection model to |new_selection|.
   void SetSelectionModel(ui::ListSelectionModel new_selection);
@@ -494,7 +494,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // The active visible column. Used for keyboard access to functionality such
   // as sorting and resizing. nullopt if no visible column is active.
-  absl::optional<size_t> active_visible_column_index_ = absl::nullopt;
+  std::optional<size_t> active_visible_column_index_ = std::nullopt;
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.
@@ -555,7 +555,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TableView, View)
-VIEW_BUILDER_PROPERTY(absl::optional<size_t>, ActiveVisibleColumnIndex)
+VIEW_BUILDER_PROPERTY(std::optional<size_t>, ActiveVisibleColumnIndex)
 VIEW_BUILDER_PROPERTY(const std::vector<ui::TableColumn>&,
                       Columns,
                       std::vector<ui::TableColumn>)

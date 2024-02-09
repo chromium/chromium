@@ -53,7 +53,7 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   bool ConfigureAndShowSurface(
       const gfx::RectF& bounds_px,
       const gfx::RectF& parent_bounds_px,
-      const absl::optional<gfx::Rect>& clip_rect_px,
+      const std::optional<gfx::Rect>& clip_rect_px,
       const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
       float buffer_scale,
       WaylandSubsurface* reference_below,
@@ -77,7 +77,7 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   wl::Object<wl_subsurface> subsurface_;
   wl::Object<augmented_sub_surface> augmented_subsurface_;
   gfx::PointF position_dip_;
-  absl::optional<gfx::RectF> clip_dip_;
+  std::optional<gfx::RectF> clip_dip_;
   absl::variant<gfx::OverlayTransform, gfx::Transform> transform_ =
       gfx::OVERLAY_TRANSFORM_NONE;
 

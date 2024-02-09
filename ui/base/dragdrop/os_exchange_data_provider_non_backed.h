@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/pickle.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
   void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
   bool IsRendererTainted() const override;
-  absl::optional<url::Origin> GetRendererTaintedOrigin() const override;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
@@ -128,7 +128,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   GURL base_url_;
 
   // For marking data originating from the renderer.
-  absl::optional<url::Origin> tainted_by_renderer_origin_;
+  std::optional<url::Origin> tainted_by_renderer_origin_;
 
   // For marking data originating by privileged WebContents.
   bool is_from_privileged_ = false;

@@ -6,13 +6,13 @@
 #define UI_ACCESSIBILITY_AX_RANGE_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -128,11 +128,11 @@ class AXRange {
   //        <0 - If the first position would come BEFORE the second.
   //        >0 - If the first position would come AFTER the second.
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
-  static absl::optional<int> CompareEndpoints(const AXPositionType* first,
-                                              const AXPositionType* second) {
+  static std::optional<int> CompareEndpoints(const AXPositionType* first,
+                                             const AXPositionType* second) {
     DCHECK(first->IsValid());
     DCHECK(second->IsValid());
-    absl::optional<int> tree_position_comparison =
+    std::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 
     // When the tree comparison is nullopt, using value_or(1) forces a default
@@ -308,7 +308,7 @@ class AXRange {
     if (max_count == 0 || IsNull())
       return std::u16string();
 
-    absl::optional<int> endpoint_comparison =
+    std::optional<int> endpoint_comparison =
         CompareEndpoints(anchor(), focus());
     if (!endpoint_comparison)
       return std::u16string();

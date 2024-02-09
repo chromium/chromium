@@ -61,7 +61,7 @@ DisplaySnapshot::DisplaySnapshot(
     int32_t year_of_manufacture,
     const gfx::Size& maximum_cursor_size,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<uint16_t>& vsync_rate_min,
+    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : display_id_(display_id),
       port_display_id_(port_display_id),

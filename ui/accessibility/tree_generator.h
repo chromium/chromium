@@ -5,9 +5,9 @@
 #ifndef UI_ACCESSIBILITY_TREE_GENERATOR_H_
 #define UI_ACCESSIBILITY_TREE_GENERATOR_H_
 
+#include <optional>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace ui {
@@ -76,7 +76,7 @@ class TreeGenerator {
   // should be focused.
   void BuildUniqueTreeWithIgnoredNodes(int tree_index,
                                        int ignored_index,
-                                       absl::optional<int> focused_node,
+                                       std::optional<int> focused_node,
                                        AXTree* out_tree) const;
 
  private:

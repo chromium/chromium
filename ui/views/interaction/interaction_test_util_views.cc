@@ -255,7 +255,7 @@ class DropdownItemSelector {
   const size_t item_index_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   AnyWidgetObserver observer_{views::test::AnyWidgetTestPasskey()};  // IN-TEST
-  absl::optional<ui::test::ActionResult> result_;
+  std::optional<ui::test::ActionResult> result_;
   raw_ptr<Widget> widget_ = nullptr;
   base::WeakPtrFactory<DropdownItemSelector> weak_ptr_factory_{this};
 };

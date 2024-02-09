@@ -55,7 +55,7 @@ void ViewsTestBase::SetUp() {
   testing::Test::SetUp();
   setup_called_ = true;
 
-  absl::optional<ViewsDelegate::NativeWidgetFactory> factory;
+  std::optional<ViewsDelegate::NativeWidgetFactory> factory;
   if (native_widget_type_ == NativeWidgetType::kDesktop) {
     factory = base::BindRepeating(&ViewsTestBase::CreateNativeWidgetForTest,
                                   base::Unretained(this));

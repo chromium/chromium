@@ -56,7 +56,7 @@ class FrameCaptionButton::HighlightPathGenerator
   ~HighlightPathGenerator() override = default;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::Rect bounds = gfx::ToRoundedRect(rect);
     bounds.Inset(frame_caption_button_->GetInkdropInsets(bounds.size()));
     return gfx::RRectF(gfx::RectF(bounds),

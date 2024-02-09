@@ -168,7 +168,7 @@ void Env::SetGestureRecognizer(
 
 gfx::Point Env::GetLastPointerPoint(ui::mojom::DragEventSource event_source,
                                     Window* window,
-                                    absl::optional<gfx::Point> fallback) {
+                                    std::optional<gfx::Point> fallback) {
   if (event_source == ui::mojom::DragEventSource::kTouch) {
     if (is_touch_down()) {
       auto iter = last_touch_locations_.find(window);

@@ -5,11 +5,11 @@
 #ifndef UI_VIEWS_VIEW_MODEL_H_
 #define UI_VIEWS_VIEW_MODEL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 
@@ -72,7 +72,7 @@ class VIEWS_EXPORT ViewModelBase {
 
   // Returns the index of the specified view, or nullopt if the view isn't in
   // the model.
-  absl::optional<size_t> GetIndexOfView(const View* view) const;
+  std::optional<size_t> GetIndexOfView(const View* view) const;
 
  protected:
   ViewModelBase();

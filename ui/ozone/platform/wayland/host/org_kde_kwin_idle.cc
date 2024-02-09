@@ -78,9 +78,9 @@ OrgKdeKwinIdle::OrgKdeKwinIdle(org_kde_kwin_idle* idle,
 
 OrgKdeKwinIdle::~OrgKdeKwinIdle() = default;
 
-absl::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
+std::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
   if (!connection_->seat()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!idle_timeout_) {
     idle_timeout_ =

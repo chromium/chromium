@@ -157,10 +157,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool OnRotateFocus(ui::PlatformWindowDelegate::RotateDirection direction,
                      bool reset) override;
   void OnActivationChanged(bool active) override;
-  absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
-  absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
+  std::optional<gfx::Size> GetMinimumSizeForWindow() override;
+  std::optional<gfx::Size> GetMaximumSizeForWindow() override;
   SkPath GetWindowMaskForWindowShapeInPixels() override;
-  absl::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP()
+  std::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP()
       override;
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dip) const override;
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;

@@ -163,7 +163,7 @@ void LabelButton::SetFocusRingCornerRadius(float radius) {
   OnPropertyChanged(&focus_ring_corner_radius_, kPropertyEffectsPaint);
 }
 
-void LabelButton::SetEnabledTextColors(absl::optional<SkColor> color) {
+void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
   if (color.has_value()) {
     for (auto state : kEnabledStates) {
       SetTextColor(state, color.value());

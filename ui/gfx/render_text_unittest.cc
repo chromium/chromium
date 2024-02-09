@@ -1386,7 +1386,7 @@ TEST_F(RenderTextTest, RevealObscuredText) {
             render_text->GetDisplayText());
 
   // Invalid reveal index.
-  render_text->RenderText::SetObscuredRevealIndex(absl::nullopt);
+  render_text->RenderText::SetObscuredRevealIndex(std::nullopt);
   EXPECT_EQ(no_seuss, render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(seuss.length() + 1);
   EXPECT_EQ(no_seuss, render_text->GetDisplayText());
@@ -1968,8 +1968,8 @@ struct ElideTextCase {
   // helps test available widths larger than the resulting test; e.g. "a  b"
   // should yield "a…" even if 3 glyph widths are available, when
   // whitespace elision is enabled.
-  const absl::optional<size_t> available_width_as_glyph_count = absl::nullopt;
-  const absl::optional<bool> whitespace_elision = absl::nullopt;
+  const std::optional<size_t> available_width_as_glyph_count = std::nullopt;
+  const std::optional<bool> whitespace_elision = std::nullopt;
 };
 
 using ElideTextCaseParam = std::tuple<ElideTextTestOptions, ElideTextCase>;

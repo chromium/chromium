@@ -83,7 +83,7 @@ namespace metadata {
 template <>
 struct TypeConverter<viz::SurfaceId> : public BaseTypeConverter<true> {
   static std::u16string ToString(const viz::SurfaceId& source_value);
-  static absl::optional<viz::SurfaceId> FromString(
+  static std::optional<viz::SurfaceId> FromString(
       const std::u16string& source_value);
   static ValidStrings GetValidStrings();
 };
@@ -96,9 +96,9 @@ std::u16string TypeConverter<viz::SurfaceId>::ToString(
 }
 
 // static
-absl::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
+std::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
     const std::u16string& source_value) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -840,7 +840,7 @@ bool Window::HasCapture() {
 }
 
 std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
+    std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   Window* root_window = GetRootWindow();
   if (!root_window)
     return nullptr;
@@ -1370,7 +1370,7 @@ void Window::InvalidateLocalSurfaceId(bool also_invalidate_allocation_group) {
 }
 
 void Window::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const absl::optional<viz::LocalSurfaceId>&
+    const std::optional<viz::LocalSurfaceId>&
         embedded_client_local_surface_id) {
   if (embedded_client_local_surface_id) {
     parent_local_surface_id_allocator_->UpdateFromChild(

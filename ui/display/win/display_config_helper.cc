@@ -43,13 +43,13 @@ bool GetTargetDeviceName(const DISPLAYCONFIG_PATH_INFO& path,
 
 }  // namespace
 
-absl::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
+std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     HMONITOR monitor) {
   // Get the monitor name.
   MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
   if (!::GetMonitorInfo(monitor, &monitor_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Look for a path info with a matching name.
@@ -64,11 +64,11 @@ absl::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
       return info;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 UINT16 GetDisplayManufacturerId(
-    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
   if (path && GetTargetDeviceName(*path, &targetName)) {
     return targetName.edidManufactureId;
@@ -77,7 +77,7 @@ UINT16 GetDisplayManufacturerId(
 }
 
 UINT16 GetDisplayProductCode(
-    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
   if (path && GetTargetDeviceName(*path, &targetName)) {
     return targetName.edidProductCodeId;

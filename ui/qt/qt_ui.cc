@@ -474,7 +474,7 @@ void QtUi::ThemeChanged() {
 }
 
 void QtUi::ScaleFactorMaybeChanged() {
-  // This gets called whenever the monitor configuration changes.  Handle the
+  // This gets called whenever the monitor configuration changes. Handle the
   // scale change asynchronously to allow the change to propagate to QT's scale
   // factor. This also coalesces scale change events together.
   if (!scale_factor_task_active_) {

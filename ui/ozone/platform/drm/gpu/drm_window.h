@@ -79,7 +79,7 @@ class DrmWindow {
   // Update the HW cursor bitmap & move to the location if specified.
   // If the bitmap is empty, the cursor is hidden.
   void SetCursor(const std::vector<SkBitmap>& bitmaps,
-                 const absl::optional<gfx::Point>& location,
+                 const std::optional<gfx::Point>& location,
                  base::TimeDelta frame_delay);
 
   // Move the HW cursor to the specified location.

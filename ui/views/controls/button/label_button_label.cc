@@ -25,8 +25,7 @@ void LabelButtonLabel::SetDisabledColor(SkColor color) {
     Label::SetEnabledColor(color);
 }
 
-void LabelButtonLabel::SetDisabledColorId(
-    absl::optional<ui::ColorId> color_id) {
+void LabelButtonLabel::SetDisabledColorId(std::optional<ui::ColorId> color_id) {
   if (!color_id.has_value()) {
     return;
   }
@@ -36,11 +35,11 @@ void LabelButtonLabel::SetDisabledColorId(
   }
 }
 
-absl::optional<ui::ColorId> LabelButtonLabel::GetDisabledColorId() const {
+std::optional<ui::ColorId> LabelButtonLabel::GetDisabledColorId() const {
   if (absl::holds_alternative<ui::ColorId>(requested_disabled_color_)) {
     return absl::get<ui::ColorId>(requested_disabled_color_);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LabelButtonLabel::SetEnabledColor(SkColor color) {
@@ -49,7 +48,7 @@ void LabelButtonLabel::SetEnabledColor(SkColor color) {
     Label::SetEnabledColor(color);
 }
 
-void LabelButtonLabel::SetEnabledColorId(absl::optional<ui::ColorId> color_id) {
+void LabelButtonLabel::SetEnabledColorId(std::optional<ui::ColorId> color_id) {
   if (!color_id.has_value()) {
     return;
   }
@@ -59,11 +58,11 @@ void LabelButtonLabel::SetEnabledColorId(absl::optional<ui::ColorId> color_id) {
   }
 }
 
-absl::optional<ui::ColorId> LabelButtonLabel::GetEnabledColorId() const {
+std::optional<ui::ColorId> LabelButtonLabel::GetEnabledColorId() const {
   if (absl::holds_alternative<ui::ColorId>(requested_enabled_color_)) {
     return absl::get<ui::ColorId>(requested_enabled_color_);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LabelButtonLabel::OnThemeChanged() {
@@ -93,8 +92,8 @@ void LabelButtonLabel::SetColorForEnableState() {
 }
 
 BEGIN_METADATA(LabelButtonLabel)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, EnabledColorId)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, DisabledColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, EnabledColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, DisabledColorId)
 END_METADATA
 
 }  // namespace views::internal

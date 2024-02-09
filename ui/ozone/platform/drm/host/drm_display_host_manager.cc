@@ -176,7 +176,7 @@ void OpenDeviceAsync(const base::FilePath& device_path,
 
 struct DisplayCard {
   base::FilePath path;
-  absl::optional<std::string> driver;
+  std::optional<std::string> driver;
 };
 
 std::vector<DisplayCard> GetValidDisplayCards() {

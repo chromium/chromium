@@ -394,13 +394,13 @@ void SimpleMenuModel::Clear() {
   MenuItemsChanged();
 }
 
-absl::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
+std::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
     int command_id) const {
   for (auto i = items_.begin(); i != items_.end(); ++i) {
     if (i->command_id == command_id)
       return static_cast<size_t>(std::distance(items_.begin(), i));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -394,7 +394,7 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   if (framebuffer_size &&
       !gfx::Rect(size).Contains(gfx::Rect(*framebuffer_size))) {
     return nullptr;

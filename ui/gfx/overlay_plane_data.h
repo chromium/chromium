@@ -5,7 +5,8 @@
 #ifndef UI_GFX_OVERLAY_PLANE_DATA_H_
 #define UI_GFX_OVERLAY_PLANE_DATA_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
@@ -33,10 +34,10 @@ struct GFX_EXPORT OverlayPlaneData {
       OverlayPriorityHint priority_hint,
       const gfx::RRectF& rounded_corners,
       const gfx::ColorSpace& color_space,
-      const absl::optional<HDRMetadata>& hdr_metadata,
-      absl::optional<SkColor4f> color = absl::nullopt,
+      const std::optional<HDRMetadata>& hdr_metadata,
+      std::optional<SkColor4f> color = std::nullopt,
       bool is_solid_color = false,
-      absl::optional<Rect> clip_rect = absl::nullopt);
+      std::optional<Rect> clip_rect = std::nullopt);
   ~OverlayPlaneData();
 
   OverlayPlaneData(const OverlayPlaneData& other);
@@ -79,17 +80,17 @@ struct GFX_EXPORT OverlayPlaneData {
   gfx::ColorSpace color_space;
 
   // Optional HDR meta data required to display this overlay.
-  absl::optional<HDRMetadata> hdr_metadata;
+  std::optional<HDRMetadata> hdr_metadata;
 
   // Represents either a background of this overlay or a color of a solid color
   // quad, which can be checked via the |is_solid_color|.
-  absl::optional<SkColor4f> color;
+  std::optional<SkColor4f> color;
 
   // Set if this is a solid color quad.
   bool is_solid_color;
 
   // Optional clip rect for this overlay.
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
 };
 
 }  // namespace gfx

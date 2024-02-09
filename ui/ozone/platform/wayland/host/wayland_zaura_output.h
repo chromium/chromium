@@ -6,9 +6,9 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_OUTPUT_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -74,8 +74,8 @@ class WaylandZAuraOutput {
 
   wl::Object<zaura_output> obj_;
   gfx::Insets insets_;
-  absl::optional<int32_t> logical_transform_ = absl::nullopt;
-  absl::optional<int64_t> display_id_ = absl::nullopt;
+  std::optional<int32_t> logical_transform_ = std::nullopt;
+  std::optional<int64_t> display_id_ = std::nullopt;
 };
 
 }  // namespace ui

@@ -193,7 +193,7 @@ class DrmThread : public base::Thread,
   // ozone::mojom::DeviceCursor
   void SetCursor(gfx::AcceleratedWidget widget,
                  const std::vector<SkBitmap>& bitmaps,
-                 const absl::optional<gfx::Point>& location,
+                 const std::optional<gfx::Point>& location,
                  base::TimeDelta frame_delay) override;
   void MoveCursor(gfx::AcceleratedWidget widget,
                   const gfx::Point& location) override;

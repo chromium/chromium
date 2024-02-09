@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point.h"
@@ -80,7 +80,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
   // The cursor location of the most recently processed input event, or nullopt
   // if no input events have been processed yet.
-  const absl::optional<gfx::Point>& last_cursor_location() const {
+  const std::optional<gfx::Point>& last_cursor_location() const {
     return last_cursor_location_;
   }
 
@@ -100,7 +100,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // The connection to the X11 server used to receive the events.
   raw_ptr<x11::Connection> connection_;
 
-  absl::optional<gfx::Point> last_cursor_location_;
+  std::optional<gfx::Point> last_cursor_location_;
 
   // State necessary for UpdateLastSeenServerTime
   bool dummy_initialized_;

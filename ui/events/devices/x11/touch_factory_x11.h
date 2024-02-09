@@ -9,11 +9,11 @@
 
 #include <bitset>
 #include <map>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/sequential_id_generator.h"
@@ -151,7 +151,7 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   std::set<std::pair<int, int>> touchscreen_ids_;
 
   // Device ID of the virtual core keyboard.
-  absl::optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
+  std::optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
 
   SequentialIDGenerator id_generator_;
 

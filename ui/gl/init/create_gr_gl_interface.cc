@@ -138,12 +138,12 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_impl(
           return R();
       }
 
-      absl::optional<gl::ScopedProgressReporter> scoped_reporter;
+      std::optional<gl::ScopedProgressReporter> scoped_reporter;
       // Not using constexpr if here to avoid unused progress_reporter warning.
       if (slow && progress_reporter)
         scoped_reporter.emplace(progress_reporter);
 
-      absl::optional<FlushHelper> flush_helper;
+      std::optional<FlushHelper> flush_helper;
       if constexpr (need_flush)
         flush_helper.emplace();
       return func(args...);

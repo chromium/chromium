@@ -22,7 +22,7 @@ Animation::RichAnimationRenderMode Animation::rich_animation_rendering_mode_ =
     RichAnimationRenderMode::PLATFORM;
 
 // static
-absl::optional<bool> Animation::prefers_reduced_motion_;
+std::optional<bool> Animation::prefers_reduced_motion_;
 
 Animation::Animation(base::TimeDelta timer_interval)
     : timer_interval_(timer_interval),

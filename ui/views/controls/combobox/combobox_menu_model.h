@@ -20,23 +20,21 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   ComboboxMenuModel& operator&(const ComboboxMenuModel&) = delete;
   ~ComboboxMenuModel() override;
 
-  absl::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
-  absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(
-      size_t index) override;
-  absl::optional<ui::ColorId> GetSelectedBackgroundColorId(
+  std::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
+  std::optional<ui::ColorId> GetSubmenuBackgroundColorId(size_t index) override;
+  std::optional<ui::ColorId> GetSelectedBackgroundColorId(
       size_t index) override;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(std::optional<ui::ColorId> foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
   void SetSubmenuBackgroundColorId(
-      absl::optional<ui::ColorId> background_color) {
+      std::optional<ui::ColorId> background_color) {
     submenu_background_color_id_ = background_color;
   }
 
-  void SetSelectedBackgroundColorId(
-      absl::optional<ui::ColorId> selected_color) {
+  void SetSelectedBackgroundColorId(std::optional<ui::ColorId> selected_color) {
     selected_background_color_id_ = selected_color;
   }
 
@@ -66,9 +64,9 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   void ActivatedAt(size_t index, int event_flags) override;
   ui::MenuModel* GetSubmenuModelAt(size_t index) const override;
 
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<ui::ColorId> submenu_background_color_id_;
-  absl::optional<ui::ColorId> selected_background_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<ui::ColorId> submenu_background_color_id_;
+  std::optional<ui::ColorId> selected_background_color_id_;
 
   raw_ptr<views::Combobox> owner_;    // Weak. Owns this.
   raw_ptr<ui::ComboboxModel> model_;  // Weak.

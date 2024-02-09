@@ -6,10 +6,10 @@
 #define UI_VIEWS_ANIMATION_INK_DROP_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop.h"
@@ -60,7 +60,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   ~InkDropImpl() override;
 
-  const absl::optional<base::TimeDelta>& hover_highlight_fade_duration() const {
+  const std::optional<base::TimeDelta>& hover_highlight_fade_duration() const {
     return hover_highlight_fade_duration_;
   }
 
@@ -309,7 +309,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   std::unique_ptr<HighlightState> highlight_state_;
 
   // Overrides the default hover highlight fade durations when set.
-  absl::optional<base::TimeDelta> hover_highlight_fade_duration_;
+  std::optional<base::TimeDelta> hover_highlight_fade_duration_;
 
   // Used to ensure highlight state transitions are not triggered when exiting
   // the current state.

@@ -805,7 +805,7 @@ std::string RoleVariantToString(const base::win::ScopedVariant& role) {
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
-absl::optional<std::string> GetIAccessible2Attribute(
+std::optional<std::string> GetIAccessible2Attribute(
     Microsoft::WRL::ComPtr<IAccessible2> element,
     std::string attribute) {
   base::win::ScopedBstr bstr;
@@ -825,7 +825,7 @@ absl::optional<std::string> GetIAccessible2Attribute(
         return ia2_attribute[1];
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -834,7 +834,7 @@ std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element) {
   if (S_OK != IA2QueryInterface<IAccessible2>(element.Get(), &ia2))
     return "";
 
-  absl::optional<std::string> id = GetIAccessible2Attribute(ia2, "id");
+  std::optional<std::string> id = GetIAccessible2Attribute(ia2, "id");
   if (id) {
     return *id;
   }

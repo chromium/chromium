@@ -6,11 +6,11 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SERIAL_TRACKER_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wl {
 
@@ -49,10 +49,10 @@ class SerialTracker final {
   void ResetSerial(SerialType type);
 
   // Returns the current serial for a given |type|, if any.
-  absl::optional<Serial> GetSerial(SerialType type) const;
+  std::optional<Serial> GetSerial(SerialType type) const;
 
   // Returns the most recent serial matching the given |types|, if any.
-  absl::optional<Serial> GetSerial(const std::vector<SerialType>& types) const;
+  std::optional<Serial> GetSerial(const std::vector<SerialType>& types) const;
 
   void ClearForTesting();
 
@@ -62,7 +62,7 @@ class SerialTracker final {
   const base::TimeTicks base_time_;
 
   base::fixed_flat_map<SerialType,
-                       absl::optional<Serial>,
+                       std::optional<Serial>,
                        static_cast<size_t>(SerialType::kMaxValue) + 1>
       serials_;
 };

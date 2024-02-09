@@ -6,11 +6,11 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"

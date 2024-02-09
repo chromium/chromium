@@ -170,9 +170,9 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
   if (!data.ReadVariableRefreshRateState(&variable_refresh_rate_state))
     return false;
 
-  const absl::optional<uint16_t> vsync_rate_min =
-      data.vsync_rate_min() > 0 ? absl::make_optional(data.vsync_rate_min())
-                                : absl::nullopt;
+  const std::optional<uint16_t> vsync_rate_min =
+      data.vsync_rate_min() > 0 ? std::make_optional(data.vsync_rate_min())
+                                : std::nullopt;
 
   display::DrmFormatsAndModifiers drm_formats_and_modifiers;
 #if BUILDFLAG(IS_CHROMEOS)

@@ -423,23 +423,23 @@ void ScrollView::SetViewportRoundedCornerRadius(
   contents_viewport_->layer()->SetRoundedCornerRadius(radii);
 }
 
-void ScrollView::SetBackgroundColor(const absl::optional<SkColor>& color) {
+void ScrollView::SetBackgroundColor(const std::optional<SkColor>& color) {
   if (background_color_ == color && !background_color_id_) {
     return;
   }
   background_color_ = color;
-  background_color_id_ = absl::nullopt;
+  background_color_id_ = std::nullopt;
   UpdateBackground();
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
 void ScrollView::SetBackgroundThemeColorId(
-    const absl::optional<ui::ColorId>& color_id) {
+    const std::optional<ui::ColorId>& color_id) {
   if (background_color_id_ == color_id && !background_color_) {
     return;
   }
   background_color_id_ = color_id;
-  background_color_ = absl::nullopt;
+  background_color_ = std::nullopt;
   UpdateBackground();
   OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
@@ -1310,7 +1310,7 @@ void ScrollView::UpdateBackground() {
     return;
   }
 
-  const absl::optional<SkColor> background_color = GetBackgroundColor();
+  const std::optional<SkColor> background_color = GetBackgroundColor();
 
   auto create_background = [background_color]() {
     return background_color ? CreateSolidBackground(background_color.value())
@@ -1335,13 +1335,13 @@ void ScrollView::UpdateBackground() {
   }
 }
 
-absl::optional<SkColor> ScrollView::GetBackgroundColor() const {
+std::optional<SkColor> ScrollView::GetBackgroundColor() const {
   return background_color_id_
              ? GetColorProvider()->GetColor(background_color_id_.value())
              : background_color_;
 }
 
-absl::optional<ui::ColorId> ScrollView::GetBackgroundThemeColorId() const {
+std::optional<ui::ColorId> ScrollView::GetBackgroundThemeColorId() const {
   return background_color_id_;
 }
 
@@ -1393,8 +1393,8 @@ BEGIN_METADATA(ScrollView)
 ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
 ADD_PROPERTY_METADATA(bool, AllowKeyboardScrolling)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, BackgroundColor)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, BackgroundThemeColorId)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, BackgroundColor)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BackgroundThemeColorId)
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(ScrollView::ScrollBarMode, HorizontalScrollBarMode)

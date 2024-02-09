@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -328,7 +329,7 @@ class DISPLAY_EXPORT Display final {
   gfx::Rect work_area_;
   float device_scale_factor_;
   Rotation rotation_ = ROTATE_0;
-  absl::optional<Rotation> panel_rotation_;
+  std::optional<Rotation> panel_rotation_;
   TouchSupport touch_support_ = TouchSupport::UNKNOWN;
   AccelerometerSupport accelerometer_support_ = AccelerometerSupport::UNKNOWN;
   gfx::Size maximum_cursor_size_;

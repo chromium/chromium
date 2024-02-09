@@ -5,10 +5,10 @@
 #ifndef UI_GFX_COLOR_UTILS_H_
 #define UI_GFX_COLOR_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <tuple>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -150,7 +150,7 @@ GFX_EXPORT SkColor PickContrastingColor(SkColor foreground1,
 GFX_EXPORT BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    absl::optional<SkColor> high_contrast_foreground = absl::nullopt,
+    std::optional<SkColor> high_contrast_foreground = std::nullopt,
     float contrast_ratio = kMinimumReadableContrastRatio);
 
 // Invert a color.

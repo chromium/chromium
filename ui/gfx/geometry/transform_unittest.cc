@@ -8,11 +8,11 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <ostream>
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
@@ -496,8 +496,7 @@ TEST(XFormTest, Translate) {
       p1 = xform.MapPoint(p1);
       if (value.tx == value.tx && value.ty == value.ty) {
         EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
-        const absl::optional<Point3F> transformed_p1 =
-            xform.InverseMapPoint(p1);
+        const std::optional<Point3F> transformed_p1 = xform.InverseMapPoint(p1);
         ASSERT_TRUE(transformed_p1.has_value());
         EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
       }
@@ -544,7 +543,7 @@ TEST(XFormTest, Scale) {
       if (value.s == value.s) {
         EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
         if (value.s != 0.0f) {
-          const absl::optional<Point3F> transformed_p1 =
+          const std::optional<Point3F> transformed_p1 =
               xform.InverseMapPoint(p1);
           ASSERT_TRUE(transformed_p1.has_value());
           EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
@@ -581,7 +580,7 @@ TEST(XFormTest, SetRotate) {
     if (value.degree == value.degree) {
       p1 = xform.MapPoint(p1);
       EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
-      const absl::optional<Point3F> transformed_p1 = xform.InverseMapPoint(p1);
+      const std::optional<Point3F> transformed_p1 = xform.InverseMapPoint(p1);
       ASSERT_TRUE(transformed_p1.has_value());
       EXPECT_TRUE(PointsAreNearlyEqual(transformed_p1.value(), p0));
     }
@@ -711,8 +710,7 @@ TEST(XFormTest, SetTranslate2D) {
         if (value.tx == value.tx && value.ty == value.ty) {
           EXPECT_EQ(p1.x(), p2.x());
           EXPECT_EQ(p1.y(), p2.y());
-          const absl::optional<Point> transformed_p1 =
-              xform.InverseMapPoint(p1);
+          const std::optional<Point> transformed_p1 = xform.InverseMapPoint(p1);
           ASSERT_TRUE(transformed_p1.has_value());
           EXPECT_EQ(transformed_p1->x(), p0.x());
           EXPECT_EQ(transformed_p1->y(), p0.y());
@@ -763,7 +761,7 @@ TEST(XFormTest, SetScale2D) {
           EXPECT_EQ(p1.x(), p2.x());
           EXPECT_EQ(p1.y(), p2.y());
           if (value.s != 0.0f) {
-            const absl::optional<Point> transformed_p1 =
+            const std::optional<Point> transformed_p1 =
                 xform.InverseMapPoint(p1);
             ASSERT_TRUE(transformed_p1.has_value());
             EXPECT_EQ(transformed_p1->x(), p0.x());
@@ -803,7 +801,7 @@ TEST(XFormTest, SetRotate2D) {
         pt = xform.MapPoint(pt);
         EXPECT_EQ(value.xprime, pt.x());
         EXPECT_EQ(value.yprime, pt.y());
-        const absl::optional<Point> transformed_pt = xform.InverseMapPoint(pt);
+        const std::optional<Point> transformed_pt = xform.InverseMapPoint(pt);
         ASSERT_TRUE(transformed_pt.has_value());
         EXPECT_EQ(transformed_pt->x(), value.x);
         EXPECT_EQ(transformed_pt->y(), value.y);
@@ -1372,7 +1370,7 @@ TEST(XFormTest, QuaternionFromRotationMatrix) {
 
   Transform m;
   m.RotateAbout(1, 0, 0, 60);
-  absl::optional<DecomposedTransform> decomp = m.Decompose();
+  std::optional<DecomposedTransform> decomp = m.Decompose();
   ASSERT_TRUE(decomp);
   EXPECT_QUATERNION_NEAR(decomp->quaternion,
                          gfx::Quaternion(kSin30deg, 0, 0, kCos30deg), 1e-6);
@@ -1536,7 +1534,7 @@ TEST(XFormTest, DecomposeTranslateRotateScale) {
     transform.Scale(degrees + 1, 2 * degrees + 1);
 
     // factor the matrix
-    absl::optional<DecomposedTransform> decomp = transform.Decompose();
+    std::optional<DecomposedTransform> decomp = transform.Decompose();
     EXPECT_TRUE(decomp);
     EXPECT_FLOAT_EQ(decomp->translate[0], degrees * 2);
     EXPECT_FLOAT_EQ(decomp->translate[1], -degrees * 3);
@@ -1558,7 +1556,7 @@ TEST(XFormTest, DecomposeScaleTransform) {
   for (float scale = 0.001f; scale < 2.0f; scale += 0.001f) {
     Transform transform = Transform::MakeScale(scale);
 
-    absl::optional<DecomposedTransform> decomp = transform.Decompose();
+    std::optional<DecomposedTransform> decomp = transform.Decompose();
     EXPECT_TRUE(decomp);
 
     Transform compose_transform = Transform::Compose(*decomp);
@@ -3661,7 +3659,7 @@ TEST(XFormTest, InverseMapPoint) {
 
   const PointF point_f(12.34f, 56.78f);
   PointF transformed_point_f = transform.MapPoint(point_f);
-  const absl::optional<PointF> reverted_point_f =
+  const std::optional<PointF> reverted_point_f =
       transform.InverseMapPoint(transformed_point_f);
   ASSERT_TRUE(reverted_point_f.has_value());
   EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_f.value(), point_f));
@@ -3678,7 +3676,7 @@ TEST(XFormTest, InverseMapPoint) {
 
   const Point3F point_3f(14, 15, 16);
   Point3F transformed_point_3f = transform3d.MapPoint(point_3f);
-  const absl::optional<Point3F> reverted_point_3f =
+  const std::optional<Point3F> reverted_point_3f =
       transform3d.InverseMapPoint(transformed_point_3f);
   ASSERT_TRUE(reverted_point_3f.has_value());
   EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_3f.value(), point_3f));

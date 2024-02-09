@@ -129,7 +129,7 @@ void WaylandSubsurface::CreateSubsurface() {
 bool WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::RectF& bounds_px,
     const gfx::RectF& parent_bounds_px,
-    const absl::optional<gfx::Rect>& clip_rect_px,
+    const std::optional<gfx::Rect>& clip_rect_px,
     const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
     float buffer_scale,
     WaylandSubsurface* new_below,
@@ -168,7 +168,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
   if (augmented_subsurface_ &&
       connection_->surface_augmenter()->SupportsClipRect() &&
       !connection_->surface_augmenter()->SupportsClipRectOnAugmentedSurface()) {
-    absl::optional<gfx::RectF> clip_dip_in_parent_surface;
+    std::optional<gfx::RectF> clip_dip_in_parent_surface;
     if (clip_rect_px) {
       clip_dip_in_parent_surface = AdjustSubsurfaceBounds(
           gfx::RectF(*clip_rect_px), parent_bounds_px,

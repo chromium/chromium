@@ -388,7 +388,7 @@ TEST_P(FlatlandSurfaceOverlayPlaneTransformTest, PresentOverlayPlane) {
       /*damage_rect=*/gfx::Rect(), kOverlayOpacity,
       gfx::OverlayPriorityHint::kNone,
       /*rounded_corners=*/gfx::RRectF(), gfx::ColorSpace(),
-      /*hdr_metadata=*/absl::nullopt);
+      /*hdr_metadata=*/std::nullopt);
   ui::OverlayPlane overlay_plane(
       CreateFlatlandSysmemNativePixmap(kExpectedImageSize), nullptr,
       overlay_data);

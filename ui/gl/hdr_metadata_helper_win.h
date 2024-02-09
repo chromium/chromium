@@ -9,7 +9,8 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gpu_switching_observer.h"
@@ -31,7 +32,7 @@ class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
 
   // Return the metadata for the display, if available.  Must call
   // UpdateDisplayMetadata first.
-  absl::optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
+  std::optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
 
   // Query the display metadata from all monitors. In the event of monitor
   // hot plugging, the metadata should be updated again.
@@ -47,7 +48,7 @@ class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  absl::optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
+  std::optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
 };
 
 }  // namespace gl

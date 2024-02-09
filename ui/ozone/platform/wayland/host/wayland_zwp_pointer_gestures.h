@@ -7,9 +7,10 @@
 
 #include <pointer-gestures-unstable-v1-client-protocol.h>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -114,7 +115,7 @@ class WaylandZwpPointerGestures::Delegate {
       const gfx::Vector2dF& delta,
       base::TimeTicks timestamp,
       int device_id,
-      absl::optional<float> scale_delta = absl::nullopt) = 0;
+      std::optional<float> scale_delta = std::nullopt) = 0;
 
   virtual void OnHoldEvent(EventType event_type,
                            uint32_t finger_count,

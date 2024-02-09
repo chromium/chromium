@@ -105,7 +105,7 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
+void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
   if (color == bg_color_override_)
     return;
   bg_color_override_ = color;
@@ -113,11 +113,11 @@ void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-absl::optional<SkColor> MdTextButton::GetBgColorOverride() const {
+std::optional<SkColor> MdTextButton::GetBgColorOverride() const {
   return bg_color_override_;
 }
 
-void MdTextButton::SetCornerRadius(absl::optional<float> radius) {
+void MdTextButton::SetCornerRadius(std::optional<float> radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
@@ -127,7 +127,7 @@ void MdTextButton::SetCornerRadius(absl::optional<float> radius) {
   OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
-absl::optional<float> MdTextButton::GetCornerRadius() const {
+std::optional<float> MdTextButton::GetCornerRadius() const {
   return corner_radius_;
 }
 
@@ -173,18 +173,17 @@ void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void MdTextButton::SetEnabledTextColors(absl::optional<SkColor> color) {
+void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
 }
 
-void MdTextButton::SetCustomPadding(
-    const absl::optional<gfx::Insets>& padding) {
+void MdTextButton::SetCustomPadding(const std::optional<gfx::Insets>& padding) {
   custom_padding_ = padding;
   UpdatePadding();
 }
 
-absl::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
+std::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
@@ -363,9 +362,9 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(MdTextButton)
-ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
-ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)
+ADD_PROPERTY_METADATA(std::optional<float>, CornerRadius)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, CustomPadding)
 ADD_PROPERTY_METADATA(ui::ButtonStyle, Style)
 END_METADATA
 

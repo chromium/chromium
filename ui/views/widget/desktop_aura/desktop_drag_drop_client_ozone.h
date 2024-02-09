@@ -74,7 +74,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
     // call to UpdateDragWidget() is scheduled at any time; this optional is set
     // means that the task is scheduled.
     // This is used on a platform where chrome manages a drag image (e.g. x11).
-    absl::optional<gfx::Point> last_screen_location_px;
+    std::optional<gfx::Point> last_screen_location_px;
 #endif
   };
 

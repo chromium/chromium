@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util_export.h"
@@ -66,10 +66,10 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   supported_color_transfer_ids() const {
     return supported_color_transfer_ids_;
   }
-  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+  const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
     return hdr_static_metadata_;
   }
-  const absl::optional<uint16_t>& vsync_rate_min() const {
+  const std::optional<uint16_t>& vsync_rate_min() const {
     return vsync_rate_min_;
   }
   // Returns a 32-bit identifier for this display |manufacturer_id_| and
@@ -143,24 +143,24 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
   uint16_t manufacturer_id_;
   uint16_t product_id_;
-  absl::optional<std::string> block_zero_serial_number_hash_;
-  absl::optional<std::string> descriptor_block_serial_number_hash_;
-  absl::optional<gfx::Size> max_image_size_;
+  std::optional<std::string> block_zero_serial_number_hash_;
+  std::optional<std::string> descriptor_block_serial_number_hash_;
+  std::optional<gfx::Size> max_image_size_;
   std::string display_name_;
   // Active pixel size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size_;
   // When |week_of_manufacture_| == 0xFF, |year_of_manufacture_| is model year.
-  absl::optional<int32_t> week_of_manufacture_;
+  std::optional<int32_t> week_of_manufacture_;
   int32_t year_of_manufacture_;
-  absl::optional<bool> overscan_flag_;
+  std::optional<bool> overscan_flag_;
   double gamma_;
   int bits_per_channel_;
   SkColorSpacePrimaries primaries_;
 
   base::flat_set<PrimaryMatrixPair> supported_color_primary_matrix_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
-  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-  absl::optional<uint16_t> vsync_rate_min_;
+  std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  std::optional<uint16_t> vsync_rate_min_;
 
   uint32_t audio_formats_;
 

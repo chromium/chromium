@@ -7,10 +7,10 @@
 
 #include <forward_list>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
 
   // A cached map of ColorId => SkColor mappings for this provider. This will be
   // generated in the call to `GenerateColorMap()`.
-  absl::optional<ColorMap> color_map_;
+  std::optional<ColorMap> color_map_;
 };
 
 }  // namespace ui

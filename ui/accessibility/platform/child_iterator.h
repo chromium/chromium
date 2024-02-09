@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) ChildIterator {
   virtual ChildIterator& operator++() = 0;
   virtual ChildIterator& operator--() = 0;
   virtual gfx::NativeViewAccessible GetNativeViewAccessible() const = 0;
-  virtual absl::optional<size_t> GetIndexInParent() const = 0;
+  virtual std::optional<size_t> GetIndexInParent() const = 0;
   virtual AXPlatformNodeDelegate* get() const = 0;
   virtual AXPlatformNodeDelegate& operator*() const = 0;
   virtual AXPlatformNodeDelegate* operator->() const = 0;

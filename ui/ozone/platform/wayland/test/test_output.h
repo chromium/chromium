@@ -6,11 +6,12 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_OUTPUT_H_
 
 #include <wayland-server-protocol.h>
+
 #include <cstdint>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"

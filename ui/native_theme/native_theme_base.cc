@@ -213,7 +213,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
                             ColorScheme color_scheme,
-                            const absl::optional<SkColor>& accent_color) const {
+                            const std::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 
@@ -221,7 +221,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
   canvas->clipRect(gfx::RectToSkRect(rect));
 
   // Form control accents shouldn't be drawn with any transparency.
-  absl::optional<SkColor> accent_color_opaque;
+  std::optional<SkColor> accent_color_opaque;
   if (accent_color) {
     accent_color_opaque = SkColorSetA(accent_color.value(), SK_AlphaOPAQUE);
   }
@@ -617,7 +617,7 @@ void NativeThemeBase::PaintCheckbox(
     const gfx::Rect& rect,
     const ButtonExtraParams& button,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   const float border_radius =
       GetBorderRadiusForPart(kCheckbox, rect.width(), rect.height());
 
@@ -678,7 +678,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     bool is_checkbox,
     const SkScalar border_radius,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   SkRect skrect = gfx::RectToSkRect(rect);
 
   // Use the largest square that fits inside the provided rectangle.
@@ -759,7 +759,7 @@ void NativeThemeBase::PaintRadio(
     const gfx::Rect& rect,
     const ButtonExtraParams& button,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   // Most of a radio button is the same as a checkbox, except the the rounded
   // square is a circle (i.e. border radius >= 100%).
   const float border_radius =
@@ -1003,7 +1003,7 @@ void NativeThemeBase::PaintSliderTrack(
     const gfx::Rect& rect,
     const SliderExtraParams& slider,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   // Paint the entire slider track.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -1060,7 +1060,7 @@ void NativeThemeBase::PaintSliderThumb(
     const gfx::Rect& rect,
     const SliderExtraParams& slider,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   const float radius =
       GetBorderRadiusForPart(kSliderThumb, rect.width(), rect.height());
   SkRect thumb_rect = gfx::RectToSkRect(rect);
@@ -1132,7 +1132,7 @@ void NativeThemeBase::PaintProgressBar(
     const gfx::Rect& rect,
     const ProgressBarExtraParams& progress_bar,
     ColorScheme color_scheme,
-    const absl::optional<SkColor>& accent_color) const {
+    const std::optional<SkColor>& accent_color) const {
   DCHECK(!rect.IsEmpty());
   // Paint the track.
   cc::PaintFlags flags;

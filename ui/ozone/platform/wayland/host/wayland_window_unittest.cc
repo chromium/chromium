@@ -3420,7 +3420,7 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   // be normal.
   MockWaylandPlatformWindowDelegate menu_window_delegate;
   EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInDIP())
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
   gfx::Rect menu_window_bounds(gfx::Point(439, 46),
                                menu_window_positioner.size);
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -3712,12 +3712,12 @@ TEST_P(WaylandWindowTest, OnSizeConstraintsChanged) {
   const bool kBooleans[] = {false, true};
   for (bool has_min_size : kBooleans) {
     for (bool has_max_size : kBooleans) {
-      absl::optional<gfx::Size> min_size =
-          has_min_size ? absl::optional<gfx::Size>(gfx::Size(100, 200))
-                       : absl::nullopt;
-      absl::optional<gfx::Size> max_size =
-          has_max_size ? absl::optional<gfx::Size>(gfx::Size(300, 400))
-                       : absl::nullopt;
+      std::optional<gfx::Size> min_size =
+          has_min_size ? std::optional<gfx::Size>(gfx::Size(100, 200))
+                       : std::nullopt;
+      std::optional<gfx::Size> max_size =
+          has_max_size ? std::optional<gfx::Size>(gfx::Size(300, 400))
+                       : std::nullopt;
       EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
           .WillOnce(Return(min_size));
       EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
@@ -3937,8 +3937,8 @@ TEST_P(WaylandWindowTest, MAYBE_SetsPropertiesOnShow) {
   });
 
   // Now, propagate size constraints and title.
-  absl::optional<gfx::Size> min_size(gfx::Size(1, 1));
-  absl::optional<gfx::Size> max_size(gfx::Size(100, 100));
+  std::optional<gfx::Size> min_size(gfx::Size(1, 1));
+  std::optional<gfx::Size> max_size(gfx::Size(100, 100));
   EXPECT_CALL(delegate, GetMinimumSizeForWindow())
       .WillRepeatedly(Return(min_size));
   EXPECT_CALL(delegate, GetMaximumSizeForWindow())
@@ -4437,7 +4437,7 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
         });
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
-        absl::nullopt /*clip_rect_px*/, gfx::OVERLAY_TRANSFORM_NONE,
+        std::nullopt /*clip_rect_px*/, gfx::OVERLAY_TRANSFORM_NONE,
         1.f /*buffer_scale*/, nullptr, nullptr);
     connection_->Flush();
 
@@ -4526,7 +4526,7 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   for (auto* subsurface : subsurfaces) {
     subsurface->ConfigureAndShowSurface(
         gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-        absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, nullptr);
+        std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, nullptr);
   }
   connection_->Flush();
 
@@ -4555,13 +4555,13 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   // Stack subsurfaces[0] to be from bottom to top, and change its position.
   subsurfaces[0]->ConfigureAndShowSurface(
       gfx::RectF(0.f, 0.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, subsurfaces[2], nullptr);
+      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, subsurfaces[2], nullptr);
   subsurfaces[1]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[2]);
+      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[2]);
   subsurfaces[2]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[0]);
+      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[0]);
   connection_->Flush();
 
   VerifyAndClearExpectations();

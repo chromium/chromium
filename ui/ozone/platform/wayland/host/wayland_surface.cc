@@ -328,7 +328,7 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 }
 
 void WaylandSurface::set_opaque_region(
-    absl::optional<std::vector<gfx::Rect>> region_px) {
+    std::optional<std::vector<gfx::Rect>> region_px) {
   pending_state_.opaque_region_px.clear();
   if (!root_window_)
     return;
@@ -348,7 +348,7 @@ void WaylandSurface::set_opaque_region(
   }
 }
 
-void WaylandSurface::set_input_region(absl::optional<gfx::Rect> region_px) {
+void WaylandSurface::set_input_region(std::optional<gfx::Rect> region_px) {
   pending_state_.input_region_px.reset();
   if (!root_window_)
     return;
@@ -637,7 +637,7 @@ bool WaylandSurface::ApplyPendingState() {
     DCHECK(get_augmented_surface());
     if (connection_->surface_augmenter()
             ->SupportsClipRectOnAugmentedSurface()) {
-      absl::optional<gfx::RectF> clip_rect = pending_state_.clip_rect;
+      std::optional<gfx::RectF> clip_rect = pending_state_.clip_rect;
       if (clip_rect) {
         clip_rect->Scale(1.f / GetWaylandScale(pending_state_));
         augmented_surface_set_clip_rect(

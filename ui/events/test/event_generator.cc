@@ -315,13 +315,13 @@ void EventGenerator::SetTouchTilt(float x, float y) {
 }
 
 void EventGenerator::PressTouch(
-    const absl::optional<gfx::Point>& touch_location_in_screen) {
+    const std::optional<gfx::Point>& touch_location_in_screen) {
   PressTouchId(0, touch_location_in_screen);
 }
 
 void EventGenerator::PressTouchId(
     int touch_id,
-    const absl::optional<gfx::Point>& touch_location_in_screen) {
+    const std::optional<gfx::Point>& touch_location_in_screen) {
   if (touch_location_in_screen.has_value())
     SetCurrentScreenLocation(*touch_location_in_screen);
   ui::TouchEvent touchev =

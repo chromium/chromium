@@ -108,7 +108,6 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
 
   // Cached default font settings.
   std::optional<gfx::FontRenderParams> font_params_;
-
   std::unique_ptr<QtInterface> shim_;
 
   std::unique_ptr<QtNativeTheme> native_theme_;

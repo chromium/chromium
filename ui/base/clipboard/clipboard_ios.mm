@@ -54,11 +54,11 @@ ClipboardIOS::~ClipboardIOS() {
 void ClipboardIOS::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-absl::optional<DataTransferEndpoint> ClipboardIOS::GetSource(
+std::optional<DataTransferEndpoint> ClipboardIOS::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
@@ -271,7 +271,7 @@ void ClipboardIOS::ReadCustomData(ClipboardBuffer buffer,
   NSData* data = GetDataWithTypeFromPasteboard(
       GetPasteboard(), (NSString*)kUTTypeChromiumWebCustomData);
   if (data) {
-    if (absl::optional<std::u16string> maybe_result = ReadCustomDataForType(
+    if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
             base::span(reinterpret_cast<const uint8_t*>([data bytes]),
                        [data length]),
             type);
@@ -379,7 +379,7 @@ void ClipboardIOS::WriteText(base::StringPiece text) {
 
 void ClipboardIOS::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */) {
+    std::optional<base::StringPiece> /* source_url */) {
   NSDictionary<NSString*, id>* html_item = @{
     ClipboardFormatType::HtmlType().ToNSString() :
         base::SysUTF8ToNSString(markup)

@@ -13,6 +13,7 @@
 #include <wrl/client.h>
 
 #include <iterator>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -30,7 +31,6 @@
 #include "base/win/shlwapi.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_win.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_util_win.h"
@@ -309,12 +309,12 @@ bool OSExchangeDataProviderWin::IsRendererTainted() const {
   return HasCustomFormat(GetRendererTaintFormatType());
 }
 
-absl::optional<url::Origin>
-OSExchangeDataProviderWin::GetRendererTaintedOrigin() const {
+std::optional<url::Origin> OSExchangeDataProviderWin::GetRendererTaintedOrigin()
+    const {
   STGMEDIUM medium;
   FORMATETC format_etc = GetRendererTaintFormatType().ToFormatEtc();
   if (FAILED(source_object_->GetData(&format_etc, &medium))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::win::ScopedHGlobal<char*> data(medium.hGlobal);
   if (data.size() == 0) {

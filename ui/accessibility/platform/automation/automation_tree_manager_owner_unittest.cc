@@ -158,23 +158,23 @@ class FakeAutomationV8Router : public AutomationV8Router {
       const std::string* tree_id = params->FindString("treeID");
       ASSERT_TRUE(tree_id);
       data.target_tree_id = ui::AXTreeID::FromString(*tree_id);
-      absl::optional<int> node_id = params->FindInt("nodeID");
+      std::optional<int> node_id = params->FindInt("nodeID");
       ASSERT_TRUE(node_id);
       data.target_node_id = *node_id;
-      absl::optional<int> request_id = params->FindInt("requestID");
+      std::optional<int> request_id = params->FindInt("requestID");
       ASSERT_TRUE(request_id);
       data.request_id = *request_id;
 
-      absl::optional<int> x = params->FindInt("left");
+      std::optional<int> x = params->FindInt("left");
       ASSERT_TRUE(x);
-      absl::optional<int> y = params->FindInt("top");
+      std::optional<int> y = params->FindInt("top");
       ASSERT_TRUE(y);
-      absl::optional<int> width = params->FindInt("width");
+      std::optional<int> width = params->FindInt("width");
       ASSERT_TRUE(width);
-      absl::optional<int> height = params->FindInt("height");
+      std::optional<int> height = params->FindInt("height");
       ASSERT_TRUE(height);
 
-      absl::optional<gfx::Rect> rect = gfx::Rect();
+      std::optional<gfx::Rect> rect = gfx::Rect();
       rect->SetRect(*x, *y, *width, *height);
 
       notify_get_text_location_.Run(data, rect);
@@ -196,8 +196,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
   // For tests.
   void AddGetTextLocationResultCallback(
       base::RepeatingCallback<void(const ui::AXActionData&,
-                                   const absl::optional<gfx::Rect>&)>
-          callback) {
+                                   const std::optional<gfx::Rect>&)> callback) {
     notify_get_text_location_ = std::move(callback);
   }
 
@@ -207,7 +206,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
   base::RepeatingCallback<void(const std::string&)> notify_event_;
   base::RepeatingCallback<void(const ui::AXTreeID&)> notify_tree_destroyed_;
   base::RepeatingCallback<void(const ui::AXActionData&,
-                               const absl::optional<gfx::Rect>&)>
+                               const std::optional<gfx::Rect>&)>
       notify_get_text_location_;
 };
 
@@ -252,7 +251,7 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
   }
 
   void SendGetTextLocationResult(const ui::AXActionData& data,
-                                 const absl::optional<gfx::Rect>& rect) {
+                                 const std::optional<gfx::Rect>& rect) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     tree_manager_owner_->DispatchGetTextLocationResult(data, rect);
 #else
@@ -288,8 +287,7 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
 
   void AddGetTextLocationResultCallback(
       base::RepeatingCallback<void(const ui::AXActionData&,
-                                   const absl::optional<gfx::Rect>&)>
-          callback) {
+                                   const std::optional<gfx::Rect>&)> callback) {
     router_->AddGetTextLocationResultCallback(std::move(callback));
   }
 
@@ -985,7 +983,7 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // Verify that the manager forwards the text location.
   bool text_location_sent = false;
   AddGetTextLocationResultCallback(base::BindLambdaForTesting(
-      [&](const ui::AXActionData& data, const absl::optional<gfx::Rect>& rect) {
+      [&](const ui::AXActionData& data, const std::optional<gfx::Rect>& rect) {
         text_location_sent = true;
       }));
 
@@ -993,7 +991,7 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   action_data.target_tree_id = updates[0].tree_data.tree_id;
   action_data.target_node_id = 1;
   action_data.request_id = 1;
-  absl::optional<gfx::Rect> rect = gfx::Rect();
+  std::optional<gfx::Rect> rect = gfx::Rect();
   rect->SetRect(2, 2, 4, 4);
   SendGetTextLocationResult(action_data, rect);
 

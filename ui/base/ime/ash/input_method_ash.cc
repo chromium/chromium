@@ -514,10 +514,10 @@ void InputMethodAsh::SetAutocorrectRange(
   }
 }
 
-absl::optional<ui::GrammarFragment>
+std::optional<ui::GrammarFragment>
 InputMethodAsh::GetGrammarFragmentAtCursor() {
   if (IsTextInputTypeNone())
-    return absl::nullopt;
+    return std::nullopt;
   return GetTextInputClient()->GetGrammarFragmentAtCursor();
 }
 
@@ -550,7 +550,7 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   // text. Again we need to fix this properly by removing the pending mechanism.
   if (pending_composition_ && !pending_commit_ && !pending_composition_range_) {
     GetTextInputClient()->SetCompositionText(*pending_composition_);
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
     composition_changed_ = false;
   }
   if (client && (client->HasCompositionText() ||
@@ -569,8 +569,8 @@ void InputMethodAsh::ResetContext(bool reset_engine) {
 
   const bool was_composing = composing_text_;
 
-  pending_composition_ = absl::nullopt;
-  pending_commit_ = absl::nullopt;
+  pending_composition_ = std::nullopt;
+  pending_commit_ = std::nullopt;
   composing_text_ = false;
   composition_changed_ = false;
 
@@ -791,7 +791,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
       client->ClearCompositionText();
     }
 
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
     pending_composition_range_.reset();
   }
 
@@ -803,7 +803,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
 
   // We should not clear composition text here, as it may belong to the next
   // composition session.
-  pending_commit_ = absl::nullopt;
+  pending_commit_ = std::nullopt;
   composition_changed_ = false;
 }
 
@@ -851,7 +851,7 @@ void InputMethodAsh::CommitText(
       typing_session_manager_.CommitCharacters(text.length());
     }
     SendFakeProcessKeyEvent(false);
-    pending_commit_ = absl::nullopt;
+    pending_commit_ = std::nullopt;
   }
 }
 
@@ -895,7 +895,7 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
     }
     SendFakeProcessKeyEvent(false);
     composition_changed_ = false;
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
   }
 }
 
@@ -905,7 +905,7 @@ void InputMethodAsh::HidePreeditText() {
 
   // Intentionally leaves |composing_text_| unchanged.
   composition_changed_ = true;
-  pending_composition_ = absl::nullopt;
+  pending_composition_ = std::nullopt;
 
   if (!handling_key_event_) {
     TextInputClient* client = GetTextInputClient();

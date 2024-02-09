@@ -681,35 +681,36 @@ void Transform::TransformVector4(float vector[4]) const {
   }
 }
 
-absl::optional<PointF> Transform::InverseMapPoint(const PointF& point) const {
+std::optional<PointF> Transform::InverseMapPoint(const PointF& point) const {
   if (LIKELY(!full_matrix_)) {
     if (!axis_2d_.IsInvertible())
-      return absl::nullopt;
+      return std::nullopt;
     return axis_2d_.InverseMapPoint(point);
   }
   Matrix44 inverse(Matrix44::kUninitialized);
   if (!matrix_.GetInverse(inverse))
-    return absl::nullopt;
+    return std::nullopt;
   return MapPointInternal(inverse, point);
 }
 
-absl::optional<Point> Transform::InverseMapPoint(const Point& point) const {
-  if (absl::optional<PointF> point_f = InverseMapPoint(PointF(point)))
+std::optional<Point> Transform::InverseMapPoint(const Point& point) const {
+  if (std::optional<PointF> point_f = InverseMapPoint(PointF(point))) {
     return ToRoundedPoint(*point_f);
-  return absl::nullopt;
+  }
+  return std::nullopt;
 }
 
-absl::optional<Point3F> Transform::InverseMapPoint(const Point3F& point) const {
+std::optional<Point3F> Transform::InverseMapPoint(const Point3F& point) const {
   if (LIKELY(!full_matrix_)) {
     if (!axis_2d_.IsInvertible())
-      return absl::nullopt;
+      return std::nullopt;
     PointF result = axis_2d_.InverseMapPoint(point.AsPointF());
     return Point3F(result.x(), result.y(), ClampFloatGeometry(point.z()));
   }
   Matrix44 inverse(Matrix44::kUninitialized);
   if (!matrix_.GetInverse(inverse))
-    return absl::nullopt;
-  return absl::make_optional(MapPointInternal(inverse, point));
+    return std::nullopt;
+  return std::make_optional(MapPointInternal(inverse, point));
 }
 
 RectF Transform::MapRect(const RectF& rect) const {
@@ -731,31 +732,32 @@ Rect Transform::MapRect(const Rect& rect) const {
   return ToEnclosingRect(MapRect(RectF(rect)));
 }
 
-absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
+std::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
   if (IsIdentity())
     return rect;
 
   if (LIKELY(!full_matrix_)) {
     if (!axis_2d_.IsInvertible())
-      return absl::nullopt;
+      return std::nullopt;
     if (axis_2d_.scale().x() > 0 && axis_2d_.scale().y() > 0)
       return axis_2d_.InverseMapRect(rect);
   }
 
   Transform inverse;
   if (!GetInverse(&inverse))
-    return absl::nullopt;
+    return std::nullopt;
 
   return inverse.MapQuad(QuadF(rect)).BoundingBox();
 }
 
-absl::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
+std::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
   if (IsIdentity())
     return rect;
 
-  if (absl::optional<RectF> mapped = InverseMapRect(RectF(rect)))
+  if (std::optional<RectF> mapped = InverseMapRect(RectF(rect))) {
     return ToEnclosingRect(mapped.value());
-  return absl::nullopt;
+  }
+  return std::nullopt;
 }
 
 BoxF Transform::MapBox(const BoxF& box) const {
@@ -859,11 +861,11 @@ QuadF Transform::ProjectQuad(const QuadF& quad) const {
   return projected_quad;
 }
 
-absl::optional<DecomposedTransform> Transform::Decompose() const {
+std::optional<DecomposedTransform> Transform::Decompose() const {
   if (LIKELY(!full_matrix_)) {
     // Consider letting 2d decomposition always succeed.
     if (!axis_2d_.IsInvertible())
-      return absl::nullopt;
+      return std::nullopt;
     return axis_2d_.Decompose();
   }
   return matrix_.Decompose();
@@ -894,10 +896,10 @@ Transform Transform::Compose(const DecomposedTransform& decomp) {
 }
 
 bool Transform::Blend(const Transform& from, double progress) {
-  absl::optional<DecomposedTransform> to_decomp = Decompose();
+  std::optional<DecomposedTransform> to_decomp = Decompose();
   if (!to_decomp)
     return false;
-  absl::optional<DecomposedTransform> from_decomp = from.Decompose();
+  std::optional<DecomposedTransform> from_decomp = from.Decompose();
   if (!from_decomp)
     return false;
 
@@ -908,10 +910,10 @@ bool Transform::Blend(const Transform& from, double progress) {
 }
 
 bool Transform::Accumulate(const Transform& other) {
-  absl::optional<DecomposedTransform> this_decomp = Decompose();
+  std::optional<DecomposedTransform> this_decomp = Decompose();
   if (!this_decomp)
     return false;
-  absl::optional<DecomposedTransform> other_decomp = other.Decompose();
+  std::optional<DecomposedTransform> other_decomp = other.Decompose();
   if (!other_decomp)
     return false;
 
@@ -1047,7 +1049,7 @@ std::string Transform::ToString() const {
 }
 
 std::string Transform::ToDecomposedString() const {
-  absl::optional<gfx::DecomposedTransform> decomp = Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = Decompose();
   if (!decomp)
     return ToString() + "(degenerate)";
 

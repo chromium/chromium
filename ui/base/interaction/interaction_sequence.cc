@@ -107,7 +107,7 @@ struct InteractionSequence::SubsequenceData {
   Builder builder;
   SubsequenceCondition condition;
   std::unique_ptr<InteractionSequence> sequence;
-  absl::optional<bool> result;
+  std::optional<bool> result;
   AbortedData aborted_data;
 };
 
@@ -532,8 +532,8 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       if (reason == AbortedReason::kSubsequenceFailed) {
         for (const auto& data : next_step()->subsequence_data) {
           aborted_data.subsequence_failures.emplace_back(
-              data.result == false ? absl::make_optional(data.aborted_data)
-                                   : absl::nullopt);
+              data.result == false ? std::make_optional(data.aborted_data)
+                                   : std::nullopt);
         }
       }
     }
@@ -1104,7 +1104,7 @@ void InteractionSequence::StageNextStep() {
         } else {
           // This subsequence cannot run, so clear it out.
           subsequence_data.sequence.reset();
-          subsequence_data.result = absl::nullopt;
+          subsequence_data.result = std::nullopt;
         }
       }
       if (!found) {

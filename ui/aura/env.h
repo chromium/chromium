@@ -125,7 +125,7 @@ class AURA_EXPORT Env : public ui::EventTarget {
   // state.
   gfx::Point GetLastPointerPoint(ui::mojom::DragEventSource event_source,
                                  aura::Window* window,
-                                 absl::optional<gfx::Point> fallback);
+                                 std::optional<gfx::Point> fallback);
 
   // Get WindowOcclusionTracker instance. Create one if not yet created.
   WindowOcclusionTracker* GetWindowOcclusionTracker();

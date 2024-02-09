@@ -5,10 +5,10 @@
 #include "ui/base/clipboard/clipboard_data.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -35,12 +35,12 @@ TEST(ClipboardDataTest, BitmapTest) {
 TEST(ClipboardDataTest, DataSrcTest) {
   GURL url("www.example.com");
   ClipboardData data1;
-  data1.set_source(absl::make_optional<DataTransferEndpoint>(url));
+  data1.set_source(std::make_optional<DataTransferEndpoint>(url));
 
   ClipboardData data2;
   EXPECT_NE(data1, data2);
 
-  data2.set_source(absl::make_optional<DataTransferEndpoint>(url));
+  data2.set_source(std::make_optional<DataTransferEndpoint>(url));
   EXPECT_EQ(data1, data2);
 }
 
@@ -57,8 +57,8 @@ TEST(ClipboardDataTest, Equivalence) {
   EXPECT_TRUE(data2.GetBitmapIfPngNotEncoded().has_value());
 
   // The PNGs have not yet been encoded.
-  EXPECT_EQ(data1.maybe_png(), absl::nullopt);
-  EXPECT_EQ(data2.maybe_png(), absl::nullopt);
+  EXPECT_EQ(data1.maybe_png(), std::nullopt);
+  EXPECT_EQ(data2.maybe_png(), std::nullopt);
 
   // Encode the PNG of one of the clipboards.
   auto png1 = clipboard_util::EncodeBitmapToPng(

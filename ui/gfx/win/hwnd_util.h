@@ -9,9 +9,9 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -39,9 +39,9 @@ GFX_EXPORT bool DoesWindowBelongToActiveWindow(HWND window);
 GFX_EXPORT bool IsWindowCloaked(HWND hwnd);
 
 // Returns true if `window` is on the current virtual desktop, false if isn't,
-// and absl::nullopt if a COM method fails. Since this calls COM methods,
+// and std::nullopt if a COM method fails. Since this calls COM methods,
 // it can only be called from a COM thread.
-GFX_EXPORT absl::optional<bool> IsWindowOnCurrentVirtualDesktop(
+GFX_EXPORT std::optional<bool> IsWindowOnCurrentVirtualDesktop(
     HWND window,
     Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager);
 

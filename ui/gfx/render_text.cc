@@ -533,7 +533,7 @@ void RenderText::SetText(std::u16string text) {
   if (directionality_mode_ == DIRECTIONALITY_FROM_TEXT)
     text_direction_ = base::i18n::UNKNOWN_DIRECTION;
 
-  obscured_reveal_index_ = absl::nullopt;
+  obscured_reveal_index_ = std::nullopt;
   OnTextAttributeChanged();
 }
 
@@ -541,7 +541,7 @@ void RenderText::AppendText(const std::u16string& text) {
   text_ += text;
   UpdateStyleLengths();
   cached_bounds_and_offset_valid_ = false;
-  obscured_reveal_index_ = absl::nullopt;
+  obscured_reveal_index_ = std::nullopt;
 
   // Invalidate the cached text direction if it depends on the text contents.
   if (directionality_mode_ == DIRECTIONALITY_FROM_TEXT)
@@ -589,13 +589,13 @@ void RenderText::SetCursorEnabled(bool cursor_enabled) {
 void RenderText::SetObscured(bool obscured) {
   if (obscured != obscured_) {
     obscured_ = obscured;
-    obscured_reveal_index_ = absl::nullopt;
+    obscured_reveal_index_ = std::nullopt;
     cached_bounds_and_offset_valid_ = false;
     OnTextAttributeChanged();
   }
 }
 
-void RenderText::SetObscuredRevealIndex(absl::optional<size_t> index) {
+void RenderText::SetObscuredRevealIndex(std::optional<size_t> index) {
   if (obscured_reveal_index_ != index) {
     obscured_reveal_index_ = index;
     cached_bounds_and_offset_valid_ = false;
@@ -664,7 +664,7 @@ void RenderText::SetElideBehavior(ElideBehavior elide_behavior) {
   }
 }
 
-void RenderText::SetWhitespaceElision(absl::optional<bool> whitespace_elision) {
+void RenderText::SetWhitespaceElision(std::optional<bool> whitespace_elision) {
   if (whitespace_elision_ != whitespace_elision) {
     whitespace_elision_ = whitespace_elision;
     OnDisplayTextAttributeChanged();

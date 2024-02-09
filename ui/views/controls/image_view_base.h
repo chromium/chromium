@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_CONTROLS_IMAGE_VIEW_BASE_H_
 #define UI_VIEWS_CONTROLS_IMAGE_VIEW_BASE_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -62,7 +62,7 @@ class VIEWS_EXPORT ImageViewBase : public View {
   virtual gfx::Size GetImageSize() const = 0;
 
   // The requested image size.
-  absl::optional<gfx::Size> image_size_;
+  std::optional<gfx::Size> image_size_;
 
  private:
   friend class ImageViewTest;

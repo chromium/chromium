@@ -5,11 +5,11 @@
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -39,10 +39,10 @@ class AccessibleView : public View {
     return static_cast<ViewAXPlatformNodeDelegate*>(&GetViewAccessibility());
   }
 
-  void SetDescription(const absl::optional<std::string>& descritpion) {
+  void SetDescription(const std::optional<std::string>& descritpion) {
     description_ = descritpion;
   }
-  const absl::optional<std::string>& GetDescription() const {
+  const std::optional<std::string>& GetDescription() const {
     return description_;
   }
 
@@ -53,7 +53,7 @@ class AccessibleView : public View {
   ax::mojom::Role GetRole() const { return role_; }
 
  private:
-  absl::optional<std::string> description_ = kDescription;
+  std::optional<std::string> description_ = kDescription;
   std::string name_ = kDialogName;
   ax::mojom::Role role_ = ax::mojom::Role::kDialog;
 };
@@ -116,7 +116,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest,
   EXPECT_NE(view()->GetPlatformNodeDelegate()->GetName(),
             *view()->GetDescription());
 
-  view()->SetDescription(absl::nullopt);
+  view()->SetDescription(std::nullopt);
 
   EXPECT_EQ(view()->GetPlatformNodeDelegate()->GetName(), kDialogName);
 }

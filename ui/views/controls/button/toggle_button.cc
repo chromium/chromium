@@ -68,11 +68,11 @@ int GetThumbInset(bool is_on) {
   return kThumbInset;
 }
 
-absl::optional<SkColor> GetSkColorFromVariant(
+std::optional<SkColor> GetSkColorFromVariant(
     const absl::variant<ui::ColorId, SkColor>& color_variant) {
   return absl::holds_alternative<SkColor>(color_variant)
-             ? absl::make_optional(absl::get<SkColor>(color_variant))
-             : absl::nullopt;
+             ? std::make_optional(absl::get<SkColor>(color_variant))
+             : std::nullopt;
 }
 
 SkColor ConvertVariantToSkColor(
@@ -131,7 +131,7 @@ class ToggleButton::ThumbView : public View {
     (is_on ? thumb_on_color_ : thumb_off_color_) = thumb_color;
   }
 
-  absl::optional<SkColor> GetThumbColor(bool is_on) const {
+  std::optional<SkColor> GetThumbColor(bool is_on) const {
     return GetSkColorFromVariant(is_on ? thumb_on_color_ : thumb_off_color_);
   }
 
@@ -331,7 +331,7 @@ void ToggleButton::SetThumbOnColor(SkColor thumb_on_color) {
   thumb_view_->SetThumbColor(true /* is_on */, thumb_on_color);
 }
 
-absl::optional<SkColor> ToggleButton::GetThumbOnColor() const {
+std::optional<SkColor> ToggleButton::GetThumbOnColor() const {
   return thumb_view_->GetThumbColor(true);
 }
 
@@ -339,7 +339,7 @@ void ToggleButton::SetThumbOffColor(SkColor thumb_off_color) {
   thumb_view_->SetThumbColor(false /* is_on */, thumb_off_color);
 }
 
-absl::optional<SkColor> ToggleButton::GetThumbOffColor() const {
+std::optional<SkColor> ToggleButton::GetThumbOffColor() const {
   return thumb_view_->GetThumbColor(false);
 }
 
@@ -347,7 +347,7 @@ void ToggleButton::SetTrackOnColor(SkColor track_on_color) {
   track_on_color_ = track_on_color;
 }
 
-absl::optional<SkColor> ToggleButton::GetTrackOnColor() const {
+std::optional<SkColor> ToggleButton::GetTrackOnColor() const {
   return GetSkColorFromVariant(track_on_color_);
 }
 
@@ -355,7 +355,7 @@ void ToggleButton::SetTrackOffColor(SkColor track_off_color) {
   track_off_color_ = track_off_color;
 }
 
-absl::optional<SkColor> ToggleButton::GetTrackOffColor() const {
+std::optional<SkColor> ToggleButton::GetTrackOffColor() const {
   return GetSkColorFromVariant(track_off_color_);
 }
 

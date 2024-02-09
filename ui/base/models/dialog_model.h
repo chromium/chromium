@@ -6,6 +6,7 @@
 #define UI_BASE_MODELS_DIALOG_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
       Params& SetId(ElementIdentifier id);
       Params& SetLabel(std::u16string label);
-      Params& SetStyle(absl::optional<ButtonStyle> style);
+      Params& SetStyle(std::optional<ButtonStyle> style);
       Params& SetEnabled(bool is_enabled);
 
       Params& AddAccelerator(Accelerator accelerator);
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
       ElementIdentifier id_;
       std::u16string label_;
-      absl::optional<ButtonStyle> style_;
+      std::optional<ButtonStyle> style_;
       bool is_enabled_ = true;
       base::flat_set<Accelerator> accelerators_;
     };
@@ -129,7 +129,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     ~Button() override;
 
     const std::u16string& label() const { return label_; }
-    const absl::optional<ButtonStyle> style() const { return style_; }
+    const std::optional<ButtonStyle> style() const { return style_; }
     bool is_enabled() const { return is_enabled_; }
     void OnPressed(base::PassKey<DialogModelHost>, const Event& event);
 
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     friend class DialogModel;
 
     std::u16string label_;
-    const absl::optional<ButtonStyle> style_;
+    const std::optional<ButtonStyle> style_;
     const bool is_enabled_;
     // The button callback gets called when the button is activated. Whether
     // that happens on key-press, release, etc. is implementation (and platform)
@@ -367,7 +367,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
    private:
     Builder& AddButtonInternal(ButtonCallbackVariant callback,
                                const Button::Params& params,
-                               absl::optional<Button>& model_button,
+                               std::optional<Button>& model_button,
                                ButtonCallbackVariant& model_callback);
 
     std::unique_ptr<DialogModel> model_;
@@ -480,7 +480,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     host_ = host;
   }
 
-  const absl::optional<bool>& override_show_close_button(
+  const std::optional<bool>& override_show_close_button(
       base::PassKey<DialogModelHost>) const {
     return override_show_close_button_;
   }
@@ -519,7 +519,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return dark_mode_banner_;
   }
 
-  const absl::optional<DialogButton>& override_default_button(
+  const std::optional<DialogButton>& override_default_button(
       base::PassKey<DialogModelHost>) const {
     return override_default_button_;
   }
@@ -572,7 +572,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::unique_ptr<DialogModelDelegate> delegate_;
   raw_ptr<DialogModelHost> host_ = nullptr;
 
-  absl::optional<bool> override_show_close_button_;
+  std::optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
   std::string internal_name_;
   std::u16string title_;
@@ -586,15 +586,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   ImageModel banner_;
   ImageModel dark_mode_banner_;
 
-  absl::optional<DialogButton> override_default_button_;
+  std::optional<DialogButton> override_default_button_;
   DialogModelSection contents_;
   ElementIdentifier initially_focused_field_;
   bool is_alert_dialog_ = false;
 
-  absl::optional<Button> ok_button_;
-  absl::optional<Button> cancel_button_;
-  absl::optional<Button> extra_button_;
-  absl::optional<DialogModelLabel::TextReplacement> extra_link_;
+  std::optional<Button> ok_button_;
+  std::optional<Button> cancel_button_;
+  std::optional<Button> extra_button_;
+  std::optional<DialogModelLabel::TextReplacement> extra_link_;
 
   ButtonCallbackVariant accept_action_callback_;
   ButtonCallbackVariant cancel_action_callback_;

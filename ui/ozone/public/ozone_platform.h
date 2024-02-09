@@ -299,7 +299,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget);
 
   // Returns true if the specified buffer format is supported.

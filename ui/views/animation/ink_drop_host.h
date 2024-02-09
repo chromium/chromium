@@ -138,7 +138,7 @@ class VIEWS_EXPORT InkDropHost {
   void SetVisibleOpacity(float visible_opacity);
   float GetVisibleOpacity() const;
 
-  void SetHighlightOpacity(absl::optional<float> opacity);
+  void SetHighlightOpacity(std::optional<float> opacity);
 
   void SetSmallCornerRadius(int small_radius);
   int GetSmallCornerRadius() const;
@@ -267,7 +267,7 @@ class VIEWS_EXPORT InkDropHost {
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
   // always set or using the default value. Then make this a non-optional float.
-  absl::optional<float> ink_drop_highlight_opacity_;
+  std::optional<float> ink_drop_highlight_opacity_;
 
   // Radii used for the SquareInkDropRipple.
   int ink_drop_small_corner_radius_ = 2;

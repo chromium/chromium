@@ -167,7 +167,7 @@ bool AXFuchsiaSemanticProviderImpl::Update(
   } else {
     auto found_not_reachable = not_reachable_.find(node.node_id().value());
     const bool is_not_reachable = found_not_reachable != not_reachable_.end();
-    const absl::optional<uint32_t> parent_node_id =
+    const std::optional<uint32_t> parent_node_id =
         GetParentForNode(node.node_id().value());
     if (is_not_reachable && parent_node_id) {
       // Connection parent -> |node| exists now.
@@ -357,14 +357,14 @@ void AXFuchsiaSemanticProviderImpl::MarkChildrenAsReachable(
   }
 }
 
-absl::optional<uint32_t> AXFuchsiaSemanticProviderImpl::GetParentForNode(
+std::optional<uint32_t> AXFuchsiaSemanticProviderImpl::GetParentForNode(
     const uint32_t node_id) {
   const auto it = nodes_.find(node_id);
   if (it != nodes_.end()) {
     if (it->second.parents.size() == 1)
       return *it->second.parents.begin();
     else
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   const auto not_reachable_it = not_reachable_.find(node_id);
@@ -372,10 +372,10 @@ absl::optional<uint32_t> AXFuchsiaSemanticProviderImpl::GetParentForNode(
     if (not_reachable_it->second.size() == 1)
       return *not_reachable_it->second.begin();
     else
-      return absl::nullopt;
+      return std::nullopt;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AXFuchsiaSemanticProviderImpl::Batch&

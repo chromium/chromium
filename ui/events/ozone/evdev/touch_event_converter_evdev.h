@@ -299,7 +299,7 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   bool palm_on_tool_type_palm_;
 
   // The start time of a touch session.
-  absl::optional<base::TimeTicks> session_start_time_ = absl::nullopt;
+  std::optional<base::TimeTicks> session_start_time_ = std::nullopt;
 
   // Whether the last touch was detected as palm.
   bool last_touch_is_palm_ = false;

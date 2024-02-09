@@ -6,12 +6,12 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_KEYBOARD_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -64,7 +64,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   // comments in this function's definition for more context.
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       WaylandWindow* window,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       PlatformKeyboardHook::KeyEventCallback callback);
   wl::Object<zwp_keyboard_shortcuts_inhibitor_v1> CreateShortcutsInhibitor(
       WaylandWindow* window);
@@ -128,7 +128,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
                    unsigned int scan_code,
                    bool down,
                    bool repeat,
-                   absl::optional<uint32_t> serial,
+                   std::optional<uint32_t> serial,
                    base::TimeTicks timestamp,
                    int device_id,
                    int flags,
@@ -166,7 +166,7 @@ class WaylandKeyboard::Delegate {
   virtual uint32_t OnKeyboardKeyEvent(EventType type,
                                       DomCode dom_code,
                                       bool repeat,
-                                      absl::optional<uint32_t> serial,
+                                      std::optional<uint32_t> serial,
                                       base::TimeTicks timestamp,
                                       int device_id,
                                       WaylandKeyboard::KeyEventKind kind) = 0;

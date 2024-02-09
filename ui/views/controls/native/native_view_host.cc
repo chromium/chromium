@@ -104,7 +104,7 @@ void NativeViewHost::NativeViewDestroyed() {
 }
 
 void NativeViewHost::SetBackgroundColorWhenClipped(
-    absl::optional<SkColor> color) {
+    std::optional<SkColor> color) {
   background_color_when_clipped_ = color;
 }
 

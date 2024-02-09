@@ -8,12 +8,12 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
@@ -163,7 +163,7 @@ class VIEWS_EXPORT ViewBuilderCore {
   // Vector of child view builders. If the optional index is included it will be
   // passed to View::AddChildViewAt().
   using ChildList = std::vector<
-      std::pair<std::unique_ptr<ViewBuilderCore>, absl::optional<size_t>>>;
+      std::pair<std::unique_ptr<ViewBuilderCore>, std::optional<size_t>>>;
   using PropertyList = std::vector<std::unique_ptr<PropertySetterBase>>;
 
   void AddPropertySetter(std::unique_ptr<PropertySetterBase> setter);

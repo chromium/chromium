@@ -376,7 +376,7 @@ base::StringPiece DataPack::GetStringPieceFromOffset(
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-absl::optional<base::StringPiece> DataPack::GetStringPiece(
+std::optional<base::StringPiece> DataPack::GetStringPiece(
     uint16_t resource_id) const {
   // It won't be hard to make this endian-agnostic, but it's not worth
   // bothering to do right now.
@@ -386,7 +386,7 @@ absl::optional<base::StringPiece> DataPack::GetStringPiece(
 
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
-    return absl::nullopt;
+    return std::nullopt;
 
   const Entry* next_entry = target + 1;
   // If the next entry points beyond the end of the file this data pack's entry
@@ -400,7 +400,7 @@ absl::optional<base::StringPiece> DataPack::GetStringPiece(
     LOG(ERROR) << "Entry #" << entry_index << " in data pack points off end "
                << "of file. This should have been caught when loading. Was the "
                << "file modified?";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (target->file_offset > next_entry->file_offset) {
     size_t entry_index = target - resource_table_;
@@ -408,7 +408,7 @@ absl::optional<base::StringPiece> DataPack::GetStringPiece(
     LOG(ERROR) << "Entry #" << next_index << " in data pack is before Entry #"
                << entry_index << ". This should have been caught when loading. "
                << "Was the file modified?";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   MaybePrintResourceId(resource_id);

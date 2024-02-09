@@ -48,7 +48,7 @@ void AddAttributeString(AttributeStrings& attributes,
 
 void AddPtrAttributeString(AttributeStrings& attributes,
                            const std::string& name,
-                           const absl::optional<intptr_t>& value) {
+                           const std::optional<intptr_t>& value) {
   if (!value)
     return;
 
@@ -130,8 +130,8 @@ void PrintViewHierarchyImpl(std::ostream* out,
 
 }  // namespace
 
-absl::optional<intptr_t> ViewDebugWrapper::GetAddress() {
-  return absl::nullopt;
+std::optional<intptr_t> ViewDebugWrapper::GetAddress() {
+  return std::nullopt;
 }
 
 void PrintViewHierarchy(std::ostream* out,

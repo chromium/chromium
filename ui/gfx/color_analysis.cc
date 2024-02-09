@@ -345,7 +345,7 @@ std::vector<Swatch> CalculateProminentColors(
     const SkBitmap& bitmap,
     const std::vector<ColorBracket>& color_brackets,
     const gfx::Rect& region,
-    absl::optional<ColorSwatchFilter> filter) {
+    std::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
 
@@ -678,7 +678,7 @@ std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
-    absl::optional<ColorSwatchFilter> filter) {
+    std::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
   DCHECK(!region.IsEmpty());

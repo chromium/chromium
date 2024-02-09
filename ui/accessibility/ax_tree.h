@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -218,12 +218,12 @@ class AX_EXPORT AXTree {
   // Returns the PosInSet of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  absl::optional<int> GetPosInSet(const AXNode& node);
+  std::optional<int> GetPosInSet(const AXNode& node);
 
   // Returns the SetSize of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  absl::optional<int> GetSetSize(const AXNode& node);
+  std::optional<int> GetSetSize(const AXNode& node);
 
   // Returns the part of the current selection that falls within this
   // accessibility tree, if any.
@@ -443,9 +443,9 @@ class AX_EXPORT AXTree {
     NodeSetSizePosInSetInfo();
     ~NodeSetSizePosInSetInfo();
 
-    absl::optional<int> pos_in_set;
-    absl::optional<int> set_size;
-    absl::optional<int> lowest_hierarchical_level;
+    std::optional<int> pos_in_set;
+    std::optional<int> set_size;
+    std::optional<int> lowest_hierarchical_level;
   };
 
   // Represents the content of an ordered set which includes the ordered set
@@ -472,8 +472,8 @@ class AX_EXPORT AXTree {
       const AXNode& original_node,
       const AXNode* ordered_set,
       const AXNode* local_parent,
-      absl::optional<int> ordered_set_min_level,
-      absl::optional<int> prev_level,
+      std::optional<int> ordered_set_min_level,
+      std::optional<int> prev_level,
       OrderedSetItemsMap* items_map_to_be_populated) const;
 
   // Computes the pos_in_set and set_size values of all items in ordered_set and

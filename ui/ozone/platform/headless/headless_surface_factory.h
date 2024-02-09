@@ -39,7 +39,7 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
 
  private:
   void CheckBasePath() const;

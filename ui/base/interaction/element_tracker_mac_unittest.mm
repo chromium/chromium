@@ -99,7 +99,7 @@ class ExpectedCall {
   const ElementContext context_;
   const int expected_count_;
   int count_ = 0;
-  absl::optional<gfx::Rect> expected_bounds_;
+  std::optional<gfx::Rect> expected_bounds_;
   ElementTracker::Subscription subscription_;
 };
 

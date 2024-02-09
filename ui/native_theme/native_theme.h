@@ -6,6 +6,7 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_H_
 
 #include <map>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -272,8 +272,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     bool right_to_left = false;
     // These allow clients to directly override the color values to support
     // element-specific web platform CSS.
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 
   struct ScrollbarTrackExtraParams {
@@ -285,7 +285,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int classic_state = 0;  // Used on Windows when uxtheme is not available.
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> track_color;
   };
 
   enum class ScrollbarOverlayColorTheme {
@@ -300,7 +300,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
         ScrollbarOverlayColorTheme::kDefault;
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
-    absl::optional<SkColor> thumb_color;
+    std::optional<SkColor> thumb_color;
     bool is_thumb_minimal_mode = false;
   };
 
@@ -326,8 +326,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     float scale_from_dip = 0;
     // These allow clients to directly override the color values to support
     // element-specific web platform CSS.
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 #endif
 
@@ -405,7 +405,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
       const gfx::Rect& rect,
       const ExtraParams& extra,
       ColorScheme color_scheme = ColorScheme::kDefault,
-      const absl::optional<SkColor>& accent_color = absl::nullopt) const = 0;
+      const std::optional<SkColor>& accent_color = std::nullopt) const = 0;
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
@@ -515,13 +515,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   virtual bool GetInvertedColors() const;
 
   // Returns the system's caption style.
-  virtual absl::optional<CaptionStyle> GetSystemCaptionStyle() const;
+  virtual std::optional<CaptionStyle> GetSystemCaptionStyle() const;
 
   virtual ColorScheme GetDefaultSystemColorScheme() const;
 
   virtual const std::map<SystemThemeColor, SkColor>& GetSystemColors() const;
 
-  absl::optional<SkColor> GetSystemThemeColor(
+  std::optional<SkColor> GetSystemThemeColor(
       SystemThemeColor theme_color) const;
 
   bool HasDifferentSystemColors(
@@ -546,16 +546,16 @@ class NATIVE_THEME_EXPORT NativeTheme {
   ui::SystemTheme system_theme() const { return system_theme_; }
 
   // Set the user_color for ColorProviderKey.
-  void set_user_color(absl::optional<SkColor> user_color) {
+  void set_user_color(std::optional<SkColor> user_color) {
     user_color_ = user_color;
   }
-  absl::optional<SkColor> user_color() const { return user_color_; }
+  std::optional<SkColor> user_color() const { return user_color_; }
 
   void set_scheme_variant(
-      absl::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant) {
+      std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant) {
     scheme_variant_ = scheme_variant;
   }
-  absl::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant() const {
+  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant() const {
     return scheme_variant_;
   }
 
@@ -634,11 +634,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // User's primary color. Included in the `ColorProvider::Key` as the basis of
   // all generated colors.
-  absl::optional<SkColor> user_color_;
+  std::optional<SkColor> user_color_;
 
   // System color scheme variant. Used in `ColorProvider::Key` to specify the
   // transforms of `user_color_` which generate colors.
-  absl::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
+  std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
 
   // Used to notify the web native theme of changes to dark mode, high
   // contrast, preferred color scheme, and preferred contrast.

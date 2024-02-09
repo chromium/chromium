@@ -295,7 +295,7 @@ void DrmThread::SetWindowBounds(gfx::AcceleratedWidget widget,
 
 void DrmThread::SetCursor(gfx::AcceleratedWidget widget,
                           const std::vector<SkBitmap>& bitmaps,
-                          const absl::optional<gfx::Point>& location,
+                          const std::optional<gfx::Point>& location,
                           base::TimeDelta frame_delay) {
   TRACE_EVENT0("drm", "DrmThread::SetCursor");
   screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location, frame_delay);

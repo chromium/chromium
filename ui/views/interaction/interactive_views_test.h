@@ -247,8 +247,8 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
 
   // Creates a state observer with `id` which polls the view in the current
   // context with `view_id`. If the view is present, uses `callback` to update
-  // the state value; otherwise the value is `absl::nullopt` (the actual state
-  // value is of type `absl::optional<T>`).
+  // the state value; otherwise the value is `std::nullopt` (the actual state
+  // value is of type `std::optional<T>`).
   //
   // The element, if present, must resolve to a View of the correct type, or the
   // test will fail.
@@ -264,12 +264,12 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       ui::ElementIdentifier view_id,
       C&& callback,
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
-          absl::optional<T>>::kDefaultPollingInterval);
+          std::optional<T>>::kDefaultPollingInterval);
 
   // Creates a state observer with `id` which polls `property` on the view in
   // the current context with `view_id`. If the view is not present, the state
-  // value will be set to `absl::nullopt` (the actual state value is of type
-  // `absl::optional<T>`).
+  // value will be set to `std::nullopt` (the actual state value is of type
+  // `std::optional<T>`).
   //
   // The element, if present, must resolve to a View of the correct type, or the
   // test will fail.
@@ -284,7 +284,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       ui::ElementIdentifier view_id,
       R (V::*property)() const,
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
-          absl::optional<T>>::kDefaultPollingInterval);
+          std::optional<T>>::kDefaultPollingInterval);
 
   // Scrolls `view` into the visible viewport if it is currently scrolled
   // outside its container. The view must be otherwise present and visible.
@@ -862,8 +862,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollView(
                             std::make_unique<PollingViewObserver<T, V>>(
                                 view_id,
                                 seq->IsCurrentStepInAnyContextForTesting()
-                                    ? absl::nullopt
-                                    : absl::make_optional(el->context()),
+                                    ? std::nullopt
+                                    : std::make_optional(el->context()),
                                 std::move(callback), polling_interval));
                       },
                       base::Unretained(this), id.identifier(), view_id, cb,
@@ -892,8 +892,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
                 std::make_unique<PollingViewPropertyObserver<T, V>>(
                     view_id,
                     seq->IsCurrentStepInAnyContextForTesting()
-                        ? absl::nullopt
-                        : absl::make_optional(el->context()),
+                        ? std::nullopt
+                        : std::make_optional(el->context()),
                     property, polling_interval));
           },
           base::Unretained(this), id.identifier(), view_id, property,

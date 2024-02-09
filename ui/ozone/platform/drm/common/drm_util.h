@@ -10,13 +10,13 @@
 #include <xf86drmMode.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
@@ -274,8 +274,8 @@ const InternalType* GetInternalTypeValueFromDrmEnum(
 }
 
 // Get the DRM driver name.
-absl::optional<std::string> GetDrmDriverNameFromFd(int fd);
-absl::optional<std::string> GetDrmDriverNameFromPath(
+std::optional<std::string> GetDrmDriverNameFromFd(int fd);
+std::optional<std::string> GetDrmDriverNameFromPath(
     const char* device_file_name);
 
 // Get an ordered list of preferred DRM driver names for the

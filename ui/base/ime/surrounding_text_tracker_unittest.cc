@@ -41,7 +41,7 @@ TEST(SurroundingTextTracker, StateGetCompositionText) {
                                         /*composition=*/gfx::Range(1, 3)};
 
     // Out of the range case.
-    EXPECT_EQ(absl::nullopt, state.GetCompositionText());
+    EXPECT_EQ(std::nullopt, state.GetCompositionText());
   }
 
   {
@@ -50,7 +50,7 @@ TEST(SurroundingTextTracker, StateGetCompositionText) {
                                         /*composition=*/gfx::Range(8, 12)};
 
     // Overlapping but not fully covered case.
-    EXPECT_EQ(absl::nullopt, state.GetCompositionText());
+    EXPECT_EQ(std::nullopt, state.GetCompositionText());
   }
 }
 

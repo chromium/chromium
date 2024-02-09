@@ -238,7 +238,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
             gfx::RectF(window_->GetBoundsInPixels()), {}, false,
             gfx::Rect(window_->applied_state().size_px), 1.0f,
             gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-            gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+            gfx::ColorSpace::CreateSRGB(), std::nullopt));
   }
 
   uint32_t surface_id_ = 0;
@@ -1378,7 +1378,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
             gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
             gfx::RectF(window_->GetBoundsInPixels()), crop_uv, false,
             surface_damage_rect, 1.0f, gfx::OverlayPriorityHint::kNone,
-            gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+            gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), std::nullopt));
 
     std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
     overlay_images.push_back(fake_overlay_image[0]);

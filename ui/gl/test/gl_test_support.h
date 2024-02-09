@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -20,7 +21,7 @@ class GLTestSupport {
   // to select if it is an allowed GL implementation. Otherwise it selects the
   // first allowed GL implementation.
   static GLDisplay* InitializeGL(
-      absl::optional<GLImplementationParts> prefered_impl);
+      std::optional<GLImplementationParts> prefered_impl);
 
   // Cleanup GL after being initialized for image testing.
   static void CleanupGL(GLDisplay* display);

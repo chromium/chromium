@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
@@ -189,7 +189,7 @@ class TableLayout::Column : public LayoutElement {
 
   // Determines the max size of all linked columns, and sets each column to that
   // size.
-  void UnifyLinkedColumnSizes(const absl::optional<int>& size_limit) {
+  void UnifyLinkedColumnSizes(const std::optional<int>& size_limit) {
     if (linked_columns_.empty() || linked_columns_.front() != this)
       return;
 
@@ -309,7 +309,7 @@ struct TableLayout::ViewState {
 
   // The baseline. Only used if the view is vertically aligned along the
   // baseline.
-  absl::optional<int> baseline;
+  std::optional<int> baseline;
 };
 
 TableLayout::TableLayout() = default;

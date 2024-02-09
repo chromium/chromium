@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/configure_displays_task.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/types/native_display_observer.h"

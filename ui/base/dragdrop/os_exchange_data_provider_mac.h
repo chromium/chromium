@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   // Overridden from OSExchangeDataProvider:
   void MarkRendererTaintedFromOrigin(const url::Origin& origin) override;
   bool IsRendererTainted() const override;
-  absl::optional<url::Origin> GetRendererTaintedOrigin() const override;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const override;
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;

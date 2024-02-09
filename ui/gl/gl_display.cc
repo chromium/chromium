@@ -773,7 +773,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 
       // The platform may need to unset its platform specific display env in
       // case of vulkan if the platform doesn't support Vulkan surface.
-      absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
+      std::optional<base::ScopedEnvironmentVariableOverride> unset_display;
       if (display_type == ANGLE_VULKAN) {
         unset_display = GLDisplayEglUtil::GetInstance()
                             ->MaybeGetScopedDisplayUnsetForVulkan();

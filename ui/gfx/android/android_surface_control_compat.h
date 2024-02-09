@@ -9,6 +9,7 @@
 #include <android/native_window.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -17,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -163,7 +163,7 @@ class GFX_EXPORT SurfaceControl {
     void SetDamageRect(const Surface& surface, const gfx::Rect& rect);
     void SetColorSpace(const Surface& surface,
                        const gfx::ColorSpace& color_space,
-                       const absl::optional<HDRMetadata>& metadata);
+                       const std::optional<HDRMetadata>& metadata);
     void SetFrameRate(const Surface& surface, float frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);
     void SetPosition(const Surface& surface, const gfx::Point& position);

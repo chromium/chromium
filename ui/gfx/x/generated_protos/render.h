@@ -28,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -467,19 +467,19 @@ class COMPONENT_EXPORT(X11) Render {
     Picture pid{};
     Drawable drawable{};
     PictFormat format{};
-    absl::optional<Repeat> repeat{};
-    absl::optional<Picture> alphamap{};
-    absl::optional<int32_t> alphaxorigin{};
-    absl::optional<int32_t> alphayorigin{};
-    absl::optional<int32_t> clipxorigin{};
-    absl::optional<int32_t> clipyorigin{};
-    absl::optional<Pixmap> clipmask{};
-    absl::optional<uint32_t> graphicsexposure{};
-    absl::optional<SubwindowMode> subwindowmode{};
-    absl::optional<PolyEdge> polyedge{};
-    absl::optional<PolyMode> polymode{};
-    absl::optional<Atom> dither{};
-    absl::optional<uint32_t> componentalpha{};
+    std::optional<Repeat> repeat{};
+    std::optional<Picture> alphamap{};
+    std::optional<int32_t> alphaxorigin{};
+    std::optional<int32_t> alphayorigin{};
+    std::optional<int32_t> clipxorigin{};
+    std::optional<int32_t> clipyorigin{};
+    std::optional<Pixmap> clipmask{};
+    std::optional<uint32_t> graphicsexposure{};
+    std::optional<SubwindowMode> subwindowmode{};
+    std::optional<PolyEdge> polyedge{};
+    std::optional<PolyMode> polymode{};
+    std::optional<Atom> dither{};
+    std::optional<uint32_t> componentalpha{};
   };
 
   using CreatePictureResponse = Response<void>;
@@ -490,35 +490,35 @@ class COMPONENT_EXPORT(X11) Render {
       const Picture& pid = {},
       const Drawable& drawable = {},
       const PictFormat& format = {},
-      const absl::optional<Repeat>& repeat = absl::nullopt,
-      const absl::optional<Picture>& alphamap = absl::nullopt,
-      const absl::optional<int32_t>& alphaxorigin = absl::nullopt,
-      const absl::optional<int32_t>& alphayorigin = absl::nullopt,
-      const absl::optional<int32_t>& clipxorigin = absl::nullopt,
-      const absl::optional<int32_t>& clipyorigin = absl::nullopt,
-      const absl::optional<Pixmap>& clipmask = absl::nullopt,
-      const absl::optional<uint32_t>& graphicsexposure = absl::nullopt,
-      const absl::optional<SubwindowMode>& subwindowmode = absl::nullopt,
-      const absl::optional<PolyEdge>& polyedge = absl::nullopt,
-      const absl::optional<PolyMode>& polymode = absl::nullopt,
-      const absl::optional<Atom>& dither = absl::nullopt,
-      const absl::optional<uint32_t>& componentalpha = absl::nullopt);
+      const std::optional<Repeat>& repeat = std::nullopt,
+      const std::optional<Picture>& alphamap = std::nullopt,
+      const std::optional<int32_t>& alphaxorigin = std::nullopt,
+      const std::optional<int32_t>& alphayorigin = std::nullopt,
+      const std::optional<int32_t>& clipxorigin = std::nullopt,
+      const std::optional<int32_t>& clipyorigin = std::nullopt,
+      const std::optional<Pixmap>& clipmask = std::nullopt,
+      const std::optional<uint32_t>& graphicsexposure = std::nullopt,
+      const std::optional<SubwindowMode>& subwindowmode = std::nullopt,
+      const std::optional<PolyEdge>& polyedge = std::nullopt,
+      const std::optional<PolyMode>& polymode = std::nullopt,
+      const std::optional<Atom>& dither = std::nullopt,
+      const std::optional<uint32_t>& componentalpha = std::nullopt);
 
   struct ChangePictureRequest {
     Picture picture{};
-    absl::optional<Repeat> repeat{};
-    absl::optional<Picture> alphamap{};
-    absl::optional<int32_t> alphaxorigin{};
-    absl::optional<int32_t> alphayorigin{};
-    absl::optional<int32_t> clipxorigin{};
-    absl::optional<int32_t> clipyorigin{};
-    absl::optional<Pixmap> clipmask{};
-    absl::optional<uint32_t> graphicsexposure{};
-    absl::optional<SubwindowMode> subwindowmode{};
-    absl::optional<PolyEdge> polyedge{};
-    absl::optional<PolyMode> polymode{};
-    absl::optional<Atom> dither{};
-    absl::optional<uint32_t> componentalpha{};
+    std::optional<Repeat> repeat{};
+    std::optional<Picture> alphamap{};
+    std::optional<int32_t> alphaxorigin{};
+    std::optional<int32_t> alphayorigin{};
+    std::optional<int32_t> clipxorigin{};
+    std::optional<int32_t> clipyorigin{};
+    std::optional<Pixmap> clipmask{};
+    std::optional<uint32_t> graphicsexposure{};
+    std::optional<SubwindowMode> subwindowmode{};
+    std::optional<PolyEdge> polyedge{};
+    std::optional<PolyMode> polymode{};
+    std::optional<Atom> dither{};
+    std::optional<uint32_t> componentalpha{};
   };
 
   using ChangePictureResponse = Response<void>;
@@ -527,19 +527,19 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> ChangePicture(
       const Picture& picture = {},
-      const absl::optional<Repeat>& repeat = absl::nullopt,
-      const absl::optional<Picture>& alphamap = absl::nullopt,
-      const absl::optional<int32_t>& alphaxorigin = absl::nullopt,
-      const absl::optional<int32_t>& alphayorigin = absl::nullopt,
-      const absl::optional<int32_t>& clipxorigin = absl::nullopt,
-      const absl::optional<int32_t>& clipyorigin = absl::nullopt,
-      const absl::optional<Pixmap>& clipmask = absl::nullopt,
-      const absl::optional<uint32_t>& graphicsexposure = absl::nullopt,
-      const absl::optional<SubwindowMode>& subwindowmode = absl::nullopt,
-      const absl::optional<PolyEdge>& polyedge = absl::nullopt,
-      const absl::optional<PolyMode>& polymode = absl::nullopt,
-      const absl::optional<Atom>& dither = absl::nullopt,
-      const absl::optional<uint32_t>& componentalpha = absl::nullopt);
+      const std::optional<Repeat>& repeat = std::nullopt,
+      const std::optional<Picture>& alphamap = std::nullopt,
+      const std::optional<int32_t>& alphaxorigin = std::nullopt,
+      const std::optional<int32_t>& alphayorigin = std::nullopt,
+      const std::optional<int32_t>& clipxorigin = std::nullopt,
+      const std::optional<int32_t>& clipyorigin = std::nullopt,
+      const std::optional<Pixmap>& clipmask = std::nullopt,
+      const std::optional<uint32_t>& graphicsexposure = std::nullopt,
+      const std::optional<SubwindowMode>& subwindowmode = std::nullopt,
+      const std::optional<PolyEdge>& polyedge = std::nullopt,
+      const std::optional<PolyMode>& polymode = std::nullopt,
+      const std::optional<Atom>& dither = std::nullopt,
+      const std::optional<uint32_t>& componentalpha = std::nullopt);
 
   struct SetPictureClipRectanglesRequest {
     Picture picture{};

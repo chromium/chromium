@@ -114,7 +114,7 @@ bool WaylandZwpLinuxDmabuf::CanCreateBufferImmed() const {
 
 void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     uint32_t fourcc_format,
-    absl::optional<uint64_t> modifier) {
+    std::optional<uint64_t> modifier) {
   // Return on not supported fourcc formats.
   if (!IsValidBufferFormat(fourcc_format))
     return;
@@ -167,7 +167,7 @@ void WaylandZwpLinuxDmabuf::OnFormat(void* data,
                                      zwp_linux_dmabuf_v1* linux_dmabuf,
                                      uint32_t format) {
   if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
-    self->AddSupportedFourCCFormatAndModifier(format, absl::nullopt);
+    self->AddSupportedFourCCFormatAndModifier(format, std::nullopt);
   }
 }
 

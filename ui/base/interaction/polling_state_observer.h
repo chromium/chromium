@@ -5,12 +5,12 @@
 #ifndef UI_BASE_INTERACTION_POLLING_STATE_OBSERVER_H_
 #define UI_BASE_INTERACTION_POLLING_STATE_OBSERVER_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
@@ -75,7 +75,7 @@ constexpr base::TimeDelta PollingStateObserver<T>::kDefaultPollingInterval;
 // listeners/callbacks. If an element with `identifier` in `context` is present,
 // the observed value will be updated to the result of `poll_element_callback`,
 // whereas if the element is not present in the context, it will be
-// absl::nullopt.
+// std::nullopt.
 //
 // If `context` is not specified, then the element will be located in any
 // context.
@@ -87,33 +87,33 @@ constexpr base::TimeDelta PollingStateObserver<T>::kDefaultPollingInterval;
 // Designed for use with the `InteractiveTestApi::PollElement()` verb.
 template <typename T>
 class PollingElementStateObserver
-    : public PollingStateObserver<absl::optional<T>> {
+    : public PollingStateObserver<std::optional<T>> {
  public:
   using PollElementCallback = base::RepeatingCallback<T(const TrackedElement*)>;
 
   // Calls `poll_element_callback` on the element with `identifier` in
   // `context` to update the value every `polling_interval`. If a matching
-  // element is not present, the value is `absl::nullopt`. The callback will be
+  // element is not present, the value is `std::nullopt`. The callback will be
   // called on initialization (if the element already exists) to get an initial
   // value.
   template <typename C>
   PollingElementStateObserver(
       ElementIdentifier identifier,
-      absl::optional<ElementContext> context,
+      std::optional<ElementContext> context,
       C&& poll_element_callback,
       base::TimeDelta polling_interval =
-          PollingStateObserver<absl::optional<T>>::kDefaultPollingInterval)
-      : PollingStateObserver<absl::optional<T>>(
+          PollingStateObserver<std::optional<T>>::kDefaultPollingInterval)
+      : PollingStateObserver<std::optional<T>>(
             base::BindRepeating(
                 [](ElementIdentifier id,
-                   absl::optional<ElementContext> ctx,
+                   std::optional<ElementContext> ctx,
                    PollElementCallback cb) {
                   auto* const el = ctx.has_value()
                                        ? ElementTracker::GetElementTracker()
                                              ->GetFirstMatchingElement(id, *ctx)
                                        : ElementTracker::GetElementTracker()
                                              ->GetElementInAnyContext(id);
-                  return el ? absl::make_optional(cb.Run(el)) : absl::nullopt;
+                  return el ? std::make_optional(cb.Run(el)) : std::nullopt;
                 },
                 identifier,
                 context,

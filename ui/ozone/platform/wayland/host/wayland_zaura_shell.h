@@ -5,12 +5,12 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -45,11 +45,11 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   zaura_shell* wl_object() const { return obj_.get(); }
 
   // Returns the Wayland server version. If the bound zaura_shell is not
-  // recent enough (ie: < v58), this returns absl::nullopt. This can be used in
+  // recent enough (ie: < v58), this returns std::nullopt. This can be used in
   // conjunction with ozone platform's RuntimeProperties in order to determine
   // if Exo supports a given feature.
   // See https://crbug.com/1457008.
-  const absl::optional<base::Version>& server_version() const {
+  const std::optional<base::Version>& server_version() const {
     return server_version_;
   }
 
@@ -95,7 +95,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
 
   wl::Object<zaura_shell> obj_;
   const raw_ptr<WaylandConnection> connection_;
-  absl::optional<base::Version> server_version_;
+  std::optional<base::Version> server_version_;
   std::vector<std::string> desks_;
   int active_desk_index_ = 0;
   gfx::RoundedCornersF window_corners_radii_;

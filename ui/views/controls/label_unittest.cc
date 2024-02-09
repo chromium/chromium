@@ -345,7 +345,7 @@ TEST_F(LabelTest, BackgroundColorId) {
             label()->GetBackgroundColor());
 
   // Once a color id is no longer set, colors can be set again.
-  label()->SetBackgroundColorId(absl::nullopt);
+  label()->SetBackgroundColorId(std::nullopt);
   label()->SetBackgroundColor(SK_ColorBLUE);
   EXPECT_EQ(SK_ColorBLUE, label()->GetBackgroundColor());
 }

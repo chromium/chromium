@@ -68,7 +68,7 @@ class TestView : public View {
   }
 
  private:
-  absl::optional<gfx::Size> minimum_size_;
+  std::optional<gfx::Size> minimum_size_;
   bool fix_area_ = false;
 };
 
@@ -4179,7 +4179,7 @@ class AnimatingLayoutManagerFlexRuleTest : public AnimatingLayoutManagerTest {
 
   void InitLayout(LayoutOrientation orientation,
                   const FlexSpecification& default_flex,
-                  const absl::optional<gfx::Size>& minimum_size,
+                  const std::optional<gfx::Size>& minimum_size,
                   bool fix_child_size) {
     for (size_t i = 0; i < num_children(); ++i) {
       if (minimum_size)

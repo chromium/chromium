@@ -9,12 +9,12 @@
 
 #include <array>
 #include <functional>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 
@@ -94,7 +94,7 @@ class EVENTS_EXPORT PointerEventsHandler {
   // parameters to correctly map to logical view coordinates. The "nullopt"
   // state represents the absence of view parameters, early in the protocol
   // lifecycle.
-  absl::optional<fuchsia_ui_pointer::ViewParameters> touch_view_parameters_;
+  std::optional<fuchsia_ui_pointer::ViewParameters> touch_view_parameters_;
 
   // Mouse State ---------------------------------------------------------------
   // Channel for mouse events from Scenic.
@@ -128,7 +128,7 @@ class EVENTS_EXPORT PointerEventsHandler {
   // parameters to correctly map to logical view coordinates. The "nullopt"
   // state represents the absence of view parameters, early in the protocol
   // lifecycle.
-  absl::optional<fuchsia_ui_pointer::ViewParameters> mouse_view_parameters_;
+  std::optional<fuchsia_ui_pointer::ViewParameters> mouse_view_parameters_;
 };
 
 }  // namespace ui

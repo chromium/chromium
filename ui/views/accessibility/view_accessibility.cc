@@ -136,15 +136,15 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
   return false;
 }
 
-absl::optional<size_t> ViewAccessibility::GetIndexOf(
+std::optional<size_t> ViewAccessibility::GetIndexOf(
     const AXVirtualView* virtual_view) const {
   DCHECK(virtual_view);
   const auto iter = base::ranges::find(virtual_children_, virtual_view,
                                        &std::unique_ptr<AXVirtualView>::get);
   return iter != virtual_children_.end()
-             ? absl::make_optional(
+             ? std::make_optional(
                    static_cast<size_t>(iter - virtual_children_.begin()))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
@@ -560,7 +560,7 @@ Widget* ViewAccessibility::GetPreviousWindowFocus() const {
 
 void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
-    child_tree_id_ = absl::nullopt;
+    child_tree_id_ = std::nullopt;
   else
     child_tree_id_ = tree_id;
 }

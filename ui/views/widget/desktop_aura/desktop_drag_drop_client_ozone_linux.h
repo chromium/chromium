@@ -37,7 +37,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzoneLinux
   // ui::WmDragHandler::LocationDelegate:
   void OnDragLocationChanged(const gfx::Point& screen_point_px) override;
   void OnDragOperationChanged(ui::mojom::DragOperation operation) override;
-  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override;
 
   // Updates |drag_widget_| so it is aligned with the last drag location.
   void UpdateDragWidgetLocation();

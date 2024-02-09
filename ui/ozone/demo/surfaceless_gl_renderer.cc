@@ -284,7 +284,7 @@ void SurfacelessGlRenderer::RenderFrame() {
             0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
             unity_rect, false, gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
             gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-            gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+            gfx::ColorSpace::CreateSRGB(), std::nullopt));
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
@@ -296,7 +296,7 @@ void SurfacelessGlRenderer::RenderFrame() {
               unity_rect, false,
               gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
               gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+              gfx::ColorSpace::CreateSRGB(), std::nullopt));
     }
   }
 

@@ -11,8 +11,8 @@ namespace ui {
 
 TEST(InputControllerEvdevTest, AccelerationSuspension) {
   InputControllerEvdev controller(nullptr, nullptr, nullptr);
-  controller.SetMouseAcceleration(absl::nullopt, true);
-  controller.SetPointingStickAcceleration(absl::nullopt, true);
+  controller.SetMouseAcceleration(std::nullopt, true);
+  controller.SetPointingStickAcceleration(std::nullopt, true);
 
   EXPECT_TRUE(controller.input_device_settings_.GetMouseSettings()
                   .acceleration_enabled);

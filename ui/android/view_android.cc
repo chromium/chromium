@@ -114,10 +114,10 @@ float ViewAndroid::GetDipScale() {
   return ui::GetScaleFactorForNativeView(this);
 }
 
-absl::optional<gfx::Rect> ViewAndroid::GetDisplayFeature() {
+std::optional<gfx::Rect> ViewAndroid::GetDisplayFeature() {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
-    return absl::nullopt;
+    return std::nullopt;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jintArray> jni_display_feature =
@@ -137,7 +137,7 @@ absl::optional<gfx::Rect> ViewAndroid::GetDisplayFeature() {
     return display_feature;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ScopedJavaLocalRef<jobject> ViewAndroid::GetEventForwarder() {
@@ -552,7 +552,7 @@ void ViewAndroid::DispatchOnSizeChanged() {
 
 void ViewAndroid::OnPhysicalBackingSizeChanged(
     const gfx::Size& size,
-    absl::optional<base::TimeDelta> deadline_override) {
+    std::optional<base::TimeDelta> deadline_override) {
   if (physical_size_ == size)
     return;
   physical_size_ = size;

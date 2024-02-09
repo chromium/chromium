@@ -346,7 +346,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
 
   {
     base::test::ScopedRunLoopTimeout timeout(
-        FROM_HERE, absl::nullopt,
+        FROM_HERE, std::nullopt,
         base::BindRepeating(
             [](base::WeakPtr<InteractionSequence> sequence) {
               std::ostringstream oss;

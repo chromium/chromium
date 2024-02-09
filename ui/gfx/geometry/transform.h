@@ -7,9 +7,9 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
@@ -410,17 +410,17 @@ class GEOMETRY_SKIA_EXPORT Transform {
   void TransformVector4(float vector[4]) const;
 
   // Returns the point with reverse transformation applied to `point`, clamped
-  // with ClampFloatGeometry(), or `absl::nullopt` if the transformation cannot
+  // with ClampFloatGeometry(), or `std::nullopt` if the transformation cannot
   // be inverted.
-  [[nodiscard]] absl::optional<PointF> InverseMapPoint(
+  [[nodiscard]] std::optional<PointF> InverseMapPoint(
       const PointF& point) const;
-  [[nodiscard]] absl::optional<Point3F> InverseMapPoint(
+  [[nodiscard]] std::optional<Point3F> InverseMapPoint(
       const Point3F& point) const;
 
-  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
+  // Applies the reverse transformation on `point`. Returns `std::nullopt` if
   // the transformation cannot be inverted. Rounds the result to the nearest
   // point.
-  [[nodiscard]] absl::optional<Point> InverseMapPoint(const Point& point) const;
+  [[nodiscard]] std::optional<Point> InverseMapPoint(const Point& point) const;
 
   // Returns the rect that is the smallest axis aligned bounding rect
   // containing the transformed rect, clamped with ClampFloatGeometry().
@@ -428,11 +428,11 @@ class GEOMETRY_SKIA_EXPORT Transform {
   [[nodiscard]] Rect MapRect(const Rect& rect) const;
 
   // Applies the reverse transformation on the given rect. Returns
-  // `absl::nullopt` if the transformation cannot be inverted, or the rect that
+  // `std::nullopt` if the transformation cannot be inverted, or the rect that
   // is the smallest axis aligned bounding rect containing the transformed rect,
   // clamped with ClampFloatGeometry().
-  [[nodiscard]] absl::optional<RectF> InverseMapRect(const RectF& rect) const;
-  [[nodiscard]] absl::optional<Rect> InverseMapRect(const Rect& rect) const;
+  [[nodiscard]] std::optional<RectF> InverseMapRect(const RectF& rect) const;
+  [[nodiscard]] std::optional<Rect> InverseMapRect(const Rect& rect) const;
 
   // Returns the box with transformation applied on the given box. The returned
   // box will be the smallest axis aligned bounding box containing the
@@ -482,7 +482,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // scale inversion, but causes transformed objects to needlessly shrink and
   // grow as they transform through scale = 0 along multiple axes. Thus 2d
   // transforms should follow the 2d spec regarding matrix decomposition.
-  absl::optional<DecomposedTransform> Decompose() const;
+  std::optional<DecomposedTransform> Decompose() const;
 
   // Composes a transform from the given |decomp|, following the routines
   // detailed in this specs:

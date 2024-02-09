@@ -6,8 +6,8 @@
 #define UI_VIEWS_CASCADING_PROPERTY_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 #include "ui/color/color_id.h"
@@ -42,12 +42,12 @@ const CascadingProperty<T>* GetCascadingPropertyObject(
 }
 
 template <typename T>
-absl::optional<T> GetCascadingProperty(
+std::optional<T> GetCascadingProperty(
     View* view,
     const ui::ClassProperty<CascadingProperty<T>*>* property_key) {
   const CascadingProperty<T>* property =
       GetCascadingPropertyObject(view, property_key);
-  return property ? absl::optional<T>(property->GetValue(view)) : absl::nullopt;
+  return property ? std::optional<T>(property->GetValue(view)) : std::nullopt;
 }
 
 template <typename T, typename K>

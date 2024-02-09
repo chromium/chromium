@@ -149,7 +149,7 @@ void PredictionMetricsHandler::EvaluatePrediction() {
 void PredictionMetricsHandler::Reset() {
   events_queue_.clear();
   predicted_events_queue_.clear();
-  last_predicted_ = absl::nullopt;
+  last_predicted_ = std::nullopt;
 }
 
 int PredictionMetricsHandler::GetInterpolatedEventForPredictedEvent(

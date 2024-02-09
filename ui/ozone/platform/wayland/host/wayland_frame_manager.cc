@@ -373,8 +373,8 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend
-            ? absl::nullopt
-            : absl::optional<std::vector<gfx::Rect>>(
+            ? std::nullopt
+            : std::optional<std::vector<gfx::Rect>>(
                   {gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))});
     surface->set_opaque_region(region_px);
   }
@@ -422,7 +422,7 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     surface->set_clip_rect(clip_rect);
   } else {
     // Reset clip rect value when `config.clip_rect` is not set.
-    surface->set_clip_rect(absl::nullopt);
+    surface->set_clip_rect(std::nullopt);
   }
 
   if (!config.access_fence_handle.is_null())

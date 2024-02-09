@@ -517,7 +517,7 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
   return (i == kMap->end()) ? ScrollAmount::kNone : i->second;
 }
 
-absl::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {
+std::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {
   switch (amount) {
     case ScrollAmount::kStart:
       return GetMinPosition();
@@ -532,7 +532,7 @@ absl::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {
     case ScrollAmount::kNextPage:
       return contents_scroll_offset_ + GetScrollIncrement(true, true);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

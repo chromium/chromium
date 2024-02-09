@@ -9,6 +9,7 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/xkb/xkb_key_code_converter.h"
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // specifically M101 or earlier of ash-chrome.
   DomCode GetDomCodeByKeysym(
       uint32_t keysym,
-      const absl::optional<std::vector<base::StringPiece>>& modifiers) const;
+      const std::optional<std::vector<base::StringPiece>>& modifiers) const;
 
   static void ParseLayoutName(const std::string& layout_name,
                               std::string* layout_id,

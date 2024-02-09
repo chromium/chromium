@@ -5,12 +5,12 @@
 #ifndef UI_PLATFORM_WINDOW_PLATFORM_WINDOW_DELEGATE_H_
 #define UI_PLATFORM_WINDOW_PLATFORM_WINDOW_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -204,8 +204,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnActivationChanged(bool active) = 0;
 
   // Requests size constraints for the PlatformWindow in DIP.
-  virtual absl::optional<gfx::Size> GetMinimumSizeForWindow();
-  virtual absl::optional<gfx::Size> GetMaximumSizeForWindow();
+  virtual std::optional<gfx::Size> GetMinimumSizeForWindow();
+  virtual std::optional<gfx::Size> GetMaximumSizeForWindow();
 
   virtual bool CanMaximize();
   virtual bool CanFullscreen();
@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // positioning. Useful for such backends as Wayland as it provides flexibility
   // in positioning child windows, which must be repositioned if the originally
   // intended position caused the surface to be constrained.
-  virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP();
+  virtual std::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInDIP();
 
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);

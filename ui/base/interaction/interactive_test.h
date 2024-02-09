@@ -352,8 +352,8 @@ class InteractiveTestApi {
   // `callback`. See `PollingElementStateObserver` and
   // `DECLARE_POLLING_ELEMENT_STATE_IDENTIFIER_VALUE()` for more info.
   //
-  // Note that the actual value type is not T, but `absl::optional<T>`, as the
-  // state will have the value absl::nullopt if the element is not present.
+  // Note that the actual value type is not T, but `std::optional<T>`, as the
+  // state will have the value std::nullopt if the element is not present.
   //
   // Use WaitForState() to check the polled state. Note that unlike
   // `ObserveState()`, transient states may be missed, so prefer using a custom
@@ -945,8 +945,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
                     std::make_unique<PollingElementStateObserver<T>>(
                         element_id,
                         seq->IsCurrentStepInAnyContextForTesting()
-                            ? absl::nullopt
-                            : absl::make_optional(el->context()),
+                            ? std::nullopt
+                            : std::make_optional(el->context()),
                         std::move(callback), polling_interval))) {
               seq->FailForTesting();
             }

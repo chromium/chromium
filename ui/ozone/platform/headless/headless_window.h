@@ -5,9 +5,10 @@
 #ifndef UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 #define UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
@@ -84,7 +85,7 @@ class HeadlessWindow : public PlatformWindow {
   gfx::AcceleratedWidget widget_;
 
   bool visible_ = false;
-  absl::optional<gfx::Rect> restored_bounds_;
+  std::optional<gfx::Rect> restored_bounds_;
   PlatformWindowState window_state_ = PlatformWindowState::kUnknown;
   ActivationState activation_state_ = ActivationState::kUnknown;
 };

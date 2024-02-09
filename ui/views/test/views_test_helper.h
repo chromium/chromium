@@ -6,8 +6,8 @@
 #define UI_VIEWS_TEST_VIEWS_TEST_HELPER_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_delegate.h"
 
@@ -32,7 +32,7 @@ class ViewsTestHelper {
   // Does any additional necessary setup of the provided |delegate|.
   virtual void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
-      absl::optional<ViewsDelegate::NativeWidgetFactory> factory);
+      std::optional<ViewsDelegate::NativeWidgetFactory> factory);
 
   // Does any additional necessary setup of this object or its members.
   virtual void SetUp();

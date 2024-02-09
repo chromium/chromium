@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_target.h"
@@ -156,7 +156,7 @@ class WaylandWindow : public PlatformWindow,
   // as it seems like an expectation of Wayland. However, if all the entered
   // outputs have the same scale factor, the very first entered output is chosen
   // as there is no way to figure out what output the window occupies the most.
-  absl::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
+  std::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
@@ -465,10 +465,10 @@ class WaylandWindow : public PlatformWindow,
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
-    absl::optional<gfx::Rect> bounds_dip;
-    absl::optional<gfx::Size> size_px;
-    absl::optional<float> raster_scale;
-    absl::optional<PlatformWindowOcclusionState> occlusion_state;
+    std::optional<gfx::Rect> bounds_dip;
+    std::optional<gfx::Size> size_px;
+    std::optional<float> raster_scale;
+    std::optional<PlatformWindowOcclusionState> occlusion_state;
   };
 
   // This holds the requested state for the next configure from the server.
@@ -581,7 +581,7 @@ class WaylandWindow : public PlatformWindow,
   // area of the window that is visible to the user as the actual window).  The
   // areas outside the geometry are used to draw client-side window decorations.
   // TODO(crbug.com/1306688): Use DIP for frame insets.
-  absl::optional<gfx::Insets> frame_insets_px_;
+  std::optional<gfx::Insets> frame_insets_px_;
 
   bool has_touch_focus_ = false;
   // The UI scale may be forced through the command line, which means that it

@@ -165,7 +165,7 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     ReadData(ui::ClipboardFormatType::WebCustomFormatMap(), data_dst,
              &custom_format_json);
     if (!custom_format_json.empty()) {
-      absl::optional<base::Value> json_val =
+      std::optional<base::Value> json_val =
           base::JSONReader::Read(custom_format_json);
       if (json_val.has_value() && json_val->is_dict()) {
         for (const auto it : json_val->GetDict()) {

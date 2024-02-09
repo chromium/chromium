@@ -84,7 +84,7 @@ DISPLAY_UTIL_EXPORT bool HasForceDisplayColorProfile();
 DISPLAY_UTIL_EXPORT gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& snapshot_color_space,
     bool allow_high_bit_depth,
-    const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata);
+    const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 DISPLAY_UTIL_EXPORT int ConnectorIndex8(int device_index, int display_index);

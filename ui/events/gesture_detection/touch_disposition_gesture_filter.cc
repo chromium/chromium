@@ -208,7 +208,7 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
     uint32_t unique_touch_event_id,
     bool event_consumed,
     bool is_source_touch_event_set_blocking,
-    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
+    const std::optional<EventLatencyMetadata>& event_latency_metadata) {
   // Spurious asynchronous acks should not trigger a crash.
   if (IsEmpty() || (Head().empty() && sequences_.size() == 1))
     return;
@@ -233,7 +233,7 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
 }
 
 void TouchDispositionGestureFilter::SendAckedEvents(
-    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
+    const std::optional<EventLatencyMetadata>& event_latency_metadata) {
   // Dispatch all packets corresponding to ack'ed touches, as well as
   // any pending timeout-based packets.
   bool touch_packet_for_current_ack_handled = false;

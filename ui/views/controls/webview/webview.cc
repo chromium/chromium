@@ -444,7 +444,7 @@ void WebView::AttachWebContentsNativeView() {
   if (bg_color) {
     holder_->SetBackgroundColorWhenClipped(bg_color->color());
   } else {
-    holder_->SetBackgroundColorWhenClipped(absl::nullopt);
+    holder_->SetBackgroundColorWhenClipped(std::nullopt);
   }
 
   holder_->Attach(view_to_attach);

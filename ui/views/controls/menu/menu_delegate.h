@@ -5,10 +5,10 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_DELEGATE_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_DELEGATE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_types.h"
@@ -71,7 +71,7 @@ class VIEWS_EXPORT MenuDelegate {
 
   // The font and color for the menu item label.
   virtual const gfx::FontList* GetLabelFontList(int id) const;
-  virtual absl::optional<SkColor> GetLabelColor(int id) const;
+  virtual std::optional<SkColor> GetLabelColor(int id) const;
 
   // The tooltip shown for the menu item. This is invoked when the user
   // hovers over the item, and no tooltip text has been set for that item.

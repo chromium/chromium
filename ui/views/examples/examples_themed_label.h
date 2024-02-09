@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_EXAMPLES_EXAMPLES_THEMED_LABEL_H_
 #define UI_VIEWS_EXAMPLES_EXAMPLES_THEMED_LABEL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
@@ -23,14 +24,14 @@ class ThemedLabel : public Label {
   ThemedLabel& operator=(const ThemedLabel&) = delete;
   ~ThemedLabel() override;
 
-  absl::optional<ui::ColorId> GetEnabledColorId() const;
-  void SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id);
+  std::optional<ui::ColorId> GetEnabledColorId() const;
+  void SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id);
 
   // View:
   void OnThemeChanged() override;
 
  private:
-  absl::optional<ui::ColorId> enabled_color_id_;
+  std::optional<ui::ColorId> enabled_color_id_;
 };
 
 BEGIN_VIEW_BUILDER(, ThemedLabel, Label)

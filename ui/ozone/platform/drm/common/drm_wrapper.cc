@@ -474,12 +474,12 @@ void DrmWrapper::WriteIntoTrace(perfetto::TracedDictionary dict) const {
   dict.Add("device_path", device_path_.value());
 }
 
-absl::optional<std::string> DrmWrapper::GetDriverName() const {
+std::optional<std::string> DrmWrapper::GetDriverName() const {
   DCHECK(drm_fd_.is_valid());
   ScopedDrmVersionPtr version(drmGetVersion(drm_fd_.get()));
   if (!version) {
     LOG(ERROR) << "Failed to query DRM version";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(version->name, version->name_len);

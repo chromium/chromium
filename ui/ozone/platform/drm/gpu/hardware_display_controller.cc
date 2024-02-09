@@ -110,7 +110,7 @@ void HardwareDisplayController::GetEnableProps(
   drmModeModeInfo empty_mode = {};
   GetModesetPropsForCrtcs(commit_request, modeset_planes,
                           /*use_current_crtc_mode=*/true, empty_mode,
-                          /*enable_vrr=*/absl::nullopt);
+                          /*enable_vrr=*/std::nullopt);
 }
 
 void HardwareDisplayController::GetModesetPropsForCrtcs(
@@ -118,7 +118,7 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     const DrmOverlayPlaneList& modeset_planes,
     bool use_current_crtc_mode,
     const drmModeModeInfo& mode,
-    absl::optional<bool> enable_vrr) {
+    std::optional<bool> enable_vrr) {
   DCHECK(commit_request);
 
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);

@@ -41,7 +41,7 @@ bool OSExchangeDataProviderNonBacked::IsRendererTainted() const {
   return tainted_by_renderer_origin_.has_value();
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 OSExchangeDataProviderNonBacked::GetRendererTaintedOrigin() const {
   // Platform-specific implementations of OSExchangeDataProvider do not
   // roundtrip opaque origins, so match that behavior here.

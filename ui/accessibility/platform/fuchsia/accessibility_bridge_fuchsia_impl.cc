@@ -17,7 +17,7 @@ namespace {
 // Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
 constexpr float kRectConversionError = 0.5;
 
-absl::optional<ax::mojom::Action> ConvertAction(
+std::optional<ax::mojom::Action> ConvertAction(
     fuchsia_accessibility_semantics::Action fuchsia_action) {
   switch (fuchsia_action) {
     case fuchsia_accessibility_semantics::Action::kDefault:
@@ -107,7 +107,7 @@ void AccessibilityBridgeFuchsiaImpl::DeleteNode(uint32_t node_id) {
 
 void AccessibilityBridgeFuchsiaImpl::OnAccessibilityHitTestResult(
     int hit_test_request_id,
-    absl::optional<uint32_t> result) {
+    std::optional<uint32_t> result) {
   auto it = pending_hit_test_completers_.find(hit_test_request_id);
   if (it == pending_hit_test_completers_.end()) {
     return;
@@ -165,7 +165,7 @@ bool AccessibilityBridgeFuchsiaImpl::OnAccessibilityAction(
   ui::AXActionData action_data = ui::AXActionData();
 
   // The requested action is not supported.
-  absl::optional<ax::mojom::Action> ax_action = ConvertAction(action);
+  std::optional<ax::mojom::Action> ax_action = ConvertAction(action);
   if (!ax_action)
     return false;
 

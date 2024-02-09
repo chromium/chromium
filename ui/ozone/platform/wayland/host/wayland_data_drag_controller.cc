@@ -617,7 +617,7 @@ void WaylandDataDragController::OnDataTransferFinished(
   window_->OnDragDataAvailable(std::move(received_data));
 }
 
-absl::optional<wl::Serial>
+std::optional<wl::Serial>
 WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
   wl::SerialType serial_type;
   bool should_drag = false;
@@ -633,7 +633,7 @@ WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
       break;
   }
   return should_drag ? connection_->serial_tracker().GetSerial(serial_type)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
 void WaylandDataDragController::SetOfferedExchangeDataProvider(

@@ -5,11 +5,11 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_DEVICE_EVENT_DISPATCHER_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_DEVICE_EVENT_DISPATCHER_EVDEV_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
@@ -61,7 +61,7 @@ struct COMPONENT_EXPORT(EVDEV) MouseMoveEventParams {
   int device_id;
   int flags;
   gfx::PointF location;
-  absl::optional<gfx::Vector2dF> ordinal_delta;
+  std::optional<gfx::Vector2dF> ordinal_delta;
   PointerDetails pointer_details;
   base::TimeTicks timestamp;
 };

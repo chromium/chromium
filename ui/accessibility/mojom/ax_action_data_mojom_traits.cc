@@ -39,7 +39,7 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
   out->horizontal_scroll_alignment = data.horizontal_scroll_alignment();
   out->vertical_scroll_alignment = data.vertical_scroll_alignment();
   out->scroll_behavior = data.scroll_behavior();
-  absl::optional<ui::AXTreeID> child_tree_id;
+  std::optional<ui::AXTreeID> child_tree_id;
   if (!data.ReadChildTreeId(&child_tree_id)) {
     return false;
   } else {

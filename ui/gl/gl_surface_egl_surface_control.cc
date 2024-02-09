@@ -395,7 +395,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
     ResourceRefs released_resources,
-    absl::optional<PrimaryPlaneFences> primary_plane_fences,
+    std::optional<PrimaryPlaneFences> primary_plane_fences,
     gfx::SurfaceControl::TransactionStats transaction_stats) {
   TRACE_EVENT0("gpu",
                "GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread");
@@ -541,7 +541,7 @@ void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
 }
 
 void GLSurfaceEGLSurfaceControl::SetChoreographerVsyncIdForNextFrame(
-    absl::optional<int64_t> choreographer_vsync_id) {
+    std::optional<int64_t> choreographer_vsync_id) {
   choreographer_vsync_id_for_next_frame_ = choreographer_vsync_id;
 }
 

@@ -19,7 +19,7 @@ struct StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo> {
     return info.rounded_corner_bounds();
   }
 
-  static const absl::optional<gfx::LinearGradient>& gradient_mask(
+  static const std::optional<gfx::LinearGradient>& gradient_mask(
       const gfx::MaskFilterInfo& info) {
     return info.gradient_mask();
   }

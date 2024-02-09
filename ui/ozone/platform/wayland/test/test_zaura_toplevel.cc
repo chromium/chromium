@@ -147,9 +147,9 @@ void SetShape(wl_client* client,
               wl_resource* resource,
               wl_resource* region_resource) {
   GetUserDataAs<TestZAuraToplevel>(resource)->set_shape(
-      region_resource ? absl::optional<TestRegion>(
+      region_resource ? std::optional<TestRegion>(
                             *GetUserDataAs<TestRegion>(region_resource))
-                      : absl::nullopt);
+                      : std::nullopt);
 }
 
 void SetTopInset(wl_client* client, wl_resource* resource, int32_t height) {

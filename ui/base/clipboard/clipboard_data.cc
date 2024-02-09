@@ -5,10 +5,10 @@
 #include "ui/base/clipboard/clipboard_data.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/skia_util.h"
@@ -96,9 +96,9 @@ bool ClipboardData::operator!=(const ClipboardData& that) const {
   return !(*this == that);
 }
 
-absl::optional<size_t> ClipboardData::CalculateSize(
-    const absl::optional<ClipboardInternalFormat>& format,
-    const absl::optional<ClipboardFormatType>& custom_data_format) const {
+std::optional<size_t> ClipboardData::CalculateSize(
+    const std::optional<ClipboardInternalFormat>& format,
+    const std::optional<ClipboardFormatType>& custom_data_format) const {
   size_t total_size = 0;
   if (format_ & static_cast<int>(ClipboardInternalFormat::kText)) {
     if (format.has_value() && *format == ClipboardInternalFormat::kText)
@@ -159,14 +159,14 @@ absl::optional<size_t> ClipboardData::CalculateSize(
 
   if (format.has_value() ||
       (format_ & static_cast<int>(ClipboardInternalFormat::kFilenames))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return total_size;
 }
 
 void ClipboardData::SetPngData(std::vector<uint8_t> png) {
-  maybe_bitmap_ = absl::nullopt;
+  maybe_bitmap_ = std::nullopt;
   maybe_png_ = std::move(png);
   format_ |= static_cast<int>(ClipboardInternalFormat::kPng);
 }
@@ -183,12 +183,12 @@ void ClipboardData::SetPngDataAfterEncoding(std::vector<uint8_t> png) const {
 void ClipboardData::SetBitmapData(const SkBitmap& bitmap) {
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
   maybe_bitmap_ = bitmap;
-  maybe_png_ = absl::nullopt;
+  maybe_png_ = std::nullopt;
   format_ |= static_cast<int>(ClipboardInternalFormat::kPng);
 }
 
-absl::optional<SkBitmap> ClipboardData::GetBitmapIfPngNotEncoded() const {
-  return maybe_png_.has_value() ? absl::nullopt : maybe_bitmap_;
+std::optional<SkBitmap> ClipboardData::GetBitmapIfPngNotEncoded() const {
+  return maybe_png_.has_value() ? std::nullopt : maybe_bitmap_;
 }
 
 bool ClipboardData::HasCustomDataFormat(

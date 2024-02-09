@@ -5,8 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_CURSOR_SHAPES_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_CURSOR_SHAPES_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -36,7 +37,7 @@ class WaylandZcrCursorShapes
 
   // Returns the cursor shape value for a cursor |type|, or nullopt if the
   // type isn't supported by the cursor API.
-  static absl::optional<int32_t> ShapeFromType(mojom::CursorType type);
+  static std::optional<int32_t> ShapeFromType(mojom::CursorType type);
 
   // Calls zcr_cursor_shapes_v1_set_cursor_shape(). See interface description
   // for values for |shape|. Virtual for testing.

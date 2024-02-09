@@ -5,9 +5,10 @@
 #ifndef UI_COMPOSITOR_COMPOSITOR_ANIMATION_OBSERVER_H_
 #define UI_COMPOSITOR_COMPOSITOR_ANIMATION_OBSERVER_H_
 
+#include <optional>
+
 #include "base/location.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {
@@ -43,7 +44,7 @@ class COMPOSITOR_EXPORT CompositorAnimationObserver {
  private:
   bool check_active_duration_ = true;
   base::Location location_;
-  absl::optional<base::TimeTicks> start_;
+  std::optional<base::TimeTicks> start_;
 };
 
 }  // namespace ui

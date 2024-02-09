@@ -6,6 +6,7 @@
 #define UI_COLOR_COLOR_PROVIDER_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/system_theme.h"

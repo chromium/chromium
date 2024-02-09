@@ -90,7 +90,7 @@ gfx::ImageSkia LargeImageView::CalculateDrawnImage() const {
   const gfx::ImageSkia cropped_image = gfx::ImageSkiaOperations::ExtractSubset(
       resized_image, gfx::Rect(clamed_size));
 
-  if (const absl::optional<size_t> corner_radius =
+  if (const std::optional<size_t> corner_radius =
           notification_view_util::GetLargeImageCornerRadius()) {
     // Return the cropped image decorated with rounded corners if necessary.
     return gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(

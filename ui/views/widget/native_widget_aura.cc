@@ -309,7 +309,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // the correct values.
   OnSizeConstraintsChanged();
 
-  absl::optional<int64_t> target_display;
+  std::optional<int64_t> target_display;
 #if BUILDFLAG(IS_CHROMEOS)
   target_display = params.display_id;
 #endif
@@ -602,11 +602,11 @@ std::string NativeWidgetAura::GetWorkspace() const {
 void NativeWidgetAura::SetBounds(const gfx::Rect& bounds) {
   if (!window_)
     return;
-  SetBoundsInternal(bounds, absl::nullopt);
+  SetBoundsInternal(bounds, std::nullopt);
 }
 
 void NativeWidgetAura::SetBoundsInternal(const gfx::Rect& bounds,
-                                         absl::optional<int64_t> display_id) {
+                                         std::optional<int64_t> display_id) {
   display::Display dst_display;
   auto* screen = display::Screen::GetScreen();
   // TODO(crbug.com/1480073): Call SetBoundsInScreen directly.

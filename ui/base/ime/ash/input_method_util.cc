@@ -21,7 +21,8 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 // For SetHardwareKeyboardLayoutForTesting.
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -779,7 +780,7 @@ void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
                                  input_method.id());
     }
 
-    const absl::optional<std::string>& handwriting_language =
+    const std::optional<std::string>& handwriting_language =
         input_method.handwriting_language();
     if (handwriting_language.has_value()) {
       MultimapDeduplicatedInsert(handwriting_language_to_ids_,
@@ -810,10 +811,10 @@ InputMethodDescriptor InputMethodUtil::GetFallbackInputMethodDescriptor() {
       extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"), "", "US",
       "us",  // layout
       languages,
-      true,                                   // login keyboard.
-      GURL(),                                 // options page, not available.
-      GURL(),                                 // input view page, not available.
-      /*handwriting_language=*/absl::nullopt  // not available.
+      true,                                  // login keyboard.
+      GURL(),                                // options page, not available.
+      GURL(),                                // input view page, not available.
+      /*handwriting_language=*/std::nullopt  // not available.
   );
 }
 

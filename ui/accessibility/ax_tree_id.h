@@ -5,10 +5,10 @@
 #ifndef UI_ACCESSIBILITY_AX_TREE_ID_H_
 #define UI_ACCESSIBILITY_AX_TREE_ID_H_
 
+#include <optional>
 #include <string>
 
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
@@ -51,7 +51,7 @@ class AX_BASE_EXPORT AXTreeID {
   std::string ToString() const;
 
   ax::mojom::AXTreeIDType type() const { return type_; }
-  const absl::optional<base::UnguessableToken>& token() const { return token_; }
+  const std::optional<base::UnguessableToken>& token() const { return token_; }
 
   bool operator==(const AXTreeID& rhs) const;
   bool operator!=(const AXTreeID& rhs) const;
@@ -69,7 +69,7 @@ class AX_BASE_EXPORT AXTreeID {
   friend void swap(AXTreeID& first, AXTreeID& second);
 
   ax::mojom::AXTreeIDType type_;
-  absl::optional<base::UnguessableToken> token_ = absl::nullopt;
+  std::optional<base::UnguessableToken> token_ = std::nullopt;
 };
 
 // For use in std::unordered_map.

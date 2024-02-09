@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -14,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -284,7 +284,7 @@ gfx::RoundedCornersF MenuScrollViewContainer::GetRoundedCorners() const {
   if (!menu_controller)
     return gfx::RoundedCornersF(corner_radius_);
 
-  absl::optional<gfx::RoundedCornersF> rounded_corners =
+  std::optional<gfx::RoundedCornersF> rounded_corners =
       menu_controller->rounded_corners();
   if (rounded_corners.has_value())
     return rounded_corners.value();
