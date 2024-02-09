@@ -1221,9 +1221,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   } else {
     ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
     ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
-        GetTetherHostsStatusMessage()->label()->GetText());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND),
+              GetTetherHostsStatusMessage()->label()->GetText());
     EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
   }
 
@@ -1241,9 +1241,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   } else {
     EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
     ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
-        GetTetherHostsStatusMessage()->label()->GetText());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND),
+              GetTetherHostsStatusMessage()->label()->GetText());
   }
 
   // Set Bluetooth device to disabling.
@@ -1259,7 +1259,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
     ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
     EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
     EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP),
+                  IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH),
               GetTetherHostsStatusMessage()->label()->GetText());
   }
 
@@ -1277,7 +1277,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
     ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
     EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
     EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP),
+                  IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH),
               GetTetherHostsStatusMessage()->label()->GetText());
   }
 

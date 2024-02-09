@@ -701,14 +701,14 @@ void NetworkListViewControllerImpl::UpdateTetherHostsSection() {
 
   if (!IsBluetoothEnabledOrEnabling(bluetooth_system_state_)) {
     CreateInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP,
+        IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH,
         &tether_hosts_status_message_);
     return;
   }
 
   if (!has_tether_networks_) {
     CreateInfoLabelIfMissingAndUpdate(
-        IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND,
+        IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND,
         &tether_hosts_status_message_);
     return;
   }
