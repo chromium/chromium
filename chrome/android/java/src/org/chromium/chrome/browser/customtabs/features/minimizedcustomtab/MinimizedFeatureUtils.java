@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
@@ -53,7 +52,6 @@ public class MinimizedFeatureUtils {
     // numeric values should never be reused.
     @IntDef({
         MinimizedFeatureAvailability.AVAILABLE,
-        MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL,
         MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE,
         MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE,
         MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION,
@@ -63,7 +61,7 @@ public class MinimizedFeatureUtils {
     @VisibleForTesting
     @interface MinimizedFeatureAvailability {
         int AVAILABLE = 0;
-        int UNAVAILABLE_API_LEVEL = 1;
+        // (Obsolete) int UNAVAILABLE_API_LEVEL = 1;
         int UNAVAILABLE_LOW_END_DEVICE = 2;
         int UNAVAILABLE_SYSTEM_FEATURE = 3;
         int UNAVAILABLE_PIP_PERMISSION = 4;
@@ -114,10 +112,7 @@ public class MinimizedFeatureUtils {
 
         @MinimizedFeatureAvailability int availability = MinimizedFeatureAvailability.AVAILABLE;
         sIsDeviceEligibleForMinimizedCustomTab = true;
-        if (VERSION.SDK_INT < VERSION_CODES.O) {
-            availability = MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL;
-            sIsDeviceEligibleForMinimizedCustomTab = false;
-        } else if (SysUtils.isLowEndDevice()) {
+        if (SysUtils.isLowEndDevice()) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE;
             sIsDeviceEligibleForMinimizedCustomTab = false;
         } else if (!context.getPackageManager()
@@ -140,7 +135,6 @@ public class MinimizedFeatureUtils {
         return sIsDeviceEligibleForMinimizedCustomTab;
     }
 
-    @RequiresApi(api = VERSION_CODES.O)
     private static boolean isPipAllowed(Context context) {
         AppOpsManager appOpsManager =
                 (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);

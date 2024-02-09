@@ -78,9 +78,6 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
                             new UserEducationHelper(mActivity, new Handler(Looper.getMainLooper())),
                             profileSupplier);
             Runnable closeTabRunnable = mNavigationController::navigateOnClose;
-            // The method above already checks for the minimum API level.
-            //
-            // noinspection NewApi
             mMinimizationManager =
                     new CustomTabMinimizationManager(
                             mActivity,
