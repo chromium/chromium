@@ -182,7 +182,7 @@ function addModelHeader(model) {
   const cpuPower = getAveragePower(model, 10 /* kCpuPower */);
   const gpuPower = getAveragePower(model, 11 /* kGpuPower */);
   const memoryPower = getAveragePower(model, 12 /* kMemoryPower */);
-  if (cpuPower != -1 && gpuPower != -1 && memoryPower != -1) {
+  if (cpuPower !== -1 && gpuPower !== -1 && memoryPower !== -1) {
     totalPowerElement.parentNode.style.display = 'block';
     totalPowerElement.textContent =
         (cpuPower + gpuPower + memoryPower).toFixed(2);
@@ -484,11 +484,11 @@ function addFPSView(parent, resolution, duration, title, eventType) {
 function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
   // Define the width of each bar based on number of models in view.
   let barWidth;
-  if (models.length == 1) {
+  if (models.length === 1) {
     barWidth = 20;
-  } else if (models.length == 2) {
+  } else if (models.length === 2) {
     barWidth = 15;
-  } else if (models.length == 3) {
+  } else if (models.length === 3) {
     barWidth = 12;
   } else {
     barWidth = 10;
@@ -560,7 +560,7 @@ function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
       const events = getGraphicsEvents(models[m], eventTypes[t]);
       // Presort deltas between frames. Fastest one goes first.
       const deltas = createDeltaEvents(events);
-      if (deltas.events.length == 0) {
+      if (deltas.events.length === 0) {
         // Nothing to display.
         continue;
       }
@@ -614,7 +614,7 @@ function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
 
         // Go the next basket or stop if this was last one.
         ++basketIndex;
-        if (basketIndex == basketFPSs.length) {
+        if (basketIndex === basketFPSs.length) {
           break;
         }
 
@@ -637,11 +637,11 @@ function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
         if (timeBasedView) {
           barHeight = maxBarHeight * basketTimeValues[b] / basketTimeValueMax;
           let basketInfo = '';
-          if (b == 0) {
+          if (b === 0) {
             basketInfo =
                 'Frame time <= ' + (1000.0 / basketMinFPSs[b]).toFixed(1) +
                 'ms.';
-          } else if (b != basketFPSs.length - 1) {
+          } else if (b !== basketFPSs.length - 1) {
             basketInfo = 'Frame time range (' +
                 (1000.0 / basketMinFPSs[b - 1]).toFixed(1) + '..' +
                 (1000.0 / basketMinFPSs[b]).toFixed(1) + '] ms.';
@@ -656,7 +656,7 @@ function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
         } else {
           barHeight = maxBarHeight * basketCountValues[b] / basketCountValueMax;
           let basketInfo = '';
-          if (b == 0) {
+          if (b === 0) {
             basketInfo = 'Frame FPS >= ' + basketMinFPSs[b].toString();
           } else {
             basketInfo = 'Frame FPS range (' + basketMinFPSs[b - 1].toString() +
@@ -768,7 +768,7 @@ function refreshModels() {
   $('arc-event-bands').textContent = '';
   $('arc-overview-tracing-models').textContent = '';
 
-  if (models.length == 0) {
+  if (models.length === 0) {
     return;
   }
 
@@ -887,14 +887,14 @@ function addModel(model) {
  */
 function removeModel(model) {
   let index = models.indexOf(model);
-  if (index == -1) {
+  if (index === -1) {
     return;
   }
 
   models.splice(index, 1);
 
   index = takenColors.indexOf(modelColors.get(model));
-  if (index != -1) {
+  if (index !== -1) {
     takenColors.splice(index, 1);
   }
 
