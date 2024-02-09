@@ -35,6 +35,7 @@ external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ F
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
+crbug.com/324436866 external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure Pass ]
 crbug.com/1507773 external/wpt/webdriver/tests/bidi/script/call_function/remote_values.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_elements/find.py [ Failure Pass Timeout ]
