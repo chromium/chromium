@@ -47,8 +47,9 @@ struct CONTENT_EXPORT CdmInfo {
     kGpuFeatureDisabled,      // gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY
     kGpuCompositionDisabled,  // GPU (direct) composition disabled
     kDisabledByPref,  // Disabled due to previous errors (stored in Local State)
-    kDisabledOnError,  // Disabled after errors or crashes
-    kMaxValue = kDisabledOnError,
+    kDisabledOnError,                // Disabled after errors or crashes
+    kDisabledBySoftwareEmulatedGpu,  // Disabled by software emulated GPU
+    kMaxValue = kDisabledBySoftwareEmulatedGpu,
   };
 
   // If `capability` is nullopt, the `capability` will be lazy initialized.

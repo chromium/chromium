@@ -206,6 +206,13 @@ bool IsGpuHardwareCompositionDisabled() {
   return gpu_data_manager->IsGpuCompositingDisabled() ||
          !gpu_data_manager->GetGPUInfo().overlay_info.direct_composition;
 }
+
+bool IsGpuSoftwareEmulated() {
+  auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  const bool is_gpu_software_emulated =
+      gpu_data_manager->GetGPUInfo().active_gpu().IsSoftwareRenderer();
+  return is_gpu_software_emulated;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -398,6 +405,16 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
     if (IsGpuHardwareCompositionDisabled()) {
       DVLOG(1) << "Hardware security not supported: GPU composition disabled";
       return {std::nullopt, Status::kGpuCompositionDisabled};
+    }
+
+    // Due to the bugs (crbug.com/41496376 and crbug.com/41497095),
+    // `disable_media_foundation_hardware_security` workaround flag cannot be
+    // enabled for the vendor ID 0x0000 and 0x1414. All software emulated GPUs
+    // are considered as disabled for the media foundation hardware security.
+    if (IsGpuSoftwareEmulated()) {
+      DVLOG(1)
+          << "Hardware security not supported: software emulated GPU enabled";
+      return {std::nullopt, Status::kDisabledBySoftwareEmulatedGpu};
     }
 #endif  // BUILDFLAG(IS_WIN)
   }
