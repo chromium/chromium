@@ -111,7 +111,9 @@ class CORE_EXPORT InlinedInterpolableDouble final {
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  public:
   InterpolableNumber() = default;
-  explicit InterpolableNumber(double value);
+  explicit InterpolableNumber(double value,
+                              CSSPrimitiveValue::UnitType unit_type =
+                                  CSSPrimitiveValue::UnitType::kNumber);
   explicit InterpolableNumber(const CSSMathExpressionNode& expression);
 
   // TODO(crbug.com/1521261): Remove this, once the bug is fixed.
@@ -151,13 +153,14 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   bool IsDoubleValue() const { return type_ == Type::kDouble; }
   bool IsExpression() const { return type_ == Type::kExpression; }
 
-  void SetDouble(double value);
+  void SetDouble(double value, CSSPrimitiveValue::UnitType unit_type);
   void SetExpression(const CSSMathExpressionNode& expression);
   const CSSMathExpressionNode& AsExpression() const;
 
   enum class Type { kDouble, kExpression };
   Type type_;
   InlinedInterpolableDouble value_;
+  CSSPrimitiveValue::UnitType unit_type_;
   Member<const CSSMathExpressionNode> expression_;
 };
 

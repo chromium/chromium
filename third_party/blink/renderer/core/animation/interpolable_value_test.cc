@@ -155,6 +155,10 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
   } test_cases[] = {
       {"progress(11em from 1rem to 110px) * 10", 10.0, 10.0, 5.0,
        "progress(11em from 1rem to 110px) * 11", 11.0, 0.5, 10.5},
+      {"10deg", 10.0, 10.0, 5.0, "progress(11em from 1rem to 110px) * 11deg",
+       11.0, 0.5, 10.5},
+      {"progress(11em from 1rem to 110px) * 10deg", 10.0, 10.0, 5.0, "11deg",
+       11.0, 0.5, 10.5},
   };
 
   using enum CSSMathExpressionNode::Flag;
@@ -178,7 +182,14 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
         CSSMathExpressionNode::ParseMathFunction(
             CSSValueID::kCalc, range, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
-    auto* number = MakeGarbageCollected<InterpolableNumber>(*expression);
+    InterpolableNumber* number = nullptr;
+    if (auto* numeric_literal =
+            DynamicTo<CSSMathExpressionNumericLiteral>(expression)) {
+      number = MakeGarbageCollected<InterpolableNumber>(
+          numeric_literal->DoubleValue(), numeric_literal->ResolvedUnitType());
+    } else {
+      number = MakeGarbageCollected<InterpolableNumber>(*expression);
+    }
     EXPECT_EQ(number->Value(length_resolver), test_case.output);
 
     // Test clone, add, scale, scale and add.
@@ -186,14 +197,15 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
     number_copy->Scale(test_case.scale_value);
     EXPECT_EQ(number_copy->Value(length_resolver),
               test_case.scale_value * test_case.output);
-    number_copy->Add(
-        *MakeGarbageCollected<InterpolableNumber>(test_case.add_value));
+    number_copy->Add(*MakeGarbageCollected<InterpolableNumber>(
+        test_case.add_value, expression->ResolvedUnitType()));
     EXPECT_EQ(number_copy->Value(length_resolver),
               test_case.scale_value * test_case.output + test_case.add_value);
     number_copy = number->Clone();
     number_copy->ScaleAndAdd(
         test_case.scale_value,
-        *MakeGarbageCollected<InterpolableNumber>(test_case.add_value));
+        *MakeGarbageCollected<InterpolableNumber>(
+            test_case.add_value, expression->ResolvedUnitType()));
     EXPECT_EQ(number_copy->Value(length_resolver),
               test_case.scale_value * test_case.output + test_case.add_value);
 
@@ -205,7 +217,14 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
         CSSMathExpressionNode::ParseMathFunction(
             CSSValueID::kCalc, target_range, *context, Flags({AllowPercent}),
             kCSSAnchorQueryTypesNone);
-    auto* target = MakeGarbageCollected<InterpolableNumber>(*target_expression);
+    InterpolableNumber* target = nullptr;
+    if (auto* numeric_literal =
+            DynamicTo<CSSMathExpressionNumericLiteral>(target_expression)) {
+      target = MakeGarbageCollected<InterpolableNumber>(
+          numeric_literal->DoubleValue(), numeric_literal->ResolvedUnitType());
+    } else {
+      target = MakeGarbageCollected<InterpolableNumber>(*target_expression);
+    }
     EXPECT_EQ(target->Value(length_resolver), test_case.interpolation_output);
 
     auto* interpolation_result = MakeGarbageCollected<InterpolableNumber>();
