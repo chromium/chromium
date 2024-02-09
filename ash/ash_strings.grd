@@ -833,6 +833,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK" translateable="false" desc="The message for the ending moment panel if the user has an unfinished task.">
         Congratulations on another productive session! Check off your task if it's done!
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG" translateable="false" desc="The annoucement for the ending moment panel.">
+        <ph name="TITLE">$1<ex>You are an inspiration!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DONE_BUTTON" translateable="false" desc="The text for the button that dismisses the ending moment panel.">
         Done
       </message>
