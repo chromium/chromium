@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,16 +6,15 @@
 import binascii
 import gzip
 import hashlib
+import io
 import json
 import os
 import sys
-import xml.etree.ElementTree
-
-import cStringIO
-import urllib2
+import urllib.request
+import xml.etree.ElementTree as ET
 
 
-LIBRARY_FILTER = set([
+LIBRARY_FILTER = {
     "ld-linux-x86-64.so",
     "libX11-xcb.so",
     "libX11.so",
@@ -37,8 +36,8 @@ LIBRARY_FILTER = set([
     "libcairo.so",
     "libcups.so",
     "libdbus-1.so",
-    "libdrm.so.2",
     "libdl.so",
+    "libdrm.so.2",
     "libexpat.so",
     "libgbm.so.1",
     "libgcc_s.so",
@@ -58,12 +57,12 @@ LIBRARY_FILTER = set([
     "libsmime3.so",
     "libstdc++.so",
     "libuuid.so",
-    "libxcb.so",
     "libxcb-dri3.so.0",
+    "libxcb.so",
     "libxkbcommon.so.0",
     "libxshmfence.so.1",
     "rtld(GNU_HASH)",
-])
+}
 
 SUPPORTED_FEDORA_RELEASES = ["32", "33", "34"]
 SUPPORTED_OPENSUSE_LEAP_RELEASES = ["15.2", "15.3"]
@@ -97,13 +96,10 @@ for distro in rpm_sources:
     distro_provides = {}
     provided_prefixes = set()
     for source in rpm_sources[distro]:
-        # |source| may redirect to a real download mirror.  However, these
-        # mirrors may be out-of-sync with each other.  Follow the redirect
-        # to ensure the file-references from the metadata file are valid.
-        source = urllib2.urlopen(source).geturl()
+        source = urllib.request.urlopen(source).geturl()
 
-        response = urllib2.urlopen(source + "repodata/repomd.xml")
-        repomd = xml.etree.ElementTree.fromstring(response.read())
+        response = urllib.request.urlopen(source + "repodata/repomd.xml")
+        repomd = ET.fromstring(response.read())
         primary = (source +
                    repomd.find("./{%s}data[@type='primary']/{%s}location" %
                                (REPO_NS, REPO_NS)).attrib["href"])
@@ -111,19 +107,17 @@ for distro in rpm_sources:
             "./{%s}data[@type='primary']/{%s}checksum[@type='sha256']" %
             (REPO_NS, REPO_NS)).text
 
-        response = urllib2.urlopen(primary)
+        response = urllib.request.urlopen(primary)
         gz_data = response.read()
 
         sha = hashlib.sha256()
         sha.update(gz_data)
-        actual_checksum = binascii.hexlify(sha.digest())
+        actual_checksum = binascii.hexlify(sha.digest()).decode("ascii")
         assert expected_checksum == actual_checksum
 
-        zipped_file = cStringIO.StringIO()
-        zipped_file.write(gz_data)
-        zipped_file.seek(0)
-        contents = gzip.GzipFile(fileobj=zipped_file, mode="rb").read()
-        metadata = xml.etree.ElementTree.fromstring(contents)
+        with gzip.open(io.BytesIO(gz_data), "rb") as f:
+            contents = f.read().decode("utf-8")
+        metadata = ET.fromstring(contents)
         for package in metadata.findall("./{%s}package" % COMMON_NS):
             if package.find("./{%s}arch" % COMMON_NS).text != "x86_64":
                 continue
@@ -148,9 +142,10 @@ for distro in rpm_sources:
     missing_libraries = LIBRARY_FILTER.difference(provided_prefixes)
     if missing_libraries:
         missing_any_library = True
-        print >> sys.stderr, "Libraries are not avilable on %s: %s" % (
-            distro,
-            ", ".join(missing_libraries),
+        print(
+            "Libraries are not available on %s: %s" %
+            (distro, ", ".join(missing_libraries)),
+            file=sys.stderr,
         )
 
 if missing_any_library:
@@ -158,6 +153,5 @@ if missing_any_library:
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(script_dir, "dist_package_provides.json"), "w") as f:
-    f.write(
-        json.dumps(provides, sort_keys=True, indent=4, separators=(",", ": ")))
+    json.dump(provides, f, sort_keys=True, indent=4, separators=(",", ": "))
     f.write("\n")
