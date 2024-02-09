@@ -88,12 +88,16 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         return super.onKeyDown(keyCode, event);
     }
 
+    void resetSelection() {
+        mSelectionController.setSelectedItem(RecyclerView.NO_POSITION);
+    }
+
     @Override
     public void setSelected(boolean isSelected) {
         if (isSelected) {
-            mSelectionController.setSelectedItem(0, true);
+            mSelectionController.setSelectedItem(0);
         } else {
-            mSelectionController.setSelectedItem(RecyclerView.NO_POSITION, false);
+            resetSelection();
         }
     }
 

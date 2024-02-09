@@ -36,6 +36,7 @@ public interface BaseCarouselSuggestionViewBinder {
             } else {
                 adapter.getModelList().clear();
             }
+            view.resetSelection();
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_WIDTH) {
             view.getItemDecoration()
                     .setItemWidth(model.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));

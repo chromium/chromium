@@ -47,7 +47,7 @@ public class RecyclerViewSelectionController
     @Override
     public void onChildViewAttachedToWindow(View view) {
         // Force update selection of the view that might come from a recycle pool.
-        setSelectedItem(mSelectedItemIndex, true);
+        setSelectedItem(mSelectedItemIndex);
     }
 
     @Override
@@ -57,12 +57,12 @@ public class RecyclerViewSelectionController
         // does not iterate over all available views, so when this view is re-used,
         // we do not want it to show up as selected right away.
         view.setSelected(false);
-        setSelectedItem(mSelectedItemIndex, true);
+        setSelectedItem(mSelectedItemIndex);
     }
 
     /** Reset the active selection. */
     public void resetSelection() {
-        setSelectedItem(RecyclerView.NO_POSITION, false);
+        setSelectedItem(RecyclerView.NO_POSITION);
     }
 
     /** Move selection to the next element on the list. */
@@ -91,7 +91,7 @@ public class RecyclerViewSelectionController
             currentIndex++;
         }
 
-        setSelectedItem(nextSelectableItemIndex, false);
+        setSelectedItem(nextSelectableItemIndex);
     }
 
     /** Move selection to the previous element on the list. */
@@ -122,7 +122,7 @@ public class RecyclerViewSelectionController
             currentIndex--;
         }
 
-        setSelectedItem(nextSelectableItemIndex, false);
+        setSelectedItem(nextSelectableItemIndex);
     }
 
     /** Retrieve currently selected element. */
@@ -135,17 +135,14 @@ public class RecyclerViewSelectionController
      * Move focus to another view.
      *
      * @param index Index of the child view to be selected.
-     * @param force Whether to apply the selection even if the current selected item has not
-     *     changed.
      */
     @VisibleForTesting
-    public void setSelectedItem(int index, boolean force) {
+    public void setSelectedItem(int index) {
         if (mLayoutManager == null) return;
         if (index != RecyclerView.NO_POSITION
                 && (index < 0 || index >= mLayoutManager.getItemCount())) {
             return;
         }
-        if (!force && (index == mSelectedItemIndex)) return;
 
         View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItemIndex);
         if (previousSelectedView != null) {
@@ -153,7 +150,7 @@ public class RecyclerViewSelectionController
         }
 
         mSelectedItemIndex = index;
-        mLayoutManager.scrollToPosition(index);
+        mLayoutManager.scrollToPosition(index == RecyclerView.NO_POSITION ? 0 : index);
 
         View currentSelectedView = mLayoutManager.findViewByPosition(index);
         if (currentSelectedView != null) {
