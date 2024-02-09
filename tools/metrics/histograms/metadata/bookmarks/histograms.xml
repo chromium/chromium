@@ -52,6 +52,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.AddBookmarkType" enum="BookmarkType"
+    expires_after="2025-01-20">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs whether the bookmark entry is a user bookmark or a partner bookmark
+    when it is added. Only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
     expires_after="2024-07-21">
   <owner>rhalavati@chromium.org</owner>

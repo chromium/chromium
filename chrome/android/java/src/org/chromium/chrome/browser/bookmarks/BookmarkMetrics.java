@@ -9,6 +9,10 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 
 /** Metrics utils for use in bookmarks. */
 public class BookmarkMetrics {
@@ -57,5 +61,15 @@ public class BookmarkMetrics {
                 "Bookmarks.MobileBookmarkManager.FilterUsed2",
                 bookmarkManagerFilter,
                 BookmarkManagerFilter.COUNT);
+    }
+
+    /** Report when a bookmark has been added through {@link BookmarkUtils#addBookmarkInternal}. */
+    public static void recordBookmarkAdded(Profile profile, BookmarkId bookmarkId) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.AddBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
+
+        @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
     }
 }

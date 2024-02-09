@@ -63,7 +63,6 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -116,6 +115,7 @@ public class BookmarkUtils {
         BookmarkId newBookmarkId =
                 addBookmarkInternal(
                         activity,
+                        tab.getProfile(),
                         bookmarkModel,
                         tab.getTitle(),
                         tab.getOriginalUrl(),
@@ -193,18 +193,12 @@ public class BookmarkUtils {
         BookmarkId bookmarkId =
                 addBookmarkInternal(
                         activity,
+                        tab.getProfile(),
                         bookmarkModel,
                         tab.getTitle(),
                         tab.getOriginalUrl(),
                         /* parent= */ parentId,
                         BookmarkType.NORMAL);
-
-        if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
-            @BrowserProfileType
-            int type = Profile.getBrowserProfileTypeFromProfile(tab.getProfile());
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
-        }
 
         Snackbar snackbar;
         if (bookmarkId == null) {
@@ -248,12 +242,10 @@ public class BookmarkUtils {
             } else {
                 snackbar =
                         Snackbar.make(
-                                        folderName,
-                                        snackbarController,
-                                        Snackbar.TYPE_ACTION,
-                                        Snackbar.UMA_BOOKMARK_ADDED)
-                                .setTemplateText(
-                                        activity.getString(R.string.bookmark_page_saved_folder));
+                                activity.getString(R.string.bookmark_page_saved_folder, folderName),
+                                snackbarController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_BOOKMARK_ADDED);
             }
             snackbar.setSingleLine(false)
                     .setAction(activity.getString(R.string.bookmark_item_edit), null);
@@ -292,6 +284,7 @@ public class BookmarkUtils {
         BookmarkId bookmarkId =
                 addBookmarkInternal(
                         activity,
+                        profile,
                         bookmarkModel,
                         title,
                         url,
@@ -374,6 +367,7 @@ public class BookmarkUtils {
             BookmarkId tabToBookmark =
                     addBookmarkInternal(
                             activity,
+                            tab.getProfile(),
                             bookmarkModel,
                             tab.getTitle(),
                             tab.getOriginalUrl(),
@@ -405,11 +399,17 @@ public class BookmarkUtils {
      * add a bookmark.
      *
      * @param context The current Android {@link Context}.
+     * @param profile The profile being used when adding the bookmark.
      * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
+     * @param title The title of the new bookmark.
+     * @param url The {@link GURL} of the new bookmark.
      * @param bookmarkType The {@link BookmarkType} of the bookmark.
+     * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null,
+     *     then the default parent is used.
      */
     static BookmarkId addBookmarkInternal(
             Context context,
+            Profile profile,
             BookmarkModel bookmarkModel,
             String title,
             GURL url,
@@ -420,30 +420,37 @@ public class BookmarkUtils {
         if (parent != null) {
             parentItem = bookmarkModel.getBookmarkById(parent);
         }
+
         if (parent == null
                 || parentItem == null
                 || parentItem.isManaged()
                 || !parentItem.isFolder()) {
-            parent = bookmarkModel.getDefaultFolder();
+            parent =
+                    bookmarkType == BookmarkType.READING_LIST
+                            ? bookmarkModel.getDefaultReadingListFolder()
+                            : bookmarkModel.getDefaultFolder();
         }
 
         // Reading list items will be added when either one of the 2 conditions is met:
         // 1. The bookmark type explicitly specifies READING_LIST.
         // 2. The last used parent implicitly specifies READING_LIST.
+        final BookmarkId bookmarkId;
         if (bookmarkType == BookmarkType.READING_LIST
                 || parent.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.addToReadingList(parent, title, url);
+            bookmarkId = bookmarkModel.addToReadingList(parent, title, url);
+        } else {
+            // Use "New tab" as title for both incognito and regular NTP.
+            if (url.getSpec().equals(UrlConstants.NTP_URL)) {
+                title = context.getResources().getString(R.string.new_tab_title);
+            }
+
+            bookmarkId =
+                    bookmarkModel.addBookmark(
+                            parent, bookmarkModel.getChildCount(parent), title, url);
         }
 
-        BookmarkId bookmarkId = null;
-        // Use "New tab" as title for both incognito and regular NTP.
-        if (url.getSpec().equals(UrlConstants.NTP_URL)) {
-            title = context.getResources().getString(R.string.new_tab_title);
-        }
-
-        bookmarkId =
-                bookmarkModel.addBookmark(parent, bookmarkModel.getChildCount(parent), title, url);
-        if (bookmarkId == null) {
+        if (bookmarkId != null) {
+            BookmarkMetrics.recordBookmarkAdded(profile, bookmarkId);
             setLastUsedParent(bookmarkModel.getDefaultFolder());
         }
         return bookmarkId;
