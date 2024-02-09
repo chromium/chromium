@@ -2786,11 +2786,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             float trailingMargin = 0f;
             Tab currTab = getTabById(stripTab.getId());
             Tab nextTab = getTabById(mStripTabs[i + 1].getId());
-            boolean eitherTabInAGroup =
-                    mTabGroupModelFilter.hasOtherRelatedTabs(currTab)
-                            || mTabGroupModelFilter.hasOtherRelatedTabs(nextTab);
-            boolean areRelatedTabs = currTab.getRootId() == nextTab.getRootId();
-            if (eitherTabInAGroup && !areRelatedTabs) trailingMargin = mTabMarginWidth;
+            if (notRelatedAndEitherTabInGroup(currTab, nextTab)) {
+                trailingMargin = mTabMarginWidth;
+            }
 
             // 1.b. Attempt to update the current tab's trailing margin.
             float oldMargin = stripTab.getTrailingMargin();
@@ -3019,6 +3017,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return TabModel.INVALID_TAB_INDEX;
     }
 
+    private boolean notRelatedAndEitherTabInGroup(Tab curTab, Tab adjTab) {
+        assert curTab != null && adjTab != null;
+        return !(curTab.getRootId() == adjTab.getRootId())
+                && (mTabGroupModelFilter.hasOtherRelatedTabs(curTab)
+                        || mTabGroupModelFilter.hasOtherRelatedTabs(adjTab));
+    }
+
     private void updateReorderPosition(float deltaX) {
         if (!mInReorderMode || mInteractingTab == null || mReorderingForTabDrop) return;
 
@@ -3036,30 +3041,39 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
         boolean isInGroup =
                 mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
-        boolean hasTrailingMargin = mInteractingTab.getTrailingMargin() == mTabMarginWidth;
-        boolean hasStartingMargin =
-                curIndex == 0
-                        ? mStripStartMarginForReorder > 0
-                        : mStripTabs[curIndex - 1].getTrailingMargin() == mTabMarginWidth;
-        boolean approachingMargin = towardEnd ? hasTrailingMargin : hasStartingMargin;
 
-        if (approachingMargin) {
+        // Whether the tab dragging for reordering will interact with tab groups, such as the tab is
+        // being dragged out of its current group, or into an adjacent group.
+        Tab curTab = mModel.getTabAt(curIndex);
+        boolean isDraggingStartInteractWithGroup =
+                curIndex == 0
+                        ? isInGroup
+                        : notRelatedAndEitherTabInGroup(curTab, mModel.getTabAt(curIndex - 1));
+        boolean isDraggingEndInteractWithGroup =
+                curIndex == mStripTabs.length - 1
+                        ? isInGroup
+                        : notRelatedAndEitherTabInGroup(curTab, mModel.getTabAt(curIndex + 1));
+
+        boolean isDraggingInteractWithGroup =
+                towardEnd ? isDraggingEndInteractWithGroup : isDraggingStartInteractWithGroup;
+
+        if (isDraggingInteractWithGroup) {
             if (isInGroup) {
-                // 2.a. Tab is in a group and approaching a margin. Maybe drag out of group.
+                // 2.a. Tab is in a group and being dragged for reordering. Maybe drag out of group.
                 destIndex = maybeMoveOutOfGroup(offset, curIndex, towardEnd);
             } else {
-                // 2.b. Tab is not in a group and approaching a margin. Maybe target tab group.
+                // 2.b. Tab is not in a group and being dragged for reordering. Maybe target tab
+                // group.
                 destIndex = updateHoveringOverGroup(offset, curIndex, towardEnd);
 
-                // 2.c. Tab is not in a group and approaching a margin. Maybe drag past group.
+                // 2.c. Tab is not in a group and being dragged for reordering. Maybe drag past
+                // group.
                 if (destIndex == TabModel.INVALID_TAB_INDEX) {
                     destIndex = maybeMovePastGroup(offset, curIndex, towardEnd);
                 }
             }
-        } else if (!mTabGroupMarginAnimRunning) {
-            // TODO(https://crbug.com/1520137): Refactor logic to not depend on presence of margins.
-            // 2.d Tab is not interacting with tab groups. Reorder as normal. Unknown if tab drag is
-            // approaching a margin until the associated animation finishes running.
+        } else {
+            // 2.d Tab is not interacting with tab groups. Reorder as normal.
             boolean pastLeftThreshold = offset < -flipThreshold;
             boolean pastRightThreshold = offset > flipThreshold;
             boolean isNotRightMost = curIndex < mStripTabs.length - 1;
@@ -3094,7 +3108,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
-            if (approachingMargin) {
+            if (isDraggingInteractWithGroup) {
                 offset -= (mInteractingTab.getIdealX() - oldIdealX);
                 // When the strip is scrolling, deltaX is already accounted for by idealX. This is
                 // because idealX uses the scroll offset which has already been adjusted by deltaX.
