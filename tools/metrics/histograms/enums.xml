@@ -11282,6 +11282,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4835" label="FullscreenAllowedByContentSetting"/>
   <int value="4836" label="SharedStorageAPI_CreateWorklet_Method"/>
   <int value="4837" label="Canvas2DLayers"/>
+  <int value="4838" label="UserFeatureNuxtImage"/>
+  <int value="4839" label="UserFeatureNuxtPicture"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

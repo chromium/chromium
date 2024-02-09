@@ -387,6 +387,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies,
           WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone,
+          WebFeature::kUserFeatureNuxtImage,
+          WebFeature::kUserFeatureNuxtPicture,
       }));
   return *opt_in_features;
 }

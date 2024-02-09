@@ -152,6 +152,8 @@ PerformanceMark::GetUseCounterMapping() {
          WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed},
         {"next-third-parties-GoogleMapsEmbed",
          WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed},
+        {"nuxt-image", WebFeature::kUserFeatureNuxtImage},
+        {"nuxt-picture", WebFeature::kUserFeatureNuxtPicture},
     };
   }
   return *map;

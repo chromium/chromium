@@ -4199,6 +4199,8 @@ enum WebFeature {
   kFullscreenAllowedByContentSetting = 4835,
   kSharedStorageAPI_CreateWorklet_Method = 4836,
   kCanvas2DLayers = 4837,
+  kUserFeatureNuxtImage = 4838,
+  kUserFeatureNuxtPicture = 4839,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
