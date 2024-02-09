@@ -187,7 +187,7 @@
   _mediator.delegate = self;
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
-    base::UmaHistogramEnumeration("FirstRun.Stage",
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kHistorySyncScreenStart);
   }
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
@@ -244,7 +244,8 @@
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Completed"));
   if (_firstRun) {
     base::UmaHistogramEnumeration(
-        "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithSync);
+        first_run::kFirstRunStageHistogram,
+        first_run::kHistorySyncScreenCompletionWithSync);
   }
   base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Completed",
                                 _accessPoint,
@@ -259,7 +260,8 @@
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Declined"));
   if (_firstRun) {
     base::UmaHistogramEnumeration(
-        "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithoutSync);
+        first_run::kFirstRunStageHistogram,
+        first_run::kHistorySyncScreenCompletionWithoutSync);
   }
   base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Declined",
                                 _accessPoint,

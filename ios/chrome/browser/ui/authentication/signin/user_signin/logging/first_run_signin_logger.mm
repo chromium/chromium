@@ -24,7 +24,7 @@
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
     signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-    base::UmaHistogramEnumeration("FirstRun.Stage",
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kWelcomeAndSigninScreenStart);
   }
 }
