@@ -4,7 +4,6 @@
 import '../../strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 /**
  * Initializes the page when the window is loaded.
@@ -14,8 +13,6 @@ window.onload = function() {
   // dialog is opened in OS Feedback.
   // TODO(b/276493287): Move add class to HTML when jelly colors and OS Feedback
   // launches by default in ASH.
-  if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
-    document.body.classList.add('jelly-enabled');
-    ColorChangeUpdater.forDocument().start();
-  }
+  document.body.classList.add('jelly-enabled');
+  ColorChangeUpdater.forDocument().start();
 };

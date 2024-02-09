@@ -11,10 +11,6 @@ build_webui("build") {
   static_files = [
     "illustrations/illo_load_content_error.svg",
     "illustrations/illo_network_unavailable.svg",
-    "illustrations/load_content_error_darkmode.svg",
-    "illustrations/load_content_error_lightmode.svg",
-    "illustrations/network_unavailable_darkmode.svg",
-    "illustrations/network_unavailable_lightmode.svg",
     "untrusted_index.html",
   ]
 

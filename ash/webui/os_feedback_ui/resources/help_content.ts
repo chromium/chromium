@@ -10,10 +10,8 @@ import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {strictQuery} from '//resources/ash/common/typescript_utils/strict_query.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -50,20 +48,11 @@ export class HelpContentElement extends HelpContentElementBase {
       searchResult: {
         type: Object,
       },
-      isDarkModeEnabled: {type: Boolean},
-      isJellyEnabled: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isJellyEnabledForOsFeedback');
-        },
-      },
       isOnline: {type: Boolean},
     };
   }
 
   searchResult: SearchResult;
-  private isDarkModeEnabled = false;
-  private readonly isJellyEnabled: boolean;
   private isOnline = navigator.onLine;
 
   constructor() {
@@ -150,30 +139,6 @@ export class HelpContentElement extends HelpContentElementBase {
   /** Extract the title as JS string from help content. */
   private getTitle(helpContent: HelpContent): string {
     return mojoString16ToString(helpContent.title);
-  }
-
-  /**
-   * Gets the relative source path to the "help content is offline"
-   * illustration.
-   */
-  private getOfflineIllustrationSrc(): string {
-    if (this.isDarkModeEnabled) {
-      return 'illustrations/network_unavailable_darkmode.svg';
-    } else {
-      return 'illustrations/network_unavailable_lightmode.svg';
-    }
-  }
-
-  /**
-   * Gets the relative source path to the "help content isn't available"
-   * illustration.
-   */
-  private getContentNotAvailableIllustrationSrc(): string {
-    if (this.isDarkModeEnabled) {
-      return 'illustrations/load_content_error_darkmode.svg';
-    } else {
-      return 'illustrations/load_content_error_lightmode.svg';
-    }
   }
 
   private handleHelpContentClicked(e: Event): void {

@@ -6,7 +6,6 @@ import './strings.m.js';
 import '//os-feedback/help_content.js';
 
 import {HelpContentElement} from '//os-feedback/help_content.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
 
@@ -36,26 +35,24 @@ function initialize() {
         OS_FEEDBACK_TRUSTED_ORIGIN);
   });
 
-  if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
-    // TODO(b/276493287): After the Jelly experiment is launched, replace
-    // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
-    // Also add `theme/typography.css` to `index.html`.
-    document.querySelector('link[href*=\'cros_styles.css\']')
-        ?.setAttribute('href', '//theme/colors.css?sets=legacy,sys');
-    const typographyLink = document.createElement('link');
-    typographyLink.href = '//theme/typography.css';
-    typographyLink.rel = 'stylesheet';
-    document.head.appendChild(typographyLink);
-    document.body.classList.add('jelly-enabled');
-    ColorChangeUpdater.forDocument().start();
-    // Post a message to parent to make testing `ColorChangeUpdater#start()`
-    // called from untrusted ui easier.
-    window.parent.postMessage(
-        {
-          id: 'color-change-updater-started-for-testing',
-        },
-        OS_FEEDBACK_TRUSTED_ORIGIN);
-  }
+  // TODO(b/276493287): After the Jelly experiment is launched, replace
+  // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+  // Also add `theme/typography.css` to `index.html`.
+  document.querySelector('link[href*=\'cros_styles.css\']')
+      ?.setAttribute('href', '//theme/colors.css?sets=legacy,sys');
+  const typographyLink = document.createElement('link');
+  typographyLink.href = '//theme/typography.css';
+  typographyLink.rel = 'stylesheet';
+  document.head.appendChild(typographyLink);
+  document.body.classList.add('jelly-enabled');
+  ColorChangeUpdater.forDocument().start();
+  // Post a message to parent to make testing `ColorChangeUpdater#start()`
+  // called from untrusted ui easier.
+  window.parent.postMessage(
+      {
+        id: 'color-change-updater-started-for-testing',
+      },
+      OS_FEEDBACK_TRUSTED_ORIGIN);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

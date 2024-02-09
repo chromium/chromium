@@ -1237,47 +1237,25 @@ suite('FeedbackFlowTestSuite', () => {
         true, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
   });
 
+  test('UpdatesCSSUrl_TrustedUi', async () => {
+    /*@type {HTMLLinkElement}*/
+    const link = document.createElement('link');
+    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+    link.href = disabledUrl;
+    document.head.appendChild(link);
+
+    await initializePage();
+
+    const enabledUrl = 'theme/colors.css';
+    assertTrue(link.href.includes(enabledUrl));
+
+    // Clean up test specific element.
+    document.head.removeChild(link);
+  });
+
+  // Test that test helper message is triggered on untrusted UI.
   test(
-      'UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback_TrustedUi', async () => {
-        // Setup test for jelly disabled.
-        loadTimeData.overrideValues({
-          isJellyEnabledForOsFeedback: false,
-        });
-        /*@type {HTMLLinkElement}*/
-        const link = document.createElement('link');
-        const disabledUrl =
-            'chrome://resources/chromeos/colors/cros_styles.css';
-        link.href = disabledUrl;
-        document.head.appendChild(link);
-        await initializePage();
-
-        assertTrue(link.href.includes(disabledUrl));
-
-        // Reset app element.
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-        // Setup test for jelly enabled.
-        loadTimeData.overrideValues({
-          isJellyEnabledForOsFeedback: true,
-        });
-        await initializePage();
-
-        const enabledUrl = 'theme/colors.css';
-        assertTrue(link.href.includes(enabledUrl));
-
-        // Clean up test specific element.
-        document.head.removeChild(link);
-      });
-
-  // Test that test helper message is triggered on untrusted UI when
-  // `isJellyEnabledForOsFeedback` is true.
-  test(
-      'UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback_UntrustedUi',
-      async () => {
-        // `isJellyEnabledForOsFeedback` is true by default based on test flag
-        // configuration.
-        assertTrue(loadTimeData.getBoolean('isJellyEnabledForOsFeedback'));
-
+      'UpdatesCSSUrlBasedOn_UntrustedUi', async () => {
         const resolver = new PromiseResolver<void>();
         let colorChangeUpdaterCalled = false;
         const testMessageListener = (event: {data: {id: string}}) => {

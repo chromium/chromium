@@ -117,9 +117,6 @@
     height: 158px;
   }
 </style>
-<iron-media-query query="(prefers-color-scheme: dark)"
-    query-matches="{{isDarkModeEnabled}}">
-</iron-media-query>
 <div id="helpContentContainer">
   <div id="helpContentLabelContainer">
     <h2 class="help-content-label">[[getLabel(searchResult, isOnline)]]</h2>
@@ -135,21 +132,13 @@
   </div>
   <template is="dom-if" if="[[!isOnline]]">
     <div class="no-help-content-details">
-      <!-- TODO(b/276493287): After the Jelly experiment is launched, remove
-                              unused image elements and SVGs. -->
-      <template is="dom-if" if="[[isJellyEnabled]]">
-        <svg id="offlineSvg" preserveAspectRatio="xMidYMid meet" role="img"
-            viewBox="0 0 400 168">
-          <title>[[i18n('helpContentOfflineAltText')]]</title>
-          <use href=
-              "//os-feedback/illustrations/illo_network_unavailable.svg#offline">
-          </use>
-        </svg>
-      </template>
-      <template is="dom-if" if="[[!isJellyEnabled]]">
-        <img src="[[getOfflineIllustrationSrc(isDarkModeEnabled)]]"
-            alt="[[i18n('helpContentOfflineAltText')]]">
-      </template>
+      <svg id="offlineSvg" preserveAspectRatio="xMidYMid meet" role="img"
+          viewBox="0 0 400 168">
+        <title>[[i18n('helpContentOfflineAltText')]]</title>
+        <use href=
+            "//os-feedback/illustrations/illo_network_unavailable.svg#offline">
+        </use>
+      </svg>
       <div class="no-help-content-text">
         [[i18n('helpContentOfflineMessage')]]
       </div>
@@ -171,21 +160,13 @@
     </dom-repeat>
     <div class="no-help-content-details"
         hidden$="[[!showHelpContentNotAvailableMsg(searchResult)]]">
-      <!-- TODO(b/276493287): After the Jelly experiment is launched, remove
-                              unused image elements and SVGs. -->
-      <template is="dom-if" if="[[isJellyEnabled]]">
-        <svg id="noContentSvg" preserveAspectRatio="xMidYMid meet" role="img"
-            viewBox="0 0 400 168">
-          <title>[[i18n('helpContentNotAvailableAltText')]]</title>
-          <use href=
-              "//os-feedback/illustrations/illo_load_content_error.svg#error">
-          </use>
-        </svg>
-      </template>
-      <template is="dom-if" if="[[!isJellyEnabled]]">
-        <img src="[[getContentNotAvailableIllustrationSrc(isDarkModeEnabled)]]"
-            alt="[[i18n('helpContentNotAvailableAltText')]]">
-      </template>
+      <svg id="noContentSvg" preserveAspectRatio="xMidYMid meet" role="img"
+          viewBox="0 0 400 168">
+        <title>[[i18n('helpContentNotAvailableAltText')]]</title>
+        <use href=
+            "//os-feedback/illustrations/illo_load_content_error.svg#error">
+        </use>
+      </svg>
       <div class="no-help-content-text">
         [[i18n('helpContentNotAvailableMessage')]]
       </div>

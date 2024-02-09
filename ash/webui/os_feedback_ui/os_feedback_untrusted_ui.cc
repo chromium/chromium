@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/grit/ash_os_feedback_untrusted_resources.h"
@@ -85,10 +84,6 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->SetDefaultResource(
       IDR_ASH_OS_FEEDBACK_UNTRUSTED_UNTRUSTED_INDEX_HTML);
 
-  // Resources for dynamic colors.
-  untrusted_source->AddBoolean("isJellyEnabledForOsFeedback",
-                               ash::features::IsJellyEnabledForOsFeedback());
-
   AddLocalizedStrings(untrusted_source);
 
   // Allow the chrome://os-feedback WebUI to embed the corresponding
@@ -109,7 +104,6 @@ OsFeedbackUntrustedUI::~OsFeedbackUntrustedUI() = default;
 
 void OsFeedbackUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  CHECK(ash::features::IsJellyEnabledForOsFeedback());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }

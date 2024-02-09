@@ -2034,12 +2034,6 @@ BASE_FEATURE(kOsFeedbackDialog,
              "OsFeedbackDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the jelly colors will be used in the os feedback app. Requires
-// jelly-colors flag to also be enabled.
-BASE_FEATURE(kOsFeedbackJelly,
-             "OsFeedbackJelly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables app badging toggle to be displayed in app notification page in
 // ChromeOS Settings.
 BASE_FEATURE(kOsSettingsAppBadgingToggle,
@@ -3661,11 +3655,6 @@ bool IsIppClientInfoEnabled() {
 bool IsJellyEnabledForDiagnosticsApp() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kDiagnosticsAppJelly);
-}
-
-bool IsJellyEnabledForOsFeedback() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kOsFeedbackJelly);
 }
 
 bool IsJellyEnabledForScanningApp() {

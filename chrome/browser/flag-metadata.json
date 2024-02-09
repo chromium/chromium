@@ -6254,13 +6254,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "os-feedback-jelly",
-    "owners": [
-      "ashleydp@chromium.org", "cros-peripherals@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "os-settings-app-badging-toggle",
     "owners": [ "wesokuhara@chromium.org", "cros-settings@google.com" ],
     "expiry_milestone": 116

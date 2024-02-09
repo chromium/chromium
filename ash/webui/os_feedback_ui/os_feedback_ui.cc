@@ -41,8 +41,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddBoolean("isJellyEnabledForOsFeedback",
-                     ash::features::IsJellyEnabledForOsFeedback());
 }
 
 void AddLocalizedStrings(content::WebUIDataSource* source) {
@@ -199,7 +197,6 @@ void OSFeedbackUI::BindInterface(
 
 void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  CHECK(ash::features::IsJellyEnabledForOsFeedback());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }

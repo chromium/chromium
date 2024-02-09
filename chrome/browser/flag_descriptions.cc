@@ -6941,12 +6941,6 @@ const char kOsFeedbackDialogName[] =
 const char kOsFeedbackDialogDescription[] =
     "Enable the OS Feedback dialog on OOBE and login screen.";
 
-const char kOsFeedbackJellyName[] =
-    "Enable jelly colors for the OS Feedback app";
-const char kOsFeedbackJellyDescription[] =
-    "Enable jelly colors for the OS Feedback app. Requires jelly-colors flag "
-    "to be enabled.";
-
 const char kOsSettingsAppBadgingToggleName[] =
     "ChromeOS Settings App Badging Toggle";
 const char kOsSettingsAppBadgingToggleDescription[] =
