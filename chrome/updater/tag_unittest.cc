@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -967,7 +968,7 @@ TEST(TagParserTest, InstallDataIndexValid) {
 
 TEST(TagParserTest, BrowserTypeValid) {
   std::tuple<std::string_view, TagArgs::BrowserType>
-      pairs[static_cast<int>(TagArgs::BrowserType::kMax)] = {
+      pairs[base::to_underlying(TagArgs::BrowserType::kMax)] = {
           {"0", TagArgs::BrowserType::kUnknown},
           {"1", TagArgs::BrowserType::kDefault},
           {"2", TagArgs::BrowserType::kInternetExplorer},
@@ -975,16 +976,16 @@ TEST(TagParserTest, BrowserTypeValid) {
           {"4", TagArgs::BrowserType::kChrome},
       };
 
-  for (const auto& pair : pairs) {
+  for (const auto& [browser, browser_type] : pairs) {
     std::stringstream tag;
     tag << "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&";
-    tag << "browser=" << std::get<0>(pair);
+    tag << "browser=" << browser;
     VerifyTagParseSuccess(
         tag.str(), std::nullopt,
         TagArgsBuilder()
             .WithApp(
                 AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
-            .WithBrowserType(std::get<1>(pair))
+            .WithBrowserType(browser_type)
             .Build());
   }
 }

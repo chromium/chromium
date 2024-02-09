@@ -27,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/updater/certificate_tag.h"
 
 namespace updater::tagging {
@@ -199,7 +200,7 @@ ErrorCode ParseBrowserType(std::string_view value, TagArgs& args) {
   }
 
   args.browser_type =
-      (browser_type < static_cast<int>(TagArgs::BrowserType::kMax))
+      browser_type < base::to_underlying(TagArgs::BrowserType::kMax)
           ? TagArgs::BrowserType(browser_type)
           : TagArgs::BrowserType::kUnknown;
 
@@ -569,10 +570,8 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
   // Installer data is assumed to be URL-encoded, so we don't unescape it.
   bool unescape_value = false;
 
-  for (const auto& attribute :
+  for (const auto& [name, value] :
        query_string::Split(app_installer_data_args, unescape_value)) {
-    const std::string_view name = attribute.first;
-    const std::string_view value = attribute.second;
     if (value.empty()) {
       return ErrorCode::kAttributeMustHaveValue;
     }
