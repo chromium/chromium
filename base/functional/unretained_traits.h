@@ -5,10 +5,11 @@
 #ifndef BASE_FUNCTIONAL_UNRETAINED_TRAITS_H_
 #define BASE_FUNCTIONAL_UNRETAINED_TRAITS_H_
 
-#include "build/build_config.h"
-
 #include <concepts>
 #include <type_traits>
+
+#include "base/types/is_complete.h"
+#include "build/build_config.h"
 
 // Various opaque system types that should still be usable with the base
 // callback system. Please keep sorted.
@@ -40,13 +41,6 @@ BASE_INTERNAL_LIST_OF_SAFE_FOR_UNRETAINED
 #undef BASE_INTERNAL_SAFE_FOR_UNRETAINED
 
 namespace base::internal {
-
-// True if `T` is completely defined.
-template <typename T>
-concept IsComplete = requires { sizeof(T); } ||
-                     // Function types must be included explicitly since you
-                     // cannot apply `sizeof()` to a function type.
-                     std::is_function_v<std::remove_cvref_t<T>>;
 
 template <typename T, typename... Ts>
 concept SameAsAny = (std::same_as<T, Ts> || ...);
