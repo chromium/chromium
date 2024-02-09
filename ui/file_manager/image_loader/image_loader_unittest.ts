@@ -4,19 +4,19 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {ImageLoaderUtil} from './image_loader_util.js';
+import {calculateCopyParameters, type CopyParameters} from './image_loader_util.js';
 import {ImageOrientation} from './image_orientation.js';
+import type {LoadImageRequest} from './load_image_request.js';
 
 
 /**
  * Casts a map of options as an incoming load request to test CopyParameters.
  *
- * @param {HTMLImageElement} source
- * @param {Object} options
- * @return {!ImageLoaderUtil.CopyParameters} Calculated copy parameters.
+ * @return Calculated copy parameters.
  */
-function calculateCopyParametersFromOptions(source, options) {
-  return ImageLoaderUtil.calculateCopyParameters(source, options);
+function calculateCopyParametersFromOptions(
+    source: HTMLImageElement, options: LoadImageRequest): CopyParameters {
+  return calculateCopyParameters(source, options);
 }
 
 /**
@@ -28,7 +28,7 @@ export function testNormalImage() {
   const source = new Image();
   source.width = 200;
   source.height = 50;
-  const options = {
+  const options: LoadImageRequest = {
     maxWidth: 100,
     maxHeight: 100,
     orientation: ImageOrientation.fromClockwiseRotation(0),
@@ -55,7 +55,7 @@ export function testRotatedImage() {
   const source = new Image();
   source.width = 50;
   source.height = 200;
-  const options = {
+  const options: LoadImageRequest = {
     maxWidth: 100,
     maxHeight: 100,
     orientation: ImageOrientation.fromClockwiseRotation(1),
@@ -82,7 +82,7 @@ export function testCroppedImage() {
   const source = new Image();
   source.width = 800;
   source.height = 100;
-  const options = {
+  const options: LoadImageRequest = {
     width: 50,
     height: 50,
     crop: true,
@@ -110,7 +110,7 @@ export function testCroppedImageWithResize() {
   const source = new Image();
   source.width = 200;
   source.height = 25;
-  const options = {
+  const options: LoadImageRequest = {
     width: 50,
     height: 50,
     crop: true,
@@ -138,7 +138,7 @@ export function testCroppedTinyImage() {
   const source = new Image();
   source.width = 20;
   source.height = 10;
-  const options = {
+  const options: LoadImageRequest = {
     width: 50,
     height: 50,
     crop: true,
@@ -166,7 +166,7 @@ export function testCroppedRotatedImage() {
   const source = new Image();
   source.width = 100;
   source.height = 400;
-  const options = {
+  const options: LoadImageRequest = {
     width: 50,
     height: 50,
     crop: true,

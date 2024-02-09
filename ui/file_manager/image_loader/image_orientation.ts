@@ -130,3 +130,16 @@ export class ImageOrientation {
     return this.a === 1 && this.b === 0 && this.c === 0 && this.d === 1;
   }
 }
+
+export function isImageTransformParam(
+    orientation: ImageTransformParam|ImageOrientation|
+    undefined): orientation is ImageTransformParam {
+  return !!orientation && 'scaleX' in orientation && 'scaleY' in orientation;
+}
+
+export function isImageOrientation(orientation: ImageTransformParam|
+                                   ImageOrientation|
+                                   undefined): orientation is ImageOrientation {
+  return !!orientation && 'a' in orientation && 'b' in orientation &&
+      'c' in orientation && 'd' in orientation;
+}

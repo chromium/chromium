@@ -36,7 +36,7 @@ copy("copy_src") {
     "cache.ts",
     "image_loader.ts",
     "image_loader_client.ts",
-    "image_loader_util.js",
+    "image_loader_util.ts",
     "image_orientation.ts",
     "image_request_task.js",
     "load_image_request.ts",

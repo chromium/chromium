@@ -6,7 +6,7 @@ import {getFileTypeForName} from 'chrome://file-manager/common/js/file_types_bas
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {ImageCache} from './cache.js';
-import {ImageLoaderUtil} from './image_loader_util.js';
+import {resizeAndCrop, shouldProcess} from './image_loader_util.js';
 import {ImageOrientation} from './image_orientation.js';
 import {cacheKey, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 import {PiexLoader} from './piex_loader.js';
@@ -636,12 +636,11 @@ export class ImageRequestTask {
     if (!(this.request_.url.match(/^data/) ||
           // @ts-ignore: error TS2532: Object is possibly 'undefined'.
           this.request_.url.match(/^drivefs:/)) ||
-        ImageLoaderUtil.shouldProcess(
-            this.image_.width, this.image_.height, this.request_)) {
+        shouldProcess(this.image_.width, this.image_.height, this.request_)) {
       // @ts-ignore: error TS2345: Argument of type 'HTMLImageElement' is not
       // assignable to parameter of type 'HTMLCanvasElement | (new (width?:
       // number | undefined, height?: number | undefined) => HTMLImageElement)'.
-      ImageLoaderUtil.resizeAndCrop(this.image_, this.canvas_, this.request_);
+      resizeAndCrop(this.image_, this.canvas_, this.request_);
       imageChanged = true;  // The image is now on the <canvas>.
     }
 

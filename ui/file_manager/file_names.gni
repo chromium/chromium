@@ -1,8 +1,5 @@
 # Static files are used as-is from the repository.
-image_loader_static_js_files = [
-  "image_loader/image_loader_util.js",
-  "image_loader/image_request_task.js",
-]
+image_loader_static_js_files = [ "image_loader/image_request_task.js" ]
 
 image_loader_ts = [
   "image_loader/background.ts",
@@ -10,7 +7,7 @@ image_loader_ts = [
   "image_loader/image_loader.ts",
   "image_loader/image_loader_client.ts",
 
-  # "image_loader/image_loader_util.ts",
+  "image_loader/image_loader_util.ts",
 
   "image_loader/image_orientation.ts",
 
@@ -484,6 +481,7 @@ ts_test_files = [
   # Image Loader:
   "image_loader/cache_unittest.ts",
   "image_loader/image_loader_client_unittest.ts",
+  "image_loader/image_loader_unittest.ts",
   "image_loader/image_orientation_unittest.ts",
   "image_loader/scheduler_unittest.ts",
 ]
@@ -541,9 +539,6 @@ unittest_files = [
   # Foreground:
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
-
-  # Image Loader:
-  "image_loader/image_loader_unittest.js",
 ]
 
 # Files that don't have the generated HTML, but are used for tests.
