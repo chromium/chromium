@@ -48,13 +48,19 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
     const em::WeeklyTimeIntervalProto& container,
     std::optional<int> timezone_offset) {
   if (!container.has_start() || !container.has_end()) {
-    LOG(WARNING) << "Interval without start or/and end.";
+    LOG(WARNING) << "Proto missing start or/and end fields.";
     return nullptr;
   }
   auto start = WeeklyTime::ExtractFromProto(container.start(), timezone_offset);
   auto end = WeeklyTime::ExtractFromProto(container.end(), timezone_offset);
-  if (!start || !end)
+  if (!start || !end) {
+    LOG(WARNING) << "Interval without start or/and end.";
     return nullptr;
+  }
+  if (start->GetDurationTo(*end) <= base::TimeDelta()) {
+    LOG(WARNING) << "Zero or negative interval duration.";
+    return nullptr;
+  }
   return std::make_unique<WeeklyTimeInterval>(*start, *end);
 }
 
@@ -76,9 +82,17 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromDict(
   auto start =
       WeeklyTime::ExtractFromDict(start_value->GetDict(), timezone_offset);
   auto end = WeeklyTime::ExtractFromDict(end_value->GetDict(), timezone_offset);
-  if (!start || !end)
+  if (!start || !end) {
+    LOG(WARNING) << "Interval without start or/and end.";
     return nullptr;
-  return std::make_unique<WeeklyTimeInterval>(*start, *end);
+  }
+  if (start->GetDurationTo(*end) <= base::TimeDelta()) {
+    LOG(WARNING) << "Zero or negative interval duration.";
+    return nullptr;
+  }
+
+  return std::make_unique<WeeklyTimeInterval>(std::move(*start),
+                                              std::move(*end));
 }
 
 }  // namespace policy
