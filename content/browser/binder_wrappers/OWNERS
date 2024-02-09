@@ -1,3 +1,0 @@
-# For security review.
-set noparent
-file://ipc/SECURITY_OWNERS
