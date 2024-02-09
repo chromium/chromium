@@ -421,6 +421,12 @@ BASE_EXPORT extern const char kProcSelfExe[];
 BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
                                   SystemMemoryInfoKB* meminfo);
 
+// Returns the memory committed by the system in KBytes, as from
+// GetSystemCommitCharge(), using data from `meminfo` instead of /proc/meminfo.
+// Exposed for testing.
+BASE_EXPORT size_t
+GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo);
+
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {
   // Serializes the platform specific fields to value.

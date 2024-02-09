@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/process/process_metrics_iocounters.h"
@@ -228,8 +229,16 @@ size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
     return 0;
-  return checked_cast<size_t>(meminfo.total - meminfo.free - meminfo.buffers -
-                              meminfo.cached);
+  return GetSystemCommitChargeFromMeminfo(meminfo);
+}
+
+size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
+  // TODO(crbug.com/315988925): This math is incorrect: `cached` can be very
+  // large so that `free` + `buffers` + `cached` > `total`. Replace this with a
+  // more meaningful metric or remove it. In the meantime, convert underflows to
+  // 0 instead of crashing.
+  return ClampedNumeric<size_t>(meminfo.total) - meminfo.free -
+         meminfo.buffers - meminfo.cached;
 }
 
 int ParseProcStatCPU(StringPiece input) {
