@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
@@ -117,6 +118,17 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
 
   // Initialize the pinned action buttons.
   action_view_controller_ = std::make_unique<views::ActionViewController>();
+
+  // Before creating the pinned buttons, verify that the pref value is correct
+  // and update it if not. If the user has been moved into a different default
+  // pin state group (i.e. from the default being false to the default being
+  // true) we want to make sure their pin state changes if they have not
+  // explicitly changed it themselves.
+  if (PrefService* pref_service = browser_view_->GetProfile()->GetPrefs()) {
+    companion::UpdateCompanionDefaultPinnedToToolbarState(
+        browser_view_->GetProfile());
+  }
+
   UpdateViews();
 }
 

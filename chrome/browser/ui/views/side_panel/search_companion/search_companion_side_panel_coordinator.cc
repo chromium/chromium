@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
@@ -374,7 +375,9 @@ void SearchCompanionSidePanelCoordinator::OnExpsPolicyPrefChanged() {
       pref_service_->GetBoolean(companion::kHasNavigatedToExpsSuccessPage));
 
   UpdateCompanionAvailabilityInSidePanel();
-  companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service_);
+
+  CHECK(browser_->profile());
+  companion::UpdateCompanionDefaultPinnedToToolbarState(browser_->profile());
 }
 
 BROWSER_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
