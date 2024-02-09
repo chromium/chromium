@@ -25,6 +25,7 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "base/uuid.h"
 #import "base/values.h"
+#import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -52,6 +53,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/grit/components_resources.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -118,6 +120,10 @@ void GetFormField(autofill::FormFieldData* field,
 // standard announcements have already been started and thus would not interrupt
 // the enqueued utterance.
 constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
+
+// The correct icon size to use in suggestions. Used to ensure images are scaled
+// appropriately.
+constexpr CGFloat kSuggestionIconWidth = 32;
 
 }  // namespace
 
@@ -732,6 +738,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                    autofill::PopupItemId::kCreateNewPlusAddress) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+      icon = [self plusAddressIcon:popup_suggestion];
     }
 
     if (!value)
@@ -1141,7 +1148,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // On iOS, the keyboard accessory wants smaller icons than the default
     // 40x24 size, so we resize them to 32x20, if the provided icon is
     // larger than that.
-    constexpr CGFloat kSuggestionIconWidth = 32;
     if (icon && (icon.size.width > kSuggestionIconWidth)) {
       // For a simple image resize, we can keep the same underlying image
       // and only adjust the ratio.
@@ -1159,6 +1165,42 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         .ToUIImage();
   }
   return nil;
+}
+
+// Helper method to create icons for plus_address icons. Intended to be called
+// only with `autofill::Suggestion`s whose `popup_item_id` is
+// `kFillExistingPlusAddress` or `kCreateNewPlusAddress`.
+- (UIImage*)plusAddressIcon:(autofill::Suggestion)plus_address_suggestion {
+  // Ensure the suggestion is of the correct type.
+  if (plus_address_suggestion.popup_item_id !=
+          autofill::PopupItemId::kFillExistingPlusAddress &&
+      plus_address_suggestion.popup_item_id !=
+          autofill::PopupItemId::kCreateNewPlusAddress) {
+    return nil;
+  }
+  // TODO(crbug.com/40276862): Finalize icons, including in the unbranded case.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (plus_address_suggestion.icon !=
+      autofill::Suggestion::Icon::kPlusAddress) {
+    return nil;
+  }
+  UIImage* icon = ui::ResourceBundle::GetSharedInstance()
+                      .GetNativeImageNamed(IDR_PLUS_ADDRESS_LOGO)
+                      .ToUIImage();
+  // Ensure the image is sized appropriately for the width of the suggestion UI
+  // element.
+  if (icon && (icon.size.width > kSuggestionIconWidth)) {
+    // For a simple image resize, we can keep the same underlying image
+    // and only adjust the ratio.
+    CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+    return [UIImage imageWithCGImage:[icon CGImage]
+                               scale:icon.scale * ratio
+                         orientation:icon.imageOrientation];
+  }
+  return icon;
+#else
+  return nil;
+#endif
 }
 
 @end

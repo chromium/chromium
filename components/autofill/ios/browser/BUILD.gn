@@ -47,6 +47,7 @@ source_set("browser") {
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/prefs:prefs",
     "//components/prefs/ios",
+    "//components/resources:components_resources_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
     "//ios/web/common",
