@@ -276,6 +276,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         assert false : "should not reach here";
     }
 
+    @Override
+    public void refreshTabList() {
+        assert false : "Not reached.";
+    }
+
     /**
      * @see SingleTabSwitcherOnNtpMediator#setVisibility.
      */
