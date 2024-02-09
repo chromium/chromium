@@ -1228,7 +1228,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1940546824932169984">Verbundene Geräte</translation>
 <translation id="1941410638996203291">Startzeit: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
-<translation id="194174710521904357">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Dies bedeutet weniger Schutz beim Surfen, aber die Websitefunktionen funktionieren mit höherer Wahrscheinlichkeit wie erwartet.</translation>
+<translation id="194174710521904357">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Dies bedeutet weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass die Website wie erwartet funktioniert.</translation>
 <translation id="1941995177877935582">Tastenbelegung anzeigen</translation>
 <translation id="1942128823046546853">Alle deine Daten auf allen Websites lesen und ändern</translation>
 <translation id="1944528062465413897">Bluetooth-Kopplungscode:</translation>
@@ -9450,7 +9450,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8472563193954285009">{COUNT,plural, =0{Alle Passwörter sind eindeutig}=1{{COUNT} wiederverwendetes Passwort}other{{COUNT} wiederverwendete Passwörter}}</translation>
 <translation id="8472623782143987204">Hardwaregestützt</translation>
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
-<translation id="8473863474539038330">Adressen</translation>
+<translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8474733733775441349">Passwörter aus deinem Google-Konto anzeigen</translation>
 <translation id="8475313423285172237">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>

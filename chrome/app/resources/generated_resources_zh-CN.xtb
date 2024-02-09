@@ -5912,7 +5912,7 @@
 <translation id="567643736130151854">您只需登录账号并开启同步功能，即可将您的书签和密码等信息同步到所有设备上</translation>
 <translation id="567740581294087470">您要提供什么类型的反馈？</translation>
 <translation id="5677503058916217575">网页语言：</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678550637669481956">已授予对 <ph name="VOLUME_NAME" />的读写权限。</translation>
 <translation id="5678821117681811450">正在发送到“<ph name="WEB_DRIVE" />”</translation>
 <translation id="5678955352098267522">读取您在 <ph name="WEBSITE_1" /> 上的数据</translation>
@@ -6557,7 +6557,7 @@
 <translation id="6194333736420234626">付款方式(&amp;P)</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
 <translation id="6195155925303302899">居中对齐</translation>
-<translation id="6195163219142236913">第三方 Cookie 受限</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>

@@ -9393,7 +9393,7 @@
 <translation id="8413795581997394485">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيَّن أنها ضارة. عند زيارة موقع إلكتروني، يرسل متصفِّح Chrome جزءًا مشفّرًا من عنوان URL إلى Google من خلال خادم لحماية الخصوصية يخفي عنوان IP الخاص بجهازك. وفي حال رصد سلوك مريب على موقع إلكتروني، يتم أيضًا إرسال عناوين URL الكاملة وأجزاء من محتوى الصفحة.</translation>
 <translation id="8413956290606243087">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟</translation>
 <translation id="8414249071344507766">ذكريات تم إخفاؤها لمدة يومين</translation>
-<translation id="8414396119627470038">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">سجِّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">ملاحظات</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
 <translation id="8417548266957501132">كلمة مرور الوالدَين</translation>

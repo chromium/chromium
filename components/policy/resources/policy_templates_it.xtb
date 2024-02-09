@@ -1273,9 +1273,9 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2062632109797189011">Riattiva l'API window.webkitStorageInfo</translation>
-<translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni Ospite e impedisce gli accessi ai profili. Gli accessi Ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
+<translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni ospite e impedisce gli accessi ai profili. Gli accessi ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
 
-      Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità Ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
+      Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
 <translation id="2070744136203607632">Non eseguire controlli dell'intercettazione DNS</translation>
 <translation id="2072613440623913880">Attiva i clic automatici nella schermata di accesso</translation>
 <translation id="2073552873076775140">Consenti di eseguire l'accesso a <ph name="PRODUCT_NAME" /></translation>
@@ -1369,7 +1369,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
       Se il criterio viene attivato o se non viene configurato, le origini visitate verranno segnalate al sistema operativo, mentre per le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo verrà visualizzata una schermata di blocco.
       Se il criterio viene disattivato, le origini visitate non verranno segnalate al sistema operativo, mentre le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo saranno accessibili.</translation>
 <translation id="2156755242840687300">Server di stampa esterni attivi</translation>
-<translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni Ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
+<translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Falso o se non viene configurato, i criteri non vengono sostituiti.</translation>
 <translation id="2158741059065130266">Se il criterio viene impostato su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
@@ -7576,7 +7576,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="7323896582714668701">Parametri aggiuntivi della riga di comando per <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome non può bloccare le navigazioni ai protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
-<translation id="7331387825106440104">Non forzare l'applicazione di vincoli nei trust anchor aggiunti localmente</translation>
+<translation id="7331387825106440104">Non applicare vincoli nei trust anchor aggiunti localmente</translation>
 <translation id="7331962793961469250">Quando la norma è impostata su True, le promozioni relative alle applicazioni del Chrome Web Store non vengono visualizzate nella pagina Nuova scheda. Se questa opzione viene impostata su False o non viene impostata, le promozioni relative alle applicazioni del Chrome Web Store vengono visualizzate nella pagina Nuova scheda.</translation>
 <translation id="7332963785317884918">Questa norma è obsoleta. <ph name="PRODUCT_OS_NAME" /> utilizzerà sempre la strategia di pulizia "RemoveLRU".
 

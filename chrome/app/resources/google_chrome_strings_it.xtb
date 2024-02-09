@@ -346,7 +346,7 @@
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installazione interrotta.</translation>
 <translation id="7025800014283535195">Puoi passare da un profilo Chrome all'altro qui</translation>
-<translation id="7036251913954633326">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità Ospite<ph name="GUEST_LINK_END" /> del browser Chrome. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
+<translation id="7036251913954633326">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità ospite<ph name="GUEST_LINK_END" /> del browser Chrome. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
 
 A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7071827361006050863">A breve Chrome eliminerà i dati di navigazione</translation>
