@@ -513,8 +513,7 @@ class PrefetchedNavigationLoaderInterceptor
               *exchange_->inner_response()->headers)) {
         DCHECK(cookie_manager_);
         state_ = State::kCheckingCookies;
-        CheckAbsenceOfCookies(tentative_resource_request, std::move(callback),
-                              std::move(fallback_callback));
+        CheckAbsenceOfCookies(tentative_resource_request, std::move(callback));
         return;
       } else {
         state_ = State::kInnerResponseRequested;
@@ -541,8 +540,7 @@ class PrefetchedNavigationLoaderInterceptor
   };
 
   void CheckAbsenceOfCookies(const network::ResourceRequest& request,
-                             LoaderCallback callback,
-                             FallbackCallback fallback_callback) {
+                             LoaderCallback callback) {
     auto match_options = network::mojom::CookieManagerGetOptions::New();
     match_options->name = "";
     match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
@@ -552,12 +550,10 @@ class PrefetchedNavigationLoaderInterceptor
         request.has_storage_access, std::move(match_options),
         request.is_ad_tagged,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(fallback_callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void OnGetCookies(LoaderCallback callback,
-                    FallbackCallback fallback_callback,
                     const std::vector<net::CookieWithAccessResult>& results) {
     DCHECK_EQ(State::kCheckingCookies, state_);
     if (!results.empty()) {
@@ -567,10 +563,10 @@ class PrefetchedNavigationLoaderInterceptor
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info =
           this->exchange_->outer_response()->load_timing;
-      std::move(fallback_callback)
-          .Run(true /* reset_subresource_loader_params */,
-               // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-               std::move(head_update_params));
+      // TODO(crbug.com/1441384) test workerStart in SXG scenarios
+      std::move(callback).Run(NavigationLoaderInterceptor::Result(
+          /*factory=*/nullptr, /*subresource_loader_params=*/std::nullopt,
+          std::move(head_update_params)));
       return;
     }
     state_ = State::kInnerResponseRequested;

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,7 +31,6 @@ struct ResourceRequest;
 namespace content {
 
 class BrowserContext;
-struct ResponseHeadUpdateParams;
 
 // NavigationLoaderInterceptor is given a chance to create a URLLoader and
 // intercept a navigation request before the request is handed off to the
@@ -55,7 +55,9 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   struct CONTENT_EXPORT Result final {
     Result(
         scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
-        std::optional<SubresourceLoaderParams> subresource_loader_params);
+        std::optional<SubresourceLoaderParams> subresource_loader_params,
+        ResponseHeadUpdateParams response_head_update_params = {});
+
     ~Result();
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
@@ -73,6 +75,11 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
     // handle the specific request but wants to handle the subsequent resource
     // requests.
     std::optional<SubresourceLoaderParams> subresource_loader_params;
+
+    // When `single_request_factory` is null, used to update the response params
+    // in non-intercepted loader via
+    // `NavigationURLLoaderImpl::head_update_params_`.
+    ResponseHeadUpdateParams response_head_update_params;
   };
 
   using LoaderCallback = base::OnceCallback<void(std::optional<Result>)>;
@@ -93,24 +100,30 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   //
   // This interceptor might initially elect to handle the request, but later
   // decide to fall back to the default behavior. In that case, it can invoke
-  // `fallback_callback` to do so. An example of this is when a service worker
-  // decides to handle the request because it is in-scope, but the service
-  // worker JavaScript execution does not result in a response provided, so
-  // fallback to network is required.
+  // `fallback_callback_for_service_worker` to do so. An example of this is when
+  // a service worker decides to handle the request because it is in-scope, but
+  // the service worker JavaScript execution does not result in a response
+  // provided, so fallback to network is required.
   //
-  // If `fallback_callback` is called, it must be called prior to the
-  // interceptor making any URLLoaderClient calls. The
-  // `reset_subresource_loader_params` parameter to |fallback_callback|
-  // indicates whether to discard the subresource loader params previously
-  // returned by MaybeCreateSubresourceLoaderParams().
+  // `fallback_callback_for_service_worker` is only for service workers to
+  // fallback to the network after initially electing to intercept the request.
+  // It must be called after `callback` is called with non-null
+  // `single_request_factory` and prior to the interceptor making any
+  // URLLoaderClient calls. The `reset_subresource_loader_params` parameter to
+  // |fallback_callback| indicates whether to discard the subresource loader
+  // params previously returned by `Result::subresource_loader_params`.
   //
-  // `callback` and `fallback_callback` must not be invoked after the
-  // destruction of this interceptor.
+  // `callback` and `fallback_callback_for_service_worker` must not be invoked
+  // after the destruction of this interceptor.
+  //
+  // TODO(crbug.com/1403746): Possibly remove
+  // `fallback_callback_for_service_worker` to simplify the ServiceWorker
+  // interception.
   virtual void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
       BrowserContext* browser_context,
       LoaderCallback callback,
-      FallbackCallback fallback_callback) = 0;
+      FallbackCallback fallback_callback_for_service_worker) = 0;
 
   // Returns true if the interceptor creates a loader for the `response_head`
   // and `response_body` passed.  `request` is the latest request whose request

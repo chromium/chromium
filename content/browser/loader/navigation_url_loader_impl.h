@@ -138,11 +138,14 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       size_t next_interceptor_index,
       std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
 
-  // This is the `fallback_callback` passed to
+  // Start a loader with the default behavior. This should be used when no
+  // interceptors have elected to handle the request in the first place.
+  void StartNonInterceptedRequest(ResponseHeadUpdateParams head_update_params);
+
+  // This is the `fallback_callback_for_service_worker` passed to
   // NavigationLoaderInterceptor::MaybeCreateLoader. It allows an interceptor
   // to initially elect to handle a request, and later decide to fallback to
-  // the default behavior. This is needed for service worker network fallback
-  // and signed exchange (SXG) fallback redirect.
+  // the default behavior. This is needed for service worker network fallback.
   void FallbackToNonInterceptedRequest(
       bool reset_subresource_loader_params,
       ResponseHeadUpdateParams head_update_params);

@@ -61,10 +61,9 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
         *signed_exchange_loader_->fallback_url()));
     signed_exchange_loader_ = nullptr;
-    std::move(fallback_callback)
-        .Run(false /* reset_subresource_loader_params */,
-             // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-             ResponseHeadUpdateParams());
+    // Skip subsequent interceptors and fallback to the network.
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
+        /*factory=*/nullptr, /*subresource_loader_params=*/std::nullopt));
     return;
   }
 

@@ -622,14 +622,21 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(started_);
 
-  subresource_loader_params_ =
-      interceptor_result
-          ? std::move(interceptor_result->subresource_loader_params)
-          : std::nullopt;
+  if (interceptor_result) {
+    subresource_loader_params_ =
+        std::move(interceptor_result->subresource_loader_params);
+    if (!interceptor_result->single_request_factory) {
+      // Skip the subsequent interceptors and start with the default behavior.
+      //
+      // Here `subresource_loader_params_` can still be non-null e.g. when
+      // there's a controlling service worker that doesn't have a fetch event
+      // handler so it doesn't intercept requests.
+      StartNonInterceptedRequest(
+          std::move(interceptor_result->response_head_update_params));
+      return;
+    }
 
-  // Intercept the request with `interceptor_result->single_request_factory` if
-  // it's non-null.
-  if (interceptor_result && interceptor_result->single_request_factory) {
+    // Intercept the request with `interceptor_result->single_request_factory`.
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
         CreateURLLoaderThrottles();
     // Intercepted requests need MimeSniffingThrottle to do mime sniffing.
@@ -661,25 +668,27 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     return;
   }
 
-  // Fallback to the next interceptor.
-  // Skip subsequent interceptors if `interceptor_result` is not nullopt.
-  if (!interceptor_result && next_interceptor_index < interceptors_.size()) {
-    CHECK(!subresource_loader_params_);
-    auto* next_interceptor = interceptors_[next_interceptor_index].get();
-    next_interceptor->MaybeCreateLoader(
-        *resource_request_, browser_context_,
-        base::BindOnce(&NavigationURLLoaderImpl::MaybeStartLoader,
-                       weak_factory_.GetWeakPtr(), next_interceptor_index + 1),
-        base::BindOnce(
-            &NavigationURLLoaderImpl::FallbackToNonInterceptedRequest,
-            weak_factory_.GetWeakPtr()));
+  subresource_loader_params_ = std::nullopt;
+
+  if (next_interceptor_index >= interceptors_.size()) {
+    // All interceptors have been checked and none has elected to handle the
+    // request. Start with the default behavior.
+    StartNonInterceptedRequest(ResponseHeadUpdateParams());
     return;
   }
 
-  // Here `subresource_loader_params_` can be non-null e.g. when there's a
-  // controlling service worker that doesn't have a fetch event handler so it
-  // doesn't intercept requests.
+  // Fallback to the next interceptor.
+  auto* next_interceptor = interceptors_[next_interceptor_index].get();
+  next_interceptor->MaybeCreateLoader(
+      *resource_request_, browser_context_,
+      base::BindOnce(&NavigationURLLoaderImpl::MaybeStartLoader,
+                     weak_factory_.GetWeakPtr(), next_interceptor_index + 1),
+      base::BindOnce(&NavigationURLLoaderImpl::FallbackToNonInterceptedRequest,
+                     weak_factory_.GetWeakPtr()));
+}
 
+void NavigationURLLoaderImpl::StartNonInterceptedRequest(
+    ResponseHeadUpdateParams head_update_params) {
   // If we already have the default `url_loader_` we must come here after a
   // redirect. No interceptors wanted to intercept the redirected request, so
   // let the loader just follow the redirect.
@@ -692,8 +701,18 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     return;
   }
 
-  // No interceptors wanted to handle this request.
-  FallbackToNonInterceptedRequest(false, ResponseHeadUpdateParams());
+  head_update_params_ = std::move(head_update_params);
+  scoped_refptr<network::SharedURLLoaderFactory> factory =
+      PrepareForNonInterceptedRequest();
+  uint32_t options =
+      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
+
+  response_loader_receiver_.reset();
+  url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+      std::move(factory), CreateURLLoaderThrottles(),
+      global_request_id_.request_id, options, resource_request_.get(),
+      /*client=*/this, kNavigationUrlLoaderTrafficAnnotation,
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
@@ -703,27 +722,18 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     subresource_loader_params_.reset();
 
   head_update_params_ = std::move(head_update_params);
-
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
   uint32_t options =
       GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
-  if (url_loader_) {
-    // `url_loader_` is using the factory for the interceptor that decided to
-    // fallback, so restart it with the non-interceptor factory.
-    url_loader_->RestartWithFactory(std::move(factory), options);
-  } else {
-    // In SXG cases we don't have `url_loader_` because it was reset when
-    // - SignedExchangeRequestHandler intercepted the response in
-    //   MaybeCreateLoaderForResponse, or
-    // - PrefetchedNavigationLoaderInterceptor made an internal redirect.
-    response_loader_receiver_.reset();
-    url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-        std::move(factory), CreateURLLoaderThrottles(),
-        global_request_id_.request_id, options, resource_request_.get(),
-        /*client=*/this, kNavigationUrlLoaderTrafficAnnotation,
-        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-  }
+
+  // As `FallbackToNonInterceptedRequest()` is called only from ServiceWorker
+  // after initially setting `interceptor_result->single_request_factory`,
+  // `url_loader_` should be non-null and pointing to the
+  // service-worker-intercepting loader. Restart it with the non-interceptor
+  // factory.
+  CHECK(url_loader_);
+  url_loader_->RestartWithFactory(std::move(factory), options);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
