@@ -335,7 +335,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
                                                /*added_by_user=*/true);
 
   // TODO(crbug.com/1441911): Make sure this flow can never cause data loss.
-  ScheduleSave();
+  ScheduleSaveForNode(parent);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeRemoved(this, parent, index.value(), node,
@@ -404,11 +404,14 @@ void BookmarkModel::RemoveAllUserBookmarks() {
         removed_node_data_list.push_back(
             {permanent_node.get(), j, std::move(node)});
       }
+
+      // Note that scheduling redundant saves is a no-op so it's done here
+      // inside the loop for simplicity.
+      ScheduleSaveForNode(permanent_node.get());
     }
   }
-  EndExtensiveChanges();
 
-  ScheduleSave();
+  EndExtensiveChanges();
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkAllUserNodesRemoved(this, removed_urls);
@@ -473,7 +476,14 @@ void BookmarkModel::Move(const BookmarkNode* node,
   BookmarkNode* mutable_new_parent = AsMutable(new_parent);
   mutable_new_parent->Add(std::move(owned_node), index);
 
-  ScheduleSave();
+  // These two calls don't guarantee that they get scheduled at the same time,
+  // which increases the risk that, if two JSON files are involved in this move,
+  // only one of them may succeed to write to disk (leading to data loss or data
+  // duplication). These scenarios should be very rare and the scheduling aspect
+  // of it is only a smart part of it, so we don't bother being too smart about
+  // it. Other risks are inherent to the use of two files.
+  ScheduleSaveForNode(old_parent);
+  ScheduleSaveForNode(new_parent);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeMoved(this, old_parent, old_index, new_parent, index);
@@ -513,14 +523,12 @@ void BookmarkModel::UpdateLastUsedTimeImpl(const BookmarkNode* node,
   BookmarkNode* mutable_node = AsMutable(node);
   mutable_node->set_date_last_used(time);
 
-  ScheduleSave();
+  ScheduleSaveForNode(node);
 }
 
 void BookmarkModel::ClearLastUsedTimeInRange(const base::Time delete_begin,
                                              const base::Time delete_end) {
   ClearLastUsedTimeInRangeRecursive(root_, delete_begin, delete_end);
-
-  ScheduleSave();
 }
 
 void BookmarkModel::ClearLastUsedTimeInRangeRecursive(
@@ -557,10 +565,8 @@ void BookmarkModel::Copy(const BookmarkNode* node,
   SetDateFolderModified(new_parent, Time::Now());
   BookmarkNodeData drag_data(node);
   // CloneBookmarkNode will use BookmarkModel methods to do the job, so we
-  // don't need to send notifications here.
+  // don't need to send notifications here or schedule a save.
   CloneBookmarkNode(this, drag_data.elements, new_parent, index, true);
-
-  ScheduleSave();
 }
 
 const gfx::Image& BookmarkModel::GetFavicon(const BookmarkNode* node) {
@@ -607,7 +613,7 @@ void BookmarkModel::SetTitle(const BookmarkNode* node,
     titled_url_index_->AddPath(node);
   }
 
-  ScheduleSave();
+  ScheduleSaveForNode(node);
 
   metrics::RecordTitleEdit(source);
   for (BookmarkModelObserver& observer : observers_) {
@@ -640,7 +646,7 @@ void BookmarkModel::SetURL(const BookmarkNode* node,
   url_index_->SetUrl(mutable_node, url);
   titled_url_index_->Add(mutable_node);
 
-  ScheduleSave();
+  ScheduleSaveForNode(node);
 
   metrics::RecordURLEdit(source);
   for (BookmarkModelObserver& observer : observers_) {
@@ -665,7 +671,7 @@ void BookmarkModel::SetNodeMetaInfo(const BookmarkNode* node,
   }
 
   if (AsMutable(node)->SetMetaInfo(key, value)) {
-    ScheduleSave();
+    ScheduleSaveForNode(node);
   }
 
   for (BookmarkModelObserver& observer : observers_) {
@@ -691,7 +697,7 @@ void BookmarkModel::SetNodeMetaInfoMap(
   }
 
   AsMutable(node)->SetMetaInfoMap(meta_info_map);
-  ScheduleSave();
+  ScheduleSaveForNode(node);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkMetaInfoChanged(this, node);
@@ -712,7 +718,7 @@ void BookmarkModel::DeleteNodeMetaInfo(const BookmarkNode* node,
   }
 
   if (AsMutable(node)->DeleteMetaInfo(key)) {
-    ScheduleSave();
+    ScheduleSaveForNode(node);
   }
 
   for (BookmarkModelObserver& observer : observers_) {
@@ -765,10 +771,10 @@ void BookmarkModel::SetDateAdded(const BookmarkNode* node, Time date_added) {
 
   // Syncing might result in dates newer than the folder's last modified date.
   if (date_added > node->parent()->date_folder_modified()) {
-    // Will trigger BookmarkStorage::ScheduleSave().
+    // Will trigger BookmarkStorage::ScheduleSaveForNode().
     SetDateFolderModified(node->parent(), date_added);
   } else {
-    ScheduleSave();
+    ScheduleSaveForNode(node);
   }
 }
 
@@ -967,7 +973,7 @@ void BookmarkModel::SortChildren(const BookmarkNode* parent) {
 
   AsMutable(parent)->SortChildren(SortComparator(collator.get()));
 
-  ScheduleSave();
+  ScheduleSaveForNode(parent);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeChildrenReordered(this, parent);
@@ -1006,7 +1012,7 @@ void BookmarkModel::ReorderChildren(
 
     AsMutable(parent)->ReorderChildren(new_order);
 
-    ScheduleSave();
+    ScheduleSaveForNode(parent);
   }
 
   for (BookmarkModelObserver& observer : observers_) {
@@ -1020,7 +1026,7 @@ void BookmarkModel::SetDateFolderModified(const BookmarkNode* parent,
   DCHECK(parent);
   AsMutable(parent)->set_date_folder_modified(time);
 
-  ScheduleSave();
+  ScheduleSaveForNode(parent);
 }
 
 void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
@@ -1063,6 +1069,15 @@ void BookmarkModel::CommitPendingWriteForTest() {
   if (account_store_) {
     account_store_->SaveNowIfScheduledForTesting();  // IN-TEST
   }
+}
+
+bool BookmarkModel::LocalOrSyncableStorageHasPendingWriteForTest() const {
+  return local_or_syncable_store_->HasScheduledSaveForTesting();  // IN-TEST
+}
+
+bool BookmarkModel::AccountStorageHasPendingWriteForTest() const {
+  CHECK(account_store_);
+  return account_store_->HasScheduledSaveForTesting();  // IN-TEST
 }
 
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
@@ -1135,7 +1150,14 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
     // If the from-disk loading went through a recovery (e.g. IDs were
     // reassigned due to collisions), it is best to save the result back to
     // disk so it won't keep happening upon every restart.
-    ScheduleSave();
+    if (local_or_syncable_store_) {
+      local_or_syncable_store_->ScheduleSave();
+    }
+
+    if (account_store_) {
+      CHECK(AreFoldersForAccountStorageAllowed());
+      account_store_->ScheduleSave();
+    }
   }
 
   next_node_id_ = details->max_id();
@@ -1214,7 +1236,7 @@ BookmarkNode* BookmarkModel::AddNode(
   BookmarkNode* node_ptr = node.get();
   url_index_->Add(parent, index, std::move(node));
 
-  ScheduleSave();
+  ScheduleSaveForNode(node_ptr);
 
   AddNodeToIndicesRecursive(node_ptr, type_for_uuid_lookup);
 
@@ -1262,12 +1284,16 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveNode(
     observer.OnWillRemoveBookmarks(this, parent, index.value(), node);
   }
 
+  // Schedule the save before actually removing the node for
+  // `ScheduleSaveNode()` to determine which underlying storage is relevant.
+  // `parent` could be used instead except for the case where permanent account
+  // folders are removed, which also exercises this codepath.
+  ScheduleSaveForNode(node);
+
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
       url_index_->Remove(AsMutable(node), &removed_urls);
   RemoveNodeFromIndicesRecursive(owned_node.get(), type_for_uuid_lookup);
-
-  ScheduleSave();
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeRemoved(this, parent, index.value(), node,
@@ -1429,20 +1455,30 @@ void BookmarkModel::RemoveAccountPermanentFolders() {
   }
 }
 
-void BookmarkModel::ScheduleSave() {
+void BookmarkModel::ScheduleSaveForNode(const BookmarkNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/41493391): Consider optimizing the save here if only one of the two
-  // stores has changed.
+  BookmarkStorage* storage = GetStorageForNode(node);
+  if (storage) {
+    storage->ScheduleSave();
+  }
+}
 
-  if (local_or_syncable_store_) {
-    local_or_syncable_store_->ScheduleSave();
+BookmarkStorage* BookmarkModel::GetStorageForNode(const BookmarkNode* node) {
+  CHECK(node);
+  CHECK(!is_root_node(node));
+
+  if (!node->is_permanent_node()) {
+    return GetStorageForNode(node->parent());
   }
 
-  if (account_store_) {
+  if (node == account_bookmark_bar_node_ || node == account_other_node_ ||
+      node == account_mobile_node_) {
     CHECK(AreFoldersForAccountStorageAllowed());
-    account_store_->ScheduleSave();
+    return account_store_.get();
   }
+
+  return local_or_syncable_store_.get();
 }
 
 }  // namespace bookmarks

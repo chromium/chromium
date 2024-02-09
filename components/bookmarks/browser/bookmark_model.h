@@ -458,6 +458,10 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // cleanly first.
   void CommitPendingWriteForTest();
 
+  // Returns whether pending writes are pending/scheduled.
+  bool LocalOrSyncableStorageHasPendingWriteForTest() const;
+  bool AccountStorageHasPendingWriteForTest() const;
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
@@ -565,8 +569,15 @@ class BookmarkModel final : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
-  // Schedules saving the bookmark model to disk.
-  void ScheduleSave();
+  // Schedules saving the bookmark model to disk as a result of `node` having
+  // changed. When multiple BookmarkStorage instances are involved, `node`
+  // allows determining which of the two needs to be persisted.
+  void ScheduleSaveForNode(const BookmarkNode* node);
+
+  // Returns which BookmakStorage instance is used to persist `node` to disk.
+  // The returned value will be either `local_or_syncable_store_` or
+  // `account_store_`. It may return null in tests.
+  BookmarkStorage* GetStorageForNode(const BookmarkNode* node);
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
