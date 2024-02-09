@@ -34,6 +34,7 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
   void OnPaint(gfx::Canvas* canvas) override;
   int GetHeightForWidth(int w) const override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   float current_aspect_ratio_;

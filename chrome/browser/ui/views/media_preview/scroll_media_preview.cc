@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -17,12 +18,20 @@ namespace scroll_media_preview {
 
 namespace {
 
+// Currently basing this off what extension menu as well as chrome labs bubble
+// uses for sizing as suggested as an initial fix by UI.
+// TODO(b/324500642): Consider making this dynamic and handled by views. Ideally
+// we wouldn't ever pop up so that they pop outside the screen.
+constexpr int kMaxScrollViewHeight = 400;
+
 class ScrollViewAndObserver : public views::ScrollView,
                               public views::ViewObserver {
   METADATA_HEADER(ScrollViewAndObserver, views::ScrollView)
 
  public:
-  ScrollViewAndObserver() = default;
+  ScrollViewAndObserver()
+      : views::ScrollView((ScrollView::ScrollWithLayers::kEnabled)) {}
+
   ScrollViewAndObserver(const ScrollViewAndObserver&) = delete;
   ScrollViewAndObserver& operator=(const ScrollViewAndObserver&) = delete;
   ~ScrollViewAndObserver() override {
@@ -58,15 +67,16 @@ views::View* CreateScrollViewAndGetContents(views::View& parent_view,
 
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view->SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+      views::ScrollBar::Orientation::kVertical));
   scroll_view->SetDrawOverflowIndicator(false);
 
-  // TODO(b/323568011): Add rounded radii to the `scroll_view`.
-  const int max_height = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  scroll_view->ClipHeightTo(0, max_height);
+  const int kRoundedRadius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kOmniboxExpandedRadius);
+  scroll_view->SetViewportRoundedCornerRadius(
+      gfx::RoundedCornersF(kRoundedRadius));
 
+  scroll_view->ClipHeightTo(0, kMaxScrollViewHeight);
   return contents;
 }
 
