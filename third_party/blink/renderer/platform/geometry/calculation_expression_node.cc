@@ -62,11 +62,48 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
 float CalculationExpressionSizingKeywordNode::Evaluate(
     float max_value,
     const Length::EvaluationInput& input) const {
-  if (keyword_ == Keyword::kSize) {
-    CHECK(input.size_keyword_basis);
-    return *input.size_keyword_basis;
+  Length::Type intrinsic_type = Length::kFixed;
+  switch (keyword_) {
+    case Keyword::kSize:
+      CHECK(input.size_keyword_basis);
+      return *input.size_keyword_basis;
+    case Keyword::kAny:
+      return 0.0f;
+    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    case Keyword::kMinContent:
+    case Keyword::kWebkitMinContent:
+      intrinsic_type = Length::Type::kMinContent;
+      break;
+    case Keyword::kMaxContent:
+    case Keyword::kWebkitMaxContent:
+      intrinsic_type = Length::Type::kMaxContent;
+      break;
+    case Keyword::kFitContent:
+    case Keyword::kWebkitFitContent:
+      intrinsic_type = Length::Type::kFitContent;
+      break;
+    case Keyword::kWebkitFillAvailable:
+      intrinsic_type = Length::Type::kFillAvailable;
+      break;
   }
-  return 0.0f;
+
+  if (!input.intrinsic_evaluator) {
+    // TODO(https://crbug.com/313072): I'd like to be able to CHECK() this
+    // instead.  However, we hit this code in three cases:
+    //  * the code in ContentMinimumInlineSize, which passes max_value of 0
+    //  * the (questionable) code in EvaluateValueIfNaNorInfinity(), which
+    //    passes max_value of 1 or -1
+    //  * the DCHECK()s in
+    //    CSSLengthInterpolationType::ApplyStandardPropertyValue pass a max
+    //    value of 100
+    // So we have to return something.  Return 0 for now, though this may
+    // not be ideal.
+    CHECK(max_value == 1.0f || max_value == -1.0f || max_value == 0.0f ||
+          max_value == 100.0f);
+    return 0.0f;
+  }
+  CHECK(input.intrinsic_evaluator);
+  return (*input.intrinsic_evaluator)(Length(intrinsic_type));
 }
 
 // ------ CalculationExpressionPixelsAndPercentNode ------
