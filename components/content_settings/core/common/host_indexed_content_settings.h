@@ -25,7 +25,11 @@ class HostIndexedContentSettings {
       HostToContentSettings;
 
   HostIndexedContentSettings();
-  explicit HostIndexedContentSettings(
+
+  // Returns a vector of indices where each index contains entries from a
+  // different |source|. This keeps the order of precedence of
+  // ContentSettingsProviders. Returns at least one index.
+  static std::vector<HostIndexedContentSettings> Create(
       const ContentSettingsForOneType& settings);
 
   ~HostIndexedContentSettings();

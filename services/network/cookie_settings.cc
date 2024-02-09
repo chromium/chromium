@@ -140,8 +140,7 @@ void CookieSettings::set_content_settings(
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
     host_indexed_content_settings_[type] =
-        std::make_unique<content_settings::HostIndexedContentSettings>(
-            settings);
+        content_settings::HostIndexedContentSettings::Create(settings);
   }
   content_settings_[type] = settings;
   if (type == ContentSettingsType::COOKIES) {
@@ -152,7 +151,7 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard()) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
-        host_indexed_content_settings_[type]->SetValue(
+        host_indexed_content_settings_[type].back().SetValue(
             ContentSettingsPattern::Wildcard(),
             ContentSettingsPattern::Wildcard(),
             base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
@@ -388,10 +387,10 @@ const ContentSettingsForOneType& CookieSettings::GetContentSettings(
   return content_settings_.at(type);
 }
 
-const content_settings::HostIndexedContentSettings&
+const std::vector<content_settings::HostIndexedContentSettings>&
 CookieSettings::GetHostIndexedContentSettings(ContentSettingsType type) const {
   CHECK(IsValidType(type)) << static_cast<int>(type);
-  return *host_indexed_content_settings_.at(type);
+  return host_indexed_content_settings_.at(type);
 }
 
 ContentSetting CookieSettings::GetContentSetting(
@@ -403,21 +402,21 @@ ContentSetting CookieSettings::GetContentSetting(
       "ContentSettings.GetContentSetting.Network.Duration");
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
-    if constexpr (DCHECK_IS_ON()) {
-      GetHostIndexedContentSettings(content_type)
-          .DcheckSameResultAsLinearLookup(primary_url, secondary_url,
-                                          GetContentSettings(content_type));
-    }
-    const content_settings::RuleEntry* result =
-        GetHostIndexedContentSettings(content_type)
-            .Find(primary_url, secondary_url);
-    if (result) {
-      if (info) {
-        info->primary_pattern = result->first.primary_pattern;
-        info->secondary_pattern = result->first.secondary_pattern;
-        info->metadata = result->second.metadata;
+    for (const auto& index : GetHostIndexedContentSettings(content_type)) {
+      const content_settings::RuleEntry* result =
+          index.Find(primary_url, secondary_url);
+      if (result) {
+        if constexpr (DCHECK_IS_ON()) {
+          index.DcheckSameResultAsLinearLookup(
+              primary_url, secondary_url, GetContentSettings(content_type));
+        }
+        if (info) {
+          info->primary_pattern = result->first.primary_pattern;
+          info->secondary_pattern = result->first.secondary_pattern;
+          info->metadata = result->second.metadata;
+        }
+        return content_settings::ValueToContentSetting(result->second.value);
       }
-      return content_settings::ValueToContentSetting(result->second.value);
     }
   } else {
     const ContentSettingPatternSource* result =

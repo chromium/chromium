@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -224,12 +225,26 @@ HostIndexedContentSettings::HostIndexedContentSettings(
 HostIndexedContentSettings& HostIndexedContentSettings::operator=(
     HostIndexedContentSettings&&) = default;
 
-HostIndexedContentSettings::HostIndexedContentSettings(
+// static
+std::vector<HostIndexedContentSettings> HostIndexedContentSettings::Create(
     const ContentSettingsForOneType& settings) {
-  for (const ContentSettingPatternSource& setting : settings) {
-    SetValue(setting.primary_pattern, setting.secondary_pattern,
-             setting.setting_value.Clone(), setting.metadata);
+  std::vector<HostIndexedContentSettings> indices;
+  indices.emplace_back();
+  if (settings.empty()) {
+    return indices;
   }
+  std::string_view last_source = settings.front().source;
+  for (const auto& entry : settings) {
+    // Indices need to be split by content settings provider to ensure
+    // accurate precedence of settings.
+    if (entry.source != last_source) {
+      last_source = entry.source;
+      indices.emplace_back();
+    }
+    indices.back().SetValue(entry.primary_pattern, entry.secondary_pattern,
+                            entry.setting_value.Clone(), entry.metadata);
+  }
+  return indices;
 }
 
 HostIndexedContentSettings::~HostIndexedContentSettings() = default;
