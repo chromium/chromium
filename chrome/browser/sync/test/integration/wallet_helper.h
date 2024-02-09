@@ -66,6 +66,15 @@ void SetCreditCardCloudTokenData(
     int profile,
     const std::vector<autofill::CreditCardCloudTokenData>& cloud_token_data);
 
+void SetServerCardCredentialData(int profile,
+                                 const autofill::CreditCard& credit_card);
+
+void RemoveServerCardCredentialData(int profile,
+                                    const autofill::CreditCard& credit_card);
+
+void UpdateServerCardCredentialData(int profile,
+                                    const autofill::CreditCard& credit_card);
+
 void UpdateServerCardMetadata(int profile,
                               const autofill::CreditCard& credit_card);
 

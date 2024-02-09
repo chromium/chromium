@@ -528,15 +528,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   cards = pdm->GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
+  card_with_cvc_1 = (cards[1]->instrument_id() == 123) ? cards[0] : cards[1];
   autofill::CreditCard* card_with_cvc_2 =
-      (cards[1]->instrument_id() == 123) ? cards[0] : cards[1];
-  autofill::CreditCard* card_with_cvc_3 =
       (cards[1]->instrument_id() == 123) ? cards[1] : cards[0];
 
+  EXPECT_FALSE(card_with_cvc_1->cvc().empty());
   EXPECT_FALSE(card_with_cvc_2->cvc().empty());
-  EXPECT_FALSE(card_with_cvc_3->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*card_with_cvc_2);
-  EXPECT_EQ(u"720", card_with_cvc_3->cvc());
+  ExpectDefaultWalletCredentialValues(*card_with_cvc_1);
+  EXPECT_EQ(u"720", card_with_cvc_2->cvc());
 }
 
 // Verify that card and CVC data should get cleared from the database when the
