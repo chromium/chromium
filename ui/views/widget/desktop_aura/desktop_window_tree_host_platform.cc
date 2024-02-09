@@ -1012,10 +1012,9 @@ gfx::Rect DesktopWindowTreeHostPlatform::ToPixelRect(
       GetRootTransform().MapRect(gfx::RectF(rect_in_dip));
   // Due to the limitation of IEEE floating point representation and rounding
   // error, the converted result may become slightly larger than expected value,
-  // such as 3000.0005. Allow 0.001 eplisin to round down in such case. This is
+  // such as 3000.0005. Allow error to round down in such case. This is
   // also used in cc/viz. See crbug.com/1418606.
-  constexpr float kEpsilon = 0.001f;
-  return gfx::ToEnclosingRectIgnoringError(rect_in_pixels_f, kEpsilon);
+  return gfx::ToEnclosingRectIgnoringError(rect_in_pixels_f);
 }
 
 Widget* DesktopWindowTreeHostPlatform::GetWidget() {

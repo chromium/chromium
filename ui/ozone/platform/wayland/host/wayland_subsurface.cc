@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
@@ -153,10 +153,10 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
           wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
           wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
     } else {
-      gfx::Rect enclosed_rect_in_parent =
-          gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
-      wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
-                                 enclosed_rect_in_parent.y());
+      gfx::Point origin_in_parent =
+          gfx::ToCeiledPoint(bounds_dip_in_parent_surface.origin());
+      wl_subsurface_set_position(subsurface_.get(), origin_in_parent.x(),
+                                 origin_in_parent.y());
     }
     // TODO(crbug.com/1506309): This commit might not be needed. Changes to the
     // position depend on the sync mode of the parent surface.

@@ -291,7 +291,8 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
   DCHECK(parent_window());
   state->window_scale = parent_window()->applied_state().window_scale;
   state->size_px =
-      gfx::ScaleToEnclosingRect(state->bounds_dip, state->window_scale).size();
+      ScaleToEnclosingRectIgnoringError(state->bounds_dip, state->window_scale)
+          .size();
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
   return true;

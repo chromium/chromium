@@ -33,6 +33,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -1242,8 +1243,10 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
 
   // Adjust state values if necessary.
   state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
-  state.size_px =
-      gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
+
+  state.size_px = gfx::ScaleToEnclosingRectIgnoringError(state.bounds_dip,
+                                                         state.window_scale)
+                      .size();
   // This will ensure that if insets at the time of the request changed, a new
   // frame is produced when the state is applied.
   state.insets = GetDecorationInsetsInDIP();

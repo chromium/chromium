@@ -374,8 +374,9 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     auto region_px =
         config.enable_blend
             ? std::nullopt
-            : std::optional<std::vector<gfx::Rect>>(
-                  {gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))});
+            : std::optional<std::vector<gfx::Rect>>({gfx::Rect(
+                  gfx::ToEnclosingRectIgnoringError(config.bounds_rect)
+                      .size())});
     surface->set_opaque_region(region_px);
   }
 
@@ -401,7 +402,8 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
   // `bounds_rect` origin.
   gfx::RectF surface_damage = gfx::RectF(config.damage_region);
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
-  surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
+  surface->UpdateBufferDamageRegion(
+      gfx::ToEnclosingRectIgnoringError(surface_damage));
   if (config.rounded_clip_bounds) {
     // The deprecated implementation uses root surface coordinates, so do not
     // offset if the local coordinates rounded corners is not supported.

@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -356,6 +358,14 @@ Rect BoundingRect(const Point& p1, const Point& p2) {
   result.SetByBounds(std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y()),
                      std::max(p1.x(), p2.x()), std::max(p1.y(), p2.y()));
   return result;
+}
+
+Rect ScaleToEnclosingRectIgnoringError(const Rect& rect,
+                                       float scale,
+                                       float epsilon) {
+  RectF rect_f(rect);
+  rect_f.Scale(scale);
+  return ToEnclosingRectIgnoringError(rect_f, epsilon);
 }
 
 Rect MaximumCoveredRect(const Rect& a, const Rect& b) {
