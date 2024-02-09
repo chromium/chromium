@@ -3415,14 +3415,12 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   UpdateFramebufferSRGB(nullptr);
 
   bool call_gl_clear = !surfaceless_ && !offscreen;
-#if BUILDFLAG(IS_ANDROID)
   // Temporary workaround for Android WebView because this clear ignores the
   // clip and corrupts that external UI of the App. Not calling glClear is ok
   // because the system already clears the buffer before each draw. Proper
   // fix might be setting the scissor clip properly before initialize. See
   // crbug.com/259023 for details.
   call_gl_clear = surface_->GetHandle();
-#endif
   if (call_gl_clear) {
     // On configs where we report no alpha, if the underlying surface has
     // alpha, clear the surface alpha to 1.0 to be correct on ReadPixels/etc.
