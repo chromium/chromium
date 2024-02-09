@@ -18223,6 +18223,21 @@
             ]
         }
     ],
+    "SonomaAccessibilityActivationRefinements": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SonomaAccessibilityActivationRefinements"
+                    ]
+                }
+            ]
+        }
+    ],
     "SparseObjectPaintProperties": [
         {
             "platforms": [
