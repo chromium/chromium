@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
-#define CHROME_BROWSER_POLICY_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
+#define CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -32,4 +32,4 @@ class ScreenCaptureLocationPolicyHandler : public TypeCheckingPolicyHandler {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_SCREEN_CAPTURE_LOCATION_POLICY_HANDLER_H_
