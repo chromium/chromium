@@ -202,6 +202,14 @@ BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
              "V8IgnitionElideRedundantTdzChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Add additional alignment for some jumps in generated x64 code, to mitigate
+// the performance impact of the Intel JCC erratum (https://crbug.com/v8/14225).
+// Currently disabled by default in V8, but adding here temporarily to test
+// real-world performance impact via a Finch experiment.
+BASE_FEATURE(kV8IntelJCCErratumMitigation,
+             "V8IntelJCCErratumMitigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // JavaScript language features.
 
 // Enables the Symbols-as-WeakMap-keys proposal.
