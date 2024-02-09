@@ -1605,6 +1605,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Don't require FCP for the page to turn interactive. Useful for testing.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 
+// Optimize loading 1x1 transparent placeholder images.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSimplifyLoadingTransparentPlaceholderImage);
+
 }  // namespace features
 }  // namespace blink
 
