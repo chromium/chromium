@@ -39,8 +39,13 @@
              : nullptr;
 }
 
-// Returns the delegate attached to the config.
+// Returns the delegate attached to the config or `nullptr` if there is no
+// config.
 - (IOSChromeSavePasswordInfoBarDelegate*)passwordDelegate {
+  if (!self.config) {
+    return nullptr;
+  }
+
   return static_cast<IOSChromeSavePasswordInfoBarDelegate*>(
       self.config->delegate());
 }
