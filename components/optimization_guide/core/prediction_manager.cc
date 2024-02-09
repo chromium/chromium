@@ -145,7 +145,11 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
              "ClientSidePhishingModelMetadata" ||
          model_metadata.type_url() ==
              "type.googleapis.com/"
-             "lens.prime.csc.VisualSearchModelMetadata";
+             "lens.prime.csc.VisualSearchModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "HistoryClustersModuleRankingModelMetadata";
 }
 
 void RecordModelAvailableAtRegistration(

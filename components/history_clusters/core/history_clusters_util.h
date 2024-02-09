@@ -88,6 +88,9 @@ bool IsVisitInCategories(const history::ClusterVisit& visit,
 bool IsClusterInCategories(const history::Cluster& cluster,
                            const base::flat_set<std::string>& categories);
 
+// Return the set of category ids associated with a given cluster.
+std::set<std::string> GetClusterCategoryIds(const history::Cluster& cluster);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

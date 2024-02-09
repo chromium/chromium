@@ -89,6 +89,15 @@ class MockHistoryService : public history::HistoryService {
 
   MOCK_METHOD1(ClearCachedDataForContextID,
                void(history::ContextID context_id));
+
+  MOCK_CONST_METHOD4(
+      GetAnnotatedVisits,
+      base::CancelableTaskTracker::TaskId(
+          const history::QueryOptions& options,
+          bool compute_redirect_chain_start_properties,
+          history::HistoryService::GetAnnotatedVisitsCallback callback,
+          base::CancelableTaskTracker* tracker));
+
   MOCK_METHOD3(HideVisits,
                base::CancelableTaskTracker::TaskId(
                    const std::vector<history::VisitID>& visit_ids,

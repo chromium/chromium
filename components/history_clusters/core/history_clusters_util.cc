@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 
 #include <algorithm>
+#include <set>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -460,6 +461,18 @@ bool IsClusterInCategories(const history::Cluster& cluster,
     }
   }
   return false;
+}
+
+std::set<std::string> GetClusterCategoryIds(const history::Cluster& cluster) {
+  std::set<std::string> category_ids;
+  for (const auto& visit : cluster.visits) {
+    for (const auto& visit_category : visit.annotated_visit.content_annotations
+                                          .model_annotations.categories) {
+      category_ids.insert(visit_category.id);
+    }
+  }
+
+  return category_ids;
 }
 
 }  // namespace history_clusters
