@@ -13,15 +13,12 @@ import org.chromium.content_public.browser.WebContents;
 public class PermissionSettingsBridge {
     public static boolean shouldShowNotificationsPromo(WebContents webContents) {
         return PermissionSettingsBridgeJni.get()
-                .shouldShowNotificationsPromo(getProfile(), webContents);
+                .shouldShowNotificationsPromo(
+                        Profile.fromWebContents(webContents).getOriginalProfile(), webContents);
     }
 
-    public static void didShowNotificationsPromo() {
-        PermissionSettingsBridgeJni.get().didShowNotificationsPromo(getProfile());
-    }
-
-    private static Profile getProfile() {
-        return Profile.getLastUsedRegularProfile();
+    public static void didShowNotificationsPromo(Profile profile) {
+        PermissionSettingsBridgeJni.get().didShowNotificationsPromo(profile.getOriginalProfile());
     }
 
     @NativeMethods
