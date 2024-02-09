@@ -117,27 +117,25 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
 
-    InstallBannerConfig config = GetCurrentInstallBannerConfig();
+    InstallBannerConfig install_config = GetCurrentInstallBannerConfig();
     std::unique_ptr<AddToHomescreenParams> a2hs_params =
         AppBannerManagerAndroid::CreateAddToHomescreenParams(
-            config, native_java_app_data_for_testing(),
+            install_config, native_java_app_data_for_testing(),
             InstallableMetrics::GetInstallSource(
                 &GetWebContents(), InstallTrigger::AMBIENT_BADGE));
 
     ambient_badge_test_->MaybeShow(
-        validated_url_, GetAppName(), GetAppIdentifier(),
-        std::move(a2hs_params),
+        install_config.validated_url, install_config.GetWebOrNativeAppName(),
+        install_config.GetWebOrNativeAppIdentifier(), std::move(a2hs_params),
         // TODO(b/323192242): See if these callbacks can be merged.
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
                        GetAndroidWeakPtr()),
         // Create the params, then pass them to MaybeShow.
         base::BindOnce(&AppBannerManagerAndroid::CreateAddToHomescreenParams,
-                       config, native_java_app_data_for_testing())
+                       install_config, native_java_app_data_for_testing())
             .Then(base::BindOnce(
                 &PwaBottomSheetController::MaybeShow, web_contents(),
-                GetAppName(), primary_icon_, has_maskable_primary_icon_,
-                manifest().start_url, screenshots_,
-                manifest().description.value_or(u""), /*expand_sheet=*/false,
+                install_config.web_app_data, /*expand_sheet=*/false,
                 base::BindRepeating(&TestAppBannerManager::OnInstallEvent,
                                     GetAndroidWeakPtr()))));
   }
