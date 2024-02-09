@@ -5500,24 +5500,6 @@
             ]
         }
     ],
-    "DefaultBrowserVideoPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Single_Step",
-                    "params": {
-                        "default_browser_video_promo_variant": "generic_conditions_fullscreen_promo"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserVideoPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBucketUsesRelaxedDurability": [
         {
             "platforms": [
