@@ -52,7 +52,6 @@
 namespace blink {
 
 class ComputedStyle;
-struct PhysicalBoxStrut;
 struct PhysicalRect;
 class ScrollIntoViewOptions;
 
@@ -70,7 +69,6 @@ class CORE_EXPORT ScrollAlignment {
   static ScrollOffset GetScrollOffsetToExpose(
       const PhysicalRect& visible_scroll_snapport_rect,
       const PhysicalRect& expose_rect,
-      const PhysicalBoxStrut& expose_scroll_margin,
       const mojom::blink::ScrollAlignment& align_x,
       const mojom::blink::ScrollAlignment& align_y,
       const ScrollOffset& current_scroll_offset);
