@@ -21074,15 +21074,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DetachedFramePromiseResolve) {
   EXPECT_EQ(nullptr, EvalJs(shell(), kTopLevelScript));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NoFeatureDetection) {
-  // Tests behavior with all feature detection off; this is currently default,
-  // but should go away once anything enabling it goes to 100%
-
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
+  // Since kFledgeCustomMaxAuctionAdComponents is rolling out, feature
+  // detection helper should be visible.
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/simple_page.html");
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ(false, EvalJs(shell(), "'protectedAudience' in navigator"));
+  EXPECT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
 }
 
 class InterestGroupAdComponentLimitBrowserTest
