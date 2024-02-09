@@ -1304,6 +1304,17 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
                           allocator_->IsFull());
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "corrupted",
                           allocator_->IsCorrupt());
+    SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "freeptr",
+                            allocator_->freeptr());
+    // The allocator's cookie should always be `kGlobalCookie`. Add it to crash
+    // keys to see if the file was corrupted externally, e.g. by a file
+    // shredder. Cast to volatile to avoid compiler optimizations and ensure
+    // that the actual value is read.
+    SCOPED_CRASH_KEY_NUMBER(
+        "PersistentMemoryAllocator", "cookie",
+        static_cast<volatile PersistentMemoryAllocator::SharedMetadata*>(
+            allocator_->shared_meta())
+            ->cookie);
     SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "ref", ref);
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "ref_found", ref_found);
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "raced", raced);
