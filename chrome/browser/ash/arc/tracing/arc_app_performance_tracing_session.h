@@ -29,7 +29,7 @@ namespace arc {
 
 struct PerfTraceResult {
   double fps, commit_deviation, perceived_fps, present_deviation,
-      render_quality;
+      render_quality, janks_per_minute;
 };
 
 using TicksNowCallback = base::RepeatingCallback<base::TimeTicks()>;

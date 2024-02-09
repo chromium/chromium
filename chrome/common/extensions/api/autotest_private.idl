@@ -380,6 +380,7 @@ namespace autotestPrivate {
     double commitDeviation;
     double presentDeviation;
     double renderQuality;
+    double janksPerMinute;
   };
 
   callback TakeScreenshotCallback = void (DOMString base64Png);
