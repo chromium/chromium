@@ -261,19 +261,23 @@ public abstract class TabModelSelectorBase
                 return model.closeTab(tab);
             }
         }
-        assert false
-                : "Tried to close a tab that is not in any model!"
-                        + " Activity class name "
-                        + getTabActivityName(tab)
-                        + " Is closing "
-                        + tab.isClosing()
-                        + " Is destroyed "
-                        + tab.isDestroyed()
-                        + " Is detached "
-                        + tab.isDetached()
-                        + " Model-size: "
-                        + getModels().size();
-        return false;
+
+        if (getModels().isEmpty()) {
+            tab.destroy();
+            return true;
+        } else {
+            assert false
+                    : "Tried to close a tab that is not in any model!"
+                            + " Activity class name "
+                            + getTabActivityName(tab)
+                            + " Is closing "
+                            + tab.isClosing()
+                            + " Is destroyed "
+                            + tab.isDestroyed()
+                            + " Is detached "
+                            + tab.isDetached();
+            return false;
+        }
     }
 
     private String getTabActivityName(Tab tab) {
