@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "chrome/browser/autofill/address_accessory_controller.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockAddressAccessoryController

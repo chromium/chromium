@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 
 namespace autofill {
 

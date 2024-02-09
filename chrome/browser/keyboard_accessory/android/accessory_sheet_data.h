@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ACCESSORY_SHEET_DATA_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ACCESSORY_SHEET_DATA_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_SHEET_DATA_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_SHEET_DATA_H_
 
 #include <optional>
 #include <string>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -436,4 +436,4 @@ class AccessorySheetData::Builder {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ACCESSORY_SHEET_DATA_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_SHEET_DATA_H_

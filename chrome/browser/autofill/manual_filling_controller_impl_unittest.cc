@@ -10,16 +10,15 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"

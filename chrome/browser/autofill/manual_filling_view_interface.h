@@ -10,7 +10,7 @@
 
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "url/gurl.h"
 
 class ManualFillingController;

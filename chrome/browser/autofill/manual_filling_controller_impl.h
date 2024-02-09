@@ -14,7 +14,7 @@
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"

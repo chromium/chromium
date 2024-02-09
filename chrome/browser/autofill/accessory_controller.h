@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 // Interface for the portions of type-specific manual filling controllers (e.g.,

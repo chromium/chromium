@@ -522,6 +522,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/autofill",
+    "//chrome/browser/keyboard_accessory/android:public",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support",

@@ -7422,6 +7422,7 @@ test("unit_tests") {
       "//chrome/browser/android/webapk/test:webapk_test_support",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/long_screenshots:services",
       "//chrome/browser/notifications",
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",

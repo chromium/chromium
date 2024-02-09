@@ -3445,6 +3445,7 @@ static_library("browser") {
       "//chrome/browser/feedback/android:jni_headers",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/gesturenav/android:jni_headers",
+      "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/language/android:jni_headers",
       "//chrome/browser/long_screenshots:services",
       "//chrome/browser/notifications:jni_headers",
