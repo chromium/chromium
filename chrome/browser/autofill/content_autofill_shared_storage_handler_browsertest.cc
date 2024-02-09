@@ -38,15 +38,11 @@ class ContentAutofillSharedStorageHandlerBrowserTest
 
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillSharedStorageHandlerBrowserTest,
                        CheckSharedStorageData) {
-  // TODO(b/41492904): Determine what to do with empty Set operations (consider
-  // clearing the key instead). For now, this test measures the histogram after
-  // initialization where there may have been one or more empty Sets before the
-  // card is added, depending on the platform.
-  base::HistogramTester histogram_tester_;
 
   CreditCard card = test::GetFullServerCard();
   AddTestServerCreditCard(browser()->profile(), card);

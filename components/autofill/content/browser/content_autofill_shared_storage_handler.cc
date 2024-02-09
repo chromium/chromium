@@ -51,14 +51,20 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
     return;
   }
 
-  shared_storage_manager_->Set(
-      url::Origin::Create(payments::GetBaseSecureUrl()),
-      kAutofillServerCardDataSharedStorageKey,
-      EncodeServerCardDataForSharedStorage(server_card_data),
-      base::BindOnce(&ContentAutofillSharedStorageHandler::
-                         OnSharedStorageSetAutofillDataComplete,
-                     weak_factory_.GetWeakPtr()),
-      storage::SharedStorageDatabase::SetBehavior::kDefault);
+  if (server_card_data.empty()) {
+    shared_storage_manager_->Delete(
+        url::Origin::Create(payments::GetBaseSecureUrl()),
+        kAutofillServerCardDataSharedStorageKey, base::DoNothing());
+  } else {
+    shared_storage_manager_->Set(
+        url::Origin::Create(payments::GetBaseSecureUrl()),
+        kAutofillServerCardDataSharedStorageKey,
+        EncodeServerCardDataForSharedStorage(server_card_data),
+        base::BindOnce(&ContentAutofillSharedStorageHandler::
+                           OnSharedStorageSetAutofillDataComplete,
+                       weak_factory_.GetWeakPtr()),
+        storage::SharedStorageDatabase::SetBehavior::kDefault);
+  }
 }
 
 void ContentAutofillSharedStorageHandler::
