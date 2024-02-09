@@ -6,10 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_features.h"
@@ -162,6 +159,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
 
   switch (model.GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return IconAndColorForSuspiciousUiPattern();
 
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
@@ -171,22 +169,6 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return IconAndColorForDangerousUiPattern();
 
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
-      bool request_ap_verdicts = false;
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-      request_ap_verdicts =
-          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-              model.profile())
-              ->IsUnderAdvancedProtection();
-#endif
-      if (request_ap_verdicts) {
-        return IconAndColor{features::IsChromeRefresh2023()
-                                ? &kDownloadWarningIcon
-                                : &vector_icons::kNotSecureWarningIcon,
-                            kColorDownloadItemIconWarning};
-      }
-      return IconAndColorForSuspiciousUiPattern();
-    }
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return IconAndColor{features::IsChromeRefresh2023()
                               ? &views::kInfoChromeRefreshIcon
