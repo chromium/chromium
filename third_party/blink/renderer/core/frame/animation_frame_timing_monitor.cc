@@ -377,9 +377,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   std::swap(script_info, pending_script_info_);
 
   if (!enabled_ || !context || !context->IsWindow() ||
-      !client_.ShouldReportLongAnimationFrameTiming() ||
-      !ShouldAllowScriptURL(script_info->source_location.url) ||
-      state_ == State::kIdle) {
+      !client_.ShouldReportLongAnimationFrameTiming()) {
     return nullptr;
   }
 
@@ -390,6 +388,11 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   }
 
   if ((end_time - script_info->start_time) < kLongScriptDuration) {
+    return nullptr;
+  }
+
+  if (!ShouldAllowScriptURL(script_info->source_location.url) ||
+      state_ == State::kIdle) {
     return nullptr;
   }
 
