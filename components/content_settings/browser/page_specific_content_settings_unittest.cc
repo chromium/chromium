@@ -462,6 +462,11 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
+                    "CookiesTreeModel tests";
+  }
   NavigateAndCommit(GURL("http://google.com"));
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   PageSpecificContentSettings* content_settings =
@@ -484,6 +489,11 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
+                    "CookiesTreeModel tests";
+  }
   NavigateAndCommit(GURL("http://google.com"));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -746,6 +756,11 @@ TEST_F(PageSpecificContentSettingsTest,
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
+                    "CookiesTreeModel tests";
+  }
   NavigateAndCommit(GURL("http://google.com"));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
