@@ -38,22 +38,6 @@ class EnvironmentProvider {
   // Demo Mode, and Kiosks.
   virtual std::optional<account_manager::Account> GetDeviceAccount();
 
-  // Getter and setter for device account policy data. Used to pass data from
-  // Ash to Lacros. The format is serialized PolicyFetchResponse object. See
-  // components/policy/proto/device_management_backend.proto for details.
-  virtual std::string GetDeviceAccountPolicy();
-  virtual void SetDeviceAccountPolicy(const std::string& policy_blob);
-
-  // Getter and updater of the component policy for given namespace. The policy
-  // blob is serialized JSON received from the server, or parsed from the file
-  // after is was validated.
-  const policy::ComponentPolicyMap& GetDeviceAccountComponentPolicy();
-
-  // Updates the component policy for given namespace. The policy value is JSON
-  // received from the server, or parsed from the file after is was validated.
-  void SetDeviceAccountComponentPolicy(
-      policy::ComponentPolicyMap component_policy);
-
   // Getter and setter for last device policy fetch attempt timestamp.
   virtual base::Time GetLastPolicyFetchAttemptTimestamp();
   virtual void SetLastPolicyFetchAttemptTimestamp(const base::Time& timestamp);

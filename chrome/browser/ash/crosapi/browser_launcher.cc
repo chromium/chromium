@@ -488,19 +488,9 @@ void BrowserLauncher::ResumeLaunch() {
   postlogin_pipe_fd_.reset();
 }
 
-void BrowserLauncher::SetDeviceAccountComponentPolicy(
-    policy::ComponentPolicyMap component_policy) {
-  environment_provider_.SetDeviceAccountComponentPolicy(
-      std::move(component_policy));
-}
-
 void BrowserLauncher::SetLastPolicyFetchAttemptTimestamp(
     base::Time last_refresh) {
   environment_provider_.SetLastPolicyFetchAttemptTimestamp(last_refresh);
-}
-
-void BrowserLauncher::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  environment_provider_.SetDeviceAccountPolicy(policy_blob);
 }
 
 bool BrowserLauncher::IsProcessValid() {

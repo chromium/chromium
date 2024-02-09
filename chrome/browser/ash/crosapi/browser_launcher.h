@@ -133,11 +133,7 @@ class BrowserLauncher {
   // `postlogin_pipe_fd` is reset.
   void ResumeLaunch();
 
-  // Sets properties to `environment_provider_`.
-  void SetDeviceAccountComponentPolicy(
-      policy::ComponentPolicyMap component_policy);
   void SetLastPolicyFetchAttemptTimestamp(base::Time last_refresh);
-  void SetDeviceAccountPolicy(const std::string& policy_blob);
 
   EnvironmentProvider& environment_provider() { return environment_provider_; }
 

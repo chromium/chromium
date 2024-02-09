@@ -45,10 +45,6 @@ struct ComponentCloudPolicyStore::DomainConstants {
 
 namespace {
 
-const char kValue[] = "Value";
-const char kLevel[] = "Level";
-const char kRecommended[] = "Recommended";
-
 const ComponentCloudPolicyStore::DomainConstants kDomains[] = {
     {
         dm_protocol::kChromeExtensionPolicyType,
@@ -80,25 +76,6 @@ const ComponentCloudPolicyStore::DomainConstants* GetDomainConstantsForType(
       return &constants;
   }
   return nullptr;
-}
-
-base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
-  base::Value::Dict result;
-  // This is actually safe because this code just copies the value,
-  // not caring about its type.
-  result.Set(kValue, entry.value_unsafe()->Clone());
-  if (entry.level == POLICY_LEVEL_RECOMMENDED) {
-    result.Set(kLevel, std::string_view(kRecommended));
-  }
-  return result;
-}
-
-base::Value::Dict TranslatePolicyMapToJson(const PolicyMap& policy_map) {
-  base::Value::Dict result;
-  for (const auto& [key, entry] : policy_map) {
-    result.Set(key, TranslatePolicyMapEntryToJson(entry));
-  }
-  return result;
 }
 
 }  // namespace
@@ -450,15 +427,6 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
   return ParseComponentPolicy(std::move(json).TakeDict(),
                               domain_constants_->scope, POLICY_SOURCE_CLOUD,
                               policy, error);
-}
-
-ComponentPolicyMap ComponentCloudPolicyStore::GetJsonPolicyMap() {
-  ComponentPolicyMap result;
-  for (const auto& [policy_namespace, policy_map] : policy_bundle_) {
-    result[policy_namespace] =
-        base::Value(TranslatePolicyMapToJson(policy_map));
-  }
-  return result;
 }
 
 }  // namespace policy

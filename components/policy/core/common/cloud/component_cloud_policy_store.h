@@ -79,9 +79,6 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // The current list of policies.
   const PolicyBundle& policy() const { return policy_bundle_; }
 
-  // Returns the map of JSON policy value for each namespace.
-  ComponentPolicyMap GetJsonPolicyMap();
-
   // The cached hash for namespace |ns|, or the empty string if |ns| is not
   // cached.
   const std::string& GetCachedHash(const PolicyNamespace& ns) const;

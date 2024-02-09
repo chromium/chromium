@@ -164,25 +164,6 @@ EnvironmentProvider::GetDeviceAccount() {
   }
 }
 
-void EnvironmentProvider::SetDeviceAccountPolicy(
-    const std::string& policy_blob) {
-  device_account_policy_blob_ = policy_blob;
-}
-
-std::string EnvironmentProvider::GetDeviceAccountPolicy() {
-  return device_account_policy_blob_;
-}
-
-const policy::ComponentPolicyMap&
-EnvironmentProvider::GetDeviceAccountComponentPolicy() {
-  return component_policy_;
-}
-
-void EnvironmentProvider::SetDeviceAccountComponentPolicy(
-    policy::ComponentPolicyMap component_policy) {
-  component_policy_ = std::move(component_policy);
-}
-
 base::Time EnvironmentProvider::GetLastPolicyFetchAttemptTimestamp() {
   return last_policy_fetch_attempt_;
 }

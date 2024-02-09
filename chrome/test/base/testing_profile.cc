@@ -874,6 +874,12 @@ TestingProfile::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void TestingProfile::SetUserCloudPolicyManagerAsh(
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
+        user_cloud_policy_manager) {
+  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+}
+
 policy::UserCloudPolicyManagerAsh*
 TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
