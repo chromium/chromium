@@ -106,7 +106,7 @@ bool ConvertVideoFrameToYUV420P10(const VideoFrame* src_frame,
   // the same layout as YUV420.
   // P010 is P016LE with the lower 6 bits zeroed out.
   // |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-  // |          valid data            | 0| 0| 0| 0| 0|
+  // |          valid data         | 0| 0| 0| 0| 0| 0|
   //
   // I010 has the upper 6 bits zeroed out and the pixel data in the LSB.
   // |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
