@@ -89,7 +89,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       },
 
       statusMessage: {
-        type: String,
+        type: Object,
         notify: true,
       },
 
@@ -156,7 +156,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   acceleratorInfo: StandardAcceleratorInfo;
   viewState: ViewState;
-  statusMessage: string;
+  statusMessage: string|TrustedHTML;
   hasError: boolean;
   recordedError: boolean;
   description: string;
@@ -432,9 +432,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         return;
       }
       case AcceleratorConfigResult.kNonSearchAcceleratorWarning: {
-        // TODO(jimmyxgong): Add the "Learn More" link when available.
-        this.statusMessage =
-            this.i18n('warningSearchNotIncluded', this.getMetaKeyDisplay());
+        this.statusMessage = this.i18nAdvanced(
+            'warningSearchNotIncluded',
+            {substitutions: [this.getMetaKeyDisplay()]});
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -472,14 +472,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
 
-  private makeA11yAnnouncement(message: string): void {
+  private makeA11yAnnouncement(message: string|TrustedHTML): void {
     const announcer = getAnnouncerInstance(this.$.container);
     // Remove "role = alert" to avoid chromevox announcing "alert" before
     // message.
     strictQuery('#messages', announcer.shadowRoot, HTMLDivElement)
         .removeAttribute('role');
     // Announce the messages.
-    announcer.announce(message);
+    announcer.announce(message as string);
   }
 
   private showEditView(): boolean {

@@ -233,6 +233,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
+  source->AddString("shortcutCustomizationLearnMoreUrl",
+                    kShortcutCustomizationLearnMoreURL);
   source->UseStringsJs();
 }
 

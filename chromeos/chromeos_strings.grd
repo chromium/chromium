@@ -4539,7 +4539,7 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_NON_SEARCH_SHORTCUT_WARNING"
             desc="The status (warning) message that displays when user attempts to input a shortcut that does not include the search/launcher key.">
-          Shortcut without <ph name="meta_key">$1<ex>search</ex></ph> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="key">$1<ex>search</ex></ph> key.
+          Shortcut without <ph name="meta_key">$1<ex>search</ex></ph> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="key">$1<ex>search</ex></ph> key. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
