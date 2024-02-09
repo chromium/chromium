@@ -98,6 +98,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // endpoint is held by the client.
   void DetachedFromRequest();
 
+  void set_worker_parent_client_uuid(std::string uuid) {
+    worker_parent_client_uuid_ = std::move(uuid);
+  }
+
   base::WeakPtr<ServiceWorkerMainResourceLoader> AsWeakPtr();
 
  private:
@@ -305,6 +309,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       forwarded_race_network_request_url_loader_factory_;
 
   base::TimeTicks find_registration_start_time_;
+
+  // Dedicated Worker's parent container's UUID.
+  // Valid for fetching the worker script with the PlzDedicatedWorker is
+  // enabled.
+  std::string worker_parent_client_uuid_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

@@ -503,12 +503,14 @@ ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher(
     blink::mojom::FetchAPIRequestPtr request,
     network::mojom::RequestDestination destination,
     const std::string& client_id,
+    const std::string& resulting_client_id,
     scoped_refptr<ServiceWorkerVersion> version,
     base::OnceClosure prepare_callback,
     FetchCallback fetch_callback,
     bool is_offline_capability_check)
     : request_(std::move(request)),
       client_id_(client_id),
+      resulting_client_id_(resulting_client_id),
       version_(std::move(version)),
       destination_(destination),
       prepare_callback_(std::move(prepare_callback)),
@@ -658,7 +660,7 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   auto params = blink::mojom::DispatchFetchEventParams::New();
   params->request = std::move(request_);
   params->client_id = client_id_;
-  params->resulting_client_id = client_id_;
+  params->resulting_client_id = resulting_client_id_;
   params->preload_url_loader_client_receiver =
       std::move(preload_url_loader_client_receiver_);
   params->is_offline_capability_check = is_offline_capability_check_;

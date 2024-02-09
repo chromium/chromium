@@ -665,6 +665,7 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
       std::make_unique<ServiceWorkerMainResourceLoader>(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_,
           std::move(find_registration_start_time)));
+  loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
   std::move(loader_callback_)
       .Run(NavigationLoaderInterceptor::Result(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
