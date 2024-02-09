@@ -123,6 +123,19 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     ])
   }
 
+  override func viewWillTransition(
+    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    super.viewWillTransition(to: size, with: coordinator)
+    weak var weakSelf = self
+    coordinator.animate(alongsideTransition: nil) { _ in
+      // The tab cell size must be updated after the transition completes.
+      // Otherwise the collection view width won't be updated.
+      weakSelf?.layout.calculateTabCellSize()
+      weakSelf?.layout.invalidateLayout()
+    }
+  }
+
   // MARK: - TabStripConsumer
 
   func populate(items: [TabSwitcherItem]?, selectedItem: TabSwitcherItem?) {

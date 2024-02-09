@@ -415,9 +415,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return alpha
   }
 
+  // MARK: - Public
+
   // Calculates the dynamic size of a tab according to the number of tabs and
   // groups.
-  private func calculateTabCellSize() {
+  public func calculateTabCellSize() {
     guard let collectionView = self.collectionView, let snapshot = dataSource?.snapshot() else {
       return
     }
@@ -446,8 +448,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)
   }
-
-  // MARK: - Public
 
   public func calculcateCellSize(indexPath: IndexPath) -> CGSize {
     // TODO(crbug.com/1509342): Handle tab group item.
