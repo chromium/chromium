@@ -32346,6 +32346,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Learn more is clicked in the Manage Topics Page.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.PageOpened">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Manage Topics page is opened.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlocked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Topic blocked from the Manage Topics page.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Topic blocking operation canceled from the confirmation dialog.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Topic blocking operation confirmed from the confirmation dialog.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicEnabled">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Topic enabled from the Manage Topics page.</description>
+</action>
+
 <action name="Settings.PrivacySandbox.Topics.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>

@@ -1191,6 +1191,7 @@ suite('ManageTopics', function() {
   let page: SettingsPrivacySandboxManageTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -1206,6 +1207,8 @@ suite('ManageTopics', function() {
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
         getFirstLevelTopicsState());
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     page = document.createElement(
@@ -1256,6 +1259,10 @@ suite('ManageTopics', function() {
   }
 
   test('ManageTopicsPageTestExplanationText', async function() {
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     const manageTopicsExplanationText =
         page.shadowRoot!.querySelector('#explanationText');
     assertTrue(!!manageTopicsExplanationText);
@@ -1273,9 +1280,20 @@ suite('ManageTopics', function() {
         'Learn more about managing your ad privacy in Chrome.');
     assertEquals(
         'https://support.google.com/chrome?p=ad_privacy', links[0]!.href);
+    const learnMoreLink =
+        manageTopicsExplanationText.querySelector<HTMLElement>(
+            '#learnMoreLink');
+    assertTrue(!!learnMoreLink);
+    learnMoreLink.click();
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('ManageTopicsPageTestLabelsAndSubLabels', async function() {
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     const firstLevelTopics =
         page.shadowRoot!.querySelectorAll('.topic-toggle-row');
     assertEquals(2, firstLevelTopics.length);
@@ -1290,6 +1308,9 @@ suite('ManageTopics', function() {
   });
 
   test('ManageTopicsPageTestToggles', async function() {
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     const toggles = page.shadowRoot!.querySelectorAll('cr-toggle');
     assertEquals(2, toggles.length);
     const toggleAriaLabels =
@@ -1309,6 +1330,10 @@ suite('ManageTopics', function() {
   });
 
   test('ManageTopicsPageChangeToggle', async function() {
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     testPrivacySandboxBrowserProxy.setChildTopics([{
       topicId: 3,
       taxonomyVersion: 1,
@@ -1320,6 +1345,10 @@ suite('ManageTopics', function() {
     assertEquals(2, toggles.length);
     toggles[0]!.click();
     assertTrue(toggles[0]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicEnabled',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     // Attempting to block topic 1, causes a dialog to open due to
     // getChildTopicsCurrentlyAssigned returning a non empty list of
     // child topics that would be blocked if they chose to continue.
@@ -1336,6 +1365,10 @@ suite('ManageTopics', function() {
     await eventToPromise('close', blockTopicDialog);
     await flushTasks();
 
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     // After closing the dialog and choosing to not block it, the
     // toggle is turned back ON.
     assertTrue(toggles[0]!.checked);
@@ -1356,6 +1389,14 @@ suite('ManageTopics', function() {
     // The block button blocks the topic and changes the
     // toggle to be turned OFF.
     assertFalse(toggles[0]!.checked);
+    assertEquals(2, metricsBrowserProxy.getArgs('recordAction').length);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed',
+        metricsBrowserProxy.getArgs('recordAction')[0]);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlocked',
+        metricsBrowserProxy.getArgs('recordAction')[1]);
+    metricsBrowserProxy.resetResolver('recordAction');
 
     testPrivacySandboxBrowserProxy.setChildTopics([]);
     // Toggle 2 (topic 4) has no child topics
@@ -1364,9 +1405,16 @@ suite('ManageTopics', function() {
     toggles[1]!.click();
     await flushTasks();
     assertFalse(toggles[1]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlocked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('ManageTopicsPageClickOnToggleRow', async function() {
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     testPrivacySandboxBrowserProxy.setChildTopics([{
       topicId: 3,
       taxonomyVersion: 1,
@@ -1381,6 +1429,10 @@ suite('ManageTopics', function() {
     assertEquals(2, toggles.length);
     topicToggleRows[0]!.click();
     assertTrue(toggles[0]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicEnabled',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Attempting to block topic 1, causes a dialog to open due to
     // getChildTopicsCurrentlyAssigned returning a non empty list of child
@@ -1397,6 +1449,10 @@ suite('ManageTopics', function() {
     blockTopicDialog.$.cancel.click();
     await eventToPromise('close', blockTopicDialog);
     await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // After closing the dialog and choosing to not block it, the toggle is
     // turned back ON.
@@ -1418,6 +1474,14 @@ suite('ManageTopics', function() {
     // The block button blocks the topic and changes the toggle to be turned
     // OFF.
     assertFalse(toggles[0]!.checked);
+    assertEquals(2, metricsBrowserProxy.getArgs('recordAction').length);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed',
+        metricsBrowserProxy.getArgs('recordAction')[0]);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlocked',
+        metricsBrowserProxy.getArgs('recordAction')[1]);
+    metricsBrowserProxy.resetResolver('recordAction');
 
     testPrivacySandboxBrowserProxy.setChildTopics([]);
     // Toggle 2 (topic 4) has no child topics that are currently assigned which
@@ -1425,6 +1489,9 @@ suite('ManageTopics', function() {
     topicToggleRows[1]!.click();
     await flushTasks();
     assertFalse(toggles[1]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlocked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });
 
@@ -1432,6 +1499,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
   let adTopicsPage: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -1448,6 +1516,8 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
         getInitialFirstLevelTopicsState());
     testPrivacySandboxBrowserProxy.setTestTopicState(getInitialTopicsState());
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.appendChild(settingsPrefs);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     adTopicsPage =
@@ -1558,6 +1628,10 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
         '#blockedTopicsRow');
     blockedTopicsRow!.click();
     await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.BlockedTopicsOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Assert initial values
     let blockedTopicsList =
@@ -1579,6 +1653,11 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
     flushTasks();
 
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
+
     // Assert initial values and unblock test-topic-1 and block test-topic-2.
     let toggles = manageTopicsPage.shadowRoot!.querySelectorAll('cr-toggle');
     assertEquals(2, toggles.length);
@@ -1588,8 +1667,16 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     assertTrue(toggles[1]!.checked);
     toggles[0]!.click();
     assertTrue(toggles[0]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicEnabled',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
     toggles[1]!.click();
     assertFalse(toggles[1]!.checked);
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlocked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Setting TopicState to reflect changes in Manage Topics page.
     testPrivacySandboxBrowserProxy.setTestTopicState(getFinalTopicsState());
@@ -1618,6 +1705,11 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     blockedTopics[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
 
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.TopicAdded',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    metricsBrowserProxy.resetResolver('recordAction');
+
     // Setting FirstLevelTopicsState to reflect changes in Ad Topics Page.
     testPrivacySandboxBrowserProxy.setFirstLevelTopicsState(
         getFinalFirstLevelTopicsState());
@@ -1628,6 +1720,10 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     document.body.appendChild(manageTopicsPage);
     await testPrivacySandboxBrowserProxy.whenCalled('getFirstLevelTopics');
     flushTasks();
+
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Manage.PageOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
 
     // Confirm that blocking test-topic-2 in Ad Topics Page are reflected in
     // Manage Topics Page. Both topics should be unchecked (blocked).
