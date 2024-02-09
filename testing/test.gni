@@ -293,6 +293,7 @@ template("mixed_test") {
             "print_final_stats",
             "detect_leaks",
             "close_fd_mask",
+            "fork",
           ]
           fuzzer_args =
               "-undefok=" + string_join(",", known_libfuzzer_args) + " "
