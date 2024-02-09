@@ -198,7 +198,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                     R.string.settings_topics_page_block_topic_snackbar,
                     null,
                     Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST,
+                    /* actionStringResId= */ 0,
+                    /* multiLine= */ true);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicRemoved");
             return true;
         }

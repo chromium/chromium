@@ -81,7 +81,9 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
                         R.string.settings_topics_page_add_topic_snackbar,
                         null,
                         Snackbar.TYPE_ACTION,
-                        Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
+                        Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST,
+                        /* actionStringResId= */ 0,
+                        /* multiLine= */ true);
             }
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
             return true;
