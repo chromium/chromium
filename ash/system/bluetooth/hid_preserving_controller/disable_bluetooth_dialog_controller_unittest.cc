@@ -16,7 +16,6 @@ namespace ash {
 
 class DisableBluetoothDialogControllerTest : public AshTestBase {
  public:
- public:
   void SetUp() override {
     AshTestBase::SetUp();
 

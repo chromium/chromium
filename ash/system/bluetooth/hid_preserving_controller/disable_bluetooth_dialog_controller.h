@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 
