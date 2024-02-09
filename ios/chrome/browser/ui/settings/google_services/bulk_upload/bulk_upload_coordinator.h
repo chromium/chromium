@@ -11,13 +11,6 @@
 // Coordinator to save in account.
 @interface BulkUploadCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
 // The delegate for the Save in Account.
 @property(nonatomic, weak) id<BulkUploadCoordinatorDelegate> delegate;
 

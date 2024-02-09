@@ -34,15 +34,9 @@
   id<SnackbarCommands> _snackbarCommandsHandler;
 }
 
-@synthesize baseNavigationController = _baseNavigationController;
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
-    _baseNavigationController = navigationController;
-  }
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
   return self;
 }
 
@@ -67,8 +61,12 @@
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
 
-  [self.baseNavigationController pushViewController:_viewController
-                                           animated:YES];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
@@ -81,7 +79,11 @@
   _viewController.mutator = nil;
   _viewController.delegate = nil;
   if (!_viewControllerIsDismissed) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
+    if (_viewController.presentingViewController) {
+      [_viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:nil];
+    }
   }
   _viewController = nil;
 }

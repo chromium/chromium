@@ -1037,7 +1037,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Verify the bulk upload view is popped.
+  // Verify the bulk upload view is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kBulkUploadTableViewAccessibilityIdentifier)]
@@ -1073,14 +1073,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                    kBulkUploadSaveButtonAccessibilityIdentifer)]
       performAction:grey_tap()];
 
-  // Verify the "manage sync" view is not visible yet.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
-
   // Successful auth should remove blocking view and "manage sync" view should
-  // be visible.
+  // be fully visible.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:

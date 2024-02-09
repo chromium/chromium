@@ -329,8 +329,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self stopBulkUpload];
   base::RecordAction(base::UserMetricsAction("BulkUploadSettingsOpen"));
   _bulkUploadCoordinator = [[BulkUploadCoordinator alloc]
-      initWithBaseNavigationController:self.navigationControllerForChildPages
-                               browser:self.browser];
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
   _bulkUploadCoordinator.delegate = self;
   [_bulkUploadCoordinator start];
 }

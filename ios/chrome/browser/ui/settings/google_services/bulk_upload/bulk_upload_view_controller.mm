@@ -70,6 +70,11 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
                  forControlEvents:UIControlEventTouchUpInside];
   _saveInAccountButton.enabled = NO;
   [self.view addSubview:_saveInAccountButton];
+  // Create the Cancel button.
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(didTapCancelButton:)];
   // Add constraints.
   [NSLayoutConstraint activateConstraints:@[
     [tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
@@ -144,6 +149,10 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 
 - (void)saveInAccountTapped:(UIButton*)button {
   [self.mutator requestSave];
+}
+
+- (void)didTapCancelButton:(UIButton*)button {
+  [self.delegate viewControllerWantsToBeDismissed:self];
 }
 
 @end
