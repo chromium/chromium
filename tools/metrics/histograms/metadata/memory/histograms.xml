@@ -2050,6 +2050,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.GpuMappedMemory" units="MB"
+    expires_after="2024-04-28">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@chromium.org</owner>
+  <summary>
+    Total size of all mapped memory buffers for GPU to/from client transfers.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.HibernatedCanvas.OriginalSize" units="MB"
     expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>

@@ -173,7 +173,7 @@ bool MappedMemoryManager::OnMemoryDump(
 
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
-        base::StringPrintf("gpu/mapped_memory/manager_%d", tracing_id_);
+        base::StringPrintf("gpu/mapped_memory/manager_0x%x", tracing_id_);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, allocated_memory_);
@@ -186,8 +186,9 @@ bool MappedMemoryManager::OnMemoryDump(
       base::trace_event::MemoryDumpManager::GetInstance()
           ->GetTracingProcessId();
   for (const auto& chunk : chunks_) {
-    std::string dump_name = base::StringPrintf(
-        "gpu/mapped_memory/manager_%d/chunk_%d", tracing_id_, chunk->shm_id());
+    std::string dump_name =
+        base::StringPrintf("gpu/mapped_memory/manager_0x%x/chunk_0x%x",
+                           tracing_id_, chunk->shm_id());
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
 
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
