@@ -981,19 +981,7 @@ PopupMenu* ChromeClientImpl::OpenPopupMenu(LocalFrame& frame,
                                            HTMLSelectElement& select) {
   NotifyPopupOpeningObservers();
 
-  bool use_external_popup_menus = WebViewImpl::UseExternalPopupMenus();
-#if BUILDFLAG(IS_MAC)
-  // There is a bug that is causing popup menus in PWA windows on macOS to
-  // sometimes not appear if using external popup menus. Until that bug is
-  // fixed, use internal menus if this is a PWA window on mac.
-  // TODO(https://crbug.com/1488347): Remove this workaround when the bug
-  // is fixed.
-  if (frame.GetSettings() && !frame.GetSettings()->GetWebAppScope().empty()) {
-    use_external_popup_menus = false;
-  }
-#endif
-
-  if (use_external_popup_menus) {
+  if (WebViewImpl::UseExternalPopupMenus()) {
     return MakeGarbageCollected<ExternalPopupMenu>(frame, select);
   }
 

@@ -5,8 +5,12 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_BRIDGE_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_BRIDGE_H_
 
+#include <utility>
+#include <vector>
+
 #import <Cocoa/Cocoa.h>
 
+#include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
@@ -88,6 +92,8 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       bool consumed) override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
+  void DisplayPopupMenu(mojom::PopupMenuPtr menu,
+                        DisplayPopupMenuCallback callback) override;
 
  private:
   bool IsPopup() const { return !!popup_window_; }
@@ -124,6 +130,17 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // The callback to be called when `Destroy()` is called.
   base::OnceClosure destroy_callback_;
+
+  // A DisplayPopupMenu call might come in while we're still displaying a popup
+  // menu. As at that point we're in a nested run loop, we'll need to delay
+  // displaying the menu until the nested look has finished. To accomplish this
+  // we keep track of pending DisplayPopupMenu calls.
+  using PendingPopupMenu =
+      std::pair<mojom::PopupMenuPtr, DisplayPopupMenuCallback>;
+  std::vector<PendingPopupMenu> pending_menus_;
+  bool showing_popup_menu_ = false;
+
+  base::WeakPtrFactory<RenderWidgetHostNSViewBridge> weak_factory_{this};
 };
 
 }  // namespace remote_cocoa
