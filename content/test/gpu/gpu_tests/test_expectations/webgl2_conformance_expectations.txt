@@ -559,7 +559,6 @@ crbug.com/1487266 [ amd-0x679e angle-metal monterey passthrough release ] deqp/f
 # NOTE: When removing this line, the suppression for the same test above
 # should have `graphite-disabled` removed.
 crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
-crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 ## Metal Intel ##
 
