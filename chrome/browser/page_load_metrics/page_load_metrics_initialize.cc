@@ -54,6 +54,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -188,8 +189,10 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
                 web_contents());
     if (loading_predictor_observer)
       tracker->AddObserver(std::move(loading_predictor_observer));
-    tracker->AddObserver(
-        std::make_unique<LcpCriticalPathPredictorPageLoadMetricsObserver>());
+    if (blink::LcppEnabled()) {
+      tracker->AddObserver(
+          std::make_unique<LcpCriticalPathPredictorPageLoadMetricsObserver>());
+    }
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
     tracker->AddObserver(
