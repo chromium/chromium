@@ -39,6 +39,7 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
+#include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -94,10 +95,9 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
-    D3D11VideoDecoder::GetD3D11DeviceCB get_d3d11_device_cb,
+    D3D11VideoDecoder::GetD3DDeviceCB get_d3d_device_cb,
     SupportedConfigs supported_configs,
-    bool system_hdr_enabled,
-    CHROME_LUID luid) {
+    bool system_hdr_enabled) {
   // Note that the output callback will hop to our thread, post the video
   // frame, and along with a callback that will hop back to the impl thread
   // when it's released.
@@ -108,8 +108,8 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
       base::MakeRefCounted<CommandBufferHelperHolder>(gpu_task_runner));
   return base::WrapUnique<VideoDecoder>(new D3D11VideoDecoder(
       gpu_task_runner, std::move(media_log), gpu_preferences, gpu_workarounds,
-      get_helper_cb, std::move(get_d3d11_device_cb),
-      std::move(supported_configs), system_hdr_enabled, luid));
+      get_helper_cb, std::move(get_d3d_device_cb), std::move(supported_configs),
+      system_hdr_enabled));
 }
 
 D3D11VideoDecoder::D3D11VideoDecoder(
@@ -118,10 +118,9 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb,
-    GetD3D11DeviceCB get_d3d11_device_cb,
+    GetD3DDeviceCB get_d3d_device_cb,
     SupportedConfigs supported_configs,
-    bool system_hdr_enabled,
-    CHROME_LUID luid)
+    bool system_hdr_enabled)
     : media_log_(std::move(media_log)),
       mailbox_release_helper_(
           base::MakeRefCounted<D3D11VideoFrameMailboxReleaseHelper>(
@@ -131,14 +130,14 @@ D3D11VideoDecoder::D3D11VideoDecoder(
       decoder_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
-      get_d3d11_device_cb_(std::move(get_d3d11_device_cb)),
+      get_d3d_device_cb_(std::move(get_d3d_device_cb)),
       get_helper_cb_(std::move(get_helper_cb)),
       supported_configs_(std::move(supported_configs)),
       system_hdr_enabled_(system_hdr_enabled),
       use_shared_handle_(
+          base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
           base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
-          gpu_preferences.gr_context_type != gpu::GrContextType::kGL),
-      luid_(luid) {
+          gpu_preferences.gr_context_type != gpu::GrContextType::kGL) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(media_log_);
 }
@@ -158,8 +157,7 @@ VideoDecoderType D3D11VideoDecoder::GetDecoderType() const {
 }
 
 bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
-    const VideoDecoderConfig& config,
-    std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
+    const VideoDecoderConfig& config) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::InitializeAcceleratedDecoder");
 
   // Clear callback in case this is a codec change.
@@ -178,38 +176,33 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
         std::make_unique<D3D11AV1Accelerator>(this, media_log_.get()), profile_,
         config.color_space_info());
-  } else if (config.codec() == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  } else if (config.codec() == VideoCodec::kHEVC) {
     DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
         std::make_unique<D3D11H265Accelerator>(this, media_log_.get()),
         profile_, config.color_space_info());
-#else
-    return false;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
+    NotifyError(D3D11Status::Codes::kDecoderUnsupportedCodec);
     return false;
   }
-
-  // Provide the initial video decoder wrapper object.
-  CHECK(set_accelerator_decoder_wrapper_cb_);
-  set_accelerator_decoder_wrapper_cb_.Run(std::move(video_decoder_wrapper));
 
   return true;
 }
 
-D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
+bool D3D11VideoDecoder::ResetD3DVideoDecoder() {
   // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
   // HDR color spaces (or VP9.2, or HEVC Main10, or HEVC Rext) with HBD capable
   // codecs (the decoder doesn't support H264PROFILE_HIGH10PROFILE). We'll get
   // a config change once we know the real bit depth if this turns out to be
   // wrong.
-  bit_depth_ = 0;
+  uint8_t bit_depth = 0;
   if (accelerated_video_decoder_) {
-    bit_depth_ = accelerated_video_decoder_->GetBitDepth();
+    bit_depth = accelerated_video_decoder_->GetBitDepth();
   }
-  if (!bit_depth_) {
-    bit_depth_ =
+  if (!bit_depth) {
+    bit_depth =
         (config_.profile() == VP9PROFILE_PROFILE2 ||
                  config_.profile() == HEVCPROFILE_REXT ||
                  config_.profile() == HEVCPROFILE_MAIN10 ||
@@ -220,15 +213,18 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
              : 8);
   }
 
-  // TODO: supported check?
-  decoder_configurator_ = D3D11DecoderConfigurator::Create(
-      gpu_preferences_, gpu_workarounds_, config_, bit_depth_, chroma_sampling_,
+  auto decoder_configurator = D3D11DecoderConfigurator::Create(
+      gpu_preferences_, gpu_workarounds_, config_, bit_depth, chroma_sampling_,
       media_log_.get(), use_shared_handle_);
-  if (!decoder_configurator_)
-    return D3D11Status::Codes::kDecoderUnsupportedProfile;
+  if (!decoder_configurator) {
+    NotifyError(D3D11StatusCode::kDecoderUnsupportedProfile);
+    return false;
+  }
 
-  if (!decoder_configurator_->SupportsDevice(video_device_))
-    return D3D11Status::Codes::kDecoderUnsupportedCodec;
+  if (!decoder_configurator->SupportsDevice(video_device_)) {
+    NotifyError(D3D11StatusCode::kDecoderUnsupportedCodec);
+    return false;
+  }
 
   FormatSupportChecker format_checker(device_);
   if (!format_checker.Initialize()) {
@@ -239,100 +235,93 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
 
   // Use IsHDRSupported to guess whether the compositor can output HDR textures.
   // See TextureSelector for notes about why the decoder should not care.
-  texture_selector_ = TextureSelector::Create(
-      gpu_preferences_, gpu_workarounds_,
-      decoder_configurator_->TextureFormat(),
+  auto texture_selector = TextureSelector::Create(
+      gpu_preferences_, gpu_workarounds_, decoder_configurator->TextureFormat(),
       system_hdr_enabled_ ? TextureSelector::HDRMode::kSDROrHDR
                           : TextureSelector::HDRMode::kSDROnly,
       &format_checker, video_device_, device_context_, media_log_.get(),
       config_.color_space_info().ToGfxColorSpace(), use_shared_handle_);
-  if (!texture_selector_)
-    return D3D11Status::Codes::kCreateTextureSelectorFailed;
-
-  UINT config_count = 0;
-  auto hr = video_device_->GetVideoDecoderConfigCount(
-      decoder_configurator_->DecoderDescriptor(), &config_count);
-  if (FAILED(hr))
-    return {D3D11Status::Codes::kGetDecoderConfigCountFailed, hr};
-
-  if (config_count == 0)
-    return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed);
-
-  D3D11_VIDEO_DECODER_CONFIG dec_config = {};
-  bool found = false;
-
-  for (UINT i = 0; i < config_count; i++) {
-    hr = video_device_->GetVideoDecoderConfig(
-        decoder_configurator_->DecoderDescriptor(), i, &dec_config);
-    if (FAILED(hr))
-      return {D3D11Status::Codes::kGetDecoderConfigFailed, hr};
-
-    if (dec_config.ConfigBitstreamRaw == 1 &&
-        (config_.codec() == VideoCodec::kVP9 ||
-         config_.codec() == VideoCodec::kAV1 ||
-         config_.codec() == VideoCodec::kHEVC)) {
-      // DXVA HEVC, VP9, and AV1 specifications say ConfigBitstreamRaw
-      // "shall be 1".
-      found = true;
-      break;
-    }
-
-    if (config_.codec() == VideoCodec::kH264 &&
-        dec_config.ConfigBitstreamRaw == 2) {
-      // ConfigBitstreamRaw == 2 means the decoder uses DXVA_Slice_H264_Short.
-      found = true;
-      break;
-    }
+  if (!texture_selector) {
+    NotifyError(D3D11StatusCode::kCreateTextureSelectorFailed);
+    return false;
   }
 
-  if (!found)
-    return D3D11Status::Codes::kDecoderUnsupportedConfig;
+  auto video_decoder_wrapper =
+      CreateD3DVideoDecoderWrapper(decoder_configurator.get(), bit_depth);
+  if (!video_decoder_wrapper) {
+    return false;
+  }
 
-  // Prefer whatever the config tells us about whether to use one Texture2D with
-  // multiple array slices, or multiple Texture2Ds with one slice each.  If bit
-  // 14 is clear, then it's the former, else it's the latter.
-  //
-  // Let the workaround override array texture mode, if enabled.
-  // TODO(crbug.com/971952): Ignore |use_single_video_decoder_texture_| here,
-  // since it might be the case that it's not actually the right fix.  Instead,
-  // We use this workaround to force a copy later.  The workaround will be
-  // renamed if this turns out to fix the issue, but we might need to merge back
-  // and smaller changes are better.
-  //
-  // For more information, please see:
-  // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf
-  // https://download.microsoft.com/download/5/f/c/5fc4ec5c-bd8c-4624-8034-319c1bab7671/DXVA_H264.pdf
-  // TODO(crbug.com/dawn/1932): Use array textures if preferred with shared
-  // handles once Dawn supports importing those.
-  use_single_video_decoder_texture_ =
-      !!(dec_config.ConfigDecoderSpecific & (1 << 14)) || use_shared_handle_;
-  if (use_single_video_decoder_texture_)
-    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
-  else
-    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using array texture";
+  // Replace the re-created members after all error-checking passes.
+  bit_depth_ = bit_depth;
+  decoder_configurator_ = std::move(decoder_configurator);
+  texture_selector_ = std::move(texture_selector);
 
-  Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder;
-  hr = video_device_->CreateVideoDecoder(
-      decoder_configurator_->DecoderDescriptor(), &dec_config, &video_decoder);
+  CHECK(set_accelerator_decoder_wrapper_cb_);
+  set_accelerator_decoder_wrapper_cb_.Run(std::move(video_decoder_wrapper));
 
-  if (!video_decoder.Get())
-    return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed);
-
-  if (FAILED(hr))
-    return {D3D11Status::Codes::kDecoderCreationFailed, hr};
-
-  return {std::move(video_decoder)};
+  return true;
 }
 
-std::unique_ptr<D3D11VideoDecoderWrapper>
-D3D11VideoDecoder::CreateD3D11VideoDecoderWrapper(
-    ComD3D11VideoDecoder video_decoder) {
-  ComD3D11VideoContext video_context;
-  HRESULT hr = device_context_.As(&video_context);
-  DCHECK(SUCCEEDED(hr));
-  return D3D11VideoDecoderWrapper::Create(
-      media_log_.get(), video_device_, std::move(video_context),
-      std::move(video_decoder), usable_feature_level_);
+std::unique_ptr<D3DVideoDecoderWrapper>
+D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
+    D3D11DecoderConfigurator* decoder_configurator,
+    uint8_t bit_depth) {
+  CHECK(decoder_configurator);
+  std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper;
+  if (base::FeatureList::IsEnabled(kD3D12VideoDecoder)) {
+    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using D3D12 backend";
+    Microsoft::WRL::ComPtr<IUnknown> d3d_device =
+        get_d3d_device_cb_.Run(D3DVersion::kD3D12);
+    if (!d3d_device) {
+      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+                   "Cannot create D3D12Device"});
+      return nullptr;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D12Device> device;
+    CHECK_EQ(d3d_device.As(&device), S_OK);
+
+    Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device;
+    HRESULT hr = device.As(&video_device);
+    if (FAILED(hr)) {
+      NotifyError({D3D11StatusCode::kFailedToGetVideoDevice,
+                   "Cannot create D3D12VideoDevice", hr});
+      return nullptr;
+    }
+
+    video_decoder_wrapper = D3D12VideoDecoderWrapper::Create(
+        media_log_.get(), video_device, config_, bit_depth, chroma_sampling_);
+  } else {
+    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using D3D11 backend";
+    ComD3D11VideoContext video_context;
+    CHECK_EQ(device_context_.As(&video_context), S_OK);
+    video_decoder_wrapper = D3D11VideoDecoderWrapper::Create(
+        media_log_.get(), video_device_, std::move(video_context),
+        decoder_configurator, usable_feature_level_, config_);
+  }
+
+  if (!video_decoder_wrapper) {
+    NotifyError({D3D11StatusCode::kDecoderCreationFailed,
+                 "D3DVideoDecoderWrapper is not created"});
+    return nullptr;
+  }
+
+  auto use_single_texture = video_decoder_wrapper->UseSingleTexture();
+  if (!use_single_texture.has_value()) {
+    NotifyError({D3D11StatusCode::kGetDecoderConfigFailed,
+                 "GetSingleTextureRecommended failed"});
+    return nullptr;
+  }
+  use_single_video_decoder_texture_ =
+      use_single_texture.value() | use_shared_handle_;
+  if (use_single_video_decoder_texture_) {
+    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
+  } else {
+    MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using array texture";
+  }
+
+  return video_decoder_wrapper;
 }
 
 void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -393,12 +382,14 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // TODO(liberato): This isn't allowed off the main thread, since the callback
   // does who-knows-what.  Either we should be given the angle device, or we
   // should thread-hop to get it.
-  device_ = get_d3d11_device_cb_.Run();
-  if (!device_) {
+  Microsoft::WRL::ComPtr<IUnknown> d3d_device =
+      get_d3d_device_cb_.Run(D3DVersion::kD3D11);
+  if (!d3d_device) {
     // This happens if, for example, if chrome is configured to use
     // D3D9 for ANGLE.
     return NotifyError(D3D11Status::Codes::kFailedToGetAngleDevice);
   }
+  CHECK_EQ(d3d_device.As(&device_), S_OK);
 
   if (!GetD3D11FeatureLevel(device_, gpu_workarounds_,
                             &usable_feature_level_)) {
@@ -414,19 +405,12 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (FAILED(hr))
     return NotifyError({D3D11Status::Codes::kFailedToGetVideoDevice, hr});
 
-  auto video_decoder_or_error = CreateD3D11Decoder();
-  if (!video_decoder_or_error.has_value()) {
-    return NotifyError(std::move(video_decoder_or_error).error());
+  if (!InitializeAcceleratedDecoder(config_)) {
+    return;
   }
 
-  auto video_decoder_wrapper =
-      CreateD3D11VideoDecoderWrapper(std::move(video_decoder_or_error).value());
-  bool ok =
-      video_decoder_wrapper &&
-      InitializeAcceleratedDecoder(config, std::move(video_decoder_wrapper));
-
-  if (!ok) {
-    return NotifyError(D3D11Status::Codes::kDecoderUnsupportedCodec);
+  if (!ResetD3DVideoDecoder()) {
+    return;
   }
 
   LogDecoderAdapterLUID();
@@ -682,17 +666,9 @@ void D3D11VideoDecoder::DoDecode() {
       // Replace the decoder, and clear any picture buffers we have.  It's okay
       // if we don't have any picture buffer yet; this might be before the
       // accelerated decoder asked for any.
-      auto video_decoder_or_error = CreateD3D11Decoder();
-      if (!video_decoder_or_error.has_value()) {
-        return NotifyError(std::move(video_decoder_or_error).error());
+      if (!ResetD3DVideoDecoder()) {
+        return;
       }
-      auto video_decoder = std::move(video_decoder_or_error).value();
-      auto wrapper = CreateD3D11VideoDecoderWrapper(video_decoder);
-      if (!wrapper) {
-        return NotifyError(D3D11StatusCode::kDecoderCreationFailed);
-      }
-      CHECK(set_accelerator_decoder_wrapper_cb_);
-      set_accelerator_decoder_wrapper_cb_.Run(std::move(wrapper));
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
@@ -996,6 +972,10 @@ void D3D11VideoDecoder::NotifyError(D3D11Status reason,
                                     DecoderStatus::Codes opt_decoder_code) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
 
+  if (!reason.is_ok() && !reason.message().empty()) {
+    MEDIA_LOG(ERROR, media_log_) << "D3D11VideoDecoder: " << reason.message();
+  }
+
   PostDecoderStatus(
       DecoderStatus(opt_decoder_code).AddCause(std::move(reason)));
 }
@@ -1106,31 +1086,47 @@ std::vector<SupportedVideoDecoderConfig>
 D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    GetD3D11DeviceCB get_d3d11_device_cb) {
+    GetD3DDeviceCB get_d3d_device_cb) {
   // Allow all of d3d11 to be turned off by workaround.
   if (gpu_workarounds.disable_d3d11_video_decoder)
     return {};
 
-  // Remember that this might query the angle device, so this won't work if
-  // we're not on the GPU main thread.  Also remember that devices are thread
-  // safe (contexts are not), so we could use the angle device from any thread
-  // as long as we're not calling into possible not-thread-safe things to get
-  // it.  I.e., if this cached it, then it'd be fine.  It's up to our caller
-  // to guarantee that, though.
-  //
-  // Note also that, currently, we are called from the GPU main thread only.
-  auto d3d11_device = get_d3d11_device_cb.Run();
-  if (!d3d11_device)
-    return {};
+  SupportedResolutionRangeMap supported_resolutions;
+  if (base::FeatureList::IsEnabled(kD3D12VideoDecoder)) {
+    auto d3d_device = get_d3d_device_cb.Run(D3DVersion::kD3D12);
+    if (!d3d_device) {
+      return {};
+    }
+    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
+    CHECK_EQ(d3d_device.As(&d3d12_device), S_OK);
 
-  D3D_FEATURE_LEVEL usable_feature_level;
-  if (!GetD3D11FeatureLevel(d3d11_device, gpu_workarounds,
-                            &usable_feature_level)) {
-    return {};
+    supported_resolutions =
+        GetSupportedD3D12VideoDecoderResolutions(d3d12_device, gpu_workarounds);
+  } else {
+    // Remember that this might query the angle device, so this won't work if
+    // we're not on the GPU main thread.  Also remember that devices are thread
+    // safe (contexts are not), so we could use the angle device from any thread
+    // as long as we're not calling into possible not-thread-safe things to get
+    // it.  I.e., if this cached it, then it'd be fine.  It's up to our caller
+    // to guarantee that, though.
+    //
+    // Note also that, currently, we are called from the GPU main thread only.
+    auto d3d_device = get_d3d_device_cb.Run(D3DVersion::kD3D11);
+    if (!d3d_device) {
+      return {};
+    }
+    ComD3D11Device d3d11_device;
+    CHECK_EQ(d3d_device.As(&d3d11_device), S_OK);
+
+    D3D_FEATURE_LEVEL usable_feature_level;
+    if (!GetD3D11FeatureLevel(d3d11_device, gpu_workarounds,
+                              &usable_feature_level)) {
+      return {};
+    }
+
+    supported_resolutions =
+        GetSupportedD3D11VideoDecoderResolutions(d3d11_device, gpu_workarounds);
   }
-
-  const auto supported_resolutions =
-      GetSupportedD3D11VideoDecoderResolutions(d3d11_device, gpu_workarounds);
 
   std::vector<SupportedVideoDecoderConfig> configs;
   for (const auto& kv : supported_resolutions) {

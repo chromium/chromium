@@ -55,6 +55,8 @@ class D3D11H264Accelerator : public D3DAccelerator,
   Status SubmitDecode(scoped_refptr<H264Picture> pic) override;
   void Reset() override;
   bool OutputPicture(scoped_refptr<H264Picture> pic) override;
+  Status SetStream(base::span<const uint8_t> stream,
+                   const DecryptConfig* decrypt_config) override;
 
  private:
   // Gets a pic params struct with the constant fields set.
@@ -82,6 +84,8 @@ class D3D11H264Accelerator : public D3DAccelerator,
   USHORT frame_num_list_[kRefFrameMaxCount];
   UINT used_for_reference_flags_;
   USHORT non_existing_frame_flags_;
+
+  uint32_t current_frame_size_ = 0;
 };
 
 }  // namespace media

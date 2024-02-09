@@ -11,7 +11,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "media/base/audio_decoder.h"
-#include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
@@ -23,11 +22,23 @@ namespace media {
 
 namespace {
 
-D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback(
-    ComD3D11Device d3d11_device) {
+D3D11VideoDecoder::GetD3DDeviceCB GetD3DDeviceCallback(
+    base::WeakPtr<MediaGpuChannelManager> manager) {
   return base::BindRepeating(
-      [](ComD3D11Device d3d11_device) { return d3d11_device; },
-      std::move(d3d11_device));
+      [](base::WeakPtr<MediaGpuChannelManager> manager,
+         D3D11VideoDecoder::D3DVersion d3d_version)
+          -> Microsoft::WRL::ComPtr<IUnknown> {
+        if (!manager) {
+          return nullptr;
+        }
+        if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D11) {
+          return manager->d3d11_device();
+        } else if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D12) {
+          return manager->d3d12_device();
+        }
+        NOTREACHED_NORETURN();
+      },
+      manager);
 }
 
 }  // namespace
@@ -43,17 +54,11 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
   for (const auto& output_desc : dxgi_info->output_descs)
     hdr_enabled |= output_desc->hdr_enabled;
 
-  ComD3D11Device d3d11_device;
-  if (traits.media_gpu_channel_manager) {
-    d3d11_device = traits.media_gpu_channel_manager->d3d11_device();
-  }
-
   return D3D11VideoDecoder::Create(
       traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-      GetD3D11DeviceCallback(std::move(d3d11_device)),
-      traits.get_cached_configs_cb.Run(), hdr_enabled,
-      traits.gpu_info.active_gpu().luid);
+      GetD3DDeviceCallback(traits.media_gpu_channel_manager),
+      traits.get_cached_configs_cb.Run(), hdr_enabled);
 }
 
 std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
@@ -77,17 +82,8 @@ GetPlatformSupportedVideoDecoderConfigs(
   if (gpu_preferences.disable_accelerated_video_decode)
     return supported_configs;
   if (!gpu_workarounds.disable_d3d11_video_decoder) {
-    if (!manager) {
-      return supported_configs;
-    }
-
-    auto d3d11_device = manager.get()->d3d11_device();
-    if (!d3d11_device) {
-      return supported_configs;
-    }
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
-        gpu_preferences, gpu_workarounds,
-        GetD3D11DeviceCallback(std::move(d3d11_device)));
+        gpu_preferences, gpu_workarounds, GetD3DDeviceCallback(manager));
   }
   return supported_configs;
 }
