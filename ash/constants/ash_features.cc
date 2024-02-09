@@ -390,12 +390,6 @@ BASE_FEATURE(kCameraEffectsSupportedByHardware,
              "CameraEffectsSupportedByHardware",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the camera privacy switch toasts and notification should be
-// displayed.
-BASE_FEATURE(kCameraPrivacySwitchNotifications,
-             "CameraPrivacySwitchNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the feature to parameterize glyph for "Campbell" feature.
 BASE_FEATURE(kCampbellGlyph,
              "CampbellGlyph",
