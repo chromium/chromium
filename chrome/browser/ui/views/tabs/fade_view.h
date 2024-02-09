@@ -88,15 +88,9 @@ class FadeView : public views::View {
                                         primary_view_->GetPreferredSize());
   }
 
+  T* GetPrimaryViewForTesting() { return primary_view_; }
+
  protected:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdatesTabAlertStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardShowsMemoryOnMemoryRefresh);
   raw_ptr<T> primary_view_ = nullptr;
   raw_ptr<U> fade_out_view_ = nullptr;
   double percent_ = 1.0;

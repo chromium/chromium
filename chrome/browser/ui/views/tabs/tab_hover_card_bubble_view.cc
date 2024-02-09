@@ -623,6 +623,10 @@ views::View* TabHoverCardBubbleView::GetThumbnailViewForTesting() {
   return thumbnail_view_;
 }
 
+FooterView* TabHoverCardBubbleView::GetFooterViewForTesting() {
+  return footer_view_;
+}
+
 // static
 std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   // For consistency, always bail out with a "don't crossfade" response if

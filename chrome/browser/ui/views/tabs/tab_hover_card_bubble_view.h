@@ -67,6 +67,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   std::u16string GetTitleTextForTesting() const;
   std::u16string GetDomainTextForTesting() const;
   views::View* GetThumbnailViewForTesting();
+  FooterView* GetFooterViewForTesting();
 
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
