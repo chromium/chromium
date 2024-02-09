@@ -61,6 +61,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProgressIndicatorElementId);
 
   enum class PreferredArrowAdjustment { kMirror, kOffset };
 

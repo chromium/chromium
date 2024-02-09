@@ -27,6 +27,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -61,6 +62,17 @@ const gfx::VectorIcon& kLogoIcon = plus_addresses::kPlusAddressesLogoIcon;
 const gfx::VectorIcon& kLogoIcon = vector_icons::kProductIcon;
 #endif
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressDescriptionTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressErrorTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressConfirmButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressCancelButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressSuggestedEmailElementId);
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
@@ -117,6 +129,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   description_paragraph->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
+  description_paragraph->SetProperty(views::kElementIdentifierKey,
+                                     kPlusAddressDescriptionTextElementId);
 
   // Set the description text & update the styling.
   std::vector<size_t> description_offsets;
@@ -181,6 +195,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::kMarginsKey,
       gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0,
                         kPlusAddressLabelVerticalMargin, 0));
+  plus_address_label_->SetProperty(views::kElementIdentifierKey,
+                                   kPlusAddressSuggestedEmailElementId);
   plus_address_label_->SetSelectable(true);
   plus_address_label_->SetLineHeight(2 * plus_address_label_->GetLineHeight());
 
@@ -202,6 +218,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::kMarginsKey,
       gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0,
                         kPlusAddressLabelVerticalMargin, 0));
+  error_report_label_->SetProperty(views::kElementIdentifierKey,
+                                   kPlusAddressErrorTextElementId);
   // Update style for error link.
   gfx::Range error_link_range(error_link_offsets[0],
                               error_link_offsets[0] + error_link_text.length());
@@ -239,6 +257,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   cancel_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
   cancel_button_->SizeToPreferredSize();
+  cancel_button_->SetProperty(views::kElementIdentifierKey,
+                              kPlusAddressCancelButtonElementId);
 
   confirm_button_ =
       buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
@@ -254,6 +274,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   confirm_button_->SizeToPreferredSize();
   confirm_button_->SetStyle(ui::ButtonStyle::kProminent);
   confirm_button_->SetEnabled(false);
+  confirm_button_->SetProperty(views::kElementIdentifierKey,
+                               kPlusAddressConfirmButtonElementId);
 
   SetContentsView(std::move(primary_view));
 }

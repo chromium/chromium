@@ -136,6 +136,8 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
   progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);
+  progress_indicator->SetProperty(views::kElementIdentifierKey,
+                                  kProgressIndicatorElementId);
   progress_indicator_ = AddChildView(std::move(progress_indicator));
 }
 
@@ -1225,5 +1227,7 @@ END_METADATA
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
                                       kMinimizeButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView, kCloseButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
+                                      kProgressIndicatorElementId);
 
 }  // namespace views
