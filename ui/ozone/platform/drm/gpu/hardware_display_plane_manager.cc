@@ -244,8 +244,14 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
   // This assumes that all planes have the same primaries. This assumption will
   // need to be enforced in the compositor's overlay processor.
   if (!overlay_list.empty()) {
-    SetColorSpaceForAllPlanes(crtc_id,
-                              overlay_list[0].color_space.GetPrimaries());
+    SkColorSpacePrimaries primaries =
+        overlay_list[0].color_space.GetPrimaries();
+
+    // Treat invalid color spaces as sRGB.
+    if (primaries == SkNamedPrimariesExt::kInvalid) {
+      primaries = SkNamedPrimariesExt::kSRGB;
+    }
+    SetColorSpaceForAllPlanes(crtc_id, primaries);
   }
 
   return true;
@@ -315,9 +321,10 @@ void HardwareDisplayPlaneManager::SetOutputColorSpace(
   if (crtc_state->output_primaries == primaries) {
     return;
   }
+  CHECK(primaries != SkNamedPrimariesExt::kInvalid);
 
-  LOG(ERROR) << "Output SkColorSpacePrimaries";
-  LOG(ERROR) << skia::SkColorSpacePrimariesToString(primaries);
+  VLOG(0) << "New output color space: "
+          << skia::SkColorSpacePrimariesToString(primaries);
 
   crtc_state->output_primaries = primaries;
   UpdateAndCommitCrtcState(crtc_id, crtc_state);
@@ -332,9 +339,10 @@ void HardwareDisplayPlaneManager::SetColorSpaceForAllPlanes(
   if (crtc_state->planes_primaries == primaries) {
     return;
   }
+  CHECK(primaries != SkNamedPrimariesExt::kInvalid);
 
-  LOG(ERROR) << "Plane SkColorSpacePrimaries";
-  LOG(ERROR) << skia::SkColorSpacePrimariesToString(primaries);
+  VLOG(0) << "New planes color space: "
+          << skia::SkColorSpacePrimariesToString(primaries);
 
   crtc_state->planes_primaries = primaries;
   UpdateAndCommitCrtcState(crtc_id, crtc_state);
