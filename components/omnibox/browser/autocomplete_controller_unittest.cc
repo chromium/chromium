@@ -34,7 +34,7 @@ class AutocompleteControllerTest : public testing::Test {
   AutocompleteControllerTest() : controller_(&task_environment_) {}
 
   void SetAutocompleteMatches(const std::vector<AutocompleteMatch>& matches) {
-    controller_.internal_result_.Reset();
+    controller_.internal_result_.ClearMatches();
     controller_.internal_result_.AppendMatches(matches);
   }
 
@@ -90,6 +90,18 @@ class AutocompleteControllerTest : public testing::Test {
                                 allowed_to_be_default_match, false,
                                 traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
+    return match;
+  }
+
+  AutocompleteMatch CreatePersonalizedZeroPrefixMatch(
+      std::string name,
+      int traditional_relevance) {
+    auto match = CreateAutocompleteMatch(
+        name, AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, false, false,
+        traditional_relevance, std::nullopt);
+    match.keyword = u"keyword";
+    match.subtypes.emplace(omnibox::SUBTYPE_PERSONAL);
+    match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX);
     return match;
   }
 
@@ -610,6 +622,87 @@ TEST_F(AutocompleteControllerTest, UpdateResult_Ranking) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
+TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
+  {
+    SCOPED_TRACE("Zero-prefix suggestions are offered synchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/true, /*done=*/false,
+                    {
+                        CreatePersonalizedZeroPrefixMatch("zps_1", 1450),
+                        CreatePersonalizedZeroPrefixMatch("zps_2", 1449),
+                    },
+                    FakeAutocompleteController::CreateInput(u"")),
+                testing::ElementsAreArray({
+                    "zps_1",
+                    "zps_2",
+                }));
+    // The count of zero-prefix suggestions offered in the session is updated.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              2u);
+  }
+  {
+    SCOPED_TRACE("More zero-prefix suggestions are offered asynchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/false, /*done=*/false,
+                    {
+                        CreatePersonalizedZeroPrefixMatch("zps_1", 1450),
+                        CreatePersonalizedZeroPrefixMatch("zps_2", 1449),
+                        CreatePersonalizedZeroPrefixMatch("zps_3", 1448),
+                        CreatePersonalizedZeroPrefixMatch("zps_4", 1447),
+                    },
+                    FakeAutocompleteController::CreateInput(u"")),
+                testing::ElementsAreArray({
+                    "zps_1",
+                    "zps_2",
+                    "zps_3",
+                    "zps_4",
+                }));
+    // If zero-prefix suggestions are offered multiple times in the session, the
+    // most recent count is logged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Stop with clear_result=false is called due to user idleness");
+    controller_.Stop(/*clear_result=*/false);
+    // Stop with clear_result=false does not clear the result set or notify
+    // `OnResultChanged()`.
+    EXPECT_FALSE(controller_.published_result_.empty());
+    // The count of zero-prefix suggestions offered in the session is unchanged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Prefix suggestions are offered synchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/true, /*done=*/true,
+                    {
+                        CreateSearchMatch("search_1", true, 900),
+                    }),
+                testing::ElementsAreArray({
+                    "search_1",
+                }));
+    // The count of zero-prefix suggestions offered in the session is unchanged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Stop with clear_result=true is called due to popup closing");
+    controller_.Stop(/*clear_result=*/true);
+    // Stop with clear_result=true clears the result set and notifies
+    // `OnResultChanged()`. The count of zero-prefix suggestions offered in the
+    // session is also reset.
+    EXPECT_TRUE(controller_.published_result_.empty());
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+  }
+}
+
 // Android and iOS aren't ready for ML and won't pass this test because they
 // have their own grouping code.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_ANDROID) && \
@@ -803,7 +896,7 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
 
   // When transferring matches, culls the lowest ML ranked matches, rather than
   // the lowest traditional ranked matches.
-  controller_.internal_result_.Reset();
+  controller_.internal_result_.ClearMatches();
   EXPECT_THAT(
       controller_.SimulateAutocompletePass(
           true, false,
@@ -1028,7 +1121,7 @@ TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
 
   // When transferring matches, culls the lowest ML ranked matches, rather than
   // the lowest traditional ranked matches.
-  controller_.internal_result_.Reset();
+  controller_.internal_result_.ClearMatches();
   EXPECT_THAT(
       controller_.SimulateAutocompletePass(
           true, false,
@@ -1639,7 +1732,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
     // Should not force default when `prevent_inline_autocomplete_` is true.
     SCOPED_TRACE("Enabled prevent inline autocomplete");
     auto enabled_config = set_feature(true);
-    controller_.internal_result_.Reset();
+    controller_.internal_result_.ClearMatches();
     EXPECT_THAT(
         controller_.SimulateAutocompletePass(
             true, true,

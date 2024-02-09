@@ -106,7 +106,7 @@ std::vector<std::string> FakeAutocompleteController::SimulateAutocompletePass(
 std::vector<std::string>
 FakeAutocompleteController::SimulateCleanAutocompletePass(
     std::vector<AutocompleteMatch> matches) {
-  internal_result_.Reset();
+  internal_result_.ClearMatches();
   return SimulateAutocompletePass(true, true, matches);
 }
 

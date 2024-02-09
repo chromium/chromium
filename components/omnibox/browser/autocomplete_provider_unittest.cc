@@ -630,7 +630,7 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
     }
     matches.push_back(match);
   }
-  result_.Reset();
+  result_.ClearMatches();
   result_.AppendMatches(matches);
 
   // Update the result with the suggestion groups information.
@@ -657,7 +657,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     match.subtypes = sbs_test_data[i].subtypes;
     matches.push_back(match);
   }
-  result_.Reset();
+  result_.ClearMatches();
   result_.AppendMatches(matches);
   result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 
@@ -687,7 +687,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
 
 void AutocompleteProviderTest::RunQuery(const std::string& query,
                                         bool allow_exact_keyword_match) {
-  result_.Reset();
+  result_.ClearMatches();
   AutocompleteInput input(base::ASCIIToUTF16(query),
                           metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());

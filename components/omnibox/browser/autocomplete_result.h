@@ -231,7 +231,19 @@ class AutocompleteResult {
     return suggestion_groups_map_;
   }
 
-  // Clears the matches for this result set.
+  size_t num_zero_prefix_suggestions_shown_in_session() const {
+    return num_zero_prefix_suggestions_shown_in_session_;
+  }
+
+  void set_num_zero_prefix_suggestions_shown_in_session(size_t number) {
+    num_zero_prefix_suggestions_shown_in_session_ = number;
+  }
+
+  // Clears the matches and their related data for this result set.
+  void ClearMatches();
+
+  // Clears the matches and their related data for the session. Called only when
+  // AutocompleteController::Stop() with `clear_result=true` is called.
   void Reset();
 
   void Swap(AutocompleteResult* other);
@@ -405,10 +417,16 @@ class AutocompleteResult {
   //    that they will be removed from result list later.
   void DemoteOnDeviceSearchSuggestions();
 
+  // The current result set. Cleared on `ClearMatches()` or `Reset()`.
   ACMatches matches_;
 
-  // The map of suggestion group IDs to suggestion group information.
+  // The map of suggestion group IDs to suggestion group information for
+  // `matches_`. Cleared on `ClearMatches()` or `Reset()`.
   omnibox::GroupConfigMap suggestion_groups_map_;
+
+  // The number of zero-prefix suggestions in the session, regardless of current
+  // `matches_`. Cleared on `Reset()`.
+  size_t num_zero_prefix_suggestions_shown_in_session_ = 0u;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

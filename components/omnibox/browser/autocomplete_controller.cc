@@ -235,7 +235,7 @@ AutocompleteController::OldResult::OldResult(UpdateType update_type,
       update_type == UpdateType::kAsyncPass) {
     matches_to_transfer.Swap(result);
   } else {
-    result->Reset();
+    result->ClearMatches();
   }
 }
 
@@ -450,7 +450,6 @@ AutocompleteController::~AutocompleteController() {
   // result changes here, because the notification observer is in the midst of
   // shutdown too, so we don't ask Stop() to clear `internal_result_` (and
   // notify).
-  internal_result_.Reset();  // Not really necessary.
   Stop(false);
 }
 
@@ -626,13 +625,15 @@ void AutocompleteController::Stop(bool clear_result,
   // the user's suggestion selection may be reset.
   CancelNotifyChangedRequest();
 
-  if (clear_result && !internal_result_.empty()) {
+  const bool non_empty_result = !internal_result_.empty();
+  if (clear_result) {
     internal_result_.Reset();
-
-    // Pass `notify_default_match` as false to clear only the popup and not the
-    // edit. Passing true would, e.g., discard the selected suggestion when
-    // closing the omnibox.
-    RequestNotifyChanged(/*notify_default_match=*/false, /*delayed=*/false);
+    if (non_empty_result) {
+      // Pass `notify_default_match` as false to clear only the popup and not
+      // the edit. Passing true would, e.g., discard the selected suggestion
+      // when closing the omnibox.
+      RequestNotifyChanged(/*notify_default_match=*/false, /*delayed=*/false);
+    }
   }
 }
 
@@ -1461,13 +1462,18 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
         ConstructAvailableAutocompletion(*last_type, last_subtypes, count));
   }
 
-  // TODO(crbug.com/1307142): These two fields should take into account all the
-  // zero-prefix suggestions shown during the session and not only the ones
-  // shown at the time of user making a selection.
+  // If zero-prefix suggestions are offered multiple times, log the most recent
+  // count.
+  if (num_zero_prefix_suggestions_shown > 0) {
+    result->set_num_zero_prefix_suggestions_shown_in_session(
+        num_zero_prefix_suggestions_shown);
+  }
   searchbox_stats.set_num_zero_prefix_suggestions_shown(
-      num_zero_prefix_suggestions_shown);
-  searchbox_stats.set_zero_prefix_enabled(num_zero_prefix_suggestions_shown >
-                                          0);
+      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
+          ? result->num_zero_prefix_suggestions_shown_in_session()
+          : num_zero_prefix_suggestions_shown);
+  searchbox_stats.set_zero_prefix_enabled(
+      searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {

@@ -122,4 +122,11 @@ VitalizeAutocompletedKeywords::VitalizeAutocompletedKeywords() {
               .Get();
 }
 
+// static
+BASE_FEATURE(ReportNumZPSInSession::kReportNumZPSInSession,
+             "ReportNumZPSInSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+ReportNumZPSInSession::ReportNumZPSInSession()
+    : enabled(base::FeatureList::IsEnabled(kReportNumZPSInSession)) {}
+
 }  // namespace omnibox_feature_configs

@@ -192,6 +192,16 @@ struct VitalizeAutocompletedKeywords : Config<VitalizeAutocompletedKeywords> {
   int score;
 };
 
+// If enabled, omnibox reports the number of zero-prefix suggestions shown in
+// the session which ends when autocomplete clears the set of results. The
+// current behavior incorrectly reports the number of zero-prefix suggestions in
+// the last set of results, which would be 0 for non-zps queries.
+struct ReportNumZPSInSession : Config<ReportNumZPSInSession> {
+  DECLARE_FEATURE(kReportNumZPSInSession);
+  ReportNumZPSInSession();
+  bool enabled;
+};
+
 #undef DECLARE_FEATURE
 
 }  // namespace omnibox_feature_configs
