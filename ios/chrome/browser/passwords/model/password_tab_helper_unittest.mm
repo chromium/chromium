@@ -83,6 +83,7 @@ TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
@@ -113,6 +114,7 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongLink) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
@@ -141,6 +143,7 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongTransition) {
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED, /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =

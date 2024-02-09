@@ -492,6 +492,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   EXPECT_CALL(
       decider,
@@ -522,6 +523,7 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_main_frame=*/false,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   EXPECT_CALL(decider, ShouldAllowRequest(
                            request, RequestInfoMatch(request_info_iframe), _))

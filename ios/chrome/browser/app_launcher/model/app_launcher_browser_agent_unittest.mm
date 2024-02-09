@@ -337,7 +337,7 @@ TEST_F(AppLauncherBrowserAgentTest, ShowDialogInOpener) {
 
   // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(
-      opener,
+      web_state,
       app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther));
 }
 

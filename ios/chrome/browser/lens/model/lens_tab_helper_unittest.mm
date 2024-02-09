@@ -60,6 +60,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_WebSearchBar) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
@@ -98,6 +99,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_TranslateOnebox) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =
@@ -136,6 +138,7 @@ TEST_F(LensTabHelperTest, ShouldAllowRequest_WebImagesSearchBar) {
       ui::PageTransition::PAGE_TRANSITION_LINK,
       /*target_frame_is_main=*/true,
       /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   __block bool callback_called = false;
   __block web::WebStatePolicyDecider::PolicyDecision request_policy =

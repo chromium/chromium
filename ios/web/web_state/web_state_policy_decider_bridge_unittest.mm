@@ -33,11 +33,12 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       ui::PageTransition::PAGE_TRANSITION_LINK;
   const bool target_frame_is_main = true;
   const bool target_frame_is_cross_origin = false;
+  const bool target_window_is_cross_origin = false;
   const bool is_user_initiated = false;
   const bool user_tapped_recently = false;
   const WebStatePolicyDecider::RequestInfo request_info(
       transition_type, target_frame_is_main, target_frame_is_cross_origin,
-      is_user_initiated, user_tapped_recently);
+      target_window_is_cross_origin, is_user_initiated, user_tapped_recently);
   decider_bridge_.ShouldAllowRequest(request, request_info, base::DoNothing());
   const FakeShouldAllowRequestInfo* should_allow_request_info =
       [decider_ shouldAllowRequestInfo];

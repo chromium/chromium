@@ -443,6 +443,17 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin));
   }
 
+  BOOL isCrossOriginCrossWindow = NO;
+  if (action.sourceFrame && action.targetFrame &&
+      action.sourceFrame.webView != action.targetFrame.webView) {
+    GURL sourceOrigin =
+        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin);
+    GURL targetOrigin =
+        web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin);
+    isCrossOriginCrossWindow =
+        !url::IsSameOriginWith(sourceOrigin, targetOrigin);
+  }
+
   // Ref: crbug.com/1408799
   if (base::FeatureList::IsEnabled(
           web::features::kPreventNavigationWithoutUserInteraction) &&
@@ -454,7 +465,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   const web::WebStatePolicyDecider::RequestInfo requestInfo(
       transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
-      isUserInitiated, hasTappedRecently);
+      isCrossOriginCrossWindow, isUserInitiated, hasTappedRecently);
 
   self.webStateImpl->ShouldAllowRequest(action.request, requestInfo,
                                         std::move(callback));

@@ -63,6 +63,7 @@ class SafeBrowsingTabHelperTest
           ui::PageTransition::PAGE_TRANSITION_FIRST) {
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition, for_main_frame, /*target_frame_is_cross_origin=*/false,
+        /*target_window_is_cross_origin=*/false,
         /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
