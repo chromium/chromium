@@ -311,13 +311,21 @@ void InterestGroupCachingStorage::GetInterestGroup(
   if (CacheIsEnabled()) {
     auto cached_groups_it = cached_interest_groups_.find(group_key.owner);
     if (cached_groups_it != cached_interest_groups_.end()) {
-      std::optional<SingleStorageInterestGroup> output =
-          cached_groups_it->second.get()->FindGroup(group_key.name);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
-      base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
-                                true);
-      return;
+      scoped_refptr<StorageInterestGroups> groups =
+          cached_groups_it->second.get();
+      if (groups) {
+        std::optional<SingleStorageInterestGroup> output =
+            groups->FindGroup(group_key.name);
+        if (output &&
+            output.value()->interest_group.expiry < base::Time::Now()) {
+          output.reset();
+        }
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
+        base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
+                                  true);
+        return;
+      }
     }
     base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
                               false);
