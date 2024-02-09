@@ -38,7 +38,8 @@ _SHARED_STORAGE_UMA_HISTOGRAMS = [
 
 # Features to enable via command line.
 _ENABLED_FEATURES = [
-    'SharedStorageAPI:SharedStorageDebugDisabledMessage/true',
+    'SharedStorageAPI:ExposeDebugMessageForSettingsStatus/true',
+    'SharedStorageAPIM118', 'SharedStorageAPIM123',
     'FencedFrames:implementation_type/mparch', 'FencedFramesDefaultMode',
     'PrivacySandboxAdsAPIsOverride', 'DefaultAllowPrivacySandboxAttestations'
 ]
