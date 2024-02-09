@@ -145,7 +145,7 @@ void VerifyTagParseSuccess(
     std::optional<std::string_view> app_installer_data_args,
     const TagArgs& expected) {
   TagArgs actual;
-  ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, &actual));
+  ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, actual));
 
   updater::test::ExpectTagArgsEqual(actual, expected);
 }
@@ -154,7 +154,7 @@ void VerifyTagParseFail(std::string_view tag,
                         std::optional<std::string_view> app_installer_data_args,
                         ErrorCode expected) {
   TagArgs args;
-  ASSERT_EQ(expected, Parse(tag, app_installer_data_args, &args));
+  ASSERT_EQ(expected, Parse(tag, app_installer_data_args, args));
 }
 
 }  // namespace
@@ -1492,7 +1492,7 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
               GetParam().expected_success);
     if (GetParam().expected_success && !GetParam().tag_string.empty()) {
       tagging::TagArgs tag_args;
-      ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, &tag_args),
+      ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, tag_args),
                 tagging::ErrorCode::kSuccess);
       test::ExpectTagArgsEqual(
           tagging::BinaryReadTag(!out_msi_file.empty() ? out_msi_file

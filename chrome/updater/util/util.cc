@@ -189,7 +189,7 @@ TagParsingResult GetTagArgsForCommandLine(
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(
-      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), &tag_args);
+      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), tag_args);
   VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
       << "Tag parsing returned " << error << ".";
   return {tag_args, error};

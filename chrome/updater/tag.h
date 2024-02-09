@@ -14,8 +14,7 @@
 
 #include "base/files/file_path.h"
 
-namespace updater {
-namespace tagging {
+namespace updater::tagging {
 namespace internal {
 
 // Advances the iterator by |distance| and makes sure that it remains valid,
@@ -260,7 +259,7 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // Note: This method assumes all attribute names are ASCII.
 ErrorCode Parse(std::string_view tag,
                 std::optional<std::string_view> app_installer_data_args,
-                TagArgs* args);
+                TagArgs& args);
 
 std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
                     std::vector<uint8_t>::const_iterator end);
@@ -306,7 +305,6 @@ bool BinaryWriteTag(const base::FilePath& in_file,
                     int padded_length,
                     base::FilePath out_file);
 
-}  // namespace tagging
-}  // namespace updater
+}  // namespace updater::tagging
 
 #endif  // CHROME_UPDATER_TAG_H_
