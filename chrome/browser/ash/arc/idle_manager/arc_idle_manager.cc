@@ -39,15 +39,9 @@ class DefaultDelegateImpl : public ArcIdleManager::Delegate {
       return;
     }
     arc_power_bridge->NotifyAndroidIdleState(
-        bridge, enable ? arc::mojom::IdleState::ACTIVE : kDozeState);
+        bridge, enable ? arc::mojom::IdleState::ACTIVE
+                       : arc::mojom::IdleState::INACTIVE);
   }
-
- private:
-  // Use force inactive state if ignore battery status enabled.
-  const arc::mojom::IdleState kDozeState =
-      kEnableArcIdleManagerIgnoreBatteryForPLT.Get()
-          ? arc::mojom::IdleState::FORCE_INACTIVE
-          : arc::mojom::IdleState::INACTIVE;
 };
 
 // Singleton factory for ArcIdleManager.
