@@ -438,8 +438,9 @@ enum class SourceForRefreshTokenOperation {
   // kAccountReconcilor_RevokeTokensNotInCookies = 18,
   kLogoutTabHelper_PrimaryPageChanged = 19,
   kForceSigninReauthWithDifferentAccount = 20,
+  kAccountReconcilor_RevokeTokensNotInCookies = 21,
 
-  kMaxValue = kForceSigninReauthWithDifferentAccount,
+  kMaxValue = kAccountReconcilor_RevokeTokensNotInCookies,
 };
 
 // Different types of reporting. This is used as a histogram suffix.
