@@ -2687,8 +2687,47 @@ class CSSMathExpressionNodeParser {
         !parsing_flags_.Has(Flag::AllowCalcSize)) {
       return nullptr;
     }
-    // TODO(https://crbug.com/313072): Implement this!
-    return nullptr;
+
+    DCHECK(RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled());
+
+    // TODO(https://crbug.com/313072): Restrict usage of calc-size() inside of
+    // calc(), probably along the lines of
+    // https://github.com/w3c/csswg-drafts/issues/626#issuecomment-1881898328
+
+    tokens.ConsumeWhitespace();
+
+    CSSMathExpressionNode* basis = nullptr;
+
+    CSSValueID id = tokens.Peek().Id();
+    if (id != CSSValueID::kInvalid &&
+        (id == CSSValueID::kAny ||
+         css_parsing_utils::ValidWidthOrHeightKeyword(id, context_))) {
+      // TODO(https://crbug.com/313072): Also allow 'auto' for some properties
+      // (not max-*, though, since they don't take 'auto').
+      // Note: We don't want to accept 'none' (for 'max-*' properties) since
+      // it's not meaningful for animation, since it's equivalent to infinity.
+      tokens.ConsumeIncludingWhitespace();
+      basis = CSSMathExpressionSizingKeywordLiteral::Create(id);
+    } else {
+      basis = ParseValueExpression(tokens, depth);
+      if (!basis) {
+        return nullptr;
+      }
+    }
+
+    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
+      return nullptr;
+    }
+
+    // TODO(https://crbug.com/313072): Allow the 'size' keyword in the
+    // calculation.
+    CSSMathExpressionNode* calculation = ParseValueExpression(tokens, depth);
+    if (!calculation) {
+      return nullptr;
+    }
+
+    return CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
+                                                               calculation);
   }
 
   CSSMathExpressionNode* ParseMathFunction(

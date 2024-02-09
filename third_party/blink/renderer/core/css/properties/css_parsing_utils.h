@@ -496,6 +496,8 @@ bool ConsumeFromPageBreakBetween(CSSParserTokenRange&, CSSValueID&);
 bool ConsumeFromColumnBreakBetween(CSSParserTokenRange&, CSSValueID&);
 bool ConsumeFromColumnOrPageBreakInside(CSSParserTokenRange&, CSSValueID&);
 
+bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context);
+
 CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange&,
                                   const CSSParserContext&,
                                   UnitlessQuirk = UnitlessQuirk::kForbid);

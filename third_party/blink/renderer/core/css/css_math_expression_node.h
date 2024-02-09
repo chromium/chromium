@@ -63,7 +63,8 @@ enum CalculationResultCategory {
   kCalcPercent,
   // TODO(crbug.com/1309178): We are now using this for all calculated lengths
   // that can't be resolved at style time, including not only calc(px + %) but
-  // also anchor queries. Rename this category accordingly.
+  // also anchor queries and intrinsic size keywords in calc-size(). Rename
+  // this category accordingly.
   kCalcPercentLength,
   kCalcAngle,
   kCalcTime,
