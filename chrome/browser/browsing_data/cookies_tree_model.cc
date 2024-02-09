@@ -33,7 +33,6 @@
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
-#include "components/browsing_data/content/file_system_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
@@ -148,7 +147,6 @@ bool TypeIsProtected(CookieTreeNode::DetailedInfo::NodeType type) {
     case CookieTreeNode::DetailedInfo::TYPE_DATABASE:
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
     case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM:
     case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
@@ -227,14 +225,6 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSessionStorage(
   Init(TYPE_SESSION_STORAGE);
   usage_info = storage_usage_info;
   origin = usage_info->storage_key.origin();
-  return *this;
-}
-
-CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitFileSystem(
-    const browsing_data::FileSystemHelper::FileSystemInfo* file_system) {
-  Init(TYPE_FILE_SYSTEM);
-  file_system_info = file_system;
-  origin = file_system_info->origin;
   return *this;
 }
 
@@ -469,55 +459,6 @@ class CookieTreeSessionStorageNode : public CookieTreeNode {
   // |session_storage_info_| is expected to remain valid as long as the
   // CookieTreeSessionStorageNode is valid.
   std::list<content::StorageUsageInfo>::iterator session_storage_info_;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// CookieTreeFileSystemNode
-
-class CookieTreeFileSystemNode : public CookieTreeNode {
- public:
-  friend class CookieTreeFileSystemsNode;
-
-  // |file_system_info| should remain valid at least as long as the
-  // CookieTreeFileSystemNode is valid.
-  explicit CookieTreeFileSystemNode(
-      std::list<browsing_data::FileSystemHelper::FileSystemInfo>::iterator
-          file_system_info)
-      : CookieTreeNode(base::UTF8ToUTF16(file_system_info->origin.Serialize())),
-        file_system_info_(file_system_info) {}
-
-  CookieTreeFileSystemNode(const CookieTreeFileSystemNode&) = delete;
-  CookieTreeFileSystemNode& operator=(const CookieTreeFileSystemNode&) = delete;
-
-  ~CookieTreeFileSystemNode() override = default;
-
-  void DeleteStoredObjects() override {
-    LocalDataContainer* container = GetLocalDataContainerForNode(this);
-
-    if (container) {
-      container->file_system_helper_->DeleteFileSystemOrigin(
-          file_system_info_->origin);
-      container->file_system_info_list_.erase(file_system_info_);
-    }
-  }
-
-  DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().InitFileSystem(&*file_system_info_);
-  }
-
-  int64_t InclusiveSize() const override {
-    int64_t size = 0;
-    for (auto const& usage : file_system_info_->usage_map) {
-      size += usage.second;
-    }
-    return size;
-  }
-
- private:
-  // file_system_info_ expected to remain valid as long as the
-  // CookieTreeFileSystemNode is valid.
-  std::list<browsing_data::FileSystemHelper::FileSystemInfo>::iterator
-      file_system_info_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -850,30 +791,6 @@ class CookieTreeSessionStoragesNode : public CookieTreeNode {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// CookieTreeFileSystemsNode
-
-class CookieTreeFileSystemsNode : public CookieTreeCollectionNode {
- public:
-  CookieTreeFileSystemsNode()
-      : CookieTreeCollectionNode(
-            l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEMS)) {}
-
-  CookieTreeFileSystemsNode(const CookieTreeFileSystemsNode&) = delete;
-  CookieTreeFileSystemsNode& operator=(const CookieTreeFileSystemsNode&) =
-      delete;
-
-  ~CookieTreeFileSystemsNode() override = default;
-
-  DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().Init(DetailedInfo::TYPE_FILE_SYSTEMS);
-  }
-
-  void AddFileSystemNode(std::unique_ptr<CookieTreeFileSystemNode> child) {
-    AddChildSortedByTitle(std::move(child));
-  }
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // CookieTreeServiceWorkersNode
 
 class CookieTreeServiceWorkersNode : public CookieTreeCollectionNode {
@@ -1015,15 +932,6 @@ CookieTreeSessionStoragesNode*
   session_storages_child_ = session_storages_node.get();
   AddChildSortedByTitle(std::move(session_storages_node));
   return session_storages_child_;
-}
-
-CookieTreeFileSystemsNode* CookieTreeHostNode::GetOrCreateFileSystemsNode() {
-  if (file_systems_child_)
-    return file_systems_child_;
-  auto file_systems_node = std::make_unique<CookieTreeFileSystemsNode>();
-  file_systems_child_ = file_systems_node.get();
-  AddChildSortedByTitle(std::move(file_systems_node));
-  return file_systems_child_;
 }
 
 CookieTreeQuotaNode* CookieTreeHostNode::UpdateOrCreateQuotaNode(
@@ -1168,7 +1076,6 @@ std::optional<size_t> CookiesTreeModel::GetIconIndex(ui::TreeModelNode* node) {
     case CookieTreeNode::DetailedInfo::TYPE_DATABASE:
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
     case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM:
     case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
@@ -1211,7 +1118,6 @@ void CookiesTreeModel::UpdateSearchResults(const std::u16string& filter) {
   PopulateDatabaseInfoWithFilter(data_container(), &notifier, filter);
   PopulateLocalStorageInfoWithFilter(data_container(), &notifier, filter);
   PopulateSessionStorageInfoWithFilter(data_container(), &notifier, filter);
-  PopulateFileSystemInfoWithFilter(data_container(), &notifier, filter);
   PopulateQuotaInfoWithFilter(data_container(), &notifier, filter);
   PopulateServiceWorkerUsageInfoWithFilter(data_container(), &notifier, filter);
   PopulateSharedWorkerInfoWithFilter(data_container(), &notifier, filter);
@@ -1266,11 +1172,6 @@ void CookiesTreeModel::PopulateSessionStorageInfo(
       LocalDataContainer* container) {
   ScopedBatchUpdateNotifier notifier(this, GetRoot());
   PopulateSessionStorageInfoWithFilter(container, &notifier, std::u16string());
-}
-
-void CookiesTreeModel::PopulateFileSystemInfo(LocalDataContainer* container) {
-  ScopedBatchUpdateNotifier notifier(this, GetRoot());
-  PopulateFileSystemInfoWithFilter(container, &notifier, std::u16string());
 }
 
 void CookiesTreeModel::PopulateQuotaInfo(LocalDataContainer* container) {
@@ -1479,32 +1380,6 @@ void CookiesTreeModel::PopulateCacheStorageUsageInfoWithFilter(
           host_node->GetOrCreateCacheStoragesNode();
       cache_storages_node->AddCacheStorageNode(
           std::make_unique<CookieTreeCacheStorageNode>(cache_storage_info));
-    }
-  }
-}
-
-void CookiesTreeModel::PopulateFileSystemInfoWithFilter(
-    LocalDataContainer* container,
-    ScopedBatchUpdateNotifier* notifier,
-    const std::u16string& filter) {
-  CookieTreeRootNode* root = static_cast<CookieTreeRootNode*>(GetRoot());
-
-  if (container->file_system_info_list_.empty())
-    return;
-
-  notifier->StartBatchUpdate();
-  for (auto file_system_info = container->file_system_info_list_.begin();
-       file_system_info != container->file_system_info_list_.end();
-       ++file_system_info) {
-    GURL origin = file_system_info->origin.GetURL();
-
-    if (filter.empty() || (CookieTreeHostNode::TitleForUrl(origin).find(
-                               filter) != std::u16string::npos)) {
-      CookieTreeHostNode* host_node = root->GetOrCreateHostNode(origin);
-      CookieTreeFileSystemsNode* file_systems_node =
-          host_node->GetOrCreateFileSystemsNode();
-      file_systems_node->AddFileSystemNode(
-          std::make_unique<CookieTreeFileSystemNode>(file_system_info));
     }
   }
 }

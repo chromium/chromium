@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "storage/common/file_system/file_system_types.h"
 
 class GURL;
 
@@ -25,7 +24,6 @@ namespace browsing_data {
 class CannedCacheStorageHelper;
 class CannedCookieHelper;
 class CannedDatabaseHelper;
-class CannedFileSystemHelper;
 class CannedServiceWorkerHelper;
 class CannedSharedWorkerHelper;
 class CannedLocalStorageHelper;
@@ -35,7 +33,6 @@ class LocalSharedObjectsContainer {
   LocalSharedObjectsContainer(
       content::StoragePartition* storage_partition,
       bool ignore_empty_localstorage,
-      const std::vector<storage::FileSystemType>& additional_file_system_types,
       browsing_data::CookieHelper::IsDeletionDisabledCallback callback);
 
   LocalSharedObjectsContainer(const LocalSharedObjectsContainer&) = delete;
@@ -71,7 +68,6 @@ class LocalSharedObjectsContainer {
 
   CannedCookieHelper* cookies() const { return cookies_.get(); }
   CannedDatabaseHelper* databases() const { return databases_.get(); }
-  CannedFileSystemHelper* file_systems() const { return file_systems_.get(); }
   CannedLocalStorageHelper* local_storages() const {
     return local_storages_.get();
   }
@@ -93,7 +89,6 @@ class LocalSharedObjectsContainer {
 
   scoped_refptr<CannedCookieHelper> cookies_;
   scoped_refptr<CannedDatabaseHelper> databases_;
-  scoped_refptr<CannedFileSystemHelper> file_systems_;
   scoped_refptr<CannedLocalStorageHelper> local_storages_;
   scoped_refptr<CannedServiceWorkerHelper> service_workers_;
   scoped_refptr<CannedSharedWorkerHelper> shared_workers_;

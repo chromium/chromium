@@ -581,12 +581,10 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
 #else
           /*ignore_empty_localstorage=*/true,
 #endif
-          delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       blocked_local_shared_objects_(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
           /*ignore_empty_localstorage=*/false,
-          delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       allowed_browsing_data_model_(BrowsingDataModel::BuildEmpty(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),

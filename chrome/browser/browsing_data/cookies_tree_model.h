@@ -25,8 +25,6 @@ class CookieTreeCookieNode;
 class CookieTreeCookiesNode;
 class CookieTreeDatabaseNode;
 class CookieTreeDatabasesNode;
-class CookieTreeFileSystemNode;
-class CookieTreeFileSystemsNode;
 class CookieTreeHostNode;
 class CookieTreeIndexedDBNode;
 class CookieTreeIndexedDBsNode;
@@ -79,8 +77,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_SESSION_STORAGE,   // This is used for CookieTreeSessionStorageNode.
       TYPE_INDEXED_DBS,       // This is used for CookieTreeIndexedDBsNode.
       TYPE_INDEXED_DB,        // This is used for CookieTreeIndexedDBNode.
-      TYPE_FILE_SYSTEMS,      // This is used for CookieTreeFileSystemsNode.
-      TYPE_FILE_SYSTEM,       // This is used for CookieTreeFileSystemNode.
       TYPE_QUOTA,             // This is used for CookieTreeQuotaNode.
       TYPE_SERVICE_WORKERS,   // This is used for CookieTreeServiceWorkersNode.
       TYPE_SERVICE_WORKER,    // This is used for CookieTreeServiceWorkerNode.
@@ -105,8 +101,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitIndexedDB(
         const content::StorageUsageInfo* storage_usage_info);
-    DetailedInfo& InitFileSystem(
-        const browsing_data::FileSystemHelper::FileSystemInfo* file_system);
     DetailedInfo& InitQuota(const BrowsingDataQuotaHelper::QuotaInfo* quota);
     DetailedInfo& InitServiceWorker(
         const content::StorageUsageInfo* storage_usage_info);
@@ -121,8 +115,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     // Used for Database (WebSQL), IndexedDB, Service Worker, and
     // Cache Storage node types.
     raw_ptr<const content::StorageUsageInfo> usage_info = nullptr;
-    raw_ptr<const browsing_data::FileSystemHelper::FileSystemInfo>
-        file_system_info = nullptr;
     raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
     raw_ptr<const browsing_data::SharedWorkerInfo> shared_worker_info = nullptr;
   };
@@ -202,7 +194,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
   CookieTreeIndexedDBsNode* GetOrCreateIndexedDBsNode();
-  CookieTreeFileSystemsNode* GetOrCreateFileSystemsNode();
   CookieTreeServiceWorkersNode* GetOrCreateServiceWorkersNode();
   CookieTreeSharedWorkersNode* GetOrCreateSharedWorkersNode();
   CookieTreeCacheStoragesNode* GetOrCreateCacheStoragesNode();
@@ -239,7 +230,6 @@ class CookieTreeHostNode : public CookieTreeNode {
       session_storages_child_ = nullptr;
   raw_ptr<CookieTreeIndexedDBsNode, AcrossTasksDanglingUntriaged>
       indexed_dbs_child_ = nullptr;
-  raw_ptr<CookieTreeFileSystemsNode> file_systems_child_ = nullptr;
   raw_ptr<CookieTreeQuotaNode, AcrossTasksDanglingUntriaged> quota_child_ =
       nullptr;
   raw_ptr<CookieTreeServiceWorkersNode> service_workers_child_ = nullptr;
@@ -342,7 +332,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateLocalStorageInfo(LocalDataContainer* container);
   void PopulateSessionStorageInfo(LocalDataContainer* container);
   void PopulateIndexedDBInfo(LocalDataContainer* container);
-  void PopulateFileSystemInfo(LocalDataContainer* container);
   void PopulateQuotaInfo(LocalDataContainer* container);
   void PopulateServiceWorkerUsageInfo(LocalDataContainer* container);
   void PopulateSharedWorkerInfo(LocalDataContainer* container);
@@ -394,9 +383,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateIndexedDBInfoWithFilter(LocalDataContainer* container,
                                        ScopedBatchUpdateNotifier* notifier,
                                        const std::u16string& filter);
-  void PopulateFileSystemInfoWithFilter(LocalDataContainer* container,
-                                        ScopedBatchUpdateNotifier* notifier,
-                                        const std::u16string& filter);
   void PopulateQuotaInfoWithFilter(LocalDataContainer* container,
                                    ScopedBatchUpdateNotifier* notifier,
                                    const std::u16string& filter);

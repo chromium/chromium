@@ -159,11 +159,6 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh,
         RendererContentSettingRules* rules) = 0;
 
-    // Gets any additional file system types which should be used when
-    // constructing a browsing_data::FileSystemHelper.
-    virtual std::vector<storage::FileSystemType>
-    GetAdditionalFileSystemTypes() = 0;
-
     virtual browsing_data::CookieHelper::IsDeletionDisabledCallback
     GetIsDeletionDisabledCallback() = 0;
 

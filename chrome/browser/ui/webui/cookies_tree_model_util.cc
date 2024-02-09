@@ -52,9 +52,6 @@ const char kKeyCreated[] = "created";
 const char kKeyExpires[] = "expires";
 const char kKeyModified[] = "modified";
 
-const char kKeyPersistent[] = "persistent";
-const char kKeyTemporary[] = "temporary";
-
 const char kKeyTotalUsage[] = "totalUsage";
 const char kKeyTemporaryUsage[] = "temporaryUsage";
 
@@ -147,27 +144,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
       dict.Set(kKeyModified,
                base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_FILE_SYSTEM: {
-      dict.Set(kKeyType, "file_system");
-
-      const browsing_data::FileSystemHelper::FileSystemInfo& file_system_info =
-          *node.GetDetailedInfo().file_system_info;
-      const storage::FileSystemType kPerm = storage::kFileSystemTypePersistent;
-      const storage::FileSystemType kTemp = storage::kFileSystemTypeTemporary;
-
-      dict.Set(kKeyOrigin, file_system_info.origin.Serialize());
-      dict.Set(
-          kKeyPersistent,
-          base::Contains(file_system_info.usage_map, kPerm)
-              ? ui::FormatBytes(file_system_info.usage_map.find(kPerm)->second)
-              : l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEM_USAGE_NONE));
-      dict.Set(
-          kKeyTemporary,
-          base::Contains(file_system_info.usage_map, kTemp)
-              ? ui::FormatBytes(file_system_info.usage_map.find(kTemp)->second)
-              : l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEM_USAGE_NONE));
       break;
     }
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA: {

@@ -204,11 +204,6 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
   }
 }
 
-std::vector<storage::FileSystemType>
-PageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
-  return browsing_data_file_system_util::GetAdditionalFileSystemTypes();
-}
-
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 PageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
   return CookiesTreeModel::GetCookieDeletionDisabledCallback(

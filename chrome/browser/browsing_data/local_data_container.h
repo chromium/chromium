@@ -16,7 +16,6 @@
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
-#include "components/browsing_data/content/file_system_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
@@ -42,8 +41,6 @@ class LocalDataContainer {
   using DatabaseInfoList = std::list<content::StorageUsageInfo>;
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
   using SessionStorageInfoList = std::list<content::StorageUsageInfo>;
-  using FileSystemInfoList =
-      std::list<browsing_data::FileSystemHelper::FileSystemInfo>;
   using QuotaInfoList = std::list<BrowsingDataQuotaHelper::QuotaInfo>;
   using ServiceWorkerUsageInfoList = std::list<content::StorageUsageInfo>;
   using SharedWorkerInfoList = std::list<browsing_data::SharedWorkerInfo>;
@@ -63,7 +60,6 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::DatabaseHelper> database_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-      scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
       scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
@@ -84,7 +80,6 @@ class LocalDataContainer {
   friend class CookieTreeDatabaseNode;
   friend class CookieTreeLocalStorageNode;
   friend class CookieTreeSessionStorageNode;
-  friend class CookieTreeFileSystemNode;
   friend class CookieTreeQuotaNode;
   friend class CookieTreeServiceWorkerNode;
   friend class CookieTreeSharedWorkerNode;
@@ -97,8 +92,6 @@ class LocalDataContainer {
       const LocalStorageInfoList& local_storage_info);
   void OnSessionStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info);
-  void OnFileSystemModelInfoLoaded(
-      const FileSystemInfoList& file_system_info);
   void OnQuotaModelInfoLoaded(const QuotaInfoList& quota_info);
   void OnServiceWorkerModelInfoLoaded(
       const ServiceWorkerUsageInfoList& service_worker_info);
@@ -112,7 +105,6 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::DatabaseHelper> database_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper_;
-  scoped_refptr<browsing_data::FileSystemHelper> file_system_helper_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;
   scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper_;
@@ -124,7 +116,6 @@ class LocalDataContainer {
   DatabaseInfoList database_info_list_;
   LocalStorageInfoList local_storage_info_list_;
   LocalStorageInfoList session_storage_info_list_;
-  FileSystemInfoList file_system_info_list_;
   QuotaInfoList quota_info_list_;
   ServiceWorkerUsageInfoList service_worker_info_list_;
   SharedWorkerInfoList shared_worker_info_list_;

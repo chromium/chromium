@@ -15,7 +15,6 @@
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
-#include "components/browsing_data/content/file_system_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
@@ -43,14 +42,10 @@ bool SameDomainOrHost(const GURL& gurl1, const GURL& gurl2) {
 LocalSharedObjectsContainer::LocalSharedObjectsContainer(
     content::StoragePartition* storage_partition,
     bool ignore_empty_localstorage,
-    const std::vector<storage::FileSystemType>& additional_file_system_types,
     browsing_data::CookieHelper::IsDeletionDisabledCallback callback)
     : cookies_(base::MakeRefCounted<CannedCookieHelper>(storage_partition,
                                                         std::move(callback))),
       databases_(base::MakeRefCounted<CannedDatabaseHelper>(storage_partition)),
-      file_systems_(base::MakeRefCounted<CannedFileSystemHelper>(
-          storage_partition->GetFileSystemContext(),
-          additional_file_system_types)),
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
           storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
@@ -70,7 +65,6 @@ size_t LocalSharedObjectsContainer::GetObjectCount() const {
   size_t count = 0;
   count += cookies()->GetCookieCount();
   count += databases()->GetCount();
-  count += file_systems()->GetCount();
   count += local_storages()->GetCount();
   count += service_workers()->GetCount();
   count += shared_workers()->GetSharedWorkerCount();
@@ -154,11 +148,9 @@ LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
     origins[storage_key.origin()]++;
   }
 
-  for (const auto& origin : file_systems()->GetOrigins())
+  for (const auto& origin : databases()->GetOrigins()) {
     origins[origin]++;
-
-  for (const auto& origin : databases()->GetOrigins())
-    origins[origin]++;
+  }
 
   return origins;
 }
@@ -171,7 +163,6 @@ void LocalSharedObjectsContainer::UpdateIgnoredEmptyStorageKeys(
 void LocalSharedObjectsContainer::Reset() {
   cookies_->Reset();
   databases_->Reset();
-  file_systems_->Reset();
   local_storages_->Reset();
   service_workers_->Reset();
   shared_workers_->Reset();

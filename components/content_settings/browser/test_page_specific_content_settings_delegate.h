@@ -27,7 +27,6 @@ class TestPageSpecificContentSettingsDelegate
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;
-  std::vector<storage::FileSystemType> GetAdditionalFileSystemTypes() override;
   browsing_data::CookieHelper::IsDeletionDisabledCallback
   GetIsDeletionDisabledCallback() override;
   PageSpecificContentSettings::MicrophoneCameraState GetMicrophoneCameraState()

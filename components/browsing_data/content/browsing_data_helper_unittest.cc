@@ -64,8 +64,8 @@ TEST_F(BrowsingDataHelperTest, SchemesThatCantStoreDataDontMatchAnything) {
 TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   auto local_shared_objects_container =
       browsing_data::LocalSharedObjectsContainer(
-          browser_context_.GetDefaultStoragePartition(), false, {},
-          base::NullCallback());
+          browser_context_.GetDefaultStoragePartition(),
+          /*ignore_empty_localstorage=*/false, base::NullCallback());
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BrowsingDataModel::BuildEmpty(

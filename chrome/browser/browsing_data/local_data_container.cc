@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "components/browsing_data/core/features.h"
 #include "content/public/browser/storage_partition.h"
@@ -24,9 +23,8 @@ LocalDataContainer::CreateFromLocalSharedObjectsContainer(
   return std::make_unique<LocalDataContainer>(
       shared_objects.cookies(), shared_objects.databases(),
       shared_objects.local_storages(), shared_objects.session_storages(),
-      shared_objects.file_systems(), /*quota_helper=*/nullptr,
-      shared_objects.service_workers(), shared_objects.shared_workers(),
-      shared_objects.cache_storages());
+      /*quota_helper=*/nullptr, shared_objects.service_workers(),
+      shared_objects.shared_workers(), shared_objects.cache_storages());
 }
 
 // static
@@ -44,7 +42,6 @@ LocalDataContainer::CreateFromStoragePartition(
       /*database_helper=*/nullptr,
       /*local_storage_helper=*/nullptr,
       /*session_storage_helper=*/nullptr,
-      /*file_system_helper=*/nullptr,
       /*quota_helper=*/nullptr,
       /*service_worker_helper=*/nullptr,
       /*shared_worker_helper=*/nullptr,
@@ -56,7 +53,6 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-    scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
     scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
     scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
@@ -65,7 +61,6 @@ LocalDataContainer::LocalDataContainer(
       database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
       session_storage_helper_(std::move(session_storage_helper)),
-      file_system_helper_(std::move(file_system_helper)),
       quota_helper_(std::move(quota_helper)),
       service_worker_helper_(std::move(service_worker_helper)),
       shared_worker_helper_(std::move(shared_worker_helper)),
@@ -103,13 +98,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started++;
     session_storage_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnSessionStorageModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (file_system_helper_.get()) {
-    batches_started++;
-    file_system_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnFileSystemModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -193,13 +181,6 @@ void LocalDataContainer::OnSessionStorageModelInfoLoaded(
   session_storage_info_list_ = session_storage_info;
   DCHECK(model_);
   model_->PopulateSessionStorageInfo(this);
-}
-
-void LocalDataContainer::OnFileSystemModelInfoLoaded(
-    const FileSystemInfoList& file_system_info) {
-  file_system_info_list_ = file_system_info;
-  DCHECK(model_);
-  model_->PopulateFileSystemInfo(this);
 }
 
 void LocalDataContainer::OnQuotaModelInfoLoaded(
