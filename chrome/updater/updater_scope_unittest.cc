@@ -4,6 +4,9 @@
 
 #include "chrome/updater/updater_scope.h"
 
+#include <string>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/updater/constants.h"
@@ -46,9 +49,28 @@ TEST_F(GetUpdaterScopeForCommandLineTest, System_And_Prefers) {
   EXPECT_FALSE(IsPrefersForCommandLine(command_line_));
 }
 
-TEST_F(GetUpdaterScopeForCommandLineTest, TagPrefers) {
+struct GetUpdaterScopeForCommandLineTagSwitchTestCase {
+  const std::string tag_switch;
+};
+
+class GetUpdaterScopeForCommandLineTagSwitchTest
+    : public ::testing::WithParamInterface<
+          GetUpdaterScopeForCommandLineTagSwitchTestCase>,
+      public GetUpdaterScopeForCommandLineTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    GetUpdaterScopeForCommandLineTagSwitchTestCases,
+    GetUpdaterScopeForCommandLineTagSwitchTest,
+    ::testing::ValuesIn(
+        std::vector<GetUpdaterScopeForCommandLineTagSwitchTestCase>{
+            {kTagSwitch},
+            {kInstallSwitch},
+            {kHandoffSwitch},
+        }));
+
+TEST_P(GetUpdaterScopeForCommandLineTagSwitchTest, TagPrefers) {
   command_line_.AppendSwitchASCII(
-      kTagSwitch,
+      GetParam().tag_switch,
       "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
       "appname=TestApp3&"
       "needsadmin=prefers&");
@@ -57,10 +79,10 @@ TEST_F(GetUpdaterScopeForCommandLineTest, TagPrefers) {
   EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
-TEST_F(GetUpdaterScopeForCommandLineTest, Prefers_And_TagPrefers) {
+TEST_P(GetUpdaterScopeForCommandLineTagSwitchTest, Prefers_And_TagPrefers) {
   command_line_.AppendSwitch(kCmdLinePrefersUser);
   command_line_.AppendSwitchASCII(
-      kTagSwitch,
+      GetParam().tag_switch,
       "appguid=5F46DE36-737D-4271-91C1-C062F9FE21D9&"
       "appname=TestApp3&"
       "needsadmin=prefers&");
@@ -68,18 +90,20 @@ TEST_F(GetUpdaterScopeForCommandLineTest, Prefers_And_TagPrefers) {
   EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
-TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntime) {
-  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true");
+TEST_P(GetUpdaterScopeForCommandLineTagSwitchTest, TagRuntime) {
+  command_line_.AppendSwitchASCII(GetParam().tag_switch, "runtime=true");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
 }
 
-TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntimeUser) {
-  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true&needsadmin=false&");
+TEST_P(GetUpdaterScopeForCommandLineTagSwitchTest, TagRuntimeUser) {
+  command_line_.AppendSwitchASCII(GetParam().tag_switch,
+                                  "runtime=true&needsadmin=false&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
 }
 
-TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntimeSystem) {
-  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true&needsadmin=true&");
+TEST_P(GetUpdaterScopeForCommandLineTagSwitchTest, TagRuntimeSystem) {
+  command_line_.AppendSwitchASCII(GetParam().tag_switch,
+                                  "runtime=true&needsadmin=true&");
   EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
             UpdaterScope::kSystem);
 }

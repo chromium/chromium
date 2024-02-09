@@ -182,6 +182,8 @@ TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
   std::string tag = command_line.HasSwitch(kTagSwitch)
                         ? command_line.GetSwitchValueASCII(kTagSwitch)
+                    : command_line.HasSwitch(kInstallSwitch)
+                        ? command_line.GetSwitchValueASCII(kInstallSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
   if (tag.empty()) {
     return {};
@@ -316,9 +318,10 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
 }
 
 base::CommandLine GetCommandLineLegacyCompatible() {
+  const std::wstring cmd_string = ::GetCommandLine();
   std::optional<base::CommandLine> cmd_line =
-      CommandLineForLegacyFormat(::GetCommandLine());
-  return cmd_line ? *cmd_line : *base::CommandLine::ForCurrentProcess();
+      CommandLineForLegacyFormat(cmd_string);
+  return cmd_line ? *cmd_line : base::CommandLine::FromString(cmd_string);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
