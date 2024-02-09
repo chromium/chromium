@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "contextual_panel_entrypoint_coordinator.h",
+    "contextual_panel_entrypoint_coordinator.mm",
+    "contextual_panel_entrypoint_coordinator_delegate.h",
+    "contextual_panel_entrypoint_mediator.h",
+    "contextual_panel_entrypoint_mediator.mm",
+    "contextual_panel_entrypoint_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}

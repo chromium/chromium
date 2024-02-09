@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
+#import <UIKit/UIkit.h>
+
 class Browser;
 class WebStateList;
 
