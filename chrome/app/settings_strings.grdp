@@ -3036,6 +3036,9 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Default behavior
   </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking." translateable="false">
+    Manage the types of information sites can use to track you as you browse.
+  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION" desc="A description of what 'Default behavior' means. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Sites automatically follow this setting when you visit them
   </message>
@@ -3140,6 +3143,15 @@
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_LABEL" desc="Label for a section on the Tracking Protection settings page containing advanced options.">
     Advanced
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that lets users turn on IP protection to hide their IP address." translateable="false">
+    Hide your IP address
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some requests will be sent through privacy servers when the feature is on. Provides a link to a help center article." translateable="false">
+    When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle." translateable="false">
+    Learn more about hiding your IP address
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL" desc="Label for a toggle that blocks all third-party cookies when on.">
     Block all third-party cookies
