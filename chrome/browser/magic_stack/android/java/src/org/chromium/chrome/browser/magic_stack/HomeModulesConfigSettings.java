@@ -63,4 +63,8 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                 return null;
         }
     }
+
+    boolean isHomeModulesConfigSettingsEmptyForTesting() {
+        return getPreferenceScreen().getPreferenceCount() == 0;
+    }
 }

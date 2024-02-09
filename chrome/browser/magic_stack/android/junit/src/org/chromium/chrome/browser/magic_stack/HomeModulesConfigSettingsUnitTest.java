@@ -12,7 +12,6 @@ import androidx.lifecycle.Lifecycle.State;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.SmallTest;
 
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -101,5 +101,34 @@ public class HomeModulesConfigSettingsUnitTest {
                 mActivity.getString(R.string.price_change_module_context_menu_item),
                 switchExisted.getTitle());
         Assert.assertTrue(switchExisted.isChecked());
+    }
+
+    @Test
+    @SmallTest
+    public void testLaunchHomeModulesConfigSettingsWithBlankPage() {
+        mMockModuleRegistry = mock(ModuleRegistry.class);
+        Set<Integer> moduleTypeRegisteredForTest = new HashSet<>(Arrays.asList(0, 1));
+        when(mMockModuleRegistry.getRegisteredModuleTypes())
+                .thenReturn(moduleTypeRegisteredForTest);
+        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.SINGLE_TAB)).thenReturn(true);
+        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.SINGLE_TAB)).thenReturn(false);
+        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.PRICE_CHANGE))
+                .thenReturn(false);
+        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.PRICE_CHANGE)).thenReturn(true);
+        ModuleRegistry.setInstanceForTesting(mMockModuleRegistry);
+
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        HomeModulesConfigSettings fragment =
+                (HomeModulesConfigSettings)
+                        fragmentManager
+                                .getFragmentFactory()
+                                .instantiate(
+                                        HomeModulesConfigSettings.class.getClassLoader(),
+                                        HomeModulesConfigSettings.class.getName());
+        fragment.setProfile(mProfile);
+        fragmentManager.beginTransaction().replace(android.R.id.content, fragment).commit();
+        mActivityScenario.moveToState(State.STARTED);
+
+        Assert.assertTrue(fragment.isHomeModulesConfigSettingsEmptyForTesting());
     }
 }
