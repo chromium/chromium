@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -128,6 +129,12 @@ class TestSignedWebBundleBuilder {
 
   // Adds an application/javascript type payload to the bundle.
   void AddJavaScript(base::StringPiece url, base::StringPiece script_content);
+
+  // For each file, deduces the mime type from the extension and adds a payload
+  // with this type to the bundle. Only files with the extension ".webmanifest"
+  // are added with the manifest mime type. For files in sub directories, the
+  // url mirrors the relative path.
+  void AddFilesFromFolder(const base::FilePath& folder);
 
   // Adds the primary url to the bundle. DO NOT use this for IWAs - primary URLs
   // are not supported in IWAs.

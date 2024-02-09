@@ -1,5 +1,5 @@
 {
-  "name": "Sub App 1",
+  "name": "Sub App 2",
   "icons": [
     {
       "src": "48x48-blue.png",
@@ -22,7 +22,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/webapps_integration/has_sub_apps/sub_app1/basic.html",
-  "scope": "/webapps_integration/has_sub_apps/sub_app1",
+  "start_url": "/sub_app2/basic.html",
+  "scope": "/sub_app2",
   "display": "standalone"
 }

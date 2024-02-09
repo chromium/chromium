@@ -7,16 +7,19 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "net/base/mime_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkStream.h"
-
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace web_app {
 
@@ -105,6 +108,39 @@ void TestSignedWebBundleBuilder::AddJavaScript(
   builder_.AddExchange(
       url, {{":status", "200"}, {"content-type", "application/javascript"}},
       script_content);
+}
+
+void TestSignedWebBundleBuilder::AddFilesFromFolder(
+    const base::FilePath& folder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  CHECK(base::DirectoryExists(folder))
+      << "Directory '" << folder.LossyDisplayName() << "' not found.";
+  base::FilePath file_path;
+  base::FileEnumerator file_enumerator(folder, /*recursive=*/true,
+                                       base::FileEnumerator::FILES);
+
+  while (!(file_path = file_enumerator.Next()).empty()) {
+    std::string mime_type;
+    if (file_path.MatchesExtension(FILE_PATH_LITERAL(".webmanifest"))) {
+      mime_type = "application/manifest+json";
+    } else if (!net::GetWellKnownMimeTypeFromExtension(
+                   file_path.Extension().substr(1), &mime_type)) {
+      LOG(ERROR) << "Unable to deduce mime type from extension: "
+                 << file_path.Extension();
+      continue;
+    }
+
+    std::string file_content;
+    if (!ReadFileToString(file_path, &file_content)) {
+      continue;
+    }
+
+    base::FilePath relative_path;
+    folder.AppendRelativePath(file_path, &relative_path);
+    builder_.AddExchange(relative_path.AsUTF8Unsafe(),
+                         {{":status", "200"}, {"content-type", mime_type}},
+                         file_content);
+  }
 }
 
 void TestSignedWebBundleBuilder::AddPrimaryUrl(GURL url) {

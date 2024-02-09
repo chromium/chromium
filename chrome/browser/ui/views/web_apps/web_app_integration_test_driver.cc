@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
 #include <codecvt>
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <ostream>
@@ -18,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -84,6 +86,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
@@ -140,6 +143,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/views/controls/button/image_button.h"
@@ -200,6 +204,12 @@ namespace web_app::integration_tests {
 
 namespace {
 
+base::FilePath GetTestDataDir() {
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
+  return root_dir.AppendASCII("chrome").AppendASCII("test").AppendASCII("data");
+}
+
 Site InstallableSiteToSite(InstallableSite site) {
   switch (site) {
     case InstallableSite::kStandalone:
@@ -226,12 +236,6 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kNotInstalled;
     case InstallableSite::kScreenshots:
       return Site::kScreenshots;
-    case InstallableSite::kHasSubApps:
-      return Site::kHasSubApps;
-    case InstallableSite::kSubApp1:
-      return Site::kSubApp1;
-    case InstallableSite::kSubApp2:
-      return Site::kSubApp2;
     case InstallableSite::kChromeUrl:
       return Site::kChromeUrl;
   }
@@ -275,12 +279,13 @@ void FlushShortcutTasks() {
 struct SiteConfig {
   std::string relative_url;
   std::string relative_manifest_id;
-  std::optional<std::string> parent_manifest_id;
   std::string app_name;
   std::u16string wco_not_enabled_title;
   SkColor icon_color;
   base::flat_set<std::string> alternate_titles;
   std::string base_url;  // if not specified, use GetTestServerForSiteMode
+  std::optional<Site> parent_site;
+  bool is_isolated = false;
 };
 
 base::flat_map<Site, SiteConfig> g_site_configs = {
@@ -398,23 +403,26 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "webapps_integration/has_sub_apps/basic.html",
       .app_name = "Site With Sub Apps",
       .wco_not_enabled_title = u"Site With Sub Apps",
-      .icon_color = SK_ColorGREEN}},
+      .icon_color = SK_ColorGREEN,
+      .is_isolated = true}},
     {Site::kSubApp1,
      {.relative_url = "/webapps_integration/has_sub_apps/sub_app1/basic.html",
       .relative_manifest_id =
           "webapps_integration/has_sub_apps/sub_app1/basic.html",
-      .parent_manifest_id = "/webapps_integration/has_sub_apps/basic.html",
       .app_name = "Sub App 1",
       .wco_not_enabled_title = u"Sub App 1",
-      .icon_color = SK_ColorBLUE}},
+      .icon_color = SK_ColorBLUE,
+      .parent_site = Site::kHasSubApps,
+      .is_isolated = true}},
     {Site::kSubApp2,
      {.relative_url = "/webapps_integration/has_sub_apps/sub_app2/basic.html",
       .relative_manifest_id =
           "webapps_integration/has_sub_apps/sub_app2/basic.html",
-      .parent_manifest_id = "/webapps_integration/has_sub_apps/basic.html",
       .app_name = "Sub App 2",
       .wco_not_enabled_title = u"Sub App 2",
-      .icon_color = SK_ColorBLUE}},
+      .icon_color = SK_ColorBLUE,
+      .parent_site = Site::kHasSubApps,
+      .is_isolated = true}},
     {Site::kChromeUrl,
      {.relative_url = "/webapps_integration/standalone/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/basic.html",
@@ -464,6 +472,33 @@ DisplayConfig GetDisplayUpdateConfiguration(Display display) {
 SiteConfig GetSiteConfiguration(Site site) {
   CHECK(base::Contains(g_site_configs, site));
   return g_site_configs.find(site)->second;
+}
+
+std::string GetRelativeSubAppPath(Site sub_app) {
+  SiteConfig sub_app_config = GetSiteConfiguration(sub_app);
+  std::optional<Site> parent_site = sub_app_config.parent_site;
+  CHECK(parent_site);
+  std::string parent_app_path =
+      GetSiteConfiguration(parent_site.value()).relative_url;
+  parent_app_path.erase(parent_app_path.find_last_of("/"));
+  std::string sub_app_path = sub_app_config.relative_url;
+  sub_app_path.erase(0, parent_app_path.length());
+  return sub_app_path;
+}
+std::string GetSiteId(Site site) {
+  return base::NumberToString(base::to_underlying(site));
+}
+
+web_package::WebBundleSigner::KeyPair GetKeyPairForSite(Site site) {
+  std::string site_id = GetSiteId(site);
+  size_t seed_length = 32;
+  site_id.resize(seed_length, 'a');
+  base::span<const uint8_t> seed = base::as_bytes(base::make_span(site_id));
+
+  uint8_t public_key[ED25519_PUBLIC_KEY_LEN];
+  uint8_t private_key[ED25519_PRIVATE_KEY_LEN];
+  ED25519_keypair_from_seed(public_key, private_key, seed.data());
+  return web_package::WebBundleSigner::KeyPair(public_key, private_key);
 }
 
 std::string GetFileExtension(FileExtension file_extension) {
@@ -925,6 +960,7 @@ WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
 void WebAppIntegrationTestDriver::SetUp() {
   webapps::TestAppBannerManagerDesktop::SetUp();
+  ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 }
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
@@ -1430,9 +1466,56 @@ void WebAppIntegrationTestDriver::InstallPreinstalledApp(Site site) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::InstallIsolatedApp(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+
+  // The site is installed as an Isolated Web App by packaging the directory of
+  // the site into a Signed Web Bundle.
+  // The scope and manifest ID of an Isolated Web App are always a unique
+  // isolated-app:// origin based on the signing key of the app.
+
+  auto builder = TestSignedWebBundleBuilder(GetKeyPairForSite(site));
+  auto app_folder =
+      base::FilePath::FromASCII(GetSiteConfiguration(site).relative_manifest_id)
+          .DirName();
+  builder.AddFilesFromFolder(GetTestDataDir().Append(app_folder));
+  TestSignedWebBundle bundle = builder.Build();
+  auto bundle_file_name = base::FilePath::FromASCII(bundle.id.id() + ".swbn");
+  base::FilePath bundle_path =
+      scoped_temp_dir_.GetPath().Append(bundle_file_name);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(bundle_path, bundle.data));
+  }
+
+  IsolatedWebAppUrlInfo url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
+  webapps::AppId app_id = url_info.app_id();
+
+  {
+    base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
+                                          InstallIsolatedWebAppCommandError>>
+        future;
+    provider()->scheduler().InstallIsolatedWebApp(
+        url_info, InstalledBundle{.path = bundle_path}, base::Version("1.0.0"),
+        /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    auto install_result = future.Take();
+    ASSERT_TRUE(install_result.has_value()) << install_result.error();
+  }
+
+  LaunchWebAppBrowserAndWait(profile(), app_id,
+                             WindowOpenDisposition::NEW_WINDOW);
+  active_app_id_ = app_id;
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::InstallSubApp(
-    Site parentapp,
-    Site subapp,
+    Site parent_app,
+    Site sub_app,
     SubAppInstallDialogOptions option) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
@@ -1445,10 +1528,13 @@ void WebAppIntegrationTestDriver::InstallSubApp(
               : SubAppsInstallDialogController::DialogActionForTesting::
                     kAccept);
 
-  MaybeNavigateTabbedBrowserInScope(parentapp);
-  content::WebContents* web_contents = GetCurrentTab(browser());
+  content::WebContents* web_contents =
+      GetAnyWebContentsForAppId(GetAppIdBySiteMode(parent_app));
+  ASSERT_TRUE(web_contents)
+      << "No open tab or window for the parent app was found.";
 
-  std::string sub_url = GetSiteConfiguration(subapp).relative_url;
+  std::string sub_url = GetRelativeSubAppPath(sub_app);
+
   // The argument of add() is a dictionary-valued dictionary:
   // { $manifest_id : {'installURL' : $installURL} }
   // In our case, both $manifest_id and $installURL are sub_url.
@@ -1457,25 +1543,31 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   base::Value::Dict outer_dict;
   outer_dict.Set(sub_url, std::move(inner_dict));
 
-  const base::Value& add_result =
-      content::EvalJs(web_contents,
-                      content::JsReplace("navigator.subApps.add($1)",
-                                         std::move(outer_dict)))
-          .value;
+  std::string script =
+      content::JsReplace("navigator.subApps.add($1)", std::move(outer_dict));
+  const content::EvalJsResult add_result =
+      content::EvalJs(web_contents, script);
 
-  base::Value::Dict expected_output;
-  expected_output.Set(sub_url, "success");
-  EXPECT_EQ(expected_output, add_result);
+  if (option == SubAppInstallDialogOptions::kUserDeny) {
+    EXPECT_FALSE(add_result.error.empty());
+  } else {
+    base::Value::Dict expected_output;
+    expected_output.Set(sub_url, "success");
+    EXPECT_EQ(expected_output, add_result.value);
+  }
+
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::RemoveSubApp(Site parentapp, Site subapp) {
+void WebAppIntegrationTestDriver::RemoveSubApp(Site parent_app, Site sub_app) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  MaybeNavigateTabbedBrowserInScope(parentapp);
-  content::WebContents* web_contents = GetCurrentTab(browser());
-  std::string sub_url = GetSiteConfiguration(subapp).relative_url;
+  content::WebContents* web_contents =
+      GetAnyWebContentsForAppId(GetAppIdBySiteMode(parent_app));
+  ASSERT_TRUE(web_contents)
+      << "No open tab or window for the parent app was found.";
+  std::string sub_url = GetRelativeSubAppPath(sub_app);
 
   const base::Value& remove_result =
       content::EvalJs(
@@ -3707,14 +3799,14 @@ void WebAppIntegrationTestDriver::CheckHasSubApp(Site parent_app,
   ASSERT_TRUE(web_contents)
       << "No open tab or window for the parent app was found.";
 
-  auto sub_app_url = GetSiteConfiguration(sub_app).relative_url;
+  std::string sub_app_url = GetRelativeSubAppPath(sub_app);
 
   const base::Value& list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()").value;
 
   const base::Value::Dict& list_result_dict = list_result.GetDict();
 
-  // Check that list() contained the subapp_url key.
+  // Check that list() contained the sub_app_url key.
   EXPECT_NE(nullptr, list_result_dict.FindDict(sub_app_url));
 
   AfterStateCheckAction();
@@ -3731,7 +3823,7 @@ void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site parent_app,
   ASSERT_TRUE(web_contents)
       << "No open tab or window for the parent app was found.";
 
-  auto sub_app_url = GetSiteConfiguration(sub_app).relative_url;
+  std::string sub_app_url = GetRelativeSubAppPath(sub_app);
 
   const base::Value& list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()").value;
@@ -3996,19 +4088,43 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
   command_manager.AwaitAllCommandsCompleteForTesting();
 }
 
+webapps::AppId GetAppIdForIsolatedSite(Site site) {
+  auto parent_site = GetSiteConfiguration(site).parent_site;
+  web_package::WebBundleSigner::KeyPair key_pair =
+      GetKeyPairForSite(parent_site ? parent_site.value() : site);
+
+  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          key_pair.public_key));
+
+  if (parent_site) {
+    // The scope and manifest ID of an Isolated Web App are always the unique
+    // isolated-app:// origin based on the signing key of the app.
+    GURL parent_app_origin = url_info.origin().GetURL();
+    GURL start_url = parent_app_origin.Resolve(GetRelativeSubAppPath(site));
+    return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url,
+                         /*parent_manifest_id=*/parent_app_origin);
+  }
+
+  return url_info.app_id();
+}
+
 webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   auto site_config = GetSiteConfiguration(site);
+
+  if (site_config.is_isolated) {
+    return GetAppIdForIsolatedSite(site);
+  }
+
   std::string manifest_id = site_config.relative_manifest_id;
   GURL start_url = GetUrlForSite(site);
   CHECK(start_url.is_valid());
 
-  auto parent_manifest = site_config.parent_manifest_id;
-  if (parent_manifest.has_value()) {
-    // TODO: This does not work for chrome:// URLs
-    webapps::ManifestId parent_manifest_id =
-        GetTestServerForSiteMode(site).GetURL(parent_manifest.value());
-    return GenerateAppId(manifest_id, start_url, parent_manifest_id);
-
+  if (site_config.parent_site) {
+    auto parent_site = GetSiteConfiguration(site_config.parent_site.value());
+    return GenerateAppId(
+        manifest_id, start_url,
+        GetTestServerForSiteMode(site).GetURL(parent_site.relative_url));
   } else {
     return GenerateAppId(manifest_id, start_url);
   }
@@ -4643,12 +4759,14 @@ WebAppIntegrationTestDriver::GetTestAppHomePageHandler(
 WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-  enabled_features.push_back(features::kPwaUpdateDialogForIcon);
-  enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
-  enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
+  enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
+  enabled_features.push_back(features::kIsolatedWebAppDevMode);
+  enabled_features.push_back(features::kIsolatedWebApps);
+  enabled_features.push_back(features::kPwaUpdateDialogForIcon);
+  enabled_features.push_back(features::kRecordWebAppDebugInfo);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
