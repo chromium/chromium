@@ -145,17 +145,10 @@ std::string GetTitleFromFeaturePromoData(
   return RemovePrefixAndCamelCase(feature->name, "IPH_");
 }
 
-std::string GetDescriptionFromFeaturePromoData(
-    const user_education::FeaturePromoSpecification& spec) {
-  const auto& desc = spec.metadata().triggering_condition_description;
-  return desc.empty() ? desc : "May be triggered when: " + desc;
-}
-
 std::vector<std::string> GetSupportedPlatforms(
     const user_education::FeaturePromoSpecification& spec) {
   std::vector<std::string> result;
-  using Platforms =
-      user_education::FeaturePromoSpecification::Metadata::Platforms;
+  using Platforms = user_education::Metadata::Platforms;
   for (const auto platform : spec.metadata().platforms) {
     switch (platform) {
       case Platforms::kWindows:
@@ -470,7 +463,7 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
     for (const auto& [feature, spec] : feature_promo_specifications) {
       info_list.emplace_back(FeaturePromoDemoPageInfo::New(
           GetTitleFromFeaturePromoData(feature, spec),
-          GetDescriptionFromFeaturePromoData(spec), feature->name,
+          spec.metadata().additional_description, feature->name,
           GetPromoTypeString(spec), spec.metadata().launch_milestone,
           GetSupportedPlatforms(spec), GetRequiredFeatures(spec),
           GetPromoInstructions(spec), GetPromoFollowedBy(spec),
