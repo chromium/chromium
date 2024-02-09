@@ -391,7 +391,6 @@ _exempted_from_contact_builders = {
         "ios17-sdk-device",
         "ios17-sdk-simulator",
         "lacros-amd64-generic-binary-size-rel",
-        "lacros-amd64-generic-rel (reclient)",
         "lacros-amd64-generic-rel",
         "lacros-amd64-generic-rel-fyi",
         "lacros-amd64-generic-rel-skylab",

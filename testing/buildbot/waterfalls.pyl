@@ -3445,12 +3445,6 @@
           'isolated_scripts': 'ios17_sdk_simulator_tests'
         },
       },
-      'lacros-amd64-generic-rel (reclient)': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos'
-      },
       'linux-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',

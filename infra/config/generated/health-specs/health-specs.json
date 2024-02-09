@@ -8758,26 +8758,6 @@
           }
         ]
       },
-      "lacros-amd64-generic-rel (reclient)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "lacros-amd64-generic-rel-gtest": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
         "problem_specs": [

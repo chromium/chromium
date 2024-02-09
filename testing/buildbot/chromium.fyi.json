@@ -39192,11 +39192,6 @@
       }
     ]
   },
-  "lacros-amd64-generic-rel (reclient)": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
   "linux-annotator-rel": {
     "scripts": [
       {
