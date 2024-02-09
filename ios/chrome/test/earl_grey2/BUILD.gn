@@ -240,9 +240,9 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/text_fragments:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
     "//ios/chrome/browser/ui/unit_conversion:eg2_tests",
-    "//ios/chrome/browser/ui/webui:eg2_tests",
-    "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
-    "//ios/chrome/browser/ui/webui/optimization_guide_internals:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
