@@ -690,6 +690,9 @@ static URLParseCase non_special_cases[] = {
     {"git://@host", "git", "", nullptr, "host", -1, nullptr, nullptr, nullptr},
     // Empty user and invalid host. "git://@" is an invalid URL.
     {"git://@", "git", "", nullptr, nullptr, -1, nullptr, nullptr, nullptr},
+    // Invalid host and non-empty port. "git://:80" is an invalid URL.
+    {"git://:80", "git", nullptr, nullptr, nullptr, 80, nullptr, nullptr,
+     nullptr},
     // Empty host cases
     {"git://", "git", nullptr, nullptr, "", -1, nullptr, nullptr, nullptr},
     {"git:///", "git", nullptr, nullptr, "", -1, "/", nullptr, nullptr},
