@@ -40,11 +40,6 @@ class PLATFORM_EXPORT SimpleThreadImpl : public SimpleThread {
   // Time in which the thread is created.
   base::TimeTicks initial_time_;
 
-  // The object pointed to by |thread_manager_| is created and destructed from
-  // the Run function. This is necessary since it has to be constructed from the
-  // thread it should be bound to and destructed from the same thread.
-  ThreadManager* thread_manager_ = nullptr;
-
   // Used by the Run function to only terminate when |this| is destructed, and
   // this is used so that |thread_data_| will live as long as |this|.
   base::WaitableEvent thread_can_shutdown_;
