@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/md5.h"
+#include <string_view>
 
+#include "base/hash/md5.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
@@ -12,7 +13,7 @@ void MD5Init(MD5Context* context) {
   MD5_Init(context);
 }
 
-void MD5Update(MD5Context* context, const StringPiece& data) {
+void MD5Update(MD5Context* context, std::string_view data) {
   MD5_Update(context, reinterpret_cast<const uint8_t*>(data.data()),
              data.size());
 }
@@ -29,7 +30,7 @@ void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest) {
   MD5(data.data(), data.size(), digest->a);
 }
 
-std::string MD5String(const StringPiece& str) {
+std::string MD5String(std::string_view str) {
   MD5Digest digest;
   MD5Sum(base::as_byte_span(str), &digest);
   return MD5DigestToBase16(digest);

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/sha1.h"
-
 #include <stdint.h>
 
+#include <string_view>
+
+#include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -21,7 +22,7 @@ SHA1Digest SHA1HashSpan(span<const uint8_t> data) {
   return digest;
 }
 
-std::string SHA1HashString(StringPiece str) {
+std::string SHA1HashString(std::string_view str) {
   CRYPTO_library_init();
   std::string digest;
   SHA1(reinterpret_cast<const uint8_t*>(str.data()), str.size(),
@@ -39,7 +40,7 @@ void SHA1Init(SHA1Context& context) {
   SHA1_Init(&context);
 }
 
-void SHA1Update(const StringPiece data, SHA1Context& context) {
+void SHA1Update(const std::string_view data, SHA1Context& context) {
   SHA1_Update(&context, data.data(), data.size());
 }
 

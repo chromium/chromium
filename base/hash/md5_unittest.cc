@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/hash/md5.h"
+
 #include <string.h>
+
 #include <memory>
 #include <string>
-
-#include "base/hash/md5.h"
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,8 +105,8 @@ TEST(MD5, ContextWithLongData) {
     if (len > length - total)
       len = length - total;
 
-    MD5Update(&ctx,
-              StringPiece(reinterpret_cast<char*>(data.get() + total), len));
+    MD5Update(&ctx, std::string_view(
+                        reinterpret_cast<char*>(data.get() + total), len));
     total += len;
   }
 

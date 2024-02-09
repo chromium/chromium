@@ -15,7 +15,6 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -35,7 +34,7 @@ BASE_EXPORT uint32_t Hash(const std::string& str);
 // publicly available.
 // May changed without warning, do not expect stability of outputs.
 BASE_EXPORT size_t FastHash(base::span<const uint8_t> data);
-inline size_t FastHash(StringPiece str) {
+inline size_t FastHash(std::string_view str) {
   return FastHash(as_bytes(make_span(str)));
 }
 

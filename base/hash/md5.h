@@ -6,10 +6,10 @@
 #define BASE_HASH_MD5_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_NACL)
@@ -47,10 +47,10 @@ namespace base {
 // MD5Update().
 BASE_EXPORT void MD5Init(MD5Context* context);
 
-// For the given buffer of |data| as a StringPiece, updates the given MD5
+// For the given buffer of |data| as a std::string_view, updates the given MD5
 // context with the sum of the data. You can call this any number of times
 // during the computation, except that MD5Init() must have been called first.
-BASE_EXPORT void MD5Update(MD5Context* context, const StringPiece& data);
+BASE_EXPORT void MD5Update(MD5Context* context, std::string_view data);
 
 // Finalizes the MD5 operation and fills the buffer with the digest.
 BASE_EXPORT void MD5Final(MD5Digest* digest, MD5Context* context);
@@ -63,7 +63,7 @@ BASE_EXPORT std::string MD5DigestToBase16(const MD5Digest& digest);
 BASE_EXPORT void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest);
 
 // Returns the MD5 (in hexadecimal) of a string.
-BASE_EXPORT std::string MD5String(const StringPiece& str);
+BASE_EXPORT std::string MD5String(std::string_view str);
 
 }  // namespace base
 
