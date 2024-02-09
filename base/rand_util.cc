@@ -12,7 +12,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -108,8 +107,8 @@ uint64_t RandGenerator(uint64_t range) {
 
 std::string RandBytesAsString(size_t length) {
   DCHECK_GT(length, 0u);
-  std::string result;
-  RandBytes(WriteInto(&result, length + 1), length);
+  std::string result(length, '\0');
+  RandBytes(result.data(), length);
   return result;
 }
 
