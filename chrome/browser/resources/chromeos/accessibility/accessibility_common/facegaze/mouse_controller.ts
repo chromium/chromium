@@ -320,7 +320,7 @@ export class MouseController {
 
   /**
    * Calculate a sigmoid function that creates an S curve with
-   * a y intercept around ~.2 for velocity == 0 and
+   * a y intercept around ~.2 for velocity === 0 and
    * approaches 1.2 around velocity of 22. Change is near-linear
    * around velocities 0 to 9, centered at velocity of five.
    */

@@ -142,7 +142,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'TextButNoSelectionChange', async function() {
         let timer;
         let input = document.getElementById('input');
         function poll(e) {
-          if (input.selectionStart == 0) {
+          if (input.selectionStart === 0) {
             return;
           }
 
@@ -180,16 +180,16 @@ AX_TEST_F('ChromeVoxEditingTest', 'RichTextMoveByLine', async function() {
       document.getElementById('go').addEventListener('click', function() {
         let sel = getSelection();
         sel.modify('move', dir, 'line');
-        if (dir == 'forward') {
+        if (dir === 'forward') {
           line++;
         } else {
           line--;
         }
 
-        if (line == 0) {
+        if (line === 0) {
           dir = 'forward';
         }
-        if (line == 2) {
+        if (line === 2) {
           dir = 'backward';
         }
       }, true);
@@ -229,16 +229,16 @@ AX_TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacter', async function() {
       document.getElementById('go').addEventListener('click', function() {
         let sel = getSelection();
         sel.modify('move', dir, 'character');
-        if (dir == 'forward') {
+        if (dir === 'forward') {
           char++;
         } else {
           char--;
         }
 
-        if (char == 0) {
+        if (char === 0) {
           dir = 'forward';
         }
-        if (char == 16) {
+        if (char === 16) {
           dir = 'backward';
         }
       }, true);
@@ -623,7 +623,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'RichTextImageByCharacter', async function() {
       let moveCount = 0;
       document.getElementById('go').addEventListener('click', function() {
         moveCount++;
-        if (moveCount == 9) {
+        if (moveCount === 9) {
           dir = 'backward';
         }
 

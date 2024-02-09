@@ -486,7 +486,7 @@ export class Cursor {
            newNode.state![StateType.RICHLY_EDITABLE]) &&
           newIndex <= newNode.children.length) {
         // Valid child node offset. Note that there is a special case where
-        // |newIndex == node.children.length|. In these cases, we actually
+        // |newIndex === node.children.length|. In these cases, we actually
         // want to position the cursor at the end of the text of
         // |node.children[newIndex - 1]|.
         // |newIndex| is assumed to be > 0.
