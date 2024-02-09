@@ -713,7 +713,18 @@ TEST(InteractionSequenceTest,
                        .Build())
           .Build();
   sequence->Start();
-  EXPECT_CALL_IN_SCOPE(aborted, Run, element1.Hide());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(test::SequenceAbortedMatcher(
+          1, &element1, element1.identifier(),
+          InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          testing::_,
+          testing::ElementsAre(testing::Optional(test::SequenceAbortedMatcher(
+              2, testing::_, element1.identifier(),
+              InteractionSequence::StepType::kCustomEvent,
+              InteractionSequence::AbortedReason::kSequenceDestroyed))))),
+      element1.Hide());
 }
 
 TEST(InteractionSequenceTest, NoInitialElementTransitionsOnActivation) {

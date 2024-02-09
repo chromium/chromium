@@ -7,6 +7,7 @@
 
 #include <map>
 #include <optional>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -222,6 +223,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     // If this failure was due to a subsequence failing, the failure information
     // for the subsequences will be stored here.
+    //
+    // This also stores the next step when a step fails due to e.g. an element
+    // losing visibility.
     std::vector<std::optional<AbortedData>> subsequence_failures;
   };
 
