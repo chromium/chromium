@@ -186,7 +186,8 @@ void DeskProfilesButton::OnMenuClosed() {
 
 void DeskProfilesButton::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
   if (desk_) {
-    desk_->SetLacrosProfileId(lacros_profile_id);
+    desk_->SetLacrosProfileId(
+        lacros_profile_id, DeskProfilesSelectProfileSource::kDeskProfileButton);
   }
 }
 

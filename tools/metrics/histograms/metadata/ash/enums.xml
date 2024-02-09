@@ -466,6 +466,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Desk template is too large"/>
 </enum>
 
+<enum name="DeskProfilesSelectProfileSource">
+  <int value="0" label="Profile button"/>
+  <int value="1" label="Desk action context menu"/>
+  <int value="2" label="New desk button drop"/>
+</enum>
+
 <enum name="DeskProfilesUsageStatus">
   <int value="0" label="Conditions are not met"/>
   <int value="1" label="Conditions are met"/>

@@ -1662,7 +1662,9 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   if (chromeos::features::IsDeskProfilesEnabled() && windows.size() == 1) {
     if (auto lacros_profile_id = windows[0]->GetProperty(ash::kLacrosProfileId);
         lacros_profile_id != 0) {
-      target_desk->SetLacrosProfileId(lacros_profile_id);
+      target_desk->SetLacrosProfileId(
+          lacros_profile_id,
+          DeskProfilesSelectProfileSource::kNewDeskButtonDrop);
     }
   }
 

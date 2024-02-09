@@ -498,10 +498,17 @@ void Desk::SetGuid(base::Uuid new_guid) {
   }
 }
 
-void Desk::SetLacrosProfileId(uint64_t lacros_profile_id,
-                              bool skip_prefs_update) {
+void Desk::SetLacrosProfileId(
+    uint64_t lacros_profile_id,
+    std::optional<DeskProfilesSelectProfileSource> source,
+    bool skip_prefs_update) {
   if (lacros_profile_id == lacros_profile_id_) {
     return;
+  }
+
+  if (source) {
+    base::UmaHistogramEnumeration(kDeskProfilesSelectProfileHistogramName,
+                                  *source);
   }
 
   lacros_profile_id_ = lacros_profile_id;

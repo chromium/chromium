@@ -2326,6 +2326,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.DeskProfiles.SelectProfile"
+    enum="DeskProfilesSelectProfileSource" expires_after="2024-12-21">
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>Emitted when the user assigns a profile to a desk.</summary>
+</histogram>
+
 <histogram name="Ash.Desks.DeskProfiles.UsageStatus"
     enum="DeskProfilesUsageStatus" expires_after="2024-12-21">
   <owner>dandersson@chromium.org</owner>

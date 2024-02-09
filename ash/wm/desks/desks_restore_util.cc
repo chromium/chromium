@@ -153,7 +153,8 @@ void RestorePrimaryUserDesks() {
       if (base::StringToUint64(desks_lacros_profile_ids_list[index].GetString(),
                                &lacros_profile_id)) {
         desks_controller->GetDeskAtIndex(index)->SetLacrosProfileId(
-            lacros_profile_id, /*skip_prefs_update=*/true);
+            lacros_profile_id, /*source=*/std::nullopt,
+            /*skip_prefs_update=*/true);
       }
     }
 

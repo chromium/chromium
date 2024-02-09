@@ -77,6 +77,18 @@ enum class DeskProfilesUsageStatus {
   kMaxValue = kEnabled,
 };
 
+// Please keep in sync with the matching enum in
+// tools/metrics/histograms/metadata/ash/enums.xml
+enum class DeskProfilesSelectProfileSource {
+  // The user has selected a profile from the profile button menu.
+  kDeskProfileButton = 0,
+  // The user has selected a profile from the mini view context menu.
+  kDeskActionContextMenu = 1,
+  // The user has dropped a browser window on the new desk button.
+  kNewDeskButtonDrop = 2,
+  kMaxValue = kNewDeskButtonDrop,
+};
+
 inline constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 inline constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 inline constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
@@ -114,6 +126,8 @@ inline constexpr char kDeskProfilesOpenProfileManagerHistogramName[] =
     "Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager";
 inline constexpr char kDeskProfilesUsageStatusHistogramName[] =
     "Ash.Desks.DeskProfiles.UsageStatus";
+inline constexpr char kDeskProfilesSelectProfileHistogramName[] =
+    "Ash.Desks.DeskProfiles.SelectProfile";
 
 inline constexpr char kOverviewDeskBarActivateDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ActivateDesk";
