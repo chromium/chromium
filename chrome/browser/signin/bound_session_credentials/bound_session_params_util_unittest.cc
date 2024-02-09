@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -14,7 +15,7 @@ Credential CreateValidCookieCredential() {
   Credential credential;
   CookieCredential* cookie = credential.mutable_cookie_credential();
   cookie->set_name("auth_cookie");
-  cookie->set_domain(".example.org");
+  cookie->set_domain(".google.com");
   cookie->set_path("/");
   return credential;
 }
@@ -22,10 +23,20 @@ Credential CreateValidCookieCredential() {
 BoundSessionParams CreateValidBoundSessionParams() {
   BoundSessionParams params;
   params.set_session_id("123");
-  params.set_site("https://example.org");
+  params.set_site("https://google.com");
   params.set_wrapped_key("456");
   *params.add_credentials() = CreateValidCookieCredential();
   return params;
+}
+
+void UpdateAllCookieCredentialsDomains(BoundSessionParams& params,
+                                       const std::string& domain) {
+  for (Credential& credential : *params.mutable_credentials()) {
+    if (!credential.has_cookie_credential()) {
+      continue;
+    }
+    credential.mutable_cookie_credential()->set_domain(domain);
+  }
 }
 }  // namespace
 
@@ -37,6 +48,14 @@ TEST(BoundSessionParamsUtilTest, Timestamp) {
 
 TEST(BoundSessionParamsUtilTest, ParamsValid) {
   EXPECT_TRUE(AreParamsValid(CreateValidBoundSessionParams()));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsValidYoutube) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_site("https://youtube.com");
+  UpdateAllCookieCredentialsDomains(params, ".youtube.com");
+  EXPECT_TRUE(AreParamsValid(params));
 }
 
 TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingSessionId) {
@@ -66,10 +85,18 @@ TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingSite) {
   EXPECT_FALSE(AreParamsValid(params));
 }
 
-TEST(BoundSessionParamsUtilTest, ParamsInvalidSite) {
+TEST(BoundSessionParamsUtilTest, ParamsInvalidSiteInvalid) {
   bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   params.set_site("http//google.com");
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsInvalidSiteNotGoogle) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_site("https://example.org");
+  UpdateAllCookieCredentialsDomains(params, ".example.org");
   EXPECT_FALSE(AreParamsValid(params));
 }
 
@@ -99,42 +126,41 @@ TEST(BoundSessionParamsUtilTest, CookieCredentialInvalidEmptyCookieName) {
   bound_session_credentials::Credential credential =
       CreateValidCookieCredential();
   credential.mutable_cookie_credential()->set_name("");
-  EXPECT_FALSE(
-      IsCookieCredentialValid(credential, GURL("https://example.org")));
+  EXPECT_FALSE(IsCookieCredentialValid(credential, GURL("https://google.com")));
 
   credential.mutable_cookie_credential()->clear_name();
-  EXPECT_FALSE(
-      IsCookieCredentialValid(credential, GURL("https://example.org")));
+  EXPECT_FALSE(IsCookieCredentialValid(credential, GURL("https://google.com")));
 }
 
 TEST(BoundSessionParamsUtilTest, CookieCredentialInvalidCookieDomainInvalid) {
   bound_session_credentials::Credential credential =
       CreateValidCookieCredential();
-  EXPECT_FALSE(IsCookieCredentialValid(credential, GURL("https://google.com")));
+  EXPECT_FALSE(
+      IsCookieCredentialValid(credential, GURL("https://example.org")));
 }
 
 TEST(BoundSessionParamsUtilTest,
      CookieCredentialValidCookieDomainWithLeadingDot) {
   bound_session_credentials::Credential credential =
       CreateValidCookieCredential();
-  EXPECT_TRUE(IsCookieCredentialValid(credential,
-                                      GURL("https://accounts.example.org")));
+  EXPECT_TRUE(
+      IsCookieCredentialValid(credential, GURL("https://accounts.google.com")));
 }
 
 TEST(BoundSessionParamsUtilTest,
      CookieCredentialValidCookieDomainWithoutLeadingDot) {
   bound_session_credentials::Credential credential =
       CreateValidCookieCredential();
-  credential.mutable_cookie_credential()->set_domain("example.org");
-  EXPECT_TRUE(IsCookieCredentialValid(credential,
-                                      GURL("https://accounts.example.org")));
+  credential.mutable_cookie_credential()->set_domain("google.com");
+  EXPECT_TRUE(
+      IsCookieCredentialValid(credential, GURL("https://accounts.google.com")));
 }
 
 TEST(BoundSessionParamsUtilTest, CookieCredentialValidCookieDomainEmpty) {
   bound_session_credentials::Credential credential =
       CreateValidCookieCredential();
   credential.mutable_cookie_credential()->set_domain("");
-  EXPECT_TRUE(IsCookieCredentialValid(credential,
-                                      GURL("https://accounts.example.org")));
+  EXPECT_TRUE(
+      IsCookieCredentialValid(credential, GURL("https://accounts.google.com")));
 }
 }  // namespace bound_session_credentials

@@ -54,7 +54,7 @@ using testing::Eq;
 using testing::Pointee;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
-constexpr std::string_view kDomain = "example.com";
+constexpr std::string_view kDomain = "google.com";
 constexpr std::string_view KTriggerRegistrationPath = "/trigger_registration";
 constexpr std::string_view kRegisterSessionPath = "/register_session";
 constexpr std::string_view kRotateCookiesPath = "/RotateBoundCookies";
@@ -347,6 +347,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
       public ChromeBrowserMainExtraParts {
  public:
   void SetUp() override {
+    embedded_https_test_server().SetCertHostnames({std::string(kDomain)});
     CHECK(embedded_https_test_server().InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
