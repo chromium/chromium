@@ -71,6 +71,11 @@ BASE_FEATURE(kPasswordManagerSystemAuthentication,
              "PasswordManagerSystemAuthentication",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Makes Kiosk close all tabs instead of closing the window.
+BASE_FEATURE(kKioskCloseAllTabs,
+             "KioskCloseAllTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
