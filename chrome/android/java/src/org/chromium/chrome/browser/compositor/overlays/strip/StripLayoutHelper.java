@@ -2655,8 +2655,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 1. Reset the state variables.
         mReorderState = REORDER_SCROLL_NONE;
         mInReorderMode = false;
-        mReorderingForTabDrop = false;
-        mLastTrailingMargin = 0;
 
         // 2. Clear any drag offset.
         finishAnimationsAndPushTabUpdates();
@@ -2688,7 +2686,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             updateTabAttachState(mInteractingTab, true, animationList);
         }
 
-        // 6. Request an update.
+        // 6. Reset the tab drop state. Must occur after the rest of the state is reset, since some
+        // logic depends on these values.
+        mReorderingForTabDrop = false;
+        mLastTrailingMargin = 0;
+
+        // 7. Request an update.
         startAnimationList(animationList, getTabGroupMarginAnimatorListener(true));
         mUpdateHost.requestUpdate();
     }
