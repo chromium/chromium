@@ -396,8 +396,9 @@ void ArcNotificationContentView::UpdateCornerRadius(float top_radius,
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;
 
-  if (GetWidget())
+  if (GetWidget() && GetNativeViewContainer()) {
     UpdateMask(force_update);
+  }
 }
 
 void ArcNotificationContentView::OnSlideChanged(bool in_progress) {
