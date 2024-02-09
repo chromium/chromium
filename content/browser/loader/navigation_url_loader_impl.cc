@@ -755,12 +755,12 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
   scoped_refptr<network::SharedURLLoaderFactory> factory;
   network::URLLoaderFactoryBuilder factory_builder;
 
-  if (url_loader_factory::GetTestingInterceptor()) {
-    url_loader_factory::GetTestingInterceptor().Run(
-        network::mojom::kBrowserProcessId, factory_builder);
-  }
-
   if (!base::Contains(known_schemes_, resource_request_->url.scheme())) {
+    if (url_loader_factory::GetTestingInterceptor()) {
+      url_loader_factory::GetTestingInterceptor().Run(
+          network::mojom::kBrowserProcessId, factory_builder);
+    }
+
     std::optional<url::Origin> initiating_origin;
     if (resource_request_->navigation_redirect_chain.size() > 1) {
       // The last URL in `navigation_redirect_chain` is an external-protocol URL
@@ -799,6 +799,9 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
                       base::BindOnce(UnknownSchemeCallback, handled)));
     }
   } else {
+    // `url_loader_factory::GetTestingInterceptor()` is checked in
+    // `url_loader_factory::Create*()` inside
+    // `BindAndInterceptNonNetworkURLLoaderFactoryReceiver()`.
     mojo::Remote<network::mojom::URLLoaderFactory>& non_network_factory =
         non_network_url_loader_factory_remotes_[resource_request_->url
                                                     .scheme()];

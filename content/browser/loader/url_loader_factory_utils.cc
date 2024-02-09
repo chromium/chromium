@@ -223,6 +223,12 @@ template <typename OutType, typename... FinishArgs>
 
   if (auto terminal_url_loader_factory =
           terminal_params.TakeURLLoaderFactory()) {
+    if (GetTestingInterceptor()) {
+      // TODO(crbug.com/324458368): Plumb a process ID here.
+      GetTestingInterceptor().Run(network::mojom::kInvalidProcessId,
+                                  factory_builder);
+    }
+
     return absl::visit(
         [&factory_builder, &finish_args...](auto&& terminal) {
           return std::move(factory_builder)
@@ -236,6 +242,8 @@ template <typename OutType, typename... FinishArgs>
   if (!header_client && terminal_params.storage_partition()) {
     CHECK(!factory_override);
     CHECK(!disable_secure_dns);
+    // `GetTestingInterceptor()` isn't used here because it is anyway used
+    // inside `GetURLLoaderFactoryForBrowserProcess()`.
     return std::move(factory_builder)
         .template Finish<OutType>(std::forward<FinishArgs>(finish_args)...,
                                   terminal_params.storage_partition()
