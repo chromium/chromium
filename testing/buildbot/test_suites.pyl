@@ -1567,11 +1567,63 @@
           'has_native_resultdb_integration',
         ],
         'args': [
+          '--no-retry-failures',
           '--test-type',
           'testharness',
           'reftest',
           'crashtest',
           'print-reftest',
+        ],
+        'swarming': {
+          'shards': 15,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'chrome_wpt_tests_headful': {
+        'test': 'chrome_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--no-retry-failures',
+          '--exit-after-n-crashes-or-timeouts=500',
+          '--no-headless',
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+        ],
+        'swarming': {
+          'shards': 30,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'chrome_wpt_tests_old_headless': {
+        'test': 'chrome_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--no-retry-failures',
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+          '--additional-driver-flag=--headless',
         ],
         'swarming': {
           'shards': 15,

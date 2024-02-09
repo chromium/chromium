@@ -46052,12 +46052,12 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-retry-failures",
           "--test-type",
           "testharness",
           "reftest",
           "crashtest",
-          "print-reftest",
-          "--additional-driver-flag=--headless=new"
+          "print-reftest"
         ],
         "merge": {
           "args": [
@@ -46066,6 +46066,71 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      },
+      {
+        "args": [
+          "--no-retry-failures",
+          "--exit-after-n-crashes-or-timeouts=500",
+          "--no-headless",
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests_headful",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 30
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      },
+      {
+        "args": [
+          "--no-retry-failures",
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest",
+          "--additional-driver-flag=--headless"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests_old_headless",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

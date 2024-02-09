@@ -1495,11 +1495,41 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_wpt_tests": targets.legacy_test_config(
             args = [
+                "--no-retry-failures",
                 "--test-type",
                 "testharness",
                 "reftest",
                 "crashtest",
                 "print-reftest",
+            ],
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+        "chrome_wpt_tests_headful": targets.legacy_test_config(
+            args = [
+                "--no-retry-failures",
+                "--exit-after-n-crashes-or-timeouts=500",
+                "--no-headless",
+                "--test-type",
+                "testharness",
+                "reftest",
+                "crashtest",
+                "print-reftest",
+            ],
+            swarming = targets.swarming(
+                shards = 30,
+            ),
+        ),
+        "chrome_wpt_tests_old_headless": targets.legacy_test_config(
+            args = [
+                "--no-retry-failures",
+                "--test-type",
+                "testharness",
+                "reftest",
+                "crashtest",
+                "print-reftest",
+                "--additional-driver-flag=--headless",
             ],
             swarming = targets.swarming(
                 shards = 15,

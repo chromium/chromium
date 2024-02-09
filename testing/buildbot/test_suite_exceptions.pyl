@@ -1674,15 +1674,6 @@
       },
     },
   },
-  'chrome_wpt_tests': {
-    'modifications': {
-      'linux-wpt-chromium-rel': {
-        'args': [
-          '--additional-driver-flag=--headless=new'
-        ],
-      },
-    },
-  },
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {
