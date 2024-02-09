@@ -76,8 +76,9 @@ export type ExtendedKeyEvent = KeyboardEvent&{
 /**
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused. This enum is tied directly to a UMA
- * enum, PdfOcrUserSelection, defined in //tools/metrics/histograms/enums.xml
- * and should always reflect it (do not change one without changing the other).
+ * enum, PdfOcrUserSelection, defined in
+ * //tools/metrics/histograms/metadata/accessibility/enums.xml and should always
+ * reflect it (do not change one without changing the other).
  */
 export enum PdfOcrUserSelection {
   DEPRECATED_TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,

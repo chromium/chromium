@@ -75,10 +75,12 @@ export function resetForTesting() {
 let actionsMetric: chrome.metricsPrivate.MetricType|null = null;
 const firstActionRecorded: Set<UserAction> = new Set();
 
-// Keep in sync with enums.xml.
-// Do not change the numeric values or reuse them since these numbers are
-// persisted to logs.
 /**
+ * Keep in sync with the values for enum ChromePDFViewerActions in
+ * tools/metrics/histograms/metadata/pdf/enums.xml.
+ * These values are persisted to logs. Entries should not be renumbered, removed
+ * or reused.
+ *
  * User Actions that can be recorded by calling record.
  * The *_FIRST values are recorded automaticlly,
  * eg. record(...ROTATE) will also record ROTATE_FIRST

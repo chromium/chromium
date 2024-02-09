@@ -155,6 +155,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/password/histograms.xml",
   "//tools/metrics/histograms/metadata/payment/histograms.xml",
   "//tools/metrics/histograms/metadata/pcscan/histograms.xml",
+  "//tools/metrics/histograms/metadata/pdf/enums.xml",
   "//tools/metrics/histograms/metadata/pdf/histograms.xml",
   "//tools/metrics/histograms/metadata/performance_controls/enums.xml",
   "//tools/metrics/histograms/metadata/performance_controls/histograms.xml",
