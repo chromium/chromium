@@ -51,7 +51,7 @@ import * as Common from 'devtools/core/common/common.js';
   `);
 
   var frameworkRegexString = '/framework\\.js$';
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.startDebuggerTest(step1, true);
 

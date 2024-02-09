@@ -66,7 +66,7 @@ import * as Common from 'devtools/core/common/common.js';
   var frameworkRegexString = '/framework\\.js$';
   var totalDebuggerStatements = 6;
 
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.startDebuggerTest(step1);

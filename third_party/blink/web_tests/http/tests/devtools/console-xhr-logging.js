@@ -20,8 +20,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
           makeSimpleXHR(method, url, false);
       }
   `);
-  Common.Settings.settingForTest('consoleGroupSimilar').set(false);
-  Common.Settings.settingForTest('monitoringXHREnabled').set(true);
+  Common.Settings.settingForTest('console-group-similar').set(false);
+  Common.Settings.settingForTest('monitoring-xhr-enabled').set(true);
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
@@ -47,7 +47,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SDK.ConsoleModel.ConsoleModel.requestClearMessages();
   TestRunner.addResult('');
 
-  Common.Settings.settingForTest('monitoringXHREnabled').set(false);
+  Common.Settings.settingForTest('monitoring-xhr-enabled').set(false);
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);

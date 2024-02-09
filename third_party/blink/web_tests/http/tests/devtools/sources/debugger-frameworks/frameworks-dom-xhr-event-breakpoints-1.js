@@ -85,7 +85,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   `);
 
   var frameworkRegexString = '/framework\\.js$';
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.setQuiet(true);
 

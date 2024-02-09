@@ -16,7 +16,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
-  Common.Settings.moduleSetting('jsSourceMapsEnabled').set(true);
+  Common.Settings.moduleSetting('js-source-maps-enabled').set(true);
   TestRunner.addScriptTag('resources/sourcemap-script.js');
   await TestRunner.waitForUISourceCode('sourcemap-typescript.ts');
 
@@ -24,11 +24,11 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('disableJSSourceMaps');
-  Common.Settings.moduleSetting('jsSourceMapsEnabled').set(false);
+  Common.Settings.moduleSetting('js-source-maps-enabled').set(false);
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('enableJSSourceMaps');
-  Common.Settings.moduleSetting('jsSourceMapsEnabled').set(true);
+  Common.Settings.moduleSetting('js-source-maps-enabled').set(true);
   await TestRunner.waitForUISourceCode('sourcemap-typescript.ts'),
       SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 

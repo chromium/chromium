@@ -27,7 +27,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupEventListeners();
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(true);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(true);
   ElementsTestRunner.selectNodeWithId('node', step1);
 
   function step1() {

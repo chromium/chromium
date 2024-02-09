@@ -26,7 +26,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
       }
   `);
 
-  Common.Settings.settingForTest('cssSourceMapsEnabled').set(true);
+  Common.Settings.settingForTest('css-source-maps-enabled').set(true);
   TestRunner.addSniffer(BindingsModule.CSSWorkspaceBinding.CSSWorkspaceBinding.prototype, 'updateLocations', step1);
   TestRunner.evaluateInPage('addStylesheet()');
 

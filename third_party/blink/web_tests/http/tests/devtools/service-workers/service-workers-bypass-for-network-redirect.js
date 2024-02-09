@@ -22,7 +22,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
   UI.InspectorView.InspectorView.instance().showPanel('sources')
       .then(function() {
-        Common.Settings.settingForTest('bypassServiceWorker').set(true);
+        Common.Settings.settingForTest('bypass-service-worker').set(true);
         let callback;
         const promise = new Promise((fulfill) => callback = fulfill);
         ConsoleTestRunner.addConsoleSniffer(message => {

@@ -43,13 +43,13 @@ import * as Common from 'devtools/core/common/common.js';
       await TestRunner.RuntimeAgent.evaluate('log();');
       TestRunner.addResult('=== Before clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Common.Settings.moduleSetting('preserveConsoleLog').set(true);
+      Common.Settings.moduleSetting('preserve-console-log').set(true);
 
       await TestRunner.RuntimeAgent.evaluate('clearConsoleFromPage();');
 
       TestRunner.addResult('=== After clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Common.Settings.moduleSetting('preserveConsoleLog').set(false);
+      Common.Settings.moduleSetting('preserve-console-log').set(false);
       next();
     }
   ]);

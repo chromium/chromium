@@ -105,7 +105,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupNormalPath();
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
   ElementsTestRunner.selectNodeWithId('inspectedNode', step1);
 
   function step1() {

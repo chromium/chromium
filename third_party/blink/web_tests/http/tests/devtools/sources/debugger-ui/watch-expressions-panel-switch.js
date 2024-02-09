@@ -22,7 +22,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   `);
 
   SourcesTestRunner.setQuiet(true);
-  Common.Settings.Settings.instance().createLocalSetting('watchExpressions', []).set([
+  Common.Settings.Settings.instance().createLocalSetting('watch-expressions', []).set([
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();

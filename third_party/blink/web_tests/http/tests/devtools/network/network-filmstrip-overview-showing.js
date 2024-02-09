@@ -15,8 +15,8 @@ import * as Network from 'devtools/panels/network/network.js';
 
   NetworkTestRunner.recordNetwork();
   var networkPanel = Network.NetworkPanel.NetworkPanel.instance();
-  var showOverviewSetting = Common.Settings.Settings.instance().createSetting('networkLogShowOverview', true);
-  var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('networkRecordFilmStripSetting', false);
+  var showOverviewSetting = Common.Settings.Settings.instance().createSetting('network-log-show-overview', true);
+  var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('network-record-film-strip-setting', false);
 
   TestRunner.addResult('Overview should not be showing');
   TestRunner.addResult('Filmstrip should not be showing');

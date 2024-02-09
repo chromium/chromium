@@ -11,7 +11,7 @@ import * as Common from 'devtools/core/common/common.js';
   TestRunner.addResult(`Tests that console preserves log on oopif navigation`);
   await TestRunner.showPanel('console');
 
-  Common.Settings.settingForTest('preserveConsoleLog').set(false);
+  Common.Settings.settingForTest('preserve-console-log').set(false);
   await TestRunner.navigatePromise('resources/empty.html');
   await TestRunner.evaluateInPage(`console.log('Before navigation')`);
   await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html');

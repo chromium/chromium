@@ -51,7 +51,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupEventListeners();
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(true);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(true);
   ElementsTestRunner.selectNodeWithId('node', step1);
 
   function step1() {
@@ -63,7 +63,7 @@ import * as Common from 'devtools/core/common/common.js';
   }
 
   function step3() {
-    Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
+    Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
     TestRunner.addResult('Listeners for selected node only(should be no listeners):');
     ElementsTestRunner.expandAndDumpSelectedElementEventListeners(step4);
   }

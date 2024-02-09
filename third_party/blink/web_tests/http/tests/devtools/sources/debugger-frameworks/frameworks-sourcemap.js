@@ -26,7 +26,7 @@ import * as Common from 'devtools/core/common/common.js';
 
   TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step1);
   var frameworkRegexString = '/framework\\.js$';
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   function step1() {
     SourcesTestRunner.startDebuggerTest(step2, true);

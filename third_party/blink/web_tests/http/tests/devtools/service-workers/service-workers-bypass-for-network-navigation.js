@@ -43,12 +43,12 @@ import * as Common from 'devtools/core/common/common.js';
       })
       .then(() => {
         TestRunner.addResult('Enable BypassServiceWorker.');
-        Common.Settings.settingForTest('bypassServiceWorker').set(true);
+        Common.Settings.settingForTest('bypass-service-worker').set(true);
         return loadIframe('frame_id2');
       })
       .then(() => {
         TestRunner.addResult('Disable BypassServiceWorker.');
-        Common.Settings.settingForTest('bypassServiceWorker').set(false);
+        Common.Settings.settingForTest('bypass-service-worker').set(false);
         return loadIframe('frame_id3');
       })
       .then(() => {

@@ -83,12 +83,12 @@ import * as Common from 'devtools/core/common/common.js';
       })
       .then(() => {
         TestRunner.addResult('Enable bypassServiceWorker');
-        Common.Settings.settingForTest('bypassServiceWorker').set(true);
+        Common.Settings.settingForTest('bypass-service-worker').set(true);
         return testCorsRequests('2');
       })
       .then(() => {
         TestRunner.addResult('Disable bypassServiceWorker');
-        Common.Settings.settingForTest('bypassServiceWorker').set(false);
+        Common.Settings.settingForTest('bypass-service-worker').set(false);
         return testCorsRequests('3');
       })
       .then(() => {
