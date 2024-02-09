@@ -7,10 +7,12 @@
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_container.h"
+#include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -418,6 +420,26 @@ TEST_F(MediaItemUIDetailedViewTest, ExitPictureInPictureButtonClick) {
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kExitPictureInPicture));
   SimulateButtonClick(MediaSessionAction::kExitPictureInPicture);
+}
+
+TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
+  auto view = CreateView(MediaDisplayPage::kQuickSettingsMediaView);
+  EXPECT_NE(view->GetProgressViewForTesting(), nullptr);
+
+  // Check that progress position can be updated.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
+  EXPECT_NEAR(view->GetProgressViewForTesting()->current_value_for_testing(),
+              0.5, 0.001);
+
+  // Check that key event on the view can seek the progress.
+  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  view->OnKeyPressed(key_event);
 }
 
 }  // namespace global_media_controls

@@ -104,6 +104,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // views::View:
   void AddedToWidget() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
@@ -113,6 +114,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   views::ImageView* GetChevronIconForTesting();
   views::Button* GetActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
+  media_message_center::MediaSquigglyProgressView* GetProgressViewForTesting();
   media_session::MediaPosition GetPositionForTesting();
   views::Button* GetStartCastingButtonForTesting();
   MediaItemUIFooter* GetFooterForTesting();
