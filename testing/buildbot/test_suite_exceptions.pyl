@@ -2990,13 +2990,6 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
-      'Win10 FYI x64 Exp Release (NVIDIA)': {
-        'args': [
-          # TODO(crbug.com/1505895): Remove this filter when these tests no
-          # longer crash on the newer driver.
-          '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
-        ],
-      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # crbug.com/1523061
