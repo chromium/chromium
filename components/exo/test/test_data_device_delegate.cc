@@ -5,26 +5,9 @@
 #include "components/exo/test/test_data_device_delegate.h"
 
 #include "components/exo/data_offer_delegate.h"
+#include "components/exo/test/test_data_offer_delegate.h"
 
 namespace exo::test {
-namespace {
-
-class TestDataOfferDelegate : public DataOfferDelegate {
- public:
-  TestDataOfferDelegate() = default;
-  TestDataOfferDelegate(const TestDataOfferDelegate&) = delete;
-  const TestDataOfferDelegate operator=(const TestDataOfferDelegate&) = delete;
-  ~TestDataOfferDelegate() override = default;
-
-  // Overridden from DataOfferDelegate:
-  void OnDataOfferDestroying(DataOffer* offer) override { delete this; }
-  void OnOffer(const std::string& mime_type) override {}
-  void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) override {}
-  void OnAction(DndAction action) override {}
-};
-
-}  // namespace
 
 TestDataDeviceDelegate::TestDataDeviceDelegate() = default;
 TestDataDeviceDelegate::~TestDataDeviceDelegate() = default;
@@ -48,7 +31,7 @@ void TestDataDeviceDelegate::OnDataDeviceDestroying(DataDevice* data_device) {
 
 DataOffer* TestDataDeviceDelegate::OnDataOffer() {
   events_.push_back(DataEvent::kOffer);
-  data_offer_ = std::make_unique<DataOffer>(new TestDataOfferDelegate);
+  data_offer_ = std::make_unique<DataOffer>(new test::TestDataOfferDelegate());
   return data_offer_.get();
 }
 

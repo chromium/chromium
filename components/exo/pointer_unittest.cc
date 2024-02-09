@@ -37,6 +37,7 @@
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/test/surface_tree_host_test_util.h"
 #include "components/exo/test/test_data_device_delegate.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -63,6 +64,7 @@
 #include "ui/gl/test/gl_test_support.h"
 #include "ui/views/widget/widget.h"
 
+using ::exo::test::TestDataSourceDelegate;
 using ::testing::_;
 using ::testing::AnyNumber;
 
@@ -165,26 +167,6 @@ class MockPointerStylusDelegate : public PointerStylusDelegate {
   MOCK_METHOD(void, OnPointerToolChange, (ui::EventPointerType));
   MOCK_METHOD(void, OnPointerForce, (base::TimeTicks, float));
   MOCK_METHOD(void, OnPointerTilt, (base::TimeTicks, const gfx::Vector2dF&));
-};
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  TestDataSourceDelegate() {}
-
-  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
-  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
-
-  // Overridden from DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const std::optional<std::string>& mime_type) override {}
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {}
-  void OnCancelled() override {}
-  void OnDndDropPerformed() override {}
-  void OnDndFinished() override {}
-  void OnAction(DndAction dnd_action) override {}
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return true;
-  }
 };
 
 class PointerTest
