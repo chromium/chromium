@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 module.exports = {
+  'extends': '../ui/webui/resources/tools/eslint_import_type.config.js',
   'rules' : {
     'no-restricted-properties' : 'off',
   },
