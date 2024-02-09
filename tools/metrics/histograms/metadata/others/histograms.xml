@@ -7128,8 +7128,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.InvalidUTF8String" enum="BooleanValid"
-    expires_after="2023-10-08">
-  <owner>rsesek@chromium.org</owner>
+    expires_after="2024-10-08">
+  <owner>ellyjones@chromium.org</owner>
   <owner>chrome-mojo@google.com</owner>
   <summary>
     Emitted any time a Mojo string is deserialized and is not valid UTF-8.
