@@ -332,7 +332,6 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
   } else {
     ShowErrorStateUI();
   }
-  MaybeBlockUntilResultShows();
 }
 
 void PlusAddressCreationDialogDelegate::ShowConfirmResult(
@@ -351,7 +350,6 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
     ShowErrorStateUI();
     confirm_button_->SetEnabled(false);
   }
-  MaybeBlockUntilResultShows();
 }
 
 void PlusAddressCreationDialogDelegate::HandleButtonPress(
@@ -377,80 +375,6 @@ void PlusAddressCreationDialogDelegate::HandleButtonPress(
           views::Widget::ClosedReason::kCloseButtonClicked);
       return;
     }
-  }
-}
-
-bool PlusAddressCreationDialogDelegate::GetConfirmButtonEnabledForTesting()
-    const {
-  CHECK(confirm_button_);
-  return confirm_button_->GetEnabled();
-}
-
-void PlusAddressCreationDialogDelegate::ClickButtonForTesting(
-    PlusAddressViewButtonType type) {
-  views::Button* button;
-  switch (type) {
-    case PlusAddressViewButtonType::kConfirm: {
-      button = confirm_button_;
-      break;
-    }
-    case PlusAddressViewButtonType::kCancel: {
-      button = cancel_button_;
-      break;
-    }
-    case PlusAddressViewButtonType::kClose: {
-      button = GetBubbleFrameView()->close_button();
-      break;
-    }
-  }
-  CHECK(button);
-  button->OnMousePressed(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                        gfx::Point(), ui::EventTimeForNow(),
-                                        ui::EF_LEFT_MOUSE_BUTTON, 0));
-  button->OnMouseReleased(ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                                         gfx::Point(), ui::EventTimeForNow(),
-                                         ui::EF_LEFT_MOUSE_BUTTON, 0));
-}
-
-std::u16string
-PlusAddressCreationDialogDelegate::GetPlusAddressLabelTextForTesting() const {
-  CHECK(plus_address_label_);
-  return plus_address_label_->GetText();
-}
-
-bool PlusAddressCreationDialogDelegate::ShowsLoadingIndicatorForTesting()
-    const {
-  CHECK(GetBubbleFrameView());
-  return GetBubbleFrameView()->GetProgress().has_value();
-}
-
-void PlusAddressCreationDialogDelegate::WaitUntilResultShownForTesting() {
-  base::RunLoop loop;
-  blocking_until_result_shown_.emplace(loop.QuitClosure());
-  loop.Run();
-}
-
-bool PlusAddressCreationDialogDelegate::
-    GetPlusAddressLabelVisibilityForTesting() const {
-  CHECK(plus_address_label_);
-  return plus_address_label_->GetVisible();
-}
-
-bool PlusAddressCreationDialogDelegate::GetErrorLabelVisibilityForTesting()
-    const {
-  CHECK(error_report_label_);
-  return error_report_label_->GetVisible();
-}
-
-void PlusAddressCreationDialogDelegate::MaybeBlockUntilResultShows() {
-  if (blocking_until_result_shown_.has_value()) {
-    // This code path is intended to be run only for testing. Bail early if
-    // not. While all paths that set this variable are in `ForTesting` blocks
-    // and therefore excluded, this check should ensure a mistake isn't made
-    // in the future.
-    CHECK_IS_TEST();
-    std::move(blocking_until_result_shown_.value()).Run();
-    blocking_until_result_shown_.reset();
   }
 }
 

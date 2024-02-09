@@ -36,21 +36,6 @@ class PlusAddressCreationView {
   virtual void OpenSettingsLink(content::WebContents* web_contents) = 0;
   // Navigates to the link shown in error report instructions.
   virtual void OpenErrorReportLink(content::WebContents* web_contents) = 0;
-  // Returns whether the Confirm button can be pressed.
-  virtual bool GetConfirmButtonEnabledForTesting() const = 0;
-  // Simulates a click on the `type` of button.
-  // TODO: crbug.com/1467623 - Remove after migrating to Kombucha tests.
-  virtual void ClickButtonForTesting(PlusAddressViewButtonType type) = 0;
-  // Returns the text shown on the Plus Address label.
-  virtual std::u16string GetPlusAddressLabelTextForTesting() const = 0;
-  // Checks that the loading indicator is showing.
-  virtual bool ShowsLoadingIndicatorForTesting() const = 0;
-  // Blocks until either ShowReserveResult or ShowConfirmResult are called.
-  virtual void WaitUntilResultShownForTesting() = 0;
-  // Return whether Plus Address label is visible.
-  virtual bool GetPlusAddressLabelVisibilityForTesting() const = 0;
-  // Return whether error label is visible.
-  virtual bool GetErrorLabelVisibilityForTesting() const = 0;
 };
 
 }  // namespace plus_addresses
