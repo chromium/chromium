@@ -3586,6 +3586,13 @@
        {}
       ]
      ],
+     "ellipsis-with-image-crash.html": [
+      "42a18d0eb0ede5875e84f0cbf0012d5bc4814479",
+      [
+       null,
+       {}
+      ]
+     ],
      "multicol-in-orthogonal-writing-mode-crash.html": [
       "5a7378de2ea890fc2eefd91135c6cb299a7464ba",
       [
@@ -4733,6 +4740,13 @@
      ],
      "get-computed-style-crash.html": [
       "38cd5af7f83d60976f9712e446a55d11fe07160e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-transition-destroyed-document-crash.html": [
+      "31f6a10ed62c8c0689b7eb5b6b3b8574c0e0fa8e",
       [
        null,
        {}
@@ -240385,6 +240399,188 @@
        }
       ]
      ],
+     "pseudo-with-classes-entry.html": [
+      "44f95dccbf41ef85a8a007b59c9dd23f0217b025",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-exit.html": [
+      "c687461f18eab4cdb1e4d3f9b2956eefe0fe2579",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-match-ident.html": [
+      "1418a90bc45577c26afcabe9f8216ebe8ddccf70",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-match-multiple-wildcard.html": [
+      "53eaacfe799bfdc8aff97705f25ffa2809e6b7d0",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-match-multiple.html": [
+      "1ab69340b4be005a7f5e8efe396beb01f1a1a300",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-match-wildard.html": [
+      "13490d58786b296d306425fc632da73fda86c763",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-mismatch-ident.html": [
+      "97db64fca20022b9b6bc96d3c4af429e8723d40d",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-mismatch-partial.html": [
+      "9d9838036bc70d97627fd3884e41c7a5224d4bcb",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-mismatch-wildcard.html": [
+      "722e41304550d11196c30c68de9b62e7bd2add3e",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-multiple-vt-classes.html": [
+      "d7ca0a049361c747a344231e74b8f1dfac5f4d8a",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-new-with-class-old-without.html": [
+      "5aedc33b3c106f10c0fef594b88735224360a04b",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-old-with-class-new-without.html": [
+      "6c153253e00af7065e2467b0e0754bf81f657e15",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-view-transition-group.html": [
+      "3e4dbb303c6149727cbffb8dcd7f32d4cc6826f7",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "pseudo-with-classes-view-transition-image-pair.html": [
+      "8f0f2ef2a9749d00b9af279c621417611d4b129c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "root-captured-as-different-tag.html": [
       "4264db81699c395e9af0a693915b92069df7a93d",
       [
@@ -323778,7 +323974,7 @@
       []
      ],
      "highlight-pseudo-computed-expected.txt": [
-      "33d5608731297516b03eafc8a03fe5b852e354f7",
+      "ea640859dce0cfcc5b3024bc8a066311045b32a2",
       []
      ],
      "painting": {
@@ -342975,6 +343171,10 @@
       "f622f94b5f5b07f26b500e8316e1f8c28b5eb900",
       []
      ],
+     "pseudo-with-classes-ref.html": [
+      "89b3a8a78efda6184ad62088c3b7595cc4f6d829",
+      []
+     ],
      "root-captured-as-different-tag-ref.html": [
       "92bd70f6f4eb24096392289040d85aca2ae43742",
       []
@@ -358121,11 +358321,11 @@
      []
     ],
     "generic-sensor-iframe-tests.sub.js": [
-     "8f13bd778e06e58c2c8417d58c2fcb1f7cda43ed",
+     "ed3415e66ec799da22277dcd3f81dbbfb956145b",
      []
     ],
     "generic-sensor-tests.js": [
-     "292b562ff3754ddb2eaf6a12ddb68ced6a0f9677",
+     "b4ed22554a0ebf62bde1d13175f2681b1fa631db",
      []
     ],
     "resources": {
@@ -441955,6 +442155,20 @@
       ]
      ],
      "parsing": {
+      "position-try-options-computed.html": [
+       "d6423c164b656814104305b9a2a0099814c0cbec",
+       [
+        null,
+        {}
+       ]
+      ],
+      "position-try-options-parsing.html": [
+       "dfc9997e9fdd0a4b7bc310bf26e9fd9c81f835fa",
+       [
+        null,
+        {}
+       ]
+      ],
       "position-try-order-computed.html": [
        "aebec00aef918060987b7cc028d903b2e960f169",
        [
@@ -567517,6 +567731,13 @@
      "the-css-user-agent-style-sheet-and-presentational-hints": {
       "mouse-cursor-imagemap.html": [
        "78f69a28957c049eb863e901d92f854f2d119ff7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "no-help-cursor-on-links-wrapped-in-svg.historical.html": [
+       "da6ffe15bbef59838922335fa03fcd017d6ff000",
        [
         null,
         {}
