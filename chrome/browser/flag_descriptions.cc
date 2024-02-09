@@ -749,6 +749,13 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
+const char kSearchInCCTDescription[] =
+    "Permits apps to create searchable and "
+    "navigable custom tabs.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSeparateWebAppShortcutBadgeIconName[] =
     "Separate Web App Shorcut Badge Icon";
 const char kSeparateWebAppShortcutBadgeIconDescription[] =

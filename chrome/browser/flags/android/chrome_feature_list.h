@@ -127,6 +127,7 @@ BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);
 BASE_DECLARE_FEATURE(kRelatedSearchesAllLanguage);
 BASE_DECLARE_FEATURE(kReportParentalControlSitesChild);
 BASE_DECLARE_FEATURE(kSearchEnginesPromoV3);
+BASE_DECLARE_FEATURE(kSearchInCCT);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowNtpAtStartupAndroid);
 BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);

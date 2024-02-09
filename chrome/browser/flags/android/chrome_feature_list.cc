@@ -249,6 +249,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesAllLanguage,
     &kReportParentalControlSitesChild,
     &kSearchEnginesPromoV3,
+    &kSearchInCCT,
     &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
     &kShowScrollableMVTOnNtpPhoneAndroid,
@@ -857,6 +858,8 @@ BASE_FEATURE(kTestDefaultEnabled,
 BASE_FEATURE(kSearchEnginesPromoV3,
              "SearchEnginesPromoV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceAndroid,
              "StartSurfaceAndroid",

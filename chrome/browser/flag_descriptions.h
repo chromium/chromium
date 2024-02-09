@@ -425,6 +425,11 @@ extern const char kBorealisZinkGlDriverDescription[];
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kSearchInCCTName[];
+extern const char kSearchInCCTDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kSeparateWebAppShortcutBadgeIconName[];
 extern const char kSeparateWebAppShortcutBadgeIconDescription[];
 

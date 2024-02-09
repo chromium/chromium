@@ -412,6 +412,7 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingNewGmsApiForSubresourceFilterCheck";
     public static final String SAFE_BROWSING_SKIP_SUBRESOURCES = "SafeBrowsingSkipSubResources";
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";
+    public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_ENGINES_PROMO_V3 = "SearchEnginesPromoV3";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT =
@@ -779,6 +780,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
+    public static final MutableFlagWithSafeDefault sSearchInCCT =
+            newMutableFlagWithSafeDefault(SEARCH_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =

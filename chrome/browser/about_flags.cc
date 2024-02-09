@@ -7020,6 +7020,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kMagicStackAndroid)},
 
+    {"search-in-cct", flag_descriptions::kSearchInCCTName,
+     flag_descriptions::kSearchInCCTDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
+
     {"enable-show-ntp-at-startup",
      flag_descriptions::kShowNtpAtStartupAndroidName,
      flag_descriptions::kShowNtpAtStartupAndroidDescription, kOsAndroid,
