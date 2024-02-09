@@ -22,8 +22,9 @@ namespace ash {
 // Customized expand button for ash notification view. Used for grouped as
 // well as singular notifications.
 class AshNotificationExpandButton : public views::Button {
+  METADATA_HEADER(AshNotificationExpandButton, views::Button)
+
  public:
-  METADATA_HEADER(AshNotificationExpandButton);
   AshNotificationExpandButton();
   AshNotificationExpandButton(const AshNotificationExpandButton&) = delete;
   AshNotificationExpandButton& operator=(const AshNotificationExpandButton&) =

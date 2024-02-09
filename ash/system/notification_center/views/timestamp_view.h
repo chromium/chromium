@@ -16,9 +16,9 @@ namespace ash {
 // A label view which shows a timestamp. The label is automatically updated
 // periodically.
 class ASH_EXPORT TimestampView : public views::Label {
- public:
-  METADATA_HEADER(TimestampView);
+  METADATA_HEADER(TimestampView, views::Label)
 
+ public:
   TimestampView();
   TimestampView(const TimestampView&) = delete;
   TimestampView& operator=(const TimestampView&) = delete;

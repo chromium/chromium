@@ -932,7 +932,7 @@ void FocusModeDetailedView::UpdateEndTimeLabel() {
   }
 }
 
-BEGIN_METADATA(FocusModeDetailedView, TrayDetailedView)
+BEGIN_METADATA(FocusModeDetailedView)
 END_METADATA
 
 }  // namespace ash

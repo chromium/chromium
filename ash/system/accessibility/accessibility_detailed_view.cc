@@ -930,7 +930,7 @@ void AccessibilityDetailedView::SetSodaFeatureSubtext(SodaFeature feature,
   }
 }
 
-BEGIN_METADATA(AccessibilityDetailedView, TrayDetailedView)
+BEGIN_METADATA(AccessibilityDetailedView)
 END_METADATA
 
 }  // namespace ash

@@ -45,9 +45,9 @@ class ArcNotificationContentView
       public ArcNotificationItem::Observer,
       public ArcNotificationSurfaceManager::Observer,
       public views::WidgetObserver {
- public:
-  METADATA_HEADER(ArcNotificationContentView);
+  METADATA_HEADER(ArcNotificationContentView, views::NativeViewHost)
 
+ public:
   static int GetNotificationContentViewWidth();
 
   ArcNotificationContentView(ArcNotificationItem* item,

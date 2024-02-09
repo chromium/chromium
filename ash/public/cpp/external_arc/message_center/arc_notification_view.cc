@@ -308,7 +308,7 @@ aura::Window* ArcNotificationView::GetNativeContainerWindowForTest() const {
   return content_view_->GetNativeViewContainer();
 }
 
-BEGIN_METADATA(ArcNotificationView, message_center::MessageView)
+BEGIN_METADATA(ArcNotificationView)
 END_METADATA
 
 }  // namespace ash

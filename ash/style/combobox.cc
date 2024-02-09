@@ -160,8 +160,9 @@ END_METADATA
 // corresponding to the items in combobox model. The selected item will show a
 // leading checked icon.
 class Combobox::ComboboxMenuView : public views::View {
+  METADATA_HEADER(ComboboxMenuView, views::View)
+
  public:
-  METADATA_HEADER(ComboboxMenuView);
   explicit ComboboxMenuView(base::WeakPtr<Combobox> combobox)
       : combobox_(combobox),
         background_shield_(this,
@@ -801,7 +802,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   return true;
 }
 
-BEGIN_METADATA(Combobox, views::Button)
+BEGIN_METADATA(Combobox)
 END_METADATA
 
 }  // namespace ash

@@ -482,7 +482,7 @@ void DropDownCheckbox::OnPerformAction() {
   }
 }
 
-BEGIN_METADATA(DropDownCheckbox, views::Button)
+BEGIN_METADATA(DropDownCheckbox)
 END_METADATA
 
 }  // namespace ash

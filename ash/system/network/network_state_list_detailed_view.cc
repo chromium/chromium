@@ -26,6 +26,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -498,5 +499,8 @@ bool NetworkStateListDetailedView::IsWifiEnabled() {
   return model_->GetDeviceState(NetworkType::kWiFi) ==
          DeviceStateType::kEnabled;
 }
+
+BEGIN_METADATA(NetworkStateListDetailedView)
+END_METADATA
 
 }  // namespace ash

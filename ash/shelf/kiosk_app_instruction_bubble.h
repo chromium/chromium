@@ -23,8 +23,9 @@ namespace ash {
 // button.
 class ASH_EXPORT KioskAppInstructionBubble
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(KioskAppInstructionBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(KioskAppInstructionBubble);
   KioskAppInstructionBubble(views::View* anchor, ShelfAlignment alignment);
 
   KioskAppInstructionBubble(const KioskAppInstructionBubble&) = delete;

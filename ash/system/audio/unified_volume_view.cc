@@ -282,7 +282,7 @@ void UnifiedVolumeView::VisibilityChanged(View* starting_from,
   Update(/*by_user=*/true);
 }
 
-BEGIN_METADATA(UnifiedVolumeView, views::View)
+BEGIN_METADATA(UnifiedVolumeView)
 END_METADATA
 
 }  // namespace ash

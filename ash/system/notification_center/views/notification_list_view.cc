@@ -1226,7 +1226,7 @@ double NotificationListView::GetCurrentValue() const {
   return gfx::Tween::CalculateValue(tween, animation_->GetCurrentValue());
 }
 
-BEGIN_METADATA(NotificationListView, views::View);
+BEGIN_METADATA(NotificationListView);
 END_METADATA
 
 }  // namespace ash

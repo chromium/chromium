@@ -33,9 +33,9 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
                                public IMEObserver,
                                public KeyboardControllerObserver,
                                public VirtualKeyboardObserver {
- public:
-  METADATA_HEADER(ImeMenuTray);
+  METADATA_HEADER(ImeMenuTray, TrayBackgroundView)
 
+ public:
   explicit ImeMenuTray(Shelf* shelf);
   ImeMenuTray(const ImeMenuTray&) = delete;
   ImeMenuTray& operator=(const ImeMenuTray&) = delete;

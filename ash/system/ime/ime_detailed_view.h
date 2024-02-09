@@ -23,9 +23,9 @@ class ImeControllerImpl;
 // along with other items in the title row (a settings button and optional
 // enterprise-controlled icon).
 class IMEDetailedView : public ImeListView {
- public:
-  METADATA_HEADER(IMEDetailedView);
+  METADATA_HEADER(IMEDetailedView, ImeListView)
 
+ public:
   IMEDetailedView(DetailedViewDelegate* delegate,
                   ImeControllerImpl* ime_controller);
   IMEDetailedView(const IMEDetailedView&) = delete;

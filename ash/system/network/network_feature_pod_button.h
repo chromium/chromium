@@ -15,9 +15,9 @@ namespace ash {
 // This class that provides the corresponding controller with notifications of
 // when the theme for this view changes.
 class ASH_EXPORT NetworkFeaturePodButton : public FeaturePodButton {
- public:
-  METADATA_HEADER(NetworkFeaturePodButton);
+  METADATA_HEADER(NetworkFeaturePodButton, FeaturePodButton)
 
+ public:
   // This class defines the interface that NetworkFeaturePodButton will use to
   // propagate theme changes.
   class Delegate {

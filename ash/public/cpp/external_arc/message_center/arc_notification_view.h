@@ -26,10 +26,10 @@ class ArcNotificationContentView;
 // ArcNotificationContentView which shows content of the notification.
 class ArcNotificationView : public message_center::MessageView,
                             public ArcNotificationItem::Observer {
+  METADATA_HEADER(ArcNotificationView, message_center::MessageView)
+
  public:
   static ArcNotificationView* FromView(views::View* message_view);
-
-  METADATA_HEADER(ArcNotificationView);
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification,

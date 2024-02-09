@@ -160,9 +160,9 @@ void ShowAddVpnDialog(VpnType vpn_provider_type,
 // A view for a VPN provider. Derives from views::Button so the entire row is
 // clickable.
 class VPNListProviderEntry : public views::Button {
- public:
-  METADATA_HEADER(VPNListProviderEntry);
+  METADATA_HEADER(VPNListProviderEntry, views::Button)
 
+ public:
   VPNListProviderEntry(const VpnProviderPtr& vpn_provider,
                        const std::string& name,
                        bool enabled)
@@ -238,7 +238,7 @@ class VPNListProviderEntry : public views::Button {
   std::string vpn_provider_app_id_;
 };
 
-BEGIN_METADATA(VPNListProviderEntry, views::Button)
+BEGIN_METADATA(VPNListProviderEntry)
 END_METADATA
 
 // A list entry that represents a network. If the network is currently
@@ -247,9 +247,9 @@ END_METADATA
 // name.
 class VPNListNetworkEntry : public HoverHighlightView,
                             public network_icon::AnimationObserver {
- public:
-  METADATA_HEADER(VPNListNetworkEntry);
+  METADATA_HEADER(VPNListNetworkEntry, HoverHighlightView)
 
+ public:
   VPNListNetworkEntry(VpnDetailedView* vpn_detailed_view,
                       TrayNetworkStateModel* model,
                       const NetworkStateProperties* network);
@@ -272,7 +272,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(VPNListNetworkEntry, HoverHighlightView)
+BEGIN_METADATA(VPNListNetworkEntry)
 END_METADATA
 
 VPNListNetworkEntry::VPNListNetworkEntry(VpnDetailedView* owner,
@@ -608,7 +608,7 @@ void VpnDetailedView::AddProvidersAndNetworks(
   }
 }
 
-BEGIN_METADATA(VpnDetailedView, NetworkStateListDetailedView)
+BEGIN_METADATA(VpnDetailedView)
 END_METADATA
 
 }  // namespace ash

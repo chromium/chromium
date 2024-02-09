@@ -14,9 +14,9 @@ namespace ash {
 // A view used to represent a keyboard shortcut/accelerator as a series of
 // bordered text or icon keys.
 class ASH_EXPORT KeyboardShortcutView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(KeyboardShortcutView);
+  METADATA_HEADER(KeyboardShortcutView, views::FlexLayoutView)
 
+ public:
   explicit KeyboardShortcutView(
       const std::vector<ui::KeyboardCode>& keyboard_codes);
   KeyboardShortcutView(const KeyboardShortcutView&) = delete;

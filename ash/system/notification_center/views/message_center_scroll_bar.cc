@@ -42,7 +42,7 @@ void CollectScrollActionReason(ScrollActionReason reason) {
 
 namespace ash {
 
-BEGIN_METADATA(MessageCenterScrollBar, RoundedScrollBar)
+BEGIN_METADATA(MessageCenterScrollBar)
 END_METADATA
 
 MessageCenterScrollBar::MessageCenterScrollBar()

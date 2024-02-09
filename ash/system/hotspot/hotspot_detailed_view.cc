@@ -286,7 +286,7 @@ void HotspotDetailedView::UpdateExtraIcon(
   extra_icon_->SetAccessibleName(tooltip);
 }
 
-BEGIN_METADATA(HotspotDetailedView, TrayDetailedView)
+BEGIN_METADATA(HotspotDetailedView)
 END_METADATA
 
 }  // namespace ash

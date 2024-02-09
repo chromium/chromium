@@ -30,9 +30,9 @@ class Switch;
 // for the delegate interface it uses to propagate user interactions.
 class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
                                        public HotspotIconAnimationObserver {
- public:
-  METADATA_HEADER(HotspotDetailedView);
+  METADATA_HEADER(HotspotDetailedView, TrayDetailedView)
 
+ public:
   // This class defines the interface that HotspotDetailedView will use to
   // propagate user interactions.
   class Delegate {

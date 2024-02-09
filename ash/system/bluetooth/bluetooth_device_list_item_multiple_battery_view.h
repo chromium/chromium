@@ -16,9 +16,9 @@ namespace ash {
 // batteries (left bud, case, right bud) of a single device.
 class ASH_EXPORT BluetoothDeviceListItemMultipleBatteryView
     : public views::View {
- public:
-  METADATA_HEADER(BluetoothDeviceListItemMultipleBatteryView);
+  METADATA_HEADER(BluetoothDeviceListItemMultipleBatteryView, views::View)
 
+ public:
   BluetoothDeviceListItemMultipleBatteryView();
   BluetoothDeviceListItemMultipleBatteryView(
       const BluetoothDeviceListItemMultipleBatteryView&) = delete;

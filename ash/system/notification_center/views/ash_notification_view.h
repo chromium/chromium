@@ -184,8 +184,9 @@ class ASH_EXPORT AshNotificationView
   // Customized title row for this notification view with added timestamp in
   // collapse mode.
   class NotificationTitleRow : public views::View {
+    METADATA_HEADER(NotificationTitleRow, views::View)
+
    public:
-    METADATA_HEADER(NotificationTitleRow);
     explicit NotificationTitleRow(const std::u16string& title);
     NotificationTitleRow(const NotificationTitleRow&) = delete;
     NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;

@@ -925,7 +925,7 @@ void ArcNotificationContentView::OnNotificationSurfaceRemoved(
   SetSurface(nullptr);
 }
 
-BEGIN_METADATA(ArcNotificationContentView, views::NativeViewHost)
+BEGIN_METADATA(ArcNotificationContentView)
 END_METADATA
 
 }  // namespace ash

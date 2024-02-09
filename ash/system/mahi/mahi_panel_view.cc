@@ -47,7 +47,7 @@ constexpr int kPanelCornerRadius = 16;
 
 }  // namespace
 
-BEGIN_METADATA(MahiPanelView, views::BoxLayoutView)
+BEGIN_METADATA(MahiPanelView)
 END_METADATA
 
 MahiPanelView::MahiPanelView() {

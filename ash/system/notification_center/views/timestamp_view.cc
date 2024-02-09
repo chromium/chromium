@@ -33,7 +33,7 @@ void TimestampView::UpdateTimestampText() {
                      base::Unretained(this)));
 }
 
-BEGIN_METADATA(TimestampView, views::Label)
+BEGIN_METADATA(TimestampView)
 END_METADATA
 
 }  // namespace ash

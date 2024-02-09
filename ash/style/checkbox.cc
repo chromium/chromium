@@ -49,7 +49,7 @@ void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kCheckBox;
 }
 
-BEGIN_METADATA(Checkbox, OptionButtonBase)
+BEGIN_METADATA(Checkbox)
 END_METADATA
 
 }  // namespace ash

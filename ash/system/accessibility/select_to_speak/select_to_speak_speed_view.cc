@@ -93,7 +93,7 @@ void SelectToSpeakSpeedView::OnKeyEvent(ui::KeyEvent* key_event) {
   key_event->StopPropagation();
 }
 
-BEGIN_METADATA(SelectToSpeakSpeedView, views::BoxLayoutView)
+BEGIN_METADATA(SelectToSpeakSpeedView)
 END_METADATA
 
 }  // namespace ash

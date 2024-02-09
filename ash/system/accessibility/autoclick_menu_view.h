@@ -23,9 +23,9 @@ class FloatingMenuButton;
 // View for the Automatic Clicks Menu, which creates and manages
 // individual buttons to control Automatic Clicks settings.
 class AutoclickMenuView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(AutoclickMenuView);
+  METADATA_HEADER(AutoclickMenuView, views::BoxLayoutView)
 
+ public:
   // Used for testing. Start at 1 because a view IDs should not be 0.
   enum class ButtonId {
     kPosition = 1,

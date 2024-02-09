@@ -24,8 +24,9 @@ namespace ash {
 // unselected button will select it, vise versa.
 class ASH_EXPORT CheckboxGroup : public OptionButtonGroup,
                                  public OptionButtonBase::Delegate {
+  METADATA_HEADER(CheckboxGroup, OptionButtonGroup)
+
  public:
-  METADATA_HEADER(CheckboxGroup);
   explicit CheckboxGroup(int group_width);
   CheckboxGroup(int group_width,
                 const gfx::Insets& inside_border_insets,

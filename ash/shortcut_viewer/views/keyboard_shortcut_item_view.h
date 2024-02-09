@@ -19,8 +19,9 @@ namespace keyboard_shortcut_viewer {
 
 // A view that displays a shortcut metadata.
 class KeyboardShortcutItemView : public views::View {
+  METADATA_HEADER(KeyboardShortcutItemView, views::View)
+
  public:
-  METADATA_HEADER(KeyboardShortcutItemView);
   KeyboardShortcutItemView(const ash::KeyboardShortcutItem& item,
                            ash::ShortcutCategory category);
 

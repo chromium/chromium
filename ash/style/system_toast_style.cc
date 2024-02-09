@@ -57,8 +57,9 @@ constexpr int kLeadingIconRightPadding = 14;
 
 // The label inside SystemToastStyle, which allows two lines at maximum.
 class SystemToastInnerLabel : public views::Label {
+  METADATA_HEADER(SystemToastInnerLabel, views::Label)
+
  public:
-  METADATA_HEADER(SystemToastInnerLabel);
   explicit SystemToastInnerLabel(const std::u16string& text)
       : views::Label(text) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -78,7 +79,7 @@ class SystemToastInnerLabel : public views::Label {
   ~SystemToastInnerLabel() override = default;
 };
 
-BEGIN_METADATA(SystemToastInnerLabel, views::Label)
+BEGIN_METADATA(SystemToastInnerLabel)
 END_METADATA
 
 // Returns the vertical padding for the layout given the presence of the dismiss
@@ -242,7 +243,7 @@ void SystemToastStyle::UpdateInsideBorderInsets() {
   InvalidateLayout();
 }
 
-BEGIN_METADATA(SystemToastStyle, views::View)
+BEGIN_METADATA(SystemToastStyle)
 END_METADATA
 
 }  // namespace ash

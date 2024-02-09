@@ -122,7 +122,7 @@ bool BluetoothDeviceListItemBatteryView::ApproximatelyEqual(
   return max - min < kBatteryPercentageChangeThreshold;
 }
 
-BEGIN_METADATA(BluetoothDeviceListItemBatteryView, views::View)
+BEGIN_METADATA(BluetoothDeviceListItemBatteryView)
 END_METADATA
 
 }  // namespace ash

@@ -28,8 +28,9 @@ class TimestampView;
 
 class ASH_EXPORT ConversationNotificationView
     : public message_center::MessageView {
+  METADATA_HEADER(ConversationNotificationView, message_center::MessageView)
+
  public:
-  METADATA_HEADER(ConversationNotificationView);
   enum ViewId {
     kControlButtonsView = 1,
     kCollapsedModeContainer,

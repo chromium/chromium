@@ -60,9 +60,9 @@ const int kMinFontSizeDelta = -10;
 // Represents a row in the scrollable IME list; each row is either an IME or
 // an IME property. A checkmark icon is shown in the row if selected.
 class ImeListItemView : public views::Button {
- public:
-  METADATA_HEADER(ImeListItemView);
+  METADATA_HEADER(ImeListItemView, views::Button)
 
+ public:
   ImeListItemView(ImeListView* list_view,
                   const std::u16string& id,
                   const std::u16string& label,
@@ -154,7 +154,7 @@ class ImeListItemView : public views::Button {
   bool selected_;
 };
 
-BEGIN_METADATA(ImeListItemView, views::Button)
+BEGIN_METADATA(ImeListItemView)
 END_METADATA
 
 }  // namespace
@@ -164,9 +164,9 @@ END_METADATA
 // shown only under certain conditions, e.g., when an external keyboard is
 // attached and the user is in TabletMode mode.
 class KeyboardStatusRow : public views::View {
- public:
-  METADATA_HEADER(KeyboardStatusRow);
+  METADATA_HEADER(KeyboardStatusRow, views::View)
 
+ public:
   KeyboardStatusRow() = default;
   KeyboardStatusRow(const KeyboardStatusRow&) = delete;
   KeyboardStatusRow& operator=(const KeyboardStatusRow&) = delete;
@@ -218,7 +218,7 @@ class KeyboardStatusRow : public views::View {
   raw_ptr<Switch> qs_toggle_ = nullptr;
 };
 
-BEGIN_METADATA(KeyboardStatusRow, views::View)
+BEGIN_METADATA(KeyboardStatusRow)
 END_METADATA
 
 ImeListView::ImeListView(DetailedViewDelegate* delegate)
@@ -409,7 +409,7 @@ void ImeListView::FocusCurrentImeIfNeeded() {
   }
 }
 
-BEGIN_METADATA(ImeListView, TrayDetailedView)
+BEGIN_METADATA(ImeListView)
 END_METADATA
 
 ImeListViewTestApi::ImeListViewTestApi(ImeListView* ime_list_view)

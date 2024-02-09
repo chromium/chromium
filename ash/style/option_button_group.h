@@ -14,9 +14,9 @@ namespace ash {
 // OptionButtonGroup is a menu component with a group of option buttons with the
 // vertical layout.
 class ASH_EXPORT OptionButtonGroup : public views::View {
- public:
-  METADATA_HEADER(OptionButtonGroup);
+  METADATA_HEADER(OptionButtonGroup, views::View)
 
+ public:
   explicit OptionButtonGroup(int group_width);
   OptionButtonGroup(int group_width,
                     const gfx::Insets& inside_border_insets,

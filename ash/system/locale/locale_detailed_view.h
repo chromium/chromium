@@ -19,9 +19,9 @@ namespace ash {
 // To show this UI on device, see go/demo-mode-g3-cookbook.
 // To show this UI in the emulator, pass --qs-show-locale-tile.
 class ASH_EXPORT LocaleDetailedView : public TrayDetailedView {
- public:
-  METADATA_HEADER(LocaleDetailedView);
+  METADATA_HEADER(LocaleDetailedView, TrayDetailedView)
 
+ public:
   explicit LocaleDetailedView(DetailedViewDelegate* delegate);
   LocaleDetailedView(const LocaleDetailedView&) = delete;
   LocaleDetailedView& operator=(const LocaleDetailedView&) = delete;

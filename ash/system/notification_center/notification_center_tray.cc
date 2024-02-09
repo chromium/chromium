@@ -247,7 +247,7 @@ void NotificationCenterTray::UpdateVisibility() {
   }
 }
 
-BEGIN_METADATA(NotificationCenterTray, TrayBackgroundView)
+BEGIN_METADATA(NotificationCenterTray)
 END_METADATA
 
 }  // namespace ash

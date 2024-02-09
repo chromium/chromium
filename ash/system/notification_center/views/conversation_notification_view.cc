@@ -281,7 +281,7 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   return title_row;
 }
 
-BEGIN_METADATA(ConversationNotificationView, MessageView)
+BEGIN_METADATA(ConversationNotificationView)
 END_METADATA
 
 }  // namespace ash

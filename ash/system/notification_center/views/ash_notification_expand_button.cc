@@ -49,7 +49,7 @@ constexpr int kLabelFontSize = 12;
 
 }  // namespace
 
-BEGIN_METADATA(AshNotificationExpandButton, views::Button)
+BEGIN_METADATA(AshNotificationExpandButton)
 END_METADATA
 
 AshNotificationExpandButton::AshNotificationExpandButton() {

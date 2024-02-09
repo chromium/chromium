@@ -17,9 +17,9 @@ class ViewClickListener;
 // Base class used in configuring the view shown for a single network in
 // the detailed Network page within the quick settings.
 class ASH_EXPORT NetworkListItemView : public HoverHighlightView {
- public:
-  METADATA_HEADER(NetworkListItemView);
+  METADATA_HEADER(NetworkListItemView, HoverHighlightView)
 
+ public:
   NetworkListItemView(const NetworkListItemView&) = delete;
   NetworkListItemView& operator=(const NetworkListItemView&) = delete;
   ~NetworkListItemView() override;

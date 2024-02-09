@@ -20,9 +20,9 @@ class FloatingMenuButton;
 
 // View for the Select-to-Speak floating menu panel.
 class SelectToSpeakMenuView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(SelectToSpeakMenuView);
+  METADATA_HEADER(SelectToSpeakMenuView, views::BoxLayoutView)
 
+ public:
   class ASH_EXPORT Delegate {
    public:
     Delegate() {}

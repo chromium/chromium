@@ -17,9 +17,9 @@ namespace ash {
 // A view that displays an icon, title and message associated with a
 // `notification_item`.
 class ASH_EXPORT ConversationItemView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(ConversationItemView);
+  METADATA_HEADER(ConversationItemView, views::FlexLayoutView)
 
+ public:
   explicit ConversationItemView(
       const message_center::NotificationItem& notification_item);
   ConversationItemView(const ConversationItemView&) = delete;

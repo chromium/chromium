@@ -39,7 +39,7 @@ void UnifiedMediaControlsDetailedView::CreateExtraTitleRowButtons() {
   tri_view()->AddView(TriView::Container::END, new MediaTray::PinButton());
 }
 
-BEGIN_METADATA(UnifiedMediaControlsDetailedView, TrayDetailedView)
+BEGIN_METADATA(UnifiedMediaControlsDetailedView)
 END_METADATA
 
 }  // namespace ash

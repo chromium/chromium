@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -35,6 +36,8 @@ bool CanNetworkConnect(
 class ASH_EXPORT NetworkStateListDetailedView
     : public TrayDetailedView,
       public TrayNetworkStateObserver {
+  METADATA_HEADER(NetworkStateListDetailedView, TrayDetailedView)
+
  public:
   NetworkStateListDetailedView(const NetworkStateListDetailedView&) = delete;
   NetworkStateListDetailedView& operator=(const NetworkStateListDetailedView&) =

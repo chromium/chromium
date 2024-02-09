@@ -24,9 +24,9 @@ class UnifiedVolumeSliderController;
 class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
                                      public AccessibilityObserver,
                                      public CrasAudioHandler::AudioObserver {
- public:
-  METADATA_HEADER(UnifiedVolumeView);
+  METADATA_HEADER(UnifiedVolumeView, UnifiedSliderView)
 
+ public:
   // This constructor is to create the `UnifiedVolumeView` with a trailing
   // settings button that leads to `AudioDetailedView`, i.e. volume slider in
   // the Quick Settings main page and Quick Settings toasts. `delegate` is used

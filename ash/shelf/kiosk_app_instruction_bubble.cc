@@ -105,7 +105,7 @@ gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
-BEGIN_METADATA(KioskAppInstructionBubble, views::BubbleDialogDelegateView)
+BEGIN_METADATA(KioskAppInstructionBubble)
 END_METADATA
 
 }  // namespace ash

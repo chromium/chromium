@@ -250,7 +250,7 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
   return above_id_list;
 }
 
-BEGIN_METADATA(NotificationCenterView, views::View);
+BEGIN_METADATA(NotificationCenterView)
 END_METADATA
 
 }  // namespace ash

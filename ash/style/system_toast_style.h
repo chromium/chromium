@@ -28,9 +28,9 @@ class SystemShadow;
 // is provided. The spacing surrounding the elements may change if the text has
 // one or two lines.
 class ASH_EXPORT SystemToastStyle : public views::View {
- public:
-  METADATA_HEADER(SystemToastStyle);
+  METADATA_HEADER(SystemToastStyle, views::View)
 
+ public:
   SystemToastStyle(base::RepeatingClosure dismiss_callback,
                    const std::u16string& text,
                    const std::u16string& dismiss_text,

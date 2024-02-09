@@ -146,7 +146,7 @@ void NetworkDetailedView::OnSettingsClicked() {
   }
 }
 
-BEGIN_METADATA(NetworkDetailedView, TrayDetailedView)
+BEGIN_METADATA(NetworkDetailedView)
 END_METADATA
 
 }  // namespace ash

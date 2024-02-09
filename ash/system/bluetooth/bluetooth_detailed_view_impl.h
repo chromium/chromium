@@ -28,9 +28,9 @@ class RoundedContainer;
 // The implementation of BluetoothDetailedView.
 class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
                                              public TrayDetailedView {
- public:
-  METADATA_HEADER(BluetoothDetailedViewImpl);
+  METADATA_HEADER(BluetoothDetailedViewImpl, TrayDetailedView)
 
+ public:
   BluetoothDetailedViewImpl(DetailedViewDelegate* detailed_view_delegate,
                             BluetoothDetailedView::Delegate* delegate);
   BluetoothDetailedViewImpl(const BluetoothDetailedViewImpl&) = delete;

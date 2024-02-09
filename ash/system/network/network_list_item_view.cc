@@ -54,7 +54,7 @@ std::u16string NetworkListItemView::GetLabel() {
   return base::UTF8ToUTF16(network_properties_->name);
 }
 
-BEGIN_METADATA(NetworkListItemView, HoverHighlightView)
+BEGIN_METADATA(NetworkListItemView)
 END_METADATA
 
 }  // namespace ash

@@ -134,7 +134,7 @@ void FloatingAccessibilityBubbleView::GetAccessibleNodeData(
   TrayBubbleView::GetAccessibleNodeData(node_data);
 }
 
-BEGIN_METADATA(FloatingAccessibilityBubbleView, TrayBubbleView)
+BEGIN_METADATA(FloatingAccessibilityBubbleView)
 END_METADATA
 
 FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
@@ -321,7 +321,7 @@ void FloatingAccessibilityView::OnKeyboardVisibilityChanged(bool visible) {
     delegate_->OnDetailedMenuEnabled(false);
 }
 
-BEGIN_METADATA(FloatingAccessibilityView, views::BoxLayoutView)
+BEGIN_METADATA(FloatingAccessibilityView)
 END_METADATA
 
 }  // namespace ash

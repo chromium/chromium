@@ -53,9 +53,9 @@ namespace ash {
 // The dialog would display all or some of above elements, depending on the
 // clients' needs.
 class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(SystemDialogDelegateView);
+  METADATA_HEADER(SystemDialogDelegateView, views::WidgetDelegateView)
 
+ public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescriptionTextIdForTesting);

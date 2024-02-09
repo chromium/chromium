@@ -90,8 +90,9 @@ int ToMessageId(DictationBubbleHintType hint_type) {
 // View for the Dictation bubble top row. Responsible for displaying icons,
 // animations, and non-finalized speech results.
 class ASH_EXPORT TopRowView : public views::View {
+  METADATA_HEADER(TopRowView, views::View)
+
  public:
-  METADATA_HEADER(TopRowView);
   TopRowView() {
     std::unique_ptr<views::BoxLayout> layout =
         std::make_unique<views::BoxLayout>(
@@ -188,7 +189,7 @@ class ASH_EXPORT TopRowView : public views::View {
   raw_ptr<views::Label> label_ = nullptr;
 };
 
-BEGIN_METADATA(TopRowView, views::View)
+BEGIN_METADATA(TopRowView)
 END_METADATA
 
 }  // namespace
@@ -274,7 +275,7 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   return hints;
 }
 
-BEGIN_METADATA(DictationBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(DictationBubbleView)
 END_METADATA
 
 DictationHintView::DictationHintView() {
@@ -330,7 +331,7 @@ void DictationHintView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
-BEGIN_METADATA(DictationHintView, views::View)
+BEGIN_METADATA(DictationHintView)
 END_METADATA
 
 }  // namespace ash

@@ -204,7 +204,7 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
   return info_text;
 }
 
-BEGIN_METADATA(NetworkInfoBubble, views::BubbleDialogDelegateView)
+BEGIN_METADATA(NetworkInfoBubble)
 END_METADATA
 
 }  // namespace ash

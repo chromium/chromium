@@ -179,7 +179,7 @@ void SelectToSpeakTray::UpdateIconOnColorChanges() {
   icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
 }
 
-BEGIN_METADATA(SelectToSpeakTray, TrayBackgroundView);
+BEGIN_METADATA(SelectToSpeakTray);
 END_METADATA
 
 }  // namespace ash

@@ -88,8 +88,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ApplicationDragAndDropHost,
                              public ShelfTooltipDelegate,
                              public display::DisplayObserver {
+  METADATA_HEADER(ShelfView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(ShelfView);
   // Used to communicate with the container class ScrollableShelfView.
   class Delegate {
    public:

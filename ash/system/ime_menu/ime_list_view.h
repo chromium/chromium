@@ -24,9 +24,9 @@ class KeyboardStatusRow;
 // Optionally shows a toggle which is used to enable or disable the invocation
 // of the virtual keyboard.
 class ImeListView : public TrayDetailedView {
- public:
-  METADATA_HEADER(ImeListView);
+  METADATA_HEADER(ImeListView, TrayDetailedView)
 
+ public:
   enum SingleImeBehavior {
     // Shows the IME menu if there's only one IME in system.
     SHOW_SINGLE_IME,

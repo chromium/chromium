@@ -149,8 +149,9 @@ const gfx::RoundedCornersF& GetSubmitFeedbackButtonInkDropCorners() {
 // non-stable release track, that has a label for the channel and ChromeOS
 // version.
 class VersionButton : public views::LabelButton {
+  METADATA_HEADER(VersionButton, views::LabelButton)
+
  public:
-  METADATA_HEADER(VersionButton);
   VersionButton(version_info::Channel channel, bool allow_user_feedback)
       : LabelButton(
             base::BindRepeating([](const ui::Event& event) {
@@ -244,14 +245,15 @@ class VersionButton : public views::LabelButton {
   SkScalar content_corners_[kNumVersionButtonCornerRadii];
 };
 
-BEGIN_METADATA(VersionButton, views::LabelButton)
+BEGIN_METADATA(VersionButton)
 END_METADATA
 
 // SubmitFeedbackButton provides a styled button, for devices on a
 // non-stable release track, that allows the user to submit feedback.
 class SubmitFeedbackButton : public IconButton {
+  METADATA_HEADER(SubmitFeedbackButton, IconButton)
+
  public:
-  METADATA_HEADER(SubmitFeedbackButton);
   // `content_corners` - an array of `SkScalar` used to generate the rounded
   // rect that's painted for the button, the same regardless of RTL/LTR.
   // `highlight_corners` - a `gfx::RoundedCornersF` used to generate the
@@ -328,7 +330,7 @@ class SubmitFeedbackButton : public IconButton {
   SkScalar content_corners_[kNumVersionButtonCornerRadii];
 };
 
-BEGIN_METADATA(SubmitFeedbackButton, IconButton)
+BEGIN_METADATA(SubmitFeedbackButton)
 END_METADATA
 
 }  // namespace
@@ -365,7 +367,7 @@ void ChannelIndicatorQuickSettingsView::SetNarrowLayout(bool narrow) {
   views::AsViewClass<VersionButton>(version_button_)->SetNarrowLayout(narrow);
 }
 
-BEGIN_METADATA(ChannelIndicatorQuickSettingsView, views::View)
+BEGIN_METADATA(ChannelIndicatorQuickSettingsView)
 END_METADATA
 
 }  // namespace ash
