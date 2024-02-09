@@ -58,12 +58,11 @@ class WebnnGraphLPMFuzzer {
 
     // Test the cross platform webnn graph validator.
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-    webnn::WebNNGraphImpl::ValidateGraph(std::move(graph_info_ptr));
-
-    // Test the coreml graph builder.
-    mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-    auto coreml_graph_builder =
-        webnn::coreml::GraphBuilder::CreateAndBuild(*std::move(graph_info_ptr));
+    if (webnn::WebNNGraphImpl::ValidateGraph(graph_info_ptr)) {
+      // Test the coreml graph builder.
+      auto coreml_graph_builder =
+          webnn::coreml::GraphBuilder::CreateAndBuild(*graph_info_ptr);
+    }
 
     ++action_index_;
   }
