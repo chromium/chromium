@@ -231,4 +231,14 @@ void BrowserActions::InitializeBrowserActions() {
                        kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
                        IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
           .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::Print(browser);
+                           },
+                           base::Unretained(&(browser_.get()))),
+                       kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
+          .Build());
 }
