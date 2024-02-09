@@ -175,7 +175,6 @@ using RequestSource = SearchTermsData::RequestSource;
                  largeIconCache:largeIconCache
          URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(browser)];
     _mostVisitedTilesMediator.delegate = self;
-    _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
     _mostVisitedTilesMediator.actionFactory = actionFactory;
 
     BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(_localState);
@@ -219,12 +218,6 @@ using RequestSource = SearchTermsData::RequestSource;
 - (void)refreshMostVisitedTiles {
   // Refresh in case there are new MVT to show.
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
-}
-
-- (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
-  _consumer = consumer;
-  _mostVisitedTilesMediator.consumer = consumer;
-  [self configureConsumer];
 }
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
@@ -802,6 +795,17 @@ using RequestSource = SearchTermsData::RequestSource;
   _contentSuggestionsMetricsRecorder = contentSuggestionsMetricsRecorder;
   _tabResumptionMediator.contentSuggestionsMetricsRecorder =
       contentSuggestionsMetricsRecorder;
+}
+
+- (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
+  _consumer = consumer;
+  _mostVisitedTilesMediator.consumer = consumer;
+  [self configureConsumer];
+}
+
+- (void)setDelegate:(id<ContentSuggestionsDelegate>)delegate {
+  _delegate = delegate;
+  _mostVisitedTilesMediator.contentSuggestionsDelegate = delegate;
 }
 
 - (BOOL)contentSuggestionsEnabled {
