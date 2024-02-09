@@ -6,10 +6,6 @@
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kLocalContentAnalysisEnabled,
-             "LocalContentAnalysisEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDialogCustomRuleMessageEnabled,
              "DialogCustomRuleMessageEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

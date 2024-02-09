@@ -87,16 +87,7 @@ bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
     CacheAnalysisConnectorPolicy(connector);
   }
 
-  if (analysis_connector_settings_.count(connector) != 1) {
-    return false;
-  }
-
-  // If the connector is for local content analysis, make sure it is also
-  // enabled by flags.  For now, only one connector is supported at a time.
-  const auto& settings = analysis_connector_settings_.at(connector)[0];
-
-  return settings.is_cloud_analysis() ||
-         base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled);
+  return analysis_connector_settings_.count(connector);
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)

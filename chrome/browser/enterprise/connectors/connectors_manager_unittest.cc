@@ -181,21 +181,13 @@ class ConnectorsManagerTest : public testing::Test {
 // Platform policies should only act as a kill switch.
 class ConnectorsManagerLocalAnalysisPolicyTest
     : public ConnectorsManagerTest,
-      public testing::WithParamInterface<
-          std::tuple<AnalysisConnector, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<AnalysisConnector, bool>> {
  protected:
   AnalysisConnector connector() const { return std::get<0>(GetParam()); }
-  bool enable_feature() const { return std::get<1>(GetParam()); }
-  bool set_policy() const { return std::get<2>(GetParam()); }
+  bool set_policy() const { return std::get<1>(GetParam()); }
 };
 
 TEST_P(ConnectorsManagerLocalAnalysisPolicyTest, Test) {
-  if (enable_feature()) {
-    scoped_feature_list_.InitWithFeatures({kLocalContentAnalysisEnabled}, {});
-  } else {
-    scoped_feature_list_.InitWithFeatures({}, {kLocalContentAnalysisEnabled});
-  }
-
   std::unique_ptr<ScopedConnectorPref> scoped_pref =
       set_policy() ? std::make_unique<ScopedConnectorPref>(
                          pref_service(), ConnectorPref(connector()),
@@ -206,15 +198,13 @@ TEST_P(ConnectorsManagerLocalAnalysisPolicyTest, Test) {
       std::make_unique<BrowserCrashEventRouter>(profile_),
       std::make_unique<ExtensionInstallEventRouter>(profile_), pref_service(),
       GetServiceProviderConfig());
-  EXPECT_EQ(enable_feature() && set_policy(),
-            manager.IsConnectorEnabled(connector()));
+  EXPECT_EQ(set_policy(), manager.IsConnectorEnabled(connector()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ConnectorsManagerLocalAnalysisPolicyTest,
     ConnectorsManagerLocalAnalysisPolicyTest,
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
-                     testing::Bool(),
                      testing::Bool()));
 
 class ConnectorsManagerConnectorPoliciesTest
