@@ -169,6 +169,11 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   // Whether download is initiated by the content on the page.
   bool is_content_initiated_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the original URL must be downloaded.
+  bool is_must_download_ = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Used to keep the system from sleeping while a download is ongoing. If the
   // system enters power saving mode while a download is alive, it can cause
   // download to be interrupted.

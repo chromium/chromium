@@ -465,6 +465,10 @@ download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
 bool FakeDownloadItem::IsFromExternalApp() {
   return false;
 }
+
+bool FakeDownloadItem::IsMustDownload() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool FakeDownloadItem::IsDangerous() const {

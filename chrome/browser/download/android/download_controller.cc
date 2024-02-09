@@ -227,8 +227,8 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
     return;
   }
 
-  if (download->GetMimeType() == kPDFMimeType &&
-      base::FeatureList::IsEnabled(chrome::android::kOpenPdfInline)) {
+  if (base::FeatureList::IsEnabled(chrome::android::kOpenPdfInline) &&
+      base::EqualsCaseInsensitiveASCII(download->GetMimeType(), kPDFMimeType)) {
     return;
   }
 

@@ -442,6 +442,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 #if BUILDFLAG(IS_ANDROID)
   // Gets whether the download is triggered from external app.
   virtual bool IsFromExternalApp() = 0;
+
+  // Whether the original URL must be downloded, e.g. triggered by context
+  // menu or from the download service, or has "content-disposition: attachment"
+  // in header.
+  virtual bool IsMustDownload() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   //    Progress State accessors -----------------------------------------------

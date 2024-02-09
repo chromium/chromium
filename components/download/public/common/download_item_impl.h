@@ -301,6 +301,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadFile* GetDownloadFile() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
+  bool IsMustDownload() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
@@ -881,6 +882,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;
+  bool is_must_download_ = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   THREAD_CHECKER(thread_checker_);

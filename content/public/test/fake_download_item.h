@@ -97,6 +97,7 @@ class FakeDownloadItem : public download::DownloadItem {
   download::DownloadFile* GetDownloadFile() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
+  bool IsMustDownload() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;

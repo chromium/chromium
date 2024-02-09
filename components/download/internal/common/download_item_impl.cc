@@ -444,7 +444,12 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
       is_updating_observers_(false),
       fetch_error_body_(info.fetch_error_body),
       request_headers_(info.request_headers),
-      download_source_(info.download_source) {
+      download_source_(info.download_source)
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      is_must_download_(info.is_must_download)
+#endif  // BUILDFLAG(IS_ANDROID)
+{
   delegate_->Attach();
   Init(true /* actively downloading */, TYPE_ACTIVE_DOWNLOAD);
   allow_metered_ |= delegate_->IsActiveNetworkMetered();
@@ -1018,6 +1023,10 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
 #if BUILDFLAG(IS_ANDROID)
 bool DownloadItemImpl::IsFromExternalApp() {
   return is_from_external_app_;
+}
+
+bool DownloadItemImpl::IsMustDownload() {
+  return is_must_download_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
