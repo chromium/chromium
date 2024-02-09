@@ -2,71 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("../../login.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":oobe_adaptive_dialog",
-    ":oobe_content_dialog",
-    ":oobe_loading_dialog",
-    ":oobe_modal_dialog",
+group("web_components") {
+  public_deps = [
+    ":copy_ts",
+    ":generate_web_component_html_wrapper_files",
   ]
 }
 
-js_library("oobe_adaptive_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_adaptive_dialog.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(dialogs_html_files, "./components/dialogs", ".")
 }
 
-js_library("oobe_content_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.js" ]
-  deps = [
-    "../behaviors:oobe_focus_behavior",
-    "../behaviors:oobe_scrollable_behavior",
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_loading_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_loading_dialog.js" ]
-  deps = [
-    ":oobe_adaptive_dialog",
-    ":oobe_content_dialog",
-    "../behaviors:oobe_dialog_host_behavior",
-    "../behaviors:oobe_i18n_behavior",
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_modal_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_modal_dialog.js" ]
-  deps = [
-    "../behaviors:oobe_focus_behavior",
-    "../behaviors:oobe_i18n_behavior",
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "oobe_adaptive_dialog.js",
-    "oobe_content_dialog.js",
-    "oobe_loading_dialog.js",
-    "oobe_modal_dialog.js",
-  ]
+# Copy to target_gen_dir for closure compilation.
+copy("copy_ts") {
+  sources = rebase_path(dialogs_ts_files, "./components/dialogs", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

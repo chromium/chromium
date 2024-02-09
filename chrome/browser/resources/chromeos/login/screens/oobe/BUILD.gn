@@ -2,60 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("../../login.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
-      ]
-  deps = [
-    ":welcome",
-    ":welcome_dialog",
-  ]
-}
-
-###############################
-# Closure compiler libraries below
-
-js_library("welcome") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.js" ]
-  deps = [
-    ":welcome_dialog",
-    "../..:display_manager",
-    "../../:cr_ui",
-    "../../components:oobe_select",
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "$externs_path/tts.js",
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("welcome_dialog") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.js" ]
-  deps = [
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [ "$externs_path/tts.js" ]
-}
 
 group("web_components") {
   public_deps = [

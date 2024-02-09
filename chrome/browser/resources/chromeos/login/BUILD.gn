@@ -201,7 +201,6 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "components:closure_compile",
-    "screens/oobe:closure_compile",
     "test_api:closure_compile",
 
     # TODO(crbug.com/1229130)

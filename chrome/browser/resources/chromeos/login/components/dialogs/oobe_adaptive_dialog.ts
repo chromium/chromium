@@ -2,46 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Indicates `Read more` button state (listed in upgrade order).
- * @enum {string}
- */
-const ReadMoreState = {
-  UNKNOWN: 'unknown',
-  SHOWN: 'shown',
-  HIDDEN: 'hidden',
-};
-
-import {afterNextRender, PolymerElement, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/ash/common/cr_scrollable_behavior.js';
-import '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
-
 import '../common_styles/oobe_common_styles.css.js';
 import '../common_styles/oobe_dialog_host_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 import '../oobe_vars/oobe_shared_vars.css.js';
 
-/** @polymer */
+import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrLazyRenderElement} from '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './oobe_adaptive_dialog.html.js';
+
+/**
+ * Indicates `Read more` button state (listed in upgrade order).
+ */
+enum ReadMoreState {
+  UNKNOWN = 'unknown',
+  SHOWN = 'shown',
+  HIDDEN = 'hidden',
+}
+
 export class OobeAdaptiveDialog extends PolymerElement {
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get is() {
-    return 'oobe-adaptive-dialog';
+    return 'oobe-adaptive-dialog' as const;
   }
 
-  constructor() {
-    super();
-
-    this.readMoreState = ReadMoreState.UNKNOWN;
-    this.resizeObserver_ = undefined;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * If set, prevents lazy instantiation of the dialog.
@@ -49,7 +45,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
       noLazy: {
         type: Boolean,
         value: false,
-        observer: 'onNoLazyChanged_',
+        observer: 'onNoLazyChanged',
       },
 
       /**
@@ -77,28 +73,62 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
       /**
        * if readMore is set to true and the content overflows contentContainer,
-       * showReadMoreButton_ will be set to true to show the `Read more` button
+       * showReadMoreButton will be set to true to show the `Read more` button
        * and hide the bottom buttons.
        * Once overflown content is shown, either by zooming out, tabbing to
        * hidden content or by clicking the `Read more` button, this property
        * should be set back to false. Don't change it directly, call
-       * addReadMoreButton_ and removeReadMoreButton_.
-       * @private
+       * addReadMoreButton and removeReadMoreButton.
        */
-      showReadMoreButton_: {
+      showReadMoreButton: {
         type: Boolean,
         value: false,
       },
     };
   }
 
+  private noLazy: boolean;
+  private readMore: boolean;
+  private singleColumn: boolean;
+  private showReadMoreButton: boolean;
+  private resizeObserver?: ResizeObserver;
+  private readMoreState: ReadMoreState;
+
+  constructor() {
+    super();
+
+    this.readMoreState = ReadMoreState.UNKNOWN;
+    this.resizeObserver = undefined;
+  }
+
+  private getLazyRender(): CrLazyRenderElement<HTMLElement> {
+    const lazyRender = this.shadowRoot?.querySelector('#lazy');
+    assert(lazyRender instanceof CrLazyRenderElement);
+    return lazyRender;
+  }
+
+  private getReadMoreButton(): CrButtonElement|null {
+    const readMoreButton = this.shadowRoot?.querySelector('#readMoreButton');
+    return readMoreButton instanceof CrButtonElement ? readMoreButton : null;
+  }
+
+  private getScrollContainer(): HTMLDivElement|null {
+    const scrollContainer = this.shadowRoot?.querySelector('#scrollContainer');
+    return scrollContainer instanceof HTMLDivElement ? scrollContainer : null;
+  }
+
+  private getContentContainer(): HTMLDivElement|null {
+    const contentContainer =
+        this.shadowRoot?.querySelector('#contentContainer');
+    return contentContainer instanceof HTMLDivElement ? contentContainer : null;
+  }
+
   /**
    * Creates a ResizeObserver and attaches it to the relevant containers
    * to be observed on size changes and scroll position.
-   * @private
    */
-  addResizeObserver_() {
-    if (this.resizeObserver_) {  // Already observing
+  private addResizeObserver(): void {
+    if (this.resizeObserver) {
       return;
     }
 
@@ -110,39 +140,42 @@ export class OobeAdaptiveDialog extends PolymerElement {
       this.readMoreState = ReadMoreState.HIDDEN;
     }
 
-    const scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
-    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    const scrollContainer = this.getScrollContainer();
+    const contentContainer = this.getContentContainer();
     if (!scrollContainer || !contentContainer) {
       return;
     }
 
-    this.resizeObserver_ = new ResizeObserver(() => void this.onResize_());
-    this.resizeObserver_.observe(scrollContainer);
-    this.resizeObserver_.observe(contentContainer);
+    this.resizeObserver = new ResizeObserver(() => void this.onResize());
+    this.resizeObserver.observe(scrollContainer);
+    this.resizeObserver.observe(contentContainer);
   }
 
-  /** @private */
-  onResize_() {
-    this.maybeUpgradeReadMoreState_(false /* read_more_clicked */);
+  private onResize(): void {
+    this.maybeUpgradeReadMoreState(false /* readMoreClicked */);
 
     // Apply scroll tags when `Read more` button is hidden.
     if (this.readMoreState == ReadMoreState.HIDDEN) {
-      this.applyScrollClassTags_();
+      this.applyScrollClassTags();
     }
   }
 
   /**
    * Applies the class tags to scrollContainer that control the shadows, and
    * updates the `Read more` button state if needed.
-   * @private
    */
-  applyScrollClassTags_() {
-    const el = this.shadowRoot.querySelector('#scrollContainer');
-    el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
-    el.classList.toggle('is-scrolled', el.scrollTop > 0);
-    el.classList.toggle(
+  private applyScrollClassTags(): void {
+    const scrollContainer = this.getScrollContainer();
+    assert(scrollContainer instanceof HTMLDivElement);
+    scrollContainer.classList.toggle(
+        'can-scroll',
+        scrollContainer.clientHeight < scrollContainer.scrollHeight);
+    scrollContainer.classList.toggle(
+        'is-scrolled', scrollContainer.scrollTop > 0);
+    scrollContainer.classList.toggle(
         'scrolled-to-bottom',
-        el.scrollTop + el.clientHeight >= el.scrollHeight);
+        scrollContainer.scrollTop + scrollContainer.clientHeight >=
+            scrollContainer.scrollHeight);
   }
 
   /**
@@ -152,27 +185,27 @@ export class OobeAdaptiveDialog extends PolymerElement {
    * SHOWN   -> HIDDEN: If `Read more` is clicked, the content stopped
    * overflowing the content container or the container is scrolled.
    *
-   * @param {boolean} read_more_clicked Whether the `Read more` button clicked
+   * @param readMoreClicked Whether the `Read more` button clicked
    *     or not.
-   * @private
    */
-  maybeUpgradeReadMoreState_(read_more_clicked) {
+  private maybeUpgradeReadMoreState(readMoreClicked: boolean): void {
     // HIDDEN is the final state. We cannot move from HIDDEN state to SHOWN or
     // UNKNOWN state.
     if (this.readMoreState == ReadMoreState.HIDDEN) {
       return;
     }
 
-    if (read_more_clicked) {
+    if (readMoreClicked) {
       this.readMoreState = ReadMoreState.HIDDEN;
-      this.removeReadMoreButton_();
+      this.removeReadMoreButton();
       return;
     }
-    const content = this.shadowRoot.querySelector('#contentContainer');
+    const content = this.getContentContainer();
+    assert(content instanceof HTMLDivElement);
     if (this.readMoreState == ReadMoreState.UNKNOWN) {
       if (content.clientHeight < content.scrollHeight) {
         this.readMoreState = ReadMoreState.SHOWN;
-        this.addReadMoreButton_();
+        this.addReadMoreButton();
       } else {
         this.readMoreState = ReadMoreState.HIDDEN;
       }
@@ -180,12 +213,12 @@ export class OobeAdaptiveDialog extends PolymerElement {
       if (content.clientHeight >= content.scrollHeight ||
           content.scrollTop > 0) {
         this.readMoreState = ReadMoreState.HIDDEN;
-        this.removeReadMoreButton_();
+        this.removeReadMoreButton();
       }
     }
   }
 
-  focus() {
+  override focus(): void {
     /* When Network Selection Dialog is shown because user pressed "Back"
        button on EULA screen, display_manager does not inform this dialog that
        it is shown. It ouly focuses this dialog.
@@ -195,22 +228,23 @@ export class OobeAdaptiveDialog extends PolymerElement {
     this.show();
   }
 
-  onBeforeShow() {
-    this.shadowRoot.querySelector('#lazy').get();
-    this.addResizeObserver_();
+  onBeforeShow(): void {
+    this.getLazyRender().get();
+    this.addResizeObserver();
   }
 
   /**
    * Scroll to the bottom of footer container.
    */
-  scrollToBottom() {
-    const el = this.shadowRoot.querySelector('#scrollContainer');
-    el.scrollTop = el.scrollHeight;
+  private scrollToBottom(): void {
+    const scrollContainer = this.getScrollContainer();
+    assert(scrollContainer instanceof HTMLDivElement);
+    scrollContainer.scrollTop = scrollContainer.scrollHeight;
   }
 
-  /** @private */
-  focusOnShow_() {
-    const focusedElements = this.querySelectorAll('.focus-on-show');
+  private focusOnShow(): void {
+    const focusedElements =
+        this.querySelectorAll<HTMLElement>('.focus-on-show');
     let focused = false;
     for (let i = 0; i < focusedElements.length; ++i) {
       if (focusedElements[i].hidden) {
@@ -229,61 +263,67 @@ export class OobeAdaptiveDialog extends PolymerElement {
   /**
    * This is called when this dialog is shown.
    */
-  show() {
-    this.focusOnShow_();
+  show(): void {
+    this.focusOnShow();
     this.dispatchEvent(
         new CustomEvent('show-dialog', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onNoLazyChanged_() {
+  private onNoLazyChanged(): void {
     if (this.noLazy) {
-      this.shadowRoot.querySelector('#lazy').get();
+      this.getLazyRender().get();
     }
   }
 
-  /** @private */
-  addReadMoreButton_() {
-    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
-    contentContainer.setAttribute('read-more-content', true);
-    this.showReadMoreButton_ = true;
+  private addReadMoreButton(): void {
+    const contentContainer = this.getContentContainer();
+    assert(contentContainer instanceof HTMLDivElement);
+    contentContainer.toggleAttribute('read-more-content', true);
+    this.showReadMoreButton = true;
 
-    afterNextRender(
-        this, () => this.shadowRoot.querySelector('#readMoreButton').focus());
+    afterNextRender(this, () => {
+      const readMoreButton = this.getReadMoreButton();
+      assert(readMoreButton);
+      readMoreButton.focus();
+    });
 
     // Once a tab reaches an element outside of the visible area, call
-    // maybeUpgradeReadMoreState_ to apply changes.
-    contentContainer.addEventListener('keyup', (event) => {
-      if (!this.showReadMoreButton_) {
+    // maybeUpgradeReadMoreState to apply changes.
+    contentContainer.addEventListener('keyup', (event: KeyboardEvent) => {
+      if (!this.showReadMoreButton) {
         return;
       }
       if (event.which === 9) {
         if (contentContainer.scrollTop > 0) {
-          this.maybeUpgradeReadMoreState_(true /* read_more_clicked */);
+          this.maybeUpgradeReadMoreState(true /* readMoreClicked */);
         }
       }
     });
   }
 
-  /** @private */
-  removeReadMoreButton_() {
-    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
+  private removeReadMoreButton(): void {
+    const contentContainer = this.getContentContainer();
+    assert(contentContainer instanceof HTMLDivElement);
     contentContainer.removeAttribute('read-more-content');
-    this.showReadMoreButton_ = false;
+    this.showReadMoreButton = false;
 
     // If `read more` button is focused after it was removed, move focus to the
     // 'focus-on-show' element.
-    const readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
-    if (this.shadowRoot.activeElement == readMoreButton) {
-      this.focusOnShow_();
+    if (this.shadowRoot?.activeElement == this.getReadMoreButton()) {
+      this.focusOnShow();
     }
 
     this.scrollToBottom();
   }
 
-  /** @private */
-  onReadMoreClick_() {
-    this.maybeUpgradeReadMoreState_(true /* read_more_clicked */);
+  private onReadMoreClick(): void {
+    this.maybeUpgradeReadMoreState(true /* readMoreClicked */);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeAdaptiveDialog.is]: OobeAdaptiveDialog;
   }
 }
 

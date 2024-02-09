@@ -26,31 +26,32 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../buttons/oobe_text_button.js';
 import '../common_styles/oobe_common_styles.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeFocusBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
+import {getTemplate} from './oobe_modal_dialog.html.js';
+
 const OobeModalDialogBase =
-    mixinBehaviors([OobeFocusBehavior, OobeI18nBehavior], PolymerElement);
+    mixinBehaviors([OobeI18nBehavior, OobeFocusBehavior], PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          OobeFocusBehaviorInterface,
+    };
 
-/** @polymer */
 export class OobeModalDialog extends OobeModalDialogBase {
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get is() {
-    return 'oobe-modal-dialog';
+    return 'oobe-modal-dialog' as const;
   }
 
-  static get properties() {
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
+  }
+
+  static get properties(): PolymerElementProperties {
     return {
       /* The ID of the localized string to be used as title text when no "title"
        * slot elements are specified.
@@ -67,7 +68,6 @@ export class OobeModalDialog extends OobeModalDialogBase {
 
       /**
        * True if close button should be hidden.
-       * @type {boolean}
        */
       shouldHideCloseButton: {
         type: Boolean,
@@ -76,7 +76,6 @@ export class OobeModalDialog extends OobeModalDialogBase {
 
       /**
        * True if title row should be hidden.
-       * @type {boolean}
        */
       shouldHideTitleRow: {
         type: Boolean,
@@ -85,7 +84,6 @@ export class OobeModalDialog extends OobeModalDialogBase {
 
       /**
        * True if confirmation dialog backdrop should be hidden.
-       * @type {boolean}
        */
       shouldHideBackdrop: {
         type: Boolean,
@@ -94,26 +92,48 @@ export class OobeModalDialog extends OobeModalDialogBase {
     };
   }
 
-  get open() {
-    return this.shadowRoot.querySelector('#modalDialog').open;
+  private titleKey: string;
+  private contentKey: string;
+  private shouldHideCloseButton: boolean;
+  private shouldHideTitleRow: boolean;
+  private shouldHideBackdrop: boolean;
+
+  private getModalDialog(): CrDialogElement {
+    const modalDialog = this.shadowRoot?.querySelector('#modalDialog');
+    assert(modalDialog instanceof CrDialogElement);
+    return modalDialog;
   }
 
-  ready() {
+  get open(): boolean {
+    return this.getModalDialog().open;
+  }
+
+  override ready(): void {
     super.ready();
   }
 
-  showDialog() {
+  /*
+   * Shows the modal dialog and changes the focus to the first focusable
+   * element.
+   */
+  showDialog(): void {
     chrome.send('enableShelfButtons', [false]);
-    this.shadowRoot.querySelector('#modalDialog').showModal();
+    this.getModalDialog().showModal();
     this.focusMarkedElement(this);
   }
 
-  hideDialog() {
-    this.shadowRoot.querySelector('#modalDialog').close();
+  hideDialog(): void {
+    this.getModalDialog().close();
   }
 
-  onClose_() {
+  private onClose(): void {
     chrome.send('enableShelfButtons', [true]);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeModalDialog.is]: OobeModalDialog;
   }
 }
 
