@@ -2264,6 +2264,12 @@
       status: "stable",
     },
     {
+      // If enabled, the lazy load iframe observer will use a scroll margin in
+      // its init dictionary instead of a root margin.
+      name: "LazyLoadScrollMarginIframe",
+      status: "test",
+    },
+    {
       name: "LCPAnimatedImagesWebExposed",
       status: "test",
       base_feature: "none",
