@@ -4178,7 +4178,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Login.OOBE.UserClicks" enum="OobeUserClickTarget"
     expires_after="2024-06-30">
   <owner>emaamari@google.com</owner>
-  <owner>raleksandrov@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>What shelf buttons or trays are clicked in the OOBE.</summary>
 </histogram>

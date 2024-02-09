@@ -14,8 +14,8 @@ items:
 - caption: Do not show Google Assistant voice match flow during initial setup
   value: false
 owners:
-- raleksandrov@google.com
 - cros-oac@google.com
+- file://chrome/browser/ui/webui/ash/login/OWNERS
 schema:
   type: boolean
 supported_on:
