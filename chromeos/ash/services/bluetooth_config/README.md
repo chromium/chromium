@@ -63,7 +63,8 @@ information see [here](https://sites.google.com/corp/google.com/flossproject/hom
 Mojo interfaces are defined within a
 [public/mojom](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/public/mojom/;drc=321047b607bc69f5d6dce6e47319d0c198d0616e)
 subdirectory. The primary interface `CrosBluetoothConfig` has a concrete
-implementation within the top-level directory.
+implementation within the top-level directory, which routes public API calls to
+the internal classes it's composed of.
 
 `CrosBluetoothConfig`'s [dependencies](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h;l=41-43;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
 are various lower-level Bluetooth classes such as `BluetoothAdapter` and
@@ -116,7 +117,6 @@ struct BluetoothDeviceProperties {
 
   // Device type, derived from the ClassOfDevice attribute for the device.
   DeviceType device_type;
-
   ...
 };
 
@@ -129,7 +129,6 @@ struct PairedBluetoothDeviceProperties {
   // (i.e., other devices do not have access to this name). Null if the
   // device has not been nicknamed by the user.
   string? nickname;
-
   ...
 };
 ```
@@ -235,19 +234,271 @@ rather than
 `CrosBluetoothConfig` is composed of many internal classes which implement
 specific functionality of the API. Some notable ones are:
 
+* [`SystemPropertiesProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/system_properties_provider.h;drc=321047b607bc69f5d6dce6e47319d0c198d0616e):
+Provides system Bluetooth properties, including Bluetooth availability and
+on/off state
 * [`AdapterStateController`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/adapter_state_controller.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda):
 Handles retrieving and modifying the Bluetooth adapter powered state
 * [`DeviceCache`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_cache.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f):
 Maintains the list of paired and unpaired Bluetooth devices
+* [`DiscoverySessionManager`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovery_session_manager.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f):
+Starts and stops Bluetooth device discovery sessions
 * [`DevicePairingHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_pairing_handler.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f):
 Executes pairing attempts and manages pairing authentication if required
 * [`DeviceOperationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_operation_handler.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f):
 Executes operations on paired devices
-* [`DiscoverySessionManager`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovery_session_manager.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f):
-Starts and stops Bluetooth device discovery sessions
 
 Each of these classes provides a fake implementation that can be used standalone
 or with `CrosBluetoothConfig`. New functionality should either
 be implemented in one of the internal classes, or if an entirely new class must
 be created, a fake implementation should also be created for it so it can be
 used for unit testing.
+
+`CrosBluetoothConfig` has a [concrete implementation](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf)
+which routes public API calls to the internal classes it's composed of.
+
+### [`SystemPropertiesProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/system_properties_provider.h;drc=321047b607bc69f5d6dce6e47319d0c198d0616e)
+This class computes the current [`BluetoothSystemProperties`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom;l=159-171;drc=5e4575c404a5571e5997be05352ab16fdf912361).
+These system properties provide information on the Bluetooth adapter state,
+whether Bluetooth can be modified, and the list of paired devices. It provides
+an observer method which clients can be used to be notified of system changes.
+```
+// Adds an observer of system properties. |observer| will be notified of
+// the current properties immediately as a result of this function, then again
+// each time system properties change. To stop observing, clients should
+// disconnect the Mojo pipe to |observer| by deleting the associated Receiver.
+void Observe(mojo::PendingRemote<mojom::SystemPropertiesObserver> observer);
+```
+
+### [`AdapterStateController`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/adapter_state_controller.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+This class controls the state of the Bluetooth adapter and serves as the source
+of truth for the adapter's current state. This class modifies the Bluetooth
+adapter directly and should only be used by classes that do not wish to persist
+the adapter state to prefs. For classes that do wish to persist the adapter
+state to prefs, such as those processing incoming user requests,
+[`BluetoothPowerController`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/bluetooth_power_controller.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+should be used instead.
+
+Clients can call `SetBluetoothEnabledState()` to update the adapter state, and
+can implement the `Observer` to be notified of adapter state changes:
+```
+class Observer : public base::CheckedObserver {
+  // Invoked when the state has changed; use GetAdapterState() to retrieve the
+  // updated state.
+  virtual void OnAdapterStateChanged() = 0;
+};
+
+// Returns the system state as obtained from the Bluetooth adapter.
+virtual mojom::BluetoothSystemState GetAdapterState() const = 0;
+
+// Turns Bluetooth on or off. If Bluetooth is unavailable or already in the
+// desired state, this function is a no-op.
+// This does not save to |enabled| to prefs. If |enabled| is wished to be
+// saved to prefs, BluetoothPowerController::SetBluetoothEnabledState() should
+// be used instead.
+virtual void SetBluetoothEnabledState(bool enabled) = 0;
+```
+
+The implementation of this class is [`AdapterStateControllerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/adapter_state_controller_impl.h;drc=659445b23950e6a6358ea8a1035ea893cbee7398).
+This class queues adapter state change requests to ensure only one
+`BluetoothAdapter::SetPowered()` call is invoked at a time. It maintains the
+operation being executed and one queued operation, and if another operation
+comes in, the queued operation is overwritten.
+
+### [`BluetoothPowerController`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/bluetooth_power_controller.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+This class sets the Bluetooth power state and saves the state to prefs. It also
+initializes the Bluetooth power state during system startup and user session
+startup.
+
+Classes that wish to set the Bluetooth adapter state and save that value to
+prefs should use this class. Classes that do not want to persist the state to
+prefs should use `AdapterStateController` instead. Internally, this class
+serves as a wrapper around `AdapterStateController`.
+```
+// Changes the Bluetooth power setting to |enabled|, persisting |enabled| to
+// user prefs if a user is logged in. If no user is logged in, the pref is
+// persisted to local state.
+virtual void SetBluetoothEnabledState(bool enabled) = 0;
+
+// Enables Bluetooth but doesn't persist the state to prefs. This should be
+// called to enable Bluetooth when OOBE HID detection starts.
+virtual void SetBluetoothHidDetectionActive() = 0;
+
+// If |is_using_bluetooth| is false, restores the Bluetooth enabled state that
+// was last persisted to local state. This should be called when OOBE HID
+// detection ends.
+virtual void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) = 0;
+```
+
+### [`DeviceCache`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_cache.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+This class caches known Bluetooth devices, providing getters and an observer
+interface for receiving updates when devices change. Classes can use this to
+get the list of paired and unpaired devices and be notified when items in these
+lists change.
+```
+class Observer : public base::CheckedObserver {
+  // Invoked when the list of paired devices has changed. This callback is
+  // used when a device has been added/removed from the list, or when one or
+  // more properties of a device in the list has changed.
+  virtual void OnPairedDevicesListChanged() {}
+
+  // Invoked when the list of unpaired devices has changed. This callback is
+  // used when a device has been added/removed from the list, or when one or
+  // more properties of a device in the list has changed.
+  virtual void OnUnpairedDevicesListChanged() {}
+};
+
+// Returns a sorted list of all paired devices. The list is sorted such that
+// connected devices appear before connecting devices, which appear before
+// disconnected devices. If Bluetooth is disabled, disabling, or unavailable,
+// this function returns an empty list.
+std::vector<mojom::PairedBluetoothDevicePropertiesPtr> GetPairedDevices() const;
+
+// Returns a sorted list of unpaired devices. This list is sorted by signal
+// strength.
+std::vector<mojom::BluetoothDevicePropertiesPtr> GetUnpairedDevices() const;
+```
+This class is implemented at [`DeviceCacheImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_cache_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf).
+Using `BluetoothAdapter` observers methods, it maintains in-memory lists of
+paired and unpaired devices.
+
+### [`DiscoverySessionManager`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovery_session_manager.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+When unpaired devices wish to be found, a `BluetoothAdapter` discovery session
+must be started. This class handles requests to start discovery sessions.
+Clients invoke `StartDiscovery()` to begin the flow and disconnect the delegate
+passed to `StartDiscovery()` to end the flow.
+```
+// Starts a discovery attempt. |delegate| is notified when the discovery
+// session has started and stopped. To cancel a discovery attempt, disconnect
+// |delegate|.
+void StartDiscovery(
+    mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate);
+```
+
+When a discovery session is started, observers of `DeviceCache` are immediately
+informed of the current discovered Bluetooth devices and will continue to
+receive updates whenever a device is added, updated or removed. Once the
+session has ended, clients will no longer receive updates.
+
+This class is implemented at [`DiscoverySessionManagerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovery_session_manager_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf).
+Internally, this class ensures that Bluetooth discovery remains active as long
+as at least one discovery client is active.
+
+### [`DiscoveredDevicesProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovered_devices_provider.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+Clients that start a discovery session via `DiscoverySessionManager` can
+observe `DeviceCache` in order to be notified of when unpaired devices are
+discovered. However, for UI surfaces, updating each time the list changes can
+provide an undesired UX behavior where the list is changing too rapidly.
+`DiscoveredDevicesProvider` is a wrapper for `DeviceCache` that batches
+unpaired devices list updates. If the device list has changed, this
+implementation waits [`kNotificationDelay`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/discovered_devices_provider_impl.h;l=33-35;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf)
+before sorting and notifying clients that the list has changed. This is to
+reduce the frequency of changes to the device list in UI surfaces, giving users
+more time to view the list between updates.
+```
+class Observer : public base::CheckedObserver {
+  // Invoked when the list of discovered devices has changed. This callback is
+  // used when a device has been added/removed from the list, or when one or
+  // more properties of a device in the list has changed.
+  virtual void OnDiscoveredDevicesListChanged() = 0;
+};
+```
+
+When the list of unpaired devices changes, this method implements the following
+logic in effort to limit the frequency of device position changes clients
+observe:
+* If a device has been added, it's appended to the end of the list and clients
+are notified. If no timer is currently running, after |kNotificationDelay|, the
+list is sorted (by signal strength), and clients are notified again.
+* If a device has been updated, it's properties are updated but its position
+un-updated, and clients are notified. If no timer is currently running, after
+|kNotificationDelay|, the list is sorted, and clients are notified again.
+* If a device has been removed, it's removed from the list and clients are
+notified. If no timer is currently running, after |kNotificationDelay|, the
+list is sorted, and clients are notified again. This last sorting and
+notification are unnecessary but simplify this method.
+
+### [`DevicePairingHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_pairing_handler.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+This class handles requests to pair to a Bluetooth device. This handler can be
+reused to pair to more than one device. Only one device should be attempted to
+be paired to at a time. Callees must pass in a `DevicePairingDelegate` to
+handle potential authentication being required. If the delegate is
+disconnected, any in-progress pairing is canceled.
+```
+void PairDevice(const std::string& device_id,
+                  mojo::PendingRemote<mojom::DevicePairingDelegate> delegate,
+                  PairDeviceCallback callback) override;
+```
+This class is implemented at [`DevicePairingHandlerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_pairing_handler_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf),
+which interacts with the `BluetoothDevice`, serving as the device's
+`PairingDelegate`, and relays the PairingDelegate method calls back to the
+client that initiated the pairing request via the request's
+`DevicePairingDelegate`.
+
+### [`DeviceOperationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_operation_handler.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+This class provides operations that can be performed on paired devices, such
+as connecting or disconnecting to a device. Operations are performed
+sequentially, queueing requests that occur simultaneously.
+```
+// Initiates a connection to the device with ID |device_id|.
+void Connect(const std::string& device_id, OperationCallback callback);
+
+// Initiates a disconnection from the device with ID |device_id|.
+void Disconnect(const std::string& device_id, OperationCallback callback);
+
+// Forgets the device with ID |device_id|, which in practice means
+// un-pairing from the device.
+void Forget(const std::string& device_id, OperationCallback callback);
+```
+Operations have a [timeout](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_operation_handler.h;l=91-92;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf),
+which when exceeded, returns to the client a failure result and the next
+operation is processed. This class is implemented at
+[`DeviceOperationHandlerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_operation_handler_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf)
+which interfaces with the `BluetoothDevice` APIs.
+
+### [`BluetoothDeviceStatusNotifier`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/bluetooth_device_status_notifier.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+This class manages notifying listeners of changes in individual Bluetooth
+devices status. Status changes includes a newly paired device, new connection
+and new disconnection (which includes forgetting a connected device).
+```
+// Adds an observer of Bluetooth device status. |observer| will be notified
+// each time Bluetooth device status changes. To stop observing, clients
+// should disconnect the Mojo pipe to |observer| by deleting the associated
+// Receiver.
+void ObserveDeviceStatusChanges(
+    mojo::PendingRemote<mojom::BluetoothDeviceStatusObserver> observer);
+```
+This class is implemented at [`BluetoothDevicesStatusNotifierImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/bluetooth_device_status_notifier_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf),
+which observes `DeviceCache` under the hood to compute changes to device
+statuses.
+
+### [`DeviceNameManager`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_name_manager.h;drc=a323c83e92a59f87c4c12cc20c4c2aabf8bc414a)
+This class manages saving and retrieving nicknames for Bluetooth devices. This
+nickname is local to only the Chromebook and is visible to all users of the
+Chromebook.
+```
+class Observer : public base::CheckedObserver {
+  // Invoked when the nickname of device with id |device_id| has changed to
+  // |nickname|. If |nickname| is null, the nickname has been removed for
+  // |device_id|.
+  virtual void OnDeviceNicknameChanged(
+      const std::string& device_id,
+      const std::optional<std::string>& nickname) = 0;
+};
+
+// Retrieves the nickname of the Bluetooth device with ID |device_id| or
+// abs::nullopt if not found.
+virtual std::optional<std::string> GetDeviceNickname(
+      const std::string& device_id) = 0;
+
+// Sets the nickname of the Bluetooth device with ID |device_id| for all users
+// of the current device, if |nickname| is valid.
+virtual void SetDeviceNickname(const std::string& device_id,
+                                 const std::string& nickname) = 0;
+
+// Removes the nickname of the Bluetooth device with ID |device_id| for all
+// users of the current device.
+virtual void RemoveDeviceNickname(const std::string& device_id) = 0;
+```
+This class is implemented at [`DeviceNameManagerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/device_name_manager_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf),
+which saves entries to Prefs.
