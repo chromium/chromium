@@ -99,6 +99,7 @@ const allowedOptionalAttributes: Map<string, AllowFunction> = new Map([
     },
   ],
   ['tabindex', allowAttribute],
+  ['aria-description', allowAttribute],
   ['aria-hidden', allowAttribute],
   ['aria-label', allowAttribute],
   ['aria-labelledby', allowAttribute],

@@ -179,6 +179,7 @@ export class SettingsToggleButtonElement extends
       attrs: [
         'id',
         'is',
+        'aria-description',
         'aria-hidden',
         'aria-label',
         'aria-labelledby',
