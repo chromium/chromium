@@ -2278,9 +2278,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240129",
+                    "name": "Enabled_20230628",
                     "params": {
-                        "level": "restore-unless-cookie-change",
+                        "level": "store-and-evict",
                         "ttl": "3m"
                     },
                     "enable_features": [
