@@ -36,7 +36,6 @@ void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
 void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     const gfx::Rect& visible_rect,
     uint32_t texture_target) {
@@ -59,11 +58,11 @@ void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
     // is because we want the texture to include the non-visible area to the
     // left and on the top of the visible rectangle so that the compositor can
     // calculate the UV coordinates to omit the non-visible area.
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
+    ProvidePictureBuffers(requested_num_of_buffers, format,
                           GetRectSizeFromOrigin(visible_rect), texture_target);
   } else {
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
-                          dimensions, texture_target);
+    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
+                          texture_target);
   }
 }
 

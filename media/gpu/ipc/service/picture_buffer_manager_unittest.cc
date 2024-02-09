@@ -56,8 +56,7 @@ class PictureBufferManagerImplTest : public testing::Test {
 #endif
     std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
         picture_buffers_and_gmbs = pbm_->CreatePictureBuffers(
-            count, PIXEL_FORMAT_ARGB, 1, gfx::Size(320, 240), GL_TEXTURE_2D,
-            mode);
+            count, PIXEL_FORMAT_ARGB, gfx::Size(320, 240), GL_TEXTURE_2D, mode);
     std::vector<PictureBuffer> picture_buffers;
     for (const auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
       picture_buffers.push_back(picture_buffer_and_gmb.first);

@@ -69,7 +69,6 @@ class PictureBufferManager
   // |count|: Number of picture buffers to create.
   // |pixel_format|: Describes the arrangement of image data in the picture's
   //     textures and is surfaced by VideoFrames.
-  // |planes|: Number of image planes (textures) in the picture.
   // |texture_size|: Size of textures to create.
   // |texture_target|: Type of textures to create.
   // |mode|: Whether to allocate GL textures. The returned PictureBuffers will
@@ -79,8 +78,6 @@ class PictureBufferManager
   //
   // Must be called on the GPU thread.
   //
-  // TODO(sandersd): For many subsampled pixel formats, it doesn't make sense to
-  // allocate all planes with the same size.
   // TODO(sandersd): Surface control over allocation for GL_TEXTURE_2D. Right
   // now such textures are allocated as RGBA textures. (Other texture targets
   // are not automatically allocated.)
@@ -89,7 +86,6 @@ class PictureBufferManager
   virtual std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
   CreatePictureBuffers(uint32_t count,
                        VideoPixelFormat pixel_format,
-                       uint32_t planes,
                        gfx::Size texture_size,
                        uint32_t texture_target,
                        VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
