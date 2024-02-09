@@ -1867,7 +1867,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that we're getting the correct TextInputState and focus updates when a
 // page enters the back-forward cache and when it gets restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
+// TODO(b/324570785): Re-enable the test for Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TextInputStateUpdated DISABLED_TextInputStateUpdated
+#else
+#define MAYBE_TextInputStateUpdated TextInputStateUpdated
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_TextInputStateUpdated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
