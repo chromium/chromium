@@ -183,7 +183,7 @@ Matcher GetMultipartContentMatcher(
     }
 
     const std::string form_data_boundary = content_type.substr(
-        base::StringPiece(kMultifpartBoundaryPrefix).length());
+        std::string_view(kMultifpartBoundaryPrefix).length());
 
     re2::RE2::Options opt;
     opt.set_case_sensitive(false);

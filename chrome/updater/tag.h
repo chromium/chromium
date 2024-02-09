@@ -9,10 +9,10 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 
 namespace updater {
 namespace tagging {
@@ -53,7 +53,7 @@ enum class NeedsAdmin {
 // not appear in the tag for this app.
 struct AppArgs {
   // |app_id| must not be empty and will be made lowercase.
-  explicit AppArgs(base::StringPiece app_id);
+  explicit AppArgs(std::string_view app_id);
 
   ~AppArgs();
   AppArgs(const AppArgs&);
@@ -258,8 +258,8 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // - installerdata  Can be any string. Must be specified after appid.
 //
 // Note: This method assumes all attribute names are ASCII.
-ErrorCode Parse(base::StringPiece tag,
-                std::optional<base::StringPiece> app_installer_data_args,
+ErrorCode Parse(std::string_view tag,
+                std::optional<std::string_view> app_installer_data_args,
                 TagArgs* args);
 
 std::string ReadTag(std::vector<uint8_t>::const_iterator begin,

@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
@@ -64,7 +65,7 @@ constexpr char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
 PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
   constexpr size_t kInstallAppPrefixLength =
-      base::StringPiece(kInstallAppPrefix).length();
+      std::string_view(kInstallAppPrefix).length();
   base::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
     VLOG_IF(1, policy_name != base::ToLowerASCII(policy_name))
@@ -219,7 +220,7 @@ std::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
       if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
           kPrefixedPolicyNames.count(policy_name) == 0) {
         apps_with_policy.push_back(
-            policy_name.substr(base::StringPiece(prefix).length()));
+            policy_name.substr(std::string_view(prefix).length()));
       }
     });
   });

@@ -7,13 +7,13 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,8 +141,8 @@ class RuntimeModeArgsBuilder {
 };
 
 void VerifyTagParseSuccess(
-    base::StringPiece tag,
-    std::optional<base::StringPiece> app_installer_data_args,
+    std::string_view tag,
+    std::optional<std::string_view> app_installer_data_args,
     const TagArgs& expected) {
   TagArgs actual;
   ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, &actual));
@@ -150,10 +150,9 @@ void VerifyTagParseSuccess(
   updater::test::ExpectTagArgsEqual(actual, expected);
 }
 
-void VerifyTagParseFail(
-    base::StringPiece tag,
-    std::optional<base::StringPiece> app_installer_data_args,
-    ErrorCode expected) {
+void VerifyTagParseFail(std::string_view tag,
+                        std::optional<std::string_view> app_installer_data_args,
+                        ErrorCode expected) {
   TagArgs args;
   ASSERT_EQ(expected, Parse(tag, app_installer_data_args, &args));
 }
@@ -967,7 +966,7 @@ TEST(TagParserTest, InstallDataIndexValid) {
 }
 
 TEST(TagParserTest, BrowserTypeValid) {
-  std::tuple<base::StringPiece, TagArgs::BrowserType>
+  std::tuple<std::string_view, TagArgs::BrowserType>
       pairs[static_cast<int>(TagArgs::BrowserType::kMax)] = {
           {"0", TagArgs::BrowserType::kUnknown},
           {"1", TagArgs::BrowserType::kDefault},
