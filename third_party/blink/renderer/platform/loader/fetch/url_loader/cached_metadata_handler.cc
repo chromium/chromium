@@ -116,8 +116,9 @@ void CachedMetadataSender::SendToCodeCacheHost(
     const String& cache_storage_name,
     const uint8_t* data,
     size_t size) {
-  if (!code_cache_host)
+  if (!code_cache_host) {
     return;
+  }
   if (cache_storage_name.IsNull()) {
     code_cache_host->get()->DidGenerateCacheableMetadata(
         code_cache_type, KURL(url), response_time,

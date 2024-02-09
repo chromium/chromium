@@ -180,8 +180,7 @@ bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
   // The only case where it's easy to skip a kEmpty request is when a content
   // equality check is required, because only ScriptResource supports that
   // requirement.
-  if (request.destination == network::mojom::RequestDestination::kEmpty &&
-      !should_use_source_hash) {
+  if (request.destination == network::mojom::RequestDestination::kEmpty) {
     return true;
   }
   return false;
