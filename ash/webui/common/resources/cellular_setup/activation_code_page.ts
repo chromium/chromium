@@ -675,4 +675,10 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [ActivationCodePageElement.is]: ActivationCodePageElement;
+  }
+}
+
 customElements.define(ActivationCodePageElement.is, ActivationCodePageElement);

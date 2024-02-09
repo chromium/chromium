@@ -7,30 +7,27 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-
-import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
 import {FinalPageElement} from './final_page.js';
 import {getCellularSetupRemote} from './mojo_interface_provider.js';
-import {getTemplate} from './psim_flow_ui.html.js';
-import {SubflowMixin} from './subflow_mixin.js';
-import {SetupLoadingPageElement} from './setup_loading_page.js';
 import {ProvisioningPageElement} from './provisioning_page.js';
+import {getTemplate} from './psim_flow_ui.html.js';
+import {SetupLoadingPageElement} from './setup_loading_page.js';
+import {SubflowMixin} from './subflow_mixin.js';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export enum PSimPageName {
+export enum PsimPageName {
   SIM_DETECT = 'simDetectPage',
   PROVISIONING = 'provisioningPage',
   FINAL = 'finalPage',
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export enum PSimUIState {
+export enum PsimUiState {
   IDLE = 'idle',
   STARTING_ACTIVATION = 'starting-activation',
   WAITING_FOR_ACTIVATION_TO_START = 'waiting-for-activation-to-start',
@@ -49,8 +46,7 @@ export enum PSimUIState {
 // The reason that caused the user to exit the PSim Setup flow.
 // These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export enum PSimSetupFlowResult {
+export enum PsimSetupFlowResult {
   SUCCESS = 0,
   CANCELLED = 1,
   CANCELLED_NO_SIM = 2,
@@ -65,20 +61,20 @@ export enum PSimSetupFlowResult {
  * The time delta, in ms, for the timeout corresponding to |state|. If no
  * timeout is applicable for this state, null is returned.
  */
-function getTimeoutMsForPSimUIState(state: PSimUIState): number|null {
+function getTimeoutMsForPsimUiState(state: PsimUiState): number|null {
   // In some cases, starting activation may require power-cycling the device's
   // modem, a process that can take several seconds.
-  if (state === PSimUIState.STARTING_ACTIVATION) {
+  if (state === PsimUiState.STARTING_ACTIVATION) {
     return 10000;  // 10 seconds.
   }
 
   // The portal is a website served by the mobile carrier.
-  if (state === PSimUIState.WAITING_FOR_PORTAL_TO_LOAD) {
+  if (state === PsimUiState.WAITING_FOR_PORTAL_TO_LOAD) {
     return 10000;  // 10 seconds.
   }
 
   // Finishing activation only requires sending a D-Bus message to Shill.
-  if (state === PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH) {
+  if (state === PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH) {
     return 1000;  // 1 second.
   }
 
@@ -129,7 +125,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
         type: String,
         notify: true,
         computed: 'getCarrierText(' +
-            'selectedPSimPageName_, cellularMetadata_.*)',
+            'selectedPsimPageName_, cellularMetadata_.*)',
       },
 
       forwardButtonLabel: {
@@ -139,16 +135,16 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
       state_: {
         type: String,
-        value: PSimUIState.IDLE,
-        observer: 'handlePSimUIStateChange_',
+        value: PsimUiState.IDLE,
+        observer: 'handlePsimUiStateChange_',
       },
 
       /**
        * Element name of the current selected sub-page.
        */
-      selectedPSimPageName_: {
+      selectedPsimPageName_: {
         type: String,
-        value: PSimPageName.SIM_DETECT,
+        value: PsimPageName.SIM_DETECT,
         notify: true,
       },
 
@@ -184,8 +180,8 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   delegate: CellularSetupDelegate;
   nameOfCarrierPendingSetup: string;
   forwardButtonLabel: string;
-  private state_: PSimUIState;
-  private selectedPSimPageName_: PSimPageName;
+  private state_: PsimUiState;
+  private selectedPsimPageName_: PsimPageName;
   private selectedPage_:
       SetupLoadingPageElement|ProvisioningPageElement|FinalPageElement;
   private showError_: boolean;
@@ -195,7 +191,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   /**
    * Provides an interface to the CellularSetup Mojo service.
    */
-  private cellularSetupRemote_: CellularSetupRemote|null = null;
+  private cellularSetupRemote_: CellularSetupInterface|null = null;
 
   /**
    * Delegate responsible for routing activation started/finished events.
@@ -246,36 +242,36 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
     let resultCode = null;
     switch (this.state_) {
-      case PSimUIState.IDLE:
-      case PSimUIState.STARTING_ACTIVATION:
-        resultCode = PSimSetupFlowResult.CANCELLED;
+      case PsimUiState.IDLE:
+      case PsimUiState.STARTING_ACTIVATION:
+        resultCode = PsimSetupFlowResult.CANCELLED;
         break;
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
-        resultCode = PSimSetupFlowResult.CANCELLED_COLD_SIM_DEFER;
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_START:
+        resultCode = PsimSetupFlowResult.CANCELLED_COLD_SIM_DEFER;
         break;
-      case PSimUIState.TIMEOUT_START_ACTIVATION:
-      case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
-        resultCode = PSimSetupFlowResult.CANCELLED_NO_SIM;
+      case PsimUiState.TIMEOUT_START_ACTIVATION:
+      case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
+        resultCode = PsimSetupFlowResult.CANCELLED_NO_SIM;
         break;
-      case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-        resultCode = PSimSetupFlowResult.CANCELLED;
+      case PsimUiState.WAITING_FOR_PORTAL_TO_LOAD:
+        resultCode = PsimSetupFlowResult.CANCELLED;
         break;
-      case PSimUIState.TIMEOUT_PORTAL_LOAD:
-        resultCode = PSimSetupFlowResult.CARRIER_PORTAL_TIMEOUT;
+      case PsimUiState.TIMEOUT_PORTAL_LOAD:
+        resultCode = PsimSetupFlowResult.CARRIER_PORTAL_TIMEOUT;
         break;
-      case PSimUIState.WAITING_FOR_USER_PAYMENT:
-        resultCode = PSimSetupFlowResult.CANCELLED_CARRIER_PORTAL;
+      case PsimUiState.WAITING_FOR_USER_PAYMENT:
+        resultCode = PsimSetupFlowResult.CANCELLED_CARRIER_PORTAL;
         break;
-      case PSimUIState.ACTIVATION_SUCCESS:
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-      case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case PSimUIState.ALREADY_ACTIVATED:
-        resultCode = PSimSetupFlowResult.SUCCESS;
+      case PsimUiState.ACTIVATION_SUCCESS:
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH:
+      case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
+      case PsimUiState.ALREADY_ACTIVATED:
+        resultCode = PsimSetupFlowResult.SUCCESS;
         break;
-      case PSimUIState.ACTIVATION_FAILURE:
+      case PsimUiState.ACTIVATION_FAILURE:
         resultCode = this.didCarrierPortalResultFail_ ?
-            PSimSetupFlowResult.CANCELLED_PORTAL_ERROR :
-            PSimSetupFlowResult.NETWORK_ERROR;
+            PsimSetupFlowResult.CANCELLED_PORTAL_ERROR :
+            PsimSetupFlowResult.NETWORK_ERROR;
         break;
       default:
         assertNotReached();
@@ -284,10 +280,10 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     assert(resultCode !== null);
     chrome.metricsPrivate.recordEnumerationValue(
         PSIM_SETUP_RESULT_METRIC_NAME, resultCode,
-        Object.keys(PSimSetupFlowResult).length);
+        Object.keys(PsimSetupFlowResult).length);
 
     const elapsedTimeMs = Date.now() - this.timeOnAttached_!.getTime();
-    if (resultCode === PSimSetupFlowResult.SUCCESS) {
+    if (resultCode === PsimSetupFlowResult.SUCCESS) {
       chrome.metricsPrivate.recordLongTime(
           SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
       return;
@@ -303,11 +299,11 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   onActivationStarted(metadata: CellularMetadata): void {
     this.clearTimer_();
     this.cellularMetadata_ = metadata;
-    this.state_ = PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
+    this.state_ = PsimUiState.WAITING_FOR_PORTAL_TO_LOAD;
   }
 
   override initSubflow(): void {
-    this.state_ = PSimUIState.STARTING_ACTIVATION;
+    this.state_ = PsimUiState.STARTING_ACTIVATION;
     this.startActivationAttempts_ = 0;
     this.updateButtonBarState_();
     this.dispatchEvent(new CustomEvent(
@@ -316,22 +312,22 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   override navigateForward(): void {
     switch (this.state_) {
-      case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-      case PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case PSimUIState.WAITING_FOR_USER_PAYMENT:
-      case PSimUIState.ACTIVATION_SUCCESS:
-        this.state_ = PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH;
+      case PsimUiState.WAITING_FOR_PORTAL_TO_LOAD:
+      case PsimUiState.TIMEOUT_PORTAL_LOAD:
+      case PsimUiState.WAITING_FOR_USER_PAYMENT:
+      case PsimUiState.ACTIVATION_SUCCESS:
+        this.state_ = PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH;
         break;
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-      case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
-      case PSimUIState.ALREADY_ACTIVATED:
-      case PSimUIState.ACTIVATION_FAILURE:
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH:
+      case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
+      case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
+      case PsimUiState.ALREADY_ACTIVATED:
+      case PsimUiState.ACTIVATION_FAILURE:
         this.dispatchEvent(new CustomEvent(
             'exit-cellular-setup', {bubbles: true, composed: true}));
         break;
-      case PSimUIState.TIMEOUT_START_ACTIVATION:
-        this.state_ = PSimUIState.STARTING_ACTIVATION;
+      case PsimUiState.TIMEOUT_START_ACTIVATION:
+        this.state_ = PsimUiState.STARTING_ACTIVATION;
         break;
       default:
         assertNotReached();
@@ -345,15 +341,31 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     this.setTimeoutFunction_ = timerFunction;
   }
 
+  getSelectedPsimPageNameForTest(): PsimPageName {
+    return this.selectedPsimPageName_;
+  }
+
+  getCurrentTimeoutIdForTest(): number|null {
+    return this.currentTimeoutId_;
+  }
+
+  setCurrentPsimUiStateForTest(state: PsimUiState): void {
+    this.state_ = state;
+  }
+
+  getCurrentPsimUiStateForTest(): PsimUiState {
+    return this.state_;
+  }
+
   private updateButtonBarState_(): void {
     let buttonState;
     switch (this.state_) {
-      case PSimUIState.IDLE:
-      case PSimUIState.STARTING_ACTIVATION:
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
-      case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-      case PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case PSimUIState.WAITING_FOR_USER_PAYMENT:
+      case PsimUiState.IDLE:
+      case PsimUiState.STARTING_ACTIVATION:
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_START:
+      case PsimUiState.WAITING_FOR_PORTAL_TO_LOAD:
+      case PsimUiState.TIMEOUT_PORTAL_LOAD:
+      case PsimUiState.WAITING_FOR_USER_PAYMENT:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
           backward: ButtonState.HIDDEN,
@@ -361,7 +373,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
           forward: ButtonState.DISABLED,
         };
         break;
-      case PSimUIState.TIMEOUT_START_ACTIVATION:
+      case PsimUiState.TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('tryAgain');
         buttonState = {
           backward: ButtonState.HIDDEN,
@@ -369,7 +381,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
           forward: ButtonState.ENABLED,
         };
         break;
-      case PSimUIState.ACTIVATION_SUCCESS:
+      case PsimUiState.ACTIVATION_SUCCESS:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
           backward: ButtonState.HIDDEN,
@@ -377,9 +389,9 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
           forward: ButtonState.ENABLED,
         };
         break;
-      case PSimUIState.ALREADY_ACTIVATED:
-      case PSimUIState.ACTIVATION_FAILURE:
-      case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
+      case PsimUiState.ALREADY_ACTIVATED:
+      case PsimUiState.ACTIVATION_FAILURE:
+      case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
           backward: ButtonState.HIDDEN,
@@ -387,8 +399,8 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
           forward: ButtonState.ENABLED,
         };
         break;
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-      case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH:
+      case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
           backward: ButtonState.HIDDEN,
@@ -410,13 +422,13 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
     switch (result) {
       case ActivationResult.kSuccessfullyStartedActivation:
-        this.state_ = PSimUIState.ACTIVATION_SUCCESS;
+        this.state_ = PsimUiState.ACTIVATION_SUCCESS;
         break;
       case ActivationResult.kAlreadyActivated:
-        this.state_ = PSimUIState.ALREADY_ACTIVATED;
+        this.state_ = PsimUiState.ALREADY_ACTIVATED;
         break;
       case ActivationResult.kFailedToActivate:
-        this.state_ = PSimUIState.ACTIVATION_FAILURE;
+        this.state_ = PsimUiState.ACTIVATION_FAILURE;
         break;
       default:
         assertNotReached();
@@ -424,7 +436,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   }
 
   private getCarrierText(): string {
-    if (this.selectedPSimPageName_ === PSimPageName.PROVISIONING &&
+    if (this.selectedPsimPageName_ === PsimPageName.PROVISIONING &&
         this.cellularMetadata_) {
       return this.cellularMetadata_.carrier;
     }
@@ -433,9 +445,9 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   private updateShowError_(): void {
     switch (this.state_) {
-      case PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case PSimUIState.ACTIVATION_FAILURE:
+      case PsimUiState.TIMEOUT_PORTAL_LOAD:
+      case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
+      case PsimUiState.ACTIVATION_FAILURE:
         this.showError_ = true;
         return;
       default:
@@ -446,32 +458,31 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
 
   private updateSelectedPage_(): void {
     switch (this.state_) {
-      case PSimUIState.IDLE:
-      case PSimUIState.STARTING_ACTIVATION:
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
-      case PSimUIState.TIMEOUT_START_ACTIVATION:
-      case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
-        this.selectedPSimPageName_ = PSimPageName.SIM_DETECT;
+      case PsimUiState.IDLE:
+      case PsimUiState.STARTING_ACTIVATION:
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_START:
+      case PsimUiState.TIMEOUT_START_ACTIVATION:
+      case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
+        this.selectedPsimPageName_ = PsimPageName.SIM_DETECT;
         return;
-      case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-      case PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case PSimUIState.WAITING_FOR_USER_PAYMENT:
-      case PSimUIState.ACTIVATION_SUCCESS:
-        this.selectedPSimPageName_ = PSimPageName.PROVISIONING;
+      case PsimUiState.WAITING_FOR_PORTAL_TO_LOAD:
+      case PsimUiState.TIMEOUT_PORTAL_LOAD:
+      case PsimUiState.WAITING_FOR_USER_PAYMENT:
+      case PsimUiState.ACTIVATION_SUCCESS:
+        this.selectedPsimPageName_ = PsimPageName.PROVISIONING;
         return;
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-      case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case PSimUIState.ALREADY_ACTIVATED:
-      case PSimUIState.ACTIVATION_FAILURE:
-        this.selectedPSimPageName_ = PSimPageName.FINAL;
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH:
+      case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
+      case PsimUiState.ALREADY_ACTIVATED:
+      case PsimUiState.ACTIVATION_FAILURE:
+        this.selectedPsimPageName_ = PsimPageName.FINAL;
         return;
       default:
         assertNotReached();
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  private handlePSimUIStateChange_(): void {
+  private handlePsimUiStateChange_(): void {
     this.updateShowError_();
     this.updateSelectedPage_();
 
@@ -480,13 +491,13 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     this.clearTimer_();
 
     // If the new state has an associated timeout, set it.
-    const timeoutMs = getTimeoutMsForPSimUIState(this.state_);
+    const timeoutMs = getTimeoutMsForPsimUiState(this.state_);
     if (timeoutMs !== null) {
       this.currentTimeoutId_ =
           this.setTimeoutFunction_(this.onTimeout_.bind(this), timeoutMs);
     }
 
-    if (this.state_ === PSimUIState.STARTING_ACTIVATION) {
+    if (this.state_ === PsimUiState.STARTING_ACTIVATION) {
       this.startActivation_();
     }
 
@@ -498,19 +509,19 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     this.closeActivationConnection_();
 
     switch (this.state_) {
-      case PSimUIState.STARTING_ACTIVATION:
+      case PsimUiState.STARTING_ACTIVATION:
         this.startActivationAttempts_++;
         if (this.startActivationAttempts_ < MAX_START_ACTIVATION_ATTEMPTS) {
-          this.state_ = PSimUIState.TIMEOUT_START_ACTIVATION;
+          this.state_ = PsimUiState.TIMEOUT_START_ACTIVATION;
         } else {
-          this.state_ = PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
+          this.state_ = PsimUiState.FINAL_TIMEOUT_START_ACTIVATION;
         }
         return;
-      case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-        this.state_ = PSimUIState.TIMEOUT_PORTAL_LOAD;
+      case PsimUiState.WAITING_FOR_PORTAL_TO_LOAD:
+        this.state_ = PsimUiState.TIMEOUT_PORTAL_LOAD;
         return;
-      case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-        this.state_ = PSimUIState.TIMEOUT_FINISH_ACTIVATION;
+      case PsimUiState.WAITING_FOR_ACTIVATION_TO_FINISH:
+        this.state_ = PsimUiState.TIMEOUT_FINISH_ACTIVATION;
         return;
       default:
         // Only the above states are expected to time out.
@@ -548,7 +559,7 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   }
 
   private onCarrierPortalLoaded_(): void {
-    this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
+    this.state_ = PsimUiState.WAITING_FOR_USER_PAYMENT;
     this.carrierPortalHandler_!.onCarrierPortalStatusChange(
         CarrierPortalStatus.kPortalLoadedWithoutPaidUser);
   }
@@ -556,22 +567,22 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
   private onCarrierPortalResult_(event: CustomEvent<boolean>): void {
     const success = event.detail;
     this.didCarrierPortalResultFail_ = !success;
-    this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
-                            PSimUIState.ACTIVATION_FAILURE;
+    this.state_ = success ? PsimUiState.ACTIVATION_SUCCESS :
+                            PsimUiState.ACTIVATION_FAILURE;
   }
 
   private getLoadingMessage_(): string {
-    if (this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION) {
+    if (this.state_ === PsimUiState.TIMEOUT_START_ACTIVATION) {
       return this.i18n('simDetectPageErrorMessage');
-    } else if (this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION) {
+    } else if (this.state_ === PsimUiState.FINAL_TIMEOUT_START_ACTIVATION) {
       return this.i18n('simDetectPageFinalErrorMessage');
     }
     return this.i18n('establishNetworkConnectionMessage');
   }
 
   private isSimDetectError_(): boolean {
-    return this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION ||
-        this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
+    return this.state_ === PsimUiState.TIMEOUT_START_ACTIVATION ||
+        this.state_ === PsimUiState.FINAL_TIMEOUT_START_ACTIVATION;
   }
 
   private getLoadingTitle_(): string {
@@ -579,6 +590,12 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       return this.i18n('simDetectPageErrorTitle');
     }
     return '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [PsimFlowUiElement.is]: PsimFlowUiElement;
   }
 }
 

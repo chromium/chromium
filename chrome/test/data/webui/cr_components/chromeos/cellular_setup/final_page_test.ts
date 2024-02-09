@@ -4,14 +4,15 @@
 
 import 'chrome://resources/ash/common/cellular_setup/final_page.js';
 
+import type {FinalPageElement} from 'chrome://resources/ash/common/cellular_setup/final_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 
 suite('CrComponentsFinalPageTest', function() {
-  let finalPage;
+  let finalPage: FinalPageElement;
+
   setup(function() {
     finalPage = document.createElement('final-page');
     finalPage.delegate = new FakeCellularSetupDelegate();
@@ -20,7 +21,7 @@ suite('CrComponentsFinalPageTest', function() {
   });
 
   test('Base test', function() {
-    const basePage = finalPage.shadowRoot.querySelector('base-page');
+    const basePage = finalPage.shadowRoot!.querySelector('base-page');
     assertTrue(!!basePage);
   });
 });

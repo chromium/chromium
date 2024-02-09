@@ -5,20 +5,21 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/setup_loading_page.js';
 
+import type {SetupLoadingPageElement} from 'chrome://resources/ash/common/cellular_setup/setup_loading_page.js';
+import type {BasePageElement} from 'chrome://resources/ash/common/cellular_setup/base_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrComponentsSetupLoadingPageTest', function() {
-  let setupLoadingPage;
-  let basePage;
+  let setupLoadingPage: SetupLoadingPageElement;
+  let basePage: BasePageElement|null;
 
   setup(function() {
     setupLoadingPage = document.createElement('setup-loading-page');
     document.body.appendChild(setupLoadingPage);
     flush();
 
-    basePage = setupLoadingPage.shadowRoot.querySelector('base-page');
+    basePage = setupLoadingPage.shadowRoot!.querySelector('base-page');
     assertTrue(!!basePage);
   });
 
@@ -26,15 +27,15 @@ suite('CrComponentsSetupLoadingPageTest', function() {
     setupLoadingPage.isSimDetectError = false;
     flush();
     assertTrue(
-        !!setupLoadingPage.shadowRoot.querySelector('#animationContainer'));
-    assertTrue(
-        setupLoadingPage.shadowRoot.querySelector('#simDetectError').hidden);
+        !!setupLoadingPage.shadowRoot!.querySelector('#animationContainer'));
+    const simDetectError = setupLoadingPage.shadowRoot!.querySelector<HTMLElement>('#simDetectError');
+    assertTrue(!!simDetectError);
+    assertTrue(simDetectError.hidden);
 
     setupLoadingPage.isSimDetectError = true;
     flush();
     assertFalse(
-        !!setupLoadingPage.shadowRoot.querySelector('#animationContainer'));
-    assertFalse(
-        setupLoadingPage.shadowRoot.querySelector('#simDetectError').hidden);
+        !!setupLoadingPage.shadowRoot!.querySelector('#animationContainer'));
+    assertFalse(simDetectError.hidden);
   });
 });

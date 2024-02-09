@@ -6,7 +6,15 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/esim_flow_ui.js';
 
 import {ButtonState} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
-import {ESimPageName, ESimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/ash/common/cellular_setup/esim_flow_ui.js';
+import type {EsimFlowUiElement} from 'chrome://resources/ash/common/cellular_setup/esim_flow_ui.js';
+import {EsimPageName, EsimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/ash/common/cellular_setup/esim_flow_ui.js';
+import type {ProfileDiscoveryListItemElement} from 'chrome://resources/ash/common/cellular_setup/profile_discovery_list_item.js';
+import type {ProfileDiscoveryConsentPageElement} from 'chrome://resources/ash/common/cellular_setup/profile_discovery_consent_page.js';
+import type {ProfileDiscoveryListPageElement} from 'chrome://resources/ash/common/cellular_setup/profile_discovery_list_page.js';
+import type {ActivationCodePageElement} from 'chrome://resources/ash/common/cellular_setup/activation_code_page.js';
+import type {ConfirmationCodePageElement} from 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
+import type {FinalPageElement} from 'chrome://resources/ash/common/cellular_setup/final_page.js';
+import type {SetupLoadingPageElement} from 'chrome://resources/ash/common/cellular_setup/setup_loading_page.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -15,31 +23,33 @@ import {ESimOperationResult, ProfileInstallResult} from 'chrome://resources/mojo
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
-
-import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertEquals, assertTrue, assertFalse, assertGT} from 'chrome://webui-test/chai_assert.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.js';
 import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
+import type {FakeEuicc} from './fake_esim_manager_remote.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {MockMetricsPrivate} from './mock_metrics_private.js';
 
 const suiteSuffix = 'smdsSupportEnabled';
 
 suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
-  /** @type {string} */
   const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
 
-  let eSimPage;
-  let eSimManagerRemote;
-  let ironPages;
-  let profileLoadingPage;
-  let profileDiscoveryConsentPage;
-  let profileDiscoveryPage;
-  let activationCodePage;
-  let confirmationCodePage;
-  let finalPage;
-  let networkConfigRemote;
-
+  let eSimPage: EsimFlowUiElement;
+  let eSimManagerRemote: FakeESimManagerRemote;
+  let ironPages: IronPagesElement|null;
+  let profileLoadingPage: SetupLoadingPageElement|null;
+  let profileDiscoveryConsentPage: ProfileDiscoveryConsentPageElement|null;
+  let profileDiscoveryPage: ProfileDiscoveryListPageElement|null;
+  let activationCodePage: ActivationCodePageElement|null;
+  let confirmationCodePage: ConfirmationCodePageElement|null;
+  let finalPage: FinalPageElement|null;
+  let networkConfigRemote: FakeNetworkConfig;
+  let metrics: MockMetricsPrivate;
   let focusDefaultButtonEventFired = false;
   const wifiGuidPrefix = 'wifi';
 
@@ -49,52 +59,52 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  /** @param {ESimSetupFlowResult} eSimSetupFlowResult */
-  function endFlowAndVerifyResult(eSimSetupFlowResult) {
+  function endFlowAndVerifyResult(esimSetupFlowResult: EsimSetupFlowResult): void {
     eSimPage.remove();
     flush();
     assertEquals(
-        chrome.metricsPrivate.getHistogramEnumValueCount(eSimSetupFlowResult),
+        metrics.getHistogramEnumValueCount(esimSetupFlowResult),
         1);
 
-    if (eSimSetupFlowResult === ESimSetupFlowResult.SUCCESS) {
+    if (esimSetupFlowResult === EsimSetupFlowResult.SUCCESS) {
       assertEquals(
-          chrome.metricsPrivate.getHistogramCount(
+          metrics.getHistogramCount(
               FAILED_ESIM_SETUP_DURATION_METRIC_NAME),
           0);
       assertEquals(
-          chrome.metricsPrivate.getHistogramCount(
+          metrics.getHistogramCount(
               SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME),
           1);
       return;
     }
 
     assertEquals(
-        chrome.metricsPrivate.getHistogramCount(
+        metrics.getHistogramCount(
             FAILED_ESIM_SETUP_DURATION_METRIC_NAME),
         1);
     assertEquals(
-        chrome.metricsPrivate.getHistogramCount(
+        metrics.getHistogramCount(
             SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME),
         0);
   }
 
   /** Adds an actively online wifi network and esim network. */
-  function addOnlineWifiNetwork() {
+  function addOnlineWifiNetwork(): void {
     const onlineNetwork =
         OncMojo.getDefaultNetworkState(NetworkType.kWiFi, wifiGuidPrefix);
     onlineNetwork.connectionState = ConnectionStateType.kOnline;
     networkConfigRemote.addNetworksForTest([onlineNetwork]);
-    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        networkConfigRemote);
   }
 
   /** Takes actively online network offline. */
-  function takeWifiNetworkOffline() {
+  function takeWifiNetworkOffline(): void {
     networkConfigRemote.setNetworkConnectionStateForTest(
         wifiGuidPrefix + '_guid', ConnectionStateType.kNotConnected);
   }
 
-  function setSmdsSupportEnabled(value) {
+  function setSmdsSupportEnabled(value: boolean): void {
     loadTimeData.overrideValues({
       'isSmdsSupportEnabled': value,
     });
@@ -105,7 +115,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     addOnlineWifiNetwork();
 
-    chrome.metricsPrivate = new MockMetricsPrivate();
+    metrics = new MockMetricsPrivate();
+    chrome.metricsPrivate =
+        metrics as unknown as typeof chrome.metricsPrivate;
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
 
@@ -120,23 +132,22 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     document.body.appendChild(eSimPage);
     flush();
 
-    ironPages = eSimPage.shadowRoot.querySelector('iron-pages');
+    ironPages = eSimPage.shadowRoot!.querySelector('iron-pages');
     profileLoadingPage =
-        eSimPage.shadowRoot.querySelector('#profileLoadingPage');
+        eSimPage.shadowRoot!.querySelector('#profileLoadingPage');
     profileDiscoveryConsentPage =
-        eSimPage.shadowRoot.querySelector('#profileDiscoveryConsentPage');
+        eSimPage.shadowRoot!.querySelector('#profileDiscoveryConsentPage');
     profileDiscoveryPage =
-        eSimPage.shadowRoot.querySelector('#profileDiscoveryPage');
+        eSimPage.shadowRoot!.querySelector('#profileDiscoveryPage');
     activationCodePage =
-        eSimPage.shadowRoot.querySelector('#activationCodePage');
+        eSimPage.shadowRoot!.querySelector('#activationCodePage');
     confirmationCodePage =
-        eSimPage.shadowRoot.querySelector('#confirmationCodePage');
-    finalPage = eSimPage.shadowRoot.querySelector('#finalPage');
+        eSimPage.shadowRoot!.querySelector('#confirmationCodePage');
+    finalPage = eSimPage.shadowRoot!.querySelector('#finalPage');
 
     // Captures the function that is called every time the interval timer
     // timeouts.
-    const setIntervalFunction = (fn, milliseconds) => {
-      intervalFunction = fn;
+    const setIntervalFunction = (_fn: Function, _milliseconds: number) => {
       return 1;
     };
 
@@ -144,20 +155,21 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     // requests to play the video due to the speed of execution. Avoid this by
     // mocking the play and pause actions.
     const playVideoFunction = () => {};
-    const stopStreamFunction = (stream) => {};
-    await activationCodePage.setFakesForTesting(
-        FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
-        playVideoFunction, stopStreamFunction);
-
+    const stopStreamFunction = (_stream: MediaStream) => {};
+    assertTrue(!!activationCodePage);
     assertTrue(!!profileLoadingPage);
     assertTrue(!!profileDiscoveryConsentPage);
     assertTrue(!!profileDiscoveryPage);
-    assertTrue(!!activationCodePage);
     assertTrue(!!confirmationCodePage);
     assertTrue(!!finalPage);
+
+    await activationCodePage.setFakesForTesting(
+        FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
+        playVideoFunction, stopStreamFunction);
   });
 
-  function assertSelectedPage(pageName, page) {
+  function assertSelectedPage(pageName: EsimPageName, page: HTMLElement): void {
+    assertTrue(!!ironPages);
     assertEquals(ironPages.selected, pageName);
     assertEquals(ironPages.selected, page.id);
   }
@@ -166,9 +178,8 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
    * Simulates navigating forward to trigger a profile install. Asserts that the
    * button_bar and page state is enabled before navigating forward. Asserts
    * that the button_bar and page state is disabled during the install.
-   * @param {HTMLElement} page
    */
-  async function navigateForwardForInstall(page) {
+  async function navigateForwardForInstall(page: HTMLElement) {
     assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
     assertEquals(eSimPage.buttonState.backward, ButtonState.HIDDEN);
 
@@ -181,32 +192,31 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     if (page !== profileLoadingPage && page !== profileDiscoveryConsentPage &&
         page !== finalPage) {
       assertEquals(
-          ESimPageName.PROFILE_INSTALLING, eSimPage.selectedESimPageName_);
+          EsimPageName.PROFILE_INSTALLING, eSimPage.getSelectedEsimPageNameForTest());
     }
 
     await flushAsync();
   }
 
-  async function enterConfirmationCode(backButtonState) {
-    const confirmationCodeInput =
-        confirmationCodePage.shadowRoot.querySelector('#confirmationCode');
+  async function enterConfirmationCode() {
+    const confirmationCodeInput = getConfirmationCodeInput(confirmationCodePage);
     confirmationCodeInput.value = 'CONFIRMATION_CODE';
     assertFalse(confirmationCodeInput.invalid);
 
     // Forward button should now be enabled.
     assertConfirmationCodePage(
-        /*forwardButtonShouldBeEnabled=*/ true,
-        /*backButtonState*/ backButtonState);
+        /*forwardButtonShouldBeEnabled=*/ true);
 
-    await navigateForwardForInstall(
-        confirmationCodePage, /*backButtonState*/ backButtonState);
+    assertTrue(!!confirmationCodePage);
+    await navigateForwardForInstall(confirmationCodePage);
     return confirmationCodeInput;
   }
 
-  async function assertFinalPageAndPressDoneButton(shouldBeShowingError) {
-    assertSelectedPage(ESimPageName.FINAL, finalPage);
+  async function assertFinalPageAndPressDoneButton(shouldBeShowingError: boolean) {
+    assertTrue(!!finalPage);
+    assertSelectedPage(EsimPageName.FINAL, finalPage);
     assertEquals(
-        !!finalPage.shadowRoot.querySelector('.error'), shouldBeShowingError);
+        !!finalPage.shadowRoot!.querySelector('.error'), shouldBeShowingError);
     assertEquals(ButtonState.ENABLED, eSimPage.buttonState.forward);
     assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.backward);
     assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.cancel);
@@ -221,11 +231,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     assertTrue(exitCellularSetupEventFired);
   }
 
-  /**
-   * @param {boolean} forwardButtonShouldBeEnabled
-   * @param {ButtonState} backButtonState
-   */
-  function assertButtonState(forwardButtonShouldBeEnabled) {
+  function assertButtonState(forwardButtonShouldBeEnabled: boolean) {
     const buttonState = eSimPage.buttonState;
     assertEquals(buttonState.backward, ButtonState.HIDDEN);
     assertEquals(buttonState.cancel, ButtonState.ENABLED);
@@ -241,11 +247,11 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   async function assertProfileDiscoveryConsentPageAndContinue() {
+    assertTrue(!!profileDiscoveryConsentPage);
     assertSelectedPage(
-        ESimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
+        EsimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled=*/ true,
-        /*backButtonState=*/ ButtonState.HIDDEN);
+        /*forwardButtonShouldBeEnabled=*/ true);
 
     // When the user clicks the "scan" button, they consent to profile
     // discovery. Navigate forward to the next page.
@@ -254,74 +260,82 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   async function assertProfileDiscoveryConsentPageAndContinueManually() {
+    assertTrue(!!profileDiscoveryConsentPage);
     assertSelectedPage(
-        ESimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
+        EsimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled=*/ true);
 
     // When the user clicks the "manually" link, they opt out of profile
     // discovery.
-    profileDiscoveryConsentPage.shadowRoot.querySelector('#shouldSkipDiscovery')
-        .shadowRoot.querySelector('a')
-        .click();
-    await flushAsync();
-  }
-
-  async function assertProfileLoadingPageAndContinue() {
-    assertSelectedPage(ESimPageName.PROFILE_LOADING, profileLoadingPage);
-    assertButtonState(
-        /*forwardButtonShouldBeEnabled=*/ false);
-    assertEquals(eSimPage.header, eSimPage.i18n('profileLoadingPageTitle'));
-    assertEquals(
-        profileLoadingPage.loadingMessage,
-        eSimPage.i18n('profileLoadingPageMessage'));
+    const localizedLink = profileDiscoveryConsentPage.shadowRoot!.
+        querySelector('#shouldSkipDiscovery');
+    assertTrue(!!localizedLink);
+    localizedLink.shadowRoot!.querySelector('a')!.click();
     await flushAsync();
   }
 
   function assertProfileDiscoveryPage() {
-    assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
+    assertTrue(!!profileDiscoveryPage);
+    assertSelectedPage(EsimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled*/ true);
     assertEquals(eSimPage.header, eSimPage.i18n('profileDiscoveryPageTitle'));
   }
 
   function assertActivationCodePage(
-      forwardButtonShouldBeEnabled, backButtonState) {
+      forwardButtonShouldBeEnabled: boolean) {
+    assertTrue(!!activationCodePage);
     if (!forwardButtonShouldBeEnabled) {
       // In the initial state, input should be cleared.
-      assertEquals(
-          activationCodePage.shadowRoot.querySelector('#activationCode').value,
-          '');
+      assertEquals(getActivationCodeInput(activationCodePage).value, '');
     }
-    assertSelectedPage(ESimPageName.ACTIVATION_CODE, activationCodePage);
+    assertSelectedPage(EsimPageName.ACTIVATION_CODE, activationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled);
   }
 
-  function assertConfirmationCodePage(
-      forwardButtonShouldBeEnabled, backButtonState) {
+  function assertConfirmationCodePage(forwardButtonShouldBeEnabled: boolean) {
+    assertTrue(!!confirmationCodePage);
     if (!forwardButtonShouldBeEnabled) {
       // In the initial state, input should be cleared.
-      assertEquals(
-          confirmationCodePage.shadowRoot.querySelector('#confirmationCode')
-              .value,
-          '');
+      assertEquals(getConfirmationCodeInput(confirmationCodePage).value, '');
     }
-    assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+    assertSelectedPage(EsimPageName.CONFIRMATION_CODE, confirmationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled);
     assertEquals(eSimPage.header, eSimPage.i18n('confimationCodePageTitle'));
+  }
+
+  function getActivationCodeInput(activationCodePage: ActivationCodePageElement|null)
+      : CrInputElement {
+    assertTrue(!!activationCodePage);
+    const activationCode =
+        activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
+    assertTrue(!!activationCode);
+    return activationCode;
+  }
+
+  function getConfirmationCodeInput(confirmationCodePage: ConfirmationCodePageElement|null)
+      : CrInputElement {
+    assertTrue(!!confirmationCodePage);
+    const confirmationCode =
+        confirmationCodePage.shadowRoot!.querySelector<CrInputElement>('#confirmationCode');
+    assertTrue(!!confirmationCode);
+    return confirmationCode;
   }
 
   test('Error fetching profiles', async function() {
     eSimManagerRemote.addEuiccForTest(0);
     const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-    const euicc = availableEuiccs.euiccs[0];
+    assertTrue(!!availableEuiccs.euiccs[0]);
+    const euicc: FakeEuicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
 
+    assertTrue(!!euicc);
     euicc.setRequestPendingProfilesResult(ESimOperationResult.kFailure);
     eSimPage.initSubflow();
     await assertProfileDiscoveryConsentPageAndContinue();
 
     await flushAsync();
-    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
+    endFlowAndVerifyResult(EsimSetupFlowResult.ERROR_FETCHING_PROFILES);
   });
 
   [true, false].forEach(isManualSetup => {
@@ -330,12 +344,14 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     suite(
         `Add eSIM flow with zero pending profiles ${suiteManualSetupSuffix}`,
         function() {
-          let euicc;
+          let euicc: FakeEuicc;
+
           setup(async function() {
             eSimManagerRemote.addEuiccForTest(0);
             const availableEuiccs =
                 await eSimManagerRemote.getAvailableEuiccs();
-            euicc = availableEuiccs.euiccs[0];
+            assertTrue(!!availableEuiccs.euiccs[0]);
+            euicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
 
             await flushAsync();
             eSimPage.initSubflow();
@@ -344,139 +360,117 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
               await assertProfileDiscoveryConsentPageAndContinueManually();
             } else {
               await assertProfileDiscoveryConsentPageAndContinue();
-              // await assertProfileLoadingPageAndContinue();
             }
 
             // Should now be at the activation code page.
             assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.HIDDEN);
+                /*forwardButtonShouldBeEnabled*/ false);
             // Insert an activation code.
-            activationCodePage.shadowRoot.querySelector('#activationCode')
-                .value = ACTIVATION_CODE_VALID;
+            const activationCode = getActivationCodeInput(activationCodePage);
+            activationCode.value = ACTIVATION_CODE_VALID;
             // Forward button should now be enabled.
             assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true,
-                /*backButtonState*/ ButtonState.HIDDEN);
+                /*forwardButtonShouldBeEnabled*/ true);
           });
 
           test('Invalid activation code', async function() {
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorInvalidActivationCode);
-
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.HIDDEN);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Install should fail and still be at activation code page.
             assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true,
-                /*backButtonState*/ ButtonState.HIDDEN);
+                /*forwardButtonShouldBeEnabled*/ true);
             assertTrue(activationCodePage.showError);
 
             endFlowAndVerifyResult(
-                ESimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE);
+                EsimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE);
           });
 
           test('Valid activation code', async function() {
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.HIDDEN);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Should go to final page.
             await assertFinalPageAndPressDoneButton(false);
 
-            endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+            endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
           });
 
           test('Valid confirmation code', async function() {
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.HIDDEN);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ false);
 
             euicc.setProfileInstallResultForTest(ProfileInstallResult.kSuccess);
-            await enterConfirmationCode(
-                /*backButtonState*/ ButtonState.ENABLED);
+            await enterConfirmationCode();
 
             // Should go to final page.
             await assertFinalPageAndPressDoneButton(false);
 
-            endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+            endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
           });
 
           test('Invalid confirmation code', async function() {
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.HIDDEN);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ false);
 
             euicc.setProfileInstallResultForTest(ProfileInstallResult.kFailure);
-            const confirmationCodeInput = await enterConfirmationCode(
-                /*backButtonState*/ ButtonState.ENABLED);
+            const confirmationCodeInput = await enterConfirmationCode();
 
             // Should still be at confirmation code page with input showing
             // error.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ true);
             assertTrue(confirmationCodeInput.invalid);
 
-            endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
+            endFlowAndVerifyResult(EsimSetupFlowResult.INSTALL_FAIL);
           });
 
           test('Navigate backwards from confirmation code', async function() {
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.HIDDEN);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
-            confirmationCodePage.shadowRoot.querySelector('#confirmationCode')
-                .value = 'CONFIRMATION_CODE';
+                /*forwardButtonShouldBeEnabled*/ false);
+            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
+            confirmationCode.value = 'CONFIRMATION_CODE';
 
             eSimPage.navigateBackward();
             await flushAsync();
 
             // Should now be at the activation code page.
             assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true,
-                /*backButtonState*/ ButtonState.HIDDEN);
-            assertEquals(
-                activationCodePage.shadowRoot.querySelector('#activationCode')
-                    .value,
-                ACTIVATION_CODE_VALID);
+                /*forwardButtonShouldBeEnabled*/ true);
+            assertEquals(getActivationCodeInput(activationCodePage).value,
+                         ACTIVATION_CODE_VALID);
 
             endFlowAndVerifyResult(
-                ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
           });
 
           test('End flow before installation attempted', async function() {
             await flushAsync();
             if (isManualSetup) {
               endFlowAndVerifyResult(
-                  ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+                  EsimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
             } else {
-              endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_NO_PROFILES);
+              endFlowAndVerifyResult(EsimSetupFlowResult.CANCELLED_NO_PROFILES);
             }
           });
 
@@ -484,20 +478,21 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             takeWifiNetworkOffline();
             await flushAsync();
 
-            endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
+            endFlowAndVerifyResult(EsimSetupFlowResult.NO_NETWORK);
           });
         });
   });
 
   suite('add eSIM flow with pending profiles', function() {
-    let euicc;
+    let euicc: FakeEuicc;
 
-    async function setupWithProfiles(profileCount) {
+    async function setupWithProfiles(profileCount: number) {
       assertGT(profileCount, 0);
 
       eSimManagerRemote.addEuiccForTest(profileCount);
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-      euicc = availableEuiccs.euiccs[0];
+      assertTrue(!!availableEuiccs.euiccs[0]);
+      euicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
       eSimPage.initSubflow();
 
       assertFocusDefaultButtonEventFired();
@@ -516,41 +511,39 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
       // Should now be at the activation code page.
       assertActivationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.ENABLED);
+          /*forwardButtonShouldBeEnabled*/ false);
       assertFocusDefaultButtonEventFired();
 
       // Insert an activation code.
-      activationCodePage.shadowRoot.querySelector('#activationCode').value =
-          ACTIVATION_CODE_VALID;
+      const activationCode = getActivationCodeInput(activationCodePage);
+      activationCode.value = ACTIVATION_CODE_VALID;
       assertFalse(focusDefaultButtonEventFired);
 
       assertActivationCodePage(
-          /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ ButtonState.ENABLED);
+          /*forwardButtonShouldBeEnabled*/ true);
     }
 
     function skipProfileList() {
-      profileDiscoveryPage.shadowRoot.querySelector('#profileListMessage')
-          .shadowRoot.querySelector('a')
-          .click();
+      assertTrue(!!profileDiscoveryPage);
+      const localizedLink =
+          profileDiscoveryPage.shadowRoot!.querySelector('#profileListMessage');
+      assertTrue(!!localizedLink);
+      localizedLink.shadowRoot!.querySelector('a')!.click();
 
       flushAsync();
 
       // Should now be at the activation code page.
       assertActivationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.ENABLED);
+          /*forwardButtonShouldBeEnabled*/ false);
       assertFocusDefaultButtonEventFired();
 
       // Insert an activation code.
-      activationCodePage.shadowRoot.querySelector('#activationCode').value =
-          ACTIVATION_CODE_VALID;
+      const activationCode = getActivationCodeInput(activationCodePage);
+      activationCode.value = ACTIVATION_CODE_VALID;
       assertFalse(focusDefaultButtonEventFired);
 
       assertActivationCodePage(
-          /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ ButtonState.ENABLED);
+          /*forwardButtonShouldBeEnabled*/ true);
     }
 
     [1, 2].forEach(profileCount => {
@@ -558,28 +551,25 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         await setupWithProfiles(profileCount);
 
         skipDiscovery();
-
-        await navigateForwardForInstall(
-            activationCodePage,
-            /*backButtonState*/ ButtonState.ENABLED);
+        assertTrue(!!activationCodePage);
+        await navigateForwardForInstall(activationCodePage);
 
         // Should now be at the final page.
         await assertFinalPageAndPressDoneButton(false);
 
-        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
       });
     });
 
     test('Skip profile list manually', async function() {
       await setupWithProfiles(1);
       skipProfileList();
-      await navigateForwardForInstall(
-          activationCodePage,
-          /*backButtonState*/ ButtonState.ENABLED);
+      assertTrue(!!activationCodePage);
+      await navigateForwardForInstall(activationCodePage);
 
       // Should now be at the final page.
       await assertFinalPageAndPressDoneButton(false);
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+      endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
     });
 
     test(
@@ -588,31 +578,40 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           await setupWithProfiles(1);
           await flushAsync();
 
-          const getProfilesList = () =>
-              profileDiscoveryPage.shadowRoot.querySelector('#profileList');
+          const getProfilesList = (): IronListElement => {
+            assertTrue(!!profileDiscoveryPage);
+            const profileList =
+                profileDiscoveryPage.shadowRoot!.querySelector<IronListElement>('#profileList');
+            assertTrue(!!profileList);
+            return profileList;
+          };
 
           assertTrue(!!getProfilesList());
-          assertEquals(getProfilesList().items.length, 1);
+          const items = getProfilesList().items;
+          assertTrue(!!items);
+          assertEquals(items.length, 1);
           assertFalse(!!getProfilesList().selectedItem);
 
           // Select a profile.
+          assertTrue(!!profileDiscoveryPage);
           const discoveryListItem =
-              profileDiscoveryPage.shadowRoot.querySelectorAll(
+              profileDiscoveryPage.shadowRoot!.querySelectorAll<ProfileDiscoveryListItemElement>(
                   'profile-discovery-list-item');
           assertTrue(!!discoveryListItem);
+          assertTrue(!!discoveryListItem[0]);
           discoveryListItem[0].click();
 
           await flushAsync();
+          assertTrue(!!getProfilesList());
           assertTrue(!!getProfilesList().selectedItem);
 
           skipProfileList();
-          await navigateForwardForInstall(
-              activationCodePage,
-              /*backButtonState*/ ButtonState.ENABLED);
+          assertTrue(!!activationCodePage);
+          await navigateForwardForInstall(activationCodePage);
 
           // Should now be at the final page.
           await assertFinalPageAndPressDoneButton(false);
-          endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+          endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
         });
 
     [1, 2].forEach(profileCount => {
@@ -625,18 +624,15 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-            await navigateForwardForInstall(
-                activationCodePage,
-                /*backButtonState*/ ButtonState.ENABLED);
+            assertTrue(!!activationCodePage);
+            await navigateForwardForInstall(activationCodePage);
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ false);
             assertFocusDefaultButtonEventFired();
-            confirmationCodePage.shadowRoot.querySelector('#confirmationCode')
-                .value = 'CONFIRMATION_CODE';
+            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
+            confirmationCode.value = 'CONFIRMATION_CODE';
             assertFalse(focusDefaultButtonEventFired);
 
             // Simulate pressing 'Backward'.
@@ -644,13 +640,10 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             await flushAsync();
 
             assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ true);
             assertFocusDefaultButtonEventFired();
-            assertEquals(
-                activationCodePage.shadowRoot.querySelector('#activationCode')
-                    .value,
-                ACTIVATION_CODE_VALID);
+            assertEquals(getActivationCodeInput(activationCodePage).value,
+                         ACTIVATION_CODE_VALID);
 
             eSimPage.navigateBackward();
             await flushAsync();
@@ -661,14 +654,17 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
                 eSimPage.forwardButtonLabel, 'Skip & set up new profile');
 
             endFlowAndVerifyResult(
-                ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
           });
     });
 
     async function selectProfile() {
+      assertTrue(!!profileDiscoveryPage);
       // Select the first profile on the list.
       const profileList =
-          profileDiscoveryPage.shadowRoot.querySelector('#profileList');
+          profileDiscoveryPage.shadowRoot!.querySelector<IronListElement>('#profileList');
+      assertTrue(!!profileList);
+      assertTrue(!!profileList.items);
       profileList.selectItem(profileList.items[0]);
       flush();
 
@@ -676,9 +672,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       assertTrue(eSimPage.buttonState.forward === ButtonState.ENABLED);
 
       // Simulate pressing 'Forward'.
-      await navigateForwardForInstall(
-          profileDiscoveryPage,
-          /*backButtonState*/ ButtonState.HIDDEN);
+      await navigateForwardForInstall(profileDiscoveryPage);
     }
 
     [1, 2].forEach(profileCount => {
@@ -691,7 +685,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         // Should now be at the final page.
         await assertFinalPageAndPressDoneButton(false);
 
-        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
       });
     });
 
@@ -702,7 +696,8 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             const availableEuiccs =
                 await eSimManagerRemote.getAvailableEuiccs();
-            const euicc = availableEuiccs.euiccs[0];
+            assertTrue(!!availableEuiccs.euiccs[0]);
+            const euicc: FakeEuicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
 
@@ -710,19 +705,17 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
+                /*forwardButtonShouldBeEnabled*/ false);
             assertFocusDefaultButtonEventFired();
 
             euicc.setProfileInstallResultForTest(ProfileInstallResult.kSuccess);
-            await enterConfirmationCode(
-                /*backButtonState*/ ButtonState.ENABLED);
+            await enterConfirmationCode();
 
             // Should go to final page.
             await assertFinalPageAndPressDoneButton(false);
             assertFocusDefaultButtonEventFired();
 
-            endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+            endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
           });
     });
 
@@ -734,7 +727,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             const availableEuiccs =
                 await eSimManagerRemote.getAvailableEuiccs();
-            const euicc = availableEuiccs.euiccs[0];
+            const euicc: FakeEuicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
             euicc.setProfileInstallResultForTest(
                 ProfileInstallResult.kErrorNeedsConfirmationCode);
 
@@ -743,10 +736,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
             // Confirmation code page should be showing.
             assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false,
-                /*backButtonState*/ ButtonState.ENABLED);
-            confirmationCodePage.shadowRoot.querySelector('#confirmationCode')
-                .value = 'CONFIRMATION_CODE';
+                /*forwardButtonShouldBeEnabled*/ false);
+            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
+            confirmationCode.value = 'CONFIRMATION_CODE';
 
             eSimPage.navigateBackward();
             await flushAsync();
@@ -755,7 +747,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             assertEquals(eSimPage.forwardButtonLabel, 'Next');
 
             endFlowAndVerifyResult(
-                ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
           });
     });
 
@@ -764,7 +756,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         await setupWithProfiles(profileCount);
 
         await flushAsync();
-        endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+        endFlowAndVerifyResult(EsimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
       });
     });
 
@@ -775,7 +767,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         takeWifiNetworkOffline();
         await flushAsync();
 
-        endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
+        endFlowAndVerifyResult(EsimSetupFlowResult.NO_NETWORK);
       });
     });
 
@@ -790,7 +782,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         takeWifiNetworkOffline();
         await flushAsync();
 
-        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
       });
     });
   });
@@ -801,6 +793,6 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     await flushAsync();
     await assertFinalPageAndPressDoneButton(/*shouldBeShowingError=*/ true);
 
-    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
+    endFlowAndVerifyResult(EsimSetupFlowResult.ERROR_FETCHING_PROFILES);
   });
 });

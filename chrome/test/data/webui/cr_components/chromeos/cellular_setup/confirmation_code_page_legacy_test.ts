@@ -5,13 +5,13 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/confirmation_code_page_legacy.js';
 
+import type {ConfirmationCodePageLegacyElement} from 'chrome://resources/ash/common/cellular_setup/confirmation_code_page_legacy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
-
-import {assertTrue} from '../../../chromeos/chai_assert.js';
+import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrComponentsConfirmationCodePageLegacyTest', function() {
-  let confirmationCodePageLegacy;
+  let confirmationCodePageLegacy: ConfirmationCodePageLegacyElement;
 
   function flushAsync() {
     flush();
@@ -33,8 +33,9 @@ suite('CrComponentsConfirmationCodePageLegacyTest', function() {
         'forward-navigation-requested', () => {
           eventFired = true;
         });
-    const input = confirmationCodePageLegacy.shadowRoot.querySelector(
+    const input = confirmationCodePageLegacy.shadowRoot!.querySelector(
         '#confirmationCode');
+    assertTrue(!!input);
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
     await flushAsync();
@@ -43,9 +44,10 @@ suite('CrComponentsConfirmationCodePageLegacyTest', function() {
 
   test('displays profile name', async function() {
     const detailsElement =
-        confirmationCodePageLegacy.shadowRoot.getElementById('details');
+        confirmationCodePageLegacy.shadowRoot!.getElementById('details');
+    assertTrue(!!detailsElement);
     assertEquals(
-        '', detailsElement.textContent.trim(),
+        '', detailsElement.textContent!.trim(),
         'no profile name is shown without profileProperties');
 
     const fakeESimManagerRemote = new FakeESimManagerRemote();
@@ -56,7 +58,7 @@ suite('CrComponentsConfirmationCodePageLegacyTest', function() {
     await flushAsync();
 
     assertEquals(
-        'profile1', detailsElement.textContent.trim(),
+        'profile1', detailsElement.textContent!.trim(),
         'correct profile name is shown');
   });
 });

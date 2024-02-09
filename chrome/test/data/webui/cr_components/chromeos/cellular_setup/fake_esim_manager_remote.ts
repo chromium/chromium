@@ -3,15 +3,30 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {ESimManagerInterface, ESimManagerObserverInterface, ESimOperationResult, ESimProfile, ESimProfileProperties, ESimProfileRemote, EuiccInterface, EuiccProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {ESimManagerInterface, ESimManagerObserverInterface, ESimProfileInterface, ESimProfileProperties, ESimProfileRemote, EuiccInterface, EuiccRemote, EuiccProperties, ProfileInstallMethod, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimOperationResult, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-/** @implements {ESimProfile} */
-export class FakeProfile {
-  constructor(eid, iccid, fakeEuicc) {
+interface DeferredPromiseObject {
+  promise: Promise<any>;
+  resolve: Function;
+  reject: Function;
+}
+
+export class FakeProfile implements ESimProfileInterface {
+  properties: ESimProfileProperties;
+  private deferGetProperties_: boolean;
+  private deferredGetPropertiesPromises_: DeferredPromiseObject[];
+  private fakeEuicc_: FakeEuicc;
+  private profileInstallResult_: ProfileInstallResult|null = null;
+  private esimOperationResult_: ESimOperationResult|null = null;
+  private deferredSetProfileNicknamePromise_: DeferredPromiseObject|null = null;
+  private deferedUninstallProfilePromise_: DeferredPromiseObject|null = null;
+
+  constructor(eid: string, iccid: string, fakeEuicc: FakeEuicc) {
     this.properties = {
-      eid,
-      iccid,
+      eid: eid,
+      iccid: iccid,
       activationCode: 'activation-code-' + iccid,
       name: stringToMojoString16('profile' + iccid),
       nickname: stringToMojoString16('profile' + iccid),
@@ -24,10 +39,7 @@ export class FakeProfile {
     this.fakeEuicc_ = fakeEuicc;
   }
 
-  /**
-   * @return {!Promise<{properties: ESimProfileProperties},}>}
-   */
-  getProperties() {
+  getProperties(): Promise<{properties: ESimProfileProperties}> {
     if (this.deferGetProperties_) {
       const deferred = this.deferredPromise_();
       this.deferredGetPropertiesPromises_.push(deferred);
@@ -39,34 +51,26 @@ export class FakeProfile {
     }
   }
 
-  /**
-   * @param {boolean} defer
-   */
-  setDeferGetProperties(defer) {
+  setDeferGetProperties(defer: boolean): void {
     this.deferGetProperties_ = defer;
   }
 
-  resolveLastGetPropertiesPromise() {
+  resolveLastGetPropertiesPromise(): void {
     if (!this.deferredGetPropertiesPromises_.length) {
       return;
     }
     const deferred = this.deferredGetPropertiesPromises_.pop();
-    deferred.resolve({properties: this.properties});
+    deferred!.resolve({properties: this.properties});
   }
 
-  /**
-   * @param {string} confirmationCode
-   * @return {!Promise<{result:
-   *     ProfileInstallResult},}>}
-   */
-  installProfile(confirmationCode) {
+  installProfile(_confirmationCode: string): Promise<{result: ProfileInstallResult}> {
     if (!this.profileInstallResult_ ||
         this.profileInstallResult_ === ProfileInstallResult.kSuccess) {
       this.properties.state = ProfileState.kActive;
     }
     this.fakeEuicc_.notifyProfileChangedForTest(this);
     this.fakeEuicc_.notifyProfileListChangedForTest();
-    // Simulate a delay in response. This is neccessary because a few tests
+    // Simulate a delay in response. This is necessary because a few tests
     // require UI to be in installing state.
     return new Promise(
         resolve => setTimeout(
@@ -78,39 +82,29 @@ export class FakeProfile {
             0));
   }
 
-  /**
-   * @param {ProfileInstallResult} result
-   */
-  setProfileInstallResultForTest(result) {
+  setProfileInstallResultForTest(result: ProfileInstallResult) {
     this.profileInstallResult_ = result;
   }
 
-  /**
-   * @param {ESimOperationResult} result
-   */
-  setEsimOperationResultForTest(result) {
+  setEsimOperationResultForTest(result: ESimOperationResult) {
     this.esimOperationResult_ = result;
   }
 
-  /**
-   * @return {Object}
-   * @private
-   */
-  deferredPromise_() {
-    const deferred = {};
-    const promise = new Promise(function(resolve, reject) {
-      deferred.resolve = resolve;
-      deferred.reject = reject;
+  private deferredPromise_(): DeferredPromiseObject {
+    let resolve_out!: Function;
+    let reject_out!: Function;
+    const promise = new Promise((resolve, reject) => {
+      resolve_out = resolve;
+      reject_out = reject;
     });
-    deferred.promise = promise;
-    return deferred;
+    return {
+      promise: promise,
+      resolve: resolve_out,
+      reject: reject_out,
+    };
   }
 
-  /**
-   * @param {?String16} nickname
-   * @return {!Promise<{result: ESimOperationResult},}>}
-   */
-  setProfileNickname(nickname) {
+  setProfileNickname(nickname: String16): Promise<{result: ESimOperationResult}> {
     if (!this.esimOperationResult_ ||
         this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       this.properties.nickname = nickname;
@@ -120,42 +114,46 @@ export class FakeProfile {
     return this.deferredSetProfileNicknamePromise_.promise;
   }
 
-  /** @private */
-  resolveSetProfileNicknamePromise_() {
-    this.deferredSetProfileNicknamePromise_.resolve({
+  resolveSetProfileNicknamePromise(): void {
+    this.deferredSetProfileNicknamePromise_!.resolve({
       result: this.esimOperationResult_ ? this.esimOperationResult_ :
                                           ESimOperationResult.kSuccess,
     });
   }
 
-  uninstallProfile() {
+  uninstallProfile(): Promise<{result: number}> {
     this.fakeEuicc_.notifyProfileChangedForTest(this);
-    this.defferedUninstallProfilePromise_ = this.deferredPromise_();
-    return this.defferedUninstallProfilePromise_.promise;
+    this.deferedUninstallProfilePromise_ = this.deferredPromise_();
+    return this.deferedUninstallProfilePromise_.promise;
   }
 
-  /** @return {Promise<void>} */
-  async resolveUninstallProfilePromise() {
+  async resolveUninstallProfilePromise(): Promise<void> {
     if (!this.esimOperationResult_ ||
         this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       const removeProfileResult =
           await this.fakeEuicc_.removeProfileForTest(this.properties.iccid);
-      this.defferedUninstallProfilePromise_.resolve(removeProfileResult);
+      this.deferedUninstallProfilePromise_!.resolve(removeProfileResult);
       return;
     }
 
-    this.defferedUninstallProfilePromise_.resolve({
+    this.deferedUninstallProfilePromise_!.resolve({
       result: this.esimOperationResult_ ? this.esimOperationResult_ :
                                           ESimOperationResult.kSuccess,
     });
   }
 }
 
-/** @implements {EuiccInterface} */
-export class FakeEuicc {
-  constructor(eid, numProfiles, fakeESimManager) {
+export class FakeEuicc implements EuiccInterface {
+  properties: EuiccProperties;
+  private fakeESimManager_: FakeESimManagerRemote;
+  private profiles_: FakeProfile[];
+  private requestPendingProfilesResult_: ESimOperationResult;
+  private eidQRCode_: QRCode|null = null;
+  private profileInstallResult_: ProfileInstallResult|null = null;
+
+  constructor(eid: string, numProfiles: number, fakeESimManager: FakeESimManagerRemote) {
     this.fakeESimManager_ = fakeESimManager;
-    this.properties = {eid};
+    this.properties = {eid: eid, isActive: false};
     this.profiles_ = [];
     for (let i = 0; i < numProfiles; i++) {
       this.addProfile();
@@ -163,29 +161,18 @@ export class FakeEuicc {
     this.requestPendingProfilesResult_ = ESimOperationResult.kSuccess;
   }
 
-  /**
-   * @return {!Promise<{properties: EuiccProperties},}>}
-   */
-  getProperties() {
+  getProperties(): Promise<{properties: EuiccProperties}> {
     return Promise.resolve({properties: this.properties});
   }
 
-  /**
-   * @return {!Promise<{result:
-   *     ESimOperationResult},}>}
-   */
-  requestPendingProfiles() {
+  requestPendingProfiles(): Promise<{result:ESimOperationResult}> {
     return Promise.resolve({
       result: this.requestPendingProfilesResult_,
     });
   }
 
-  /**
-   * @return {!Promise<{result:ESimOperationResult,
-   *     profiles:Array<!ESimProfileProperties>,}}
-   *
-   */
-  requestAvailableProfiles() {
+  requestAvailableProfiles(): Promise<{result:ESimOperationResult,
+      profiles: ESimProfileProperties[], }> {
     return Promise.resolve({
       result: this.requestPendingProfilesResult_,
       profiles: this.profiles_.map(profile => {
@@ -194,35 +181,24 @@ export class FakeEuicc {
     });
   }
 
-  /**
-   * @return {!Promise<{profiles: Array<!ESimProfileRemote>,}>}
-   */
-  getProfileList() {
+  getProfileList(): Promise<{profiles: ESimProfileRemote[]}> {
     return Promise.resolve({
-      profiles: this.profiles_,
+      profiles: this.profiles_ as unknown as ESimProfileRemote[],
     });
   }
 
-  /**
-   * @return {!Promise<{qrCode: QRCode| null}>}
-   */
-  getEidQRCode() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  getEidQRCode(): Promise<{qrCode: QRCode|null}> {
     if (this.eidQRCode_) {
       return Promise.resolve({qrCode: this.eidQRCode_});
     } else {
-      return Promise.resolve(null);
+      return Promise.resolve({qrCode: null});
     }
   }
 
-  /**
-   * @param {string} activationCode
-   * @param {string} confirmationCode
-   * @param {ProfileInstallMethod} installMethod
-   * @return {!Promise<{result: ProfileInstallResult, profile: ESimProfileRemote
-   *     | null },}>}
-   */
   installProfileFromActivationCode(
-      activationCode, confirmationCode, installMethod) {
+      _activationCode: string, _confirmationCode: string, _installMethod: ProfileInstallMethod):
+      Promise<{result: ProfileInstallResult, profile: ESimProfileRemote|null }> {
     this.notifyProfileListChangedForTest();
     return Promise.resolve({
       result: this.profileInstallResult_ ? this.profileInstallResult_ :
@@ -231,32 +207,21 @@ export class FakeEuicc {
     });
   }
 
-  /**
-   * @param {ESimOperationResult} result
-   */
-  setRequestPendingProfilesResult(result) {
+  setRequestPendingProfilesResult(result: ESimOperationResult): void {
     this.requestPendingProfilesResult_ = result;
   }
 
-  /**
-   * @param {ProfileInstallResult} result
-   */
-  setProfileInstallResultForTest(result) {
+  setProfileInstallResultForTest(result: ProfileInstallResult): void {
     this.profileInstallResult_ = result;
   }
 
-  /**
-   * @param {QRCode} qrcode
-   */
-  setEidQRCodeForTest(qrcode) {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  setEidQRCodeForTest(qrcode: QRCode): void {
     this.eidQRCode_ = qrcode;
   }
 
-  /**
-   * @param {string} iccid
-   */
-  async removeProfileForTest(iccid) {
-    const result = [];
+  async removeProfileForTest(iccid: string) {
+    const result: FakeProfile[] = [];
     let profileRemoved = false;
     for (const profile of this.profiles_) {
       const property = await profile.getProperties();
@@ -275,45 +240,37 @@ export class FakeEuicc {
     return {result: ESimOperationResult.kFailure};
   }
 
-  /**
-   * @param {FakeProfile} profile
-   */
-  notifyProfileChangedForTest(profile) {
+  notifyProfileChangedForTest(profile: FakeProfile): void {
     this.fakeESimManager_.notifyProfileChangedForTest(profile);
   }
 
-  notifyProfileListChangedForTest() {
+  notifyProfileListChangedForTest(): void {
     this.fakeESimManager_.notifyProfileListChangedForTest(this);
   }
 
-  /** @private */
-  addProfile() {
+  addProfile(): void {
     const iccid = this.profiles_.length + 1 + '';
     this.profiles_.push(new FakeProfile(this.properties.eid, iccid, this));
   }
 }
 
-/** @implements {ESimManagerInterface} */
-export class FakeESimManagerRemote {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export class FakeESimManagerRemote implements ESimManagerInterface {
+  private euiccs_: FakeEuicc[];
+  private observers_: ESimManagerObserverInterface[];
+
   constructor() {
     this.euiccs_ = [];
     this.observers_ = [];
   }
 
-  /**
-   * @return {!Promise<{euiccs: !Array<!EuiccRemote>,}>}
-   */
-  getAvailableEuiccs() {
+  getAvailableEuiccs(): Promise<{euiccs: EuiccRemote[]}> {
     return Promise.resolve({
-      euiccs: this.euiccs_,
+      euiccs: this.euiccs_ as unknown as EuiccRemote[],
     });
   }
 
-  /**
-   * @param {number} numProfiles The number of profiles the EUICC has.
-   * @return {FakeEuicc} The euicc that was added.
-   */
-  addEuiccForTest(numProfiles) {
+  addEuiccForTest(numProfiles: number): FakeEuicc {
     const eid = this.euiccs_.length + 1 + '';
     const euicc = new FakeEuicc(eid, numProfiles, this);
     this.euiccs_.push(euicc);
@@ -321,34 +278,25 @@ export class FakeESimManagerRemote {
     return euicc;
   }
 
-  /**
-   * @param {!ESimManagerObserverInterface} observer
-   */
-  addObserver(observer) {
+  addObserver(observer: ESimManagerObserverInterface): void {
     this.observers_.push(observer);
   }
 
-  notifyAvailableEuiccListChanged() {
+  notifyAvailableEuiccListChanged(): void {
     for (const observer of this.observers_) {
       observer.onAvailableEuiccListChanged();
     }
   }
 
-  /**
-   * @param {FakeEuicc} euicc
-   */
-  notifyProfileListChangedForTest(euicc) {
+  notifyProfileListChangedForTest(euicc: FakeEuicc): void {
     for (const observer of this.observers_) {
-      observer.onProfileListChanged(euicc);
+      observer.onProfileListChanged(euicc as unknown as EuiccRemote);
     }
   }
 
-  /**
-   * @param {FakeProfile|null} profile
-   */
-  notifyProfileChangedForTest(profile) {
+  notifyProfileChangedForTest(profile: FakeProfile|null): void {
     for (const observer of this.observers_) {
-      observer.onProfileChanged(profile);
+      observer.onProfileChanged(profile as unknown as ESimProfileRemote);
     }
   }
 }

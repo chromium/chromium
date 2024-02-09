@@ -6,29 +6,31 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/cellular_setup.js';
 import 'chrome://resources/ash/common/cellular_setup/psim_flow_ui.js';
 
+import type {CellularSetupElement} from 'chrome://resources/ash/common/cellular_setup/cellular_setup.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
-
+import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 
 suite('CrComponentsCellularSetupTest', function() {
-  let cellularSetupPage;
-  let eSimManagerRemote;
-  let networkConfigRemote;
+  let cellularSetupPage: CellularSetupElement;
+  let eSimManagerRemote: FakeESimManagerRemote;
+  let networkConfigRemote: FakeNetworkConfig;
 
   setup(function() {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
 
     networkConfigRemote = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        networkConfigRemote);
   });
 
   async function flushAsync() {
@@ -39,9 +41,25 @@ suite('CrComponentsCellularSetupTest', function() {
 
   function init() {
     networkConfigRemote.setDeviceStateForTest({
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: undefined,
+      macAddress: undefined,
+      scanning: false,
+      simLockStatus: undefined,
+      inhibitReason: InhibitReason.kNotInhibited,
+      simAbsent: false,
+      managedNetworkAvailable: false,
+      serial: undefined,
+      isCarrierLocked: false,
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
-      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
+      simInfos: [{
+        slotId: 0,
+        iccid: '1111111111111111',
+        eid: '',
+        isPrimary: false,
+      }],
     });
     eSimManagerRemote.addEuiccForTest(2);
     flush();
@@ -55,16 +73,16 @@ suite('CrComponentsCellularSetupTest', function() {
   test('Show pSim flow ui', async function() {
     init();
     await flushAsync();
-    let eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
-    let pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
+    let eSimFlow = cellularSetupPage.shadowRoot!.querySelector('esim-flow-ui');
+    let pSimFlow = cellularSetupPage.shadowRoot!.querySelector('psim-flow-ui');
 
     assertTrue(!!eSimFlow);
     assertFalse(!!pSimFlow);
 
     cellularSetupPage.currentPageName = CellularSetupPageName.PSIM_FLOW_UI;
     await flushAsync();
-    eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
-    pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
+    eSimFlow = cellularSetupPage.shadowRoot!.querySelector('esim-flow-ui');
+    pSimFlow = cellularSetupPage.shadowRoot!.querySelector('psim-flow-ui');
 
     assertFalse(!!eSimFlow);
     assertTrue(!!pSimFlow);
@@ -73,8 +91,8 @@ suite('CrComponentsCellularSetupTest', function() {
   test('Show eSIM flow ui', async function() {
     init();
     await flushAsync();
-    const eSimFlow = cellularSetupPage.shadowRoot.querySelector('esim-flow-ui');
-    const pSimFlow = cellularSetupPage.shadowRoot.querySelector('psim-flow-ui');
+    const eSimFlow = cellularSetupPage.shadowRoot!.querySelector('esim-flow-ui');
+    const pSimFlow = cellularSetupPage.shadowRoot!.querySelector('psim-flow-ui');
 
     // By default eSIM flow is always shown
     assertTrue(!!eSimFlow);

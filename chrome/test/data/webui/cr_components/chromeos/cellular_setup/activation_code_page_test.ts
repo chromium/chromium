@@ -5,34 +5,30 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/activation_code_page.js';
 
+import type {ActivationCodePageElement} from 'chrome://resources/ash/common/cellular_setup/activation_code_page.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-import {assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.js';
 import {FakeMediaDevices} from './fake_media_devices.js';
 
 suite('CrComponentsActivationCodePageTest', function() {
-  /** @type {string} */
   const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
-
-  /** @type {string} */
   const ACTIVATION_CODE_INVALID = 'INVALID';
 
-  let activationCodePage;
-
-  /** @type {?FakeMediaDevices} */
-  let mediaDevices = null;
-
-  /** @type {function(Function, number)} */
-  let intervalFunction = null;
-
-  let networkConfigRemote;
+  let activationCodePage: ActivationCodePageElement;
+  let mediaDevices: FakeMediaDevices|null = null;
+  let intervalFunction:Function|null = null;
+  let networkConfigRemote: FakeNetworkConfig;
 
   function flushAsync() {
     flush();
@@ -42,7 +38,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   // Captures the function that is called every time the interval timer
   // timeouts.
-  function setIntervalFunction(fn, milliseconds) {
+  function setIntervalFunction(fn: Function, _: number): number {
     intervalFunction = fn;
     return 1;
   }
@@ -50,18 +46,31 @@ suite('CrComponentsActivationCodePageTest', function() {
   // In tests, pausing the video can have race conditions with previous
   // requests to play the video due to the speed of execution. Avoid this by
   // mocking the play and pause actions.
-  function playVideoFunction() {}
-  function stopStreamFunction(stream) {}
+  function playVideoFunction(): void {}
+  function stopStreamFunction(_: MediaStream): void {}
 
   setup(async function() {
     networkConfigRemote = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        networkConfigRemote);
     loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
     networkConfigRemote.setDeviceStateForTest({
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      isCarrierLocked: true,
-    });
+        ipv4Address: undefined,
+        ipv6Address: undefined,
+        imei: undefined,
+        macAddress: undefined,
+        scanning: false,
+        simLockStatus: undefined,
+        simInfos: undefined,
+        inhibitReason: InhibitReason.kNotInhibited,
+        simAbsent: false,
+        managedNetworkAvailable: false,
+        serial: undefined,
+        isCarrierLocked: true,
+        type: NetworkType.kCellular,
+        deviceState: DeviceStateType.kEnabled,
+      });
+
     await flushAsync();
 
     activationCodePage = document.createElement('activation-code-page');
@@ -84,6 +93,7 @@ suite('CrComponentsActivationCodePageTest', function() {
   });
 
   async function addMediaDevice() {
+    assertTrue(!!mediaDevices);
     mediaDevices.addDevice();
     await flushAsync();
 
@@ -91,10 +101,11 @@ suite('CrComponentsActivationCodePageTest', function() {
   }
 
   async function resolveEnumeratedDevicesPromise() {
-    let resolver;
-    const enumerateDeviceResolvedPromise = new Promise((resolve, reject) => {
+    let resolver: () => void;
+    const enumerateDeviceResolvedPromise = new Promise<void>((resolve, _) => {
       resolver = resolve;
     });
+    assertTrue(!!mediaDevices);
     mediaDevices.resolveEnumerateDevices(function() {
       resolver();
     });
@@ -103,50 +114,51 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test('Page description', async function() {
     const description =
-        activationCodePage.shadowRoot.querySelector('#description');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#description');
     assertTrue(!!description);
 
     // Mock camera on
     activationCodePage.showNoProfilesFound = true;
-    assertEquals(description.innerText.trim(),
+    assertEquals(description.innerText!.trim(),
       loadTimeData.getString('scanQRCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
-    assertEquals(description.innerText.trim(),
+    assertEquals(description.innerText!.trim(),
       loadTimeData.getString('scanQRCode'));
 
     // Clearing devices to test without camera
+    assertTrue(!!mediaDevices);
     mediaDevices.removeDevice();
       await resolveEnumeratedDevicesPromise();
     activationCodePage.showNoProfilesFound = true;
-    assertEquals(description.innerText.trim(),
+    assertEquals(description.innerText!.trim(),
       loadTimeData.getString('enterActivationCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
-    assertEquals(description.innerText.trim(),
+    assertEquals(description.innerText!.trim(),
       loadTimeData.getString('enterActivationCode'));
   });
 
   test('UI states', async function() {
     let qrCodeDetectorContainer =
-        activationCodePage.shadowRoot.querySelector('#esimQrCodeDetection');
+        activationCodePage.shadowRoot!.querySelector('#esimQrCodeDetection');
     const activationCodeContainer =
-        activationCodePage.shadowRoot.querySelector('#activationCodeContainer');
-    const video = activationCodePage.shadowRoot.querySelector('#video');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#activationCodeContainer');
+    const video = activationCodePage.shadowRoot!.querySelector<HTMLElement>('#video');
     const startScanningContainer =
-        activationCodePage.shadowRoot.querySelector('#startScanningContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningContainer');
     const startScanningButton =
-        activationCodePage.shadowRoot.querySelector('#startScanningButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
     const scanFinishContainer =
-        activationCodePage.shadowRoot.querySelector('#scanFinishContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanFinishContainer');
     const switchCameraButton =
-        activationCodePage.shadowRoot.querySelector('#switchCameraButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#switchCameraButton');
     const getUseCameraAgainButton = () => {
-      return activationCodePage.shadowRoot.querySelector(
+      return activationCodePage.shadowRoot!.querySelector<HTMLElement>(
           '#useCameraAgainButton');
     };
     const scanSuccessContainer =
-        activationCodePage.shadowRoot.querySelector('#scanSuccessContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanSuccessContainer');
     const scanFailureContainer =
-        activationCodePage.shadowRoot.querySelector('#scanFailureContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanFailureContainer');
 
     assertTrue(!!qrCodeDetectorContainer);
     assertTrue(!!activationCodeContainer);
@@ -159,7 +171,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(!!scanSuccessContainer);
     assertTrue(!!scanFailureContainer);
     assertFalse(
-        !!activationCodePage.shadowRoot.querySelector('paper-spinner-lite'));
+        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
@@ -168,10 +180,11 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
     assertFalse(
-        !!activationCodePage.shadowRoot.querySelector('paper-spinner-lite'));
+        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Click the start scanning button.
     startScanningButton.click();
+    assertTrue(!!mediaDevices);
     mediaDevices.resolveGetUserMedia();
     await flushAsync();
 
@@ -185,6 +198,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         eventToPromise('focus-default-button', activationCodePage);
 
     // Mock camera scanning a code.
+    assertTrue(!!intervalFunction);
     await intervalFunction();
     await flushAsync();
 
@@ -201,8 +215,9 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(activationCodePage.showError);
 
     // Simulate typing in the input.
-    activationCodePage.shadowRoot.querySelector('#activationCode')
-        .dispatchEvent(new KeyboardEvent('keydown', {key: 'A'}));
+    const input = activationCodePage.shadowRoot!.querySelector<HTMLElement>('#activationCode');
+    assertTrue(!!input);
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'A'}));
     await flushAsync();
 
     // We should be back in the initial state.
@@ -212,12 +227,12 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
     assertFalse(
-        !!activationCodePage.shadowRoot.querySelector('paper-spinner-lite'));
+        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     activationCodePage.showBusy = true;
     await flushAsync();
     assertTrue(
-        !!activationCodePage.shadowRoot.querySelector('paper-spinner-lite'));
+        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Mock, no media devices present
     mediaDevices.removeDevice();
@@ -226,17 +241,17 @@ suite('CrComponentsActivationCodePageTest', function() {
     // When no camera device is present qrCodeDetector container should
     // not be shown
     qrCodeDetectorContainer =
-        activationCodePage.shadowRoot.querySelector('#esimQrCodeDetection');
+        activationCodePage.shadowRoot!.querySelector('#esimQrCodeDetection');
 
     assertFalse(!!qrCodeDetectorContainer);
   });
 
   test('Switch camera button states', async function() {
-    const video = activationCodePage.shadowRoot.querySelector('#video');
+    const video = activationCodePage.shadowRoot!.querySelector<HTMLElement>('#video');
     const startScanningButton =
-        activationCodePage.shadowRoot.querySelector('#startScanningButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
     const switchCameraButton =
-        activationCodePage.shadowRoot.querySelector('#switchCameraButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#switchCameraButton');
 
     assertTrue(!!video);
     assertTrue(!!startScanningButton);
@@ -248,6 +263,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Click the start scanning button.
     startScanningButton.click();
+    assertTrue(!!mediaDevices);
     mediaDevices.resolveGetUserMedia();
     await flushAsync();
 
@@ -298,6 +314,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(switchCameraButton.hidden);
 
     // Mock detecting an activation code.
+    assertTrue(!!intervalFunction);
     await intervalFunction();
     await flushAsync();
 
@@ -306,13 +323,13 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test('UI is disabled when showBusy property is set', async function() {
     const startScanningButton =
-        activationCodePage.shadowRoot.querySelector('#startScanningButton');
+        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#startScanningButton');
     const switchCameraButton =
-        activationCodePage.shadowRoot.querySelector('#switchCameraButton');
+        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#switchCameraButton');
     const tryAgainButton =
-        activationCodePage.shadowRoot.querySelector('#tryAgainButton');
+        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#tryAgainButton');
     const input =
-        activationCodePage.shadowRoot.querySelector('#activationCode');
+        activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
 
     assertTrue(!!startScanningButton);
     assertTrue(!!switchCameraButton);
@@ -336,13 +353,14 @@ suite('CrComponentsActivationCodePageTest', function() {
       'Do not show qrContainer when BarcodeDetector is not ready',
       async function() {
         let qrCodeDetectorContainer =
-            activationCodePage.shadowRoot.querySelector('#esimQrCodeDetection');
+            activationCodePage.shadowRoot!.querySelector('#esimQrCodeDetection');
 
         assertTrue(!!qrCodeDetectorContainer);
         // Activation code input should be at the bottom of the page.
-        assertTrue(activationCodePage.shadowRoot
-                       .querySelector('#activationCodeContainer')
-                       .classList.contains('relative'));
+        const activationCodeContainer = activationCodePage.shadowRoot!
+            .querySelector<HTMLElement>('#activationCodeContainer');
+        assertTrue(!!activationCodeContainer);
+        assertTrue(activationCodeContainer.classList.contains('relative'));
 
         FakeBarcodeDetector.setShouldFail(true);
         await activationCodePage.setFakesForTesting(
@@ -350,13 +368,12 @@ suite('CrComponentsActivationCodePageTest', function() {
             playVideoFunction, stopStreamFunction);
 
         qrCodeDetectorContainer =
-            activationCodePage.shadowRoot.querySelector('#esimQrCodeDetection');
+            activationCodePage.shadowRoot!.querySelector('#esimQrCodeDetection');
 
         assertFalse(!!qrCodeDetectorContainer);
         // Activation code input should now be in the center of the page.
-        assertTrue(activationCodePage.shadowRoot
-                       .querySelector('#activationCodeContainer')
-                       .classList.contains('center'));
+        assertTrue(!!activationCodeContainer);
+        assertTrue(activationCodeContainer.classList.contains('center'));
       });
 
   test('Event is fired when enter is pressed on input', async function() {
@@ -365,7 +382,8 @@ suite('CrComponentsActivationCodePageTest', function() {
       eventFired = true;
     });
     const input =
-        activationCodePage.shadowRoot.querySelector('#activationCode');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#activationCode');
+    assertTrue(!!input);
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
     await flushAsync();
@@ -376,12 +394,12 @@ suite('CrComponentsActivationCodePageTest', function() {
       'Install error after manual entry should show error on input',
       async function() {
         const input =
-            activationCodePage.shadowRoot.querySelector('#activationCode');
+            activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
         const startScanningContainer =
-            activationCodePage.shadowRoot.querySelector(
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>(
                 '#startScanningContainer');
         const scanFinishContainer =
-            activationCodePage.shadowRoot.querySelector('#scanFinishContainer');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanFinishContainer');
         assertTrue(!!input);
         assertTrue(!!startScanningContainer);
         assertTrue(!!scanFinishContainer);
@@ -400,21 +418,21 @@ suite('CrComponentsActivationCodePageTest', function() {
       'Install error after scanning should show error on camera',
       async function() {
         const input =
-            activationCodePage.shadowRoot.querySelector('#activationCode');
+            activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
         const startScanningContainer =
-            activationCodePage.shadowRoot.querySelector(
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>(
                 '#startScanningContainer');
         const startScanningButton =
-            activationCodePage.shadowRoot.querySelector('#startScanningButton');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
         const scanFinishContainer =
-            activationCodePage.shadowRoot.querySelector('#scanFinishContainer');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanFinishContainer');
         const scanInstallFailureHeader =
-            activationCodePage.shadowRoot.querySelector(
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>(
                 '#scanInstallFailureHeader');
         const scanSucessHeader =
-            activationCodePage.shadowRoot.querySelector('#scanSucessHeader');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanSucessHeader');
         const getUseCameraAgainButton = () => {
-          return activationCodePage.shadowRoot.querySelector(
+          return activationCodePage.shadowRoot!.querySelector<HTMLElement>(
               '#useCameraAgainButton');
         };
         assertTrue(!!input);
@@ -428,10 +446,12 @@ suite('CrComponentsActivationCodePageTest', function() {
 
         // Click the start scanning button.
         startScanningButton.click();
+        assertTrue(!!mediaDevices);
         mediaDevices.resolveGetUserMedia();
         await waitAfterNextRender(activationCodePage);
 
         // Mock camera scanning a code.
+        assertTrue(!!intervalFunction);
         await intervalFunction();
         await flushAsync();
 
@@ -459,57 +479,69 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test('Tabbing does not close video stream', async function() {
     const startScanningButton =
-        activationCodePage.shadowRoot.querySelector('#startScanningButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
     const getVideo = () =>
-        activationCodePage.shadowRoot.querySelector('#video');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#video');
     const input =
-        activationCodePage.shadowRoot.querySelector('#activationCode');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#activationCode');
 
     assertTrue(!!startScanningButton);
-    assertTrue(!!getVideo());
-    assertTrue(getVideo().hidden);
+    let video = getVideo();
+    assertTrue(!!video);
+    assertTrue(video.hidden);
     assertTrue(!!input);
 
     // Click the start scanning button.
     startScanningButton.click();
+    assertTrue(!!mediaDevices);
     mediaDevices.resolveGetUserMedia();
     await waitAfterNextRender(activationCodePage);
-
-    assertFalse(getVideo().hidden);
+    video = getVideo();
+    assertTrue(!!video);
+    assertFalse(video.hidden);
 
     // Simulate keyboard 'Tab' key press.
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
     await flushAsync();
 
-    assertFalse(getVideo().hidden);
+    video = getVideo();
+    assertTrue(!!video);
+    assertFalse(video.hidden);
 
     // Simulate keyboard 'A' key press.
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'KeyA'}));
     await flushAsync();
 
-    assertTrue(getVideo().hidden);
+    video = getVideo();
+    assertTrue(!!video);
+    assertTrue(video.hidden);
   });
 
   test(
       'Clear qr code detection timeout when video is hidden', async function() {
         const startScanningButton =
-            activationCodePage.shadowRoot.querySelector('#startScanningButton');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
         const getVideo = () =>
-            activationCodePage.shadowRoot.querySelector('#video');
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#video');
 
         assertTrue(!!startScanningButton);
-        assertTrue(!!getVideo());
-        assertTrue(getVideo().hidden);
+        let video = getVideo();
+        assertTrue(!!video);
+        assertTrue(video.hidden);
 
         // Click the start scanning button.
         startScanningButton.click();
+        assertTrue(!!mediaDevices);
         mediaDevices.resolveGetUserMedia();
         await waitAfterNextRender(activationCodePage);
 
-        assertFalse(getVideo().hidden);
+        video = getVideo();
+        assertTrue(!!video);
+        assertFalse(video.hidden);
         assertTrue(!!activationCodePage.getQrCodeDetectorTimerForTest());
 
         // Mock camera scanning a code.
+        assertTrue(!!intervalFunction);
         await intervalFunction();
         await flushAsync();
 
@@ -518,12 +550,12 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test('Input entered manually is validated', async function() {
     const input =
-        activationCodePage.shadowRoot.querySelector('#activationCode');
+        activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
     assertTrue(!!input);
     assertFalse(input.invalid);
 
     const setInputAndAssert =
-        async (activationCode, isInputInvalid, shouldEventContainCode) => {
+        async (activationCode: string, isInputInvalid: boolean, shouldEventContainCode: boolean) => {
       const activationCodeUpdatedPromise =
           eventToPromise('activation-code-updated', activationCodePage);
       input.value = activationCode;
@@ -533,9 +565,10 @@ suite('CrComponentsActivationCodePageTest', function() {
           activationCodeUpdatedEvent.detail.activationCode,
           shouldEventContainCode ? activationCode : null);
       assertEquals(input.invalid, isInputInvalid);
-      assertEquals(activationCodePage.$.inputSubtitle.hidden, isInputInvalid);
-      assertEquals(
-          activationCodePage.$.inputSubtitle.innerText.trim(),
+      const inputSubtitle = activationCodePage.shadowRoot!.querySelector<HTMLElement>('#inputSubtitle');
+      assertTrue(!!inputSubtitle);
+      assertEquals(inputSubtitle.hidden, isInputInvalid);
+      assertEquals(inputSubtitle.innerText!.trim(),
           loadTimeData.getString('scanQrCodeInputSubtitle'));
     };
 
@@ -573,20 +606,20 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test('Scanned code is validated', async function() {
     const input =
-        activationCodePage.shadowRoot.querySelector('#activationCode');
+        activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
     const startScanningContainer =
-        activationCodePage.shadowRoot.querySelector('#startScanningContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningContainer');
     const startScanningButton =
-        activationCodePage.shadowRoot.querySelector('#startScanningButton');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#startScanningButton');
     const scanFinishContainer =
-        activationCodePage.shadowRoot.querySelector('#scanFinishContainer');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanFinishContainer');
     const scanInstallFailureHeader =
-        activationCodePage.shadowRoot.querySelector(
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>(
             '#scanInstallFailureHeader');
     const scanSucessHeader =
-        activationCodePage.shadowRoot.querySelector('#scanSucessHeader');
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanSucessHeader');
     const getUseCameraAgainButton = () => {
-      return activationCodePage.shadowRoot.querySelector(
+      return activationCodePage.shadowRoot!.querySelector<HTMLElement>(
           '#useCameraAgainButton');
     };
     assertTrue(!!input);
@@ -600,6 +633,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Click the start scanning button.
     startScanningButton.click();
+    assertTrue(!!mediaDevices);
     mediaDevices.resolveGetUserMedia();
     await waitAfterNextRender(activationCodePage);
 
@@ -607,6 +641,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     let activationCodeUpdatedPromise =
         eventToPromise('activation-code-updated', activationCodePage);
     FakeBarcodeDetector.setDetectedBarcode(ACTIVATION_CODE_INVALID);
+    assertTrue(!!intervalFunction);
     await intervalFunction();
     await flushAsync();
 
@@ -621,7 +656,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(!!activationCodeUpdatedEvent.detail.activationCode);
 
     // Start scanning again.
-    getUseCameraAgainButton().click();
+    getUseCameraAgainButton()!.click();
     mediaDevices.resolveGetUserMedia();
     await waitAfterNextRender(activationCodePage);
 
@@ -643,7 +678,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(!!activationCodeUpdatedEvent.detail.activationCode);
 
     // Start scanning again.
-    getUseCameraAgainButton().click();
+    getUseCameraAgainButton()!.click();
     mediaDevices.resolveGetUserMedia();
     await waitAfterNextRender(activationCodePage);
 
@@ -669,7 +704,7 @@ suite('CrComponentsActivationCodePageTest', function() {
   });
 
   test('check carrier lock warning', async function() {
-    assertTrue(!!activationCodePage.shadowRoot.querySelector(
+    assertTrue(!!activationCodePage.shadowRoot!.querySelector(
         '#carrierLockWarningContainer'));
   });
 
@@ -677,10 +712,21 @@ suite('CrComponentsActivationCodePageTest', function() {
       'check carrier lock warning not displayed for consumer devices',
       async function() {
         networkConfigRemote.setDeviceStateForTest({
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          isCarrierLocked: false,
-        });
+            ipv4Address: undefined,
+            ipv6Address: undefined,
+            imei: undefined,
+            macAddress: undefined,
+            scanning: false,
+            simLockStatus: undefined,
+            simInfos: undefined,
+            inhibitReason: InhibitReason.kNotInhibited,
+            simAbsent: false,
+            managedNetworkAvailable: false,
+            serial: undefined,
+            isCarrierLocked: false,
+            type: NetworkType.kCellular,
+            deviceState: DeviceStateType.kEnabled,
+          });
         await flushAsync();
         const page = document.createElement('activation-code-page');
         assertFalse(
@@ -692,10 +738,21 @@ suite('CrComponentsActivationCodePageTest', function() {
       async function() {
         loadTimeData.overrideValues({'isCellularCarrierLockEnabled': false});
         networkConfigRemote.setDeviceStateForTest({
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          isCarrierLocked: true,
-        });
+            ipv4Address: undefined,
+            ipv6Address: undefined,
+            imei: undefined,
+            macAddress: undefined,
+            scanning: false,
+            simLockStatus: undefined,
+            simInfos: undefined,
+            inhibitReason: InhibitReason.kNotInhibited,
+            simAbsent: false,
+            managedNetworkAvailable: false,
+            serial: undefined,
+            isCarrierLocked: true,
+            type: NetworkType.kCellular,
+            deviceState: DeviceStateType.kEnabled,
+          });
         await flushAsync();
         const page = document.createElement('activation-code-page');
         assertFalse(

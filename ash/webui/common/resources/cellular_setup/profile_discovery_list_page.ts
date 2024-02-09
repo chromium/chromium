@@ -61,5 +61,11 @@ export class ProfileDiscoveryListPageElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [ProfileDiscoveryListPageElement.is]: ProfileDiscoveryListPageElement;
+  }
+}
+
 customElements.define(
     ProfileDiscoveryListPageElement.is, ProfileDiscoveryListPageElement);

@@ -5,14 +5,14 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
 
+import type {ConfirmationCodePageElement} from 'chrome://resources/ash/common/cellular_setup/confirmation_code_page.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrComponentsConfirmationCodePageTest', function() {
-  let confirmationCodePage;
+  let confirmationCodePage: ConfirmationCodePageElement;
 
   function flushAsync() {
     flush();
@@ -34,7 +34,8 @@ suite('CrComponentsConfirmationCodePageTest', function() {
           eventFired = true;
         });
     const input =
-        confirmationCodePage.shadowRoot.querySelector('#confirmationCode');
+        confirmationCodePage.shadowRoot!.querySelector('#confirmationCode');
+    assertTrue(!!input);
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
     await flushAsync();
@@ -43,9 +44,10 @@ suite('CrComponentsConfirmationCodePageTest', function() {
 
   test('displays profile name', async function() {
     const detailsElement =
-        confirmationCodePage.shadowRoot.getElementById('details');
+        confirmationCodePage.shadowRoot!.getElementById('details');
+    assertTrue(!!detailsElement);
     assertEquals(
-        '', detailsElement.textContent.trim(),
+        '', detailsElement.textContent!.trim(),
         'no profile name is shown without profileProperties');
 
     confirmationCodePage.profileProperties = {
@@ -59,7 +61,7 @@ suite('CrComponentsConfirmationCodePageTest', function() {
     };
 
     assertEquals(
-        'test profile name', detailsElement.textContent.trim(),
+        'test profile name', detailsElement.textContent!.trim(),
         'correct profile name is shown');
   });
 });

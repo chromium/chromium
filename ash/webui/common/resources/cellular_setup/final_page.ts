@@ -68,4 +68,10 @@ export class FinalPageElement extends FinalPageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [FinalPageElement.is]: FinalPageElement;
+  }
+}
+
 customElements.define(FinalPageElement.is, FinalPageElement);

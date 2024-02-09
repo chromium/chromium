@@ -6,7 +6,7 @@
       flex-direction: column;
   }
 </style>
-<iron-pages attr-for-selected="id" selected="[[selectedESimPageName_]]">
+<iron-pages attr-for-selected="id" selected="[[selectedEsimPageName_]]">
   <setup-loading-page id="profileLoadingPage" loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
   </setup-loading-page>
   <template is="dom-if" if="[[smdsSupportEnabled_]]" restamp>

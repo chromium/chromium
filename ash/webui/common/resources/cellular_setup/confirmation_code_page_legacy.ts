@@ -110,5 +110,11 @@ export class ConfirmationCodePageLegacyElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [ConfirmationCodePageLegacyElement.is]: ConfirmationCodePageLegacyElement;
+  }
+}
+
 customElements.define(
     ConfirmationCodePageLegacyElement.is, ConfirmationCodePageLegacyElement);

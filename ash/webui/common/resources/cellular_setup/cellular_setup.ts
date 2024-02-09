@@ -164,4 +164,10 @@ export class CellularSetupElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [CellularSetupElement.is]: CellularSetupElement;
+  }
+}
+
 customElements.define(CellularSetupElement.is, CellularSetupElement);

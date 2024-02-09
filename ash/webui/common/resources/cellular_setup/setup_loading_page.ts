@@ -58,4 +58,10 @@ export class SetupLoadingPageElement extends PolymerElement {
   isSimDetectError: boolean;
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [SetupLoadingPageElement.is]: SetupLoadingPageElement;
+  }
+}
+
 customElements.define(SetupLoadingPageElement.is, SetupLoadingPageElement);

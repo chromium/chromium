@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CellularSetup, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
-import {ESimManager, ESimManagerObserverInterface, ESimManagerObserverReceiver, ESimManagerObserverRemote, ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {CellularSetup, CellularSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import {ESimManager, ESimManagerInterface, ESimManagerObserverInterface, ESimManagerObserverReceiver, ESimManagerObserverRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
-let cellularRemote: CellularSetupRemote|null = null;
-let eSimManagerRemote: ESimManagerRemote|null = null;
+let cellularRemote: CellularSetupInterface|null = null;
+let eSimManagerRemote: ESimManagerInterface|null = null;
 let isTesting: boolean = false;
 
 export function setCellularSetupRemoteForTesting(
-    testCellularRemote: CellularSetupRemote|null): void {
+    testCellularRemote: CellularSetupInterface|null): void {
   cellularRemote = testCellularRemote;
   isTesting = true;
 }
 
-export function getCellularSetupRemote(): CellularSetupRemote {
+export function getCellularSetupRemote(): CellularSetupInterface {
   if (cellularRemote) {
     return cellularRemote;
   }
@@ -25,12 +25,12 @@ export function getCellularSetupRemote(): CellularSetupRemote {
 }
 
 export function setESimManagerRemoteForTesting(
-    testESimManagerRemote: ESimManagerRemote|null): void {
+    testESimManagerRemote: ESimManagerInterface|null): void {
   eSimManagerRemote = testESimManagerRemote;
   isTesting = true;
 }
 
-export function getESimManagerRemote(): ESimManagerRemote {
+export function getESimManagerRemote(): ESimManagerInterface {
   if (eSimManagerRemote) {
     return eSimManagerRemote;
   }
