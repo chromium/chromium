@@ -15,6 +15,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"

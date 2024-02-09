@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -40,7 +41,6 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -2173,7 +2173,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   const GURL node_url("http://google.com");
@@ -2186,7 +2186,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
@@ -2204,7 +2204,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
 
@@ -2222,7 +2222,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   ASSERT_NE(nullptr, model->account_bookmark_bar_node());
@@ -2231,6 +2231,48 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   EXPECT_EQ(node_url1, model->bookmark_bar_node()->children()[0]->url());
   EXPECT_EQ(node_url2,
             model->account_bookmark_bar_node()->children()[0]->url());
+}
+
+TEST(BookmarkModelLoadTest, AccountNodesPopulatedOnLoadAsLocalOrSyncable) {
+  const GURL node_url("http://google.com/");
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+
+  // Enable feature to be able to write into the account bookmarks file,
+  // including one bookmarked URL.
+  {
+    base::test::ScopedFeatureList features{
+        syncer::kEnableBookmarkFoldersForAccountStorage};
+
+    auto model =
+        std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+    model->Load(tmp_dir.GetPath());
+    test::WaitForBookmarkModelToLoad(model.get());
+    model->CreateAccountPermanentFolders();
+
+    ASSERT_NE(nullptr, model->account_bookmark_bar_node());
+
+    model->AddURL(model->account_bookmark_bar_node(), 0, u"User", node_url);
+
+    // This is necessary to ensure the save completes.
+    task_environment.FastForwardUntilNoTasksRemain();
+  }
+
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
+
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  EXPECT_EQ(nullptr, model->account_bookmark_bar_node());
+  ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
+  EXPECT_EQ(node_url, model->bookmark_bar_node()->children()[0]->url());
 }
 
 // Verifies the TitledUrlIndex is properly loaded.
@@ -2242,7 +2284,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   const GURL node_url("http://google.com");
@@ -2255,7 +2297,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   std::vector<TitledUrlMatch> matches = model->GetBookmarksMatching(
@@ -2276,7 +2318,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
 
@@ -2290,7 +2332,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable /*unused*/);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   std::vector<TitledUrlMatch> matches = model->GetBookmarksMatching(
@@ -2308,7 +2350,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   const base::Uuid node_uuid = model
@@ -2323,7 +2365,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   EXPECT_NE(nullptr,
@@ -2345,7 +2387,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
 
@@ -2362,7 +2404,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
   // was added.
   model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
-  model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable /*not used*/);
+  model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
   EXPECT_EQ(nullptr,
