@@ -653,8 +653,18 @@ TEST_F(SessionSyncBridgeTest,
   // IDs are persisted by session restore across browser restarts.
   PlaceholderTabDelegate placeholder_tab1(
       SessionID::FromSerializedValue(kTabId1));
+  auto snapshot1 = std::make_unique<TestSyncedTabDelegate>(
+      SessionID::FromSerializedValue(kWindowId1),
+      SessionID::FromSerializedValue(kTabId1), base::DoNothing());
+  placeholder_tab1.SetPlaceholderTabSyncedTabDelegate(std::move(snapshot1));
+
   PlaceholderTabDelegate placeholder_tab2(
       SessionID::FromSerializedValue(kTabId2));
+  auto snapshot2 = std::make_unique<TestSyncedTabDelegate>(
+      SessionID::FromSerializedValue(kWindowId2),
+      SessionID::FromSerializedValue(kTabId2), base::DoNothing());
+  placeholder_tab2.SetPlaceholderTabSyncedTabDelegate(std::move(snapshot2));
+
   ResetWindows();
   TestSyncedWindowDelegate* window = AddWindow(kWindowId2);
   window->OverrideTabAt(0, &placeholder_tab1);
@@ -1650,6 +1660,11 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   // tab IDs are persisted by session restore across browser restarts.
   PlaceholderTabDelegate placeholder_tab1(
       SessionID::FromSerializedValue(kTabId1));
+  auto snapshot1 = std::make_unique<TestSyncedTabDelegate>(
+      SessionID::FromSerializedValue(kWindowId1),
+      SessionID::FromSerializedValue(kTabId1), base::DoNothing());
+  placeholder_tab1.SetPlaceholderTabSyncedTabDelegate(std::move(snapshot1));
+
   ResetWindows();
   TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
   window->OverrideTabAt(0, &placeholder_tab1);
