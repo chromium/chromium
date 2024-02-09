@@ -369,7 +369,7 @@ export class SettingsCrostiniSubpageElement extends
    */
   private onRemoveClick_(): void {
     this.browserProxy_.requestRemoveCrostini();
-    recordSettingChange();
+    recordSettingChange(Setting.kUninstallCrostini);
   }
 
   /**
