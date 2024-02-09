@@ -1674,6 +1674,185 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
           std::string(R"("")").length());
 }
 
+// Check that accessing `decisionLogicUrl` and `trustedScoringSignalsUrl` of
+// `auctionConfig` displays a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the fields are
+// removed.
+TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  decision_logic_url_ = GURL("https://url.test/");
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+
+  // Include a pair of component auctions, to make sure it works for them as
+  // well.
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+  component_auctions[0].trusted_scoring_signals_url =
+      GURL("https://component1.test/signals.js");
+
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[1].seller =
+      url::Origin::Create(GURL("https://component2.test"));
+  component_auctions[1].decision_logic_url =
+      GURL("https://component2.test/script.js");
+  component_auctions[1].trusted_scoring_signals_url =
+      GURL("https://component2.test/signals.js");
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(
+                            /*raw_return_value=*/
+                            R"(auctionConfig.decisionLogicUrl &&
+             auctionConfig.trustedScoringSignalsUrl &&
+             auctionConfig.componentAuctions[0].decisionLogicUrl &&
+             auctionConfig.componentAuctions[0].trustedScoringSignalsUrl &&
+             auctionConfig.componentAuctions[1].decisionLogicUrl &&
+             auctionConfig.componentAuctions[1].trustedScoringSignalsUrl ?
+                 1 : 0)"));
+
+  // This response body doesn't actually matter, but have to set some response
+  // for the signals request to avoid a hang.
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/trusted_scoring_signals?hostname=window.test"
+           "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
+      kTrustedScoringSignalsResponse);
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  RunScoreAdExpectingResultOnWorklet(worklet_impl, /*expected_score=*/1);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/4);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/5);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/6);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/7);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/8);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
+      /*line_number=*/9);
+}
+
+// Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
+// `auctionConfig` does not display a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when `decisionLogicUrl` and
+// `trustedScoringSignalsUrl` are removed.
+TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  decision_logic_url_ = GURL("https://url.test/");
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+
+  // Include a pair of component auctions, to make sure they have no warnings as
+  // well.
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+  component_auctions[0].trusted_scoring_signals_url =
+      GURL("https://component1.test/signals.js");
+
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[1].seller =
+      url::Origin::Create(GURL("https://component2.test"));
+  component_auctions[1].decision_logic_url =
+      GURL("https://component2.test/script.js");
+  component_auctions[1].trusted_scoring_signals_url =
+      GURL("https://component2.test/signals.js");
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(
+                            /*raw_return_value=*/
+                            R"(auctionConfig.decisionLogicURL &&
+             auctionConfig.trustedScoringSignalsURL &&
+             auctionConfig.componentAuctions[0].decisionLogicURL &&
+             auctionConfig.componentAuctions[0].trustedScoringSignalsURL &&
+             auctionConfig.componentAuctions[1].decisionLogicURL &&
+             auctionConfig.componentAuctions[1].trustedScoringSignalsURL ?
+                 1 : 0)"));
+
+  // This response body doesn't actually matter, but have to set some response
+  // for the signals request to avoid a hang.
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/trusted_scoring_signals?hostname=window.test"
+           "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
+      kTrustedScoringSignalsResponse);
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  RunScoreAdExpectingResultOnWorklet(worklet_impl, /*expected_score=*/1);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
   RunScoreAdWithReturnValueExpectingResult(
       R"("experimentGroupId" in auctionConfig ? 1 : 0)", 0);
@@ -3256,6 +3435,193 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson2,
       /*expected_report_url=*/std::nullopt);
+}
+
+// Check that accessing `decisionLogicUrl` and `trustedScoringSignalsUrl` of
+// `auctionConfig` displays a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when the fields are
+// removed.
+TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  decision_logic_url_ = GURL("https://url.test/");
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+
+  // Include a pair of component auctions, to make sure it works for them as
+  // well.
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+  component_auctions[0].trusted_scoring_signals_url =
+      GURL("https://component1.test/signals.js");
+
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[1].seller =
+      url::Origin::Create(GURL("https://component2.test"));
+  component_auctions[1].decision_logic_url =
+      GURL("https://component2.test/script.js");
+  component_auctions[1].trusted_scoring_signals_url =
+      GURL("https://component2.test/signals.js");
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript(
+                            /*raw_return_value=*/
+                            R"(auctionConfig.decisionLogicUrl + '|' +
+         auctionConfig.trustedScoringSignalsUrl + '|' +
+         auctionConfig.componentAuctions[0].decisionLogicUrl + '|' +
+         auctionConfig.componentAuctions[0].trustedScoringSignalsUrl + '|' +
+         auctionConfig.componentAuctions[1].decisionLogicUrl + '|' +
+         auctionConfig.componentAuctions[1].trustedScoringSignalsUrl)"));
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      worklet_impl, /*expected_signals_for_winner=*/
+      "\"https://url.test/|"
+      "https://url.test/trusted_scoring_signals|"
+      "https://component1.test/script.js|"
+      "https://component1.test/signals.js|"
+      "https://component2.test/script.js|"
+      "https://component2.test/signals.js\"",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/10);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/11);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/12);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/13);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.decisionLogicUrl is deprecated. Please use "
+      "auctionConfig.decisionLogicURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/14);
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"auctionConfig.trustedScoringSignalsUrl is deprecated. "
+      "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
+      /*line_number=*/15);
+}
+
+// Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
+// `auctionConfig` does not display a warning.
+//
+// TODO(https://crbug.com/1441988): Remove this test when `decisionLogicUrl` and
+// `trustedScoringSignalsUrl` are removed.
+TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  decision_logic_url_ = GURL("https://url.test/");
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+
+  // Include a pair of component auctions, to make sure it works for them as
+  // well.
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+  component_auctions[0].trusted_scoring_signals_url =
+      GURL("https://component1.test/signals.js");
+
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[1].seller =
+      url::Origin::Create(GURL("https://component2.test"));
+  component_auctions[1].decision_logic_url =
+      GURL("https://component2.test/script.js");
+  component_auctions[1].trusted_scoring_signals_url =
+      GURL("https://component2.test/signals.js");
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript(
+                            /*raw_return_value=*/
+                            R"(auctionConfig.decisionLogicURL + '|' +
+         auctionConfig.trustedScoringSignalsURL + '|' +
+         auctionConfig.componentAuctions[0].decisionLogicURL + '|' +
+         auctionConfig.componentAuctions[0].trustedScoringSignalsURL + '|' +
+         auctionConfig.componentAuctions[1].decisionLogicURL + '|' +
+         auctionConfig.componentAuctions[1].trustedScoringSignalsURL)"));
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      worklet_impl, /*expected_signals_for_winner=*/
+      "\"https://url.test/|"
+      "https://url.test/trusted_scoring_signals|"
+      "https://component1.test/script.js|"
+      "https://component1.test/signals.js|"
+      "https://component2.test/script.js|"
+      "https://component2.test/signals.js\"",
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
 }
 
 TEST_F(SellerWorkletTest,

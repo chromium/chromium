@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_ref.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/context_recycler.h"
@@ -96,28 +97,6 @@ bool SetDictMember(v8::Isolate* isolate,
   v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
                                        gin::StringToV8(isolate, key), v8_value);
   return !result.IsNothing() && result.FromJust();
-}
-
-bool SetDecisionLogicUrl(v8::Isolate* isolate,
-                         v8::Local<v8::Object> object,
-                         const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "decisionLogicURL", v8_value) &&
-         SetDictMember(isolate, object, "decisionLogicUrl", v8_value);
-}
-
-bool SetTrustedScoringSignalsUrl(v8::Isolate* isolate,
-                                 v8::Local<v8::Object> object,
-                                 const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "trustedScoringSignalsURL", v8_value) &&
-         SetDictMember(isolate, object, "trustedScoringSignalsUrl", v8_value);
 }
 
 bool CanSetRequestedAdSize(
@@ -291,6 +270,12 @@ bool IsValidBid(double bid) {
 // Converts `auction_config` back to JSON format, and appends to args.
 // Returns true if conversion succeeded.
 //
+// On return, `deprecated_url_lazy_fillers` will hold helpers to log console
+// warnings when fields with deprecated URLs are accessed. `v8_helper` and
+// `v8_logger` must remain valid until all elements of
+// `deprecated_url_lazy_fillers` are torn down, as must the values pointed at by
+// `decision_logic_url` and `trusted_scoring_signals_url`.
+//
 // The resulting object will look something like this (based on example from
 // explainer):
 //
@@ -312,26 +297,51 @@ bool IsValidBid(double bid) {
 //                              '*': {...},
 //                              ...},
 // }
-bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
-                         v8::Local<v8::Context> context,
-                         const url::Origin& seller,
-                         const std::optional<GURL>& decision_logic_url,
-                         const std::optional<GURL>& trusted_coding_signals_url,
-                         const std::optional<uint16_t> experiment_group_id,
-                         const blink::AuctionConfig::NonSharedParams&
-                             auction_ad_config_non_shared_params,
-                         v8::LocalVector<v8::Value>* args) {
+bool AppendAuctionConfig(
+    AuctionV8Helper* v8_helper,
+    AuctionV8Logger* v8_logger,
+    v8::Local<v8::Context> context,
+    const url::Origin& seller,
+    base::optional_ref<const GURL> decision_logic_url,
+    base::optional_ref<const GURL> trusted_scoring_signals_url,
+    const std::optional<uint16_t> experiment_group_id,
+    const blink::AuctionConfig::NonSharedParams&
+        auction_ad_config_non_shared_params,
+    std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>&
+        deprecated_url_lazy_fillers,
+    v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
-  if (!auction_config_dict.Set("seller", seller.Serialize()) ||
-      (decision_logic_url &&
-       !SetDecisionLogicUrl(isolate, auction_config_value,
-                            decision_logic_url->spec())) ||
-      (trusted_coding_signals_url &&
-       !SetTrustedScoringSignalsUrl(isolate, auction_config_value,
-                                    trusted_coding_signals_url->spec()))) {
+  if (!auction_config_dict.Set("seller", seller.Serialize())) {
     return false;
+  }
+  if (decision_logic_url.has_value()) {
+    deprecated_url_lazy_fillers.emplace_back(
+        std::make_unique<DeprecatedUrlLazyFiller>(
+            v8_helper, v8_logger, &decision_logic_url.value(),
+            "auctionConfig.decisionLogicUrl is deprecated."
+            " Please use auctionConfig.decisionLogicURL instead."));
+    if (!auction_config_dict.Set("decisionLogicURL",
+                                 decision_logic_url->spec()) ||
+        !deprecated_url_lazy_fillers.back()->AddDeprecatedUrlGetter(
+            auction_config_value, "decisionLogicUrl")) {
+      return false;
+    }
+  }
+
+  if (trusted_scoring_signals_url.has_value()) {
+    deprecated_url_lazy_fillers.emplace_back(
+        std::make_unique<DeprecatedUrlLazyFiller>(
+            v8_helper, v8_logger, &trusted_scoring_signals_url.value(),
+            "auctionConfig.trustedScoringSignalsUrl is deprecated."
+            " Please use auctionConfig.trustedScoringSignalsURL instead."));
+    if (!auction_config_dict.Set("trustedScoringSignalsURL",
+                                 trusted_scoring_signals_url->spec()) ||
+        !deprecated_url_lazy_fillers.back()->AddDeprecatedUrlGetter(
+            auction_config_value, "trustedScoringSignalsUrl")) {
+      return false;
+    }
   }
 
   if (auction_ad_config_non_shared_params.interest_group_buyers) {
@@ -473,12 +483,12 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   if (!component_auctions.empty()) {
     v8::LocalVector<v8::Value> component_auction_vector(isolate);
     for (const auto& component_auction : component_auctions) {
-      if (!AppendAuctionConfig(v8_helper, context, component_auction.seller,
-                               component_auction.decision_logic_url,
-                               component_auction.trusted_scoring_signals_url,
-                               experiment_group_id,
-                               component_auction.non_shared_params,
-                               &component_auction_vector)) {
+      if (!AppendAuctionConfig(
+              v8_helper, v8_logger, context, component_auction.seller,
+              component_auction.decision_logic_url,
+              component_auction.trusted_scoring_signals_url,
+              experiment_group_id, component_auction.non_shared_params,
+              deprecated_url_lazy_fillers, &component_auction_vector)) {
         return false;
       }
     }
@@ -978,10 +988,14 @@ void SellerWorklet::V8State::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!AppendAuctionConfig(
-          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
-          decision_logic_url_, trusted_scoring_signals_url_,
-          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
+  std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
+      deprecated_url_lazy_fillers;
+  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
+                           url::Origin::Create(decision_logic_url_),
+                           decision_logic_url_, trusted_scoring_signals_url_,
+                           experiment_group_id_,
+                           auction_ad_config_non_shared_params,
+                           deprecated_url_lazy_fillers, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1440,10 +1454,14 @@ void SellerWorklet::V8State::ReportResult(
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
-  if (!AppendAuctionConfig(
-          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
-          decision_logic_url_, trusted_scoring_signals_url_,
-          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
+  std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
+      deprecated_url_lazy_fillers;
+  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
+                           url::Origin::Create(decision_logic_url_),
+                           decision_logic_url_, trusted_scoring_signals_url_,
+                           experiment_group_id_,
+                           auction_ad_config_non_shared_params,
+                           deprecated_url_lazy_fillers, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/std::nullopt,
                                          /*report_url=*/std::nullopt,
