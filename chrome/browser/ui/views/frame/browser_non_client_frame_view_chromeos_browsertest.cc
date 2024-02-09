@@ -187,225 +187,6 @@ using BrowserNonClientFrameViewChromeOSTouchTest =
 using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
 
-// Enumeration of test modes for
-// `BrowserNonClientFrameViewChromeOSThemeChangeTest`s.
-enum class ThemeChangeTestMode {
-  kSWA,
-  kNonSWA,
-};
-
-// Base class for `ThemeChange` tests, parameterized by test mode and:
-// * whether manifest background color is preferred,
-// * whether theme changes should be animated.
-class BrowserNonClientFrameViewChromeOSThemeChangeTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<ThemeChangeTestMode,
-                     /*prefer_manifest_background_color=*/bool,
-                     /*should_animate_theme_changes=*/bool>> {
- public:
-  BrowserNonClientFrameViewChromeOSThemeChangeTest() {
-    switch (GetThemeChangeTestMode()) {
-      case ThemeChangeTestMode::kSWA: {
-        system_web_app_installation_ =
-            ash::TestSystemWebAppInstallation::SetUpAppWithColors(
-                /*theme_color=*/SK_ColorWHITE,
-                /*dark_mode_theme_color=*/SK_ColorBLACK,
-                /*background_color=*/SK_ColorWHITE,
-                /*dark_mode_background_color=*/SK_ColorBLACK);
-        auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
-            system_web_app_installation_->GetDelegate());
-        delegate->SetPreferManifestBackgroundColor(
-            PreferManifestBackgroundColor());
-        delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
-        // When system colored SWAs were introduced for Jelly,
-        // `UseSystemThemeColor()` overrode other styling information in the
-        // manifest. This test now verifies behavior for SWAs that are opted out
-        // of the system styling (by setting it to false).
-        delegate->SetUseSystemThemeColor(false);
-        break;
-      }
-      case ThemeChangeTestMode::kNonSWA:
-        break;
-    }
-  }
-
-  // Returns test mode given test parameterization.
-  ThemeChangeTestMode GetThemeChangeTestMode() const {
-    return std::get<0>(GetParam());
-  }
-
-  // Returns whether the web app under test prefers manifest background colors
-  // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
-
-  // Returns whether theme changes should be animated for the web app under test
-  // given test parameterization.
-  bool ShouldAnimateThemeChanges() const { return std::get<2>(GetParam()); }
-
-  // Toggles the color mode, triggering propagation of theme change events.
-  void ToggleColorMode() {
-    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
-    native_theme->set_use_dark_colors(!native_theme->ShouldUseDarkColors());
-    native_theme->set_preferred_color_scheme(
-        native_theme->CalculatePreferredColorScheme());
-
-    native_theme->NotifyOnNativeThemeUpdated();
-  }
-
-  // Installs the web app under test, blocking until installation is complete,
-  // and returning the `webapps::AppId` for the installed web app.
-  webapps::AppId WaitForAppInstall() {
-    switch (GetThemeChangeTestMode()) {
-      case ThemeChangeTestMode::kSWA:
-        system_web_app_installation_->WaitForAppInstall();
-        return system_web_app_installation_->GetAppId();
-      case ThemeChangeTestMode::kNonSWA: {
-        if (!test_server_) {
-          test_server_ = std::make_unique<net::EmbeddedTestServer>(
-              net::EmbeddedTestServer::TYPE_HTTPS);
-          test_server_->AddDefaultHandlers(GetChromeTestDataDir());
-          CHECK(test_server_->Start());
-        }
-        const GURL app_url =
-            test_server_->GetURL("app.com", "/ssl/google.html");
-        auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-        web_app_info->start_url = app_url;
-        web_app_info->scope = app_url.GetWithoutFilename();
-        web_app_info->theme_color = SK_ColorWHITE;
-        web_app_info->dark_mode_theme_color = SK_ColorBLACK;
-        web_app_info->background_color = SK_ColorWHITE;
-        web_app_info->dark_mode_background_color = SK_ColorBLACK;
-        return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-      }
-    }
-  }
-
-  // Returns the `Profile` associated with the web app under test.
-  Profile* profile() { return browser()->profile(); }
-
- private:
-  std::unique_ptr<ash::TestSystemWebAppInstallation>
-      system_web_app_installation_;
-  std::unique_ptr<net::EmbeddedTestServer> test_server_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Mode,
-    BrowserNonClientFrameViewChromeOSThemeChangeTest,
-    testing::Combine(testing::Values(ThemeChangeTestMode::kSWA,
-                                     ThemeChangeTestMode::kNonSWA),
-                     /*prefer_manifest_background_color=*/testing::Bool(),
-                     /*should_animate_theme_changes=*/testing::Bool()),
-    [](const testing::TestParamInfo<
-        std::tuple<ThemeChangeTestMode,
-                   /*prefer_manifest_background_color=*/bool,
-                   /*should_animate_theme_changes=*/bool>>& info) {
-      ThemeChangeTestMode test_mode = std::get<0>(info.param);
-      bool prefer_manifest_background_color = std::get<1>(info.param);
-      bool should_animate_theme_changes = std::get<2>(info.param);
-
-      std::stringstream name;
-      switch (test_mode) {
-        case ThemeChangeTestMode::kSWA:
-          name << "kSWA";
-          break;
-        case ThemeChangeTestMode::kNonSWA:
-          name << "kNonSWA";
-          break;
-      }
-
-      if (prefer_manifest_background_color)
-        name << "_PreferManifestBackgroundColor";
-      if (should_animate_theme_changes)
-        name << "_ShouldAnimateThemeChanges";
-
-      return name.str();
-    });
-
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSThemeChangeTest,
-                       ThemeChange) {
-  // Skip test parameterizations for non-system web apps that don't make sense.
-  if (GetThemeChangeTestMode() == ThemeChangeTestMode::kNonSWA &&
-      (PreferManifestBackgroundColor() || ShouldAnimateThemeChanges())) {
-    GTEST_SKIP();
-  }
-
-  const webapps::AppId app_id = WaitForAppInstall();
-  auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
-  auto* contents_web_view =
-      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
-  auto* web_contents = contents_web_view->GetWebContents();
-
-  // Verify background color is immediately resolved from the app controller
-  // despite the fact that the web contents background color hasn't loaded
-  // yet.
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-            browser->app_controller()->GetBackgroundColor().value());
-  EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
-
-  // Wait for the web contents background color to load and verify that the
-  // background color still matches that resolved from the app controller.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-
-  content::AwaitDocumentOnLoadCompleted(web_contents);
-
-  // Toggle color mode and verify background color is immediately resolved
-  // from the app controller. If a system web app is loaded which prefers
-  // manifest colors, there will be a temporary mismatch between the contents
-  // background color and the web contents background color due to the fact
-  // that the web contents background color update is async.
-  ToggleColorMode();
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-            browser->app_controller()->GetBackgroundColor().value());
-  if (PreferManifestBackgroundColor()) {
-    EXPECT_NE(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  } else {
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-
-  // If theme changes should be animated, the layer associated with the
-  // `contents_web_view` native view should be immediately hidden.
-  auto* layer = contents_web_view->holder()->native_view()->layer();
-  if (ShouldAnimateThemeChanges()) {
-    EXPECT_EQ(layer->GetTargetOpacity(), std::nextafter(0.f, 1.f));
-  } else {
-    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
-  }
-
-  // Wait for the web contents background color to update and verify that the
-  // background color still matches that resolved from the app controller.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
-
-  // If theme changes should be animated, the layer associated with the
-  // `contents_web_view` native view should be animated back in only after a
-  // round trip through the renderer and compositor pipelines. This should
-  // ensure that the web contents has finished repainting theme changes.
-  if (ShouldAnimateThemeChanges()) {
-    base::test::TestFuture<bool> visual_state_change_future;
-    web_contents->GetRenderViewHost()->GetWidget()->InsertVisualStateCallback(
-        visual_state_change_future.GetCallback());
-    EXPECT_TRUE(visual_state_change_future.Wait());
-    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
-  }
-}
 
 // This test does not make sense for the webUI tabstrip, since the window layout
 // is different in that case.
@@ -545,37 +326,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests that Avatar icon should show on the top left corner of the teleported
-// browser window on ChromeOS.
-// TODO(http://crbug.com/1059514): This test should be made to work with the
-// webUI tabstrip.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
-                       AvatarDisplayOnTeleportedWindow) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view =
-      GetFrameViewChromeOS(browser_view);
-  BrowserNonClientFrameViewChromeOSTestApi test_api(frame_view);
-  aura::Window* window = browser()->window()->GetNativeWindow();
-
-  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
-  EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
-
-  const AccountId account_id1 =
-      multi_user_util::GetAccountIdFromProfile(browser()->profile());
-  TestMultiUserWindowManager* window_manager =
-      TestMultiUserWindowManager::Create(browser(), account_id1);
-
-  // Teleport the window to another desktop.
-  const AccountId account_id2(AccountId::FromUserEmail("user2"));
-  window_manager->ShowWindowForUser(window, account_id2);
-  EXPECT_TRUE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
-  EXPECT_TRUE(test_api.GetProfileIndicatorIcon());
-
-  // Teleport the window back to owner desktop.
-  window_manager->ShowWindowForUser(window, account_id1);
-  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
-  EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
-}
 
 // There should be no top inset when using the WebUI tab strip since the frame
 // is invisible. Regression test for crbug.com/1076675
@@ -642,33 +392,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   gfx::Size min_window_size = frame_view->GetMinimumSize();
   EXPECT_GT(min_window_size.height(), min_height_no_bookmarks);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
-                       SettingsSystemWebAppHasMinimumWindowSize) {
-  // Install the Settings System Web App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
-
-  // Open a settings window.
-  ui_test_utils::BrowserChangeObserver observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
-  settings_manager->ShowOSSettings(browser()->profile());
-  observer.Wait();
-
-  Browser* settings_browser =
-      settings_manager->FindBrowserForProfile(browser()->profile());
-
-  // Try to set the bounds to a tiny value.
-  settings_browser->window()->SetBounds(gfx::Rect(1, 1));
-
-  // The window has a reasonable size.
-  gfx::Rect actual_bounds = settings_browser->window()->GetBounds();
-  EXPECT_LE(300, actual_bounds.width());
-  EXPECT_LE(100, actual_bounds.height());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This is a regression test that session restore minimized browser should
 // re-layout the header (https://crbug.com/827444).
@@ -1878,6 +1601,295 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// The remaining tests make sense only for Ash, not for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+using BrowserNonClientFrameViewAshTestNoWebUiTabStrip =
+    BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip;
+
+// Tests that Avatar icon should show on the top left corner of the teleported
+// browser window on ChromeOS.
+// TODO(http://crbug.com/1059514): This test should be made to work with the
+// webUI tabstrip.
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
+                       AvatarDisplayOnTeleportedWindow) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+  BrowserNonClientFrameViewChromeOSTestApi test_api(frame_view);
+  aura::Window* window = browser()->window()->GetNativeWindow();
+
+  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
+
+  const AccountId account_id1 =
+      multi_user_util::GetAccountIdFromProfile(browser()->profile());
+  TestMultiUserWindowManager* window_manager =
+      TestMultiUserWindowManager::Create(browser(), account_id1);
+
+  // Teleport the window to another desktop.
+  const AccountId account_id2(AccountId::FromUserEmail("user2"));
+  window_manager->ShowWindowForUser(window, account_id2);
+  EXPECT_TRUE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_TRUE(test_api.GetProfileIndicatorIcon());
+
+  // Teleport the window back to owner desktop.
+  window_manager->ShowWindowForUser(window, account_id1);
+  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
+}
+
+using BrowserNonClientFrameViewAshTest = BrowserNonClientFrameViewChromeOSTest;
+
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
+                       SettingsSystemWebAppHasMinimumWindowSize) {
+  // Install the Settings System Web App.
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  // Open a settings window.
+  ui_test_utils::BrowserChangeObserver observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
+  settings_manager->ShowOSSettings(browser()->profile());
+  observer.Wait();
+
+  Browser* settings_browser =
+      settings_manager->FindBrowserForProfile(browser()->profile());
+
+  // Try to set the bounds to a tiny value.
+  settings_browser->window()->SetBounds(gfx::Rect(1, 1));
+
+  // The window has a reasonable size.
+  gfx::Rect actual_bounds = settings_browser->window()->GetBounds();
+  EXPECT_LE(300, actual_bounds.width());
+  EXPECT_LE(100, actual_bounds.height());
+}
+
+// Enumeration of test modes for
+// `BrowserNonClientFrameViewAshThemeChangeTest`s.
+enum class ThemeChangeTestMode {
+  kSWA,
+  kNonSWA,
+};
+
+// Base class for `ThemeChange` tests, parameterized by test mode and:
+// * whether manifest background color is preferred,
+// * whether theme changes should be animated.
+class BrowserNonClientFrameViewAshThemeChangeTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<ThemeChangeTestMode,
+                     /*prefer_manifest_background_color=*/bool,
+                     /*should_animate_theme_changes=*/bool>> {
+ public:
+  BrowserNonClientFrameViewAshThemeChangeTest() {
+    switch (GetThemeChangeTestMode()) {
+      case ThemeChangeTestMode::kSWA: {
+        system_web_app_installation_ =
+            ash::TestSystemWebAppInstallation::SetUpAppWithColors(
+                /*theme_color=*/SK_ColorWHITE,
+                /*dark_mode_theme_color=*/SK_ColorBLACK,
+                /*background_color=*/SK_ColorWHITE,
+                /*dark_mode_background_color=*/SK_ColorBLACK);
+        auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
+            system_web_app_installation_->GetDelegate());
+        delegate->SetPreferManifestBackgroundColor(
+            PreferManifestBackgroundColor());
+        delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
+        // When system colored SWAs were introduced for Jelly,
+        // `UseSystemThemeColor()` overrode other styling information in the
+        // manifest. This test now verifies behavior for SWAs that are opted out
+        // of the system styling (by setting it to false).
+        delegate->SetUseSystemThemeColor(false);
+        break;
+      }
+      case ThemeChangeTestMode::kNonSWA:
+        break;
+    }
+  }
+
+  // Returns test mode given test parameterization.
+  ThemeChangeTestMode GetThemeChangeTestMode() const {
+    return std::get<0>(GetParam());
+  }
+
+  // Returns whether the web app under test prefers manifest background colors
+  // over web contents background colors.
+  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
+
+  // Returns whether theme changes should be animated for the web app under test
+  // given test parameterization.
+  bool ShouldAnimateThemeChanges() const { return std::get<2>(GetParam()); }
+
+  // Toggles the color mode, triggering propagation of theme change events.
+  void ToggleColorMode() {
+    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+
+    native_theme->set_use_dark_colors(!native_theme->ShouldUseDarkColors());
+    native_theme->set_preferred_color_scheme(
+        native_theme->CalculatePreferredColorScheme());
+
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
+
+  // Installs the web app under test, blocking until installation is complete,
+  // and returning the `webapps::AppId` for the installed web app.
+  webapps::AppId WaitForAppInstall() {
+    switch (GetThemeChangeTestMode()) {
+      case ThemeChangeTestMode::kSWA:
+        system_web_app_installation_->WaitForAppInstall();
+        return system_web_app_installation_->GetAppId();
+      case ThemeChangeTestMode::kNonSWA: {
+        if (!test_server_) {
+          test_server_ = std::make_unique<net::EmbeddedTestServer>(
+              net::EmbeddedTestServer::TYPE_HTTPS);
+          test_server_->AddDefaultHandlers(GetChromeTestDataDir());
+          CHECK(test_server_->Start());
+        }
+        const GURL app_url =
+            test_server_->GetURL("app.com", "/ssl/google.html");
+        auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+        web_app_info->start_url = app_url;
+        web_app_info->scope = app_url.GetWithoutFilename();
+        web_app_info->theme_color = SK_ColorWHITE;
+        web_app_info->dark_mode_theme_color = SK_ColorBLACK;
+        web_app_info->background_color = SK_ColorWHITE;
+        web_app_info->dark_mode_background_color = SK_ColorBLACK;
+        return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+      }
+    }
+  }
+
+  // Returns the `Profile` associated with the web app under test.
+  Profile* profile() { return browser()->profile(); }
+
+ private:
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
+      system_web_app_installation_;
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Mode,
+    BrowserNonClientFrameViewAshThemeChangeTest,
+    testing::Combine(testing::Values(ThemeChangeTestMode::kSWA,
+                                     ThemeChangeTestMode::kNonSWA),
+                     /*prefer_manifest_background_color=*/testing::Bool(),
+                     /*should_animate_theme_changes=*/testing::Bool()),
+    [](const testing::TestParamInfo<
+        std::tuple<ThemeChangeTestMode,
+                   /*prefer_manifest_background_color=*/bool,
+                   /*should_animate_theme_changes=*/bool>>& info) {
+      ThemeChangeTestMode test_mode = std::get<0>(info.param);
+      bool prefer_manifest_background_color = std::get<1>(info.param);
+      bool should_animate_theme_changes = std::get<2>(info.param);
+
+      std::stringstream name;
+      switch (test_mode) {
+        case ThemeChangeTestMode::kSWA:
+          name << "kSWA";
+          break;
+        case ThemeChangeTestMode::kNonSWA:
+          name << "kNonSWA";
+          break;
+      }
+
+      if (prefer_manifest_background_color) {
+        name << "_PreferManifestBackgroundColor";
+      }
+      if (should_animate_theme_changes) {
+        name << "_ShouldAnimateThemeChanges";
+      }
+
+      return name.str();
+    });
+
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
+                       ThemeChange) {
+  // Skip test parameterizations for non-system web apps that don't make sense.
+  if (GetThemeChangeTestMode() == ThemeChangeTestMode::kNonSWA &&
+      (PreferManifestBackgroundColor() || ShouldAnimateThemeChanges())) {
+    GTEST_SKIP();
+  }
+
+  const webapps::AppId app_id = WaitForAppInstall();
+  auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  auto* contents_web_view =
+      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  auto* web_contents = contents_web_view->GetWebContents();
+
+  // Verify background color is immediately resolved from the app controller
+  // despite the fact that the web contents background color hasn't loaded
+  // yet.
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            browser->app_controller()->GetBackgroundColor().value());
+  EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
+
+  // Wait for the web contents background color to load and verify that the
+  // background color still matches that resolved from the app controller.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              browser->app_controller()->GetBackgroundColor().value());
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+
+  content::AwaitDocumentOnLoadCompleted(web_contents);
+
+  // Toggle color mode and verify background color is immediately resolved
+  // from the app controller. If a system web app is loaded which prefers
+  // manifest colors, there will be a temporary mismatch between the contents
+  // background color and the web contents background color due to the fact
+  // that the web contents background color update is async.
+  ToggleColorMode();
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            browser->app_controller()->GetBackgroundColor().value());
+  if (PreferManifestBackgroundColor()) {
+    EXPECT_NE(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  } else {
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+
+  // If theme changes should be animated, the layer associated with the
+  // `contents_web_view` native view should be immediately hidden.
+  auto* layer = contents_web_view->holder()->native_view()->layer();
+  if (ShouldAnimateThemeChanges()) {
+    EXPECT_EQ(layer->GetTargetOpacity(), std::nextafter(0.f, 1.f));
+  } else {
+    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
+  }
+
+  // Wait for the web contents background color to update and verify that the
+  // background color still matches that resolved from the app controller.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              browser->app_controller()->GetBackgroundColor().value());
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+
+  // If theme changes should be animated, the layer associated with the
+  // `contents_web_view` native view should be animated back in only after a
+  // round trip through the renderer and compositor pipelines. This should
+  // ensure that the web contents has finished repainting theme changes.
+  if (ShouldAnimateThemeChanges()) {
+    base::test::TestFuture<bool> visual_state_change_future;
+    web_contents->GetRenderViewHost()->GetWidget()->InsertVisualStateCallback(
+        visual_state_change_future.GetCallback());
+    EXPECT_TRUE(visual_state_change_future.Wait());
+    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #define INSTANTIATE_TEST_SUITE(name) \
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
@@ -1886,10 +1898,12 @@ INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
+INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTest);
+INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
 INSTANTIATE_TEST_SUITE(KioskBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserNonClientFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
+INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
