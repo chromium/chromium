@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/autofill_shared_storage.pb.h"
 #include "components/autofill/content/common/content_autofill_features.h"
@@ -63,7 +64,8 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
 void ContentAutofillSharedStorageHandler::
     OnSharedStorageSetAutofillDataComplete(
         storage::SharedStorageManager::OperationResult result) {
-  // TODO(crbug/1519929): Record metrics.
+  UMA_HISTOGRAM_ENUMERATION("Autofill.SharedStorageServerCardDataSetResult",
+                            result);
 }
 
 }  // namespace autofill

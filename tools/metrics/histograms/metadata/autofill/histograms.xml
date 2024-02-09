@@ -4489,6 +4489,21 @@ chromium-metrics-reviews@google.com.
   <token key="SourcePair" variants="Autofill.ShadowPredictions.SourcePair"/>
 </histogram>
 
+<histogram name="Autofill.SharedStorageServerCardDataSetResult"
+    enum="AutofillSharedStorageServerCardDataSetResult"
+    expires_after="2024-08-01">
+  <owner>nburris@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the shared storage Set operation result that is returned from the
+    SharedStorageManager, each time the cached autofill server credit card
+    information is updated and inserted into the shared storage database,
+    implemented in ContentAutofillSharedStorageHandler. SharedStorageManager
+    provides the API to update the Shared Storage database, which enables
+    privacy-preserving cross-site data storage.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SkippingFormFillDueToChangedFieldCount"
     enum="Boolean" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

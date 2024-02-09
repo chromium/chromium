@@ -3199,6 +3199,31 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="Company"/>
 </enum>
 
+<enum name="AutofillSharedStorageServerCardDataSetResult">
+  <int value="0"
+      label="(Unused) Non-set operation success. Not expected as
+             ContentAutofillSharedStorageHandler only records Set results."/>
+  <int value="1" label="Set operation success."/>
+  <int value="2"
+      label="(Unused) Value present and ignored. Not expected as
+             ContentAutofillSharedStorageHandler always overwrites."/>
+  <int value="3" label="SQL database error."/>
+  <int value="4" label="Database initialization failed."/>
+  <int value="5" label="Insufficient capacity."/>
+  <int value="6"
+      label="(Unused) Invalid append. Not expected as
+             ContentAutofillSharedStorageHandler does not append."/>
+  <int value="7"
+      label="(Unused) Key not found. Not expected as
+             ContentAutofillSharedStorageHandler only records Set results."/>
+  <int value="8"
+      label="(Unused) Too many keys found. Not expected as
+             ContentAutofillSharedStorageHandler only records Set results."/>
+  <int value="9"
+      label="(Unused) Entry expired. Not expected as
+             ContentAutofillSharedStorageHandler only records Set results."/>
+</enum>
+
 <enum name="AutofillSilentUpdatesProfileImportType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="SilentUpdateForIncompleteProfile"/>

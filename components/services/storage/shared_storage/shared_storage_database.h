@@ -99,6 +99,11 @@ class SharedStorageDatabase {
     kIgnoreIfPresent = 1,  // Does not set an entry if one previously exists.
   };
 
+  // This enum is used to record UMA. Do not reorder, delete, nor
+  // insert elements, unless you insert at the end. Also, update
+  // the corresponding enum in enums.xml (i.e.
+  // "AutofillSharedStorageServerCardDataSetResult"
+  // in tools/metrics/histograms/metadata/autofill/enums.xml).
   enum class OperationResult {
     kSuccess = 0,      // Result if a non-setting operation is successful.
     kSet = 1,          // Result if value is set.
@@ -119,6 +124,8 @@ class SharedStorageDatabase {
     kTooManyFound = 8,  // Result if the number of keys/entries retrieved for
                         // `Keys()`/`Entries()` exceeds INT_MAX.
     kExpired = 9,       // Result if the retrieved entry is expired.
+    // Update `kMaxValue` when adding a new value to the enum.
+    kMaxValue = kExpired,
   };
 
   // Bundles a retrieved string `data` and its last write time `last_used_time`
