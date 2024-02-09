@@ -33,6 +33,17 @@ gfx::ImageSkia GetImage(const PickerGifView& gif_view) {
   return gif_view.GetImageModel().GetImage().AsImageSkia();
 }
 
+TEST(PickerGifViewTest, AccessibleNameIsContentDescription) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  PickerGifView gif_view(
+      base::BindOnce(&FetchGifFrames,
+                     std::vector<image_util::AnimationFrame>{}),
+      kImageSize, /*accessible_name=*/u"cat gif");
+
+  EXPECT_EQ(gif_view.GetAccessibleName(), u"cat gif");
+}
+
 TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
@@ -41,7 +52,7 @@ TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {
       CreateGifFrame(base::Milliseconds(30)),
       CreateGifFrame(base::Milliseconds(40))};
   PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames),
-                         kOriginalGifDimensions);
+                         kOriginalGifDimensions, /*accessible_name=*/u"");
 
   EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
 }
@@ -54,7 +65,8 @@ TEST(PickerGifViewTest, FrameDurations) {
       CreateGifFrame(base::Milliseconds(30)),
       CreateGifFrame(base::Milliseconds(40)),
       CreateGifFrame(base::Milliseconds(50))};
-  PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames), kImageSize);
+  PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames), kImageSize,
+                         /*accessible_name=*/u"");
   EXPECT_TRUE(GetImage(gif_view).BackedBySameObjectAs(frames[0].image));
 
   task_environment.FastForwardBy(frames[0].duration);
@@ -74,7 +86,8 @@ TEST(PickerGifViewTest, AdjustsShortFrameDurations) {
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(0)),
       CreateGifFrame(base::Milliseconds(30))};
-  PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames), kImageSize);
+  PickerGifView gif_view(base::BindOnce(&FetchGifFrames, frames), kImageSize,
+                         /*accessible_name=*/u"");
 
   // We use a duration of 100ms for frames that specify a duration of <= 10ms
   // (to follow the behavior of blink).

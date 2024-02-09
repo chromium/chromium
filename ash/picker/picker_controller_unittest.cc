@@ -155,7 +155,8 @@ TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller.InsertResultOnNextFocus(
-      PickerSearchResult::Gif(GURL("http://foo.com/fake.gif"), gfx::Size()));
+      PickerSearchResult::Gif(GURL("http://foo.com/fake.gif"), gfx::Size(),
+                              /*content_description=*/u""));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});

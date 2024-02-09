@@ -56,8 +56,12 @@ PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
 }
 
 PickerSearchResult PickerSearchResult::Gif(const GURL& url,
-                                           const gfx::Size& dimensions) {
-  return PickerSearchResult(GifData{.url = url, .dimensions = dimensions});
+                                           const gfx::Size& dimensions,
+                                           std::u16string content_description) {
+  return PickerSearchResult(
+      GifData{.url = url,
+              .dimensions = dimensions,
+              .content_description = std::move(content_description)});
 }
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,

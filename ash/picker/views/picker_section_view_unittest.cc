@@ -45,7 +45,8 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<PickerImageItemView>(
       views::Button::PressedCallback(),
-      std::make_unique<PickerGifView>(base::DoNothing(), gif_dimensions));
+      std::make_unique<PickerGifView>(base::DoNothing(), gif_dimensions,
+                                      /*accessible_name=*/u""));
 }
 
 using PickerSectionViewTest = AshTestBase;

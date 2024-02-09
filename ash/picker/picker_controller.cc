@@ -202,7 +202,7 @@ void PickerController::StartSearch(const std::u16string& query,
             PickerSearchResult::Gif(
                 GURL(
                     "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
-                gfx::Size(140, 140))}}),
+                gfx::Size(140, 140), u"gif")}}),
       PickerSearchResults::Section(
           u"Matching links",
           {{

@@ -65,7 +65,9 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
-      u"Gif Section", {{PickerSearchResult::Gif(GURL(), gfx::Size())}})}});
+      u"Gif Section",
+      {{PickerSearchResult::Gif(GURL(), gfx::Size(),
+                                /*content_description=*/u"")}})}});
   view.SetSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
@@ -136,7 +138,8 @@ INSTANTIATE_TEST_SUITE_P(
          {"Emoji", PickerSearchResult::Emoji(u"😊")},
          {"Symbol", PickerSearchResult::Symbol(u"♬")},
          {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
-         {"Gif", PickerSearchResult::Gif(GURL(), gfx::Size(10, 10))}}),
+         {"Gif",
+          PickerSearchResult::Gif(GURL(), gfx::Size(10, 10), u"cat gif")}}),
     [](const testing::TestParamInfo<
         PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
       return info.param.test_name;
