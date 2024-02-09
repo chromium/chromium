@@ -5543,7 +5543,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Feedback.RequestSource" enum="FeedbackSource"
     expires_after="2024-06-30">
   <owner>afakhry@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
   <summary>Records the source that requested showing the feedback app.</summary>
 </histogram>
 

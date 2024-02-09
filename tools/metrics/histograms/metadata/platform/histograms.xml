@@ -226,8 +226,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.CrashCollector.AddWeightResult"
     enum="CrosCrashCollectorAddWeightResult" expires_after="2024-09-01">
   <owner>mutexlox@google.com</owner>
-  <owner>kendraketsui@google.com</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     (ChromeOS only) An enum indicating the reasons why adding a weight to crash
     reports succeeded or failed. This is recorded after each crash with
@@ -242,7 +241,7 @@ chromium-metrics-reviews@google.com.
     enum="CrosCrashSenderRemoveReason" expires_after="2024-07-10">
   <owner>iby@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     (Chrome OS only) An enum indicating the reasons for removal of crash reports
     on devices. Generally, we'll remove crash reports after successfully sending
@@ -285,7 +284,7 @@ chromium-metrics-reviews@google.com.
   <owner>bsimonnet@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Total use time (device ON and not asleep) in the previous day, or the most
     recent day the device was in use. Reported at most once a day.
@@ -525,7 +524,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-01-30">
   <owner>iby@google.com</owner>
   <owner>mutexlox@google.com</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     On ChromeOS, number of external metrics samples read in from the platform.
     Emitted once every 30 seconds. If this is too large (over 100,000), we will
@@ -536,9 +535,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
     units="number of boot attempts" expires_after="2024-10-06">
-  <owner>kendraketsui@google.com</owner>
   <owner>mutexlox@google.com</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records number of boot attempts on a device since receiving a variations
     safe seed from Chrome. This value is reported every time a device boots.
@@ -968,7 +966,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of kernel crashes during the previous day, or the most recent day the
     device was in use. Reported at most once a day.
@@ -982,7 +980,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, normalized as number of
     crashes per year of active use (active use = device is ON and not asleep).
@@ -997,7 +995,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, normalized as number
     crashes per year of CPU time. Reported daily.
@@ -1011,7 +1009,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of kernel crashes since the last OS update, reported daily.
   </summary>
@@ -1024,7 +1022,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of kernel crashes during the previous epoch-week, or the most recent
     epoch-week the device was in use. Reported at most once a week. Epoch-weeks
@@ -1039,7 +1037,7 @@ chromium-metrics-reviews@google.com.
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Time elapsed between the last two kernel crashes. Sent after every kernel
     crash.
@@ -1871,7 +1869,7 @@ chromium-metrics-reviews@google.com.
   <owner>gwendal@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records the feature level of the device. Recorded in every UMA upload.
 
@@ -1884,7 +1882,7 @@ chromium-metrics-reviews@google.com.
   <owner>gwendal@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records the scope level of the device (Soft vs Hard Branded). Recorded in
     every UMA upload.
@@ -2471,7 +2469,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-06-30">
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Use time (device ON and not asleep) in a particular period (approximately
     every five minutes). To compute usage time in a given period (e.g. a day),
@@ -2486,7 +2484,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-05-31">
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Use time samples that would have gone to Platform.UnaggregatedUsageTime, but
     which are implausibly big. For example, we've seen individual samples of ~1
@@ -2505,7 +2503,7 @@ chromium-metrics-reviews@google.com.
   <owner>bsimonnet@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of unclean OS shutdowns during the previous day, or the most recent
     day the device was in use. Specifically, the counter is incremented during
@@ -2525,7 +2523,7 @@ chromium-metrics-reviews@google.com.
   <owner>bsimonnet@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Count of crashes (user) during the previous day, or the most recent day the
     device was in use. Reported at most once a day.

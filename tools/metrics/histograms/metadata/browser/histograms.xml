@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
     expires_after="2024-06-09">
   <owner>aalsum@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records the stage up to which the user interacted with the HaTS Chrome OS
     survey. This is needed in addition to the Hats metrics data since Chrome OS

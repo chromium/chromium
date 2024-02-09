@@ -1995,7 +1995,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
     expires_after="2024-07-14">
   <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     The size of the stack copied during a stack profiler capture. One sample per
     199 stack captures. Only recorded by clients in the stack-sampled metrics
