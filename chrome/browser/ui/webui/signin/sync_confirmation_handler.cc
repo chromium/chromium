@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,6 +56,18 @@ bool UseMinorModeRestrictions() {
 #else
   return base::FeatureList::IsEnabled(
       ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+#endif
+}
+
+// After this time delta, user must see a screen. If it was impossible to get
+// the CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability before
+// the deadline, the screen should be configured in minor-safe way.
+base::TimeDelta GetMinorModeRestrictionsDeadline() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Not implemented for those platforms.
+  NOTREACHED_NORETURN();
+#else
+  return ::switches::kMinorModeRestrictionsFetchDeadline.Get();
 #endif
 }
 
@@ -329,8 +342,8 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
 
   if (!screen_mode_notified_ && UseMinorModeRestrictions()) {
     // Deadline timer for the case when screen mode doesn't arrive in time.
-    screen_mode_deadline_.Start(FROM_HERE, base::Seconds(2), this,
-                                &SyncConfirmationHandler::OnDeadline);
+    screen_mode_deadline_.Start(FROM_HERE, GetMinorModeRestrictionsDeadline(),
+                                this, &SyncConfirmationHandler::OnDeadline);
   }
 
   if (browser_)

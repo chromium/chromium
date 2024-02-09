@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace switches {
 
@@ -113,6 +114,23 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled(
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::TimeDelta kMinorModeRestrictionsFetchDeadlineDefaultValue =
+#if BUILDFLAG(IS_ANDROID)
+    // Based on Signin.AccountCapabilities.UserVisibleLatency
+    base::Milliseconds(400);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // Based on Signin.SyncOptIn.PreSyncConfirmationLatency
+    base::Milliseconds(900);
+#elif BUILDFLAG(IS_IOS)
+    // Based on Signin.AccountCapabilities.UserVisibleLatency
+    base::Seconds(1);
+#endif
+
+const base::FeatureParam<base::TimeDelta> kMinorModeRestrictionsFetchDeadline{
+    &kMinorModeRestrictionsForHistorySyncOptIn,
+    /*name=*/"MinorModeRestrictionsFetchDeadline",
+    kMinorModeRestrictionsFetchDeadlineDefaultValue};
 #endif
 
 #if BUILDFLAG(IS_IOS)
