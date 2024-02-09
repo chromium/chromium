@@ -506,7 +506,6 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
   // Verify that the ungrouped visits can be searched over and returned as part
   // of a special ungrouped cluster.
   {
-    std::vector<history::AnnotatedVisit> annotated_visits;
     state.OnGotUngroupedVisits(base::TimeTicks(),
                                base::BindLambdaForTesting(result_callback), {},
                                fake_continuation_params,
@@ -536,6 +535,61 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
 
     EXPECT_EQ(get_annotated_visits_options.begin_time, new_continuation_time);
     EXPECT_EQ(get_annotated_visits_options.end_time, continuation_time);
+  }
+}
+
+TEST_F(QueryClustersStateTest, GetUngroupedVisitsDoesCrossBatchDeduplication) {
+  base::test::ScopedFeatureList scoped_list(kSearchesFindUngroupedVisits);
+
+  MockHistoryService mock_history_service;
+  QueryClustersState state(nullptr, /*history_service=*/&mock_history_service,
+                           /*query=*/"Code");
+
+  // First batch of ungrouped visits seeds the seen visits set with url_id = 2.
+  {
+    base::RunLoop result_loop;
+    std::vector<history::Cluster> final_result;
+
+    state.OnGotUngroupedVisits(
+        base::TimeTicks(),
+        base::BindLambdaForTesting(
+            [&](const std::string& query,
+                std::vector<history::Cluster> cluster_batch, bool can_load_more,
+                bool is_continuation) {
+              final_result = std::move(cluster_batch);
+              result_loop.Quit();
+            }),
+        {}, QueryClustersContinuationParams(),
+        /*ungrouped_visits=*/GetHardcodedTestVisits());
+    result_loop.Run();
+    ASSERT_EQ(final_result.size(), 1U);
+    EXPECT_EQ(final_result[0].label_source,
+              history::Cluster::LabelSource::kUngroupedVisits);
+    EXPECT_EQ(final_result[0].visits[0].annotated_visit.url_row.id(), 2);
+  }
+
+  // Second batch of ungrouped visits gets deduplicated.
+  {
+    base::RunLoop result_loop;
+    std::vector<history::Cluster> final_result;
+
+    // Prevent the code from trying to fetch ANOTHER batch.
+    QueryClustersContinuationParams continuation_params;
+    continuation_params.exhausted_all_visits = true;
+
+    state.OnGotUngroupedVisits(
+        base::TimeTicks(),
+        base::BindLambdaForTesting(
+            [&](const std::string& query,
+                std::vector<history::Cluster> cluster_batch, bool can_load_more,
+                bool is_continuation) {
+              final_result = std::move(cluster_batch);
+              result_loop.Quit();
+            }),
+        {}, continuation_params,
+        /*ungrouped_visits=*/GetHardcodedTestVisits());
+    result_loop.Run();
+    EXPECT_TRUE(final_result.empty());
   }
 }
 

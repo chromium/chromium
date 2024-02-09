@@ -118,9 +118,9 @@ BASE_FEATURE(kRenameJourneys,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Intended to be Enabled by default on Desktop and the flag left here as a
-// killswitch. Not enabled yet, because localization not implemented yet.
+// killswitch.
 BASE_FEATURE(kSearchesFindUngroupedVisits,
              "GroupedHistorySearchesFindUngroupedVisits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace history_clusters
