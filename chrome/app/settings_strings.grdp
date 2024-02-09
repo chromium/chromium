@@ -2188,9 +2188,6 @@
   <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
     Use secure DNS
   </message>
-  <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System)
-  </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
       Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
