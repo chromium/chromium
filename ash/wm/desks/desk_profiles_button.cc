@@ -182,6 +182,11 @@ void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,
 
 void DeskProfilesButton::OnMenuClosed() {
   context_menu_ = nullptr;
+
+  // Move focus back to the profile button when the menu has closed. This
+  // ensures that the ChromeVox focus ring doesn't float in empty space after
+  // the menu has been dismissed.
+  RequestFocus();
 }
 
 void DeskProfilesButton::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
