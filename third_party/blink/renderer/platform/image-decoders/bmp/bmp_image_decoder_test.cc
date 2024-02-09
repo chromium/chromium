@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
 #include <memory>
+#include <string>
+#include <tuple>
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -139,153 +141,153 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-TEST(BMPImageDecoderTest, VerifyBMPSuite) {
-  struct BMPSuiteEntry {
-    const char* dir;
-    const char* bmp;
-  };
-  static constexpr BMPSuiteEntry kBMPSuiteEntries[] = {
-      {"good", "pal1"},
-      {"good", "pal1wb"},
-      {"good", "pal1bg"},
-      {"good", "pal4"},
-      {"good", "pal4gs"},
-      {"good", "pal4rle"},
-      {"good", "pal8"},
-      {"good", "pal8-0"},
-      {"good", "pal8gs"},
-      {"good", "pal8rle"},
-      {"good", "pal8w126"},
-      {"good", "pal8w125"},
-      {"good", "pal8w124"},
-      {"good", "pal8topdown"},
-      {"good", "pal8nonsquare"},
-      {"good", "pal8os2"},
-      {"good", "pal8v4"},
-      {"good", "pal8v5"},
-      {"good", "rgb16"},
-      {"good", "rgb16bfdef"},
-      {"good", "rgb16-565"},
-      {"good", "rgb16-565pal"},
-      {"good", "rgb24"},
-      {"good", "rgb24pal"},
-      {"good", "rgb32"},
-      {"good", "rgb32bfdef"},
-      {"good", "rgb32bf"},
+using BMPSuiteEntry = std::tuple<std::string, std::string>;
+class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
 
-      {"questionable", "pal1p1"},
-      {"questionable", "pal2"},
-      {"questionable", "pal2color"},
-      {"questionable", "pal4rletrns"},
-      {"questionable", "pal4rlecut"},
-      {"questionable", "pal8rletrns"},
-      {"questionable", "pal8rlecut"},
-      {"questionable", "pal8offs"},
-      {"questionable", "pal8oversizepal"},
-      {"questionable", "pal8os2-sz"},
-      {"questionable", "pal8os2-hs"},
-      {"questionable", "pal8os2sp"},
-      {"questionable", "pal8os2v2"},
-      {"questionable", "pal8os2v2-16"},
-      {"questionable", "pal8os2v2-sz"},
-      {"questionable", "pal8os2v2-40sz"},
-      {"questionable", "rgb24rle24"},
-      {"questionable", "pal1huffmsb"},  // We reject this encoding.
-      {"questionable", "rgb16faketrns"},
-      {"questionable", "rgb16-231"},
-      {"questionable", "rgb16-3103"},
-      {"questionable", "rgba16-4444"},
-      {"questionable", "rgba16-5551"},
-      {"questionable", "rgba16-1924"},
-      {"questionable", "rgb24largepal"},
-      // {"questionable", "rgb24prof", "rgb24"},  // Omitted--not public domain.
-      // {"questionable", "rgb24prof2", "rgb24"},  //  "       "    "      "
-      // {"questionable", "rgb24lprof", "rgb24"},  //  "       "    "      "
-      {"questionable", "rgb24jpeg"},
-      {"questionable", "rgb24png"},
-      {"questionable", "rgb32h52"},
-      {"questionable", "rgb32-xbgr"},
-      {"questionable", "rgb32fakealpha"},
-      {"questionable", "rgb32-111110"},
-      {"questionable", "rgb32-7187"},
-      {"questionable", "rgba32-1"},
-      {"questionable", "rgba32-1010102"},
-      {"questionable", "rgba32-81284"},
-      {"questionable", "rgba32-61754"},
-      {"questionable", "rgba32abf"},
-      {"questionable", "rgba32h56"},
-      // TODO: crbug.com/40244265 - a bitcount of 64 is not yet supported.
-      {"questionable", "rgba64"},
+TEST_P(BMPImageDecoderTest, VerifyBMPSuiteImage) {
+  // Load the BMP file under test.
+  const auto& [entry_dir, entry_bmp] = GetParam();
+  std::string bmp_path = base::StringPrintf(
+      "/images/bmp-suite/%s/%s.bmp", entry_dir.c_str(), entry_bmp.c_str());
+  scoped_refptr<SharedBuffer> data = ReadFile(bmp_path.c_str());
+  ASSERT_NE(data.get(), nullptr) << "unable to load '" << bmp_path << "'";
+  ASSERT_FALSE(data->empty());
 
-      {"bad", "badbitcount"},
-      {"bad", "badbitssize"},
-      {"bad", "baddens1"},
-      {"bad", "baddens2"},
-      {"bad", "badfilesize"},
-      {"bad", "badheadersize"},
-      {"bad", "badpalettesize"},
-      {"bad", "badplanes"},
-      {"bad", "badrle"},
-      {"bad", "badrle4"},
-      {"bad", "badrle4bis"},
-      {"bad", "badrle4ter"},
-      {"bad", "badrlebis"},
-      {"bad", "badrleter"},
-      {"bad", "badwidth"},
-      {"bad", "pal8badindex"},
-      {"bad", "reallybig"},
-      {"bad", "rgb16-880"},
-      {"bad", "rletopdown"},
-      {"bad", "shortfile"},
-  };
+  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+  decoder->SetData(data, /*all_data_received=*/true);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
 
-  for (const BMPSuiteEntry& entry : kBMPSuiteEntries) {
-    // Load the BMP file under test.
-    std::string bmp_path =
-        base::StringPrintf("/images/bmp-suite/%s/%s.bmp", entry.dir, entry.bmp);
-    scoped_refptr<SharedBuffer> data = ReadFile(bmp_path.c_str());
-    ASSERT_NE(data.get(), nullptr) << "unable to load '" << bmp_path << "'";
-    ASSERT_FALSE(data->empty());
-
-    std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
-    decoder->SetData(data, /*all_data_received=*/true);
-    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-
-    // Some entries in BMP Suite are intentionally invalid. These could draw
-    // nonsense, or generate an error. We only need to verify that they don't
-    // crash, and treat them as if they generated a 1x1 transparent bitmap.
-    [[maybe_unused]] const SkBitmap* result_image;
-    SkBitmap empty_bitmap;
-    if (frame->GetStatus() == ImageFrame::kFrameComplete) {
-      EXPECT_FALSE(decoder->Failed());
-      result_image = &frame->Bitmap();
-    } else {
-      // Images in the "good" directory should always decode successfully.
-      EXPECT_NE(entry.dir, "good");
-      // Represent failures as a 1x1 transparent black pixel in Skia Gold.
-      EXPECT_TRUE(decoder->Failed());
-      empty_bitmap.allocPixels(SkImageInfo::MakeN32(1, 1, kPremul_SkAlphaType));
-      empty_bitmap.eraseColor(SK_ColorTRANSPARENT);
-      result_image = &empty_bitmap;
-    }
+  // Some entries in BMP Suite are intentionally invalid. These could draw
+  // nonsense, or generate an error. We only need to verify that they don't
+  // crash, and treat them as if they generated a 1x1 transparent bitmap.
+  [[maybe_unused]] const SkBitmap* result_image;
+  SkBitmap empty_bitmap;
+  if (frame->GetStatus() == ImageFrame::kFrameComplete) {
+    EXPECT_FALSE(decoder->Failed());
+    result_image = &frame->Bitmap();
+  } else {
+    // Images in the "good" directory should always decode successfully.
+    EXPECT_NE(entry_dir, "good");
+    // Represent failures as a 1x1 transparent black pixel in Skia Gold.
+    EXPECT_TRUE(decoder->Failed());
+    empty_bitmap.allocPixels(SkImageInfo::MakeN32(1, 1, kPremul_SkAlphaType));
+    empty_bitmap.eraseColor(SK_ColorTRANSPARENT);
+    result_image = &empty_bitmap;
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
-    // Verify image contents via go/chrome-engprod-skia-gold on platforms where
-    // it is properly supported. On other platforms, decoding without a crash
-    // counts as a pass.
-    raw_ptr<ui::test::SkiaGoldPixelDiff> skia_gold =
-        ui::test::SkiaGoldPixelDiff::GetSession();
-    ui::test::PositiveIfOnlyImageAlgorithm positive_if_exact_image_only;
-    std::string golden_name = ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
-        "BMPImageDecoderTest", "VerifyBMPSuite",
-        base::StringPrintf("%s_%s.rev0", entry.dir, entry.bmp));
-    EXPECT_TRUE(skia_gold->CompareScreenshot(golden_name, *result_image,
-                                             &positive_if_exact_image_only))
-        << bmp_path;
+  // Verify image contents via go/chrome-engprod-skia-gold on platforms where
+  // it is properly supported. On other platforms, decoding without a crash
+  // counts as a pass.
+  raw_ptr<ui::test::SkiaGoldPixelDiff> skia_gold =
+      ui::test::SkiaGoldPixelDiff::GetSession();
+  ui::test::PositiveIfOnlyImageAlgorithm positive_if_exact_image_only;
+  std::string golden_name = ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
+      "BMPImageDecoderTest", "VerifyBMPSuite",
+      base::StringPrintf("%s_%s.rev0", entry_dir.c_str(), entry_bmp.c_str()));
+  EXPECT_TRUE(skia_gold->CompareScreenshot(golden_name, *result_image,
+                                           &positive_if_exact_image_only))
+      << bmp_path;
 #endif
-  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BMPSuite,
+    BMPImageDecoderTest,
+    testing::Values(
+        BMPSuiteEntry{"good", "pal1"},
+        BMPSuiteEntry{"good", "pal1wb"},
+        BMPSuiteEntry{"good", "pal1bg"},
+        BMPSuiteEntry{"good", "pal4"},
+        BMPSuiteEntry{"good", "pal4gs"},
+        BMPSuiteEntry{"good", "pal4rle"},
+        BMPSuiteEntry{"good", "pal8"},
+        BMPSuiteEntry{"good", "pal8-0"},
+        BMPSuiteEntry{"good", "pal8gs"},
+        BMPSuiteEntry{"good", "pal8rle"},
+        BMPSuiteEntry{"good", "pal8w126"},
+        BMPSuiteEntry{"good", "pal8w125"},
+        BMPSuiteEntry{"good", "pal8w124"},
+        BMPSuiteEntry{"good", "pal8topdown"},
+        BMPSuiteEntry{"good", "pal8nonsquare"},
+        BMPSuiteEntry{"good", "pal8os2"},
+        BMPSuiteEntry{"good", "pal8v4"},
+        BMPSuiteEntry{"good", "pal8v5"},
+        BMPSuiteEntry{"good", "rgb16"},
+        BMPSuiteEntry{"good", "rgb16bfdef"},
+        BMPSuiteEntry{"good", "rgb16-565"},
+        BMPSuiteEntry{"good", "rgb16-565pal"},
+        BMPSuiteEntry{"good", "rgb24"},
+        BMPSuiteEntry{"good", "rgb24pal"},
+        BMPSuiteEntry{"good", "rgb32"},
+        BMPSuiteEntry{"good", "rgb32bfdef"},
+        BMPSuiteEntry{"good", "rgb32bf"},
+
+        BMPSuiteEntry{"questionable", "pal1p1"},
+        BMPSuiteEntry{"questionable", "pal2"},
+        BMPSuiteEntry{"questionable", "pal2color"},
+        BMPSuiteEntry{"questionable", "pal4rletrns"},
+        BMPSuiteEntry{"questionable", "pal4rlecut"},
+        BMPSuiteEntry{"questionable", "pal8rletrns"},
+        BMPSuiteEntry{"questionable", "pal8rlecut"},
+        BMPSuiteEntry{"questionable", "pal8offs"},
+        BMPSuiteEntry{"questionable", "pal8oversizepal"},
+        BMPSuiteEntry{"questionable", "pal8os2-sz"},
+        BMPSuiteEntry{"questionable", "pal8os2-hs"},
+        BMPSuiteEntry{"questionable", "pal8os2sp"},
+        BMPSuiteEntry{"questionable", "pal8os2v2"},
+        BMPSuiteEntry{"questionable", "pal8os2v2-16"},
+        BMPSuiteEntry{"questionable", "pal8os2v2-sz"},
+        BMPSuiteEntry{"questionable", "pal8os2v2-40sz"},
+        BMPSuiteEntry{"questionable", "rgb24rle24"},
+        BMPSuiteEntry{"questionable", "pal1huffmsb"},  // Unsupported encoding.
+        BMPSuiteEntry{"questionable", "rgb16faketrns"},
+        BMPSuiteEntry{"questionable", "rgb16-231"},
+        BMPSuiteEntry{"questionable", "rgb16-3103"},
+        BMPSuiteEntry{"questionable", "rgba16-4444"},
+        BMPSuiteEntry{"questionable", "rgba16-5551"},
+        BMPSuiteEntry{"questionable", "rgba16-1924"},
+        BMPSuiteEntry{"questionable", "rgb24largepal"},
+        //           {"questionable", "rgb24prof"},  Omitted--not public domain.
+        //           {"questionable", "rgb24prof2"},    "       "    "      "
+        //           {"questionable", "rgb24lprof"},    "       "    "      "
+        BMPSuiteEntry{"questionable", "rgb24jpeg"},
+        BMPSuiteEntry{"questionable", "rgb24png"},
+        BMPSuiteEntry{"questionable", "rgb32h52"},
+        BMPSuiteEntry{"questionable", "rgb32-xbgr"},
+        BMPSuiteEntry{"questionable", "rgb32fakealpha"},
+        BMPSuiteEntry{"questionable", "rgb32-111110"},
+        BMPSuiteEntry{"questionable", "rgb32-7187"},
+        BMPSuiteEntry{"questionable", "rgba32-1"},
+        BMPSuiteEntry{"questionable", "rgba32-1010102"},
+        BMPSuiteEntry{"questionable", "rgba32-81284"},
+        BMPSuiteEntry{"questionable", "rgba32-61754"},
+        BMPSuiteEntry{"questionable", "rgba32abf"},
+        BMPSuiteEntry{"questionable", "rgba32h56"},
+        // TODO: crbug.com/40244265 - a bitcount of 64 is not yet supported.
+        BMPSuiteEntry{"questionable", "rgba64"},
+
+        BMPSuiteEntry{"bad", "badbitcount"},
+        BMPSuiteEntry{"bad", "badbitssize"},
+        BMPSuiteEntry{"bad", "baddens1"},
+        BMPSuiteEntry{"bad", "baddens2"},
+        BMPSuiteEntry{"bad", "badfilesize"},
+        BMPSuiteEntry{"bad", "badheadersize"},
+        BMPSuiteEntry{"bad", "badpalettesize"},
+        BMPSuiteEntry{"bad", "badplanes"},
+        BMPSuiteEntry{"bad", "badrle"},
+        BMPSuiteEntry{"bad", "badrle4"},
+        BMPSuiteEntry{"bad", "badrle4bis"},
+        BMPSuiteEntry{"bad", "badrle4ter"},
+        BMPSuiteEntry{"bad", "badrlebis"},
+        BMPSuiteEntry{"bad", "badrleter"},
+        BMPSuiteEntry{"bad", "badwidth"},
+        BMPSuiteEntry{"bad", "pal8badindex"},
+        BMPSuiteEntry{"bad", "reallybig"},
+        BMPSuiteEntry{"bad", "rgb16-880"},
+        BMPSuiteEntry{"bad", "rletopdown"},
+        BMPSuiteEntry{"bad", "shortfile"}));
 
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  public:
