@@ -914,6 +914,10 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
   // issues with context losses, but is also beneficial to performance at
   // least on perf benchmarks.
   if (gr_context_type == GrContextType::kGL) {
+    // NOTE: We do not CHECK here that the current GL context is that of the
+    // SharedContextState due to not having easy access to the
+    // SharedContextState here. However, all codepaths that create SharedImage
+    // backings make the SharedContextState's context current before doing so.
     egl_state_for_skia_gl_context_ = RetainGLTexture();
   }
 }
