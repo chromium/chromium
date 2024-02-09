@@ -123,7 +123,7 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
 
       // Create a progress icon animation for `key`.
       registry()->SetProgressIconAnimationForKey(
-          key, std::make_unique<ProgressIconAnimation>());
+          key, ProgressIconAnimation::Create());
       EXPECT_TRUE(registry()->GetProgressIconAnimationForKey(key));
       EXPECT_EQ(icon_callback_call_count, index + 1u);
 
@@ -178,7 +178,7 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, SetProgressIconAnimationForKey) {
   EXPECT_EQ(callback_call_count, 0u);
 
   // Create a progress icon `animation`.
-  auto animation = std::make_unique<ProgressIconAnimation>();
+  auto animation = ProgressIconAnimation::Create();
   auto* animation_ptr = animation.get();
 
   // Set progress icon `animation` for `key`.

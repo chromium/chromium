@@ -203,8 +203,8 @@ class DefaultProgressIndicatorAnimationRegistry
   void EnsureProgressIconAnimation() {
     auto key = progress_indicator_->animation_key();
     if (!GetProgressIconAnimationForKey(key)) {
-      auto* icon_animation = SetProgressIconAnimationForKey(
-          key, std::make_unique<ProgressIconAnimation>());
+      auto* icon_animation =
+          SetProgressIconAnimationForKey(key, ProgressIconAnimation::Create());
       icon_animation->Start();
     }
   }
