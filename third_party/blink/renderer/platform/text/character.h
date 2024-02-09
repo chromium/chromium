@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -103,15 +102,6 @@ class PLATFORM_EXPORT Character {
   static unsigned ExpansionOpportunityCount(base::span<const UChar>,
                                             TextDirection,
                                             bool& is_after_expansion);
-  static unsigned ExpansionOpportunityCount(const TextRun& run,
-                                            bool& is_after_expansion) {
-    if (run.Is8Bit()) {
-      return ExpansionOpportunityCount(run.Span8(), run.Direction(),
-                                       is_after_expansion);
-    }
-    return ExpansionOpportunityCount(run.Span16(), run.Direction(),
-                                     is_after_expansion);
-  }
 
   static bool IsUprightInMixedVertical(UChar32 character);
 
