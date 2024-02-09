@@ -52,6 +52,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
 
   bool HasAnchorQueries() const { return has_anchor_queries_; }
   bool HasAutoAnchorPositioning() const { return has_auto_anchor_positioning_; }
+  bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
@@ -79,6 +80,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
 
   bool has_anchor_queries_ = false;
   bool has_auto_anchor_positioning_ = false;
+  bool has_content_or_intrinsic_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
@@ -176,12 +178,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     kWebkitFillAvailable,
   };
 
-  explicit CalculationExpressionSizingKeywordNode(Keyword keyword)
-      : keyword_(keyword) {
-#if DCHECK_IS_ON()
-    result_type_ = ResultType::kPixelsAndPercent;
-#endif
-  }
+  explicit CalculationExpressionSizingKeywordNode(Keyword keyword);
 
   Keyword Value() const { return keyword_; }
 
@@ -284,9 +281,6 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 #endif
 
  private:
-  bool ComputeHasAnchorQueries() const;
-  bool ComputeHasAutoAnchorPositioning() const;
-
   Children children_;
   CalculationOperator operator_;
 };

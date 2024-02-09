@@ -46,6 +46,19 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 
 // ------ CalculationExpressionSizingKeywordNode ------
 
+CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
+    Keyword keyword)
+    : keyword_(keyword) {
+  if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
+    // TODO(https://crbug.com/313072): When we implement 'auto' it probably
+    // needs to be tracked separately here.
+    has_content_or_intrinsic_ = true;
+  }
+#if DCHECK_IS_ON()
+  result_type_ = ResultType::kPixelsAndPercent;
+#endif
+}
+
 float CalculationExpressionSizingKeywordNode::Evaluate(
     float max_value,
     const Length::EvaluationInput& input) const {
@@ -309,24 +322,6 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
   }
 }
 
-bool CalculationExpressionOperationNode::ComputeHasAnchorQueries() const {
-  for (const auto& child : children_) {
-    if (child->HasAnchorQueries())
-      return true;
-  }
-  return false;
-}
-
-bool CalculationExpressionOperationNode::ComputeHasAutoAnchorPositioning()
-    const {
-  for (const auto& child : children_) {
-    if (child->HasAutoAnchorPositioning()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     Children&& children,
     CalculationOperator op)
@@ -335,8 +330,17 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
   result_type_ = ResolvedResultType();
   DCHECK_NE(result_type_, ResultType::kInvalid);
 #endif
-  has_anchor_queries_ = ComputeHasAnchorQueries();
-  has_auto_anchor_positioning_ = ComputeHasAutoAnchorPositioning();
+  for (const auto& child : children_) {
+    if (child->HasAnchorQueries()) {
+      has_anchor_queries_ = true;
+    }
+    if (child->HasAutoAnchorPositioning()) {
+      has_auto_anchor_positioning_ = true;
+    }
+    if (child->HasContentOrIntrinsicSize()) {
+      has_content_or_intrinsic_ = true;
+    }
+  }
 }
 
 float CalculationExpressionOperationNode::Evaluate(

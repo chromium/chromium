@@ -69,6 +69,7 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
   }
   bool HasAnchorQueries() const;
   bool HasAutoAnchorPositioning() const;
+  bool HasContentOrIntrinsicSize() const;
 
   float Pixels() const {
     DCHECK(!IsExpression());

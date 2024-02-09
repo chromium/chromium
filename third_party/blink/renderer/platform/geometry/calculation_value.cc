@@ -148,4 +148,8 @@ bool CalculationValue::HasAutoAnchorPositioning() const {
   return IsExpression() && data_.expression->HasAutoAnchorPositioning();
 }
 
+bool CalculationValue::HasContentOrIntrinsicSize() const {
+  return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
+}
+
 }  // namespace blink
