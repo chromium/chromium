@@ -267,6 +267,17 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->relative_bounds.bounds = override_data_.relative_bounds.bounds;
   }
 
+#if DCHECK_IS_ON()
+  // This will help keep track of the attributes that have already
+  // been migrated from the old system of computing AXNodeData for Views (pull),
+  // to the new system (push). This will help ensure that new Views don't use
+  // the old system for attributes that have already been migrated.
+  // TODO(accessibility): Remove once migration is complete.
+  views::ViewsAXCompletedAttributes::Validate(*data);
+#endif
+
+  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
+
   // We need to add the ignored state to all ignored Views, similar to how Blink
   // exposes ignored DOM nodes. Calling AXNodeData::IsIgnored() would also check
   // if the role is in the list of roles that are inherently ignored.

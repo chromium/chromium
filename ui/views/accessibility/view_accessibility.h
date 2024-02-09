@@ -19,6 +19,7 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -341,6 +342,16 @@ class VIEWS_EXPORT ViewAccessibility {
   // Contains data set explicitly via OverrideRole, OverrideName, etc. that
   // overrides anything provided by GetAccessibleNodeData().
   ui::AXNodeData override_data_;
+
+  // Contains data that is populated by the setters in this class.
+  // This member is tied to the ViewsAX project. Which is introducing a new
+  // system to set accessible properties in a "push" fashion (instead of pull).
+  // Authors are encouraged to start using it today, and it will eventually
+  // replace the old system. For now, while the migration to the new system
+  // happens, we allow the old system to coexist with he new one by just
+  // unioning the data from both systems. This is done in
+  // GetAccessibleNodeData().
+  ui::AXNodeData data_;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility.

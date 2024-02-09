@@ -41,4 +41,109 @@ bool ViewAccessibilityUtils::IsFocusedChildWidget(Widget* widget,
          widget->GetContentsView()->Contains(focused_view);
 }
 
+// static
+void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
+                                   ui::AXNodeData& destination) {
+  for (const auto& attr : source.int_attributes) {
+    destination.AddIntAttribute(attr.first, attr.second);
+  }
+
+  for (const auto& attr : source.string_attributes) {
+    destination.AddStringAttribute(attr.first, attr.second);
+  }
+
+  for (const auto& attr : source.bool_attributes) {
+    destination.AddBoolAttribute(attr.first, attr.second);
+  }
+
+  for (const auto& attr : source.intlist_attributes) {
+    destination.AddIntListAttribute(attr.first, attr.second);
+  }
+
+  for (const auto& attr : source.stringlist_attributes) {
+    destination.AddStringListAttribute(attr.first, attr.second);
+  }
+}
+
+#if DCHECK_IS_ON()
+
+std::unordered_set<ax::mojom::IntAttribute>&
+ViewsAXCompletedAttributes::int_attr_set() {
+  static std::unordered_set<ax::mojom::IntAttribute> set;
+  return set;
+}
+
+std::unordered_set<ax::mojom::StringAttribute>&
+ViewsAXCompletedAttributes::string_attr_set() {
+  static std::unordered_set<ax::mojom::StringAttribute> set;
+  return set;
+}
+
+std::unordered_set<ax::mojom::BoolAttribute>&
+ViewsAXCompletedAttributes::bool_attr_set() {
+  static std::unordered_set<ax::mojom::BoolAttribute> set;
+  return set;
+}
+
+std::unordered_set<ax::mojom::IntListAttribute>&
+ViewsAXCompletedAttributes::int_list_attr_set() {
+  static std::unordered_set<ax::mojom::IntListAttribute> set;
+  return set;
+}
+
+std::unordered_set<ax::mojom::StringListAttribute>&
+ViewsAXCompletedAttributes::string_list_attr_set() {
+  static std::unordered_set<ax::mojom::StringListAttribute> set;
+  return set;
+}
+
+void ViewsAXCompletedAttributes::Validate(
+    const ui::AXNodeData& data_to_validate) {
+  for (const auto& attr : data_to_validate.int_attributes) {
+    DCHECK(!base::Contains(int_attr_set(), attr.first))
+        << " Attribute " << attr.first
+        << " has been migrated to use the new AXNodeData pipeline. Please use "
+           "the setters/getters in ViewAccessibility to set the attribute."
+           "See the comment in ViewAccessibility::GetAccessibleNodeData for "
+           "more info.";
+  }
+
+  for (const auto& attr : data_to_validate.string_attributes) {
+    DCHECK(!base::Contains(string_attr_set(), attr.first))
+        << " Attribute " << attr.first
+        << " has been migrated to use the new AXNodeData pipeline. Please use "
+           "the setters/getters in ViewAccessibility to set the attribute."
+           "See the comment in ViewAccessibility::GetAccessibleNodeData for "
+           "more info.";
+  }
+
+  for (const auto& attr : data_to_validate.bool_attributes) {
+    DCHECK(!base::Contains(bool_attr_set(), attr.first))
+        << " Attribute " << attr.first
+        << " has been migrated to use the new AXNodeData pipeline. Please use "
+           "the setters/getters in ViewAccessibility to set the attribute."
+           "See the comment in ViewAccessibility::GetAccessibleNodeData for "
+           "more info.";
+  }
+
+  for (const auto& attr : data_to_validate.intlist_attributes) {
+    DCHECK(!base::Contains(int_list_attr_set(), attr.first))
+        << " Attribute " << attr.first
+        << " has been migrated to use the new AXNodeData pipeline. Please use "
+           "the setters/getters in ViewAccessibility to set the attribute."
+           "See the comment in ViewAccessibility::GetAccessibleNodeData for "
+           "more info.";
+  }
+
+  for (const auto& attr : data_to_validate.stringlist_attributes) {
+    DCHECK(!base::Contains(string_list_attr_set(), attr.first))
+        << " Attribute " << attr.first
+        << " has been migrated to use the new AXNodeData pipeline. Please use "
+           "the setters/getters in ViewAccessibility to set the attribute."
+           "See the comment in ViewAccessibility::GetAccessibleNodeData for "
+           "more info.";
+  }
+}
+#endif  // DCHECK_IS_ON()
+
 }  // namespace views
