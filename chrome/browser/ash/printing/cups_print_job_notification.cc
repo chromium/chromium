@@ -37,6 +37,16 @@ constexpr char kCupsPrintJobNotificationId[] =
 
 constexpr int64_t kSuccessTimeoutSeconds = 8;
 
+constexpr uint32_t kPrintManagementPageButtonIndex = 0;
+
+// This button only appears in notifications for print jobs initiated by the Web
+// Printing API.
+constexpr uint32_t kWebPrintingContentSettingsButtonIndex = 1;
+
+bool IsPrintJobInitiatedByWebPrintingAPI(const CupsPrintJob& job) {
+  return job.source() == crosapi::mojom::PrintJob::Source::kIsolatedWebApp;
+}
+
 }  // namespace
 
 CupsPrintJobNotification::CupsPrintJobNotification(
@@ -47,6 +57,8 @@ CupsPrintJobNotification::CupsPrintJobNotification(
       notification_id_(print_job->GetUniqueId()),
       print_job_(print_job),
       profile_(profile),
+      is_web_printing_api_initiated_(
+          IsPrintJobInitiatedByWebPrintingAPI(*print_job)),
       success_timer_(std::make_unique<base::OneShotTimer>()) {
   // Create a notification for the print job. The title, body, and icon of the
   // notification will be updated in UpdateNotification().
@@ -63,6 +75,14 @@ CupsPrintJobNotification::CupsPrintJobNotification(
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));
+  std::vector<message_center::ButtonInfo> buttons;
+  buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_PRINT_JOB_PRINTING_PRINT_MANAGEMENT_PAGE));
+  if (is_web_printing_api_initiated_) {
+    buttons.emplace_back(l10n_util::GetStringUTF16(
+        IDS_PRINT_JOB_PRINTING_CONTENT_SETTINGS_PAGE));
+  }
+  notification_->set_buttons(buttons);
   UpdateNotification();
 }
 
@@ -86,13 +106,24 @@ void CupsPrintJobNotification::Close(bool by_user) {
 void CupsPrintJobNotification::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
-  // If we are in guest mode then we need to use the OffTheRecord profile to
-  // open the Print Manageament App. There is a check in Browser::Browser
-  // that only OffTheRecord profiles can open browser windows in guest mode.
-  chrome::ShowPrintManagementApp(
-      profile_->IsGuestSession()
-          ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-          : profile_.get());
+  if (!button_index) {
+    return;
+  }
+
+  switch (*button_index) {
+    case kPrintManagementPageButtonIndex:
+      chrome::ShowPrintManagementApp(profile_);
+      break;
+    case kWebPrintingContentSettingsButtonIndex:
+      CHECK(is_web_printing_api_initiated_)
+          << "Regular print jobs are not supposed to show permissions button.";
+      // Navigates to `chrome://settings/content/webPrinting`.
+      chrome::ShowContentSettingsExceptionsForProfile(
+          profile_, ContentSettingsType::WEB_PRINTING);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 message_center::Notification*

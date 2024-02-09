@@ -6,10 +6,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +24,23 @@ namespace ash {
 namespace {
 
 using ::chromeos::PrinterErrorCode;
+
+std::u16string GetAppShortNameUTF16(Profile* profile,
+                                    const std::string& app_id) {
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    std::optional<std::u16string> app_name;
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .ForOneApp(app_id, [&app_name](const apps::AppUpdate& update) {
+          app_name = base::UTF8ToUTF16(update.ShortName());
+        });
+    if (app_name) {
+      return *app_name;
+    }
+  }
+  // If no app name could be inferred, go with `Chrome` as a fallback option.
+  return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
+}
 
 std::u16string GetNotificationTitleForFailure(const CupsPrintJob& job) {
   DCHECK_EQ(CupsPrintJob::State::STATE_FAILED, job.state());
@@ -92,18 +112,43 @@ std::u16string GetNotificationBodyMessageForUnauthorizedClient(
   }
 }
 
-std::u16string GetGenericNotificationBodyMessage(const CupsPrintJob& job) {
+std::u16string GetNotificationBodyMessageForInProgressJob(
+    const CupsPrintJob& job,
+    Profile& profile) {
   const std::u16string printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
+  auto app_name = GetAppShortNameUTF16(&profile, job.source_id());
   if (job.total_page_number() > 1) {
     const std::u16string pages =
         base::NumberToString16(job.total_page_number());
-    return l10n_util::GetStringFUTF16(IDS_PRINT_JOB_NOTIFICATION_MESSAGE, pages,
-                                      printer_name);
+    return l10n_util::GetStringFUTF16(
+        IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_IN_PROGRESS, app_name, pages,
+        printer_name);
   } else {
     return l10n_util::GetStringFUTF16(
-        IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE, printer_name);
+        IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_IN_PROGRESS_SINGLE_PAGE,
+        app_name, printer_name);
   }
+}
+
+std::u16string GetNotificationBodyMessageForCompletedJob(
+    const CupsPrintJob& job,
+    Profile& profile) {
+  const std::u16string printer_name =
+      base::UTF8ToUTF16(job.printer().display_name());
+  return l10n_util::GetStringFUTF16(
+      IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_DONE,
+      GetAppShortNameUTF16(&profile, job.source_id()), printer_name);
+}
+
+std::u16string GetNotificationBodyMessageForInterruptedJob(
+    const CupsPrintJob& job,
+    Profile& profile) {
+  const std::u16string printer_name =
+      base::UTF8ToUTF16(job.printer().display_name());
+  return l10n_util::GetStringFUTF16(
+      IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_INTERRUPTED,
+      GetAppShortNameUTF16(&profile, job.source_id()), printer_name);
 }
 
 }  // namespace
@@ -125,12 +170,14 @@ void UpdateNotificationTitle(message_center::Notification* notification,
       notification->set_title(
           l10n_util::GetStringUTF16(IDS_PRINT_JOB_DONE_NOTIFICATION_TITLE));
       break;
-    case CupsPrintJob::State::STATE_CANCELLED:
     case CupsPrintJob::State::STATE_FAILED:
       notification->set_title(GetNotificationTitleForFailure(job));
       break;
     case CupsPrintJob::State::STATE_ERROR:
       notification->set_title(GetNotificationTitleForError(job));
+      break;
+    case CupsPrintJob::State::STATE_CANCELLED:
+      NOTREACHED();
       break;
     default:
       break;
@@ -152,11 +199,13 @@ void UpdateNotificationIcon(message_center::Notification* notification,
       notification->set_accent_color_id(cros_tokens::kCrosSysPrimary);
       notification->set_vector_small_image(kNotificationPrintingDoneIcon);
       break;
-    case CupsPrintJob::State::STATE_CANCELLED:
     case CupsPrintJob::State::STATE_FAILED:
     case CupsPrintJob::State::STATE_ERROR:
       notification->set_accent_color_id(cros_tokens::kCrosSysError);
       notification->set_vector_small_image(kNotificationPrintingWarningIcon);
+      break;
+    case CupsPrintJob::State::STATE_CANCELLED:
+      NOTREACHED();
       break;
     case CupsPrintJob::State::STATE_NONE:
       break;
@@ -171,7 +220,31 @@ void UpdateNotificationBodyMessage(message_center::Notification* notification,
         GetNotificationBodyMessageForUnauthorizedClient(job, profile));
     return;
   }
-  notification->set_message(GetGenericNotificationBodyMessage(job));
+
+  switch (job.state()) {
+    case CupsPrintJob::State::STATE_WAITING:
+    case CupsPrintJob::State::STATE_STARTED:
+    case CupsPrintJob::State::STATE_PAGE_DONE:
+    case CupsPrintJob::State::STATE_SUSPENDED:
+    case CupsPrintJob::State::STATE_RESUMED:
+      notification->set_message(
+          GetNotificationBodyMessageForInProgressJob(job, profile));
+      return;
+    case CupsPrintJob::State::STATE_DOCUMENT_DONE:
+      notification->set_message(
+          GetNotificationBodyMessageForCompletedJob(job, profile));
+      return;
+    case CupsPrintJob::State::STATE_FAILED:
+    case CupsPrintJob::State::STATE_ERROR:
+      notification->set_message(
+          GetNotificationBodyMessageForInterruptedJob(job, profile));
+      return;
+    case CupsPrintJob::State::STATE_CANCELLED:
+      NOTREACHED();
+      return;
+    case CupsPrintJob::State::STATE_NONE:
+      return;
+  }
 }
 
 }  // namespace printing::internal
