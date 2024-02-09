@@ -31,6 +31,8 @@ class HttpResponse;
 // be registered as an additional request handler.
 class FakeGaia {
  public:
+  static constexpr std::string_view kDefaultGaiaId = "12345";
+
   using ScopeSet = std::set<std::string>;
   using RefreshTokenToDeviceIdMap = std::map<std::string, std::string>;
 

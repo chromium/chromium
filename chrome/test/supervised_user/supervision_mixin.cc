@@ -28,6 +28,7 @@
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/fake_gaia.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace supervised_user {
@@ -157,13 +158,22 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
           consent_level_)) {
     // PRE_ tests intentionally leave accounts that are picked up by subsequent
     // test runs.
-    AccountInfo account_info =
-        GetIdentityTestEnvironment()->MakeAccountAvailable(email_);
-    CHECK(!account_info.account_id.empty());
 
-    GetIdentityTestEnvironment()->SetPrimaryAccount(email_, consent_level_);
-    WaitForPrimaryAccount(GetIdentityTestEnvironment()->identity_manager(),
-                          consent_level_, account_info.account_id);
+    // Use the same Gaia id as the one used in the /ListAccounts response from
+    // `FakeGaia`.
+    // Otherwise, the `SigninManager` will find:
+    // - cookie accounts not empty and
+    // - the first account in the cookie doesn't have an equivalent extended
+    //   account info with the same gaia id.
+    // This will lead to clear primary account and removing all accounts.
+    AccountInfo account_info =
+        GetIdentityTestEnvironment()->MakeAccountAvailable(
+            signin::AccountAvailabilityOptionsBuilder()
+                .AsPrimary(consent_level_)
+                .WithGaiaId(FakeGaia::kDefaultGaiaId)
+                .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
+                .Build(email_));
+    CHECK(!account_info.account_id.empty());
   } else {
     GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   }
