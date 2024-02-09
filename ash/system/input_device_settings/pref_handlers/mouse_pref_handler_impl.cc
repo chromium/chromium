@@ -49,6 +49,25 @@ bool GetDefaultSwapRightValue(const mojom::MousePolicies& mouse_policies) {
   return kDefaultSwapRight;
 }
 
+// Append all missing button remappings to the current list with default
+// remapping action.
+void UpdateButtonRemappingsWithCompleteList(
+    mojom::MouseButtonConfig mouse_button_config,
+    std::vector<mojom::ButtonRemappingPtr>& current_button_remappings) {
+  auto default_remappings =
+      GetButtonRemappingListForConfig(mouse_button_config);
+  for (auto& remapping : default_remappings) {
+    const auto iter = base::ranges::find(
+        current_button_remappings, *remapping->button,
+        [](const mojom::ButtonRemappingPtr& current_remapping) {
+          return *current_remapping->button;
+        });
+    if (iter == current_button_remappings.end()) {
+      current_button_remappings.push_back(std::move(remapping));
+    }
+  }
+}
+
 // GetMouseSettingsFromPrefs returns a mouse settings based on user prefs
 // to be used as settings for new mouses.
 mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
@@ -334,8 +353,11 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
     const auto* button_remappings_list =
         button_remappings_dict.FindList(mouse->device_key);
     if (button_remappings_list) {
-      mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
+      auto button_remappings = ConvertListToButtonRemappingArray(
           *button_remappings_list, mouse->customization_restriction);
+      UpdateButtonRemappingsWithCompleteList(mouse->mouse_button_config,
+                                             button_remappings);
+      mouse->settings->button_remappings = std::move(button_remappings);
     } else {
       mouse->settings->button_remappings =
           GetButtonRemappingListForConfig(mouse->mouse_button_config);
