@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -76,8 +77,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorServiceProviderImpl
   void WritePattern(dbus::MessageWriter* pattern_array_writer,
                     uint8_t start_pos,
                     uint8_t ad_data_type,
-                    const uint8_t* content_of_pattern,
-                    size_t pattern_length);
+                    base::span<const uint8_t> pattern);
 
   const dbus::ObjectPath& object_path() const override;
 

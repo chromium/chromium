@@ -207,8 +207,7 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::WriteProperties(
   variant_writer.OpenArray("(yyay)", &pattern_array_writer);
   for (auto& pattern : filter_->patterns()) {
     WritePattern(&pattern_array_writer, pattern.start_position(),
-                 static_cast<uint8_t>(pattern.data_type()), &pattern.value()[0],
-                 pattern.value().size());
+                 static_cast<uint8_t>(pattern.data_type()), pattern.value());
   }
   variant_writer.CloseContainer(&pattern_array_writer);
 
@@ -230,15 +229,13 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::WritePattern(
     dbus::MessageWriter* pattern_array_writer,
     uint8_t start_pos,
     uint8_t ad_data_type,
-    const uint8_t* content_of_pattern,
-    size_t pattern_length) {
+    base::span<const uint8_t> pattern) {
   dbus::MessageWriter struct_writer(nullptr);
   pattern_array_writer->OpenStruct(&struct_writer);
 
   struct_writer.AppendByte(start_pos);
   struct_writer.AppendByte(ad_data_type);
-  struct_writer.AppendArrayOfBytes(
-      base::make_span(content_of_pattern, pattern_length));
+  struct_writer.AppendArrayOfBytes(pattern);
   pattern_array_writer->CloseContainer(&struct_writer);
 }
 
