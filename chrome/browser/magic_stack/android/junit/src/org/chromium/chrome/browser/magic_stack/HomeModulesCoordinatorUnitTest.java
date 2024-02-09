@@ -236,6 +236,29 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testGetModuleList_AllModules() {
+        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleList())
+                .thenReturn(
+                        new HashSet<>(
+                                List.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        assertEquals(expectedModuleList, mCoordinator.getModuleList());
+    }
+
+    @Test
+    @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);

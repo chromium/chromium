@@ -344,7 +344,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         // TODO(https://crbug.com/1512962): Gets the modules ranking list using segmentation service
         // API.
         List<Integer> generalModuleList;
-        if (mModuleDelegateHost.isHomeSurface()) {
+        if (HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue()) {
+            generalModuleList =
+                    List.of(
+                            ModuleType.PRICE_CHANGE,
+                            ModuleType.SINGLE_TAB,
+                            ModuleType.TAB_RESUMPTION);
+        } else if (mModuleDelegateHost.isHomeSurface()) {
             generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
         } else if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
             generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
