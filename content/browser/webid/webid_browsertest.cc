@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -83,6 +84,20 @@ static constexpr char kLoggedOutHeaderValue[] = "logged-out";
 
 // Token value in //content/test/data/id_assertion_endpoint.json
 constexpr char kToken[] = "[not a real token]";
+
+constexpr char kJsErrorPrefix[] = "a JavaScript error:";
+
+// Extracts error from `result` removing `kJsErrorPrefix` and removing leading
+// and trailing whitespace and quotes.
+std::string ExtractJsError(const EvalJsResult& result) {
+  if (!base::StartsWith(result.error, kJsErrorPrefix)) {
+    return result.error;
+  }
+
+  std::string error_message = result.error.substr(strlen(kJsErrorPrefix));
+  base::TrimString(error_message, "\n \"", &error_message);
+  return error_message;
+}
 
 bool IsGetRequestWithPath(const HttpRequest& request,
                           const std::string& expected_path) {
@@ -468,10 +483,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
         }) ()
     )";
 
-  std::string expected_error =
-      "a JavaScript error: \"NetworkError: Error "
-      "retrieving a token.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), script).error);
+  std::string expected_error = "NetworkError: Error retrieving a token.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
 }
 
 // Verify that an IdP can register itself.
@@ -512,10 +525,10 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RpCantRegisterIdP) {
   // developer friendly, since this was a call error rather
   // than a user declining the permission error.
   std::string expected_error =
-      "a JavaScript error: \"NotAllowedError: "
-      "User declined the permission to register the Identity Provider.\"\n";
+      "NotAllowedError: User declined the permission to register the Identity "
+      "Provider.";
 
-  EXPECT_EQ(expected_error, EvalJs(shell(), script).error);
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
 }
 
 // Verify that an IdP can unregister itself.
@@ -1032,10 +1045,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalCredentialCallback callback) {
             EXPECT_EQ(
-                "a JavaScript error: \"AbortError: Only one "
-                "navigator.credentials.get request may be outstanding at one "
-                "time.\"\n",
-                EvalJs(shell(), script).error);
+                "AbortError: Only one navigator.credentials.get request may be "
+                "outstanding at one time.",
+                ExtractJsError(EvalJs(shell(), script)));
             std::move(callback).Run("test-mdoc");
           }));
 
@@ -1262,9 +1274,9 @@ IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
   idp_server()->SetConfigResponseDetails(config_details);
 
   std::string expected_error =
-      "a JavaScript error: \"IdentityCredentialError: Error "
-      "retrieving a token.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
+      "IdentityCredentialError: Error retrieving a token.";
+  EXPECT_EQ(expected_error,
+            ExtractJsError(EvalJs(shell(), GetBasicRequestString())));
 }
 
 // Verify that auto re-authn can be triggered if the Rp is on the
