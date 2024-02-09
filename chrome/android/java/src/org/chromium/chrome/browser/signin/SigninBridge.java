@@ -71,11 +71,11 @@ final class SigninBridge {
     /** Opens account picker bottom sheet. */
     @VisibleForTesting
     @CalledByNative
-    static void openAccountPickerBottomSheet(WindowAndroid windowAndroid, String continueUrl) {
+    static void openAccountPickerBottomSheet(
+            Profile profile, WindowAndroid windowAndroid, String continueUrl) {
         ThreadUtils.assertOnUiThread();
         SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
         if (!signinManager.isSyncOptInAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
