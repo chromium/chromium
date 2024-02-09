@@ -6890,11 +6890,6 @@ const char kMeteredShowToggleDescription[] =
     "The toggle allows users to set whether a network should be considered "
     "metered for purposes of bandwith usage (e.g. for automatic updates).";
 
-const char kMicrophoneMuteNotificationsName[] = "Microphone Mute Notifications";
-const char kMicrophoneMuteNotificationsDescription[] =
-    "Enables notifications that are shown when an app tries to use microphone "
-    "while audio input is muted.";
-
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =
     "Support for detecting the state of hardware microphone mute toggle. Only "

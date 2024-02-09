@@ -3970,9 +3970,6 @@ extern const char kMediaAppPdfA11yOcrDescription[];
 extern const char kMeteredShowToggleName[];
 extern const char kMeteredShowToggleDescription[];
 
-extern const char kMicrophoneMuteNotificationsName[];
-extern const char kMicrophoneMuteNotificationsDescription[];
-
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
 
