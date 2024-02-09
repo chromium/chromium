@@ -284,8 +284,11 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   password = GenerateMaxEntropyPassword(std::move(actual_spec));
 
   // Catch cases where supplied spec is infeasible.
-  if (password.empty())
+  // TODO(b/40065733): we should never generate specs for small generated
+  // passwords
+  if (password.size() < 4) {
     password = GenerateMaxEntropyPassword(BuildDefaultSpec());
+  }
 
   CHECK_LE(4u, password.size());
   return password;
