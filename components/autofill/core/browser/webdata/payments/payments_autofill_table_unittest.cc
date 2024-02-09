@@ -1590,89 +1590,103 @@ TEST_F(PaymentsAutofillTableTest, RemoveAllVirtualCardUsageData) {
   EXPECT_TRUE(usage_data.empty());
 }
 
-TEST_F(PaymentsAutofillTableTest, AddMaskedBankAccount) {
-  BankAccount bank_account_to_store_1 = test::CreatePixBankAccount(100);
-  BankAccount bank_account_to_store_2 = test::CreatePixBankAccount(200);
-  table_.get()->AddMaskedBankAccount(bank_account_to_store_1);
-  table_.get()->AddMaskedBankAccount(bank_account_to_store_2);
+TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
+  // Populate masked_bank_accounts table.
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(100, 'bank_name', 'account_number_suffix', 1, 'nickname', "
+      "'http://display-icon-url.com');"
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
+      "'http://display-icon-url2.com');"));
 
-  // Verify bank account 1 is correctly retrieved.
-  std::unique_ptr<BankAccount> bank_account_from_db_1 =
-      table_->GetMaskedBankAccount(
-          bank_account_to_store_1.payment_instrument().instrument_id());
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  table_->GetMaskedBankAccounts(bank_accounts_from_db);
 
-  ASSERT_TRUE(bank_account_from_db_1);
-  EXPECT_EQ(bank_account_to_store_1, *bank_account_from_db_1);
+  EXPECT_EQ(2u, bank_accounts_from_db.size());
 
-  // Verify bank account 2 is correctly retrieved.
-  std::unique_ptr<BankAccount> bank_account_from_db_2 =
-      table_->GetMaskedBankAccount(
-          bank_account_to_store_2.payment_instrument().instrument_id());
-
-  ASSERT_TRUE(bank_account_from_db_2);
-  EXPECT_EQ(bank_account_to_store_2, *bank_account_from_db_2);
-}
-
-TEST_F(PaymentsAutofillTableTest, UpdateMaskedBankAccount) {
-  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
-  ASSERT_TRUE(table_.get()->AddMaskedBankAccount(bank_account_to_store));
-
-  BankAccount updated_bank_account_to_store(
-      100, u"updated_nickname", GURL("http://www.updated-example.com"),
-      u"updated_bank_name", u"updated_account_number_suffix",
-      BankAccount::AccountType::kSalary);
-  ASSERT_TRUE(
-      table_.get()->UpdateMaskedBankAccount(updated_bank_account_to_store));
-
-  std::unique_ptr<BankAccount> bank_account_from_db =
-      table_->GetMaskedBankAccount(
-          bank_account_to_store.payment_instrument().instrument_id());
-
-  ASSERT_TRUE(bank_account_from_db);
-  EXPECT_EQ(updated_bank_account_to_store, *bank_account_from_db);
-}
-
-TEST_F(PaymentsAutofillTableTest, RemoveMaskedBankAccount) {
-  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
-  ASSERT_TRUE(table_.get()->AddMaskedBankAccount(bank_account_to_store));
-
-  // Remove bank account from db.
-  ASSERT_TRUE(table_.get()->RemoveMaskedBankAccount(bank_account_to_store));
-
-  // Verify row is deleted from bank_accounts table.
-  sql::Statement bank_accounts_select(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT COUNT(*) "
-          "FROM masked_bank_accounts WHERE instrument_id = ?"));
-  bank_accounts_select.BindInt64(
-      0, bank_account_to_store.payment_instrument().instrument_id());
-  EXPECT_TRUE(bank_accounts_select.Step());
-  EXPECT_EQ(0, bank_accounts_select.ColumnInt(0));
-}
-
-TEST_F(PaymentsAutofillTableTest, GetPaymentInstrument) {
-  sql::Statement bank_accounts_insert(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
-          "account_number_suffix, account_type, nickname, display_icon_url) "
-          "VALUES(100, 'bank_name', "
-          "'account_number_suffix', 1, 'nickname', "
-          "'http://display-icon-url.com')"));
-  EXPECT_TRUE(bank_accounts_insert.Run());
-
-  std::unique_ptr<BankAccount> bank_account_from_db =
-      table_->GetMaskedBankAccount(100);
-
-  ASSERT_TRUE(bank_account_from_db);
-  EXPECT_EQ(100, bank_account_from_db->payment_instrument().instrument_id());
-  EXPECT_EQ(u"nickname", bank_account_from_db->payment_instrument().nickname());
-  EXPECT_EQ(static_cast<BankAccount::AccountType>(1),
-            bank_account_from_db->account_type());
+  BankAccount bank_account_from_db_1 = *bank_accounts_from_db.at(0).get();
+  EXPECT_EQ(100, bank_account_from_db_1.payment_instrument().instrument_id());
+  EXPECT_EQ(u"bank_name", bank_account_from_db_1.bank_name());
   EXPECT_EQ(u"account_number_suffix",
-            bank_account_from_db->account_number_suffix());
+            bank_account_from_db_1.account_number_suffix());
+  EXPECT_EQ(static_cast<BankAccount::AccountType>(1),
+            bank_account_from_db_1.account_type());
+  EXPECT_EQ(u"nickname",
+            bank_account_from_db_1.payment_instrument().nickname());
   EXPECT_EQ(GURL("http://display-icon-url.com"),
-            bank_account_from_db->payment_instrument().display_icon_url());
-  EXPECT_EQ(u"bank_name", bank_account_from_db->bank_name());
+            bank_account_from_db_1.payment_instrument().display_icon_url());
+
+  BankAccount bank_account_from_db_2 = *bank_accounts_from_db.at(1).get();
+  EXPECT_EQ(200, bank_account_from_db_2.payment_instrument().instrument_id());
+  EXPECT_EQ(u"bank_name_2", bank_account_from_db_2.bank_name());
+  EXPECT_EQ(u"account_number_suffix_2",
+            bank_account_from_db_2.account_number_suffix());
+  EXPECT_EQ(static_cast<BankAccount::AccountType>(3),
+            bank_account_from_db_2.account_type());
+  EXPECT_EQ(u"nickname_2",
+            bank_account_from_db_2.payment_instrument().nickname());
+  EXPECT_EQ(GURL("http://display-icon-url2.com"),
+            bank_account_from_db_2.payment_instrument().display_icon_url());
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       GetMaskedBankAccounts_BankAccountTypeOutOfBounds) {
+  // Populate masked_bank_accounts table with the first row to have an invalid
+  // bank account type with value 100.
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(100, 'bank_name', 'account_number_suffix', 100, 'nickname', "
+      "'http://display-icon-url.com');"
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
+      "'http://display-icon-url2.com');"));
+
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  table_->GetMaskedBankAccounts(bank_accounts_from_db);
+
+  // Expect only one bank account since the other one has an invalid bank
+  // account type.
+  EXPECT_EQ(1u, bank_accounts_from_db.size());
+  // Verify that the returned bank account maps to the second row in the table.
+  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  EXPECT_EQ(200, bank_account_from_db.payment_instrument().instrument_id());
+}
+
+TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
+  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(100, 'bank_name', 'account_number_suffix', 1, 'nickname', "
+      "'http://display-icon-url.com');"
+      "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
+      "account_number_suffix, account_type, nickname, display_icon_url) "
+      "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
+      "'http://display-icon-url2.com');"));
+
+  // Verify that GetMaskedBankAccounts returns 2 bank accounts.
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  table_->GetMaskedBankAccounts(bank_accounts_from_db);
+  EXPECT_EQ(2u, bank_accounts_from_db.size());
+
+  // Create bank account with different id from the ones above.
+  BankAccount bank_account_to_store = test::CreatePixBankAccount(8000);
+  std::vector<BankAccount> bank_accounts_to_store;
+  bank_accounts_to_store.push_back(bank_account_to_store);
+  table_->SetMaskedBankAccounts(bank_accounts_to_store);
+
+  // Verify that GetMaskedBankAccounts returns 1 bank account.
+  table_->GetMaskedBankAccounts(bank_accounts_from_db);
+  EXPECT_EQ(1u, bank_accounts_from_db.size());
+
+  // Verify that the instrument id of the returned bank account matches the one
+  // that was stored.
+  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  EXPECT_EQ(8000, bank_account_from_db.payment_instrument().instrument_id());
 }
 
 }  // namespace autofill

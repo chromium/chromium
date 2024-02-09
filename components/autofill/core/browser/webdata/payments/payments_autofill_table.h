@@ -352,16 +352,12 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
-  // Records a single BankAccount in the bank accounts table. Returns true if
-  // the BankAccount was successfully added to the database.
-  bool AddMaskedBankAccount(const BankAccount& bank_account);
-  // Returns true if the BankAccount was successfully updated in the database.
-  bool UpdateMaskedBankAccount(const BankAccount& bank_account);
-  // Delete the bank account from the database.
-  bool RemoveMaskedBankAccount(const BankAccount& bank_account);
-  // Retrieve the data from the `masked_bank_accounts` table and return a
-  // BankAccount object.
-  std::unique_ptr<BankAccount> GetMaskedBankAccount(int64_t instrument_id);
+  // Rewrites the bank accounts table. Returns true if all bank accounts were
+  // successfully added to the database.
+  bool SetMaskedBankAccounts(const std::vector<BankAccount>& bank_accounts);
+  // Retrieve all bank accounts from the database.
+  bool GetMaskedBankAccounts(
+      std::vector<std::unique_ptr<BankAccount>>& bank_accounts);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);

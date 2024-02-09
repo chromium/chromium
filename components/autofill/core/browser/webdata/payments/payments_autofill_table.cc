@@ -533,94 +533,58 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
   return true;
 }
 
-std::unique_ptr<BankAccount> PaymentsAutofillTable::GetMaskedBankAccount(
-    int64_t instrument_id) {
-  sql::Statement s;
-  SelectBuilder(db_, s, kMaskedBankAccountsTable,
-                {kBankName, kAccountNumberSuffix, kAccountType, kNickname,
-                 kDisplayIconUrl},
-                "WHERE instrument_id = ?");
-  s.BindInt64(0, instrument_id);
-
-  if (!s.Step()) {
-    return nullptr;
-  }
-  int index = 0;
-  auto bank_name = s.ColumnString16(index++);
-  auto account_number_suffix = s.ColumnString16(index++);
-  int account_type = s.ColumnInt(index++);
-  auto nickname = s.ColumnString16(index++);
-  auto display_icon_url = s.ColumnString16(index++);
-  if (account_type >
-          static_cast<int>(BankAccount::AccountType::kTransactingAccount) ||
-      account_type < static_cast<int>(BankAccount::AccountType::kUnknown)) {
-    return nullptr;
-  }
-  return std::make_unique<BankAccount>(
-      instrument_id, nickname, GURL(display_icon_url), bank_name,
-      account_number_suffix,
-      static_cast<BankAccount::AccountType>(account_type));
-}
-
-bool PaymentsAutofillTable::AddMaskedBankAccount(
-    const BankAccount& bank_account) {
+bool PaymentsAutofillTable::SetMaskedBankAccounts(
+    const std::vector<BankAccount>& bank_accounts) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
     return false;
   }
 
-  // Add bank account.
+  // Deletes all old values.
+  Delete(db_, kMaskedBankAccountsTable);
+
+  // Add bank accounts.
   sql::Statement insert;
   InsertBuilder(db_, insert, kMaskedBankAccountsTable,
                 {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType,
                  kNickname, kDisplayIconUrl});
-  BindMaskedBankAccountToStatement(bank_account, &insert);
-  if (!insert.Run()) {
-    return false;
+  for (BankAccount bank_account : bank_accounts) {
+    BindMaskedBankAccountToStatement(bank_account, &insert);
+    if (!insert.Run()) {
+      return false;
+    }
+    insert.Reset(/*clear_bound_vars=*/true);
   }
-
   return transaction.Commit();
 }
 
-bool PaymentsAutofillTable::UpdateMaskedBankAccount(
-    const BankAccount& bank_account) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin()) {
-    return false;
-  }
+bool PaymentsAutofillTable::GetMaskedBankAccounts(
+    std::vector<std::unique_ptr<BankAccount>>& bank_accounts) {
+  sql::Statement s;
+  bank_accounts.clear();
 
-  // Update bank account.
-  sql::Statement update;
-  UpdateBuilder(db_, update, kMaskedBankAccountsTable,
+  SelectBuilder(db_, s, kMaskedBankAccountsTable,
                 {kInstrumentId, kBankName, kAccountNumberSuffix, kAccountType,
-                 kNickname, kDisplayIconUrl},
-                base::StrCat({kInstrumentId, "=?1"}));
-  BindMaskedBankAccountToStatement(bank_account, &update);
-  if (!update.Run()) {
-    return false;
+                 kNickname, kDisplayIconUrl});
+  while (s.Step()) {
+    int index = 0;
+    auto instrument_id = s.ColumnInt64(index++);
+    auto bank_name = s.ColumnString16(index++);
+    auto account_number_suffix = s.ColumnString16(index++);
+    int account_type = s.ColumnInt(index++);
+    auto nickname = s.ColumnString16(index++);
+    auto display_icon_url = s.ColumnString16(index++);
+    if (account_type >
+            static_cast<int>(BankAccount::AccountType::kTransactingAccount) ||
+        account_type < static_cast<int>(BankAccount::AccountType::kUnknown)) {
+      continue;
+    }
+    bank_accounts.push_back(std::make_unique<BankAccount>(
+        instrument_id, nickname, GURL(display_icon_url), bank_name,
+        account_number_suffix,
+        static_cast<BankAccount::AccountType>(account_type)));
   }
-
-  return transaction.Commit();
-}
-
-bool PaymentsAutofillTable::RemoveMaskedBankAccount(
-    const BankAccount& bank_account) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin()) {
-    return false;
-  }
-
-  sql::Statement bank_accounts_delete;
-  DeleteBuilder(db_, bank_accounts_delete, kMaskedBankAccountsTable,
-                base::StrCat({kInstrumentId, "=?"}));
-  bank_accounts_delete.BindInt64(
-      0, bank_account.payment_instrument().instrument_id());
-  if (!bank_accounts_delete.Run()) {
-    return false;
-  }
-  // TODO(crbug.com/1475426) : Delete row from `masked_bank_accounts_metadata`
-  // table.
-  return transaction.Commit();
+  return s.Succeeded();
 }
 
 bool PaymentsAutofillTable::AddLocalIban(const Iban& iban) {
