@@ -58,6 +58,7 @@ ts_modules = [
   "settings.ts",
   "string_util.ts",
   "word_utils.ts",
+  "testing/test_import_manager.ts",
   "tree_walker.ts",
 ]
 

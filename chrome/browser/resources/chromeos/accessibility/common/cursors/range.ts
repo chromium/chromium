@@ -10,6 +10,7 @@
 import {AutomationPredicate} from '../automation_predicate.js';
 import {AutomationUtil} from '../automation_util.js';
 import {constants} from '../constants.js';
+import {TestImportManager} from '../testing/test_import_manager.js';
 
 import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from './cursor.js';
 
@@ -354,3 +355,5 @@ export class CursorRange {
     return this.start_.wrapped || this.end_.wrapped;
   }
 }
+
+TestImportManager.exportForTesting(CursorRange);

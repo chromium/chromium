@@ -8,6 +8,7 @@
 AccessibilityTestBase = class extends testing.Test {
   /** @override */
   setUp() {
+    TestImportManager.importForTesting();
     const runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async () => {
       await this.setUpDeferred();
