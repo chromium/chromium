@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_lookup.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -30,6 +32,8 @@
 namespace ash {
 namespace {
 
+using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
+
 const int64_t kTimeOutMilliseconds = 2000;
 // Color of the text of the warning message.
 const SkColor kTextColor = SK_ColorWHITE;
@@ -43,10 +47,20 @@ const int kVerticalMarginAroundText = 100;
 class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
  public:
   ExitWarningWidgetDelegateView()
-      : text_(l10n_util::GetStringUTF16(IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT)),
-        accessible_name_(l10n_util::GetStringUTF16(
+      : accessible_name_(l10n_util::GetStringUTF16(
             IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE)),
         text_width_(0) {
+    std::vector<AcceleratorDetails> accelerators =
+        Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
+            AcceleratorAction::kExit);
+    CHECK(!accelerators.empty());
+    // TODO(jimmyxgong): For now fetch the first accelerator of the list. But
+    // maybe there's a possibility to check which accelerator was most recently
+    // pressed.
+    text_ = l10n_util::GetStringFUTF16(
+        IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_DYNAMIC,
+        AcceleratorLookup::GetAcceleratorDetailsText(accelerators[0]));
+
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     const gfx::FontList& font_list =
         rb.GetFontList(ui::ResourceBundle::LargeFont);

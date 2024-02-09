@@ -3776,6 +3776,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
         Press Ctrl+Shift+Q twice to sign out.
       </message>
+      <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_DYNAMIC" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
+        Press <ph name="accelerator">$1<ex>Ctrl+Shift+Q</ex></ph> twice to sign out.
+      </message>
       <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE" desc="The message used by accessibility to indicate the content of the popup when the user preses the exit shortcut in chrome-os.">
         Press Control Shift Q twice to sign out.
       </message>
@@ -3909,6 +3912,22 @@ Some features are limited to increase battery life.
       <message name="IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG"
                desc="Notification message to tell users that they just pressed the Ctrl+Search+M shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
         Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.
+      </message>
+
+      <message name="IDS_ASH_ACCELERATOR_LAUNCHER_KEY" desc="Label for the launcher key in ChromeOS keyboards.">
+        launcher
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_SEARCH_KEY" desc="Label for the search key in ChromeOS keyboards.">
+        search
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_SHIFT_KEY" desc="Label for the search key in ChromeOS keyboards.">
+        shift
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_CONTROL_KEY" desc="Label for the control key in ChromeOS keyboards.">
+        ctrl
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_ALT_KEY" desc="Label for the alt key in ChromeOS keyboards.">
+        alt
       </message>
 
       <!-- Accelerator Actions-->
