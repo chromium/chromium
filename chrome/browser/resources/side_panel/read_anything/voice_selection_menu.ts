@@ -32,13 +32,13 @@ interface VoiceDropdown {
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
-// TODO add tests for this component
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
   private readonly availableVoices: SpeechSynthesisVoice[];
   private readonly selectedVoice: SpeechSynthesisVoice;
+  private readonly previewVoicePlaying: SpeechSynthesisVoice;
 
   private voicePlayingWhenMenuOpened_: boolean = false;
 

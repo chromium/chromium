@@ -92,12 +92,15 @@ suite('VoiceSelectionMenuElement', () => {
 
   suite('with multiple available voices', () => {
     let selectedVoice: SpeechSynthesisVoice;
+    let previewVoice: SpeechSynthesisVoice;
 
     setup(() => {
       selectedVoice = {name: 'test voice 3'} as SpeechSynthesisVoice;
+      previewVoice = {name: 'test voice 1'} as SpeechSynthesisVoice;
+
       availableVoices = [
         {name: 'test voice 0'} as SpeechSynthesisVoice,
-        {name: 'test voice 1'} as SpeechSynthesisVoice,
+        previewVoice,
         {name: 'test voice 2'} as SpeechSynthesisVoice,
         selectedVoice,
       ];
@@ -122,6 +125,75 @@ suite('VoiceSelectionMenuElement', () => {
       assertEquals(dropdownItems.length, 4);
       assertFalse(isHiddenWithCss(checkMarkSelectedVoice));
       assertTrue(isHiddenWithCss(checkMarkVoice0));
+    });
+
+    suite('when preview starts playing', () => {
+      setup(() => {
+        // Click button to display dropdown menu
+        const button =
+            voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
+                '#voice-selection')!;
+        button!.click();
+
+        // Bypass Typescript compiler to allow us to set a private readonly
+        // property
+        // @ts-ignore
+        voiceSelectionMenu.previewVoicePlaying = previewVoice;
+        flush();
+      });
+
+      test('it shows preview-playing button when preview plays', () => {
+        const dropdownItems: NodeListOf<HTMLElement> =
+            voiceSelectionMenu.$.voiceSelectionMenu
+                .querySelectorAll<HTMLButtonElement>('.dropdown-item');
+
+        const playIconVoice0 =
+            dropdownItems.item(0)!.querySelector<HTMLElement>('#play-icon')!;
+        const pauseIconVoice0 =
+            dropdownItems.item(0)!.querySelector<HTMLElement>('#pause-icon')!;
+        const playIconOfPreviewVoice =
+            dropdownItems.item(1)!.querySelector<HTMLElement>('#play-icon')!;
+        const pauseIconOfPreviewVoice =
+            dropdownItems.item(1)!.querySelector<HTMLElement>('#pause-icon')!;
+
+        // The play icon should flip to pause for the voice being previewed
+        assertFalse(isPositionedOnPage(playIconOfPreviewVoice));
+        assertTrue(isPositionedOnPage(pauseIconOfPreviewVoice));
+        // The play icon should remain for the other buttons
+        assertTrue(isPositionedOnPage(playIconVoice0));
+        assertFalse(isPositionedOnPage(pauseIconVoice0));
+      });
+
+      suite('when preview finishes playing', () => {
+        setup(() => {
+          // Bypass Typescript compiler to allow us to set a private readonly
+          // property
+          // @ts-ignore
+          voiceSelectionMenu.previewVoicePlaying = null;
+          flush();
+        });
+
+        test('it flips the preview pause button back to play', () => {
+          const dropdownItems: NodeListOf<HTMLElement> =
+              voiceSelectionMenu.$.voiceSelectionMenu
+                  .querySelectorAll<HTMLButtonElement>('.dropdown-item');
+
+          const playIconVoice0 =
+              dropdownItems.item(0)!.querySelector<HTMLElement>('#play-icon')!;
+          const pauseIconVoice0 =
+              dropdownItems.item(0)!.querySelector<HTMLElement>('#pause-icon')!;
+          const playIconOfPreviewVoice =
+              dropdownItems.item(1)!.querySelector<HTMLElement>('#play-icon')!;
+          const pauseIconOfPreviewVoice =
+              dropdownItems.item(1)!.querySelector<HTMLElement>('#pause-icon')!;
+
+          // All icons should be play icons because no preview is playing
+          assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
+          assertFalse(isPositionedOnPage(pauseIconOfPreviewVoice));
+          assertTrue(isPositionedOnPage(playIconVoice0));
+          assertFalse(isPositionedOnPage(pauseIconVoice0));
+        });
+      });
     });
   });
 });
