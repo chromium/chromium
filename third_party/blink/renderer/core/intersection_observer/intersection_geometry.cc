@@ -715,6 +715,32 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     cached_rects->valid = true;
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+    // TODO(wangxianzhu): Remove or clean up this code after fixing
+    // crbug.com/41492283.
+    if (!cached_rects->min_scroll_delta_to_update.IsZero() &&
+        root_and_target.relationship == RootAndTarget::kScrollableByRootOnly &&
+        CanUseGeometryMapper(*root_and_target.target) &&
+        cached_rects->local_target_rect.size() !=
+            cached_rects->unscrolled_unclipped_intersection_rect.size()) {
+      // There are no intermediate clippers, no non-2d-translation transforms.
+      // Why is unscrolled_unclipped_intersection_rect.size() different?
+      PropertyTreeStateOrAlias container_properties =
+          PropertyTreeState::Uninitialized();
+      root_and_target.target->GetPropertyContainer(nullptr,
+                                                   &container_properties);
+      auto root_state =
+          root_and_target.root->FirstFragment().ContentsProperties();
+      StringBuilder sb;
+      for (const auto* clip = &container_properties.Clip();
+           clip != &root_state.Clip(); clip = clip->Parent()) {
+        sb.Append('\n');
+        sb.Append(clip->ToString());
+      }
+      NOTREACHED()
+          << cached_rects->local_target_rect.ToString() << " "
+          << cached_rects->unscrolled_unclipped_intersection_rect.ToString()
+          << sb.ToString().Utf8();
+    }
     cached_rects->computed_min_scroll_delta_to_update =
         cached_rects->min_scroll_delta_to_update;
     cached_rects->local_root_rect = root_geometry.local_root_rect;
