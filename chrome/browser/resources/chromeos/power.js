@@ -59,7 +59,7 @@ function plotLineGraph(
   }
 
   for (let count = 0; count < plots.length; count++) {
-    if (plots[count].data.length != size) {
+    if (plots[count].data.length !== size) {
       throw new Error('Mismatch in time and plot data.');
     }
   }
@@ -309,7 +309,7 @@ function plotLineGraph(
           intervalStart = Math.max(i - 1, 0);
         }
 
-        if (i == size - 1) {
+        if (i === size - 1) {
           // If this is the last sample, just draw missing rect.
           drawMissingRect(intervalStart, i);
         }
@@ -371,7 +371,7 @@ function plotLineGraph(
       return;
     }
 
-    if (width == size) {
+    if (width === size) {
       drawTimeGuide(Math.round(x - xOrigin));
     } else {
       drawTimeGuide(Math.round((x - xOrigin) / (width - 1) * (size - 1)));
@@ -486,13 +486,13 @@ function addTimeDataSample(
     plots, tData, absTime, sampleArray, sampleTime, previousSampleTime,
     systemResumedArray) {
   for (let i = 0; i < plots.length; i++) {
-    if (plots[i].data.length != tData.length) {
+    if (plots[i].data.length !== tData.length) {
       throw new Error('Mismatch in time and plot data.');
     }
   }
 
   let time;
-  if (tData.length == 0) {
+  if (tData.length === 0) {
     time = new Date(sampleTime);
     absTime[0] = sampleTime;
     tData[0] = time.toLocaleTimeString();
@@ -623,7 +623,7 @@ function showBatteryChargeData({powerSupplyData, systemResumedData}) {
         [dischargeRate, movingAverage, binnedAverage], powerSupplyData[i].time,
         powerSupplyData[j].time, systemResumedData);
   }
-  if (minDischargeRate == maxDischargeRate) {
+  if (minDischargeRate === maxDischargeRate) {
     // This means that all the samples had the same value. Hence, offset the
     // extremes by a bit so that the plot looks good.
     minDischargeRate -= 1;
@@ -686,7 +686,7 @@ function showStateOccupancyData(
   let absTime;
   for (let cpu = 0; cpu < timeInStateData.length; cpu++) {
     const cpuData = timeInStateData[cpu];
-    if (cpuData.length == 0) {
+    if (cpuData.length === 0) {
       cpuPlots[cpu] = {plots: [], tData: []};
       continue;
     }
@@ -715,7 +715,7 @@ function showStateOccupancyData(
     }
     // If stateCount is 0, then it means the CPU has been offline
     // throughout. Just add a single plot for such a case.
-    if (stateCount == 0) {
+    if (stateCount === 0) {
       plots.push({name: null, data: [], color: null});
       stateCount = 1;  // Some invalid state!
     }

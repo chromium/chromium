@@ -165,7 +165,7 @@ function updateInFlightOperations(inFlightOperations) {
   const existingNodes = container.childNodes;
   for (let i = existingNodes.length - 1; i >= 0; i--) {
     const node = existingNodes[i];
-    if (node.className == 'in-flight-operation') {
+    if (node.className === 'in-flight-operation') {
       container.removeChild(node);
     }
   }
@@ -328,7 +328,7 @@ function updateKeyValueList(ul, list) {
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
     let text = item.key;
-    if (item.value != '') {
+    if (item.value !== '') {
       text += ': ' + item.value;
     }
 
