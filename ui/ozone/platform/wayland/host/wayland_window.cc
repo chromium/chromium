@@ -641,6 +641,24 @@ EventTargeter* WaylandWindow::GetEventTargeter() {
   return nullptr;
 }
 
+void WaylandWindow::OcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {
+  // Put non-synchronized occlusion state updates into pending occlusion state
+  // as well, to avoid an earlier pending synchronized occlusion state update
+  // being applied later and overwriting a non-synchronized occlusion state that
+  // happened in between. This can only happen if a non-synchronized occlusion
+  // state update is sent after configure is initiated from the server but
+  // before it is finalized (and the pending state is applied). It's also safe
+  // to overwrite the current pending state from a configure, because there's no
+  // happens-before/after guarantees on unsynchronised state setting w.r.t.
+  // configures, so it would be valid for the configure ack's commit to have the
+  // unsynchronised occlusion state set, if that happened after configure but
+  // before the corresponding frame was produced.
+  // TODO(crbug.com/1278648): Remove this once the oldest ash we want to use
+  // supports synchronized occlusion state in configure.
+  SetPendingOcclusionState(occlusion_state);
+}
+
 void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
   NOTREACHED()
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";

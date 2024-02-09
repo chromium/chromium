@@ -17,7 +17,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kZAuraShellVersion = 60;
+constexpr uint32_t kZAuraShellVersion = 65;
 constexpr uint32_t kZAuraOutputVersion = 44;
 
 void GetAuraSurface(wl_client* client,

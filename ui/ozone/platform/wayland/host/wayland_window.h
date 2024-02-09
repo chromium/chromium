@@ -224,6 +224,10 @@ class WaylandWindow : public PlatformWindow,
   std::unique_ptr<EventTargetIterator> GetChildIterator() const override;
   EventTargeter* GetEventTargeter() override;
 
+  // WaylandZAuraSurface::Delegate:
+  void OcclusionStateChanged(
+      PlatformWindowOcclusionState occlusion_state) override;
+
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
   // currently bound to.
@@ -278,6 +282,11 @@ class WaylandWindow : public PlatformWindow,
   // Sets the raster scale to be applied on the next configure.
   void SetPendingRasterScale(float scale) {
     pending_configure_state_.raster_scale = scale;
+  }
+
+  // Sets the raster scale to be applied on the next configure.
+  void SetPendingOcclusionState(PlatformWindowOcclusionState occlusion_state) {
+    pending_configure_state_.occlusion_state = occlusion_state;
   }
 
   // See comments on the member variable for an explanation of this.
@@ -459,6 +468,7 @@ class WaylandWindow : public PlatformWindow,
     absl::optional<gfx::Rect> bounds_dip;
     absl::optional<gfx::Size> size_px;
     absl::optional<float> raster_scale;
+    absl::optional<PlatformWindowOcclusionState> occlusion_state;
   };
 
   // This holds the requested state for the next configure from the server.

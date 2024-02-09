@@ -452,6 +452,19 @@ void XDGToplevelWrapperImpl::OnOverviewChange(void* data,
       in_overview_as_uint);
 }
 
+// static
+void XDGToplevelWrapperImpl::OnConfigureOcclusionState(
+    void* data,
+    struct zaura_toplevel* zaura_toplevel,
+    uint32_t mode) {
+  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(surface);
+  auto* wayland_window = static_cast<WaylandWindow*>(surface->wayland_window_);
+  auto occlusion_state =
+      WaylandOcclusionStateToPlatformWindowOcclusionState(mode);
+  wayland_window->SetPendingOcclusionState(occlusion_state);
+}
+
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
@@ -588,7 +601,8 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
       .origin_change = &OnOriginChange,
       .configure_raster_scale = &OnConfigureRasterScale,
       .rotate_focus = &OnRotateFocus,
-      .overview_change = &OnOverviewChange};
+      .overview_change = &OnOverviewChange,
+      .configure_occlusion_state = &OnConfigureOcclusionState};
   zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
                               this);
 }

@@ -119,9 +119,14 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                              zaura_toplevel* aura_toplevel,
                              int32_t x,
                              int32_t y);
+
   static void OnConfigureRasterScale(void* data,
-                                     zaura_toplevel* aura_toplevel,
+                                     struct zaura_toplevel* zaura_toplevel,
                                      uint32_t scale_as_uint);
+
+  static void OnConfigureOcclusionState(void* data,
+                                        struct zaura_toplevel* zaura_toplevel,
+                                        uint32_t mode);
   static void OnRotateFocus(void* data,
                             zaura_toplevel* aura_toplevel,
                             uint32_t serial,
