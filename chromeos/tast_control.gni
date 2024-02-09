@@ -193,4 +193,11 @@ if (!is_official_build) {
     "cryptohome.UssMigrationPasswordPin@jacuzzi",
     "cryptohome.UssMigrationPinPassword@jacuzzi",
   ]
+
+  # b/322444880 Should be fixed by the next LKGM uprev.
+  tast_disabled_tests_from_chrome_all += [ "terminal.SSH@octopus" ]
+
+  # b/324521903 temporary disabled until the test fixes
+  tast_disabled_tests_from_chrome_all +=
+      [ "secagentd.AuthenticationEvents.mainline@octopus" ]
 }
