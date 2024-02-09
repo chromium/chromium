@@ -2,29 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.magic_stack;
+package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 
 import android.content.Context;
 import android.os.Bundle;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
 import java.util.Set;
 
 /** Fragment that allows the user to configure chrome home modules related preferences. */
-public class ChromeHomeModulesConfigSettings extends ChromeBaseSettingsFragment {
+public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.home_modules_configuration);
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
-        ChromeHomeModulesConfigManager chromeHomeModulesConfigManager =
-                ChromeHomeModulesConfigManager.getInstance();
+        HomeModulesConfigManager homeModulesConfigManager =
+                HomeModulesConfigManager.getInstance();
 
         ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
         Set<Integer> moduleTypeRegistered = moduleRegistry.getRegisteredModuleTypes();
@@ -34,16 +32,16 @@ public class ChromeHomeModulesConfigSettings extends ChromeBaseSettingsFragment 
 
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
-            currentSwitch.setKey(chromeHomeModulesConfigManager.getPreferenceKey(moduleType));
+            currentSwitch.setKey(homeModulesConfigManager.getPreferenceKey(moduleType));
             currentSwitch.setTitle(getTitleForModuleType(moduleType));
 
             // Set up listeners and update the page.
             boolean isModuleTypeEnabled =
-                    chromeHomeModulesConfigManager.getPrefModuleTypeEnabled(moduleType);
+                    homeModulesConfigManager.getPrefModuleTypeEnabled(moduleType);
             currentSwitch.setChecked(isModuleTypeEnabled);
             currentSwitch.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
-                        chromeHomeModulesConfigManager.setPrefModuleTypeEnabled(
+                        homeModulesConfigManager.setPrefModuleTypeEnabled(
                                 moduleType, (boolean) newValue);
                         return true;
                     });

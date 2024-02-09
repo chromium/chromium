@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.magic_stack;
+package org.chromium.chrome.browser.magic_stack;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -20,38 +20,38 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/** Unit tests for {@link ChromeHomeModulesConfigManager}. */
+/** Unit tests for {@link HomeModulesConfigManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ChromeHomeModulesConfigManagerUnitTest {
+public class HomeModulesConfigManagerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testSetAndGetPrefModuleTypeDisabled() {
-        ChromeHomeModulesConfigManager chromeHomeModulesConfigManager =
-                ChromeHomeModulesConfigManager.getInstance();
+    public void testSetAndGetPrefModuleTypeEnabled() {
+        HomeModulesConfigManager homeModulesConfigManager =
+                HomeModulesConfigManager.getInstance();
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(1));
 
         HomeModulesStateListener listener = Mockito.mock(HomeModulesStateListener.class);
-        chromeHomeModulesConfigManager.addListener(listener);
+        homeModulesConfigManager.addListener(listener);
 
         ChromeSharedPreferences.getInstance().writeBoolean(priceChangePreferenceKey, true);
         Assert.assertTrue(
-                chromeHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE));
+                homeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE));
 
         ChromeSharedPreferences.getInstance().writeBoolean(priceChangePreferenceKey, false);
         Assert.assertFalse(
-                chromeHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE));
+                homeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE));
 
-        chromeHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, true);
+        homeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, true);
         Assert.assertTrue(
                 ChromeSharedPreferences.getInstance().readBoolean(priceChangePreferenceKey, true));
         verify(listener).onModuleConfigChanged(eq(ModuleType.PRICE_CHANGE), eq(true));
 
-        chromeHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
+        homeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
         Assert.assertFalse(
                 ChromeSharedPreferences.getInstance().readBoolean(priceChangePreferenceKey, true));
         verify(listener).onModuleConfigChanged(eq(ModuleType.PRICE_CHANGE), eq(false));

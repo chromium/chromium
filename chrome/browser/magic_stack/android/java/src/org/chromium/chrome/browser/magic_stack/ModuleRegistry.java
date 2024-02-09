@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -34,12 +35,12 @@ public class ModuleRegistry {
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
-        static final ModuleRegistry INSTANCE = new ModuleRegistry();
+        static ModuleRegistry sInstance = new ModuleRegistry();
     }
 
     /** Gets the singleton instance for the ModuleRegistry. */
     public static ModuleRegistry getInstance() {
-        return LazyHolder.INSTANCE;
+        return LazyHolder.sInstance;
     }
 
     /** Private constructor, use GetInstance() instead. */
@@ -132,5 +133,12 @@ public class ModuleRegistry {
      */
     public boolean isModuleConfigurable(@ModuleType int key) {
         return key != ModuleType.SINGLE_TAB;
+    }
+
+    /** Sets a mocked instance for testing. */
+    public static void setInstanceForTesting(ModuleRegistry instance) {
+        var oldValue = LazyHolder.sInstance;
+        LazyHolder.sInstance = instance;
+        ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
     }
 }

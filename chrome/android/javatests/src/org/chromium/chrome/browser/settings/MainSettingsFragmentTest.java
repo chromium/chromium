@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
@@ -102,7 +103,6 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-import org.chromium.chrome.features.magic_stack.ChromeHomeModulesConfigSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -776,7 +776,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
         Assert.assertTrue(moduleRegistry.hasCustomizableModule());
         assertSettingsExists(
-                MainSettings.PREF_HOME_MODULES_CONFIG, ChromeHomeModulesConfigSettings.class);
+                MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
     }
 
     @Test
@@ -789,7 +789,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
         Assert.assertTrue(moduleRegistry.hasCustomizableModule());
         assertSettingsExists(
-                MainSettings.PREF_HOME_MODULES_CONFIG, ChromeHomeModulesConfigSettings.class);
+                MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
     }
 
     @Test

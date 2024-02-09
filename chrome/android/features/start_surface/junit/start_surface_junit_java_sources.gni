@@ -4,8 +4,6 @@
 
 start_surface_junit_java_sources = [
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/browser/bookmarks/BookmarkNativesMockRule.java",
-  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/magic_stack/ChromeHomeModulesConfigManagerUnitTest.java",
-  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/magic_stack/ChromeHomeModulesConfigSettingsUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinderUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinatorUnitTest.java",
   "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinatorUnitTestRule.java",
