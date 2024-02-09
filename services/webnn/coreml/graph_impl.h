@@ -54,9 +54,11 @@ class API_AVAILABLE(macos(13.0)) GraphImpl final : public WebNNGraphImpl {
   static absl::optional<CoreMLFeatureInfo> GetCoreMLFeatureInfo(
       const GraphBuilder::OperandInfo* operand_info);
   using CoreMLFeatureInfoMap = base::flat_map<std::string, CoreMLFeatureInfo>;
-  GraphImpl(ComputeResourceInfo compute_resource_info,
-            std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
-            MLModel* ml_model);
+  GraphImpl(
+      ComputeResourceInfo compute_resource_info,
+      std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
+      base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+      MLModel* ml_model);
 
   // Compile the CoreML model and pass the file path for the compiled
   // temporary .modelc file to OnCreateAndBuildSuccess
@@ -70,14 +72,17 @@ class API_AVAILABLE(macos(13.0)) GraphImpl final : public WebNNGraphImpl {
   // Additionally CompilationContext is responsible for cleaning up any
   // on disk artifacts created by the CoreML model compilation process.
   struct CompilationContext {
-    CompilationContext(ComputeResourceInfo compute_resource_info,
-                       std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
-                       base::ScopedTempDir model_file_dir,
-                       mojom::WebNNContext::CreateGraphCallback callback);
+    CompilationContext(
+        ComputeResourceInfo compute_resource_info,
+        std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
+        base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+        base::ScopedTempDir model_file_dir,
+        mojom::WebNNContext::CreateGraphCallback callback);
     ~CompilationContext();
 
     ComputeResourceInfo compute_resource_info;
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info;
+    base::flat_map<std::string, std::string> coreml_name_to_operand_name;
     base::ScopedTempDir model_file_dir;
     base::ScopedTempDir compiled_model_dir;
     MLModel* __strong ml_model;
@@ -98,6 +103,7 @@ class API_AVAILABLE(macos(13.0)) GraphImpl final : public WebNNGraphImpl {
 
  private:
   std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info_;
+  base::flat_map<std::string, std::string> coreml_name_to_operand_name_;
   MLModel* __strong ml_model_;
 };
 

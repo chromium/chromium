@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
 #define SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
 
+#include <cstdint>
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
@@ -12,6 +13,10 @@
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
 
 namespace webnn::coreml {
+
+// Get name identifiers used in CoreML model files for input/output operands.
+std::string GetCoreMLNameFromInput(const std::string& input_name);
+std::string GetCoreMLNameFromOutput(const std::string& output_name);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
 // produce a protobuf message that corresponds to the
@@ -46,7 +51,8 @@ class GraphBuilder {
     OperandInfo(OperandInfo&);
     OperandInfo(OperandInfo&&);
 
-    std::string name;
+    // Identifier for this operand in coreml model file.
+    std::string coreml_name;
     std::vector<uint32_t> dimensions;
     webnn::mojom::Operand_DataType data_type;
   };
@@ -72,6 +78,7 @@ class GraphBuilder {
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
   [[nodiscard]] base::expected<void, std::string> PopulateFeatureDescription(
+      uint64_t operand_id,
       const webnn::mojom::Operand& operand,
       ::CoreML::Specification::FeatureDescription* feature_description);
 
@@ -86,7 +93,8 @@ class GraphBuilder {
  private:
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::NeuralNetwork> neural_network_;
-  std::map<uint64_t, OperandInfo> id_to_node_output_map_;
+  // Used to get operand info to specify input for a neural network layer.
+  std::map<uint64_t, OperandInfo> id_to_layer_input_info_map_;
   std::map<std::string, uint64_t> input_name_to_id_map_;
   unsigned int layer_count_ = 0;
 };

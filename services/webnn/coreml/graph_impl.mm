@@ -11,12 +11,14 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/coreml/graph_builder.h"
 #include "services/webnn/error.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
@@ -120,10 +122,18 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
                          std::move(callback), "Model inputs error."));
       return;
     }
-    input_feature_info_vector.push_back(
-        std::pair<std::string, CoreMLFeatureInfo>(
-            name, std::move(coreml_feature_info.value())));
+    input_feature_info_vector.emplace_back(
+        name, std::move(coreml_feature_info.value()));
   }
+
+  std::vector<std::pair<std::string, std::string>> coreml_name_to_operand_name;
+  for (auto const& output_id : graph_info->output_operands) {
+    auto& name = graph_info->id_to_operand_map.at(output_id)->name;
+    CHECK(name.has_value());
+    coreml_name_to_operand_name.emplace_back(
+        GetCoreMLNameFromOutput(name.value()), name.value());
+  }
+
   auto input_feature_info = std::make_unique<CoreMLFeatureInfoMap>(
       std::move(input_feature_info_vector));
 
@@ -134,7 +144,8 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   // invocation.
   __block auto compilation_context = std::make_unique<CompilationContext>(
       std::move(compute_resource_info), std::move(input_feature_info),
-      std::move(model_file_dir), std::move(callback));
+      std::move(coreml_name_to_operand_name), std::move(model_file_dir),
+      std::move(callback));
 
   // TODO(https://crbug.com/1522278): Add metrics to measure compilation time.
   [MLModel
@@ -195,9 +206,10 @@ void GraphImpl::OnCreateAndBuildSuccess(
   mojo::PendingRemote<mojom::WebNNGraph> webnn_graph;
   // The receiver bound to GraphImpl.
   mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(std::move(context->compute_resource_info),
-                                     std::move(context->input_feature_info),
-                                     context->ml_model)),
+      base::WrapUnique(new GraphImpl(
+          std::move(context->compute_resource_info),
+          std::move(context->input_feature_info),
+          std::move(context->coreml_name_to_operand_name), context->ml_model)),
       webnn_graph.InitWithNewPipeAndPassReceiver());
   std::move(context->callback)
       .Run(mojom::CreateGraphResult::NewGraphRemote(std::move(webnn_graph)));
@@ -270,11 +282,14 @@ absl::optional<GraphImpl::CoreMLFeatureInfo> GraphImpl::GetCoreMLFeatureInfo(
   return GraphImpl::CoreMLFeatureInfo(data_type, shape, stride);
 }
 
-GraphImpl::GraphImpl(ComputeResourceInfo compute_resource_info,
-                     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
-                     MLModel* ml_model)
+GraphImpl::GraphImpl(
+    ComputeResourceInfo compute_resource_info,
+    std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
+    base::flat_map<std::string, std::string> coreml_name_to_operand_name,
+    MLModel* ml_model)
     : WebNNGraphImpl(std::move(compute_resource_info)),
       input_feature_info_(std::move(input_feature_info)),
+      coreml_name_to_operand_name_(std::move(coreml_name_to_operand_name)),
       ml_model_(ml_model) {}
 
 GraphImpl::~GraphImpl() = default;
@@ -288,10 +303,12 @@ void GraphImpl::ComputeImpl(
   NSMutableSet* feature_names = [[NSMutableSet alloc] init];
   NSMutableDictionary* feature_values = [[NSMutableDictionary alloc] init];
   for (auto& [key, buffer] : named_inputs) {
-    NSString* feature_name = [NSString stringWithUTF8String:key.c_str()];
-    [feature_names addObject:feature_name];
     auto feature_info = input_feature_info_->find(key);
     CHECK(feature_info != input_feature_info_->end());
+    NSString* feature_name =
+        base::SysUTF8ToNSString(GetCoreMLNameFromInput(key));
+    [feature_names addObject:feature_name];
+
     MLFeatureValue* feature_value =
         CreateFeatureValue(&feature_info->second, std::move(buffer));
     if (!feature_value) {
@@ -341,7 +358,9 @@ void GraphImpl::ComputeImpl(
   for (NSString* feature_name in output_features.featureNames) {
     MLFeatureValue* feature_value =
         [output_features featureValueForName:feature_name];
-    std::string name = base::SysNSStringToUTF8(feature_name);
+    std::string name =
+        coreml_name_to_operand_name_.at(base::SysNSStringToUTF8(feature_name));
+
     size_t expected_size =
         compute_resource_info().output_name_to_byte_length_map.at(name);
     [feature_value.multiArrayValue
@@ -358,10 +377,12 @@ void GraphImpl::ComputeImpl(
 GraphImpl::CompilationContext::CompilationContext(
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
+    base::flat_map<std::string, std::string> coreml_name_to_operand_name,
     base::ScopedTempDir model_file_dir,
     mojom::WebNNContext::CreateGraphCallback callback)
     : compute_resource_info(std::move(compute_resource_info)),
       input_feature_info(std::move(input_feature_info)),
+      coreml_name_to_operand_name(std::move(coreml_name_to_operand_name)),
       model_file_dir(std::move(model_file_dir)),
       callback(std::move(callback)) {}
 
