@@ -104,12 +104,6 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAllScreens {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
-  [self willFinishPresentingScreens];
-}
-
 #pragma mark - Helper
 
 // Presents the screen of certain `type`.

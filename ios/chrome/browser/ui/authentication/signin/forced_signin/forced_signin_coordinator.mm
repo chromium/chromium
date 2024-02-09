@@ -152,10 +152,6 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAllScreens {
-  [self finishPresentingScreens];
-}
-
 #pragma mark - SigninCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
