@@ -417,7 +417,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // y-offset  = lowered tab container + (tab container size - bg size)/2 -
         // Tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-        mNewTabButton.setY(NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mNewTabButton.setDrawY(NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         mNewTabButton.setIncognito(incognito);
         mNewTabButton.setClickSlop(NEW_TAB_BUTTON_CLICK_SLOP_DP);
@@ -1234,7 +1234,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (isLastTab) {
                 tabStartHidden =
                         tab.getDrawX() + mTabOverlapWidth
-                                < mNewTabButton.getX() + mNewTabButton.getWidth();
+                                < mNewTabButton.getDrawX() + mNewTabButton.getWidth();
             } else {
                 tabStartHidden =
                         tab.getDrawX() + mTabOverlapWidth < getCloseBtnVisibilityThreshold(false);
@@ -1244,7 +1244,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             tabStartHidden = tab.getDrawX() + tab.getWidth() < getCloseBtnVisibilityThreshold(true);
             if (isLastTab) {
                 tabEndHidden =
-                        tab.getDrawX() + tab.getWidth() - mTabOverlapWidth > mNewTabButton.getX();
+                        tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                                > mNewTabButton.getDrawX();
             } else {
                 tabEndHidden =
                         (tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
@@ -2363,11 +2364,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     mUpdateHost.getAnimationHandler(),
                     mNewTabButton,
                     CompositorButton.DRAW_X,
-                    mNewTabButton.getX(),
+                    mNewTabButton.getDrawX(),
                     offset,
                     NEW_TAB_BUTTON_OFFSET_MOVE_MS);
         } else {
-            mNewTabButton.setX(offset);
+            mNewTabButton.setDrawX(offset);
         }
         return null;
     }

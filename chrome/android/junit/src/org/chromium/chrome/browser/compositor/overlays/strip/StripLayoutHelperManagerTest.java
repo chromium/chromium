@@ -201,7 +201,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button x-position is not as expected",
                 760.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
                 0.0);
     }
 
@@ -217,7 +217,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button x-position is not as expected",
                 BUTTON_END_PADDING,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
                 0.0);
     }
 
@@ -231,7 +231,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button y-position is not as expected",
                 3.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getY(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawY(),
                 0.0);
     }
 
@@ -312,7 +312,7 @@ public class StripLayoutHelperManagerTest {
     public void testModelSelectorButtonHoverEnter() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
-        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getX();
+        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getDrawX();
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
@@ -341,7 +341,7 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button is in pressed state, not hover state, when click is from
         // mouse.
         mStripLayoutHelperManager.simulateOnDownForTesting(
-                mStripLayoutHelperManager.getModelSelectorButton().getX() + 1, 0, true, 1);
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX() + 1, 0, true, 1);
         assertFalse(
                 "Model selector button should not be hovered",
                 mStripLayoutHelperManager.getModelSelectorButton().isHovered());

@@ -419,7 +419,7 @@ public class StripLayoutHelperManager
 
         // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
         // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-        mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         // Use toolbar menu button padding to align MSB with menu button.
         mStripEndPadding =
@@ -663,9 +663,9 @@ public class StripLayoutHelperManager
             orientationChanged = true;
         }
         if (!LocalizationUtils.isLayoutRtl()) {
-            mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithEndPadding());
+            mModelSelectorButton.setDrawX(mWidth - getModelSelectorButtonWidthWithEndPadding());
         } else {
-            mModelSelectorButton.setX(
+            mModelSelectorButton.setDrawX(
                     getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
         }
 
