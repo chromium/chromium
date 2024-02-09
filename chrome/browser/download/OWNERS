@@ -7,6 +7,9 @@ per-file download_status-updater_lacros*=vakh@chromium.org
 per-file insecure_download_blocking*=jdeblasio@chromium.org
 
 # For UI changes.
-per-file download_item_model*=chlily@chromium.org
-per-file download_ui_model*=chlily@chromium.org
-per-file download_ui_safe_browsing_util*=chlily@chromium.org
+per-file download_danger_prompt*=file://chrome/browser/download/bubble/OWNERS
+per-file download_item_model*=file://chrome/browser/download/bubble/OWNERS
+per-file download_item_warning_data*=file://chrome/browser/download/bubble/OWNERS
+per-file download_ui_controller*=file://chrome/browser/download/bubble/OWNERS
+per-file download_ui_model*=file://chrome/browser/download/bubble/OWNERS
+per-file download_ui_safe_browsing_util*=file://chrome/browser/download/bubble/OWNERS
