@@ -30,6 +30,16 @@ std::unique_ptr<RuleIterator> CustomExtensionProvider::GetRuleIterator(
                                                incognito);
 }
 
+std::unique_ptr<content_settings::Rule> CustomExtensionProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const content_settings::PartitionKey& partition_key) const {
+  return extensions_settings_->GetRule(primary_url, secondary_url, content_type,
+                                       off_the_record);
+}
+
 bool CustomExtensionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

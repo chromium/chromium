@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_partition_key.h"
@@ -20,6 +19,7 @@ class ContentSettingsPattern;
 namespace content_settings {
 
 class RuleIterator;
+struct Rule;
 
 class ProviderInterface {
  public:

@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 class GURL;
+class ContentSettingsPattern;
 
 namespace base {
 class Lock;

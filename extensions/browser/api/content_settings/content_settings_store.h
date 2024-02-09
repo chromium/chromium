@@ -16,15 +16,17 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension_id.h"
+
+class GURL;
+class ContentSettingsPattern;
 
 namespace content_settings {
 class OriginValueMap;
 class RuleIterator;
+struct Rule;
 }
 
 namespace extensions {
@@ -60,9 +62,17 @@ class ContentSettingsStore
 
   // //////////////////////////////////////////////////////////////////////////
 
+  // See GetRuleIterator::GetRuleIterator().
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType type,
       bool incognito) const;
+
+  // See GetRuleIterator::GetRule().
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record) const;
 
   // Sets the content |setting| for |pattern| of extension |ext_id|. The
   // |incognito| flag allow to set whether the provided setting is for

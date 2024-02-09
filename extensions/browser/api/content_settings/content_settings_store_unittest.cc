@@ -64,11 +64,22 @@ ContentSetting GetContentSettingFromStore(
     const GURL& primary_url, const GURL& secondary_url,
     ContentSettingsType content_type,
     bool incognito) {
+  auto rule =
+      store->GetRule(primary_url, secondary_url, content_type, incognito);
+
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       store->GetRuleIterator(content_type, incognito));
   const base::Value setting =
       content_settings::TestUtils::GetContentSettingValueAndPatterns(
           rule_iterator.get(), primary_url, secondary_url, nullptr, nullptr);
+
+  // Compare iterator lookup with direct lookup.
+  if (rule) {
+    EXPECT_EQ(setting, rule->value);
+  } else {
+    EXPECT_TRUE(setting.is_none());
+  }
+
   return content_settings::ValueToContentSetting(setting);
 }
 
