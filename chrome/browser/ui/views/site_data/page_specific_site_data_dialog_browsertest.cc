@@ -431,6 +431,11 @@ class PageSpecificSiteDataDialogPre3pcdBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogPre3pcdBrowserTest,
                        PartitionedCookiesAndAllowedThirdParty) {
+  // Allow third-party cookies.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+
   content::CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 8);
 
