@@ -254,6 +254,10 @@ public class ToolbarTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         int tabStripHeightResource =
                 activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        int toolbarLayoutHeight =
+                activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        + activity.getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         checkTabStripHeightOnUiThread(tabStripHeightResource);
         ComponentCallbacks tabStripCallback =
                 activity.getToolbarManager().getTabStripTransitionCoordinatorForTesting();
@@ -268,6 +272,13 @@ public class ToolbarTest {
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
         checkTabStripHeightOnUiThread(0);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getContainerViewForTesting()
+                                        .getHeight(),
+                                Matchers.equalTo(toolbarLayoutHeight)));
 
         TabStripTransitionCoordinator.setMinScreenWidthForTesting(1);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -275,6 +286,13 @@ public class ToolbarTest {
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
         checkTabStripHeightOnUiThread(tabStripHeightResource);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getContainerViewForTesting()
+                                        .getHeight(),
+                                Matchers.equalTo(toolbarLayoutHeight + tabStripHeightResource)));
     }
 
     private void checkTabStripHeightOnUiThread(int tabStripHeight) {
