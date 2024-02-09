@@ -1204,7 +1204,6 @@ component("net") {
     sources += [
       "base/apple/url_conversions.h",
       "base/apple/url_conversions.mm",
-      "base/mac/url_conversions.h",
       "base/network_change_notifier_apple.h",
       "base/network_change_notifier_apple.mm",
       "base/network_config_watcher_apple.cc",
