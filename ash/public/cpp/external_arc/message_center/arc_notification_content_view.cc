@@ -133,6 +133,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       } else if (located_event->IsScrollEvent()) {
         owner_->item_->CancelPress();
         widget->OnScrollEvent(located_event->AsScrollEvent());
+        return;
       } else if (located_event->IsGestureEvent() &&
                  event->type() != ui::ET_GESTURE_TAP) {
         bool slide_handled_by_android = false;
