@@ -20,7 +20,7 @@ namespace blink {
 
 float CalculationExpressionNumberNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator*) const {
+    const Length::EvaluationInput&) const {
   return value_;
 }
 
@@ -48,7 +48,7 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 
 float CalculationExpressionSizingKeywordNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator*) const {
+    const Length::EvaluationInput&) const {
   // TODO(https://crbug.com/313072): Write this.
   return 0.0f;
 }
@@ -57,7 +57,7 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator*) const {
+    const Length::EvaluationInput&) const {
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
@@ -338,49 +338,47 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
 
 float CalculationExpressionOperationNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator* anchor_evaluator) const {
+    const Length::EvaluationInput& input) const {
   switch (operator_) {
     case CalculationOperator::kAdd: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left + right;
     }
     case CalculationOperator::kSubtract: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left - right;
     }
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left * right;
     }
     case CalculationOperator::kMin: {
       DCHECK(!children_.empty());
-      float minimum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float minimum = children_[0]->Evaluate(max_value, input);
       for (auto& child : children_) {
-        minimum =
-            std::min(minimum, child->Evaluate(max_value, anchor_evaluator));
+        minimum = std::min(minimum, child->Evaluate(max_value, input));
       }
       return minimum;
     }
     case CalculationOperator::kMax: {
       DCHECK(!children_.empty());
-      float maximum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float maximum = children_[0]->Evaluate(max_value, input);
       for (auto& child : children_) {
-        maximum =
-            std::max(maximum, child->Evaluate(max_value, anchor_evaluator));
+        maximum = std::max(maximum, child->Evaluate(max_value, input));
       }
       return maximum;
     }
     case CalculationOperator::kClamp: {
       DCHECK(!children_.empty());
-      float min = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float val = children_[1]->Evaluate(max_value, anchor_evaluator);
-      float max = children_[2]->Evaluate(max_value, anchor_evaluator);
+      float min = children_[0]->Evaluate(max_value, input);
+      float val = children_[1]->Evaluate(max_value, input);
+      float max = children_[2]->Evaluate(max_value, input);
       // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
       return std::max(min, std::min(val, max));
     }
@@ -391,15 +389,15 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kMod:
     case CalculationOperator::kRem: {
       DCHECK_EQ(children_.size(), 2u);
-      float a = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float b = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float a = children_[0]->Evaluate(max_value, input);
+      float b = children_[1]->Evaluate(max_value, input);
       return EvaluateSteppedValueFunction(operator_, a, b);
     }
     case CalculationOperator::kHypot: {
       DCHECK_GE(children_.size(), 1u);
       float value = 0;
       for (scoped_refptr<const CalculationExpressionNode> operand : children_) {
-        float a = operand->Evaluate(max_value, anchor_evaluator);
+        float a = operand->Evaluate(max_value, input);
         value = std::hypot(value, a);
       }
       return value;
@@ -407,8 +405,7 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kAbs:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children_.size(), 1u);
-      const float value =
-          children_.front()->Evaluate(max_value, anchor_evaluator);
+      const float value = children_.front()->Evaluate(max_value, input);
       if (operator_ == CalculationOperator::kAbs) {
         return std::abs(value);
       } else {
@@ -420,17 +417,17 @@ float CalculationExpressionOperationNode::Evaluate(
     }
     case CalculationOperator::kProgress: {
       DCHECK_EQ(children_.size(), 3u);
-      float progress = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float from = children_[1]->Evaluate(max_value, anchor_evaluator);
-      float to = children_[2]->Evaluate(max_value, anchor_evaluator);
+      float progress = children_[0]->Evaluate(max_value, input);
+      float from = children_[1]->Evaluate(max_value, input);
+      float to = children_[2]->Evaluate(max_value, input);
       return (progress - from) / (to - from);
     }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
-      // float basis = children_[0]->Evaluate(max_value, anchor_evaluator);
+      // float basis = children_[0]->Evaluate(max_value, input);
       // TODO(https://crbug.com/313072): pass basis to computation of
       // calculation!
-      return children_[1]->Evaluate(max_value, anchor_evaluator);
+      return children_[1]->Evaluate(max_value, input);
     }
     case CalculationOperator::kInvalid:
       break;

@@ -640,23 +640,23 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // adjustment is already set to 0 above.
   if (inset_area.UsedTop().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, anchor_evaluator);
-    top = inset_area.UsedTop().NonNanCalculatedValue(available_height,
-                                                     anchor_evaluator);
+    top = inset_area.UsedTop().NonNanCalculatedValue(
+        available_height, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedBottom().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, anchor_evaluator);
-    bottom = inset_area.UsedBottom().NonNanCalculatedValue(available_height,
-                                                           anchor_evaluator);
+    bottom = inset_area.UsedBottom().NonNanCalculatedValue(
+        available_height, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedLeft().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, anchor_evaluator);
-    left = inset_area.UsedLeft().NonNanCalculatedValue(available_width,
-                                                       anchor_evaluator);
+    left = inset_area.UsedLeft().NonNanCalculatedValue(
+        available_width, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedRight().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, anchor_evaluator);
-    right = inset_area.UsedRight().NonNanCalculatedValue(available_width,
-                                                         anchor_evaluator);
+    right = inset_area.UsedRight().NonNanCalculatedValue(
+        available_width, {.anchor_evaluator = anchor_evaluator});
   }
 
   ContainingBlockInfo adjusted_container_info(container_info);

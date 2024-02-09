@@ -54,7 +54,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
   const Length& GetFallback() const { return fallback_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
+  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;

@@ -377,7 +377,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
-    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
     EXPECT_TRUE(!res->HasPercentage());
   }
 }
@@ -402,7 +402,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
-    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
     const CSSMathExpressionNode* css_node =
         CSSMathExpressionOperation::Create(*node);
     EXPECT_NE(css_node, nullptr);
@@ -453,7 +453,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
     CSSToLengthConversionData resolver;
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
-    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
     EXPECT_TRUE(!res->HasPercentage());
   }
 }
@@ -500,7 +500,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
-    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
     const CSSMathExpressionNode* css_node =
         CSSMathExpressionOperation::Create(*node);
     EXPECT_NE(css_node, nullptr);
@@ -547,7 +547,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
     CSSToLengthConversionData resolver;
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
-    EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_EQ(node->Evaluate(FLT_MAX, {}), test_case.output);
   }
 }
 
@@ -574,7 +574,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     // Very close to 0.0f, but not exactly 0.0f for unknown reason.
-    EXPECT_NEAR(node->Evaluate(FLT_MAX, nullptr), test_case.output, 0.001);
+    EXPECT_NEAR(node->Evaluate(FLT_MAX, {}), test_case.output, 0.001);
   }
 }
 
@@ -626,7 +626,7 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
     scoped_refptr<const CalculationExpressionNode> calc_node =
         css_node->ToCalculationExpression(CSSToLengthConversionData());
     EXPECT_TRUE(calc_node->IsOperation());
-    EXPECT_EQ(calc_node->Evaluate(100.0, nullptr), test_case.output);
+    EXPECT_EQ(calc_node->Evaluate(100.0, {}), test_case.output);
     css_node = CSSMathExpressionNode::Create(*calc_node);
     EXPECT_EQ(css_node->CustomCSSText(), test_case.input);
   }

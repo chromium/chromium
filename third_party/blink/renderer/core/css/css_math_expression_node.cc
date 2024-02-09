@@ -249,14 +249,14 @@ bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
 std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
     scoped_refptr<const blink::CalculationExpressionNode> value,
     bool allows_negative_percentage_reference) {
-  // |anchor_evaluator| is not needed because this function is just for handling
+  // |input| is not needed because this function is just for handling
   // inf and NaN.
-  float evaluated_value = value->Evaluate(1, /* anchor_evaluator */ nullptr);
+  float evaluated_value = value->Evaluate(1, {});
   if (!std::isfinite(evaluated_value)) {
     return CreateClampedSamePixelsAndPercent(evaluated_value);
   }
   if (allows_negative_percentage_reference) {
-    evaluated_value = value->Evaluate(-1, /* anchor_evaluator */ nullptr);
+    evaluated_value = value->Evaluate(-1, {});
     if (!std::isfinite(evaluated_value)) {
       return CreateClampedSamePixelsAndPercent(evaluated_value);
     }

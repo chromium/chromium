@@ -58,7 +58,7 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
   if (length.IsPercent()) {
     std::swap(unit_dimension, ref_dimension);
   }
-  return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
+  return FloatValueForLength(length, unit_dimension) * ref_dimension;
 }
 
 }  // namespace

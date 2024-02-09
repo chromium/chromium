@@ -37,7 +37,7 @@ int IntValueForLength(const Length& length, int maximum_value) {
 
 float FloatValueForLength(const Length& length,
                           float maximum_value,
-                          const Length::AnchorEvaluator* anchor_evaluator) {
+                          const Length::EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kFixed:
       return length.GetFloatValue();
@@ -47,7 +47,7 @@ float FloatValueForLength(const Length& length,
     case Length::kAuto:
       return static_cast<float>(maximum_value);
     case Length::kCalculated:
-      return length.NonNanCalculatedValue(maximum_value, anchor_evaluator);
+      return length.NonNanCalculatedValue(maximum_value, input);
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
@@ -65,10 +65,9 @@ float FloatValueForLength(const Length& length,
   return 0;
 }
 
-LayoutUnit MinimumValueForLengthInternal(
-    const Length& length,
-    LayoutUnit maximum_value,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+LayoutUnit MinimumValueForLengthInternal(const Length& length,
+                                         LayoutUnit maximum_value,
+                                         const Length::EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kPercent:
       // Don't remove the extra cast to float. It is needed for rounding on
@@ -76,8 +75,7 @@ LayoutUnit MinimumValueForLengthInternal(
       return LayoutUnit(
           static_cast<float>(maximum_value * length.Percent() / 100.0f));
     case Length::kCalculated:
-      return LayoutUnit(
-          length.NonNanCalculatedValue(maximum_value, anchor_evaluator));
+      return LayoutUnit(length.NonNanCalculatedValue(maximum_value, input));
     case Length::kFillAvailable:
     case Length::kAuto:
       return LayoutUnit();
@@ -101,12 +99,12 @@ LayoutUnit MinimumValueForLengthInternal(
 
 LayoutUnit ValueForLength(const Length& length,
                           LayoutUnit maximum_value,
-                          const Length::AnchorEvaluator* anchor_evaluator) {
+                          const Length::EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kFixed:
     case Length::kPercent:
     case Length::kCalculated:
-      return MinimumValueForLength(length, maximum_value, anchor_evaluator);
+      return MinimumValueForLength(length, maximum_value, input);
     case Length::kFillAvailable:
     case Length::kAuto:
       return maximum_value;

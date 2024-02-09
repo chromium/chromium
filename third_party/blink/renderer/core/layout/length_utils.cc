@@ -92,8 +92,9 @@ LayoutUnit ResolveInlineLengthInternal(
           constraint_space.PercentageResolutionInlineSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize)
           << length.ToString();
-      LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size, anchor_evaluator);
+      LayoutUnit value =
+          MinimumValueForLength(length, percentage_resolution_size,
+                                {.anchor_evaluator = anchor_evaluator});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
@@ -163,8 +164,9 @@ LayoutUnit ResolveBlockLengthInternal(
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
-      LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size, anchor_evaluator);
+      LayoutUnit value =
+          MinimumValueForLength(length, percentage_resolution_size,
+                                {.anchor_evaluator = anchor_evaluator});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.BlockSum(), value);

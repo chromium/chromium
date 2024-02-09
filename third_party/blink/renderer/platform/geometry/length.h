@@ -28,6 +28,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -429,8 +430,14 @@ class PLATFORM_EXPORT Length {
     Mode original_;
   };
 
-  float NonNanCalculatedValue(float max_value,
-                              const AnchorEvaluator* = nullptr) const;
+  struct EvaluationInput {
+    STACK_ALLOCATED();
+
+   public:
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr;
+  };
+
+  float NonNanCalculatedValue(float max_value, const EvaluationInput&) const;
 
   Length SubtractFromOneHundredPercent() const;
 

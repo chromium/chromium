@@ -194,11 +194,10 @@ void Length::DecrementCalculatedRef() const {
   CalcHandles().DecrementRef(CalculationHandle());
 }
 
-float Length::NonNanCalculatedValue(
-    float max_value,
-    const AnchorEvaluator* anchor_evaluator) const {
+float Length::NonNanCalculatedValue(float max_value,
+                                    const EvaluationInput& input) const {
   DCHECK(IsCalculated());
-  float result = GetCalculationValue().Evaluate(max_value, anchor_evaluator);
+  float result = GetCalculationValue().Evaluate(max_value, input);
   if (std::isnan(result))
     return 0;
   return result;
