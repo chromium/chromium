@@ -5,21 +5,29 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://webui-test/cr_components/chromeos/network/cr_policy_strings.js';
 
+import {CellularRoamingToggleButtonElement} from 'chrome://os-settings/lazy_load.js';
+import {CrToggleElement} from 'chrome://os-settings/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {ManagedBoolean} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('CellularRoamingToggleButton', function() {
-  /** @type {CellularRoamingToggleButton|undefined} */
-  let cellularRoamingToggleButton;
+suite('CellularRoamingToggleButton', () => {
+  let cellularRoamingToggleButton: CellularRoamingToggleButtonElement;
+  let mojoApi_: FakeNetworkConfig;
 
-  /** @type {?CrosNetworkConfigRemote} */
-  let mojoApi_ = null;
+  interface EnforcementCase {
+    controlledBy: chrome.settingsPrivate.ControlledBy;
+    managedPropertiesPolicySource: PolicySource;
+    managedPropertiesPolicyValue: boolean;
+    managedPropertiesActiveValue: boolean;
+    prefValue: boolean;
+  }
 
-  /** @type {Object} */
   const prefs_ = {
     cros: {
       signed: {
@@ -31,41 +39,45 @@ suite('CellularRoamingToggleButton', function() {
     },
   };
 
-  function createCellularRoamingToggleButton() {
+  const managedBoolean: ManagedBoolean = {
+    activeValue: false,
+    policySource: PolicySource.kNone,
+    policyValue: false,
+  };
+
+  async function createCellularRoamingToggleButton(): Promise<void> {
     cellularRoamingToggleButton =
         document.createElement('cellular-roaming-toggle-button');
+
+    const allowRoaming = {...managedBoolean};
     setManagedProperties(
-        /* allowRoaming= */ {}, /* roamingState= */ null);
+        /* allowRoaming= */ allowRoaming, /* roamingState= */ '');
+
     cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
     document.body.appendChild(cellularRoamingToggleButton);
-    flush();
+    await flushTasks();
+  }
+
+  async function setManagedProperties(
+      allowRoaming: ManagedBoolean, roamingState: string): Promise<void> {
+    const props = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    props.typeProperties.cellular!.allowRoaming = allowRoaming;
+    props.typeProperties.cellular!.roamingState = roamingState;
+
+    cellularRoamingToggleButton.set('managedProperties', props);
+    mojoApi_.setManagedPropertiesForTest(props);
+    await flushTasks();
   }
 
   /**
-   * @param {boolean} allowRoaming
-   * @param {string} roamingState
+   * Generates and returns a list of test cases that tests covering policy
+   * enforcement of roaming should cover.
    */
-  function setManagedProperties(allowRoaming, roamingState) {
-    cellularRoamingToggleButton.managedProperties = {
-      type: NetworkType.kCellular,
-      typeProperties: {
-        cellular: {
-          allowRoaming: allowRoaming,
-          roamingState: roamingState,
-        },
-      },
-    };
-    flush();
-  }
-
-  /**
-   * @return {Array} Generates and returns a list of test cases that tests
-   * covering policy enforcement of roaming should cover.
-   */
-  function getAllowRoamingEnforcementTestCases() {
+  function getAllowRoamingEnforcementTestCases(): EnforcementCase[] {
     const ControlledBy = chrome.settingsPrivate.ControlledBy;
 
-    const enforcementCases = [];
+    const enforcementCases: EnforcementCase[] = [];
 
     // The enforcement of the cellular roaming pref a.k.a. the global policy.
     for (const controlledBy
@@ -82,13 +94,14 @@ suite('CellularRoamingToggleButton', function() {
             // The effective value of roaming for the particular network, e.g.
             // whether it is enabled or disabled.
             for (const managedPropertiesActiveValue of [true, false]) {
-              enforcementCases.push({
-                controlledBy: controlledBy,
-                managedPropertiesPolicySource: managedPropertiesPolicySource,
-                managedPropertiesPolicyValue: managedPropertiesPolicyValue,
-                managedPropertiesActiveValue: managedPropertiesActiveValue,
-                prefValue: prefValue,
-              });
+              const enforcement: EnforcementCase = {
+                controlledBy,
+                managedPropertiesPolicySource,
+                managedPropertiesPolicyValue,
+                managedPropertiesActiveValue,
+                prefValue,
+              };
+              enforcementCases.push(enforcement);
             }
           }
         }
@@ -97,64 +110,83 @@ suite('CellularRoamingToggleButton', function() {
     return enforcementCases;
   }
 
-  function getRoamingToggleButtonSubLabelText() {
+  function getRoamingToggleButtonSubLabelText(): string {
     const allowRoamingToggle =
         cellularRoamingToggleButton.getCellularRoamingToggle();
     if (!allowRoamingToggle) {
       return '';
     }
-    const subLabel = allowRoamingToggle.shadowRoot.querySelector('#sub-label');
+    const subLabel =
+        allowRoamingToggle.shadowRoot!.querySelector<HTMLElement>('#sub-label');
     if (!subLabel) {
       return '';
     }
     return subLabel.innerText;
   }
 
-  function getRoamingTogglePolicyIndicatorText() {
+  function getRoamingTogglePolicyIndicatorText(): string {
     const allowRoamingToggle =
         cellularRoamingToggleButton.getCellularRoamingToggle();
     if (!allowRoamingToggle) {
       return '';
     }
-    const policyIndicator = allowRoamingToggle.shadowRoot.querySelector(
-        'cr-policy-network-indicator-mojo');
+    const policyIndicator =
+        allowRoamingToggle.shadowRoot!
+            .querySelector('cr-policy-network-indicator-mojo');
     if (!policyIndicator) {
       return '';
     }
-    return policyIndicator.indicatorTooltip_;
+    return policyIndicator.get('indicatorTooltip_');
   }
 
-  function policyIconIsVisible(cellularRoamingToggle) {
+  function policyIconIsVisible(cellularRoamingToggle: CrToggleElement):
+      boolean {
     if (!cellularRoamingToggle) {
       return false;
     }
-    const policyIndicator = cellularRoamingToggle.shadowRoot.querySelector(
+    const policyIndicator = cellularRoamingToggle.shadowRoot!.querySelector(
         'cr-policy-network-indicator-mojo');
     if (!policyIndicator) {
       return false;
     }
     const policyIcon =
-        policyIndicator.shadowRoot.querySelector('cr-tooltip-icon');
-    return !!policyIcon && !policyIcon.hidden;
+        policyIndicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    return isVisible(policyIcon);
   }
 
-  suiteSetup(function() {
+  function isRoamingProhibitedByPolicy(): boolean {
+    const dataRoamingEnabled = prefs_.cros.signed.data_roaming_enabled;
+    return !dataRoamingEnabled.value &&
+        dataRoamingEnabled.controlledBy ===
+        chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+  }
+
+  function isPerNetworkToggleDisabled(): boolean {
+    return cellularRoamingToggleButton.shadowRoot!.querySelector(
+        'network-config-toggle')!.disabled;
+  }
+
+  suiteSetup(() => {
     mojoApi_ = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi_);
   });
 
-  setup(function() {
+  setup(() => {
     prefs_.cros.signed.data_roaming_enabled.value = true;
   });
 
-  test('Cellular roaming subtext', function() {
+  test('Cellular roaming subtext', () => {
     createCellularRoamingToggleButton();
+
+    const allowedRoaming = {...managedBoolean};
 
     // Regardless of whether roaming is enabled or not, the subtext should
     // notify the user if roaming is required by the provider.
-    for (const allowRoaming in [true, false]) {
+    for (const allowRoaming of [true, false]) {
+      allowedRoaming.activeValue = allowRoaming;
       setManagedProperties(
-          /* allowRoaming= */ {activeValue: allowRoaming},
+          /* allowRoaming= */ allowedRoaming,
           /* roamingState= */ 'Required');
 
       assertEquals(
@@ -164,9 +196,10 @@ suite('CellularRoamingToggleButton', function() {
 
     // Regardless of the roaming state, except when roaming is required, the
     // subtext should notify the user that roaming is disabled when applicable.
-    for (const roamingState in ['Home', 'Roaming']) {
+    for (const roamingState of ['Home', 'Roaming']) {
+      allowedRoaming.activeValue = false;
       setManagedProperties(
-          /* allowRoaming= */ {activeValue: false},
+          /* allowRoaming= */ allowedRoaming,
           /* roamingState= */ roamingState);
 
       assertEquals(
@@ -174,9 +207,10 @@ suite('CellularRoamingToggleButton', function() {
           getRoamingToggleButtonSubLabelText());
     }
 
+    allowedRoaming.activeValue = true;
     // Roaming is allowed but we are not roaming.
     setManagedProperties(
-        /* allowRoaming= */ {activeValue: true},
+        /* allowRoaming= */ allowedRoaming,
         /* roamingState= */ 'Home');
 
     assertEquals(
@@ -184,8 +218,9 @@ suite('CellularRoamingToggleButton', function() {
         getRoamingToggleButtonSubLabelText());
 
     // Roaming is allowed and we are roaming.
+    allowedRoaming.activeValue = true;
     setManagedProperties(
-        /* allowRoaming= */ {activeValue: true},
+        /* allowRoaming= */ allowedRoaming,
         /* roamingState= */ 'Roaming');
 
     assertEquals(
@@ -195,37 +230,41 @@ suite('CellularRoamingToggleButton', function() {
 
     // Simulate disabling roaming via policy.
     prefs_.cros.signed.data_roaming_enabled.value = false;
-    cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
+    cellularRoamingToggleButton.prefs = {...prefs_};
 
     assertEquals(
         cellularRoamingToggleButton.i18n('networkAllowDataRoamingDisabled'),
         getRoamingToggleButtonSubLabelText());
   });
 
-  suite('Cellular per-network roaming', function() {
-    setup(function() {
+  suite('Cellular per-network roaming', () => {
+    setup(() => {
       mojoApi_.resetForTest();
       createCellularRoamingToggleButton();
     });
 
-    test('Toggle controls property', async function() {
+    test('Toggle controls property', async () => {
       const cellularRoamingToggle =
           cellularRoamingToggleButton.getCellularRoamingToggle();
+      assertTrue(!!cellularRoamingToggle);
 
       assertFalse(cellularRoamingToggle.checked);
-      assertFalse(cellularRoamingToggleButton.isRoamingAllowedForNetwork_);
+      assertFalse(
+          cellularRoamingToggleButton.get('isRoamingAllowedForNetwork_'));
 
       cellularRoamingToggle.click();
 
       await mojoApi_.whenCalled('setProperties');
 
       assertTrue(cellularRoamingToggle.checked);
-      assertTrue(cellularRoamingToggleButton.isRoamingAllowedForNetwork_);
+      assertTrue(
+          cellularRoamingToggleButton.get('isRoamingAllowedForNetwork_'));
     });
 
-    test('Toggle is influenced by policy', function() {
+    test('Toggle is influenced by policy', async () => {
       const cellularRoamingToggle =
           cellularRoamingToggleButton.getCellularRoamingToggle();
+      assertTrue(!!cellularRoamingToggle);
 
       const ControlledBy = chrome.settingsPrivate.ControlledBy;
 
@@ -262,23 +301,22 @@ suite('CellularRoamingToggleButton', function() {
             enforcementCase.prefValue;
         prefs_.cros.signed.data_roaming_enabled.controlledBy =
             enforcementCase.controlledBy;
-        cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
+        cellularRoamingToggleButton.prefs = {
+          ...prefs_,
+        };
 
-        const dataRoamingEnabled =
-            cellularRoamingToggleButton.prefs.cros.signed.data_roaming_enabled;
-
-        flush();
+        await flushTasks();
 
         if (!enforcementCase.prefValue &&
             enforcementCase.controlledBy === ControlledBy.DEVICE_POLICY) {
-          assertTrue(
-              cellularRoamingToggleButton.isRoamingProhibitedByPolicy_());
-          assertTrue(cellularRoamingToggleButton.isPerNetworkToggleDisabled_());
-          assertFalse(cellularRoamingToggleButton.isRoamingAllowedForNetwork_);
+          assertTrue(isRoamingProhibitedByPolicy());
+          assertTrue(isPerNetworkToggleDisabled());
+          assertFalse(
+              cellularRoamingToggleButton.get('isRoamingAllowedForNetwork_'));
           assertFalse(cellularRoamingToggle.checked);
           assertTrue(policyIconIsVisible(cellularRoamingToggle));
           assertEquals(
-              CrPolicyStrings.controlledSettingPolicy,
+              window.CrPolicyStrings.controlledSettingPolicy,
               getRoamingTogglePolicyIndicatorText());
           continue;
         }
@@ -287,12 +325,11 @@ suite('CellularRoamingToggleButton', function() {
                 PolicySource.kUserPolicyEnforced ||
             enforcementCase.managedPropertiesPolicySource ===
                 PolicySource.kDevicePolicyEnforced) {
-          assertFalse(
-              cellularRoamingToggleButton.isRoamingProhibitedByPolicy_());
-          assertTrue(cellularRoamingToggleButton.isPerNetworkToggleDisabled_());
+          assertFalse(isRoamingProhibitedByPolicy());
+          assertTrue(isPerNetworkToggleDisabled());
           assertEquals(
               enforcementCase.managedPropertiesPolicyValue,
-              cellularRoamingToggleButton.isRoamingAllowedForNetwork_);
+              cellularRoamingToggleButton.get('isRoamingAllowedForNetwork_'));
           assertEquals(
               enforcementCase.managedPropertiesPolicyValue,
               cellularRoamingToggle.checked);
@@ -302,7 +339,7 @@ suite('CellularRoamingToggleButton', function() {
             case PolicySource.kUserPolicyEnforced:
             case PolicySource.kDevicePolicyEnforced:
               assertEquals(
-                  CrPolicyStrings.controlledSettingPolicy,
+                  window.CrPolicyStrings.controlledSettingPolicy,
                   getRoamingTogglePolicyIndicatorText());
               break;
             case PolicySource.kUserPolicyRecommended:
@@ -310,20 +347,23 @@ suite('CellularRoamingToggleButton', function() {
               assertEquals(
                   (enforcementCase.managedPropertiesActiveValue ===
                    enforcementCase.managedPropertiesPolicyValue) ?
-                      CrPolicyStrings.controlledSettingRecommendedMatches :
-                      CrPolicyStrings.controlledSettingRecommendedDiffers,
+                      window.CrPolicyStrings
+                          .controlledSettingRecommendedMatches :
+                      window.CrPolicyStrings
+                          .controlledSettingRecommendedDiffers,
                   getRoamingTogglePolicyIndicatorText());
               break;
           }
           continue;
         }
 
-        assertFalse(cellularRoamingToggleButton.isRoamingProhibitedByPolicy_());
-        assertFalse(cellularRoamingToggle.shadowRoot.querySelector('cr-toggle')
-                        .disabled);
+        assertFalse(isRoamingProhibitedByPolicy());
+        assertFalse(
+            cellularRoamingToggle.shadowRoot!.querySelector(
+                                                 'cr-toggle')!.disabled);
         assertEquals(
             enforcementCase.managedPropertiesActiveValue,
-            cellularRoamingToggleButton.isRoamingAllowedForNetwork_);
+            cellularRoamingToggleButton.get('isRoamingAllowedForNetwork_'));
         assertEquals(
             enforcementCase.managedPropertiesActiveValue,
             cellularRoamingToggle.checked);

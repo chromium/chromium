@@ -108,6 +108,7 @@ export {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/lo
 export {CrPolicyIndicatorElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 export {CrTooltipIconElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
+export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
