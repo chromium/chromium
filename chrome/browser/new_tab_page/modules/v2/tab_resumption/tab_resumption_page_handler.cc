@@ -239,8 +239,16 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   auto tabs_mojom = GetForeignTabs();
   std::vector<GURL> urls;
   for (const auto& tab : tabs_mojom) {
-    urls.push_back(tab->url);
+    if (tab->url.is_valid()) {
+      urls.push_back(tab->url);
+    }
   }
+
+  if (urls.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   history_service->QueryURLs(
