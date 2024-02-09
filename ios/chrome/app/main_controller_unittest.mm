@@ -55,6 +55,10 @@ class MainControllerTest : public PlatformTest {
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
   }
 
+  ~MainControllerTest() override {
+    ClipboardRecentContent::SetInstance(nullptr);
+  }
+
   MainController* CreateMainController() {
     MainController* main_controller = [[MainController alloc] init];
     main_controller.appState = app_state_;
