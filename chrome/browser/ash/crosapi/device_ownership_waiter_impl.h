@@ -18,8 +18,7 @@ class DeviceOwnershipWaiterImpl : public DeviceOwnershipWaiter {
       delete;
   ~DeviceOwnershipWaiterImpl() override = default;
 
-  void WaitForOwnershipFetched(base::OnceClosure callback,
-                               bool launching_at_login_screen) override;
+  void WaitForOwnershipFetched(base::OnceClosure callback) override;
 };
 
 }  // namespace crosapi

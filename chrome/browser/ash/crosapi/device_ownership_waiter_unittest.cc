@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_chromeos_version_info.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 
 #include <memory>
 
-#include "base/check_deref.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,14 +24,7 @@ class DeviceOwnershipWaiterTest : public testing::Test {
 
   ~DeviceOwnershipWaiterTest() override = default;
 
-  void SetUp() override {
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-  }
-
-  ash::FakeChromeUserManager& GetFakeUserManager() {
-    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get()));
-  }
+  void SetOwnerId(const AccountId& id) { fake_user_manager_->SetOwnerId(id); }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -42,7 +32,7 @@ class DeviceOwnershipWaiterTest : public testing::Test {
       std::make_unique<ash::ScopedStubInstallAttributes>(
           ash::StubInstallAttributes::CreateUnset())};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 };
 
 TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
@@ -50,32 +40,16 @@ TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
   // on Linux build, we mock that behavior by pretending to be ChromeOS.
   const char kLsbReleaseValidChromeOs[] = "CHROMEOS_RELEASE_NAME=Chrome OS\n";
 
-  {
-    base::test::ScopedChromeOSVersionInfo version(kLsbReleaseValidChromeOs,
-                                                  base::Time());
-    DeviceOwnershipWaiterImpl waiter;
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseValidChromeOs,
+                                                base::Time());
+  DeviceOwnershipWaiterImpl waiter;
 
-    base::test::TestFuture<void> future;
-    waiter.WaitForOwnershipFetched(future.GetCallback(),
-                                   /*launching_at_login_screen=*/true);
+  base::test::TestFuture<void> future;
+  waiter.WaitForOwnershipFetched(future.GetCallback());
 
-    GetFakeUserManager().SetOwnerId(user_manager::StubAccountId());
+  SetOwnerId(user_manager::StubAccountId());
 
-    EXPECT_TRUE(future.Wait());
-  }
-  {
-    base::test::ScopedChromeOSVersionInfo version(kLsbReleaseValidChromeOs,
-                                                  base::Time());
-    DeviceOwnershipWaiterImpl waiter;
-
-    base::test::TestFuture<void> future;
-    waiter.WaitForOwnershipFetched(future.GetCallback(),
-                                   /*launching_at_login_screen=*/false);
-
-    GetFakeUserManager().SetOwnerId(user_manager::StubAccountId());
-
-    EXPECT_TRUE(future.Wait());
-  }
+  EXPECT_TRUE(future.Wait());
 }
 
 // Tests that on a ChromeOS on Linux build, the delay
@@ -88,8 +62,7 @@ TEST_F(DeviceOwnershipWaiterTest, DoesNotDelayForChromeOsOnLinux) {
   DeviceOwnershipWaiterImpl waiter;
 
   base::test::TestFuture<void> future;
-  waiter.WaitForOwnershipFetched(future.GetCallback(),
-                                 /*launching_at_login_screen=*/false);
+  waiter.WaitForOwnershipFetched(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
 }

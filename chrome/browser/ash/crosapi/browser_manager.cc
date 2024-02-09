@@ -1055,7 +1055,8 @@ void BrowserManager::Start(bool launching_at_login_screen) {
 void BrowserManager::StartWithLogFile(
     bool launching_at_login_screen,
     BrowserLauncher::LaunchParamsFromBackground params) {
-  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
+  CHECK((!launching_at_login_screen && state_ == State::WAITING_OWNER_FETCH) ||
+        (launching_at_login_screen && state_ == State::PREPARING_FOR_LAUNCH));
 
   // Shutdown() might have been called after Start() posted the StartWithLogFile
   // task, so we need to check `shutdown_requested_` again.
@@ -1459,13 +1460,10 @@ void BrowserManager::ResumeLaunch() {
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
-  WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(
-          &BrowserManager::WaitForProfileAddedAndThen,
-          weak_factory_.GetWeakPtr(),
-          base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
-                         weak_factory_.GetWeakPtr())),
-      /*launching_at_login_screen=*/false);
+  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
+      &BrowserManager::WaitForProfileAddedAndThen, weak_factory_.GetWeakPtr(),
+      base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
+                     weak_factory_.GetWeakPtr())));
 }
 
 void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
@@ -1475,9 +1473,7 @@ void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
       g_browser_process->profile_manager(), std::move(cb));
 }
 
-void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
-    base::OnceClosure cb,
-    bool launching_at_login_screen) {
+void BrowserManager::WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb) {
   CHECK(state_ == State::PRE_LAUNCHED || state_ == State::PREPARING_FOR_LAUNCH);
   SetState(State::WAITING_OWNER_FETCH);
   if (g_skip_device_ownership_wait_for_testing) {
@@ -1486,9 +1482,9 @@ void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
                                                              std::move(cb));
     return;
   }
+
   device_ownership_waiter_called_ = true;
-  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb),
-                                                    launching_at_login_screen);
+  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb));
 }
 
 void BrowserManager::OnLaunchParamsFetched(
@@ -1496,11 +1492,16 @@ void BrowserManager::OnLaunchParamsFetched(
     BrowserLauncher::LaunchParamsFromBackground params) {
   CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
 
-  WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr(), launching_at_login_screen,
-                     std::move(params)),
-      launching_at_login_screen);
+  // On launching at login screen, the device ownership data is not ready yet
+  // and will be fetched on resuming launch.
+  if (launching_at_login_screen) {
+    StartWithLogFile(launching_at_login_screen, std::move(params));
+    return;
+  }
+
+  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
+      &BrowserManager::StartWithLogFile, weak_factory_.GetWeakPtr(),
+      launching_at_login_screen, std::move(params)));
 }
 
 void BrowserManager::ResumeLaunchAfterProfileAdded() {

@@ -613,10 +613,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void WaitForProfileAddedAndThen(base::OnceClosure cb);
 
   // Waits for the device owner being fetched from `UserManager` and then
-  // executes a callback. If Lacros is launched at the login screen, this
-  // just executes the callback directly.
-  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
-                                        bool launching_at_login_screen);
+  // executes a callback. Should NOT be called if Lacros is launched at the
+  // login screen since device owner is not available until login.
+  void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb);
 
   // Called as soon as `LaunchParamsFromBackground` are fetched.
   void OnLaunchParamsFetched(
