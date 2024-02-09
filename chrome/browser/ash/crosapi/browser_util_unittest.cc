@@ -29,6 +29,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/policy_constants.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
@@ -124,14 +125,19 @@ class BrowserUtilTest : public testing::Test {
         std::nullopt);
   }
 
-  const user_manager::User* AddRegularUser(const std::string& email) {
+  const user_manager::User* AddRegularUser(const std::string& email,
+                                           bool login = true) {
     AccountId account_id = AccountId::FromUserEmail(email);
     const User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-        policy::PolicyMap());
+    user_manager::KnownUser(fake_user_manager_->GetLocalState())
+        .SaveKnownUser(account_id);
+    if (login) {
+      fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                       /*browser_restart=*/false,
+                                       /*is_child=*/false);
+      ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+          policy::PolicyMap());
+    }
     return user;
   }
 
@@ -217,7 +223,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
 }
 
 TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
-  const user_manager::User* const user = AddRegularUser("user@test.com");
+  constexpr char kUserEmail[] = "user@test.com";
+  const user_manager::User* const user =
+      AddRegularUser(kUserEmail, /*login=*/false);
 
   // Lacros is not enabled yet for profile migration to happen.
   EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
@@ -229,6 +237,7 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
   cmdline->AppendSwitchASCII(
       ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
       ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
+  cmdline->AppendSwitchASCII(ash::switches::kLoginUser, kUserEmail);
 
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kBeforeInit));
@@ -333,25 +342,6 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
         user, browser_util::PolicyInitState::kAfterInit));
   }
-}
-
-TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
-  const user_manager::User* const user = AddRegularUser("user@test.com");
-
-  // Ash browser is enabled if Lacros is not enabled.
-  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
-      user, browser_util::PolicyInitState::kBeforeInit));
-
-  // Sets command line flag to emulate the situation where the Chrome
-  // restart happens.
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  cmdline->AppendSwitchASCII(
-      ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
-      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
-
-  // Ash browser is disabled if LacrosOnly is enabled.
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-      user, browser_util::PolicyInitState::kBeforeInit));
 }
 
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
