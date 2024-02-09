@@ -113,15 +113,6 @@ bool WebAXContext::HasDirtyObjects() {
   return private_->GetAXObjectCache().HasDirtyObjects();
 }
 
-bool WebAXContext::AddPendingEvent(const ui::AXEvent& event,
-                                   bool insert_at_beginning) {
-  if (!HasActiveDocument()) {
-    return true;
-  }
-  return private_->GetAXObjectCache().AddPendingEvent(event,
-                                                      insert_at_beginning);
-}
-
 void WebAXContext::UpdateAXForAllDocuments() {
   if (!HasActiveDocument()) {
     return;

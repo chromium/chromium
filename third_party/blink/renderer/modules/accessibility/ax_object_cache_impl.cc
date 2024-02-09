@@ -5134,12 +5134,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
-  // Make a copy of the events, because it's possible that
-  // actions inside this loop will cause more events to be
-  // queued up.
-  Deque<ui::AXEvent> src_events = pending_events_;
-  pending_events_.clear();
-
   HashSet<int32_t> already_serialized_ids;
   int redundant_serialization_count = 0;
 
@@ -5152,9 +5146,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   EnsureSerializer();
 
   ui::AXNodeData::AXNodeDataSize node_data_size;
-  while (!dirty_objects_.empty()) {
-    AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
-    dirty_objects_.pop_front();
+  for (const auto& current_dirty_object : dirty_objects_) {
     AXObject* obj = current_dirty_object->obj;
 
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
@@ -5246,11 +5238,11 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     // used by tests and as a signal to serialize location data.
     ui::AXEvent layout_complete_event(Root()->AXObjectID(),
                                       ax::mojom::blink::Event::kLayoutComplete);
-    src_events.push_back(layout_complete_event);
+    pending_events_.push_back(layout_complete_event);
   }
 
   // Loop over each event and generate an updated event message.
-  for (ui::AXEvent& event : src_events) {
+  for (ui::AXEvent& event : pending_events_) {
     if (event.event_type == ax::mojom::blink::Event::kEndOfTest) {
       had_end_of_test_event = true;
       continue;
@@ -5282,7 +5274,9 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
             << ObjectFromAXID(event.id);
   }
 
-  CHECK(!HasDirtyObjects());
+  dirty_objects_.clear();
+  pending_events_.clear();
+
 #if DCHECK_IS_ON()
   CheckTreeConsistency(*this, *ax_tree_serializer_);
 
@@ -5329,16 +5323,6 @@ void AXObjectCacheImpl::GetImagesToAnnotate(
       nodes.push_back(&node);
     }
   }
-}
-
-// TODO(accessibility): This function can go when legacy mode is deleted.
-bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
-                                        bool insert_at_beginning) {
-  if (insert_at_beginning)
-    pending_events_.push_front(event);
-  else
-    pending_events_.push_back(event);
-  return true;
 }
 
 HeapMojoRemote<blink::mojom::blink::RenderAccessibilityHost>&

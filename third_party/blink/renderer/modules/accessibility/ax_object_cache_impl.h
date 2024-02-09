@@ -546,9 +546,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool HasDirtyObjects() const override { return !dirty_objects_.empty(); }
   bool IsDirty() override;
 
-  bool AddPendingEvent(const ui::AXEvent& event,
-                       bool insert_at_beginning) override;
-
   void SetImageAsDataNodeId(int id, const gfx::Size& max_size) {
     ax_tree_source_->set_image_data_node_id(id, max_size);
   }
@@ -1147,9 +1144,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   std::unique_ptr<ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>
       ax_tree_serializer_;
 
-  HeapDeque<Member<AXDirtyObject>> dirty_objects_;
+  HeapVector<Member<AXDirtyObject>> dirty_objects_;
 
-  Deque<ui::AXEvent> pending_events_;
+  Vector<ui::AXEvent> pending_events_;
 
   HashMap<DOMNodeId, bool> whitespace_ignored_map_;
 
