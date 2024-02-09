@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/Dawn Android arm64 Builder/gn-args.json"
+        "infra/config/generated/builders/try/android-dawn-arm64-exp-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -63,38 +63,6 @@
               },
               "run_tests_serially": true
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Dawn Android arm64 Release (Pixel 6)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
-              "builder_group": "chromium.dawn",
-              "execution_mode": "TEST",
-              "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
-              },
-              "legacy_chromium_config": {
-                "config": "android",
-                "target_platform": "android"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "android",
-                  "dawn_top_of_tree"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Dawn Android arm64 Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
           }
         ]
       },
@@ -110,28 +78,13 @@
           "bucket": "ci",
           "builder": "Dawn Android arm64 Experimental Release (Pixel 6)",
           "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Dawn Android arm64 Release (Pixel 6)",
-          "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-dawn-arm64-exp-rel",
-          "group": "tryserver.chromium.dawn"
-        },
-        {
-          "builder": "android-dawn-arm64-rel",
-          "group": "tryserver.chromium.dawn"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -139,12 +92,10 @@
     "column_keys": [],
     "grouping_keys": [
       "status",
-      "v.test_suite"
+      "v.test_suite",
+      "v.gpu"
     ]
   },
-  "builder_group": "chromium.dawn",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "dawn"
-  ]
+  "builder_group": "tryserver.chromium.dawn",
+  "recipe": "chromium_trybot"
 }

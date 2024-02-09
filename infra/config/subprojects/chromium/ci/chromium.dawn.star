@@ -520,6 +520,37 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Dawn Android arm64 Experimental Release (Pixel 6)",
+    description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Android",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
+)
+
+ci.thin_tester(
     name = "Dawn Linux x64 Release (Intel UHD 630)",
     triggered_by = ["Dawn Linux x64 Builder"],
     builder_spec = builder_config.builder_spec(
