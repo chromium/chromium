@@ -1267,6 +1267,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUserEducationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUpstreamTrustedReportsFirmwareEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVideoConferenceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStopAllScreenShareEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcBackgroundReplaceEnabled();

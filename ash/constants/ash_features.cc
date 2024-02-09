@@ -4339,6 +4339,10 @@ bool IsUserEducationEnabled() {
   return IsHoldingSpaceWallpaperNudgeEnabled() || IsWelcomeTourEnabled();
 }
 
+bool IsUpstreamTrustedReportsFirmwareEnabled() {
+  return base::FeatureList::IsEnabled(kUpstreamTrustedReportsFirmware);
+}
+
 bool IsVideoConferenceEnabled() {
   return (base::FeatureList::IsEnabled(kVideoConference) ||
           base::FeatureList::IsEnabled(kFeatureManagementVideoConference)) &&

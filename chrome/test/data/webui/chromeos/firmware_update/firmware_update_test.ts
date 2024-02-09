@@ -160,9 +160,9 @@ suite('FirmwareUpdateAppTest', () => {
   });
 
   test('ConfirmationDialogShowsDisclaimerWhenFlagEnabled', async () => {
-    // Enable the v2 flag.
+    // Enable the upstream trusted reports flag
     loadTimeData.overrideValues({
-      isFirmwareUpdateUIV2Enabled: true,
+      isUpstreamTrustedReportsFirmwareEnabled: true,
     });
 
     // Setup the app.
@@ -187,9 +187,9 @@ suite('FirmwareUpdateAppTest', () => {
     page?.remove();
     await flushTasks();
 
-    // Disable the v2 flag.
+    // Disable the upstream trusted reports flag
     loadTimeData.overrideValues({
-      isFirmwareUpdateUIV2Enabled: false,
+      isUpstreamTrustedReportsFirmwareEnabled: false,
     });
 
     // Setup the app.
