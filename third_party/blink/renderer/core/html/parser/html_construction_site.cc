@@ -938,6 +938,15 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     bool serializable =
         RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
         template_stack_item->GetAttributeItem(html_names::kSerializableAttr);
+    bool clonable;
+    if (RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+      clonable = template_stack_item->GetAttributeItem(
+          html_names::kShadowrootclonableAttr);
+    } else {
+      // Legacy behavior - if the shadow root is within a template, it is
+      // clonable.
+      clonable = OpenElements()->HasTemplateInHTMLScope();
+    }
     HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
 
@@ -947,7 +956,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             : ShadowRootType::kClosed;
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, type, focus_delegation, slot_assignment_mode,
-        serializable);
+        serializable, clonable);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.

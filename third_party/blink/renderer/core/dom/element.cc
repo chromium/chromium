@@ -5264,13 +5264,9 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
       parameters_mismatch |=
           RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
           existing_shadow->serializable() != serializable;
-      // TODO(crbug.com/1521128): We'd like to check for mismatch of clonable
-      // here, but this would break the core use case of *not* breaking
-      // non-DSD-aware web components. Since declarative shadow roots have
-      // clonable:true by default, and old code doesn't know to add
-      // clonable:true to attachShadow() parameters, all old web components
-      // would break. See https://github.com/whatwg/html/issues/10107
-      // For now, this does not check for `clonable` mismatch.
+      parameters_mismatch |=
+          RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+          existing_shadow->clonable() != clonable;
       if (parameters_mismatch) {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           "Parameters used for attachShadow() "
@@ -5296,7 +5292,8 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
                                           ShadowRootType type,
                                           FocusDelegation focus_delegation,
                                           SlotAssignmentMode slot_assignment,
-                                          bool serializable) {
+                                          bool serializable,
+                                          bool clonable) {
   CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
   CHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() ||
         !serializable);
@@ -5315,7 +5312,6 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 
   // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
-  bool clonable = true;  // Declarative shadow roots are clonable by default.
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment,
                                /*registry*/ nullptr, serializable, clonable);

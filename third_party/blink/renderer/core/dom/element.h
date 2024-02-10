@@ -736,7 +736,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    ShadowRootType,
                                    FocusDelegation,
                                    SlotAssignmentMode,
-                                   bool serializable);
+                                   bool serializable,
+                                   bool clonable);
 
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(ShadowRootType,

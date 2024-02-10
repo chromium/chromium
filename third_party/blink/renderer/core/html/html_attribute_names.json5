@@ -321,6 +321,7 @@
     "serializable",
     "shadowroot",
     "shadowrootmode",
+    "shadowrootclonable",
     "shadowrootdelegatesfocus",
     "shape",
     "sharedstoragewritable",

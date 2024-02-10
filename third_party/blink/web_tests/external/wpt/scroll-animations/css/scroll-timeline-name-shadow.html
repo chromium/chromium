@@ -34,7 +34,7 @@
   </style>
   <div class=scroller>
     <div class=scroller>
-      <template shadowrootmode=open>
+      <template shadowrootmode=open shadowrootclonable>
         <style>
           :host {
             scroll-timeline: --timeline y;
@@ -71,7 +71,7 @@
     }
   </style>
   <div class=host>
-    <template shadowrootmode=open>
+    <template shadowrootmode=open shadowrootclonable>
       <style>
         ::slotted(.scroller) {
           scroll-timeline: --timeline y;
@@ -108,7 +108,7 @@
     }
   </style>
   <div class=host>
-    <template shadowrootmode=open>
+    <template shadowrootmode=open shadowrootclonable>
       <style>
           /* Not using 'anim' at document scope, due to https://crbug.com/1334534 */
           @keyframes anim2 {
@@ -152,7 +152,7 @@
   </style>
   <div class=scroller>
     <div class=host>
-      <template shadowrootmode=open>
+      <template shadowrootmode=open shadowrootclonable>
         <style>
           div {
             scroll-timeline: --timeline y;

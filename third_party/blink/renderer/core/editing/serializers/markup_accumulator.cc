@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
@@ -597,6 +598,11 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
   if (shadow_root->serializable() &&
       RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled()) {
     template_element->SetBooleanAttribute(html_names::kSerializableAttr, true);
+  }
+  if (shadow_root->clonable() &&
+      RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
+    template_element->SetBooleanAttribute(html_names::kShadowrootclonableAttr,
+                                          true);
   }
   return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
                                                       template_element);
