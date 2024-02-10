@@ -1507,10 +1507,11 @@
       base_feature: "none",
     },
     // Controls whether DOMParser.parseFromString() attempts to use the
-    // html fast path parser.
+    // html fast path parser. This flag is to be used as a killswitch in case
+    // of any issues.
     {
       name: "DOMParserUsesHTMLFastPathParser",
-      status: "test"
+      status: "stable"
     },
     {
       name: "DOMPartsAPI",

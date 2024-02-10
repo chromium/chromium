@@ -1644,11 +1644,26 @@ void Document::SetContentFromDOMParser(const String& content) {
   if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
       contentType() == "text/html" && IsA<HTMLDocument>(this)) {
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
-    const bool include_shadow_roots =
-        declarative_shadow_root_allow_state_ == AllowState::kAllow;
-    if (TryParsingHTMLFragment(content, *this, *body, *body,
-                               kAllowScriptingContent, include_shadow_roots,
-                               nullptr)) {
+    HTMLFragmentParsingBehaviorSet parser_behavior(
+        {HTMLFragmentParsingBehavior::kStripInitialWhitespaceForBody});
+    if (declarative_shadow_root_allow_state_ == AllowState::kAllow) {
+      parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
+    }
+    const bool success = TryParsingHTMLFragment(content, *this, *body, *body,
+                                                kAllowScriptingContent,
+                                                parser_behavior, nullptr);
+    if (success) {
+      // When DCHECK is enabled, use SetContent() and verify fast-path
+      // content matches. This effectively means the results of the fast-path
+      // parser aren't used with DCHECK enabled, but it provides a way to
+      // catch problems.
+#if DCHECK_IS_ON()
+      SetContent(content);
+      DCHECK(this->body());
+      DCHECK_EQ(CreateMarkup(body), CreateMarkup(this->body()))
+          << " supplied value " << content;
+      DCHECK(body->isEqualNode(this->body()));
+#else
       auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
       auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
       html->AppendChild(head);
@@ -1656,6 +1671,7 @@ void Document::SetContentFromDOMParser(const String& content) {
       // Append `body` last so that the newly created children of `body` only
       // get one InsertedInto().
       html->AppendChild(body);
+#endif
       return;
     }
   }

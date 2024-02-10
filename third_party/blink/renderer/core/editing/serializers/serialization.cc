@@ -671,11 +671,14 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   if (IsA<HTMLDocument>(document) || force_html == Element::ForceHtml::kForce) {
     bool log_tag_stats = false;
     base::ElapsedTimer parse_timer;
+    HTMLFragmentParsingBehaviorSet parser_behavior;
+    if (parse_declarative_shadows ==
+        Element::ParseDeclarativeShadowRoots::kParse) {
+      parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
+    }
     const bool parsed_fast_path = TryParsingHTMLFragment(
         markup, document, *fragment, *context_element, parser_content_policy,
-        parse_declarative_shadows ==
-            Element::ParseDeclarativeShadowRoots::kParse,
-        &log_tag_stats);
+        parser_behavior, &log_tag_stats);
     if (parsed_fast_path) {
       LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()

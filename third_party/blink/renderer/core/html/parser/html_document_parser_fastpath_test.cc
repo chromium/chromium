@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -35,9 +36,9 @@ TEST(HTMLDocumentParserFastpathTest, SanityCheck) {
   document->body()->AppendChild(div);
   DocumentFragment* fragment = DocumentFragment::Create(*document);
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(TryParsingHTMLFragment(
-      "<div>test</div>", *document, *fragment, *div,
-      ParserContentPolicy::kAllowScriptingContent, false));
+  EXPECT_TRUE(
+      TryParsingHTMLFragment("<div>test</div>", *document, *fragment, *div,
+                             ParserContentPolicy::kAllowScriptingContent, {}));
   histogram_tester.ExpectTotalCount(
       "Blink.HTMLFastPathParser.UnsupportedTagType.CompositeMaskV2", 0);
   histogram_tester.ExpectTotalCount(
@@ -331,6 +332,49 @@ TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
   parser->parseFromString("<strong>0</strong> items left", "text/html",
                           parser_options);
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
+}
+
+TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingWhitespace) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* parser = DOMParser::Create(scope.GetScriptState());
+  auto* parser_options = ParseFromStringOptions::Create();
+  base::HistogramTester histogram_tester;
+  Document* document =
+      parser->parseFromString("\n   <div></div>", "text/html", parser_options);
+  histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
+  EXPECT_EQ("<body><div></div></body>", CreateMarkup(document->body()));
+  auto* first_child = document->body()->firstChild();
+  ASSERT_TRUE(first_child);
+}
+
+TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* parser = DOMParser::Create(scope.GetScriptState());
+  auto* parser_options = ParseFromStringOptions::Create();
+  base::HistogramTester histogram_tester;
+  Document* document = parser->parseFromString("\n   x<div></div>y ",
+                                               "text/html", parser_options);
+  histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
+  EXPECT_EQ("<body>x<div></div>y </body>", CreateMarkup(document->body()));
+  auto* first_child = document->body()->firstChild();
+  ASSERT_TRUE(first_child);
+}
+
+TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace2) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* parser = DOMParser::Create(scope.GetScriptState());
+  auto* parser_options = ParseFromStringOptions::Create();
+  base::HistogramTester histogram_tester;
+  Document* document = parser->parseFromString("\n   x \n  <div></div>y \n   ",
+                                               "text/html", parser_options);
+  histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
+  EXPECT_EQ("<body>x \n  <div></div>y \n   </body>",
+            CreateMarkup(document->body()));
+  auto* first_child = document->body()->firstChild();
+  ASSERT_TRUE(first_child);
 }
 
 TEST(HTMLDocumentParserFastpathTest, MixedEncoding) {
