@@ -340809,10 +340809,6 @@
       "5c5cdb42e7078b18ed1e4f58f34747ce76d50c02",
       []
      ],
-     "appearance-cssom-001_include=Invalid-expected.txt": [
-      "65e2526f27bdcc2acb34278a85b24f4b624de6e5",
-      []
-     ],
      "appearance-progress-bar-002-ref.html": [
       "d243f0c75c75f57e6fd1ca629ccf0d3d924a0c13",
       []
@@ -382472,7 +382468,7 @@
     ],
     "resources": {
      "orientation-event-helpers.js": [
-      "d9ee728d1efa49d58e24a79b49cb4443dafa7f25",
+      "01e91c62aecd4d8f58be304f095bdbb4d99b1d37",
       []
      ]
     }
@@ -395913,7 +395909,7 @@
        []
       ],
       "property-list.js": [
-       "692ff01328799a075f2d76232cfec06934369088",
+       "98ab02a122155e75e4e5877d07baac7d34fb2be5",
        []
       ],
       "property-types.js": [
@@ -503834,7 +503830,7 @@
      ]
     ],
     "get-nested-configs.https.html": [
-     "da77f94a76302ac540b3d4f10ba3d9702da4703f",
+     "2876e52d148833b097f68aff50a3916faed2d773",
      [
       null,
       {}
@@ -519668,7 +519664,7 @@
       ]
      ],
      "component-ads.https.window.js": [
-      "719a645beb692c5e5e407f3daf61323d5ae0a264",
+      "7e98570b9ef22cd73673565f3188b4c2b839ad6b",
       [
        "fledge/tentative/component-ads.https.window.html?1-5",
        {
@@ -601906,7 +601902,7 @@
    },
    "orientation-event": {
     "device-orientation-events-of-detached-documents.https.html": [
-     "c7ad5ecaefe31d713e03a26a609bc7fcd9d4051a",
+     "f05be6d0d205db65f6acb13249402db7749dba20",
      [
       null,
       {
@@ -601915,7 +601911,7 @@
      ]
     ],
     "device-orientation-events-unavailable-on-insecure-origins.html": [
-     "571a388f64495e61b8f0eb846e03b226ce007d9f",
+     "6d2eee402f7e0650ade6ede2d08504cbcc52c207",
      [
       null,
       {
@@ -601948,7 +601944,7 @@
     ],
     "motion": {
      "add-during-dispatch.https.html": [
-      "3a895b9d0969ab1c8a77509ab29d2bd8071d372e",
+      "262715ce556515f0f2cec924281de8d7a0efbd2a",
       [
        null,
        {
@@ -601957,7 +601953,7 @@
       ]
      ],
      "add-listener-from-callback.https.html": [
-      "0803d7cc9bfa8951cbce39dad8c2b63ed713956b",
+      "1f8cca86b23d41c09ebd472688f7b17e4c5e1344",
       [
        null,
        {
@@ -601973,7 +601969,7 @@
       ]
      ],
      "multiple-event-listeners.https.html": [
-      "3b13d632ac8a3e4d240b8b4844054f0e9e84193c",
+      "f94c9d136eb310f1bf51d8d2677e374996ed538e",
       [
        null,
        {
@@ -601982,7 +601978,7 @@
       ]
      ],
      "null-values.https.html": [
-      "b6a2a1622fe003d6ea02d5ca4620bb95499f4157",
+      "f875afcd64dbae3b91208938cf35a5ffcf3f046a",
       [
        null,
        {
@@ -601998,7 +601994,7 @@
       ]
      ],
      "page-visibility.https.html": [
-      "ea67131151f1ed27b621558d413ce6656c022821",
+      "2925af93315275d878c6fb01551eb8aeb581f6e0",
       [
        null,
        {
@@ -602027,7 +602023,7 @@
     },
     "orientation": {
      "absolute-fallback.https.html": [
-      "610b1b3c5643246ce8fcf004ddcb2e113aa8c761",
+      "27a430728e88a160063792b37c1a144a156ff63f",
       [
        null,
        {
@@ -602036,7 +602032,7 @@
       ]
      ],
      "add-listener-from-callback.https.html": [
-      "8f8cfa29c4f948cc926829a48d0d89516dbb26e5",
+      "7f664ab40070487bd9c433572deefdb919aa25e5",
       [
        null,
        {
@@ -602045,7 +602041,7 @@
       ]
      ],
      "basic-operation-absolute.https.html": [
-      "61fd218781df1b8f6103d1c63d7ab8027db42026",
+      "bebd69b952f5bad8534e167fe06c35f8841b1c60",
       [
        null,
        {
@@ -602054,7 +602050,7 @@
       ]
      ],
      "basic-operation.https.html": [
-      "45fe38006ea2bd68a472b2f1ea3cb4a1a0db7c71",
+      "c4d26e3744e39388ab8679fd0cf5ee9de68bb5e9",
       [
        null,
        {
@@ -602070,7 +602066,7 @@
       ]
      ],
      "multiple-event-listeners.https.html": [
-      "473b7f88284bb7ac9670e22aa1da079763c322ca",
+      "a32f9f3a1f68ecf61e99c6dabf486d21a4f80941",
       [
        null,
        {
@@ -602079,7 +602075,7 @@
       ]
      ],
      "no-synchronous-events.https.html": [
-      "e5d7621123ff5b7558ceb45df0a67b263775e1c9",
+      "97dccfbc31a1e9624fcb735102e58696b9fd6cd3",
       [
        null,
        {
@@ -602088,7 +602084,7 @@
       ]
      ],
      "null-values.https.html": [
-      "f9e4aa642052cb3d3d30605c0d97c073510cc555",
+      "c54d73da50cdc2eedf07c80a5033d66ac42cc507",
       [
        null,
        {
@@ -602104,7 +602100,7 @@
       ]
      ],
      "page-visibility.https.html": [
-      "37ca3681c9198a04b6d238d96bf2d15657961e21",
+      "bcb4beeb8ee5da418ba098634d6b7d13743455b6",
       [
        null,
        {
@@ -602131,7 +602127,7 @@
       ]
      ],
      "updates.https.html": [
-      "c84588d5985d4a327ce164826fd915bf54a52a8b",
+      "fe1811535b3b473336dbf90f65279511a6c93284",
       [
        null,
        {
