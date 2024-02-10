@@ -110,6 +110,18 @@ async function testGetTitleByDocumentId() {
   chrome.test.succeed();
 }
 
+// Checks that `tabId` can find prerendering tab.
+async function testGetTabByTabId() {
+  await setup();
+  chrome.tabs.get(prerenderingTabId, function(tab) {
+    // Make sure tab.windowId is chrome.windows.WINDOW_ID_NONE and it is
+    // allowed.
+    chrome.test.assertEq(chrome.windows.WINDOW_ID_NONE, tab.windowId);
+    chrome.test.assertEq(-1, tab.index);
+    chrome.test.succeed();
+  });
+}
+
 chrome.test.getConfig(async config => {
   testServerPort = config.testServer.port;
   chrome.test.assertNe(0, testServerPort);
@@ -121,10 +133,12 @@ chrome.test.getConfig(async config => {
 
   // TODO(https://crbug.com/1350676): add more tests for tabs.on* event listeners.
   chrome.test.runTests([
-    testGetTitleForAllFrames,
-    testGetAllInWindow,
-    testQuery,
-    testGetTitleByFrameId,
-    testGetTitleByDocumentId,
+    // TODO(crbug.com/1501760): Flaky on multiple platforms.
+    // testGetTitleForAllFrames,
+    // testGetAllInWindow,
+    // testQuery,
+    // testGetTitleByFrameId,
+    // testGetTitleByDocumentId,
+    testGetTabByTabId,
   ]);
 });

@@ -544,9 +544,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
 }
 
-// TODO(crbug.com/1501760): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
-                       DISABLED_PrerenderingIntoANewTab) {
+                       PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
