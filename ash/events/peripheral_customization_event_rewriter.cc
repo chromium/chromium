@@ -156,6 +156,21 @@ int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
   }
 }
 
+bool AreScrollWheelEventRewritesAllowed(
+    mojom::CustomizationRestriction customization_restriction) {
+  switch (customization_restriction) {
+    case mojom::CustomizationRestriction::kDisallowCustomizations:
+    case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+    case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
+    case mojom::CustomizationRestriction::
+        kAllowAlphabetOrNumberKeyEventRewrites:
+      return false;
+    case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
+    case mojom::CustomizationRestriction::kAllowCustomizations:
+      return true;
+  }
+}
+
 template <typename Iterator>
 std::vector<std::unique_ptr<ui::Event>> RewriteModifiers(
     const ui::Event& event,
@@ -248,11 +263,10 @@ std::vector<std::unique_ptr<ui::Event>> GenerateFullKeyEventSequence(
 
 std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
     const ui::Event& event,
-    const mojom::KeyEvent& key_event) {
-  const ui::EventType event_type = (event.type() == ui::ET_MOUSE_PRESSED ||
-                                    event.type() == ui::ET_KEY_PRESSED)
-                                       ? ui::ET_KEY_PRESSED
-                                       : ui::ET_KEY_RELEASED;
+    const mojom::KeyEvent& key_event,
+    bool key_press) {
+  const ui::EventType event_type =
+      key_press ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
   const uint32_t modifier_key_flag = ConvertKeyCodeToFlags(key_event.vkey);
 
   // `other_modifiers_to_apply` symbolizes the flags that are not handled by
@@ -269,6 +283,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
       key_event.modifiers == modifier_key_flag) {
     applied_modifier_key_flag = ui::EF_NONE;
   }
+
   auto rewritten_event = std::make_unique<ui::KeyEvent>(
       event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
       applied_modifier_key_flag | other_modifiers_to_apply | event.flags(),
@@ -280,9 +295,41 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
       /*pressed=*/event_type == ui::ET_KEY_PRESSED, std::move(rewritten_event));
 }
 
-std::unique_ptr<ui::Event> RewriteEventToMouseButtonEvent(
+std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
+    const ui::Event& event,
+    const mojom::KeyEvent& key_event) {
+  // If the original event is a mouse scroll event, we must generate both a
+  // press and release from the single event.
+  const bool should_press_and_release = event.type() == ui::ET_MOUSEWHEEL;
+
+  const bool key_press = should_press_and_release ||
+                         event.type() == ui::ET_MOUSE_PRESSED ||
+                         event.type() == ui::ET_KEY_PRESSED;
+  std::vector<std::unique_ptr<ui::Event>> rewritten_events =
+      RewriteEventToKeyEvents(event, key_event, key_press);
+
+  if (should_press_and_release) {
+    std::vector<std::unique_ptr<ui::Event>> release_rewritten_events =
+        RewriteEventToKeyEvents(event, key_event, /*key_press=*/false);
+    rewritten_events.reserve(rewritten_events.size() +
+                             release_rewritten_events.size());
+    rewritten_events.insert(
+        rewritten_events.end(),
+        std::make_move_iterator(release_rewritten_events.begin()),
+        std::make_move_iterator(release_rewritten_events.end()));
+  }
+  return rewritten_events;
+}
+
+std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
     const ui::Event& event,
     mojom::StaticShortcutAction action) {
+  // If the original event is a mouse scroll event, we must generate both a
+  // press and release from the single event.
+  const bool should_press_and_release = event.type() == ui::ET_MOUSEWHEEL;
+
+  std::vector<std::unique_ptr<ui::Event>> rewritten_events;
+
   auto* flag_iter = kStaticActionToMouseButtonFlag.find(action);
   CHECK(flag_iter != kStaticActionToMouseButtonFlag.end());
   const int characteristic_flag = flag_iter->second;
@@ -295,15 +342,24 @@ std::unique_ptr<ui::Event> RewriteEventToMouseButtonEvent(
                                   display.bounds().origin().OffsetFromOrigin()),
                       display.device_scale_factor());
 
-  const ui::EventType type = (event.type() == ui::ET_MOUSE_PRESSED ||
-                              event.type() == ui::ET_KEY_PRESSED)
-                                 ? ui::ET_MOUSE_PRESSED
-                                 : ui::ET_MOUSE_RELEASED;
-  auto rewritten_event = std::make_unique<ui::MouseEvent>(
+  const ui::EventType type =
+      (should_press_and_release || event.type() == ui::ET_MOUSE_PRESSED ||
+       event.type() == ui::ET_KEY_PRESSED)
+          ? ui::ET_MOUSE_PRESSED
+          : ui::ET_MOUSE_RELEASED;
+  rewritten_events.push_back(std::make_unique<ui::MouseEvent>(
       type, location, location, event.time_stamp(),
-      event.flags() | characteristic_flag, characteristic_flag);
-  rewritten_event->set_source_device_id(event.source_device_id());
-  return rewritten_event;
+      event.flags() | characteristic_flag, characteristic_flag));
+  rewritten_events.back()->set_source_device_id(event.source_device_id());
+
+  if (should_press_and_release) {
+    rewritten_events.push_back(std::make_unique<ui::MouseEvent>(
+        ui::ET_MOUSE_RELEASED, location, location, event.time_stamp(),
+        event.flags() | characteristic_flag, characteristic_flag));
+    rewritten_events.back()->set_source_device_id(event.source_device_id());
+  }
+
+  return rewritten_events;
 }
 
 bool IsMouseButtonEvent(const ui::MouseEvent& mouse_event) {
@@ -374,6 +430,23 @@ mojom::ButtonPtr GetButtonFromMouseEvent(const ui::MouseEvent& mouse_event) {
   NOTREACHED_NORETURN();
 }
 
+// Returns the customizable button for the scroll wheel event. Will return null
+// if the scroll event is not a horizontal scroll event.
+mojom::ButtonPtr GetButtonFromMouseWheelEvent(
+    const ui::MouseWheelEvent& mouse_wheel_event) {
+  if (mouse_wheel_event.x_offset() == 0) {
+    return nullptr;
+  }
+
+  if (mouse_wheel_event.x_offset() > 0) {
+    return mojom::Button::NewCustomizableButton(
+        mojom::CustomizableButton::kScrollRight);
+  }
+
+  return mojom::Button::NewCustomizableButton(
+      mojom::CustomizableButton::kScrollLeft);
+}
+
 int ConvertButtonToFlags(const mojom::Button& button) {
   if (button.is_customizable_button()) {
     switch (button.get_customizable_button()) {
@@ -389,6 +462,9 @@ int ConvertButtonToFlags(const mojom::Button& button) {
       case mojom::CustomizableButton::kBack:
       case mojom::CustomizableButton::kSide:
         return ui::EF_BACK_MOUSE_BUTTON;
+      case mojom::CustomizableButton::kScrollLeft:
+      case mojom::CustomizableButton::kScrollRight:
+        return ui::EF_NONE;
     }
   }
 
@@ -594,6 +670,40 @@ void PeripheralCustomizationEventRewriter::StopObserving() {
   mice_to_observe_.clear();
 }
 
+bool PeripheralCustomizationEventRewriter::NotifyMouseWheelEventObserving(
+    const ui::MouseWheelEvent& mouse_wheel_event,
+    DeviceType device_type) {
+  const auto customization_restriction_iter =
+      mice_to_observe_.find(mouse_wheel_event.source_device_id());
+  if (customization_restriction_iter == mice_to_observe_.end()) {
+    return false;
+  }
+
+  auto customization_restriction = customization_restriction_iter->second;
+  if (!AreScrollWheelEventRewritesAllowed(customization_restriction)) {
+    return false;
+  }
+
+  const mojom::ButtonPtr button =
+      GetButtonFromMouseWheelEvent(mouse_wheel_event);
+  if (!button) {
+    return false;
+  }
+
+  switch (device_type) {
+    case DeviceType::kMouse:
+      input_device_settings_controller_->OnMouseButtonPressed(
+          mouse_wheel_event.source_device_id(), *button);
+      break;
+    case DeviceType::kGraphicsTablet:
+      input_device_settings_controller_->OnGraphicsTabletButtonPressed(
+          mouse_wheel_event.source_device_id(), *button);
+      break;
+  }
+
+  return true;
+}
+
 bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
     const ui::MouseEvent& mouse_event,
     DeviceType device_type) {
@@ -661,6 +771,7 @@ bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
              IsNumberKeyboardCode(key_event.key_code());
     case mojom::CustomizationRestriction::kDisallowCustomizations:
     case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+    case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
       return false;
   }
 }
@@ -712,7 +823,8 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
 
   if (remapping_action->is_accelerator_action()) {
     if (event.type() == ui::ET_KEY_PRESSED ||
-        event.type() == ui::ET_MOUSE_PRESSED) {
+        event.type() == ui::ET_MOUSE_PRESSED ||
+        event.type() == ui::ET_MOUSEWHEEL) {
       // Every accelerator supported by peripheral customization is not impacted
       // by the accelerator passed. Therefore, passing an empty accelerator will
       // cause no issues.
@@ -746,8 +858,7 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
     }
 
     if (kStaticActionToMouseButtonFlag.contains(static_action)) {
-      rewritten_events.push_back(
-          RewriteEventToMouseButtonEvent(event, static_action));
+      rewritten_events = RewriteEventToMouseButtonEvents(event, static_action);
     } else {
       rewritten_events = RewriteEventToKeyEvents(
           event, GetStaticShortcutAction(
@@ -826,6 +937,12 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
     mojom::ButtonPtr button,
     const ui::Event& original_event,
     const std::vector<std::unique_ptr<ui::Event>>& rewritten_events) {
+  // Scroll wheel events cannot affect other events modifiers since they do a
+  // full press/release sequence with the one event.
+  if (original_event.type() == ui::ET_MOUSEWHEEL) {
+    return;
+  }
+
   DeviceIdButton device_id_button_key =
       DeviceIdButton{original_event.source_device_id(), std::move(button)};
   // If the button is released, the entry must be removed from the map.
@@ -866,6 +983,83 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
   // events.
   device_button_to_flags_.insert_or_assign(std::move(device_id_button_key),
                                            event_flags);
+}
+
+ui::EventDispatchDetails
+PeripheralCustomizationEventRewriter::RewriteMouseWheelEvent(
+    const ui::MouseWheelEvent& mouse_wheel_event,
+    const Continuation continuation) {
+  auto device_type_to_observe =
+      GetDeviceTypeToObserve(mouse_wheel_event.source_device_id());
+  if (device_type_to_observe) {
+    if (NotifyMouseWheelEventObserving(mouse_wheel_event,
+                                       *device_type_to_observe)) {
+      return DiscardEvent(continuation);
+    }
+
+    // Otherwise, the flags must be cleared for the remappable buttons so they
+    // do not affect the application while the mouse is meant to be observed.
+    std::unique_ptr<ui::Event> rewritten_event = CloneEvent(mouse_wheel_event);
+    const int remappable_flags =
+        GetRemappableMouseEventFlags(*device_type_to_observe);
+    rewritten_event->SetFlags(rewritten_event->flags() & ~remappable_flags);
+    if (rewritten_event->IsMouseEvent()) {
+      auto& rewritten_mouse_event = *rewritten_event->AsMouseEvent();
+      rewritten_mouse_event.set_changed_button_flags(
+          rewritten_mouse_event.changed_button_flags() & ~remappable_flags);
+    }
+    return SendEvent(continuation, rewritten_event.get());
+  }
+
+  // Clone event and remove the already remapped modifiers and use this as the
+  // "source" key event for the rest of the rewriting.
+  std::unique_ptr<ui::Event> original_event_with_modifiers_removed =
+      CloneEvent(mouse_wheel_event);
+  RemoveRemappedModifiers(*original_event_with_modifiers_removed);
+
+  std::vector<std::unique_ptr<ui::Event>> rewritten_events;
+  mojom::ButtonPtr button = GetButtonFromMouseWheelEvent(mouse_wheel_event);
+  bool updated_button_map = false;
+  if (!button.is_null()) {
+    if (RewriteEventFromButton(*original_event_with_modifiers_removed, *button,
+                               rewritten_events)) {
+      return DiscardEvent(continuation);
+    }
+  }
+
+  const bool event_rewritten = !rewritten_events.empty();
+
+  // Add an event to our list to rewrite based on other pressed buttons.
+  if (!event_rewritten) {
+    rewritten_events.push_back(
+        std::move(original_event_with_modifiers_removed));
+  }
+
+  // If the button was released, the pressed button map must be updated before
+  // applying remapped modifiers.
+  const ui::Event& last_rewritten_event = *rewritten_events.back();
+  if (event_rewritten &&
+      (last_rewritten_event.type() == ui::ET_MOUSE_RELEASED ||
+       last_rewritten_event.type() == ui::ET_KEY_RELEASED)) {
+    updated_button_map = true;
+    UpdatePressedButtonMap(std::move(button), mouse_wheel_event,
+                           rewritten_events);
+  }
+
+  for (const auto& rewritten_event : rewritten_events) {
+    ApplyRemappedModifiers(*rewritten_event);
+  }
+
+  if (event_rewritten && !updated_button_map) {
+    UpdatePressedButtonMap(std::move(button), mouse_wheel_event,
+                           rewritten_events);
+  }
+
+  ui::EventDispatchDetails details;
+  for (const auto& rewritten_event : rewritten_events) {
+    details = SendEvent(continuation, rewritten_event.get());
+  }
+  return details;
 }
 
 ui::EventDispatchDetails
@@ -948,6 +1142,10 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteEvent(
     const Continuation continuation) {
   DCHECK(features::IsPeripheralCustomizationEnabled() ||
          ::features::IsShortcutCustomizationEnabled());
+
+  if (event.IsMouseWheelEvent()) {
+    return RewriteMouseWheelEvent(*event.AsMouseWheelEvent(), continuation);
+  }
 
   if (event.IsMouseEvent()) {
     return RewriteMouseEvent(*event.AsMouseEvent(), continuation);

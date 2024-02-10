@@ -105,6 +105,11 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   // the given `device_type`. Returns true if the event should be discarded.
   bool NotifyMouseEventObserving(const ui::MouseEvent& mouse_event,
                                  DeviceType device_type);
+  // Notifies observers if the given `mouse_wheel_event` is a remappable button
+  // for the given `device_type`. Returns true if the event should be discarded.
+  bool NotifyMouseWheelEventObserving(
+      const ui::MouseWheelEvent& mouse_wheel_event,
+      DeviceType device_type);
   // Notifies observers if the given `key_event` is a remappable button for
   // the given `device_type`. Returns true if the event should be discarded.
   bool NotifyKeyEventObserving(const ui::KeyEvent& key_event,
@@ -123,6 +128,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   ui::EventDispatchDetails RewriteMouseEvent(const ui::MouseEvent& mouse_event,
                                              const Continuation continuation);
+  ui::EventDispatchDetails RewriteMouseWheelEvent(
+      const ui::MouseWheelEvent& mouse_event,
+      const Continuation continuation);
   ui::EventDispatchDetails RewriteKeyEvent(const ui::KeyEvent& key_event,
                                            const Continuation continuation);
 

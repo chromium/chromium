@@ -32,12 +32,17 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
           // Logitech ERGO M575 (USB Dongle)
-          {{0x46d, 0x4096},
+          {{0x046d, 0x4096},
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Logitech M510 (USB Dongle)
+          {{0x046d, 0x4051},
+           {mojom::CustomizationRestriction::
+                kAllowHorizontalScrollWheelRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // HP 690/695 Mouse
-          {{0x3f0, 0x804a},
+          {{0x03f0, 0x804a},
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
