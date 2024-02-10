@@ -63,7 +63,7 @@ class ChromeUserManagerImpl
   ~ChromeUserManagerImpl() override;
 
   // Creates ChromeUserManagerImpl instance.
-  static std::unique_ptr<ChromeUserManager> CreateChromeUserManager();
+  static std::unique_ptr<ChromeUserManagerImpl> CreateChromeUserManager();
 
   // Registers user manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);

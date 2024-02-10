@@ -306,9 +306,9 @@ void ChromeUserManagerImpl::RegisterProfilePrefs(
 }
 
 // static
-std::unique_ptr<ChromeUserManager>
+std::unique_ptr<ChromeUserManagerImpl>
 ChromeUserManagerImpl::CreateChromeUserManager() {
-  return std::unique_ptr<ChromeUserManager>(new ChromeUserManagerImpl());
+  return base::WrapUnique(new ChromeUserManagerImpl());
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()

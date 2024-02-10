@@ -2147,8 +2147,6 @@ source_set("ash") {
     "login/users/chrome_user_manager_util.h",
     "login/users/default_user_image/default_user_images.cc",
     "login/users/default_user_image/default_user_images.h",
-    "login/users/scoped_test_user_manager.cc",
-    "login/users/scoped_test_user_manager.h",
     "login/users/test_users.cc",
     "login/users/test_users.h",
     "login/version_info_updater.cc",
