@@ -53,7 +53,8 @@ class {event.name} final : public ::metrics::structured::Event {{
 """
 
 HEADER_METRIC_TEMPLATE = """\
-  {event.name}& Set{metric.name}(const {metric.type} value);
+  {event.name}&& Set{metric.name}(const {metric.type} value) &&;
+  {event.name}& Set{metric.name}(const {metric.type} value) &;
 """
 
 IMPL_FILE_TEMPLATE = """\
@@ -96,7 +97,13 @@ IMPL_EVENT_TEMPLATE = """\
 """
 
 IMPL_METRIC_TEMPLATE = """\
-{event.name}& {event.name}::Set{metric.name}(const {metric.type} value) {{
+{event.name}&& {event.name}::Set{metric.name}(const {metric.type} value) && {{
+  AddMetric(\"{metric.name}\", Event::MetricType::{metric.type_enum},
+            {metric.base_value});
+  return std::move(*this);
+}}
+
+{event.name}& {event.name}::Set{metric.name}(const {metric.type} value) & {{
   AddMetric(\"{metric.name}\", Event::MetricType::{metric.type_enum},
             {metric.base_value});
   return *this;
