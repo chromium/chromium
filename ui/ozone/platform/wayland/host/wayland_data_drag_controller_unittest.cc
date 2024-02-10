@@ -1202,7 +1202,9 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
 // Emulate an incoming DnD session, testing that data drag controller gracefully
 // handles entered window destruction happening while the data fetching is still
 // unfinished. Regression test for https://crbug.com/1400872.
-TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
+// TODO(b/324541578): Fix threading-related flakiness and re-enabled.
+TEST_P(WaylandDataDragControllerTest,
+       DISABLED_DestroyWindowWhileFetchingForeignData) {
   auto main_thread_test_task_runnner =
       task_environment_.GetMainThreadTaskRunner();
   ASSERT_TRUE(main_thread_test_task_runnner);
