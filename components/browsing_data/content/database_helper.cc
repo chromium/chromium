@@ -27,7 +27,6 @@
 
 using content::BrowserThread;
 using content::StorageUsageInfo;
-using storage::DatabaseIdentifier;
 
 namespace browsing_data {
 

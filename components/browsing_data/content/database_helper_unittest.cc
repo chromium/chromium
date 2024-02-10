@@ -13,8 +13,6 @@
 namespace browsing_data {
 namespace {
 
-using storage::DatabaseIdentifier;
-
 class CannedDatabaseHelperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
