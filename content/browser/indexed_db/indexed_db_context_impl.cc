@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
@@ -337,16 +336,8 @@ void IndexedDBContextImpl::DoDeleteBucketData(
     return;
   }
 
-  // TODO(estade): remove this and just obliterate the data directory.
-  base::FilePath idb_file_path = GetLevelDBPath(bucket_locator);
-  leveldb::Status s =
-      IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(
-          idb_file_path);
-  bool success = s.ok();
-  if (success) {
-    success = base::DeletePathRecursively(GetBlobStorePath(bucket_locator));
-  }
-
+  bool success = base::ranges::all_of(GetStoragePaths(bucket_locator),
+                                      &base::DeletePathRecursively);
   NotifyOfBucketModification(bucket_locator);
   if (success) {
     bucket_set_.erase(bucket_locator);

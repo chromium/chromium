@@ -88,39 +88,6 @@ base::FilePath CreateAndReturnTempDir(base::ScopedTempDir* temp_dir) {
   return temp_dir->GetPath();
 }
 
-class LevelDBLock {
- public:
-  LevelDBLock() = default;
-  LevelDBLock(leveldb::Env* env, std::unique_ptr<leveldb::FileLock> lock)
-      : env_(env), lock_(std::move(lock)) {}
-
-  LevelDBLock(const LevelDBLock&) = delete;
-  LevelDBLock& operator=(const LevelDBLock&) = delete;
-
-  ~LevelDBLock() {
-    if (env_) {
-      // The call to UnlockFile assumes ownership of the lock.
-      env_->UnlockFile(lock_.release());
-    }
-  }
-
- private:
-  raw_ptr<leveldb::Env> env_ = nullptr;
-  std::unique_ptr<leveldb::FileLock> lock_;
-};
-
-std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
-  leveldb::Env* env = IndexedDBClassFactory::GetLevelDBOptions().env;
-  base::FilePath lock_path = file_name.AppendASCII("LOCK");
-  leveldb::FileLock* lock = nullptr;
-  leveldb::Status status = env->LockFile(lock_path.AsUTF8Unsafe(), &lock);
-  if (!status.ok())
-    return nullptr;
-  DCHECK(lock);
-  return std::make_unique<LevelDBLock>(
-      env, std::unique_ptr<leveldb::FileLock>(lock));
-}
-
 storage::BucketInfo ToBucketInfo(const storage::BucketLocator& bucket_locator) {
   storage::BucketInfo bucket_info;
   bucket_info.id = bucket_locator.id;
@@ -1505,28 +1472,6 @@ TEST_P(IndexedDBTestFirstOrThirdParty,
       &bucket_info);
   base::FilePath test_path =
       GetFilePathForTesting(bucket_info.ToBucketLocator());
-  EXPECT_TRUE(base::DirectoryExists(test_path));
-}
-
-TEST_P(IndexedDBTestFirstOrThirdParty, DeleteFailsIfDirectoryLocked) {
-  const blink::StorageKey kTestStorageKey = GetTestStorageKey();
-  storage::BucketInfo bucket_info = InitBucket(kTestStorageKey);
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
-
-  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
-  ASSERT_TRUE(base::CreateDirectory(test_path));
-
-  auto lock = LockForTesting(test_path);
-  ASSERT_TRUE(lock);
-
-  base::test::TestFuture<bool> success_future;
-  context()->IDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        context()->DeleteForStorageKey(kTestStorageKey,
-                                       success_future.GetCallback());
-      }));
-  EXPECT_FALSE(success_future.Get());
-
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
 
