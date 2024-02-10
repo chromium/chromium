@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -198,6 +199,12 @@ VirtualCardUsageData GetVirtualCardUsageData2();
 // info that has the specific type.
 std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
     const std::vector<CardUnmaskChallengeOptionType>& types);
+
+// Each Get returns an active CreditCardBenefit with dummy info.
+// One getter for each benefit type.
+std::unique_ptr<CreditCardFlatRateBenefit> GetActiveCreditCardFlatRateBenefit();
+std::unique_ptr<CreditCardCategoryBenefit> GetActiveCreditCardCategoryBenefit();
+std::unique_ptr<CreditCardMerchantBenefit> GetActiveCreditCardMerchantBenefit();
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with

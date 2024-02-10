@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -1647,6 +1648,132 @@ void PaymentsAutofillTable::ClearLocalPaymentMethodsData() {
   Delete(db_, kLocalIbansTable);
 }
 
+bool PaymentsAutofillTable::SetCreditCardBenefits(
+    const std::vector<std::unique_ptr<CreditCardBenefit>>&
+        credit_card_benefits) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Remove all old benefits to rewrite the benefit tables entirely.
+  if (!ClearAllCreditCardBenefits()) {
+    return false;
+  }
+
+  for (const std::unique_ptr<CreditCardBenefit>& credit_card_benefit :
+       credit_card_benefits) {
+    if (!credit_card_benefit->IsValid()) {
+      continue;
+    }
+
+    // Insert new card benefit data.
+    sql::Statement insert_benefit;
+    InsertBuilder(db_, insert_benefit, kMaskedCreditCardBenefitsTable,
+                  {kBenefitId, kInstrumentId, kBenefitType, kBenefitCategory,
+                   kBenefitDescription, kStartTime, kEndTime});
+    int index = 0;
+    insert_benefit.BindString(index++, *(credit_card_benefit->benefit_id()));
+    insert_benefit.BindInt64(
+        index++, *(credit_card_benefit->linked_card_instrument_id()));
+    insert_benefit.BindInt(
+        index++, static_cast<int>(credit_card_benefit->benefit_type()));
+    insert_benefit.BindInt(
+        index++, static_cast<int>(
+                     credit_card_benefit->benefit_type() ==
+                             CreditCardBenefit::BenefitType::kCategoryBenefit
+                         ? static_cast<CreditCardCategoryBenefit*>(
+                               credit_card_benefit.get())
+                               ->benefit_category()
+                         : CreditCardCategoryBenefit::BenefitCategory::
+                               kUnknownBenefitCategory));
+    insert_benefit.BindString16(index++,
+                                credit_card_benefit->benefit_description());
+    insert_benefit.BindTime(index++, credit_card_benefit->start_time());
+    insert_benefit.BindTime(index++, credit_card_benefit->expiry_time());
+    if (!insert_benefit.Run()) {
+      return false;
+    }
+
+    // Insert merchant domains linked with the benefit.
+    if (credit_card_benefit->benefit_type() ==
+        CreditCardBenefit::BenefitType::kMerchantBenefit) {
+      for (const url::Origin& domain :
+           static_cast<CreditCardMerchantBenefit*>(credit_card_benefit.get())
+               ->merchant_domains()) {
+        sql::Statement insert_benefit_merchant_domain;
+        InsertBuilder(db_, insert_benefit_merchant_domain,
+                      kBenefitMerchantDomainsTable,
+                      {kBenefitId, kMerchantDomain});
+        insert_benefit_merchant_domain.BindString(
+            0, *credit_card_benefit->benefit_id());
+        insert_benefit_merchant_domain.BindString(1, domain.Serialize());
+        if (!insert_benefit_merchant_domain.Run()) {
+          return false;
+        }
+      }
+    }
+  }
+  return transaction.Commit();
+}
+
+bool PaymentsAutofillTable::GetAllCreditCardBenefits(
+    std::vector<std::unique_ptr<CreditCardBenefit>>* credit_card_benefits) {
+  sql::Statement get_benefits;
+  SelectBuilder(db_, get_benefits, kMaskedCreditCardBenefitsTable,
+                {kBenefitId, kInstrumentId, kBenefitType, kBenefitDescription,
+                 kStartTime, kEndTime, kBenefitCategory});
+
+  while (get_benefits.Step()) {
+    int index = 0;
+    CreditCardBenefit::BenefitId benefit_id =
+        CreditCardBenefit::BenefitId(get_benefits.ColumnString(index++));
+    CreditCardBenefit::LinkedCardInstrumentId linked_card_instrument_id =
+        CreditCardBenefit::LinkedCardInstrumentId(
+            get_benefits.ColumnInt64(index++));
+    CreditCardBenefit::BenefitType benefit_type =
+        static_cast<CreditCardBenefit::BenefitType>(
+            get_benefits.ColumnInt(index++));
+    std::u16string benefit_description = get_benefits.ColumnString16(index++);
+    base::Time start_time = get_benefits.ColumnTime(index++);
+    base::Time expiry_time = get_benefits.ColumnTime(index++);
+    CreditCardCategoryBenefit::BenefitCategory benefit_category =
+        static_cast<CreditCardCategoryBenefit::BenefitCategory>(
+            get_benefits.ColumnInt(index++));
+
+    switch (benefit_type) {
+      case CreditCardBenefit::BenefitType::kFlatRateBenefit:
+        credit_card_benefits->push_back(
+            std::make_unique<CreditCardFlatRateBenefit>(
+                benefit_id, linked_card_instrument_id, benefit_description,
+                start_time, expiry_time));
+        break;
+      case CreditCardBenefit::BenefitType::kCategoryBenefit:
+        credit_card_benefits->push_back(
+            std::make_unique<CreditCardCategoryBenefit>(
+                benefit_id, linked_card_instrument_id, benefit_category,
+                benefit_description, start_time, expiry_time));
+        break;
+      case CreditCardBenefit::BenefitType::kMerchantBenefit:
+        credit_card_benefits->push_back(
+            std::make_unique<CreditCardMerchantBenefit>(
+                benefit_id, linked_card_instrument_id, benefit_description,
+                GetMerchantDomainsForBenefitId(benefit_id), start_time,
+                expiry_time));
+
+        break;
+    }
+  }
+
+  return get_benefits.Succeeded();
+}
+
+bool PaymentsAutofillTable::ClearAllCreditCardBenefits() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && Delete(db_, kMaskedCreditCardBenefitsTable) &&
+         Delete(db_, kBenefitMerchantDomainsTable) && transaction.Commit();
+}
+
 bool PaymentsAutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
@@ -1660,9 +1787,10 @@ bool PaymentsAutofillTable::MigrateToVersion84AddNicknameColumn() {
                               "VARCHAR");
 }
 
-bool PaymentsAutofillTable::MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard() {
-  // Add the new card_issuer column to the masked_credit_cards table and set the
-  // default value to ISSUER_UNKNOWN.
+bool PaymentsAutofillTable::
+    MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard() {
+  // Add the new card_issuer column to the masked_credit_cards table and set
+  // the default value to ISSUER_UNKNOWN.
   return AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kCardIssuer,
                               "INTEGER DEFAULT 0");
 }
@@ -1682,11 +1810,13 @@ bool PaymentsAutofillTable::
 
 bool PaymentsAutofillTable::MigrateToVersion94AddPromoCodeColumnsToOfferData() {
   sql::Transaction transaction(db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
-  if (!db_->DoesTableExist(kOfferDataTable))
+  if (!db_->DoesTableExist(kOfferDataTable)) {
     InitOfferDataTable();
+  }
 
   // Add the new promo_code and DisplayStrings text columns to the offer_data
   // table.
@@ -1701,11 +1831,13 @@ bool PaymentsAutofillTable::MigrateToVersion94AddPromoCodeColumnsToOfferData() {
 
 bool PaymentsAutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
   sql::Transaction transaction(db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
-  if (!db_->DoesTableExist(kMaskedCreditCardsTable))
+  if (!db_->DoesTableExist(kMaskedCreditCardsTable)) {
     InitMaskedCreditCardsTable();
+  }
 
   // Add virtual_card_enrollment_state to masked_credit_cards.
   if (!AddColumnIfNotExists(db_, kMaskedCreditCardsTable,
@@ -1722,7 +1854,8 @@ bool PaymentsAutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
   return transaction.Commit();
 }
 
-bool PaymentsAutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
+bool PaymentsAutofillTable::
+    MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
          DropColumn(db_, kMaskedCreditCardsTable, kStatus) &&
@@ -1735,11 +1868,13 @@ bool PaymentsAutofillTable::MigrateToVersion101RemoveCreditCardArtImageTable() {
 
 bool PaymentsAutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
   sql::Transaction transaction(db_);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
-  if (!db_->DoesTableExist(kMaskedCreditCardsTable))
+  if (!db_->DoesTableExist(kMaskedCreditCardsTable)) {
     InitMaskedCreditCardsTable();
+  }
 
   // Add product_description to masked_credit_cards.
   if (!AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kProductDescription,
@@ -1786,16 +1921,18 @@ bool PaymentsAutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
                       {kLastFour, "VARCHAR"}});
 }
 
-bool PaymentsAutofillTable::MigrateToVersion111AddVirtualCardEnrollmentTypeColumn() {
+bool PaymentsAutofillTable::
+    MigrateToVersion111AddVirtualCardEnrollmentTypeColumn() {
   return db_->DoesTableExist(kMaskedCreditCardsTable) &&
          AddColumnIfNotExists(db_, kMaskedCreditCardsTable,
                               kVirtualCardEnrollmentType, "INTEGER DEFAULT 0");
 }
 
 bool PaymentsAutofillTable::MigrateToVersion115EncryptIbanValue() {
-  // Encrypt all existing IBAN values and rename the column name from `value` to
-  // `value_encrypted` by the following steps:
-  // 1. Read all existing guid and value data from `ibans`, encrypt all values,
+  // Encrypt all existing IBAN values and rename the column name from `value`
+  // to `value_encrypted` by the following steps:
+  // 1. Read all existing guid and value data from `ibans`, encrypt all
+  // values,
   //    and rewrite to `ibans`.
   // 2. Rename `value` column to `value_encrypted` for `ibans` table.
   sql::Transaction transaction(db_);
@@ -1928,8 +2065,8 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
     masked_insert.BindInt64(index++, card.instrument_id());
     masked_insert.BindInt(
         index++, static_cast<int>(card.virtual_card_enrollment_state()));
-    masked_insert.BindInt(index++, static_cast<int>(
-                                   card.virtual_card_enrollment_type()));
+    masked_insert.BindInt(
+        index++, static_cast<int>(card.virtual_card_enrollment_type()));
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
     masked_insert.BindString(index++, card.product_terms_url().spec());
@@ -1954,6 +2091,20 @@ bool PaymentsAutofillTable::DeleteFromMaskedCreditCards(const std::string& id) {
 bool PaymentsAutofillTable::DeleteFromUnmaskedCreditCards(const std::string& id) {
   // TODO(crbug.com/1497734): Remove this method entirely.
   return false;
+}
+
+base::flat_set<url::Origin>
+PaymentsAutofillTable::GetMerchantDomainsForBenefitId(
+    const CreditCardBenefit::BenefitId benefit_id) {
+  base::flat_set<url::Origin> merchant_domains;
+  sql::Statement s;
+  SelectBuilder(db_, s, kBenefitMerchantDomainsTable, {kMerchantDomain},
+                "WHERE benefit_id = ?");
+  s.BindString(0, *benefit_id);
+  while (s.Step()) {
+    merchant_domains.insert(url::Origin::Create(GURL(s.ColumnString(0))));
+  }
+  return merchant_domains;
 }
 
 bool PaymentsAutofillTable::InitCreditCardsTable() {

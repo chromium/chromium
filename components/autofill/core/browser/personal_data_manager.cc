@@ -493,7 +493,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_local_ibans_query_ || pending_server_ibans_query_ ||
          pending_customer_data_query_ || pending_offer_data_query_ ||
-         pending_virtual_card_usage_data_query_);
+         pending_virtual_card_usage_data_query_ ||
+         pending_credit_card_benefit_query_);
 
   if (!result) {
     // Error from the web database.
@@ -513,6 +514,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_offer_data_query_ = 0;
     } else if (h == pending_virtual_card_usage_data_query_) {
       pending_virtual_card_usage_data_query_ = 0;
+    } else if (h == pending_credit_card_benefit_query_) {
+      pending_credit_card_benefit_query_ = 0;
     }
   } else {
     switch (result->GetType()) {
@@ -570,6 +573,13 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
         ReceiveLoadedDbValues(h, result.get(),
                               &pending_virtual_card_usage_data_query_,
                               &autofill_virtual_card_usage_data_);
+        break;
+      case CREDIT_CARD_BENEFIT_RESULT:
+        DCHECK_EQ(h, pending_credit_card_benefit_query_)
+            << "received credit card benefit from invalid request.";
+        ReceiveLoadedDbValues(h, result.get(),
+                              &pending_credit_card_benefit_query_,
+                              &credit_card_benefits_);
         break;
       default:
         NOTREACHED();
@@ -1230,6 +1240,92 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
   return nullptr;
 }
 
+CreditCardFlatRateBenefit*
+PersonalDataManager::GetFlatRateBenefitByInstrumentId(
+    const CreditCardBenefit::LinkedCardInstrumentId instrument_id) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+    return nullptr;
+  }
+
+  auto find_result = base::ranges::find_if(
+      credit_card_benefits_,
+      [instrument_id](std::unique_ptr<CreditCardBenefit>& benefit) {
+        return benefit->linked_card_instrument_id() == instrument_id &&
+               benefit->benefit_type() ==
+                   CreditCardBenefit::BenefitType::kFlatRateBenefit &&
+               benefit->expiry_time() > AutofillClock::Now() &&
+               benefit->start_time() <= AutofillClock::Now();
+      });
+
+  // Casting the search result to `CreditCardFlatRateBenefit`.
+  // Safe to do so as benefit type is checked in the search criteria.
+  return find_result == credit_card_benefits_.end()
+             ? nullptr
+             : static_cast<CreditCardFlatRateBenefit*>(find_result->get());
+}
+
+CreditCardCategoryBenefit*
+PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
+    const CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+    const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+    return nullptr;
+  }
+
+  auto find_result = base::ranges::find_if(
+      credit_card_benefits_, [instrument_id, benefit_category](
+                                 std::unique_ptr<CreditCardBenefit>& benefit) {
+        return benefit->linked_card_instrument_id() == instrument_id &&
+               benefit->benefit_type() ==
+                   CreditCardBenefit::BenefitType::kCategoryBenefit &&
+               // Safe to down-cast as BenefitType was checked before the cast.
+               static_cast<CreditCardCategoryBenefit*>(benefit.get())
+                       ->benefit_category() == benefit_category &&
+               benefit->expiry_time() > AutofillClock::Now() &&
+               benefit->start_time() <= AutofillClock::Now();
+      });
+
+  // Casting the search result to `CreditCardCategoryBenefit`.
+  // Safe to do so as benefit type is checked in the search criteria.
+  return find_result == credit_card_benefits_.end()
+             ? nullptr
+             : static_cast<CreditCardCategoryBenefit*>(find_result->get());
+}
+
+CreditCardMerchantBenefit*
+PersonalDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
+    const CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+    const url::Origin& merchant_origin) {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+    return nullptr;
+  }
+
+  auto find_result = base::ranges::find_if(
+      credit_card_benefits_, [instrument_id, merchant_origin](
+                                 std::unique_ptr<CreditCardBenefit>& benefit) {
+        return benefit->linked_card_instrument_id() == instrument_id &&
+               benefit->benefit_type() ==
+                   CreditCardBenefit::BenefitType::kMerchantBenefit &&
+               // Safe to down-cast as BenefitType was checked before the cast.
+               static_cast<CreditCardMerchantBenefit*>(benefit.get())
+                   ->merchant_domains()
+                   .contains(merchant_origin) &&
+               benefit->expiry_time() > AutofillClock::Now() &&
+               benefit->start_time() <= AutofillClock::Now();
+      });
+
+  // Casting the search result to `CreditCardMerchantBenefit`.
+  // Safe to do so as benefit type is checked in the search criteria.
+  return find_result == credit_card_benefits_.end()
+             ? nullptr
+             : static_cast<CreditCardMerchantBenefit*>(find_result->get());
+}
+
+void PersonalDataManager::AddCreditCardBenefitForTest(
+    std::unique_ptr<CreditCardBenefit> benefit) {
+  credit_card_benefits_.push_back(std::move(benefit));
+}
+
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished_ &&
          is_payments_data_loaded_;
@@ -1452,6 +1548,7 @@ void PersonalDataManager::Refresh() {
   LoadPaymentsCustomerData();
   LoadAutofillOffers();
   LoadVirtualCardUsageData();
+  LoadCreditCardBenefits();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -2071,6 +2168,17 @@ void PersonalDataManager::LoadVirtualCardUsageData() {
       database_helper_->GetServerDatabase()->GetVirtualCardUsageData(this);
 }
 
+void PersonalDataManager::LoadCreditCardBenefits() {
+  if (!database_helper_->GetServerDatabase()) {
+    return;
+  }
+
+  CancelPendingServerQuery(&pending_credit_card_benefit_query_);
+
+  pending_credit_card_benefit_query_ =
+      database_helper_->GetServerDatabase()->GetCreditCardBenefits(this);
+}
+
 void PersonalDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
@@ -2102,6 +2210,7 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_server_ibans_query_);
   CancelPendingServerQuery(&pending_offer_data_query_);
   CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
+  CancelPendingServerQuery(&pending_credit_card_benefit_query_);
 }
 
 void PersonalDataManager::LoadPaymentsCustomerData() {
@@ -2376,7 +2485,8 @@ bool PersonalDataManager::HasPendingPaymentQueries() const {
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||
-         pending_virtual_card_usage_data_query_ != 0;
+         pending_virtual_card_usage_data_query_ != 0 ||
+         pending_credit_card_benefit_query_ != 0;
 }
 
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {

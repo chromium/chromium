@@ -15,7 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/payment_instrument.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/sync/base/model_type.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -542,6 +542,19 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Clear all local payment methods (credit cards and IBANs).
   void ClearLocalPaymentMethodsData();
 
+  // Set, get, and clear the `credit_card_benefits` table and the
+  // 'benefit_merchant_domains' table.
+  bool SetCreditCardBenefits(
+      const std::vector<std::unique_ptr<CreditCardBenefit>>&
+          credit_card_benefits);
+  bool GetAllCreditCardBenefits(
+      std::vector<std::unique_ptr<CreditCardBenefit>>* credit_card_benefits);
+  bool ClearAllCreditCardBenefits();
+
+  // Testing helper to access the database for checking the result of database
+  // update.
+  raw_ptr<sql::Database> GetDbForTesting() const { return db_.get(); }
+
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
   // GetCreditCard may change over time, but MigrateToVersionXX should never
@@ -584,6 +597,10 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Deletes server credit cards by |id|. Returns true if a row was deleted.
   bool DeleteFromMaskedCreditCards(const std::string& id);
   bool DeleteFromUnmaskedCreditCards(const std::string& id);
+
+  // Get the list of eligible merchant domains for the specific 'benefit_id`.
+  base::flat_set<url::Origin> GetMerchantDomainsForBenefitId(
+      const CreditCardBenefit::BenefitId benefit_id);
 
   bool InitCreditCardsTable();
   bool InitLocalIbansTable();

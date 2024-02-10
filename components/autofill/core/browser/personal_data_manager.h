@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -397,6 +398,35 @@ class PersonalDataManager : public KeyedService,
   // Returns the credit card with the given server id, or nullptr if there is no
   // match.
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
+
+  // Return the first valid flat rate benefit linked with the card with the
+  // specific `instrument_id`.
+  // To avoid dangling pointers, callers should not keep a pointer to the
+  // returned benefits as state.
+  CreditCardFlatRateBenefit* GetFlatRateBenefitByInstrumentId(
+      CreditCardBenefit::LinkedCardInstrumentId instrument_id);
+
+  // Return the first valid category benefit for the specific
+  // `benefit_category` and linked with the card with the specific
+  // `instrument_id`.
+  // To avoid dangling pointers, callers should not keep a pointer to the
+  // returned benefits as state.
+  CreditCardCategoryBenefit* GetCategoryBenefitByInstrumentIdAndCategory(
+      CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+      CreditCardCategoryBenefit::BenefitCategory benefit_category);
+
+  // Return the first valid merchant benefit for the specific
+  // `merchant_origin` and linked with the card with the specific
+  // `instrument_id`.
+  // To avoid dangling pointers, callers should not keep a pointer to the
+  // returned benefits as state.
+  CreditCardMerchantBenefit* GetMerchantBenefitByInstrumentIdAndOrigin(
+      CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+      const url::Origin& merchant_origin);
+
+  // Add the credit-card-linked benefit to local cache for tests. This does
+  // not affect data in the real database.
+  void AddCreditCardBenefitForTest(std::unique_ptr<CreditCardBenefit> benefit);
 
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
@@ -778,8 +808,11 @@ class PersonalDataManager : public KeyedService,
   // Loads the autofill offer data from the web database.
   virtual void LoadAutofillOffers();
 
-  // Loads the virtual card usage data from the web database
+  // Loads the virtual card usage data from the web database.
   virtual void LoadVirtualCardUsageData();
+
+  // Loads the credit card benefits from the web database.
+  virtual void LoadCreditCardBenefits();
 
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.
@@ -841,6 +874,11 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<VirtualCardUsageData>>
       autofill_virtual_card_usage_data_;
 
+  // Cached version of the credit card benefits obtained from the database.
+  // Including credit-card-linked flat rate benefits, category benefits and
+  // merchant benefits that are available for users' online purchases.
+  std::vector<std::unique_ptr<CreditCardBenefit>> credit_card_benefits_;
+
   // When the manager makes a request from WebDataServiceBase, the database
   // is queried on another sequence, we record the query handle until we
   // get called back.
@@ -853,6 +891,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
+  WebDataServiceBase::Handle pending_credit_card_benefit_query_ = 0;
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
