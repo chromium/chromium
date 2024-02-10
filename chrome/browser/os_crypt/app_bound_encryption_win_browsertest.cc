@@ -56,18 +56,12 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
       : scoped_install_details_(std::make_unique<FakeInstallDetails>()) {}
 
  protected:
-  enum class Operation {
-    kEncrypt,
-    kDecrypt,
-  };
-
   void SetUp() override {
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
       GTEST_SKIP() << "Elevation is required for this test.";
     enable_metrics_feature_.InitAndEnableFeature(
         features::kAppBoundEncryptionMetrics);
     ASSERT_TRUE(InstallService());
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     InProcessBrowserTest::SetUp();
   }
 
@@ -76,51 +70,6 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
       return;
     InProcessBrowserTest::TearDown();
     std::ignore = UnInstallService();
-  }
-
-  void EncryptOrDecryptInTestProcess(base::FilePath::StringPieceType filename,
-                                     const std::string& input_data,
-                                     std::string& output_data,
-                                     Operation op,
-                                     HRESULT& result) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    const auto input_file_path = temp_dir_.GetPath().Append(L"input-file");
-    const auto output_file_path = temp_dir_.GetPath().Append(L"output-file");
-    ASSERT_TRUE(base::WriteFile(input_file_path, input_data));
-
-    auto executable_file_path = temp_dir_.GetPath().Append(filename);
-    std::ignore = base::DeleteFile(executable_file_path);
-
-    const auto orig_exe = base::PathService::CheckedGet(base::DIR_EXE)
-                              .Append(FILE_PATH_LITERAL("app_binary.exe"));
-    ASSERT_TRUE(base::CopyFile(orig_exe, executable_file_path));
-
-    base::CommandLine cmd(executable_file_path);
-
-    cmd.AppendSwitchPath(switches::kAppBoundTestInputFilename, input_file_path);
-    cmd.AppendSwitchPath(switches::kAppBoundTestOutputFilename,
-                         output_file_path);
-    switch (op) {
-      case Operation::kEncrypt:
-        cmd.AppendSwitch(switches::kAppBoundTestModeEncrypt);
-        break;
-      case Operation::kDecrypt:
-        cmd.AppendSwitch(switches::kAppBoundTestModeDecrypt);
-        break;
-    }
-
-    base::LaunchOptions options;
-    options.start_hidden = true;
-    options.wait = true;
-
-    auto process = base::LaunchProcess(cmd, options);
-    int exit_code;
-    EXPECT_TRUE(process.WaitForExit(&exit_code));
-    result = static_cast<HRESULT>(exit_code);
-    if (SUCCEEDED(result)) {
-      EXPECT_TRUE(base::ReadFileToString(output_file_path, &output_data));
-    }
   }
 
   base::HistogramTester histogram_tester_;
@@ -154,7 +103,6 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   }
 
   install_static::ScopedInstallDetails scoped_install_details_;
-  base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList enable_metrics_feature_;
 };
 
@@ -202,24 +150,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   WaitForHistogram("OSCrypt.AppBoundEncryption.Decrypt.Time");
 }
 
-IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptProcess) {
-  const std::string kSecret("secret");
-  std::string ciphertext;
-  HRESULT result;
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app1.exe", kSecret, ciphertext, Operation::kEncrypt, result));
-  EXPECT_EQ(S_OK, result);
-  std::string plaintext;
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app1.exe", ciphertext, plaintext, Operation::kDecrypt, result));
-  EXPECT_EQ(S_OK, result);
-  EXPECT_EQ(kSecret, plaintext);
-
-  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
-      L"app2.exe", ciphertext, plaintext, Operation::kDecrypt, result));
-  EXPECT_EQ(elevation_service::Elevator::kValidationDidNotPass, result);
-}
-
 // Run this test manually to force uninstall the service using
 // --gtest_filter=AppBoundEncryptionWinTest.MANUAL_Uninstall --run-manual.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MANUAL_Uninstall) {}
@@ -237,5 +167,94 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, NoService) {
   EXPECT_EQ(REGDB_E_CLASSNOTREG, hr);
   EXPECT_EQ(DWORD{ERROR_GEN_FAILURE}, last_error);
 }
+
+// These tests do not function correctly in component builds because they rely
+// on being able to run a standalone executable child process in various
+// different directories, and a component build has too many dynamic DLL
+// dependencies to conveniently move around the file system hermetically.
+#if !defined(COMPONENT_BUILD)
+class AppBoundEncryptionWinTestMultiProcess : public AppBoundEncryptionWinTest {
+ protected:
+  enum class Operation {
+    kEncrypt,
+    kDecrypt,
+  };
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    AppBoundEncryptionWinTest::SetUp();
+  }
+
+  void EncryptOrDecryptInTestProcess(base::FilePath::StringPieceType filename,
+                                     const std::string& input_data,
+                                     std::string& output_data,
+                                     Operation op,
+                                     HRESULT& result) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    const auto input_file_path = temp_dir_.GetPath().Append(L"input-file");
+    const auto output_file_path = temp_dir_.GetPath().Append(L"output-file");
+    ASSERT_TRUE(base::WriteFile(input_file_path, input_data));
+
+    auto executable_file_path = temp_dir_.GetPath().Append(filename);
+    std::ignore = base::DeleteFile(executable_file_path);
+
+    const auto orig_exe = base::PathService::CheckedGet(base::DIR_EXE)
+                              .Append(FILE_PATH_LITERAL("app_binary.exe"));
+    ASSERT_TRUE(base::CopyFile(orig_exe, executable_file_path));
+
+    base::CommandLine cmd(executable_file_path);
+
+    cmd.AppendSwitchPath(switches::kAppBoundTestInputFilename, input_file_path);
+    cmd.AppendSwitchPath(switches::kAppBoundTestOutputFilename,
+                         output_file_path);
+    switch (op) {
+      case Operation::kEncrypt:
+        cmd.AppendSwitch(switches::kAppBoundTestModeEncrypt);
+        break;
+      case Operation::kDecrypt:
+        cmd.AppendSwitch(switches::kAppBoundTestModeDecrypt);
+        break;
+    }
+
+    base::LaunchOptions options;
+    options.start_hidden = true;
+    options.wait = true;
+
+    auto process = base::LaunchProcess(cmd, options);
+    int exit_code;
+    EXPECT_TRUE(process.WaitForExit(&exit_code));
+    result = static_cast<HRESULT>(exit_code);
+    if (SUCCEEDED(result)) {
+      EXPECT_TRUE(base::ReadFileToString(output_file_path, &output_data));
+    }
+    // This ensures the process has really terminated before this function
+    // returns, as base::Process destructor does not do this by default.
+    process.Terminate(0, /*wait=*/true);
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestMultiProcess,
+                       EncryptDecryptProcess) {
+  const std::string kSecret("secret");
+  std::string ciphertext;
+  HRESULT result;
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app1.exe", kSecret, ciphertext, Operation::kEncrypt, result));
+  EXPECT_EQ(S_OK, result);
+  std::string plaintext;
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app1.exe", ciphertext, plaintext, Operation::kDecrypt, result));
+  EXPECT_EQ(S_OK, result);
+  EXPECT_EQ(kSecret, plaintext);
+
+  ASSERT_NO_FATAL_FAILURE(EncryptOrDecryptInTestProcess(
+      L"app2.exe", ciphertext, plaintext, Operation::kDecrypt, result));
+  EXPECT_EQ(elevation_service::Elevator::kValidationDidNotPass, result);
+}
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace os_crypt
