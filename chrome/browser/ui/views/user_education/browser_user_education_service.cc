@@ -841,6 +841,28 @@ void MaybeRegisterChromeTutorials(
     return;
   }
 
+  {  // Menu item bubble test.
+    TutorialDescription test_description;
+    test_description.metadata.additional_description = "Used for testing only.";
+    test_description.metadata.launch_milestone = 116;
+    test_description.metadata.owners = "Frizzle Team";
+    // These features aren't actually required; they are merely here to verify
+    // that Tutorials have their required features shown on the tester page.
+    test_description.metadata.required_features = {
+        &feature_engagement::kIPHWebUiHelpBubbleTestFeature};
+    test_description.steps = {
+        BubbleStep(kToolbarAppMenuButtonElementId)
+            .SetBubbleBodyText(IDS_OK)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+        BubbleStep(AppMenuModel::kDownloadsMenuItem)
+            .SetBubbleBodyText(IDS_OK)
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
+        HiddenStep::WaitForHidden(AppMenuModel::kDownloadsMenuItem),
+        BubbleStep(kTopContainerElementId).SetBubbleBodyText(IDS_OK)};
+    tutorial_registry.AddTutorial("Menu item bubble test tutorial",
+                                  std::move(test_description));
+  }
+
   // Tab Group tutorial.
   tutorial_registry.AddTutorial(
       kTabGroupTutorialId,
