@@ -184,14 +184,20 @@ bool CaptureModeEducationController::IsArm3QuickSettingsNudgeEnabled() {
 }
 
 void CaptureModeEducationController::MaybeShowEducation() {
-  auto* pref_service = GetPrefService();
-  CHECK(pref_service);
-
   // We don't want to show the nudge if the user is not signed in yet or is on
   // the lock screen.
   if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     return;
   }
+
+  // Check the feature here so we only record data for users that could have hit
+  // the education nudge.
+  if (!features::IsCaptureModeEducationEnabled()) {
+    return;
+  }
+
+  auto* pref_service = GetPrefService();
+  CHECK(pref_service);
 
   if (!(features::IsCaptureModeEducationBypassLimitsEnabled() ||
         skip_prefs_for_test_)) {
