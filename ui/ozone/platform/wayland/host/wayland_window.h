@@ -255,8 +255,7 @@ class WaylandWindow : public PlatformWindow,
     WindowTiledEdges tiled_edges;
 #endif
 
-    // Dumps the values of the states that are part of the standard
-    // xdg_toplevel.state enum into a string;
+    // Dumps the values of the states into a string.
     std::string ToString() const;
   };
 

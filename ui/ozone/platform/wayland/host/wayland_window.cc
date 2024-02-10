@@ -690,6 +690,18 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_activated) {
     states += "activated ";
   }
+  if (is_minimized) {
+    states += "minimized ";
+  }
+  if (is_snapped_primary) {
+    states += "snapped_primary ";
+  }
+  if (is_snapped_secondary) {
+    states += "snapped_secondary ";
+  }
+  if (is_floated) {
+    states += "floated ";
+  }
   if (states.empty()) {
     states = "<default>";
   } else {
