@@ -2579,6 +2579,62 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
+namespace {
+
+// Invoked from the nested run loop.
+void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
+                              TabStrip* attached_tab_strip,
+                              TabStrip* target_tab_strip) {
+  ASSERT_TRUE(attached_tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_TRUE(
+      TabDragController::IsAttachedTo(attached_tab_strip->GetDragContext()));
+  ASSERT_EQ(2u, test->browser_list->size());
+
+  TabDragController* const drag_controller =
+      attached_tab_strip->GetDragContext()->GetDragController();
+  const gfx::Point target_center =
+      GetCenterInScreenCoordinates(target_tab_strip);
+
+  // Drag to target_tab_strip. This should cause TabDragController to ask to end
+  // the nested run loop. Normally, we'd return from here to allow the nested
+  // loop to exit, but to reproduce the conditions for the crash, we won't.
+  drag_controller->Drag(target_center);
+
+  // Call Drag directly - still on the nested run loop! - in a way that would
+  // spawn a nested run loop if processed.
+  drag_controller->Drag(target_center +
+                        gfx::Vector2d(0, GetDetachY(target_tab_strip)));
+
+  // Release input to ensure the nested run loop does actually exit.
+  test->ReleaseInput(0, /*async=*/true);
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+
+  browser()->tab_strip_model()->ToggleSelectionAt(0);
+
+  // Move to the first tab and drag it enough so that it detaches, but not
+  // enough that it attaches to browser2.
+  DragTabAndNotify(tab_strip, base::BindOnce(&DoubleNestedRunLoopStep2, this,
+                                             tab_strip, tab_strip2));
+
+  // The drag should have ended.
+  ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(TabDragController::IsActive());
+}
+
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragWindowIntoGroup DISABLED_DragWindowIntoGroup

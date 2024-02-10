@@ -243,8 +243,14 @@ class TabDragController : public views::WidgetObserver,
     // valid.  On platforms where this state is used, the kDraggingWindow and
     // kWaitingToDragTabs states are not used.
     kDraggingUsingSystemDragAndDrop,
-    // The session is waiting for the nested move loop to exit to transition
-    // to kDraggingTabs.  Not used on all platforms.
+    // The session has already attached to the target tabstrip, but must wait
+    // for the nested move loop to exit to transition to kDraggingTabs. Used on
+    // platforms where `can_release_capture_` is false.
+    kWaitingToExitRunLoop,
+    // The session is still attached to the drag-created window, and is waiting
+    // for the nested move loop to exit to transition to kDraggingTabs and
+    // attach to `tab_strip_to_attach_to_after_exit_`. Used on platforms where
+    // `can_release_capture_` is true.
     kWaitingToDragTabs,
     // The drag session has completed or been canceled.
     kStopped
