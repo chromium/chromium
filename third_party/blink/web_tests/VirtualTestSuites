@@ -2426,11 +2426,14 @@
     "bases": [
       "css-parser/deprecated-css-appearance-values.html",
       "css-parser/deprecated-css-appearance-values-warning/appearance-warning-cssom-usecounter.html",
+      "css-parser/deprecated-css-appearance-values-warning/appearance-warning-slider-vertical-usecounter.html",
       "css-parser/deprecated-css-appearance-values-warning/appearance-warning-usecounter.html",
       "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-cssom-usecounter.html",
       "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-usecounter.html",
       "http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js",
       "http/tests/inspector-protocol/issues/css-appearance-non-standard-cssom-issue.js",
+      "http/tests/inspector-protocol/issues/css-appearance-non-standard-slider-vertical-cssom-issue.js",
+      "http/tests/inspector-protocol/issues/css-appearance-non-standard-slider-vertical-issue.js",
       "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
     ],
     "args": ["--enable-blink-features=NonStandardAppearanceValuesHighUsage",
@@ -2601,14 +2604,28 @@
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
   {
-    "prefix": "vertical-form-controls-direction-disabled",
+    "prefix": "vertical-form-controls-direction-disabled-slider-vertical-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "css-parser/vertical-range-slider-appearance.html",
       "fast/forms/color-scheme/meter/meter-appearance-basic-vertical.html",
       "fast/forms/color-scheme/progress/progress-appearance-basic.html",
       "fast/forms/range/range-appearance-border-padding.html"
     ],
     "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
+             "--disable-features=NonStandardAppearanceValueSliderVertical",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["dizhangg@chromium.org"],
+    "expires": "Jun 1, 2024"
+  },
+  {
+    "prefix": "vertical-form-controls-direction-disabled-slider-vertical-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "css-parser/vertical-range-slider-appearance.html"
+    ],
+    "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
+             "--enable-features=NonStandardAppearanceValueSliderVertical",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Jun 1, 2024"

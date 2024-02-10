@@ -307,17 +307,17 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
 
   ControlPart part = o.StyleRef().EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
-  if (!(part == kSliderHorizontalPart ||
-        (part == kSliderVerticalPart &&
-         RuntimeEnabledFeatures::
-             NonStandardAppearanceValueSliderVerticalEnabled()))) {
+  bool is_slider_vertical =
+      RuntimeEnabledFeatures::
+          NonStandardAppearanceValueSliderVerticalEnabled() &&
+      part == kSliderVerticalPart;
+  bool is_writing_mode_vertical =
+      RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled() &&
+      !IsHorizontalWritingMode(o.StyleRef().GetWritingMode());
+  if (!(part == kSliderHorizontalPart || is_slider_vertical)) {
     return;
   }
-  bool is_horizontal =
-      part == kSliderHorizontalPart &&
-      !(RuntimeEnabledFeatures::
-            FormControlsVerticalWritingModeSupportEnabled() &&
-        !IsHorizontalWritingMode(o.StyleRef().GetWritingMode()));
+  bool is_horizontal = !is_writing_mode_vertical && !is_slider_vertical;
 
   gfx::Size thumb_size;
   LayoutObject* thumb_layout_object =
@@ -371,7 +371,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
       (is_horizontal && o.StyleRef().IsLeftToRightDirection()) ||
       (RuntimeEnabledFeatures::
            FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-       !is_horizontal && o.StyleRef().IsLeftToRightDirection());
+       is_writing_mode_vertical && o.StyleRef().IsLeftToRightDirection());
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
        i++) {
     String value = option_element->value();

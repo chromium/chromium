@@ -1,0 +1,1 @@
+CONSOLE WARNING: The keyword 'slider-vertical' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.

@@ -6,7 +6,7 @@ CONSOLE WARNING: The keyword 'media-sliderthumb' used on the 'appearance' proper
 CONSOLE WARNING: The keyword 'media-volume-slider' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'media-volume-sliderthumb' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'slider-horizontal' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
-CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr"> instead.
+CONSOLE WARNING: The keyword 'slider-vertical' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'sliderthumb-horizontal' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'sliderthumb-vertical' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'searchfield-cancel-button' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.

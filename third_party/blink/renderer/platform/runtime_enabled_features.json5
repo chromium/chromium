@@ -2585,6 +2585,8 @@
       // inner-spin-button, push-button, searchfield-cancel-button,
       // slider-horizontal, square-button. Disable this feature to stop
       // parsing or allowing these values.
+      // This feature is disabled in fieldtrial testing config because we are
+      // testing the deprecation via Finch.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "NonStandardAppearanceValuesHighUsage",
       status: "stable",

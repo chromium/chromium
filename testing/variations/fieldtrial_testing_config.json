@@ -11972,6 +11972,28 @@
             ]
         }
     ],
+    "NonStandardAppearanceValueSliderVertical": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "NonStandardAppearanceValueSliderVertical"
+                    ]
+                }
+            ]
+        }
+    ],
     "NonStandardAppearanceValuesHighUsage": [
         {
             "platforms": [

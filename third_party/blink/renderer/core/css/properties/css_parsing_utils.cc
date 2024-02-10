@@ -3350,8 +3350,8 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The keyword 'slider-vertical' specified to an 'appearance' "
               "property is not standardized. It will be removed in the future. "
-              "Use <input type=range style=\"writing-mode: vertical-lr\"> "
-              "instead."));
+              "Use <input type=range style=\"writing-mode: vertical-lr; "
+              "direction: rtl\"> instead."));
           Deprecation::CountDeprecation(
               document->GetExecutionContext(),
               WebFeature::kCSSValueAppearanceSliderVertical);

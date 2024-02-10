@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] -webkit-appearance: slider-vertical (invalid)
-  assert_in_array: style.WebkitAppearance (uppercase W) value "slider-vertical" not in array [""]
-[FAIL] appearance: slider-vertical (invalid)
-  assert_in_array: style.appearance value "slider-vertical" not in array [""]
-Harness: the test ran to completion.
-
