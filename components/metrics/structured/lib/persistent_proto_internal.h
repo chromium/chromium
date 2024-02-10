@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_INTERNAL_H_
-#define COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_INTERNAL_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 
 #include <memory>
 
@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics::structured {
@@ -74,7 +73,7 @@ class PersistentProtoInternal
   constexpr explicit operator bool() const { return has_value(); }
 
   // base::ImportantFileWriter::DataSerializer:
-  absl::optional<std::string> SerializeData() override;
+  std::optional<std::string> SerializeData() override;
 
   // Schedules a write to be executed immediately. Only to be used for tests.
   void StartWriteForTesting();
@@ -89,12 +88,6 @@ class PersistentProtoInternal
 
   // Called after OnWriteAttempt() or if the write was unsuccessful earlier.
   void OnWriteComplete(WriteStatus status);
-
-  // Whether or not a write is scheduled before OnReadComplete has finished.
-  //
-  // This is to prevent a race condition from happening where OnReadComplete may
-  // not finish before a call to QueueWrite() executes a Write().
-  bool write_queued_before_init_ = false;
 
   // Whether we should immediately clear the proto after reading it.
   bool purge_after_reading_ = false;
@@ -120,4 +113,4 @@ class PersistentProtoInternal
 }  // namespace internal
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_INTERNAL_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_

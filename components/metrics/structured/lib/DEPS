@@ -10,4 +10,5 @@ noparent = True
 include_rules = [
     "+base",
     "+third_party/protobuf",
+    "+testing/gtest",
 ]

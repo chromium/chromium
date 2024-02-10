@@ -32,6 +32,7 @@ source_set("structured") {
     "//components/metrics",
     "//components/metrics/structured",
     "//components/metrics/structured:structured_metrics_validator",
+    "//components/metrics/structured/lib",
   ]
 
   if (is_chromeos_ash) {

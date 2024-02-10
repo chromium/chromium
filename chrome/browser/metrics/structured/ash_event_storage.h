@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/structured/event_storage.h"
-#include "components/metrics/structured/persistent_proto.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 
 namespace metrics::structured {

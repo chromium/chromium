@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/persistent_proto.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
 
 #include <memory>
 #include <string>
@@ -13,8 +13,7 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/metrics/structured//lib/proto/key.pb.h"
-#include "components/metrics/structured/proto/event_storage.pb.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics::structured {

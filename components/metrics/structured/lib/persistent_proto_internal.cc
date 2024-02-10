@@ -1,8 +1,8 @@
-#// Copyright 2024 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/persistent_proto_internal.h"
+#include "components/metrics/structured/lib/persistent_proto_internal.h"
 
 #include <memory>
 #include <utility>
@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/metrics/structured/histogram_util.h"
 
 namespace metrics::structured::internal {
 

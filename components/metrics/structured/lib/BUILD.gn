@@ -4,9 +4,39 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+# Core structured metrics library to be shared with other repos. This
+# library can only have dependencies that are part of libchrome.
+# See README.md for more details.
+source_set("lib") {
+  sources = [
+    "persistent_proto.h",
+    "persistent_proto_internal.cc",
+    "persistent_proto_internal.h",
+  ]
+
+  public_deps = [ ":proto" ]
+
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 proto_library("proto") {
   visibility = [ "//components/metrics/structured/*" ]
   proto_in_dir = "//"
   generate_python = false
   sources = [ "proto/key.proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "persistent_proto_unittest.cc" ]
+  deps = [
+    ":lib",
+    ":proto",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

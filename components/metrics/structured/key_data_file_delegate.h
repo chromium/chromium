@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
-#include "components/metrics/structured/persistent_proto.h"
 
 namespace base {
 

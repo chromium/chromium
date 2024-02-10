@@ -2,22 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
-#define COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_H_
 
 #include <concepts>
 #include <memory>
-#include <optional>
 #include <type_traits>
 
-#include "base/files/file_path.h"
-#include "base/files/important_file_writer.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
-#include "base/types/expected.h"
-#include "components/metrics/structured/persistent_proto_internal.h"
+#include "components/metrics/structured/lib/persistent_proto_internal.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics::structured {
@@ -66,4 +58,4 @@ class PersistentProto : public internal::PersistentProtoInternal {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_H_

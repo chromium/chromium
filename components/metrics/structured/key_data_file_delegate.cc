@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/key_util.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
-#include "components/metrics/structured/persistent_proto.h"
 
 namespace metrics::structured {
 

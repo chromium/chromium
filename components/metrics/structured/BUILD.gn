@@ -26,9 +26,6 @@ static_library("structured") {
     "key_data_provider_prefs.h",
     "key_util.cc",
     "key_util.h",
-    "persistent_proto.h",
-    "persistent_proto_internal.cc",
-    "persistent_proto_internal.h",
     "reporting/structured_metrics_log_metrics.cc",
     "reporting/structured_metrics_log_metrics.h",
     "reporting/structured_metrics_reporting_service.cc",
@@ -58,6 +55,8 @@ static_library("structured") {
     ":structured_metrics_validator",
     "//base",
     "//components/metrics",
+    "//components/metrics/structured/lib",
+    "//components/metrics/structured/lib:proto",
     "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
@@ -250,7 +249,6 @@ source_set("unit_tests") {
   sources = [
     "key_data_file_delegate_unittest.cc",
     "key_data_prefs_delegate_unittest.cc",
-    "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",
     "structured_metrics_service_unittest.cc",
@@ -284,6 +282,7 @@ source_set("unit_tests") {
 test("structured_metrics_unittests") {
   deps = [
     ":unit_tests",
+    "//components/metrics/structured/lib:unit_tests",
     "//components/metrics/structured/mojom:unit_tests",
     "//components/test:run_all_unittests",
   ]
