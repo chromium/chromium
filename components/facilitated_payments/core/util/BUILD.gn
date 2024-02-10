@@ -19,11 +19,24 @@ static_library("util") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "pix_code_validator_unittest.cc" ]
+  sources = [
+    "pix_code_validator_fuzzer_util_unittest.cc",
+    "pix_code_validator_unittest.cc",
+  ]
 
   deps = [
+    ":fuzzer_util",
     ":util",
     "//testing/gtest",
+    "//third_party/re2",
+  ]
+}
+
+static_library("fuzzer_util") {
+  testonly = true
+  sources = [
+    "pix_code_validator_fuzzer_util.cc",
+    "pix_code_validator_fuzzer_util.h",
   ]
 }
 
@@ -34,6 +47,7 @@ if (fuzztest_supported) {
     testonly = true
 
     deps = [
+      ":fuzzer_util",
       ":util",
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
