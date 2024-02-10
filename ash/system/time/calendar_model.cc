@@ -94,11 +94,13 @@ bool EventStartedLessThanOneHourAgo(const CalendarEvent& event,
           start_time_difference_in_mins >= -60);
 }
 
+// Returns 1)events that start in 10 minutes, and the events that are in
+// progress and started less than one hour ago; or 2) returns the first next
+// event(s) if there's no events meet condition #1.
 auto FilterTheNextEventsOrEventsRecentlyInProgress(
     const ash::SingleDayEventList& list,
     const base::Time& now_local) {
   std::list<CalendarEvent> result;
-  int min_start_time_difference_in_mins = INT_MAX;
   for (const CalendarEvent& event : list) {
     if (event.all_day_event()) {
       continue;
@@ -120,18 +122,13 @@ auto FilterTheNextEventsOrEventsRecentlyInProgress(
       continue;
     }
 
-    // If the event start time was more than
-    // `min_start_time_difference_in_mins`, then don't show it, and don't
-    // consider the rest of the events because they are sorted in chronnological
-    // order.
-    if (start_time_difference_in_mins > min_start_time_difference_in_mins) {
+    // If there are already events to return and this event starts in more than
+    // 10 mins, then don't show it. And don't consider the rest of the events
+    // because they are sorted in chronnological order.
+    if (!result.empty() && start_time_difference_in_mins > 10) {
       return result;
     }
 
-    // This event starts later than `now_local` and is either the first event
-    // happening next or the event happening at the same time as the next
-    // event, add it into `result`.
-    min_start_time_difference_in_mins = start_time_difference_in_mins;
     result.emplace_back(event);
   }
 
