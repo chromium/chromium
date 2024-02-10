@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_bar_view_base.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
@@ -1538,11 +1539,14 @@ void DeskBarViewBase::UpdateGradientMask() {
   gfx::LinearGradient gradient_mask(/*angle=*/0);
 
   // Fraction of layer width that gradient will be applied to.
-  const float fade_position =
-      should_show_start_gradient || should_show_end_gradient
-          ? static_cast<float>(kDeskBarGradientZoneLength) /
-                scroll_view_->bounds().width()
-          : 0;
+  float fade_position = should_show_start_gradient || should_show_end_gradient
+                            ? static_cast<float>(kDeskBarGradientZoneLength) /
+                                  scroll_view_->bounds().width()
+                            : 0;
+
+  // Clamp the `fade_position` value to ensure that it fits within the range of
+  // linear gradient.
+  fade_position = std::clamp(fade_position, 0.0f, 1.0f);
 
   // Left fade in section.
   if (should_show_start_gradient) {
