@@ -99,6 +99,7 @@ InstallBannerConfig AppBannerManagerAndroid::GetCurrentInstallBannerConfig() {
   // for, so just populate the icon url & icon for both.
   web_app_data.primary_icon_url = primary_icon_url_;
   web_app_data.primary_icon = primary_icon_;
+  web_app_data.has_maskable_primary_icon = has_maskable_primary_icon_;
   web_app_data.screenshots = screenshots_;
   std::optional<NativeAppBannerData> native_app_data;
   if (!native_java_app_data_.is_null()) {
