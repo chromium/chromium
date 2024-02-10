@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -166,4 +167,24 @@ TEST(BuildInstallerCommandLineArgumentsTest, NoArguments) {
                                                   cmd_line_args.get(),
                                                   cmd_line_args.capacity());
   EXPECT_EQ(exit_result.exit_code, updater::INVALID_OPTION);
+}
+
+TEST(BuildInstallerCommandLineArgumentsTest, LegacyCommandLine) {
+  std::optional<base::CommandLine> cmd_line =
+      updater::CommandLineForLegacyFormat(
+          L"UpdaterSetup.exe /install "
+          L"\"appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=Google%"
+          L"20Chrome&needsadmin=Prefers&lang=en\"");
+  ASSERT_TRUE(cmd_line.has_value());
+  updater::CommandString cmd_line_args;
+  updater::ProcessExitResult exit_result =
+      updater::BuildInstallerCommandLineArguments(
+          cmd_line->GetCommandLineString().c_str(), cmd_line_args.get(),
+          cmd_line_args.capacity());
+  EXPECT_EQ(exit_result.exit_code, updater::SUCCESS_EXIT_CODE);
+  const base::CommandLine command_line = base::CommandLine::FromString(
+      base::StrCat({L"exe.exe ", cmd_line_args.get()}));
+  EXPECT_EQ(command_line.GetSwitchValueASCII(updater::kInstallSwitch),
+            "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=Google%"
+            "20Chrome&needsadmin=Prefers&lang=en");
 }

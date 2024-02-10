@@ -422,8 +422,7 @@ void Install(UpdaterScope scope) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
-  command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
+  command_line.AppendSwitchASCII(kInstallSwitch, "usagestats=1");
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
   ASSERT_EQ(exit_code, 0);
@@ -438,8 +437,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
-  command_line.AppendSwitchASCII(kTagSwitch, tag);
+  command_line.AppendSwitchASCII(kInstallSwitch, tag);
   command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
   if (is_silent_install) {
     ASSERT_TRUE(child_window_text_to_find.empty());
