@@ -50,7 +50,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_Found) {
   EXPECT_TRUE(IsPixCodeFound(CreateAgentFor(R"(
    <body>
     <div>
-      00020126180014br.gov.bcb.pix63041D3D
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
   </form>
   )").get()));
@@ -61,7 +61,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
   std::unique_ptr<FacilitatedPaymentsAgent> agent = CreateAgentFor(R"(
    <body>
     <div>
-      00020126180014br.gov.bcb.pix63041D3D
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
   </form>
   )");

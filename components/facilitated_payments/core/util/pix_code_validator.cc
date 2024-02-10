@@ -12,6 +12,7 @@ namespace {
 constexpr char kSectionIdAndSizePattern[] = "(\\d{2})(\\d{2})";
 constexpr char kPayloadFormatIndicatorFirstSectionId[] = "00";
 constexpr char kMerchantAccountInformationSectionId[] = "26";
+constexpr char kMerchantAccountInformationDynamicUrlSectionId[] = "25";
 constexpr char kAdditionalDataFieldTemplateSectionId[] = "62";
 constexpr char kCrc16LastSectionId[] = "63";
 constexpr char kPixCodeIndicator[] = "0014br.gov.bcb.pix";
@@ -86,6 +87,21 @@ bool IsValidPixCode(std::string_view code) {
       if (section_info.section_value.find(kPixCodeIndicator) != 0) {
         return false;
       }
+      // By this time, we have already verified that the sub sections for
+      // merchant account information are already valid. Only checking for the
+      // presence of the dynamic url section id is sufficient to determine
+      // whether the Pix code is a static vs dynamic code.
+      SectionInfo dynamic_url_section_info;
+      // We expect the dynamic url id to start right after the pix code
+      // indicator.
+      std::string_view dynamic_url_section_string =
+          section_info.section_value.substr(strlen(kPixCodeIndicator));
+      ParseNextSection(&dynamic_url_section_string, &dynamic_url_section_info);
+      if (dynamic_url_section_info.section_id !=
+          kMerchantAccountInformationDynamicUrlSectionId) {
+        return false;
+      }
+
       contains_pix_code_indicator = true;
     }
 

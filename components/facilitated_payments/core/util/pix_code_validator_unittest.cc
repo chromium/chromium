@@ -9,8 +9,16 @@
 namespace payments::facilitated {
 namespace {
 
-TEST(PixCodeValidatorTest, ValidCode) {
-  EXPECT_TRUE(IsValidPixCode("00020126180014br.gov.bcb.pix63041D3D"));
+TEST(PixCodeValidatorTest, ValidDynamicCode) {
+  EXPECT_TRUE(IsValidPixCode(
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F"));
+}
+
+TEST(PixCodeValidatorTest, StaticCode) {
+  // Code is invalid because merchant account identifier section
+  // 26270014br.gov.bcb.pix0105ABCDE does not contain a section for dynamic url
+  // with id 25.
+  EXPECT_FALSE(IsValidPixCode("00020126270014br.gov.bcb.pix0105ABCDE63041D3D"));
 }
 
 TEST(PixCodeValidatorTest, EmptyStringNotValid) {
@@ -18,50 +26,83 @@ TEST(PixCodeValidatorTest, EmptyStringNotValid) {
 }
 
 TEST(PixCodeValidatorTest, LastSectionLengthTooLong) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.pix63051D3D"));
+  // Code is invalid because the last section 63051D3D has the length specified
+  // as 05 which is longer than the string succeeding it (1D3D).
+  EXPECT_FALSE(IsValidPixCode(
+      "00020126370014br.gov.bcb.pix2514www.example.com63051D3D"));
 }
 
 TEST(PixCodeValidatorTest, SectionHeaderIsNotADigit) {
-  EXPECT_FALSE(IsValidPixCode("000A0126180014br.gov.bcb.pix63041D3D"));
+  // Code is invalid because the section 000A01 does not have the first 4
+  // characters as digits.
+  EXPECT_FALSE(IsValidPixCode(
+      "000A0126370014br.gov.bcb.pix2514www.example.com6304EA3F"));
 }
 
-TEST(PixCodeValidatorTest, SectionTruncatedTooShort) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.pix63041D3"));
+TEST(PixCodeValidatorTest, LastSectionLengthTooShort) {
+  // Code is invalid because the last section 63021D3 has the length specified
+  // as 02 which is shorter than the length of the string succeeding it (1D3).
+  EXPECT_FALSE(
+      IsValidPixCode("00020126370014br.gov.bcb.pix2514www.example.com63021D3"));
 }
 
 TEST(PixCodeValidatorTest, SectionHeaderTruncatedTooShort) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.pix630"));
+  // Code is invalid because the last section 630 doesn't have the minimum
+  // length of 4 characters.
+  EXPECT_FALSE(
+      IsValidPixCode("00020126370014br.gov.bcb.pix2514www.example.com630"));
 }
 
 TEST(PixCodeValidatorTest, MerchantAccountInformationIsEmpty) {
+  // Code is invalid because the section 2600 has a length of 00.
   EXPECT_FALSE(IsValidPixCode("000201260063041D3D"));
 }
 
 TEST(PixCodeValidatorTest, MerchantAccountInformationIsNotValid) {
-  EXPECT_FALSE(IsValidPixCode("00020126030014br.gov.bcb.pix63041D3D"));
+  // Code is invalid because the merchant account information section 2603001
+  // does not contain the Pix code indicator 0014br.gov.bcb.pix.
+  EXPECT_FALSE(IsValidPixCode(
+      "00020126030014br.gov.bcb.pix2514www.example.com6304EA3F"));
 }
 
 TEST(PixCodeValidatorTest, InvalidPixCodeIndicator) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.PIX63041D3D"));
+  // Code is invalid because the Pix code indicator is 0014br.gov.bcb.PIX
+  // instead 0014br.gov.bcb.pix.
+  EXPECT_FALSE(IsValidPixCode(
+      "00020126370014br.gov.bcb.PIX2514www.example.com6304EA3F"));
 }
 
 TEST(PixCodeValidatorTest, EmptyAdditionalDataSection) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.pix620063041D3D"));
+  // Code is invalid because the additional data section 6200 has a length of
+  // 00.
+  EXPECT_FALSE(IsValidPixCode(
+      "00020126370014br.gov.bcb.pix2514www.example.com620063041D3D"));
 }
 
 TEST(PixCodeValidatorTest, LastSectionIdIsNotCrc16) {
-  EXPECT_FALSE(IsValidPixCode("00020126180014br.gov.bcb.pix64041D3D"));
+  // Code is invalid because the last section 64041D3D has an id 64 instead
+  // of 64.
+  EXPECT_FALSE(IsValidPixCode(
+      "00020126370014br.gov.bcb.pix2514www.example.com64041D3D"));
 }
 
 TEST(PixCodeValidatorTest, FirstSectionIsNotPayloadIndicator) {
-  EXPECT_FALSE(IsValidPixCode("01020126180014br.gov.bcb.pix63041D3D"));
+  // Code is invalid because the first section 010201 has an id 01 instead of
+  // 00.
+  EXPECT_FALSE(IsValidPixCode(
+      "01020126370014br.gov.bcb.pix2514www.example.com6304EA3F"));
 }
 
 TEST(PixCodeValidatorTest, NoMerchantAccountInformationSection) {
+  // Code is invalid because there is no merchant account information section
+  // with id 26.
   EXPECT_FALSE(IsValidPixCode("00020163041D3D"));
 }
 
 TEST(PixCodeValidatorTest, NoPixCodeIndicator) {
+  // Code is invalid because the merchant account information section
+  // 261801020063041D3D does not contain the Pix code indicator
+  // 0014br.gov.bcb.pix .
   EXPECT_FALSE(IsValidPixCode("000201261801020063041D3D"));
 }
 
