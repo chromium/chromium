@@ -585,6 +585,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2075497153347571252">Jou administrateur het <ph name="PERMISSION" /> op <ph name="ORIGIN" /> geblokkeer</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2080021694978766903">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie.</translation>
+<translation id="2081482239432306393">Huisnommeropsie is gekies</translation>
 <translation id="20817612488360358">Stelsel se instaanbedienerinstellings word gestel om gebruik te word, maar doelbewuste instaanbedieneropstelling word ook gespesifiseer.</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Laat met elke besoek toe</translation>
@@ -1409,6 +1410,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3723663469265383848">Tydens die opdatering sal jy jou toestel vir tot 10 minute lank nie kan gebruik nie.</translation>
 <translation id="372429172604983730">Programme wat hierdie fout kan veroorsaak, sluit in teenvirus-, brandmuur- en webfiltrering- of instaanbedienersagteware.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Oortjie en dan Enter om vinnig 'n nuwe Google-aanbieding in Skyfies te skep</translation>
+<translation id="3727309136762649052">Naamspasie</translation>
 <translation id="3727850735097852673">Herbegin Chrome en laat Keychain toegang toe om Google Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="3733139489341305600">Selfbestuurvoertuie</translation>
 <translation id="3736520371357197498">As jy die risiko's vir jou sekuriteit verstaan, mag jy <ph name="BEGIN_LINK" />hierdie onveilige werf besoek<ph name="END_LINK" /> voordat die gevaarlike programme verwyder is.</translation>
@@ -1573,6 +1575,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4089152113577680600">Laai 14</translation>
 <translation id="4092349052316400070">Vul adres in</translation>
 <translation id="4096237801206588987">11x15 dm.</translation>
+<translation id="4098306082496067348">Tik op besonderhede van virtuele kaart om dit by die betaalpunt te voeg.</translation>
 <translation id="4098354747657067197">Misleidende werf voor</translation>
 <translation id="4099048595830172239">Administrateursbeleid beveel aan dat jy nie jou skerm met <ph name="APPLICATION_TITLE" /> deel wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om lettertipegroottes en lettersoorte in Chrome te pasmaak</translation>
@@ -1896,6 +1899,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4729147136006144950">Liefdadigheid en filantropie</translation>
 <translation id="4730977633786878901">Resensies</translation>
 <translation id="4731638775147756694">Jou administrateur het hierdie program geblokkeer</translation>
+<translation id="4732860731866514038">Laai tans taalpakket vir <ph name="LANGUAGE" /> af … <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wil jou toestel se ligging gebruik</translation>
 <translation id="4736491186715342415">Motorvoertuie</translation>
 <translation id="4736825316280949806">Herbegin Chromium</translation>
@@ -2255,7 +2259,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
             <ph name="LIST_ITEM" />Webkoekies en werfdata
             <ph name="LIST_ITEM" />Inligting wat in vorms ingevoer word
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> wil jou MIDI-toestelle (SysEx) beheer en herprogrammeer</translation>
 <translation id="5443468954631487277">Omgekeerde volgorde, voorkant na bo</translation>
 <translation id="5447235695608032700">Laat <ph name="SITE" /> toe om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="5447765697759493033">Hierdie werf sal nie vertaal word nie</translation>
@@ -2468,7 +2471,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5877831137320480913">Skoonheid en fiksheid</translation>
 <translation id="5879989559903563723">Word nie in Gasmodus toegelaat nie</translation>
 <translation id="5880050725127890683">Gaan na Chrome-veiligheidskontrole</translation>
-<translation id="5883861433316751031">Beheer en herprogrammeer MIDI-toestelle?</translation>
 <translation id="5884465125445718607">Koevert Chinees #6</translation>
 <translation id="5887400589839399685">Kaart is gestoor</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
@@ -2819,7 +2821,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6556866813142980365">Herdoen</translation>
 <translation id="6557715786897013164">14x17 dm.</translation>
 <translation id="6560786330438719938">Apps wat geïnstalleer of gedeïnstalleer is en hoe dikwels hulle gebruik word</translation>
-<translation id="6567084950885568327">MIDI-toestelbeheer en -herprogrammering</translation>
 <translation id="6568793038316600992">Knoppie om betaalmetodes te bestuur; aktiveer om jou betaal- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="6569060085658103619">Jy bekyk tans 'n uitbreidingbladsy</translation>
 <translation id="6569366777234823130">Dramaflieks</translation>
@@ -3202,6 +3203,7 @@ Bykomende besonderhede:
 <translation id="733354035281974745">Toestel se plaaslike rekening is geïgnoreer</translation>
 <translation id="7334320624316649418">Herdoen herrangskikking</translation>
 <translation id="7335157162773372339">Kan vra om jou kamera te gebruik</translation>
+<translation id="7336636595549675416">Huisnommer</translation>
 <translation id="7337248890521463931">Wys meer reëls</translation>
 <translation id="7337706099755338005">Nie op jou platform beskikbaar nie.</translation>
 <translation id="733923710415886693">Hierdie bediener se sertifikaat is nie via sertifikaatdeursigtigheid openbaar gemaak nie.</translation>
@@ -3908,7 +3910,6 @@ Bykomende besonderhede:
 <translation id="8671519637524426245">Die <ph name="SECURE_DNS_SALT" />-waarde voldoen nie aan die groottevereistes nie.</translation>
 <translation id="867224526087042813">Handtekening</translation>
 <translation id="8672264262457010862">Besigheid en nywerheid</translation>
-<translation id="8673776281896298303">Beheer en herprogrammeer jou MIDI-toestelle (SysEx)</translation>
 <translation id="8676424191133491403">Geen wagperiode nie</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, antwoord, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Die webbladsy by <ph name="PAGE" /> kon nie gelaai word nie, want:</translation>

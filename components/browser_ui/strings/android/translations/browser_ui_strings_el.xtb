@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Τα cookie τρίτου μέρους περιορίζονται</translation>
 <translation id="3008272652534848354">Επαναφορά αδειών</translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Να επιτρέπεται η σύνδεση τρίτου μέρους για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Λήγει αύριο}other{Λήγει σε # ημέρες}}</translation>
 <translation id="310297983047869047">Προηγούμενη διαφάνεια</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4151930093518524179">Προεπιλεγμένη εστίαση</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
+<translation id="4169019654293892025">Απόκρυψη στοιχείου <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Συνδέθηκε σε συσκευή USB</translation>
 <translation id="4194328954146351878">Να γίνεται ερώτηση πριν επιτραπεί στους ιστοτόπους να βλέπουν και να αλλάζουν πληροφορίες σε συσκευές NFC (συνιστάται)</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Από <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Επιτρέπεται</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 επιλεγμένο}other{# επιλεγμένα}}</translation>
 <translation id="7087918508125750058">Επιλέχθηκαν <ph name="ITEM_COUNT" />. Οι επιλογές είναι διαθέσιμες κοντά στο επάνω μέρος της οθόνης</translation>
-<translation id="7137403271056944713">Έλεγχος συσκ. MIDI/επαναπρογρ.</translation>
 <translation id="7141896414559753902">Αποκλεισμός εμφάνισης αναδυόμενων παραθύρων και ανακατευθύνσεων σε ιστοτόπους (συνιστάται)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Εστίαση σελίδας</translation>
 <translation id="7781829728241885113">Χθες</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Συνέχεια με αυτή την καρτέλα}other{Συνέχεια με αυτές τις καρτέλες}}</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7804248752222191302">Ένας ιστότοπος χρησιμοποιεί την κάμερά σας.</translation>
 <translation id="7807060072011926525">Παρέχεται από την Google</translation>

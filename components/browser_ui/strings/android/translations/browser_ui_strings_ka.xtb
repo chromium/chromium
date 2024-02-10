@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
 <translation id="3008272652534848354">ნებართვების გადაყენება</translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">მესამე მხარის მეშვეობით სისტემაში შესვლის დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="310297983047869047">წინა სლაიდი</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">გამარტივებული ხედი ვებგვერდებისთვის</translation>
 <translation id="4151930093518524179">ნაგულისხმევი მასშტაბი</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />-ის დამალვა</translation>
 <translation id="4169549551965910670">დაკავშირებულია USB მოწყობილობასთან</translation>
 <translation id="4194328954146351878">შეკითხვა საიტებისთვის NFC მოწყობილობებზე ინფორმაციაზე წვდომისა და მისი შეცვლის დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4200726100658658164">მდებარეობის პარამეტრების გახსნა</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-დან</translation>
 <translation id="4226663524361240545">შეტყობინებებმა შეიძლება მოწყობილობის ვიბრაცია გამოიწვიოს</translation>
 <translation id="4259722352634471385">ნავიგაცია დაბლოკილია: <ph name="URL" /></translation>
 <translation id="4278390842282768270">დაშვებულია</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{არჩეულია 1}other{არჩეულია #}}</translation>
 <translation id="7087918508125750058">არჩეულია <ph name="ITEM_COUNT" />. ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
-<translation id="7137403271056944713">MIDI-მოწყ. მართვა / გადაპროგრ.</translation>
 <translation id="7141896414559753902">საიტებისთვის გადამისამართებისა და ამომხტარი ფანჯრების ჩვენების დაბლოკვა (რეკომენდებული)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> კბაიტი</translation>
 <translation id="7180611975245234373">განახლება</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">გვერდის მასშტაბი</translation>
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7791543448312431591">დამატება</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ამ ჩანართით გაგრძელება}other{ამ ჩანართებით გაგრძელება}}</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7804248752222191302">ეს საიტი იყენებს თქვენს კამერას</translation>
 <translation id="7807060072011926525">უზრუნველყოფს Google</translation>

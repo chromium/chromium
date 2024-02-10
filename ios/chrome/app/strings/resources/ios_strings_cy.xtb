@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Personoleiddio Dewislen</translation>
 <translation id="1296581780163690620">Lawrlwytho ffeil? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">I wneud yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
+<translation id="1310362642333088424">I lawrlwytho ffeiliau, lluniau a rhagor, mae angen mwy o le storio arnoch.</translation>
 <translation id="1312721752506309252">Mae gwell amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="1321993286294231467">Bu gwall wrth gadw'r llun.</translation>
 <translation id="1322735045095424339">Mae eich sefydliad yn gofyn am y Modd Anhysbys</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Pori'n Ddiogel</translation>
 <translation id="1641316430523156212">Dilyn</translation>
 <translation id="1644574205037202324">Hanes</translation>
+<translation id="164673457281113247">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw}zero{Mae'r Nodau tudalen wedi'u cadw}two{Mae'r Nodau tudalen wedi'u cadw}few{Mae'r Nodau tudalen wedi'u cadw}many{Mae'r Nodau tudalen wedi'u cadw}other{Mae'r Nodau tudalen wedi'u cadw}}</translation>
 <translation id="165008673352427892">Nodwedd newydd</translation>
 <translation id="1650222530560417226">Tapiwch y botwm "Dechrau Cofnodi" i gasglu cofnodion a gwallau panel JavaScript yn y dyfodol ar bob tab. Bydd y cofnodion yn cael eu casglu (a'u cadw yn y cof yn unig) tan i chi gau'r dudalen hon neu tan i chi dapio'r botwm "Stopio Cofnodi".</translation>
 <translation id="1653432787084483144">{count,plural, =1{Mae {count} cyfrinair sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} gyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
@@ -176,7 +178,7 @@
 <translation id="189531189292803889">Cafodd eich iPad ei adfer yn ddiweddar, a allai fod wedi newid eich porwr diofyn</translation>
 <translation id="1904580727789512086">Mae'r cyfeiriadau URL rydych yn ymweld â nhw wedi'u cadw i'ch Cyfrif Google</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
-<translation id="1919752845298942932">Nid yw Cysylltiad yn Ddiogel</translation>
+<translation id="1919752845298942932">Nid yw'r Cysylltiad yn Ddiogel</translation>
 <translation id="1923342640370224680">Awr Ddiwethaf</translation>
 <translation id="1930989359703290198">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig. Mae cyfrifon na chaniateir yn cael eu cuddio. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tapiwch ddwywaith i gopïo.</translation>
@@ -464,7 +466,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3371831930909698441">Mae cyfieithiad ar gael. Mae opsiynau ar gael yn agos at waelod y sgrîn.</translation>
 <translation id="3377063233124932127">Mae eich nodau tudalen, cyfrineiriau a rhagor bellach wedi'u cadw ar y brig.</translation>
 <translation id="3393920035788932672">Caniateir ffenestri naid</translation>
-<translation id="3398509000872871492">Mae'r cysylltiad yn Ddiogel</translation>
+<translation id="3398509000872871492">Mae'r Cysylltiad yn Ddiogel</translation>
 <translation id="3404232721752787413">Cadw yn Google Photos</translation>
 <translation id="3404744938087714423">Bydd allgofnodi'n diffodd cysoni.</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -511,6 +513,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3603009562372709545">Copïo Dolen URL</translation>
 <translation id="3607167657931203000">Data Awtolenwi</translation>
 <translation id="3609785682760573515">Wrthi’n cysoni...</translation>
+<translation id="3630104167004786843">Peidio â chael diweddariadau</translation>
 <translation id="3631443864840848029">Gwnewch yn siŵr eich bod yn cadw'ch cyfrinair presennol ar gyfer y wefan hon.</translation>
 <translation id="3638472932233958418">Rhag-lwytho Tudalennau Gwe</translation>
 <translation id="3643338347976071250">{count,plural, =1{Mae {count} cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google, {email}.}zero{Mae {count} cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} gyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
@@ -637,6 +640,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4309403553630140242">Tapiwch ddwywaith am ragor o wybodaeth</translation>
 <translation id="430967081421617822">Erioed</translation>
 <translation id="4322394346347055525">Cau Tabiau Eraill</translation>
+<translation id="4323142320106872792">Mae'ch Storfa yn Llawn</translation>
 <translation id="4331177082088332784">Gallwch reoli hyn yn y BEGIN_LINK Gosodiadau Cynnwys END_LINK</translation>
 <translation id="4334428914252001502">Mae 1 erthygl sydd heb ei darllen.</translation>
 <translation id="4338650699862464074">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google.</translation>
@@ -843,6 +847,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5345660046352249607">{COUNT,plural, =1{Tracio'r Pecyn Hwn?}zero{Tracio {COUNT} Pecyn?}two{Tracio {COUNT} Becyn?}few{Tracio {COUNT} Pecyn?}many{Tracio {COUNT} Pecyn?}other{Tracio {COUNT} Pecyn?}}</translation>
 <translation id="536067926684072644">Dangos Nodau Tudalen</translation>
 <translation id="5360976571138293719">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, ewch i <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw i "{title}". Mae wedi'i gadw i'r ddyfais hon yn unig.}zero{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}two{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}few{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}many{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}other{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}}</translation>
 <translation id="5386314158584363703">Byddwch yn gweld eich gwefannau a ddilynir yma</translation>
 <translation id="5388358297987318779">Agor Llun</translation>
 <translation id="5395707839134961196">Cuddio manylion peiriant chwilio</translation>
@@ -870,6 +875,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5525269841082836315">Creu Cyfrinymadrodd</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} cyfrinair gwan}zero{{COUNT} cyfrinair gwan}two{{COUNT} gyfrinair gwan}few{{COUNT} cyfrinair gwan}many{{COUNT} cyfrinair gwan}other{{COUNT} cyfrinair gwan}}</translation>
 <translation id="5532545557415295622">Deialog terfyn amser segur</translation>
+<translation id="5533967537771071082">Rheoli'r Storfa</translation>
 <translation id="5542540507657872337">Canfuwyd <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Mae Handoff yn gadael i chi ddechrau pori gwefan ar y ddyfais hon ac yna parhau yn hawdd ar eich Mac. Bydd y wefan sydd ar agor yn bresennol yn ymddangos yn Noc eich Mac.
 
@@ -1085,6 +1091,8 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="6537746030088321027">enghraifft.com</translation>
 <translation id="6550675742724504774">Dewisiadau</translation>
 <translation id="6550891580932862748">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Ni fydd eich gosodiadau Pori'n Ddiogel mewn cynhyrchion Google eraill yn cael eu heffeithio.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw i ‘{title}‘}zero{Mae {count} Nod tudalen wedi'u cadw i ‘{title}‘}two{Mae {count} Nod tudalen wedi'u cadw i ‘{title}‘}few{Mae {count} Nod tudalen wedi'u cadw i ‘{title}‘}many{Mae {count} Nod tudalen wedi'u cadw i ‘{title}‘}other{Mae {count} Nod tudalen wedi'u cadw i ‘{title}‘}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw i "{title}". Mae wedi'i gadw i'r ddyfais hon yn unig.}zero{Mae'r Nodau tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}two{Mae'r Nodau tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}few{Mae'r Nodau tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}many{Mae'r Nodau tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}other{Mae'r Nodau tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}}</translation>
 <translation id="6561262006871132942">Chwyddo</translation>
 <translation id="6579867704846662339">Gallwch ddewis agor cyfeiriadau URL sy'n dod i mewn o apiau eraill yn Anhysbys.</translation>
 <translation id="6583087784430677195">I'w ddiffodd, agorwch y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /> ac ewch i Awtolenwi Cyfrineiriau.</translation>
@@ -1199,6 +1207,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Enw Llawn</translation>
 <translation id="7136892417564438900">Nid yw'r camera ar gael</translation>
+<translation id="7138080855268384146">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="7141960840225504692">Bydd eich tabiau'n cael eu cau a bydd data pori yn cael eu dileu</translation>
 <translation id="7154343200458623869">Cwblhau eich tasg.</translation>
 <translation id="7161230316646448869">Cysonwch eich nodau tudalen, hanes a rhagor ar bob dyfais</translation>

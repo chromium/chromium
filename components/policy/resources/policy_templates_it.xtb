@@ -506,6 +506,19 @@ Se il criterio viene disattivato, la pagina con l'intestazione <ph name="CACHE_C
 <translation id="1426170570389588560">Imposta il periodo di tempo in giorni per memorizzare i metadati dei processi di stampa</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1427655258943162134">Indirizzo o URL del server proxy</translation>
+<translation id="1430811977802269244">Consenti l'attivazione degli aggiornamenti automatici estesi
+per i dispositivi idonei che altrimenti perderebbero l'assistenza Android.
+
+Se il criterio viene attivato, i dispositivi autorizzano gli aggiornamenti automatici estesi.
+
+Se il criterio viene disattivato o se non viene configurato, i dispositivi smetteranno di ricevere aggiornamenti
+dopo la data di scadenza degli aggiornamenti automatici originale.
+
+Questo criterio è pertinente solo per i modelli precedenti che non ricevono
+automaticamente gli aggiornamenti estesi.
+
+Per ulteriori dettagli, visita la pagina
+https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
 <translation id="1432834104376790711">Questo criterio attiva o disattiva l'impostazione della modalità Risparmio energetico.
       Su Chrome, questa impostazione fa sì che la frequenza fotogrammi venga limitata per ridurre il consumo energetico. Se questo criterio non è impostato, l'utente finale può controllare questa impostazione all'indirizzo chrome://settings/performance.
       Su ChromeOS, questa impostazione fa sì che la frequenza fotogrammi e la frequenza della CPU vengano limitate, le retroilluminazione siano attenuate e Android venga attivato nella modalità Risparmio energetico. Sui dispositivi con più CPU, alcune CPU verranno disattivate.
@@ -580,6 +593,7 @@ Se il criterio viene disattivato, la pagina con l'intestazione <ph name="CACHE_C
 Se attivi o non configuri questo criterio, viene attivato lo scorrimento della pagina web ai frammenti di testo specifici tramite URL.
 
 Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di testo specifici tramite URL viene disattivato.</translation>
+<translation id="1468702975912409463">Consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="1474273443907024088">Disattiva TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
@@ -791,7 +805,6 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="1675391557079742340">Attiva la codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /> per la pubblicità nell'intestazione Accept-Encoding</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
-<translation id="1681688654564283886">Disattiva Tempo di utilizzo per i siti web</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio non viene configurato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a 20 GB (valore predefinito).
@@ -1347,9 +1360,9 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2062632109797189011">Riattiva l'API window.webkitStorageInfo</translation>
-<translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni Ospite e impedisce gli accessi ai profili. Gli accessi Ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
+<translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni ospite e impedisce gli accessi ai profili. Gli accessi ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
 
-      Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità Ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
+      Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
 <translation id="2070744136203607632">Non eseguire controlli dell'intercettazione DNS</translation>
 <translation id="2072613440623913880">Attiva i clic automatici nella schermata di accesso</translation>
 <translation id="2073552873076775140">Consenti di eseguire l'accesso a <ph name="PRODUCT_NAME" /></translation>
@@ -1437,12 +1450,8 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2149957154942061013">Solo per uso interno</translation>
 <translation id="2151831603578119302">Attiva le scorciatoie delle funzioni di accessibilità</translation>
 <translation id="2156132677421487971">Consente di configurare le norme per <ph name="PRODUCT_NAME" />, una funzione che permette agli utenti di inviare i contenuti di schede, siti o del desktop dal browser a schermi remoti e sistemi audio.</translation>
-<translation id="2156179920247248678">Questo criterio consente a <ph name="PRODUCT_NAME" /> di usare la funzionalità Tempo di utilizzo di <ph name="MAC_OS_NAME" />.
-
-      Se il criterio viene attivato o se non viene configurato, le origini visitate verranno segnalate al sistema operativo, mentre per le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo verrà visualizzata una schermata di blocco.
-      Se il criterio viene disattivato, le origini visitate non verranno segnalate al sistema operativo, mentre le origini che sono state bloccate nelle impostazioni di Tempo di utilizzo saranno accessibili.</translation>
 <translation id="2156755242840687300">Server di stampa esterni attivi</translation>
-<translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni Ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
+<translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Falso o se non viene configurato, i criteri non vengono sostituiti.</translation>
 <translation id="2158741059065130266">Se il criterio viene impostato su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
@@ -1694,6 +1703,16 @@ La funzionalità non è disponibile se la sincronizzazione delle password viene 
 
       Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API WebUSB. Per concedere l'accesso ai dispositivi USB tramite l'API Web Serial, vedi il criterio <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Consenti ai genitori di aggiungere account supervisionati</translation>
+<translation id="2319419071295380556">Imposta la directory in cui vengono salvate le acquisizioni schermo (screenshot e registrazioni dello schermo).
+Se il criterio viene impostato come consigliato, il valore verrà utilizzato per impostazione predefinita, ma l'utente potrà modificarlo.
+In caso contrario, l'utente non potrà modificarlo e le acquisizioni verranno salvate sempre nella directory definita.
+
+Il criterio utilizza lo stesso formato del criterio <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />
+La posizione può essere impostata su un file system locale o su <ph name="GOOGLE_DRIVE_NAME" /> (con prefisso "${google_drive}") o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (con prefisso "${onedrive}").
+Se il criterio non viene configurato, le acquisizioni schermo verranno archiviate nella directory locale "Download".
+Vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /> utilizza la directory "Download" predefinita per archiviare le acquisizioni schermo e gli utenti possono modificarla.</translation>
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
@@ -2190,6 +2209,7 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
 <translation id="2755847332939882873">Consenti la raccolta di dati di rilevamento del rendimento a livello di sistema</translation>
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
+<translation id="2760947619380644513">Consenti agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
 <translation id="2764750330785898947">Attiva il supporto della codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /></translation>
 <translation id="2764964245640818227">Controlla se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> può aggiungere annotazioni nei PDF.
@@ -4317,7 +4337,6 @@ Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene 
       Tieni presente che questo criterio esegue l'override sia di DisabledPlugins sia di DisabledPluginsExceptions.
 
       Se il criterio non è impostato, l'utente può disattivare qualsiasi plug-in installato sul sistema.</translation>
-<translation id="4549405078915181477">Attiva Tempo di utilizzo per i siti web</translation>
 <translation id="4549695018986780856">Manifest v2 abilitato</translation>
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4554991346503872538">Non offrire mai la traduzione</translation>
@@ -4508,11 +4527,6 @@ Per i dispositivi gestiti, questo criterio è attivo per impostazione predefinit
 Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
-<translation id="4698147321113652592">Questo criterio stabilisce una serie di intervalli settimanali per la pianificazione della sospensione automatica. Quando inizia un intervallo, il dispositivo <ph name="PRODUCT_OS_NAME" /> entra in modalità di sospensione e si riattiva al termine dell'intervallo.
-
-Le pianificazioni con intervalli che si sovrappongono non sono supportate. Questo criterio non avrà alcun effetto se contiene due intervalli che si sovrappongono.
-
-I dispositivi <ph name="PRODUCT_OS_NAME" /> utilizzeranno il fuso orario del sistema per applicare questi intervalli.</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699592681017489215">Questo criterio consente di configurare un'opzione locale che permette di disattivare i controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
@@ -5090,6 +5104,13 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="5238275681097851753">Consenti il blocco di determinati contenuti in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forza l'attivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="5239277956452384929">Consenti l'accesso a un elenco di URL durante l'autenticazione</translation>
+<translation id="5242361766432467515">Se il criterio viene impostato attivato o se non viene configurato, gli utenti collegati a un host di accesso remoto potrebbero aprire gli URL lato host nel browser client locale.
+
+Se il criterio viene disattivato, l'host di accesso remoto non potrà inviare URL al client.
+
+L'impostazione non si applica alle connessioni di assistenza remota, perché questa modalità di connessione non supporta la funzionalità.
+
+Nota: questa funzionalità non è ancora disponibile per tutti gli utenti, quindi la sua attivazione non ne garantisce la visibilità nell'UI del client.</translation>
 <translation id="5245647012663146075">Non consentire l'attivazione di Phone Hub</translation>
 <translation id="5245671702326993331">Consente le notifiche native</translation>
 <translation id="524637053580639111">Questo criterio è stato rimosso nella versione M82. Usa il criterio DeviceMinimumVersion.
@@ -5629,6 +5650,7 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
       È possibile eseguire l'override del criterio per pattern URL specifici utilizzando i criteri <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Questo criterio incide soltanto sulle operazioni relative agli appunti controllate dall'autorizzazione di accesso dei siti agli appunti e non sulle scritture di appunti purificate o sulle operazioni di copia e incolla affidabili.</translation>
+<translation id="5650256117857913687">Non consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="5650716720715977549">Applica limitazioni alle richieste agli endpoint di rete con un livello di protezione più alto</translation>
 <translation id="5651538748810288218">Se il criterio viene impostato su 1, i siti web possono accedere ai sensori, ad esempio di movimento e di luce, e usarli. Se il criterio viene impostato su 2, viene negato l'accesso ai sensori.
 
@@ -5692,6 +5714,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 
       Questo criterio è disponibile soltanto su <ph name="PRODUCT_NAME" /> e non ha effetto su <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Disattiva la modalità in background</translation>
+<translation id="5705632645298500887">Imposta la posizione in cui archiviare le acquisizioni schermo</translation>
 <translation id="5705828032077475554">Segnala sessioni CRD</translation>
 <translation id="5706929446669049441">Disattiva la condivisione delle credenziali utente</translation>
 <translation id="57072195677044908">Disattiva la separazione dei profili</translation>
@@ -7722,6 +7745,7 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
 <translation id="7298197471363105063">Esegui l'override degli insiemi First-Party.</translation>
 <translation id="7300320787419338290">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
+<translation id="7302500623317853506">Consenti aggiornamenti automatici estesi</translation>
 <translation id="7303655680460311843">Attiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
 <translation id="7306926210354955892">La configurazione del criterio consente di specificare l'azione da eseguire quando la directory dei dati ARC dell'utente è stata creata con virtio-fs. A meno che non venga eseguita la migrazione dei dati virtio-fs su virtio-blk, le app per Android potrebbero essere eseguite più lentamente su ARC VM.
@@ -7769,7 +7793,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="7323896582714668701">Parametri aggiuntivi della riga di comando per <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome non può bloccare le navigazioni ai protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
-<translation id="7331387825106440104">Non forzare l'applicazione di vincoli nei trust anchor aggiunti localmente</translation>
+<translation id="7331387825106440104">Non applicare vincoli nei trust anchor aggiunti localmente</translation>
 <translation id="7331962793961469250">Quando la norma è impostata su True, le promozioni relative alle applicazioni del Chrome Web Store non vengono visualizzate nella pagina Nuova scheda. Se questa opzione viene impostata su False o non viene impostata, le promozioni relative alle applicazioni del Chrome Web Store vengono visualizzate nella pagina Nuova scheda.</translation>
 <translation id="7332963785317884918">Questa norma è obsoleta. <ph name="PRODUCT_OS_NAME" /> utilizzerà sempre la strategia di pulizia "RemoveLRU".
 
@@ -8086,6 +8110,15 @@ Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="F
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
+<translation id="7642884929006659708">Questo criterio è deprecato dalla versione 122 di <ph name="PRODUCT_NAME" />. Usa il criterio AllowedDomainsForAppsList.
+
+      La configurazione del criterio consente di attivare la funzionalità di accesso limitato di Chrome in <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere agli strumenti Google soltanto con gli account dei domini specificati (per consentire gli account Gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
+
+      Se questa impostazione viene lasciata vuota o se non viene configurata, gli utenti possono accedere a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> con qualsiasi account.
+
+      Gli utenti non possono modificare o ignorare questa impostazione.
+
+      Nota: questo criterio comporta l'aggiunta dell'intestazione X-GoogApps-Allowed-Domains a tutte le richieste HTTP e HTTPS inviate a tutti i domini google.com, come descritto all'indirizzo https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Un criterio per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
 
 Se imposti questo criterio su Disabled, l'impostazione relativa alla misurazione degli annunci verrà disattivata per i tuoi utenti.
@@ -9529,6 +9562,7 @@ Se il criterio viene disattivato, le ricerche trasferite al proxy con una protez
 <translation id="8862086508140571198">Questo criterio consente di impostare un elenco di contenuti scaricabili (DLC) da scaricare il prima possibile. I contenuti scaricati saranno poi disponibili per tutti gli utenti sul dispositivo.
 
 Questo è utile quando l'amministratore sa che probabilmente gli utenti del dispositivo useranno una funzionalità che richiede la presenza dei contenuti scaricabili.</translation>
+<translation id="8864727482158496280">Non consentire aggiornamenti automatici estesi</translation>
 <translation id="8864975621965365890">Consente di eliminare il messaggio di richiesta di turndown che compare quando un sito viene visualizzato da <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Utilizza l'impostazione predefinita per il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8866430022832109569">Generazione di report sull'inventario per app</translation>

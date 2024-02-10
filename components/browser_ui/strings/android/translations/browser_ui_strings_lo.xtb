@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">ມຸມມອງງ່າຍດາຍສຳລັບໜ້າເວັບ</translation>
 <translation id="4151930093518524179">ຊູມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
+<translation id="4169019654293892025">ເຊື່ອງ <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">ເຊື່ອມຕໍ່ຫາອຸປະກອນ USB ແລ້ວ</translation>
 <translation id="4194328954146351878">ຖາມກ່ອນການອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC (ແນະນຳ)</translation>
 <translation id="4200726100658658164">ເປີດການຕັ້ງຄ່າສະຖານທີ່</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{ເລືອກ 1 ລາຍການແລ້ວ}other{ເລືອກ # ລາຍການແລ້ວ}}</translation>
 <translation id="7087918508125750058">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ.  ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງຂອງໜ້າຈໍ</translation>
-<translation id="7137403271056944713">ການຄວບຄຸມ / ການຕັ້ງໂປຣແກຣມອຸປະກອນ MIDI ຄືນໃໝ່</translation>
 <translation id="7141896414559753902">ບລັອກບໍ່ໃຫ້ເວັບໄຊສະແດງປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ (ແນະນຳ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>

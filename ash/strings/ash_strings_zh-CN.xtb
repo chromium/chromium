@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">前往应用</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店应用</translation>
 <translation id="1225748608451425081">由于发生了一个已知问题，您的 Chromebook 已被锁定。您可以在 <ph name="TIME_LEFT" />后重新登录。</translation>
-<translation id="1226877728704622336">闲置的桌面</translation>
 <translation id="1229194443904279055">停止选择</translation>
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">多账号登录已被停用</translation>
 <translation id="2579264398927991698">固件更新</translation>
 <translation id="2582112259361606227">重启以进行更新</translation>
-<translation id="2586561057878260610">按 Ctrl + W 即可与“<ph name="DESK_NAME" />”合并。按 Ctrl + Shift + W 则可关闭桌面和窗口。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">此设备的管理员可能会监控您的浏览活动。</translation>
 <translation id="316086887565479535">此模板含有不支持的应用</translation>
 <translation id="3160929076476941240">2 小时</translation>
-<translation id="3161500364292033097">关闭桌面和窗口</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
 <translation id="3170769098533255179">未连接任何设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="3171170659304083361">输入法设置</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
+<translation id="3712143870407382523">选择这一侧的窗口</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
 <translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
@@ -1047,7 +1045,6 @@
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="5198715732953550718">将“<ph name="MOVED_APP_NAME" />”和“<ph name="IN_PLACE_APP" />”移到一起创建了一个新文件夹。</translation>
-<translation id="5203299837691351876">活跃的桌面</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{另外 1 条通知}other{另外 # 条通知}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
@@ -1065,7 +1062,6 @@
 <translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5268819379131021772">Google 任务列表</translation>
-<translation id="5275923704957843041">桌面预览</translation>
 <translation id="5277869901083657836">开启/关闭触控笔工具</translation>
 <translation id="5278086053818066789">开启/关闭 ChromeVox（语音反馈）</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />中有需要您关注的新动态。</translation>
@@ -1171,7 +1167,7 @@
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678564054339031017">显示下一周的活动</translation>
 <translation id="5679050765726761783">已连接低功耗适配器</translation>
 <translation id="5682642926269496722">当前用户账号无法使用 Google 助理。</translation>
@@ -1414,6 +1410,7 @@
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
 <translation id="6622679827379792051">设置查看手机中的应用</translation>
+<translation id="6624493541160101248">当前桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="6625718907317144388">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
 <translation id="662830937908749204">将焦点移到下一个窗格</translation>
@@ -1468,7 +1465,6 @@
 <translation id="6819327813400217281">相机已对准左下角</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">关闭事件面板</translation>
-<translation id="6831561626108366035">找到<ph name="ACTIVE_STATE" />“<ph name="DESK_NAME" />”按钮。</translation>
 <translation id="6836499262298959512">危险文件</translation>
 <translation id="6837621009301897464">如需截取屏幕截图，请按</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
@@ -1507,6 +1503,7 @@
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
 <translation id="6984028004251196682">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> 赫兹）。分辨率已更改为 <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> 赫兹）。点击“确认”可保留更改。系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="6989752354829085073">不妨观看快速导览，了解如何玩转 Chromebook。只需 6 步，即可启动并运行。</translation>
+<translation id="7000027735917578303">窗口和桌面设置</translation>
 <translation id="7004910047186208204">连接到移动数据网络</translation>
 <translation id="7005239792648594238">打开一款应用即可开始使用</translation>
 <translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
@@ -1758,6 +1755,7 @@
 <translation id="8001755249288974029">选中从光标处到行首的文字</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8026334261755873520">清除浏览数据</translation>
+<translation id="802782383769312836">上一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8029247720646289474">热点连接失败</translation>
 <translation id="8029629653277878342">需要输入 PIN 码或密码以增强安全性</translation>
 <translation id="8030169304546394654">连接已断开</translation>
@@ -1805,6 +1803,7 @@
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
 <translation id="8230305195727960608">颜色反转模式</translation>
 <translation id="8236042855478648955">该休息了</translation>
+<translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8239034820133090126">启用右侧桌面</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，应用</translation>
@@ -2032,6 +2031,7 @@
 <translation id="92580429198593979">您按下了颜色反转的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="925832987464884575">隐藏预览</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">当前桌面：<ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> <ph name="EMAIL" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="938963181863597773">我的日历中有哪些活动？</translation>
 <translation id="945383118875625837">将链接拖动到书签栏中</translation>
 <translation id="945522503751344254">发送反馈</translation>

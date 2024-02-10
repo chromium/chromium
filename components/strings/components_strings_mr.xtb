@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ब्लॉक केला आहे</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080021694978766903">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत.</translation>
+<translation id="2081482239432306393">घराचा क्रमांक हा पर्याय निवडला आहे</translation>
 <translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉंफिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">प्रत्येक भेटीला अनुमती द्या</translation>
@@ -1408,6 +1409,7 @@
 <translation id="3723663469265383848">अपडेटदरम्यान तुम्हाला तुमचे डिव्हाइस कमान १० मिनिटे वापरता येणार नाही.</translation>
 <translation id="372429172604983730">या एररला कारणीभूत असू शकणार्‍या ॲप्लिकेशनमध्ये अँटिव्हायरस, फायरवॉल आणि वेब फिल्टरिंग किंवा प्रॉक्सी सॉफ्टवेअरचा समावेश होतो.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
+<translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="3733139489341305600">ऑटोनोमस वाहने</translation>
 <translation id="3736520371357197498">तुम्ही तुमच्या सुरक्षिततेच्या जोखमी समजत असल्यास, धोकादायक प्रोग्राम काढण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
@@ -1572,6 +1574,7 @@
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">पत्ता भरा</translation>
 <translation id="4096237801206588987">११ x १५ इं</translation>
+<translation id="4098306082496067348">चेकआउटमध्ये व्हर्च्युअल कार्डचे तपशील जोडण्यासाठी त्यांवर टॅप करा.</translation>
 <translation id="4098354747657067197">भ्रामक साइट पुढे आहे</translation>
 <translation id="4099048595830172239">गोपनीय आशय दृश्यमान असताना, अ‍ॅडमिनिस्ट्रेटर धोरण हे तुमची स्क्रीन <ph name="APPLICATION_TITLE" /> सोबत शेअर करण्याची शिफारस करत नाही:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
@@ -1895,6 +1898,7 @@
 <translation id="4729147136006144950">धर्मार्थ आणि लोकोपकार</translation>
 <translation id="4730977633786878901">परीक्षणे</translation>
 <translation id="4731638775147756694">तुमच्या अ‍ॅडमिनिस्ट्रेटरने हे अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पॅक डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ला तुमच्या डिव्हाइसचे स्थान वापरायचे आहे</translation>
 <translation id="4736491186715342415">मोटर वाहने</translation>
 <translation id="4736825316280949806">Chromium रीस्टार्ट करा</translation>
@@ -2254,7 +2258,6 @@
             <ph name="LIST_ITEM" />कुकी आणि साइट डेटा
             <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> ला तुमची MIDI डिव्‍हाइस (SysEx) नियंत्रित आणि रीप्रोग्राम करायची आहेत</translation>
 <translation id="5443468954631487277">उलट्या क्रमाने फेस अप</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> ला त्यांनी तुमच्याबद्दल सेव्ह केलेली माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="5447765697759493033">या साइटचे भाषांतर होणार नाही</translation>
@@ -2467,7 +2470,6 @@
 <translation id="5877831137320480913">सौंदर्य आणि फिटनेस</translation>
 <translation id="5879989559903563723">अतिथी मोडमध्ये अनुमती नाही</translation>
 <translation id="5880050725127890683">Chrome सुरक्षितता तपासणी वर जा</translation>
-<translation id="5883861433316751031">MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करायची आहेत का?</translation>
 <translation id="5884465125445718607">एन्व्हलप चायनीज #६</translation>
 <translation id="5887400589839399685">कार्ड सेव्ह केले</translation>
 <translation id="5887687176710214216">काल शेवटची भेट दिली</translation>
@@ -2819,7 +2821,6 @@
 <translation id="6556866813142980365">पुन्हा करा</translation>
 <translation id="6557715786897013164">१४ x १७ इं</translation>
 <translation id="6560786330438719938">इंस्टॉल केलेली किंवा अनइंस्टॉल केलेली अ‍ॅप्स आणि ती किती वेळा वापरली जातात</translation>
-<translation id="6567084950885568327">MIDI डिव्हाइसचे नियंत्रण आणि रीप्रोग्रामिंग</translation>
 <translation id="6568793038316600992">पेमेंट पद्धती व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड माहिती व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6569060085658103619">तुम्ही एक एक्स्टेंशन पेज पाहत आहात</translation>
 <translation id="6569366777234823130">नाट्यमय चित्रपट</translation>
@@ -3202,6 +3203,7 @@
 <translation id="733354035281974745">डिव्हाइसचे स्थानिक खाते ओव्हरराइड करा</translation>
 <translation id="7334320624316649418">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
 <translation id="7335157162773372339">तुमचा कॅमेरा वापरण्याची विनंती करू शकते</translation>
+<translation id="7336636595549675416">घर क्रमांक</translation>
 <translation id="7337248890521463931">आणखी रेषा दाखवा</translation>
 <translation id="7337706099755338005">तुमच्या प्लॅटफॉर्मवर उपलब्ध नाही.</translation>
 <translation id="733923710415886693">सर्टिफिकेट पारदर्शकतेअंतर्गत सर्व्हरचे सर्टिफिकेट उघड केले नाही.</translation>
@@ -3908,7 +3910,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> मूल्य आकार आवश्यकता पूर्ण करत नाही.</translation>
 <translation id="867224526087042813">स्वाक्षरी</translation>
 <translation id="8672264262457010862">व्यवसाय आणि औद्योगिक</translation>
-<translation id="8673776281896298303">तुमची MIDI डिव्हाइस (SysEx) नियंत्रित करा आणि रीप्रोग्राम करा</translation>
 <translation id="8676424191133491403">विलंब नाही</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> वरील वेबपेज लोड केले जाऊ शकले नाही कारण:</translation>

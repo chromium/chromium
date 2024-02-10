@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">Танай администратор <ph name="PERMISSION" />-г <ph name="ORIGIN" />-д блоклосон</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2080021694978766903">Энэ бодлого <ph name="MAX_ITEMS_LIMIT" />-с олон оруулгатай байх ёсгүй.</translation>
+<translation id="2081482239432306393">Байшингийн дугаарын сонголтыг сонгосон</translation>
 <translation id="20817612488360358">Системийн прокси-гийн тохиргоонуудыг ашиглахаар суулгасан хэдий ч прокси-гийн нарийн тохиргоог зааж өгсөн байна.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
 <translation id="2083256696566019397">Зочлох бүрд зөвшөөрөх</translation>
@@ -1410,6 +1411,7 @@
 <translation id="3723663469265383848">Шинэчлэлтийн үеэр та төхөөрөмжөө 10 хүртэлх минут ашиглах боломжгүй болно.</translation>
 <translation id="372429172604983730">Энэ алдааг антивирус, галт хана, веб шүүлтүүр эсвэл прокси программ хангамж зэрэг апп үүсгэх боломжтой.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Үзүүлэнд шинэ Google үзүүлэн шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="3727309136762649052">Нэршил</translation>
 <translation id="3727850735097852673">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="3733139489341305600">Өөрөө жолоодогч тээврийн хэрэгсэл</translation>
 <translation id="3736520371357197498">Аюултай програмуудыг устгахаас өмнө та энэхүү <ph name="BEGIN_LINK" />сайт руу орохдоо<ph name="END_LINK" /> таны аюулгүй байдалд учирч болох эрсдлийг анхаарна уу.</translation>
@@ -1898,6 +1900,7 @@
 <translation id="4729147136006144950">Буяны болон филантрофийн үйл ажиллагаа</translation>
 <translation id="4730977633786878901">Шүүмж</translation>
 <translation id="4731638775147756694">Энэ аппликэйшнийг таны администратор хориглосон байна</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> хэлний багцыг татаж байна... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> таны төхөөрөмжийн байршлыг ашиглах хүсэлтэй байна</translation>
 <translation id="4736491186715342415">Моторт тээврийн хэрэгсэл</translation>
 <translation id="4736825316280949806">Chromium-г дахин эхлүүлэх</translation>
@@ -2257,7 +2260,6 @@
             <ph name="LIST_ITEM" />Күүкинүүд болон сайтын өгөгдөл
             <ph name="LIST_ITEM" />Маягтуудад оруулсан мэдээлэл
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> таны MIDI төхөөрөмжүүдийг (SysEx) хянаж, дахин программчлахыг хүсэж байна</translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="5447235695608032700"><ph name="SITE" />-д таны талаар хадгалсан мэдээллээ ашиглахыг зөвшөөрнө үү</translation>
 <translation id="5447765697759493033">Энэ сайтыг орчуулахгүй</translation>
@@ -2470,7 +2472,6 @@
 <translation id="5877831137320480913">Гоо сайхан, фитнес</translation>
 <translation id="5879989559903563723">Зочны горимд зөвшөөрдөггүй</translation>
 <translation id="5880050725127890683">Chrome-н аюулгүй байдлын шалгалт руу очих</translation>
-<translation id="5883861433316751031">MIDI төхөөрөмжүүдийг (SysEx) хянаж, дахин программчлах уу?</translation>
 <translation id="5884465125445718607">Хятад дугтуй #6</translation>
 <translation id="5887400589839399685">Картыг хадгалсан</translation>
 <translation id="5887687176710214216">Хамгийн сүүлд өчигдөр зочилсон</translation>
@@ -2820,7 +2821,6 @@
 <translation id="6556866813142980365">Дахин хийх</translation>
 <translation id="6557715786897013164">14 x 17 инч</translation>
 <translation id="6560786330438719938">Суулгасан эсвэл устгасан аппууд болон тэдгээрийг хэр тогтмол ашигладаг болох</translation>
-<translation id="6567084950885568327">MIDI төхөөрөмжийн хяналт болон дахин программчлал</translation>
 <translation id="6568793038316600992">Төлбөрийн хэрэгсэл удирдах товчлуур, төлбөр болон кредит картаа Chrome-н тохиргоонд удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="6569060085658103619">Та өргөтгөлийн хуудсыг харж байна.</translation>
 <translation id="6569366777234823130">Драмын кино</translation>
@@ -3203,6 +3203,7 @@
 <translation id="733354035281974745">Төхөөрөмжийн дотоод бүртгэлийг дарж бичих</translation>
 <translation id="7334320624316649418">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
 <translation id="7335157162773372339">Таны камерыг ашиглахыг хүсэх боломжтой</translation>
+<translation id="7336636595549675416">Байшингийн дугаар</translation>
 <translation id="7337248890521463931">Илүү олон мөр харуулах</translation>
 <translation id="7337706099755338005">Таны платформд боломжгүй.</translation>
 <translation id="733923710415886693">Серверийн сертификатыг Сертификатын ил тод байдлаар ил тод болгоогүй.</translation>
@@ -3909,7 +3910,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-н утга нь шаардлагатай хэмжээнд нийцэхгүй байна.</translation>
 <translation id="867224526087042813">Гарын үсэг</translation>
 <translation id="8672264262457010862">Бизнес, аж үйлдвэр</translation>
-<translation id="8673776281896298303">Таны MIDI төхөөрөмжүүдийг (SysEx) хянаж, дахин программчлах</translation>
 <translation id="8676424191133491403">Хүлээхгүй</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, хариулт, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ын веб хуудсыг дараах шалтгааны улмаас ачаалж чадсангүй:</translation>

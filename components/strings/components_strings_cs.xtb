@@ -246,6 +246,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1428729058023778569">Toto varování se vám zobrazuje, protože tento web nepodporuje protokol HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Samolepicí fólie</translation>
 <translation id="1430915738399379752">Tisk</translation>
+<translation id="1431021750861456539">Automatický režim celé obrazovky</translation>
 <translation id="1432187715652018471">stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
 <translation id="1433225466058025572">Zkuste soubory přesunout znovu</translation>
@@ -585,6 +586,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2075497153347571252">Oprávnění <ph name="PERMISSION" /> na webu <ph name="ORIGIN" /> zablokoval váš administrátor</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2080021694978766903">Tato zásada smí mít maximálně tento počet položek: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2081482239432306393">Je vybrána možnost čísla popisného</translation>
 <translation id="20817612488360358">Jako aktivní jsou nakonfigurována systémová nastavení proxy serveru, je však určena i explicitní konfigurace proxy serveru.</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Povolit při každé návštěvě</translation>
@@ -1405,6 +1407,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3723663469265383848">Během aktualizace nebudete zařízení až 10 minut moci používat.</translation>
 <translation id="372429172604983730">Tuto chybu mohou způsobovat aplikace, jako jsou antivirové programy, firewally a software na filtrování nebo zprostředkování webového provozu.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou prezentaci Google v Prezentacích</translation>
+<translation id="3727309136762649052">Jmenný prostor</translation>
 <translation id="3727850735097852673">Pokud Správce hesel Google chcete používat s Klíčenkou systému macOS, restartujte Chrome a povolte přístup ke Klíčence. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="3733139489341305600">Autonomní vozidla</translation>
 <translation id="3736520371357197498">Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento nespolehlivý web navštívit<ph name="END_LINK" /> ještě před tím, než budou nebezpečné programy odstraněny.</translation>
@@ -1893,6 +1896,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4729147136006144950">Charita a filantropie</translation>
 <translation id="4730977633786878901">Recenze</translation>
 <translation id="4731638775147756694">Administrátor aplikaci zablokoval</translation>
+<translation id="4732860731866514038">Stahování jazykového balíčku <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Web <ph name="URL" /> chce použít polohu vašeho zařízení</translation>
 <translation id="4736491186715342415">Motorová vozidla</translation>
 <translation id="4736825316280949806">Restartujte Chromium</translation>
@@ -2252,7 +2256,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
             <ph name="LIST_ITEM" />soubory cookie a data webů,
             <ph name="LIST_ITEM" />údaje zadané do formulářů.
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> chce ovládat a přeprogramovat vaše zařízení MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
 <translation id="5447235695608032700">Povolit webu <ph name="SITE" /> používat informace, které si o vás uložil</translation>
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
@@ -2279,6 +2282,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <ph name="LINE_BREAK" />
 Kontaktujte administrátora systému.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
+<translation id="5501712702042287009">automatický režim celé obrazovky</translation>
 <translation id="550365051221576010">Vyplnit vše</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Spravované záložky</translation>
@@ -2465,7 +2469,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5877831137320480913">Krása a fitness</translation>
 <translation id="5879989559903563723">V režimu hosta není povoleno</translation>
 <translation id="5880050725127890683">Přejít na bezpečnostní kontrolu Chromu</translation>
-<translation id="5883861433316751031">Ovládat a přeprogramovat zařízení MIDI?</translation>
 <translation id="5884465125445718607">Obálka čínská č. 6</translation>
 <translation id="5887400589839399685">Karta byla uložena</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
@@ -2815,7 +2818,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6557715786897013164">14 × 17″</translation>
 <translation id="6560786330438719938">Nainstalované a odinstalované aplikace a četnost jejich používání</translation>
-<translation id="6567084950885568327">Ovládání a přeprogramování zařízení MIDI</translation>
 <translation id="6568793038316600992">Tlačítko Spravovat platební metody, aktivací můžete spravovat údaje o platbách a platebních kartách v nastavení Chromu</translation>
 <translation id="6569060085658103619">Prohlížíte si stránku rozšíření</translation>
 <translation id="6569366777234823130">Filmová dramata</translation>
@@ -3197,6 +3199,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="733354035281974745">Místní přepsání účtu na zařízení</translation>
 <translation id="7334320624316649418">&amp;Opakovat změnu uspořádání</translation>
 <translation id="7335157162773372339">Může žádat o použití kamery</translation>
+<translation id="7336636595549675416">Číslo popisné</translation>
 <translation id="7337248890521463931">Zobrazit další řádky</translation>
 <translation id="7337706099755338005">Pro vaši platformu nedostupné.</translation>
 <translation id="733923710415886693">Certifikát serveru nebyl zveřejněn prostřednictvím projektu Certificate Transparency.</translation>
@@ -3904,7 +3907,6 @@ Další podrobnosti:
 <translation id="8671519637524426245">Hodnota <ph name="SECURE_DNS_SALT" /> nesplňuje požadavky na velikost.</translation>
 <translation id="867224526087042813">Podpis</translation>
 <translation id="8672264262457010862">Obchodní a průmyslové zboží</translation>
-<translation id="8673776281896298303">Ovládejte a přeprogramujte svá zařízení MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Bez prodlevy</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odpověď, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Webovou stránku <ph name="PAGE" /> nelze načíst, protože:</translation>

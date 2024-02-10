@@ -806,7 +806,6 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="1675391557079742340">Contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> voor advertenties aanzetten in de header Accept-Encoding</translation>
 <translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
-<translation id="1681688654564283886">Schermtijd uitzetten voor websites</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
 
       Als dit beleid niet is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan 20 GB (standaardwaarde).
@@ -1437,10 +1436,6 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="2149957154942061013">Alleen intern</translation>
 <translation id="2151831603578119302">Snelkoppelingen voor toegankelijkheidsfuncties aanzetten</translation>
 <translation id="2156132677421487971">Stel beleid voor <ph name="PRODUCT_NAME" /> in, een functie waarmee gebruikers de content van tabbladen, sites of hun bureaublad vanuit de browser naar externe schermen en geluidssystemen kunnen sturen.</translation>
-<translation id="2156179920247248678">Met dit beleid kan <ph name="PRODUCT_NAME" /> deelnemen aan de <ph name="MAC_OS_NAME" />-functie Schermtijd.
-
-      Als je het beleid toepast of niet instelt, worden bezochte oorsprongen gemeld aan het OS en laten oorsprongen die zijn geblokkeerd in de instellingen voor Schermtijd, een blokkeringsscherm zien.
-      Als je het beleid niet toepast, worden bezochte oorsprongen niet gemeld aan het OS en zijn oorsprongen die zijn geblokkeerd in de instellingen voor Schermtijd gewoon toegankelijk.</translation>
 <translation id="2156755242840687300">Aangezette externe afdrukservers</translation>
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
@@ -1693,6 +1688,16 @@ De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via
 
       Dit beleid heeft alleen effect op USB-apparaten via de WebUSB API. Zie het beleid <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de Web Serial API.</translation>
 <translation id="2318583605563438459">Toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
+<translation id="2319419071295380556">Hiermee stel je de directory in waarin Screenshots (zowel screenshots als schermopnamen) worden opgeslagen.
+Als je het beleid instelt als Aanbevolen, wordt de waarde standaard gebruikt, maar kan de gebruiker deze wijzigen.
+Anders kan de gebruiker deze niet wijzigen en worden de opnamen altijd opgeslagen in de aangegeven directory.
+
+Het beleid gebruikt dezelfde indeling als het beleid <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+De locatie kan worden ingesteld op een lokaal bestandssysteem of op <ph name="GOOGLE_DRIVE_NAME" /> (met het voorvoegsel '${google_drive}') of <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (met het voorvoegsel '${onedrive}')).
+Als je het beleid instelt op een lege tekenreeks, wordt afgedwongen dat de schermopnamen worden opgeslagen in de lokale map Downloads.
+Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaarddirectory Downloads om schermopnamen op te slaan en kunnen gebruikers deze directory wijzigen.</translation>
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
@@ -4289,7 +4294,6 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
       Dit beleid heeft voorrang op zowel DisabledPlugins als DisabledPluginsExceptions.
 
       Als dit beleid niet is ingesteld, kan de gebruiker alle op het systeem geïnstalleerde plug-ins uitzetten.</translation>
-<translation id="4549405078915181477">Schermtijd aanzetten voor websites</translation>
 <translation id="4549695018986780856">Manifest v2 staat aan</translation>
 <translation id="4554651132977135445">Loopback-verwerkingsmodus voor gebruikersbeleid</translation>
 <translation id="4554991346503872538">Nooit een vertaling aanbieden</translation>
@@ -4473,11 +4477,6 @@ Voor beheerde apparaten wordt dit beleid standaard toegepast en worden statistie
 Voor onbeheerde apparaten kan de gebruiker ervoor kiezen om de statistieken te sturen.</translation>
 <translation id="4694138212536142867">Rapportage voor hardwarestatus van apparaat aanzetten</translation>
 <translation id="4697581738794063407">De filterfunctie voor URL-parameters beheren</translation>
-<translation id="4698147321113652592">Met dit beleid stel je een reeks wekelijkse intervallen vast om automatische opschorting te plannen. Als een interval begint, wordt de opschortingsstand van het <ph name="PRODUCT_OS_NAME" />-apparaat geactiveerd. Het apparaat wordt weer geactiveerd als het interval voorbij is.
-
-Planningen met overlappende intervallen worden niet ondersteund. Dit beleid heeft geen effect als het 2 overlappende intervallen bevat.
-
-<ph name="PRODUCT_OS_NAME" />-apparaten gebruiken de tijdzone van het systeem om deze intervallen toe te passen.</translation>
 <translation id="4698895924806859508">Netwerkgebeurtenissen niet rapporteren</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4699592681017489215">Met dit beleid wordt een lokale schakelaar ingesteld die kan worden gebruikt om controles voor DNS-onderschepping uit te zetten. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
@@ -5656,6 +5655,7 @@ Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> uitgezet.</tran
 
       Dit beleid is alleen beschikbaar in <ph name="PRODUCT_NAME" /> en heeft geen effect op <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Achtergrondmodus uitzetten</translation>
+<translation id="5705632645298500887">Locatie instellen om schermopnamen op te slaan</translation>
 <translation id="5705828032077475554">CRD-sessies rapporteren</translation>
 <translation id="5706929446669049441">Delen van inloggegevens van gebruikers uitzetten</translation>
 <translation id="57072195677044908">Zet profielscheiding uit</translation>
@@ -8007,6 +8007,15 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
+<translation id="7642884929006659708">Dit beleid is beëindigd sinds <ph name="PRODUCT_NAME" /> versie 122. Gebruik in plaats daarvan het beleid AllowedDomainsForAppsList.
+
+      Als je dit beleid instelt, wordt de beperkte inlogfunctie van Chrome in <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> aangezet. Gebruikers kunnen deze instelling niet wijzigen. Gebruikers kunnen Google-tools alleen openen met accounts van de aangegeven domeinen (voeg consumer_accounts toe aan de lijst met domeinen om Gmail- en GoogleMail-accounts toe te staan). Deze instelling voorkomt dat gebruikers inloggen op een secundair account en dit toevoegen aan een beheerd apparaat waarvoor Google-verificatie vereist is, als dit account niet behoort tot één van de expliciet toegestane domeinen.
+
+      Als je deze instelling leeg laat of niet instelt, kunnen gebruikers <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> openen met elk account.
+
+      Gebruikers kunnen deze instelling niet wijzigen of overschrijven.
+
+      Opmerking: Door dit beleid wordt de kop 'X-GoogApps-Allowed-Domains' toegevoegd aan alle HTTP- en HTTPS-verzoeken voor alle google.com-domeinen, zoals beschreven in https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
 
 Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitgezet voor je gebruikers.

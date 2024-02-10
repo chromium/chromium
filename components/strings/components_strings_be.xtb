@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">Адміністратар заблакіраваў дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2080021694978766903">Максімальная колькасць запісаў для гэтай палітыкі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2081482239432306393">Выбраны варыянт "Нумар дома"</translation>
 <translation id="20817612488360358">Сістэмныя налады проксі зададзены для выкарыстання, але яўная канфігурацыя проксі таксама вызначана.</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дазваляць пры кожным наведванні</translation>
@@ -1406,6 +1407,7 @@
 <translation id="3723663469265383848">Падчас абнаўлення вы не зможаце выкарыстоўваць прыладу на працягу прыкладна 10 хвілін.</translation>
 <translation id="372429172604983730">Выклікаць гэту памылку могуць такія праграмы, як антывірусы, брандмаўэры, сістэмы вэб-фільтрацыі і проксі-серверы.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі", націсніце Tab, затым Enter</translation>
+<translation id="3727309136762649052">Прастора імён</translation>
 <translation id="3727850735097852673">Каб выкарыстоўваць Менеджар пароляў Google са звязкам ключоў macOS, перазапусціце Chrome і дайце адпаведны доступ. Пасля перазапуску ўкладкі будуць адкрыты паўторна.</translation>
 <translation id="3733139489341305600">Беспілотныя аўтамабілі</translation>
 <translation id="3736520371357197498">Калі вы разумееце рызыкі бяспекі, можаце <ph name="BEGIN_LINK" />наведаць гэты небяспечны сайт<ph name="END_LINK" /> да таго, як зламысныя праграмы будуць выдалены.</translation>
@@ -1894,6 +1896,7 @@
 <translation id="4729147136006144950">Дабрачыннасць і філантропія</translation>
 <translation id="4730977633786878901">Водгукі</translation>
 <translation id="4731638775147756694">Гэта праграма заблакіравана адміністратарам</translation>
+<translation id="4732860731866514038">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запытвае дазвол на выкарыстанне звестак аб месцазнаходжанні прылады</translation>
 <translation id="4736491186715342415">Маторныя транспартныя сродкі</translation>
 <translation id="4736825316280949806">Перазапусціце Chromium</translation>
@@ -2251,7 +2254,6 @@
 <ph name="BEGIN_LIST" /><ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
 <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
 <ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.<ph name="END_LIST" /></translation>
-<translation id="54430913453805768">Сайт <ph name="URL" /> запытвае дазвол на кіраванне вашымі прыладамі MIDI (SysEx) і іх перапраграміраванне</translation>
 <translation id="5443468954631487277">У адваротным парадку, рабочым бокам уверх</translation>
 <translation id="5447235695608032700">Дазволіць сайту "<ph name="SITE" />" выкарыстоўваць інфармацыю, якую ён пра вас захаваў</translation>
 <translation id="5447765697759493033">Гэты сайт не будзе перакладацца</translation>
@@ -2464,7 +2466,6 @@
 <translation id="5877831137320480913">Прыгажосць і фітнес</translation>
 <translation id="5879989559903563723">Не дазволена ў гасцявым рэжыме</translation>
 <translation id="5880050725127890683">Перайсці на старонку праверкі бяспекі Chrome</translation>
-<translation id="5883861433316751031">Кіраваць прыладамі MIDI і перапраграміраваць іх?</translation>
 <translation id="5884465125445718607">Канверт Chinese № 6</translation>
 <translation id="5887400589839399685">Картка захавана</translation>
 <translation id="5887687176710214216">Апошняе наведванне: учора</translation>
@@ -2815,7 +2816,6 @@
 <translation id="6556866813142980365">Узнавіць</translation>
 <translation id="6557715786897013164">14 x 17 цаляў</translation>
 <translation id="6560786330438719938">Усталяваныя або выдаленыя праграмы і частата іх выкарыстання</translation>
-<translation id="6567084950885568327">кіраванне прыладай MIDI і яе перапраграмаванне</translation>
 <translation id="6568793038316600992">Кнопка "Наладзіць спосабы аплаты". Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце яе.</translation>
 <translation id="6569060085658103619">Вы праглядаеце старонку пашырэння</translation>
 <translation id="6569366777234823130">Драмы</translation>
@@ -3198,6 +3198,7 @@
 <translation id="733354035281974745">Перавызначэнне лакальнага ўліковага запісу прылады</translation>
 <translation id="7334320624316649418">&amp;Паўтарыць змяненне парадку</translation>
 <translation id="7335157162773372339">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
+<translation id="7336636595549675416">Нумар дома</translation>
 <translation id="7337248890521463931">Паказваць больш радкоў</translation>
 <translation id="7337706099755338005">Недаступна на вашай платформе.</translation>
 <translation id="733923710415886693">Сертыфікат сервера не быў раскрыты ў адпаведнасці са стандартам "Празрыстасць сертыфікатаў".</translation>
@@ -3905,7 +3906,6 @@
 <translation id="8671519637524426245">Значэнне <ph name="SECURE_DNS_SALT" /> не адпавядае патрабаванням да памеру.</translation>
 <translation id="867224526087042813">Подпіс</translation>
 <translation id="8672264262457010862">Бізнес і прамысловасць</translation>
-<translation id="8673776281896298303">Кіраваць прыладамі MIDI (SysEx) і перапраграміраваць іх</translation>
 <translation id="8676424191133491403">Без затрымкі</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, адказ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Немагчыма загрузіць вэб-старонку па адрасе <ph name="PAGE" />, бо:</translation>

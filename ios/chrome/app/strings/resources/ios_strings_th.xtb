@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">ปรับแต่งเมนู</translation>
 <translation id="1296581780163690620">ดาวน์โหลดไฟล์ใช่ไหม (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
+<translation id="1310362642333088424">คุณต้องมีพื้นที่เก็บข้อมูลเพิ่มเติมเพื่อดาวน์โหลดไฟล์ รูปภาพ และอื่นๆ</translation>
 <translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1321993286294231467">เกิดข้อผิดพลาดในการบันทึกรูปภาพ</translation>
 <translation id="1322735045095424339">องค์กรกำหนดให้ใช้โหมดไม่ระบุตัวตน</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">ติดตาม</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
+<translation id="164673457281113247">{count,plural, =1{บันทึกบุ๊กมาร์กแล้ว}other{บันทึกบุ๊กมาร์กแล้ว}}</translation>
 <translation id="165008673352427892">ฟีเจอร์ใหม่</translation>
 <translation id="1650222530560417226">แตะปุ่ม "เริ่มบันทึก" เพื่อรวบรวมบันทึกและข้อผิดพลาดของคอนโซล JavaScript ในอนาคตจากทุกแท็บ ระบบจะรวบรวมบันทึก (และเก็บไว้ในหน่วยความจำเท่านั้น) จนกว่าหน้านี้จะปิดหรือมีการแตะ "หยุดบันทึก"</translation>
 <translation id="1653432787084483144">{count,plural, =1{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
@@ -511,6 +513,7 @@
 <translation id="3603009562372709545">คัดลอก URL ของลิงก์</translation>
 <translation id="3607167657931203000">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="3609785682760573515">กำลังซิงค์...</translation>
+<translation id="3630104167004786843">ไม่รับอัปเดต</translation>
 <translation id="3631443864840848029">ตรวจสอบว่าคุณกำลังบันทึกรหัสผ่านปัจจุบันสำหรับเว็บไซต์นี้</translation>
 <translation id="3638472932233958418">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3643338347976071250">{count,plural, =1{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
@@ -637,6 +640,7 @@
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="430967081421617822">ตั้งแต่ต้น</translation>
 <translation id="4322394346347055525">ปิดแท็บอื่นๆ</translation>
+<translation id="4323142320106872792">พื้นที่เก็บข้อมูลเต็ม</translation>
 <translation id="4331177082088332784">คุณจัดการตัวเลือกนี้ได้ในBEGIN_LINKการตั้งค่าเนื้อหาEND_LINK</translation>
 <translation id="4334428914252001502">บทความที่ยังไม่ได้อ่าน 1 รายการ</translation>
 <translation id="4338650699862464074">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
@@ -843,6 +847,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{ติดตามพัสดุนี้ไหม}other{ติดตามพัสดุ {COUNT} รายการไหม}}</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
+<translation id="5379352933722332597">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="5386314158584363703">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
 <translation id="5395707839134961196">ซ่อนรายละเอียดเครื่องมือค้นหา</translation>
@@ -870,6 +875,7 @@
 <translation id="5525269841082836315">สร้างข้อความรหัสผ่าน</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="5532545557415295622">กล่องโต้ตอบระยะหมดเวลาเนื่องจากไม่มีการใช้งาน</translation>
+<translation id="5533967537771071082">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="5542540507657872337">พบ <ph name="COUNT" /> แท็บ</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณสามารถเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏในแท่นชาร์จของ Mac
 
@@ -1085,6 +1091,8 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6550891580932862748">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย การตั้งค่า Google Safe Browsing ในผลิตภัณฑ์อื่นๆ ของ Google จะไม่ได้รับผลกระทบ</translation>
+<translation id="6552223548936340886">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="6561262006871132942">ซูมเข้า</translation>
 <translation id="6579867704846662339">คุณเลือกเปิด URL ที่มีเข้ามาจากแอปอื่นๆ ในโหมดไม่ระบุตัวตนได้</translation>
 <translation id="6583087784430677195">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
@@ -1199,6 +1207,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">ชื่อและนามสกุล</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
+<translation id="7138080855268384146">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="7141960840225504692">แท็บจะปิดไป และข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="7154343200458623869">ทำงานของคุณให้เสร็จสมบูรณ์</translation>
 <translation id="7161230316646448869">ซิงค์บุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>

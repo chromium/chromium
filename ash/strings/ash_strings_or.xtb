@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ଆପକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ଆପ୍‌</translation>
 <translation id="1225748608451425081">ଏକ ଜଣାଶୁଣା ସମସ୍ୟା ଯୋଗୁଁ ଆପଣଙ୍କ Chromebook ଲକ୍ ହୋଇଯାଇଛି। ଆପଣ ଏତିକି ସମୟ ପରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ସକ୍ଷମ ହେବେ: <ph name="TIME_LEFT" />।</translation>
-<translation id="1226877728704622336">ନିଷ୍କ୍ରିୟ ଡେସ୍କ</translation>
 <translation id="1229194443904279055">ଚୟନ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1235458158152011030">ଜଣାଶୁଣା ନେଟ୍‌ୱାର୍କ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ସଂଯୁକ୍ତ ହୋଇଛି।</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="2579264398927991698">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="2582112259361606227">ଅପ୍‍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> ସହ ଏକତ୍ରିତ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ। ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Shift + W ଦବାନ୍ତୁ।</translation>
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
 <translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ଡିଭାଇସ୍ ବ୍ୟବସ୍ଥାପକ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିପାରନ୍ତି।</translation>
 <translation id="316086887565479535">ଟେମ୍ପଲେଟରେ ଅସମର୍ଥିତ ଆପଗୁଡ଼ିକ ଅଛି</translation>
 <translation id="3160929076476941240">2 ଘଣ୍ଟା</translation>
-<translation id="3161500364292033097">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରୁଛି। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="3170769098533255179">କୌଣସି ଡିଭାଇସକୁ କନେକ୍ଟ କରାଯାଇନାହିଁ। ହଟସ୍ପଟ ଚାଲୁ ଥିବା ସମୟରେ, ୱାଇ-ଫାଇ ବନ୍ଦ ରହିବ।</translation>
 <translation id="3171170659304083361">ଇନପୁଟ୍ ପଦ୍ଧତି ସେଟିଂସ୍</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">ନାଇଜେରିଆର ଜନସଂଖ୍ୟା</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
+<translation id="3712143870407382523">ଏହି ସାଇଡ ପାଇଁ ଏକ ୱିଣ୍ଡୋ ବାଛନ୍ତୁ</translation>
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3713734891607377840">ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3726171378575546917">ଏହି ଡିଭାଇସରେ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ଏବଂ <ph name="UNAVAILABLE_APPS_COUNT" />ଟି ଅଧିକ ଆପ ନାହିଁ।</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">ଇଣ୍ଟର୍ନେଟ୍‍</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" />ଟି ଇଭେଣ୍ଟ</translation>
 <translation id="5198715732953550718">ନୂଆ ଫୋଲ୍ଡର୍ ତିଆରି କରିବାକୁ<ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> ସହ ସମ୍ମିଳିତ ହୋଇଛି।</translation>
-<translation id="5203299837691351876">ସକ୍ରିୟ ଡେସ୍କ</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}other{#ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ ନାହିଁ</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
 <translation id="5268819379131021772">Google ଟାସ୍କଗୁଡ଼ିକର ତାଲିକା</translation>
-<translation id="5275923704957843041">ଡେସ୍କ ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="5277869901083657836">ଷ୍ଟାଇଲସ ଟୁଲଗୁଡ଼ିକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5278086053818066789">ChromeVoxକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ (କଥିତ ମତାମତ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
@@ -1415,6 +1411,7 @@
 <translation id="6613765291890844037">ଷ୍ଟୋରେଜ ବ୍ୟବହାର କରାଯାଉଛି <ph name="STORAGE_IN_USE_SIZE" /> | ମୋଟ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଚାଲୁ ଅଛି</translation>
 <translation id="6622679827379792051">ଆପଣଙ୍କ ଫୋନର ଆପ୍ସକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="6624493541160101248">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="6625718907317144388">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ଏବଂ ଅନ୍ୟ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ପରବର୍ତ୍ତୀ ପେନକୁ ଫୋକସ ମୁଭ କରନ୍ତୁ</translation>
@@ -1469,7 +1466,6 @@
 <translation id="6819327813400217281">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
 <translation id="6827049576281411231">ଇଭେଣ୍ଟ ପ୍ୟାନେଲ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> ବଟନକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="6836499262298959512">ବିପଦଜନକ ଫାଇଲ୍</translation>
 <translation id="6837621009301897464">ଏକ ସ୍କ୍ରିନସଟ ନେବା ପାଇଁ ଏହାକୁ ଦବାନ୍ତୁ</translation>
 <translation id="6852052252232534364">ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -1508,6 +1504,7 @@
 <translation id="698231206551913481">ଏହି ୟୁଜରଙ୍କୁ କାଢ଼ି ଦେବା ପରେ, ତାଙ୍କ ସହ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ଫାଇଲ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରିଦିଆଯିବ।</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)ରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। <ph name="TIMEOUT_SECONDS" />ରେ ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
 <translation id="6989752354829085073">ଆପଣଙ୍କ Chromebook କିପରି ବ୍ୟବହାର କରିବେ ତାହା ଜାଣିବା ପାଇଁ ଏହାକୁ ଶୀଘ୍ର ଦେଖନ୍ତୁ। ଆଗକୁ ବଢ଼ନ୍ତୁ ଏବଂ 6 ଷ୍ଟେପରେ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>
+<translation id="7000027735917578303">ୱିଣ୍ଡୋ ଏବଂ ଡେସ୍କଗୁଡ଼ିକର ସେଟିଂସ</translation>
 <translation id="7004910047186208204">ମୋବାଇଲ ଡାଟା ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7005239792648594238">ଆରମ୍ଭ କରିବାକୁ ଏକ ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="7007983414944123363">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1759,6 +1756,7 @@
 <translation id="8001755249288974029">କର୍ସରରୁ ଲାଇନର ଆରମ୍ଭ ପର୍ଯ୍ୟନ୍ତ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8004512796067398576">ବୃଦ୍ଧି</translation>
 <translation id="8026334261755873520">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
+<translation id="802782383769312836">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="8029247720646289474">ହଟସ୍ପଟ୍ ସହ ସଂଯୋଗ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8029629653277878342">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ PIN କିମ୍ବା ପାସୱାର୍ଡ ଆବଶ୍ୟକ</translation>
 <translation id="8030169304546394654">ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
@@ -1806,6 +1804,7 @@
 <translation id="8219451629189078428">ଏହି ସମୟରେ ଆପଣଙ୍କ Chromebook ଚାଲୁ ରହି ପାୱାର୍ ସହିତ ସଂଯୁକ୍ତ ରହିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କର ଉଭୟ Chromebook ଓ ପାୱାର୍ ଆଉଟଲେଟ୍ ସହ ଚାର୍ଜର କିମ୍ବା ଆଡପ୍ଟର କେବୁଲଗୁଡ଼ିକ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ପ୍ଲଗ୍ ଇନ୍ ହୋଇଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ। ଆପଣଙ୍କ Chromebookକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="8230305195727960608">କଲର ଇନଭର୍ସନ ମୋଡ</translation>
 <translation id="8236042855478648955">ବିରତିର ସମୟ ହୋଇଛି</translation>
+<translation id="8237964652943995219">ପରବର୍ତ୍ତୀ ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="8239034820133090126">ଡାହାଣ ପଟ ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ଆପ୍</translation>
@@ -2033,6 +2032,7 @@
 <translation id="92580429198593979">କଲର ଇନଭର୍ସନ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="925832987464884575">ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ତୁରନ୍ତ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
+<translation id="938407504481277932">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="938963181863597773">ମୋ କ୍ୟାଲେଣ୍ଡରରେ କ’ଣ ଅଛି?</translation>
 <translation id="945383118875625837">ବୁକ୍‌ମାର୍କ ବାର୍‌କୁ ଲିଙ୍କ୍‍ ଟାଣନ୍ତୁ</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>

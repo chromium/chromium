@@ -585,6 +585,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2075497153347571252">Mae eich gweinyddwr wedi rhwystro <ph name="PERMISSION" /> ar <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2080021694978766903">Ni ddylai'r polisi hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion.</translation>
+<translation id="2081482239432306393">Dewiswyd yr opsiwn rhif tŷ</translation>
 <translation id="20817612488360358">Trefnwyd defnyddio gosodiadau dirprwyol, ond mae ffurfweddiad dirprwyol penodol hefyd wedi'i ddewis.</translation>
 <translation id="2082238445998314030">Canlyniad <ph name="RESULT_NUMBER" /> o <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Caniatáu ar bob ymweliad</translation>
@@ -1409,6 +1410,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3723663469265383848">Yn ystod y diweddariad ni fyddwch yn gallu defnyddio'ch dyfais am hyd at 10 munud.</translation>
 <translation id="372429172604983730">Ymhlith yr apiau all achosi'r gwall hwn mae meddalwedd gwrthfeirysau, meddalwedd wal dân, meddalwedd hidlo ar y we neu feddalwedd ddirprwy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i greu cyflwyniad Google newydd yn Slides yn gyflym</translation>
+<translation id="3727309136762649052">Gofod enw</translation>
 <translation id="3727850735097852673">I ddefnyddio Rheolwr Cyfrineiriau Google gyda macOS Keychain, ail-lansiwch Chrome a chaniatáu mynediad Keychain. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="3733139489341305600">Cerbydau awtonomaidd</translation>
 <translation id="3736520371357197498">Os ydych yn deall y risgiau i'ch diogelwch, gallwch <ph name="BEGIN_LINK" />fynd i'r wefan hon<ph name="END_LINK" /> cyn i'r rhaglenni peryglus gael eu tynnu.</translation>
@@ -1897,6 +1899,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4729147136006144950">Elusen a Dyngarwch</translation>
 <translation id="4730977633786878901">Adolygiadau</translation>
 <translation id="4731638775147756694">Mae'r cais hwn wedi'i rwystro gan eich gweinyddwr</translation>
+<translation id="4732860731866514038">Wrthi'n lawrlwytho'r pecyn iaith <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Mae <ph name="URL" /> eisiau defnyddio lleoliad eich dyfais</translation>
 <translation id="4736491186715342415">Cerbydau modur</translation>
 <translation id="4736825316280949806">Ailgychwyn Chromium</translation>
@@ -2256,7 +2259,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
             <ph name="LIST_ITEM" />Cwcis a data gwefan
             <ph name="LIST_ITEM" />Gwybodaeth a roddir mewn ffurflenni
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">Mae <ph name="URL" /> eisiau rheoli ac ailraglennu eich dyfeisiau MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Yn y drefn wrthol wyneb i fyny</translation>
 <translation id="5447235695608032700">Caniatáu i <ph name="SITE" /> ddefnyddio gwybodaeth y maent wedi cadw amdanoch chi</translation>
 <translation id="5447765697759493033">Ni fydd y wefan hon yn cael ei chyfieithu</translation>
@@ -2469,7 +2471,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5877831137320480913">Harddwch a ffitrwydd</translation>
 <translation id="5879989559903563723">Ni chaniateir yn y modd Gwestai</translation>
 <translation id="5880050725127890683">Mynd i wiriad diogelwch Chrome</translation>
-<translation id="5883861433316751031">Rheoli ac ailraglennu dyfeisiau MIDI?</translation>
 <translation id="5884465125445718607">Amlen Chinese #6</translation>
 <translation id="5887400589839399685">Cadwyd y cerdyn</translation>
 <translation id="5887687176710214216">Ymwelwyd ddiwethaf ddoe</translation>
@@ -2820,7 +2821,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6556866813142980365">Ail-wneud</translation>
 <translation id="6557715786897013164">14 x 17 modfedd</translation>
 <translation id="6560786330438719938">Apiau sydd wedi'u gosod neu eu dadosod a pha mor aml y cânt eu defnyddio</translation>
-<translation id="6567084950885568327">Rheoli dyfeisiau MIDI ac ailraglennu</translation>
 <translation id="6568793038316600992">Botwm rheoli dulliau talu, gweithredwch i reoli eich taliadau a gwybodaeth cerdyn credyd yng ngosodiadau Chrome</translation>
 <translation id="6569060085658103619">Rydych yn edrych ar dudalen estyniad</translation>
 <translation id="6569366777234823130">Ffilmiau drama</translation>
@@ -3203,6 +3203,7 @@ Manylion ychwanegol:
 <translation id="733354035281974745">Diystyru cyfrif lleol dyfais</translation>
 <translation id="7334320624316649418">&amp;Ail-wneud aildrefnu</translation>
 <translation id="7335157162773372339">Yn gallu gofyn am ddefnyddio eich camera</translation>
+<translation id="7336636595549675416">Rhif tŷ</translation>
 <translation id="7337248890521463931">Dangos rhagor o linellau</translation>
 <translation id="7337706099755338005">Nid yw ar gael ar eich platfform.</translation>
 <translation id="733923710415886693">Ni chafodd tystysgrif y gweinydd ei ddatgelu drwy Dryloywder Tystysgrif.</translation>
@@ -3909,7 +3910,6 @@ Manylion ychwanegol:
 <translation id="8671519637524426245">Nid yw'r gwerth <ph name="SECURE_DNS_SALT" /> yn bodloni'r gofynion maint.</translation>
 <translation id="867224526087042813">Llofnod</translation>
 <translation id="8672264262457010862">Busnes a diwydiannol</translation>
-<translation id="8673776281896298303">Rheoli ac ailraglennu eich dyfeisiau MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Dim oedi</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ateb, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ni ellid llwytho'r dudalen we yn <ph name="PAGE" /> oherwydd:</translation>

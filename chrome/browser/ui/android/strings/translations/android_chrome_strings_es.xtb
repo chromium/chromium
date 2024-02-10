@@ -873,6 +873,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5698878456427040674">Comprueba que la cuenta seleccionada es compatible.</translation>
 <translation id="570347048394355941">Cambiar a la pestaña</translation>
 <translation id="5715150588940290235">¿Eliminar códigos de seguridad guardados?</translation>
+<translation id="571930967925877633">Tus marcadores, el historial y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5726692708398506830">Amplía todo el contenido de la página</translation>
 <translation id="5744751019568455640">Estas son las voces que puedes elegir para leer tus páginas web en voz alta. Si te gusta esta y quieres que la siga usando, solo tienes que tocar su nombre.</translation>
@@ -1056,7 +1057,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos</translation>
 <translation id="6627583120233659107">Editar carpeta</translation>
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>
-<translation id="6636623428211296678">Explora más ajustes a continuación o termina ahora</translation>
+<translation id="6636623428211296678">Consulta más ajustes a continuación o termina ahora</translation>
 <translation id="663674369910034433">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />Servicios de Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_UMA_LINK" />Gestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear siempre</translation>
@@ -1105,7 +1106,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6828070228333235514">Dejar de seguir precio</translation>
 <translation id="6830728435402077660">No es seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6833996806551876956">Demostración del entorno aislado de privacidad</translation>
+<translation id="6833996806551876956">Prueba de Privacy Sandbox</translation>
 <translation id="6836206421467243968">Restaurar grupo de pestañas <ph name="TITLE_OF_GROUP" /> como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>
@@ -1426,7 +1427,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8402673309244746971">Ir a Siguiendo</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio hace algo sospechoso, también se envían URLs completas y fragmentos de contenido de la página.</translation>
-<translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">Iniciar sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8422250855136581222">No hay pestañas en este dispositivo</translation>
 <translation id="8424781820952413435">Página enviada. Para verla, abre Chrome en tu <ph name="DEVICE_TYPE" /></translation>

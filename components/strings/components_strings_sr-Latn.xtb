@@ -246,6 +246,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1428729058023778569">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Samolepljiva folija</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1431021750861456539">Automatski prikaz preko celog ekrana</translation>
 <translation id="1432187715652018471">Stranica želi da instalira obrađivača usluge.</translation>
 <translation id="1432581352905426595">Upravljaj pretraživačima</translation>
 <translation id="1433225466058025572">Probajte da ponovo premestite fajlove</translation>
@@ -585,6 +586,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2075497153347571252">Administrator je blokirao dozvolu (<ph name="PERMISSION" />) na <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="2080021694978766903">Ove smernice ne smeju da imaju više od <ph name="MAX_ITEMS_LIMIT" /> unosa.</translation>
+<translation id="2081482239432306393">Izabrana je opcija za kućni broj</translation>
 <translation id="20817612488360358">Podešeno je da se koriste sistemska podešavanja proksija, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2083256696566019397">Dozvoli pri svakoj poseti</translation>
@@ -1409,6 +1411,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3723663469265383848">Tokom ažuriranja nećete moći da koristite uređaj najviše 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacije koje mogu da dovedu do ove greške obuhvataju antivirusni softver, zaštitni zid i veb-filtriranje ili proksi softver.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili novu Google prezentaciju u Prezentacijama</translation>
+<translation id="3727309136762649052">Imenski prostor</translation>
 <translation id="3727850735097852673">Da biste koristili Google menadžer lozinki sa macOS Keychain-om, ponovo pokrenite Chrome i dozvolite pristup Keychain-u. Kartice će se ponovo otvoriti posle ponovnog pokretanja.</translation>
 <translation id="3733139489341305600">Autonomna vozila</translation>
 <translation id="3736520371357197498">Ako razumete bezbednosne rizike, možete da <ph name="BEGIN_LINK" />posetite ovaj nebezbedni sajt<ph name="END_LINK" /> pre nego što uklonimo opasne programe.</translation>
@@ -1897,6 +1900,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4729147136006144950">Dobrotvorni rad i filantropija</translation>
 <translation id="4730977633786878901">Recenzije</translation>
 <translation id="4731638775147756694">Administrator je blokirao ovu aplikaciju</translation>
+<translation id="4732860731866514038">Preuzima se jezički paket za jezik <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> želi da koristi lokaciju uređaja</translation>
 <translation id="4736491186715342415">Motorna vozila</translation>
 <translation id="4736825316280949806">Ponovo pokrenite Chromium</translation>
@@ -2256,7 +2260,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
             <ph name="LIST_ITEM" />kolačiće i podatke o sajtovima
             <ph name="LIST_ITEM" />informacije koje ste uneli u obrasce
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> želi da kontroliše i reprogramira MIDI uređaje (SysEx)</translation>
 <translation id="5443468954631487277">Obrnutim redosledom sa odštampanom stranom nagore</translation>
 <translation id="5447235695608032700">Dozvolite da <ph name="SITE" /> koristi informacije koje je sačuvao o vama</translation>
 <translation id="5447765697759493033">Ovaj sajt se neće prevoditi</translation>
@@ -2283,6 +2286,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     <ph name="LINE_BREAK" />
     Pokušajte da se obratite administratoru sistema.</translation>
 <translation id="549333378215107354">Veličina 3</translation>
+<translation id="5501712702042287009">automatski prikaz preko celog ekrana</translation>
 <translation id="550365051221576010">Popuni sve</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Obeleživači kojim se upravlja</translation>
@@ -2469,7 +2473,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5877831137320480913">Lepota i fitnes</translation>
 <translation id="5879989559903563723">Nije dozvoljeno u režimu gosta</translation>
 <translation id="5880050725127890683">Idi na Chrome proveru bezbednosti</translation>
-<translation id="5883861433316751031">Želite da kontrolišete i reprogramirate MIDI uređaje?</translation>
 <translation id="5884465125445718607">Kineska koverta br. 6</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
@@ -2819,7 +2822,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6556866813142980365">Ponovi</translation>
 <translation id="6557715786897013164">14×17 in</translation>
 <translation id="6560786330438719938">Aplikacije koje su instalirane ili deinstalirane i koliko često se koriste</translation>
-<translation id="6567084950885568327">Kontrola i reprogramiranje MIDI uređaja</translation>
 <translation id="6568793038316600992">Dugme Upravljaj načinima plaćanja, aktivirajte ga da biste upravljali plaćanjima i informacijama o kreditnim karticama u podešavanjima Chrome-a</translation>
 <translation id="6569060085658103619">Pregledate stranicu dodatka.</translation>
 <translation id="6569366777234823130">Drame</translation>
@@ -3202,6 +3204,7 @@ Dodatni detalji:
 <translation id="733354035281974745">Zamena lokalnog naloga na uređaju</translation>
 <translation id="7334320624316649418">&amp;Ponovi promenu redosleda</translation>
 <translation id="7335157162773372339">Može da traži da koristi kameru</translation>
+<translation id="7336636595549675416">Kućni broj</translation>
 <translation id="7337248890521463931">Prikaži više redova</translation>
 <translation id="7337706099755338005">Nije dostupno na vašoj platformi.</translation>
 <translation id="733923710415886693">Sertifikat servera nije otkriven pomoću Transparentnosti sertifikata.</translation>
@@ -3909,7 +3912,6 @@ Dodatni detalji:
 <translation id="8671519637524426245">Vrednost <ph name="SECURE_DNS_SALT" /> ne ispunjava uslove za veličinu.</translation>
 <translation id="867224526087042813">Potpis</translation>
 <translation id="8672264262457010862">Poslovanje i industrija</translation>
-<translation id="8673776281896298303">da kontroliše i reprogramira MIDI uređaje (SysEx)</translation>
 <translation id="8676424191133491403">Bez odlaganja</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Veb-stranica na adresi <ph name="PAGE" /> ne može da se učita iz sledećih razloga:</translation>

@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">自定义菜单</translation>
 <translation id="1296581780163690620">下载文件？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">为了确保您可以一直使用 Google 账号的密码，请验证是您本人在操作。</translation>
+<translation id="1310362642333088424">如需下载文件和照片等内容，您需要更多存储空间。</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1641316430523156212">关注</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
 <translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="1653432787084483144">{count,plural, =1{键盘上方显示了 {count} 个已保存的密码。}other{键盘上方显示了 {count} 个已保存的密码。}}</translation>
@@ -183,7 +185,7 @@
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="194449685234099560">您可在此处找到您打开的所有标签页。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
-<translation id="1956138802718275401">从主屏幕获取密码</translation>
+<translation id="1956138802718275401">从主屏幕快速查询密码</translation>
 <translation id="1959441496380398824">轻触并按住某个日期。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" />与您分享了一个用于登录 <ph name="WEBSITE" /> 的密码</translation>
@@ -379,7 +381,7 @@
 <translation id="2895084600668778673">查看所有自动填充数据</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
 <translation id="2902684821701498619">添加到阅读清单</translation>
-<translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个重复使用的密码，这可能会给您带来安全风险。</translation>
+<translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2920866371965792875">若要查看来自此网站的最新讯息，请从这里关注它。</translation>
 <translation id="2921219216347069551">无法分享网页</translation>
@@ -511,6 +513,7 @@
 <translation id="3603009562372709545">复制链接网址</translation>
 <translation id="3607167657931203000">自动填充数据</translation>
 <translation id="3609785682760573515">正在同步…</translation>
+<translation id="3630104167004786843">不接收动态资讯</translation>
 <translation id="3631443864840848029">请确保您保存的是您目前用于此网站的密码。</translation>
 <translation id="3638472932233958418">预先加载网页</translation>
 <translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
@@ -575,6 +578,7 @@
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
 <translation id="3989635538409502728">退出</translation>
+<translation id="3994422733891749358">选择要接收的通知</translation>
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">您的管理员管理已禁用密码分享功能。</translation>
 <translation id="4002019827078931033">将地址栏移到顶部</translation>
@@ -636,6 +640,7 @@
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="430967081421617822">时间不限</translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
+<translation id="4323142320106872792">存储空间已满</translation>
 <translation id="4331177082088332784">您可以在BEGIN_LINK内容设置END_LINK中管理此设置</translation>
 <translation id="4334428914252001502">有 1 篇未读文章。</translation>
 <translation id="4338650699862464074">将您所访问的网页的网址发送给 Google。</translation>
@@ -684,6 +689,7 @@
 <translation id="4592368184551360546">键盘</translation>
 <translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
+<translation id="4607887340472970274">价格跟踪</translation>
 <translation id="4611811151908969241">隐藏“取消关注‘<ph name="DOMAIN_NAME" />’”</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
 <translation id="4616391354457235490">撤消</translation>
@@ -724,6 +730,7 @@
 <translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4803185665210547709">由贵单位管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">根据您的兴趣推送的新闻和内容。</translation>
 <translation id="4805759445554688327">卡号无效</translation>
 <translation id="4808646838864186379">您的递送已取消</translation>
 <translation id="4808744395915275922">更新</translation>
@@ -840,6 +847,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{要跟踪此包裹吗？}other{要跟踪这 {COUNT} 个包裹吗？}}</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
+<translation id="5379352933722332597">{count,plural, =1{书签已保存到“{title}”。这个书签仅会保存到此设备上。}other{{count} 个书签已保存到“{title}”。这些书签仅会保存到此设备上。}}</translation>
 <translation id="5386314158584363703">您已关注的网站都会显示在此处</translation>
 <translation id="5388358297987318779">打开图片</translation>
 <translation id="5395707839134961196">隐藏搜索引擎详细信息</translation>
@@ -867,6 +875,7 @@
 <translation id="5525269841082836315">创建密码</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5532545557415295622">空闲超时对话框</translation>
+<translation id="5533967537771071082">管理存储空间</translation>
 <translation id="5542540507657872337">找到了 <ph name="COUNT" /> 个</translation>
 <translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
@@ -1082,6 +1091,8 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6550891580932862748">不会保护您免受危险网站、下载内容和扩展程序的侵害。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
+<translation id="6552223548936340886">{count,plural, =1{书签已保存到“{title}”}other{{count} 个书签已保存到“{title}”}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”。这个书签仅会保存到此设备上。}other{这些书签已保存到“{title}”。这些书签仅会保存到此设备上。}}</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6579867704846662339">您可选择在无痕模式下打开来自其他应用的传入网址。</translation>
 <translation id="6583087784430677195">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后转至“自动填充密码”。</translation>
@@ -1196,6 +1207,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
+<translation id="7138080855268384146">{count,plural, =1{书签已保存到账号 {email} 中的“{title}”}other{{count} 个书签已保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="7141960840225504692">标签页将被关闭，而且您的浏览数据将被删除</translation>
 <translation id="7154343200458623869">完成任务。</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
@@ -1237,6 +1249,7 @@
 <translation id="7409985198648820906">有 <ph name="UNREAD_COUNT" /> 篇未读文章。</translation>
 <translation id="7412027924265291969">继续</translation>
 <translation id="741204030948306876">立即开启</translation>
+<translation id="7417689656810783109">重命名分组</translation>
 <translation id="7418640008860669073">保存到…</translation>
 <translation id="7425346204213733349">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但现有数据将继续存储在您的 Google 账号中。</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
@@ -1335,7 +1348,7 @@
 <translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
-<translation id="7889910613639381518">使用“Google 密码管理工具”小组件轻松安全地进行访问。</translation>
+<translation id="7889910613639381518">使用“Google 密码管理工具”小组件查询密码，方便又安全。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7920949005883349320">隐私与安全</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
@@ -1414,6 +1427,7 @@
 <translation id="828291969289324795">{count,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8286036467436129157">登录</translation>
+<translation id="8292843446079898078">接收所跟踪商品的降价提醒。</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8311853334103696030">隐藏“跟踪价格”</translation>
@@ -1421,6 +1435,7 @@
 <translation id="8328777765163860529">全部关闭</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
 <translation id="834783239627985533">最常访问的网站</translation>
+<translation id="8358401059263985056">开启通知功能</translation>
 <translation id="8364841868226993049">正在将此图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>
 <translation id="8374977641764177587">开启通知？</translation>
@@ -1460,7 +1475,7 @@
 <translation id="8533670235862049797">“安全浏览”功能已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>
 <translation id="8548878600947630424">在网页中查找...</translation>
-<translation id="854938212724803178">您有 1 个已泄露的密码。请立即修正它以确保安全。</translation>
+<translation id="854938212724803178">您有 1 个密码已泄露。请立即更改，确保安全。</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>

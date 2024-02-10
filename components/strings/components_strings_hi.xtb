@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">आपके एडमिन ने <ph name="ORIGIN" /> पर <ph name="PERMISSION" /> को ब्लॉक कर दिया है</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="2080021694978766903">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा, खोज से जुड़ी सेवा देने वाली कंपनी नहीं हो सकतीं.</translation>
+<translation id="2081482239432306393">'घर का नंबर' विकल्प चुना गया</translation>
 <translation id="20817612488360358">सिस्‍टम प्रॉक्‍सी सेटिंग उपयोग किए जाने के लिए सेट हैं लेकिन कोई स्पष्‍ट प्रॉक्‍सी कॉन्फ़िगरेशन भी मौजूद है.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हमेशा के लिए अनुमति दें</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3723663469265383848">अपडेट के दौरान, डिवाइस को 10 मिनट तक इस्तेमाल नहीं किया जा सकेगा.</translation>
 <translation id="372429172604983730">जिन ऐप्लिकेशन की वजह से यह गड़बड़ी हो सकती है उनमें एंटीवायरस, फ़ायरवॉल और वेब-फ़िल्टरिंग या प्रॉक्सी सॉफ़्टवेयर शामिल हैं.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides में जल्दी से Google प्रज़ेंटेशन बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
+<translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain के साथ Google Password Manager का इस्तेमाल करने के लिए, Chrome को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="3733139489341305600">ऑटोनोमस वाहन</translation>
 <translation id="3736520371357197498">अगर आप अपनी सुरक्षा संबंधी जोखिमों को समझते हैं तो, खतरनाक प्रोग्राम हटाए जाने से पहले आप <ph name="BEGIN_LINK" />इस असुरक्षित साइट पर विज़िट<ph name="END_LINK" /> कर सकते हैं.</translation>
@@ -1897,6 +1899,7 @@
 <translation id="4729147136006144950">दान और परोपकार</translation>
 <translation id="4730977633786878901">समीक्षाएं</translation>
 <translation id="4731638775147756694">इस ऐप्लिकेशन को आपके एडमिन ने ब्लॉक कर दिया है</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पैक डाउनलोड किया जा रहा है... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> वेबसाइट आपके डिवाइस के स्थान की जानकारी का इस्तेमाल करना चाहती है</translation>
 <translation id="4736491186715342415">मोटर व्हीकल</translation>
 <translation id="4736825316280949806">क्रोमियम को फिर से शुरू करें</translation>
@@ -2256,7 +2259,6 @@
             <ph name="LIST_ITEM" />कुकी और साइट डेटा
             <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> आपके MIDI डिवाइसों (SysEx) को कंट्रोल और फिर से प्रोग्राम करना चाहता है</translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
@@ -2469,7 +2471,6 @@
 <translation id="5877831137320480913">खूबसूरती और फ़िटनेस</translation>
 <translation id="5879989559903563723">मेहमान मोड में अनुमति नहीं है</translation>
 <translation id="5880050725127890683">Chrome की सुरक्षा जांच पर जाएं</translation>
-<translation id="5883861433316751031">क्या एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करना है?</translation>
 <translation id="5884465125445718607">चाइनीज़ #6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5887400589839399685">कार्ड सेव किया गया</translation>
 <translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
@@ -2820,7 +2821,6 @@
 <translation id="6556866813142980365">फिर से करें</translation>
 <translation id="6557715786897013164">14 x 17 इंच</translation>
 <translation id="6560786330438719938">इंस्टॉल या अनइंस्टॉल किए गए ऐप्लिकेशन और उनका इस्तेमाल कितनी बार किया जाता है</translation>
-<translation id="6567084950885568327">एमआईडीआई डिवाइस के कंट्रोल और उसे दोबारा प्रोग्राम करना</translation>
 <translation id="6568793038316600992">'पेमेंट के तरीके मैनेज करें' बटन, Chrome की सेटिंग में, पेमेंट और क्रेडिट कार्ड की जानकारी मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="6569060085658103619">आप एक एक्सटेंशन पेज देख रहे हैं</translation>
 <translation id="6569366777234823130">ड्रामा फ़िल्में</translation>
@@ -3203,6 +3203,7 @@
 <translation id="733354035281974745">डिवाइस का स्थानीय खाता बदलें</translation>
 <translation id="7334320624316649418">&amp;पुन: क्रमित करना फिर से करें</translation>
 <translation id="7335157162773372339">साइट, आपके कैमरे का इस्तेमाल करने की अनुमति मांग सकती है</translation>
+<translation id="7336636595549675416">घर का नंबर</translation>
 <translation id="7337248890521463931">और लाइनें दिखाएं</translation>
 <translation id="7337706099755338005">आपके प्लेटफ़ॉर्म पर उपलब्ध नहीं है.</translation>
 <translation id="733923710415886693">प्रमाणपत्र पारदर्शिता के माध्यम से सर्वर के प्रमाणपत्र को प्रकट नहीं किया गया.</translation>
@@ -3910,7 +3911,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> वैल्यू, साइज़ की ज़रूरी शर्तों को पूरा नहीं करती.</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672264262457010862">कारोबार और उद्योग</translation>
-<translation id="8673776281896298303">अपने एमआईडीआई डिवाइसों (SysEx) को कंट्रोल करें और फिर से प्रोग्राम करें</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>

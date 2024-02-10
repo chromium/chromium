@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">アプリに移動</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />、Play ストア アプリ</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
-<translation id="1226877728704622336">アクティブでないデスク</translation>
 <translation id="1229194443904279055">選択を終了</translation>
 <translation id="1235458158152011030">既知のネットワーク</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">マルチログインは無効にされています</translation>
 <translation id="2579264398927991698">ファームウェア アップデート</translation>
 <translation id="2582112259361606227">再起動して更新</translation>
-<translation id="2586561057878260610">Ctrl+W キーを押して、<ph name="DESK_NAME" /> と結合します。Ctrl+Shift+W キーを押して、デスクとウィンドウを閉じます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2595239820337756193">5 km は何マイル</translation>
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">デバイス管理者が閲覧アクティビティを監視している可能性があります。</translation>
 <translation id="316086887565479535">テンプレートでサポートされていないアプリ</translation>
 <translation id="3160929076476941240">2 時間</translation>
-<translation id="3161500364292033097">デスクとウィンドウを閉じる</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
 <translation id="3170769098533255179">デバイスは接続されていません。アクセス ポイントの使用中、Wi-Fi はオフになります。</translation>
 <translation id="3171170659304083361">入力方法の設定</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
+<translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> で <ph name="IN_PLACE_APP" /> を使用して新しいフォルダが作成されました。</translation>
-<translation id="5203299837691351876">アクティブなデスク</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />、<ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />、<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{他 1 件の通知}other{他 # 件の通知}}</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">保存したデスクはありません</translation>
 <translation id="5260676007519551770">デスク 4</translation>
 <translation id="5268819379131021772">Google ToDo リストのタスク一覧</translation>
-<translation id="5275923704957843041">デスクのプレビュー</translation>
 <translation id="5277869901083657836">タッチペン ツールを切り替える</translation>
 <translation id="5278086053818066789">ChromeVox（音声フィードバック）をオンまたはオフにします</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037">使用中の保存容量 <ph name="STORAGE_IN_USE_SIZE" /> | 全体 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
 <translation id="6622679827379792051">スマートフォンのアプリの表示を設定</translation>
+<translation id="6624493541160101248">現在のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="6625718907317144388">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />、その他の通知は表示されません</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
 <translation id="662830937908749204">次のペインにフォーカスを移動する</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">カメラは左下にスナップされています</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
 <translation id="6827049576281411231">予定パネルを閉じる</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> に移動するボタン。</translation>
 <translation id="6836499262298959512">危険なファイル</translation>
 <translation id="6837621009301897464">スクリーンショットを撮るには、押します</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> Hz）に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="6989752354829085073">Chromebook について学べるクイックツアーをお試しください。6 つのステップでご利用を開始できます。</translation>
+<translation id="7000027735917578303">ウィンドウとデスクの設定</translation>
 <translation id="7004910047186208204">モバイルデータに接続する</translation>
 <translation id="7005239792648594238">開始するにはアプリを開きます</translation>
 <translation id="7007983414944123363">PIN またはパスワードを確認できませんでした。もう一度お試しください。</translation>
@@ -1761,6 +1758,7 @@
 <translation id="8001755249288974029">カーソル位置から行頭までのテキストを選択する</translation>
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
+<translation id="802782383769312836">前のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="8029247720646289474">アクセス ポイント接続エラー</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
 <translation id="8030169304546394654">切断済み</translation>
@@ -1808,6 +1806,7 @@
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8230305195727960608">色反転モード</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
+<translation id="8237964652943995219">次のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="8239034820133090126">右側のデスクを有効にする</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">色反転のキーボード ショートカットを押しました。オンにしますか？</translation>
 <translation id="925832987464884575">プレビューを非表示</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> が今すぐ <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
+<translation id="938407504481277932">現在のデスク: <ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> <ph name="EMAIL" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
 <translation id="945383118875625837">リンクをブックマーク バーにドラッグする</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>

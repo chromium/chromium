@@ -2260,7 +2260,6 @@ Del</translation>
             <ph name="LIST_ITEM" />קובצי Cookie ונתונים מאתרים
             <ph name="LIST_ITEM" />מידע שהוזן בטפסים
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">‏נשלחה מהכתובת <ph name="URL" /> בקשה לשלוט במכשירי MIDI‏ (SysEx) ולתכנת אותם מחדש.</translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
 <translation id="5447235695608032700">מתן הרשאה לאתר <ph name="SITE" /> להשתמש במידע עליך שנשמר בו</translation>
 <translation id="5447765697759493033">האתר הזה לא יתורגם</translation>
@@ -2474,7 +2473,6 @@ Del</translation>
 <translation id="5877831137320480913">יופי וכושר גופני</translation>
 <translation id="5879989559903563723">אין הרשאה במצב אורח</translation>
 <translation id="5880050725127890683">‏מעבר אל בדיקת האבטחה ב-Chrome</translation>
-<translation id="5883861433316751031">‏רוצה לשלוט במכשירי MIDI ולתכנת אותם מחדש?</translation>
 <translation id="5884465125445718607">מעטפה – סינית 6</translation>
 <translation id="5887400589839399685">הכרטיס נשמר</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
@@ -2825,7 +2823,6 @@ Del</translation>
 <translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6557715786897013164">‏14x17 אינץ'</translation>
 <translation id="6560786330438719938">אפליקציות שהותקנו או הוסרו ותדירות השימוש בהן</translation>
-<translation id="6567084950885568327">‏שליטה במכשירי MIDI ותכנות שלהם מחדש</translation>
 <translation id="6568793038316600992">‏הלחצן לניהול אמצעי התשלום, מפעילים אותו כדי לנהל את פרטי כרטיסי האשראי והתשלומים שלך בהגדרות Chrome</translation>
 <translation id="6569060085658103619">זהו דף של תוסף</translation>
 <translation id="6569366777234823130">סרטי דרמה</translation>
@@ -3914,7 +3911,6 @@ Del</translation>
 <translation id="8671519637524426245">הערך של <ph name="SECURE_DNS_SALT" /> לא עומד בדרישות הגודל.</translation>
 <translation id="867224526087042813">חתימה</translation>
 <translation id="8672264262457010862">עסקים ותעשייה</translation>
-<translation id="8673776281896298303">‏שליטה במכשירי MIDI‏ (SysEx) ותכנות שלהם מחדש</translation>
 <translation id="8676424191133491403">ללא עיכוב</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , תשובה, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">לא ניתן היה לטעון את דף האינטרנט בכתובת <ph name="PAGE" /> מהסיבות הבאות:</translation>

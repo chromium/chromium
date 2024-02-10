@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ऐप्लिकेशन पर जाएं</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ऐप्लिकेशन</translation>
 <translation id="1225748608451425081">आपका Chromebook, एक जानी-पहचानी समस्या की वजह से लॉक है. आप इतने समय बाद साइन इन कर पाएंगे: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">यह डेस्क इस्तेमाल में नहीं है</translation>
 <translation id="1229194443904279055">टेक्स्ट चुनना बंद करें</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट हो गया है.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">एक से ज़्यादा 'साइन इन' को बंद कर दिया गया है</translation>
 <translation id="2579264398927991698">फ़र्मवेयर से जुड़े अपडेट</translation>
 <translation id="2582112259361606227">अपडेट करने के लिए रीस्टार्ट करें</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> के साथ जोड़ने के लिए, Ctrl + W दबाएं. डेस्क और विंडो बंद करने के लिए, Ctrl + Shift + W दबाएं.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">डिवाइस व्यवस्थापक आपकी ब्राउज़िंग गतिविधि की निगरानी कर सकता है.</translation>
 <translation id="316086887565479535">टेंप्लेट में मौजूद, काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="3160929076476941240">2 घंटे</translation>
-<translation id="3161500364292033097">डेस्क और विंडो बंद करें</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
 <translation id="3170769098533255179">कोई डिवाइस कनेक्ट नहीं है. हॉटस्पॉट का इस्तेमाल करने के दौरान, वाई-फ़ाई बंद रहेगा.</translation>
 <translation id="3171170659304083361">इनपुट के तरीकों से जुड़ी सेटिंग</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
+<translation id="3712143870407382523">चुनें कि इस तरफ़ कौनसी विंडो दिखेगी</translation>
 <translation id="371370241367527062">सामने वाला माइक्रोफ़ोन</translation>
 <translation id="3713734891607377840">पूरा होने पर खोलें</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, और <ph name="UNAVAILABLE_APPS_COUNT" /> ऐप्लिकेशन इस डिवाइस पर मौजूद नहीं हैं.</translation>
@@ -1049,7 +1047,6 @@
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इवेंट</translation>
 <translation id="5198715732953550718">नया फ़ोल्डर बनाने के लिए <ph name="MOVED_APP_NAME" /> को <ph name="IN_PLACE_APP" /> में जोड़ा गया.</translation>
-<translation id="5203299837691351876">इस डेस्क का इस्तेमाल किया जा सकता है</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 अन्य सूचना}one{# अन्य सूचना}other{# अन्य सूचनाएं}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
@@ -1067,7 +1064,6 @@
 <translation id="5258528442992323769">कोई डेस्क सेव नहीं किया गया है</translation>
 <translation id="5260676007519551770">डेस्क 4</translation>
 <translation id="5268819379131021772">Google टास्क की सूची</translation>
-<translation id="5275923704957843041">डेस्क की झलक</translation>
 <translation id="5277869901083657836">स्टाइलस टूल को टॉगल करें</translation>
 <translation id="5278086053818066789">ChromeVox (बोलकर दिए जाने वाले जवाब की सुविधा) को चालू या बंद करने के लिए</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> पर एक सूचना है.</translation>
@@ -1417,6 +1413,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज इस्तेमाल किया जा रहा है | कुल <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">निजता स्क्रीन चालू है</translation>
 <translation id="6622679827379792051">अपने फ़ोन में मौजूद ऐप्लिकेशन को देखने की सुविधा सेट अप करें</translation>
+<translation id="6624493541160101248">मौजूदा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="6625718907317144388">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं के साथ-साथ अन्य सूचनाओं को छिपाया गया है</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">फ़ोकस को अगले पैनल पर ले जाएं</translation>
@@ -1471,7 +1468,6 @@
 <translation id="6819327813400217281">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>
 <translation id="6827049576281411231">इवेंट वाला पैनल बंद करें</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> बटन पर जाएं.</translation>
 <translation id="6836499262298959512">यह फ़ाइल सुरक्षित नहीं है</translation>
 <translation id="6837621009301897464">स्क्रीनशॉट लेने के लिए, दबाएं</translation>
 <translation id="6852052252232534364">चालू करने के लिए क्लिक करें</translation>
@@ -1510,6 +1506,7 @@
 <translation id="698231206551913481">इस उपयोगकर्ता को हटाए जाने पर, इससे जुड़ीं सभी फ़ाइलों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> पर <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ट्ज़) रिज़ॉल्यूशन काम नहीं करता. इसलिए, रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> हर्ट्ज़) पर सेट कर दिया गया था. बदलावों को सेव रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग <ph name="TIMEOUT_SECONDS" /> में पहले जैसी कर दी जाएंगी.</translation>
 <translation id="6989752354829085073">फटाफट से देखते हैं Chromebook को इस्तेमाल करने का तरीका. तैयार हो जाएं और सिर्फ़ छह चरणों को पूरा करके इसका इस्तेमाल करें.</translation>
+<translation id="7000027735917578303">विंडो और डेस्क की सेटिंग</translation>
 <translation id="7004910047186208204">मोबाइल डेटा से कनेक्ट करें</translation>
 <translation id="7005239792648594238">कीऑस्क ऐप्लिकेशन का इस्तेमाल शुरू करने के लिए कोई ऐप्लिकेशन खोलें</translation>
 <translation id="7007983414944123363">आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
@@ -1761,6 +1758,7 @@
 <translation id="8001755249288974029">कर्सर जहां मौजूद है, वहां से लेकर लाइन की शुरुआत तक का टेक्स्ट चुनें</translation>
 <translation id="8004512796067398576">वृद्धि</translation>
 <translation id="8026334261755873520">ब्राउज़िंग डेटा मिटाएं</translation>
+<translation id="802782383769312836">पिछला डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="8029247720646289474">हॉटस्पॉट से कनेक्ट नहीं किया जा सका</translation>
 <translation id="8029629653277878342">ज़्यादा सुरक्षा के लिए पिन या पासवर्ड की ज़रूरत है</translation>
 <translation id="8030169304546394654">डिसकनेक्ट किया गया</translation>
@@ -1808,6 +1806,7 @@
 <translation id="8219451629189078428">इस दौरान यह ज़रूरी है कि आपका Chromebook चालू रहे और चार्ज हो रहा हो. पक्का करें कि चार्जर या अडैप्टर केबल आपके Chromebook और पावर सॉकेट में अच्छी तरह से प्लग इन हैं. अपने Chromebook को बंद न करें.</translation>
 <translation id="8230305195727960608">रंग बदलने की सुविधा वाला मोड</translation>
 <translation id="8236042855478648955">ब्रेक लेने का समय हो गया</translation>
+<translation id="8237964652943995219">अगला डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="8239034820133090126">दाईं ओर मौजूद डेस्क को चालू करें</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, फ़ोन की बैटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ऐप्लिकेशन</translation>
@@ -2035,6 +2034,7 @@
 <translation id="92580429198593979">आपने रंग बदलने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. क्या आपको इस सुविधा को बंद करना है?</translation>
 <translation id="925832987464884575">झलक छिपाएं</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अपना <ph name="DEVICE_TYPE" /> तुरंत अपडेट करें</translation>
+<translation id="938407504481277932">मौजूदा डेस्क: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="938963181863597773">मेरे कैलेंडर पर आज के लिए क्या काम हैं?</translation>
 <translation id="945383118875625837">लिंक को बुकमार्क बार में खीचें और छोड़ें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>

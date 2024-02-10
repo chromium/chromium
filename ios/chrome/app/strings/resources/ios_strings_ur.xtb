@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">مینیو کو حسب ضرورت بنائیں</translation>
 <translation id="1296581780163690620">فائل ڈاؤن لوڈ کریں؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
+<translation id="1310362642333088424">فائلیں، تصاویر اور بہت کچھ ڈاؤن لوڈ کرنے کے لیے آپ کو مزید اسٹوریج کی جگہ درکار ہے۔</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
 <translation id="1322735045095424339">آپ کی تنظیم پوشیدگی وضع چاہتی ہے</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1641316430523156212">پیروی کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
+<translation id="164673457281113247">{count,plural, =1{بُک مارک محفوظ ہو گیا}other{بُک مارکس محفوظ ہو گئے}}</translation>
 <translation id="165008673352427892">نئی خصوصیت</translation>
 <translation id="1650222530560417226">‏مستقبل کے JavaScript کونسول لاگز اور تمام ٹیبز کی خرابیاں جمع کرنے کیلئے، "لاگنگ شروع کریں" بٹن پر تھپتھپائیں۔ لاگز اس وقت تک جمع (اور صرف میموری میں اسٹور) کئے جائیں گے جب تک یہ صفحہ بند نہ ہو جائے یا "لاگنگ بند کریں" پر نہ تھپتھپایا جائے۔</translation>
 <translation id="1653432787084483144">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈز دستیاب ہیں۔}}</translation>
@@ -511,6 +513,7 @@
 <translation id="3603009562372709545">‏لنک URL کاپی کریں</translation>
 <translation id="3607167657931203000">آٹو فل ڈیٹا</translation>
 <translation id="3609785682760573515">مطابقت پذیری کی جا رہی ہے…</translation>
+<translation id="3630104167004786843">اپ ڈیٹس حاصل نہ کریں</translation>
 <translation id="3631443864840848029">اس بات کو یقینی بنائیں کہ آپ اس سائٹ کے لیے اپنا موجودہ پاس ورڈ محفوظ کر رہے ہیں۔</translation>
 <translation id="3638472932233958418">ویب صفحات کو پیشگی لوڈ کریں</translation>
 <translation id="3643338347976071250">{count,plural, =1{‏{count} پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
@@ -637,6 +640,7 @@
 <translation id="4309403553630140242">مزيد معلومات کے لیے دوبار تھپتھپائيں</translation>
 <translation id="430967081421617822">ابھی تک</translation>
 <translation id="4322394346347055525">دیگر ٹیبز بند کریں</translation>
+<translation id="4323142320106872792">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="4331177082088332784">‏آپ BEGIN_LINK مواد کی ترتیبات END_LINK میں اس کا نظم کر سکتے ہیں</translation>
 <translation id="4334428914252001502">1 نہ پڑھا ہوا مضمون۔</translation>
 <translation id="4338650699862464074">‏Google کو آپ کے ملاحظہ کردہ صفحات کے URLs بھیجتا ہے۔</translation>
@@ -843,6 +847,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں؟}other{{COUNT} پیکیجز کو ٹریک کریں؟}}</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
 <translation id="5360976571138293719">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>
+<translation id="5379352933722332597">{count,plural, =1{بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{{count} بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلے میں محفوظ ہے۔}}</translation>
 <translation id="5386314158584363703">آپ کو اپنی پیروی کی گئی سائٹیں یہاں ملیں گی</translation>
 <translation id="5388358297987318779">تصویر کھولیں</translation>
 <translation id="5395707839134961196">سرچ انجن کی تفصیلات چھپائیں</translation>
@@ -870,6 +875,7 @@
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="5532545557415295622">غیر فعال ٹائم آؤٹ ڈائیلاگ</translation>
+<translation id="5533967537771071082">اسٹوریج کا نظم کریں</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ملے</translation>
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
@@ -1085,6 +1091,8 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">اختیارات</translation>
 <translation id="6550891580932862748">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ Google کے دیگر پروڈکٹس میں آپ کی محفوظ براؤزنگ کی ترتیبات متاثر نہیں ہوں گی۔</translation>
+<translation id="6552223548936340886">{count,plural, =1{"{title}" میں بُک مارک کو محفوظ کیا گیا}other{"{title}" میں {count} بُک مارکس کو محفوظ کیا گیا}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلہ میں محفوظ ہیں۔}}</translation>
 <translation id="6561262006871132942">زوم ان کریں</translation>
 <translation id="6579867704846662339">‏آپ پوشیدگی میں دیگر ایپس سے آنے والے URLs کو کھولنے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="6583087784430677195">آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کھولیں اور آٹو فل پاس ورڈز پر جائیں۔</translation>
@@ -1199,6 +1207,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
+<translation id="7138080855268384146">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{{count} بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="7141960840225504692">آپ کے ٹیبز بند ہو جائیں گے اور براؤزنگ ڈیٹا حذف ہو جائے گا</translation>
 <translation id="7154343200458623869">اپنا ٹاسک مکمل کریں۔</translation>
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>

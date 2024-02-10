@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Menyunu fərdiləşdirin</translation>
 <translation id="1296581780163690620">Fayl endirilsin? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google Hesabında parollardan hər zaman istifadə etmək üçün kimliyinizi təsdiq edin.</translation>
+<translation id="1310362642333088424">Fayl, foto və s. endirmək üçün çox yaddaş yeri lazımdır.</translation>
 <translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
 <translation id="1321993286294231467">Şəkil yadda saxlanılarkən xəta.</translation>
 <translation id="1322735045095424339">Təşkilatınız Anonim rejimi tələb edir</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1641316430523156212">İzləyin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
+<translation id="164673457281113247">{count,plural, =1{Əlfəcin yadda saxlandı}other{Əlfəcinlər yadda saxlandı}}</translation>
 <translation id="165008673352427892">Yeni funksiya</translation>
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}}</translation>
@@ -511,6 +513,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3603009562372709545">Link URL kopyalayın</translation>
 <translation id="3607167657931203000">Datanı avtomatik doldurun</translation>
 <translation id="3609785682760573515">Sinxronlaşdırılır...</translation>
+<translation id="3630104167004786843">Güncəlləmələr almayın</translation>
 <translation id="3631443864840848029">Bu sayt üçün cari parolunuzu saxladığınıza əmin olun.</translation>
 <translation id="3638472932233958418">Əvvəldən yüklənilən Veb səhifələr</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} parol yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
@@ -637,6 +640,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4309403553630140242">Ətraflı məlumat üçün iki dəfə toxunun</translation>
 <translation id="430967081421617822">Bütün Vaxt</translation>
 <translation id="4322394346347055525">Digər tabları qapadın</translation>
+<translation id="4323142320106872792">Yaddaş doludur</translation>
 <translation id="4331177082088332784">Bunu BEGIN_LINK Kontent ayarlarında END_LINK idarə etmək olar</translation>
 <translation id="4334428914252001502">1 oxunmamış məqalə.</translation>
 <translation id="4338650699862464074">Daxil olduğunuz səhifələrin linklərini Google'a göndərir.</translation>
@@ -843,6 +847,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5345660046352249607">{COUNT,plural, =1{Bu paket izlənsin?}other{{COUNT} paket izlənsin?}}</translation>
 <translation id="536067926684072644">Əlfəcinləri göstərin</translation>
 <translation id="5360976571138293719">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə baxın.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı. O, yalnız bu cihazda yadda saxlanır.}other{{count} əlfəcin "{title}" bölməsində yadda saxlandı. Onlar yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="5386314158584363703">İzlədiyiniz saytları burada tapa bilərsiniz</translation>
 <translation id="5388358297987318779">Şəkli Açın</translation>
 <translation id="5395707839134961196">Axtarış mexanizmi detallarını gizlədin</translation>
@@ -870,6 +875,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5525269841082836315">Parol söz yaradın</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} zəif parol}other{{COUNT} zəif parol}}</translation>
 <translation id="5532545557415295622">Fəaliyyətsiz vaxt limiti dialoqu</translation>
+<translation id="5533967537771071082">Yaddaşı idarə edin</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> tapıldı</translation>
 <translation id="5548760955356983418">Handoff bu cihazda asanlıqla veb sayt açıb Mac cihazınızda davam etməyə imkan verir. Cari açıq veb sayt Mac cihazınızda görünəcək.
 
@@ -1085,6 +1091,8 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6550891580932862748">Təhlükəli veb-sayt, endirmə və artırmalardan qorumur. Digər Google məhsullarında Təhlükəsiz baxış ayarlarına təsir etmir.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin "{title}" bölməsində yadda saxlandı}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı. O, yalnız bu cihazda yadda saxlanır.}other{Əlfəcinlər "{title}" bölməsində yadda saxlandı. Onlar yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="6561262006871132942">Böyüdün</translation>
 <translation id="6579867704846662339">Digər tətbiqlərdən əldə edilən URL-ləri Anonim rejimdə aça bilərsiniz.</translation>
 <translation id="6583087784430677195">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parolların Avtomatik Doldurulmasına keçin.</translation>
@@ -1199,6 +1207,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Tam Ad</translation>
 <translation id="7136892417564438900">Kamera əlçatan deyil</translation>
+<translation id="7138080855268384146">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}}</translation>
 <translation id="7141960840225504692">Tablar bağlanacaq və baxış datası silinəcək</translation>
 <translation id="7154343200458623869">Tapşırığı tamamlayın.</translation>
 <translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>

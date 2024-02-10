@@ -807,7 +807,6 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="1675391557079742340">Activer l'annonce de l'encodage du contenu <ph name="ZSTANDARD_SHORTNAME" /> dans l'en-tête Accept-Encoding</translation>
 <translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
-<translation id="1681688654564283886">Désactiver la fonctionnalité "Temps d'utilisation" pour les sites Web</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
 
       Si cette règle n'est pas configurée et que l'espace disque libre sur l'appareil est inférieur à 20 Go (valeur par défaut), le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas être installé.
@@ -1439,10 +1438,6 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 <translation id="2149957154942061013">Usage interne uniquement</translation>
 <translation id="2151831603578119302">Activer les raccourcis des fonctionnalités d'accessibilité</translation>
 <translation id="2156132677421487971">Configurer les règles pour <ph name="PRODUCT_NAME" />, une fonctionnalité permettant aux utilisateurs de caster le contenu des onglets, des sites ou de leur bureau depuis leur navigateur sur des écrans ou systèmes audio distants.</translation>
-<translation id="2156179920247248678">Ce règlement permet à <ph name="PRODUCT_NAME" /> d'utiliser la fonctionnalité <ph name="MAC_OS_NAME" /> "Temps d'utilisation".
-
-      Si le règlement est activé ou non défini, les origines visitées sont signalées à l'OS, tandis que les origines bloquées dans les paramètres de temps d'utilisation affichent un écran de blocage.
-      Si le règlement est désactivé, les origines visitées ne sont pas signalées à l'OS, tandis que les origines bloquées dans les paramètres de temps d'utilisation demeurent accessibles.</translation>
 <translation id="2156755242840687300">Serveurs d'impression externes activés</translation>
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
@@ -1696,6 +1691,16 @@ Cette fonctionnalité n'est pas disponible si la synchronisation des mots de pas
 
       Cette règle ne concerne que l'accès aux appareils USB via l'API WebUSB. Pour autoriser l'accès aux appareils USB via l'API Web Serial, consultez la règle <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Autoriser les parents à ajouter des comptes supervisés</translation>
+<translation id="2319419071295380556">Définit le répertoire dans lequel les captures d'écran et les enregistrements d'écran sont stockés.
+Si la règle est configurée pour suivre la recommandation, la valeur est utilisée par défaut, mais l'utilisateur peut la modifier.
+Sinon, l'utilisateur ne peut pas la modifier et les captures seront toujours enregistrées dans le répertoire défini.
+
+La règle utilise le même format que la règle <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+L'emplacement peut être défini sur le système de fichiers local, sur <ph name="GOOGLE_DRIVE_NAME" /> (avec le préfixe "${google_drive}") ou sur <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (avec le préfixe "${onedrive}").
+Si cette règle est définie sur une chaîne vide, le stockage des captures d'écran est forcé dans le répertoire "Téléchargements" local.
+Voici la liste des variables que vous pouvez utiliser (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise le répertoire "Téléchargements" par défaut pour stocker les captures d'écran, et les utilisateurs peuvent le modifier.</translation>
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
@@ -4299,7 +4304,6 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
       Notez que cette règle ignore les règles DisabledPlugins et DisabledPluginsExceptions.
 
       Si cette règle n'est pas configurée, l'utilisateur peut désactiver n'importe quel plug-in installé sur le système.</translation>
-<translation id="4549405078915181477">Activer la fonctionnalité "Temps d'utilisation" pour les sites Web</translation>
 <translation id="4549695018986780856">Manifest V2 est activé</translation>
 <translation id="4554651132977135445">Mode de traitement du bouclage pour les règles relatives aux utilisateurs</translation>
 <translation id="4554991346503872538">Ne jamais proposer de traduction</translation>
@@ -4493,11 +4497,6 @@ Pour les appareils gérés, cette règle est activée par défaut et envoie les 
 Pour les appareils non gérés, l'utilisateur peut décider d'envoyer les métriques.</translation>
 <translation id="4694138212536142867">Activer les rapports sur l'état du matériel de l'appareil</translation>
 <translation id="4697581738794063407">Contrôler la fonctionnalité de filtrage des paramètres d'URL</translation>
-<translation id="4698147321113652592">Cette règle définit une série d'intervalles hebdomadaires pour la planification des suspensions automatiques. L'appareil <ph name="PRODUCT_OS_NAME" /> passe en mode suspendu au début d'un intervalle, puis se réactive à la fin de l'intervalle.
-
-Les plannings dont les intervalles se chevauchent ne sont pas acceptés. Cette règle n'aura aucune incidence si elle contient deux intervalles qui se chevauchent.
-
-Les appareils <ph name="PRODUCT_OS_NAME" /> utiliseront le fuseau horaire du système pour appliquer ces intervalles.</translation>
 <translation id="4698895924806859508">Ne pas signaler les événements réseau</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4699592681017489215">Cette règle configure un interrupteur local pouvant être utilisé pour désactiver les contrôles d'interception des requêtes DNS. Ces contrôles ont pour but de déterminer si le navigateur est situé derrière un proxy qui redirige les noms d'hôte inconnus.
@@ -5678,6 +5677,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.
 
       Cette règle n'est disponible que sur <ph name="PRODUCT_NAME" />. Elle n'affecte pas <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Désactiver le mode arrière-plan</translation>
+<translation id="5705632645298500887">Définir l'emplacement de stockage des captures d'écran</translation>
 <translation id="5705828032077475554">Signaler les sessions CRD</translation>
 <translation id="5706929446669049441">Désactiver le partage des identifiants de l'utilisateur</translation>
 <translation id="57072195677044908">Désactive la séparation des profils</translation>
@@ -8042,6 +8042,15 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
+<translation id="7642884929006659708">Cette règle est obsolète depuis la version 122 de <ph name="PRODUCT_NAME" />. Veuillez utiliser la règle AllowedDomainsForAppsList à la place.
+
+      Cette règle permet d'activer la fonctionnalité de connexion limitée de Chrome dans <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> et d'empêcher les utilisateurs de modifier ce paramètre. Les utilisateurs ne peuvent accéder aux outils Google que via des comptes des domaines spécifiés (pour autoriser des comptes Gmail ou Googlemail, ajoutez "consumer_accounts" à la liste des domaines). Ce paramètre empêche les utilisateurs de se connecter et d'ajouter un compte secondaire sur un appareil géré qui exige l'authentification Google, si ce compte n'appartient pas à l'un des domaines explicitement autorisés.
+
+      Si ce paramètre est vide ou s'il n'est pas configuré, les utilisateurs peuvent accéder à <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> avec n'importe quel compte.
+
+      Les utilisateurs ne peuvent ni modifier, ni ignorer ce paramètre.
+
+      Remarque : Cette règle entraîne l'ajout de l'en-tête "X-GoogApps-Allowed-Domains" à toutes les requêtes HTTP et HTTPS sur tous les domaines google.com (comme indiqué sur https://support.google.com/a/answer/1668854).</translation>
 <translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
 
 Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">الانتقال إلى التطبيق</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، تطبيق من "متجر Play"</translation>
 <translation id="1225748608451425081">‏تم قفل جهاز Chromebook بسبب مشكلة معروفة. ستتمكّن من تسجيل الدخول بعد: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">سطح المكتب غير النشط</translation>
 <translation id="1229194443904279055">إيقاف التحديد</translation>
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="1239161794459865856">ميزة <ph name="FEATURE_NAME" /> متصلة.</translation>
@@ -375,7 +374,6 @@
 <translation id="2575685495496069081">تمّ إيقاف الدخول المتعدّد</translation>
 <translation id="2579264398927991698">تحديثات البرامج الثابتة</translation>
 <translation id="2582112259361606227">إعادة التشغيل للتحديث</translation>
-<translation id="2586561057878260610">‏اضغط على Ctrl + W للدمج مع <ph name="DESK_NAME" />. اضغط على Ctrl + Shift + W لإغلاق سطح المكتب والنوافذ.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
 <translation id="2595239820337756193">5 كيلومتر بالميل</translation>
 <translation id="2596078834055697711">أخذ لقطة شاشة للنافذة</translation>
@@ -512,7 +510,6 @@
 <translation id="3154351730702813399">قد يراقب مشرف الجهاز نشاط التصفح.</translation>
 <translation id="316086887565479535">يحتوي النموذج على تطبيقات غير متوافقة.</translation>
 <translation id="3160929076476941240">ساعتان</translation>
-<translation id="3161500364292033097">إغلاق سطح المكتب والنوافذ</translation>
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="3170769098533255179">‏ما مِن أجهزة متصلة. أثناء استخدام نقطة الاتصال، ستظل ميزة Wi-Fi غير مفعّلة.</translation>
 <translation id="3171170659304083361">إعدادات أساليب الإدخال</translation>
@@ -673,6 +670,7 @@
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
+<translation id="3712143870407382523">اختَر نافذة لهذا الجانب.</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="3713734891607377840">فتح الملف بعد اكتمال تنزيله</translation>
 <translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
@@ -1050,7 +1048,6 @@
 <translation id="5197255632782567636">الإنترنت</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> حدث</translation>
 <translation id="5198715732953550718">تم جمع <ph name="MOVED_APP_NAME" /> مع <ph name="IN_PLACE_APP" /> لإنشاء مجلد جديد.</translation>
-<translation id="5203299837691351876">سطح المكتب النشط</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />، <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />، <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد آخر}zero{# إشعار آخر}two{إشعاران آخران}few{# إشعارات أخرى}many{# إشعارًا آخر}other{# إشعار آخر}}</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
@@ -1068,7 +1065,6 @@
 <translation id="5258528442992323769">ما مِن أسطح مكتب محفوظة.</translation>
 <translation id="5260676007519551770">مكتب 4</translation>
 <translation id="5268819379131021772">‏قائمة مهام Google</translation>
-<translation id="5275923704957843041">معاينة سطح المكتب</translation>
 <translation id="5277869901083657836">إيقاف/تفعيل أدوات قلم الشاشة</translation>
 <translation id="5278086053818066789">‏تشغيل/إيقاف ChromeVox (الوصف الشفهي للشاشة)</translation>
 <translation id="5283099933536931082">لديك إشعار من <ph name="APP_ITEM_TITLE" />.</translation>
@@ -1418,6 +1414,7 @@
 <translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
 <translation id="6622679827379792051">إعداد ميزة عرض التطبيقات في هاتفك</translation>
+<translation id="6624493541160101248">سطح المكتب الحالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">نقل التركيز إلى اللوحة التالية</translation>
@@ -1472,7 +1469,6 @@
 <translation id="6819327813400217281">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى.</translation>
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
 <translation id="6827049576281411231">إغلاق لوحة الأحداث</translation>
-<translation id="6831561626108366035">انقر على زر <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">ملف ضار</translation>
 <translation id="6837621009301897464">اضغط لأخذ لقطة شاشة</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
@@ -1511,6 +1507,7 @@
 <translation id="698231206551913481">سيتم حذف جميع الملفات والبيانات المحلية المرتبطة بهذا المستخدم نهائيًا بمجرد إزالة هذا المستخدم.</translation>
 <translation id="6984028004251196682">لا يوفِّر <ph name="DISPLAY_NAME" /> درجة الدقة <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز). ولذلك تم تغييرها إلى <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> هرتز). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">‏يمكنك إجراء جولة سريعة للتعرّف على طريقة استخدام جهاز Chromebook. ابدأ باستخدام جهازك باتّباع 6 خطوات.</translation>
+<translation id="7000027735917578303">إعدادات النوافذ وأسطح المكتب</translation>
 <translation id="7004910047186208204">الاتصال بشبكة بيانات الجوّال</translation>
 <translation id="7005239792648594238">للبدء، افتح تطبيقًا.</translation>
 <translation id="7007983414944123363">تعذّر التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. يُرجى إعادة المحاولة.</translation>
@@ -1763,6 +1760,7 @@
 <translation id="8001755249288974029">اختيار النص من موضع المؤشر إلى بداية السطر</translation>
 <translation id="8004512796067398576">زيادة</translation>
 <translation id="8026334261755873520">محو بيانات التصفُّح</translation>
+<translation id="802782383769312836">سطح المكتب السابق: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">تعذّر الاتصال بالإنترنت عبر نقطة الاتصال</translation>
 <translation id="8029629653277878342">يجب إدخال رقم التعريف الشخصي أو كلمة المرور لمزيد من الأمان.</translation>
 <translation id="8030169304546394654">غير متصل</translation>
@@ -1810,6 +1808,7 @@
 <translation id="8219451629189078428">‏يجب أن يكون جهاز Chromebook قيد التشغيل ومتّصلاً بمصدر طاقة خلال هذه المدة. ويجب توصيل كابلات الشاحن أو المحوِّل بشكل محكم بكلٍ من جهاز Chromebook والمقبس الكهربائي. يُرجى عدم إيقاف تشغيل جهاز Chromebook.</translation>
 <translation id="8230305195727960608">وضع "قلب الألوان"</translation>
 <translation id="8236042855478648955">حان وقت الراحة</translation>
+<translation id="8237964652943995219">سطح المكتب التالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">تفعيل سطح المكتب على يسار الشاشة</translation>
 <translation id="8247060538831475781">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، تطبيق</translation>
@@ -2037,6 +2036,7 @@
 <translation id="92580429198593979">لقد ضغطت على اختصار لوحة المفاتيح المتعلّق بميزة "قلب الألوان". هل تريد تفعيل هذه الميزة؟</translation>
 <translation id="925832987464884575">إخفاء المعاينات</translation>
 <translation id="937214777182567951">يتطلّب <ph name="MANAGER" /> منك تحديث جهاز <ph name="DEVICE_TYPE" /> فورًا.</translation>
+<translation id="938407504481277932">سطح المكتب الحالي: <ph name="DESK_NAME" />. ‫<ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>
 <translation id="945383118875625837">اسحب الرابط إلى شريط الإشارات</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>

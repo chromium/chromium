@@ -818,7 +818,6 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="1675391557079742340">Ativar a codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> de publicidade no cabeçalho Accept-Encoding</translation>
 <translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
-<translation id="1681688654564283886">Desativar o Tempo de Uso para sites</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
 
       Se esta política não for definida, haverá falha na instalação do <ph name="PLUGIN_VM_NAME" /> caso o espaço livre disponível em disco seja inferior a 20 GB (valor padrão).
@@ -1478,10 +1477,6 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="2149957154942061013">Somente interna</translation>
 <translation id="2151831603578119302">Ativar atalhos de recursos de acessibilidade</translation>
 <translation id="2156132677421487971">"Configurar políticas para o <ph name="PRODUCT_NAME" />", um recurso que permite que os usuários enviem o conteúdo de guias, sites ou a área de trabalho do navegador para telas e sistemas de som remotos.</translation>
-<translation id="2156179920247248678">Esta política permite que o <ph name="PRODUCT_NAME" /> participe do recurso Tempo de Uso do <ph name="MAC_OS_NAME" />.
-
-      Se a política for ativada ou deixada sem definição, as origens visitadas serão informadas ao SO e as origens bloqueadas nas configurações do Tempo de Uso vão mostrar uma tela de bloqueio.
-      Se a política for desativada, as origens visitadas não serão informadas ao SO e será possível acessar as origens que foram bloqueadas nas configurações do Tempo de Uso.</translation>
 <translation id="2156755242840687300">Servidores de impressão externos ativados</translation>
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
@@ -1735,6 +1730,16 @@ O recurso não vai estar disponível se a sincronização de senhas estiver desa
 
       Ela afeta apenas o acesso aos dispositivos USB pela API WebUSB. Para conceder acesso a dispositivos USB pela API Web Serial, consulte a política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Permitir que os pais adicionem contas supervisionadas</translation>
+<translation id="2319419071295380556">Define o diretório onde as capturas e gravações de tela serão salvas.
+Se a política for definida como recomendada, o valor será usado por padrão, mas o usuário poderá mudá-lo.
+Caso contrário, o usuário não poderá mudá-lo, e as capturas serão sempre salvas no diretório definido.
+
+A política usa o mesmo formato da política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+O local pode ser definido como o sistema de arquivos local, o <ph name="GOOGLE_DRIVE_NAME" /> (com o prefixo "${google_drive}") ou o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (com o prefixo "${onedrive}").
+Se a política for definida como uma string vazia, ela vai forçar o armazenamento das capturas de tela no diretório local "Downloads".
+Confira uma lista com as variáveis que podem ser usadas (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usará o diretório padrão "Downloads" para armazenar capturas de tela, e essa configuração poderá ser modificada pelos usuários.</translation>
 <translation id="2326031114717677574">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
 
       Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
@@ -4452,7 +4457,6 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
       Esta política substitui DisabledPlugins e DisabledPluginsExceptions.
 
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
-<translation id="4549405078915181477">Ativar o Tempo de Uso para sites</translation>
 <translation id="4549695018986780856">O Manifest v2 está ativado</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
 <translation id="4554991346503872538">Nunca oferecer tradução</translation>
@@ -4657,11 +4661,6 @@ Nos dispositivos gerenciados, ela é ativada por padrão e envia métricas ao Go
 No caso de dispositivos não gerenciados, o usuário pode decidir enviar as métricas ou não.</translation>
 <translation id="4694138212536142867">Ativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="4697581738794063407">Controlar o recurso de filtro do parâmetro de URL</translation>
-<translation id="4698147321113652592">Esta política estabelece uma série de intervalos semanais para programar a suspensão automática. Quando um intervalo é iniciado, o dispositivo <ph name="PRODUCT_OS_NAME" /> entra no modo de suspensão e é ativado quando o intervalo termina.
-
-Não é possível usar programações com intervalos sobrepostos. Esta política não terá efeito se tiver dois intervalos sobrepostos.
-
-Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.</translation>
 <translation id="4698895924806859508">Não informar eventos de rede</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
 <translation id="4699592681017489215">Esta política configura um interruptor local que pode ser usado para desativar verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.
@@ -5861,6 +5860,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será 
 
       Ela está disponível apenas no <ph name="PRODUCT_NAME" /> e não afeta o <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Desativar o modo de segundo plano</translation>
+<translation id="5705632645298500887">Definir um local para armazenar capturas de tela</translation>
 <translation id="5705828032077475554">Informar sessões de CRD</translation>
 <translation id="5706929446669049441">Desativa o compartilhamento de credenciais do usuário</translation>
 <translation id="57072195677044908">Desativa a separação de perfis</translation>
@@ -8312,6 +8312,15 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
       Se a política for definida como "Desativada", sempre que alguma ação do usuário gerar uma caixa de diálogo para seleção de arquivos, como a importação de favoritos, o upload de arquivos ou o salvamento de links, uma mensagem aparecerá no lugar da caixa de diálogo. O navegador responde como se o usuário tivesse clicado em "Cancelar" na caixa de diálogo de seleção de arquivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir o uso de notificações do sistema</translation>
+<translation id="7642884929006659708">Esta política foi descontinuada na versão 122 do <ph name="PRODUCT_NAME" />. Use a AllowedDomainsForAppsList.
+
+      Se a política for definida, o recurso de login restrito do Chrome será ativado no <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> e os usuários não poderão mudar essa configuração. Os usuários poderão acessar as ferramentas do Google apenas usando contas dos domínios especificados. Para permitir contas gmail ou googlemail, adicione consumer_accounts à lista de domínios. Essa configuração impede que os usuários façam login e adicionem uma conta secundária em um dispositivo gerenciado que precisa da autenticação do Google se essa conta não pertencer a um dos domínios explicitamente permitidos.
+
+      Deixar essa configuração vazia ou sem definição permite que usuários acessem o <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> com qualquer conta.
+
+      Os usuários não poderão mudar ou substituir essa configuração.
+
+      Observação: essa política faz com que o cabeçalho X-GoogApps-Allowed-Domains seja anexado a todas as solicitações HTTP e HTTPS de todos os domínios google.com, como descrito em https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
 
 Se a política for desativada, a configuração de medição de anúncio também vai ser desativada para os usuários.

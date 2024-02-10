@@ -66,7 +66,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1217633719248931900">Mynd i'r ap</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Ap Play Store</translation>
 <translation id="1225748608451425081">Mae eich Chromebook wedi'i gloi oherwydd problem hysbys. Byddwch yn gallu mewngofnodi ar ôl: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">desg anweithredol</translation>
 <translation id="1229194443904279055">Stopio dewis</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
 <translation id="1239161794459865856">Mae <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
@@ -374,7 +373,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2575685495496069081">Mae mewngofnodi o sawl cyfrif wedi'i analluogi</translation>
 <translation id="2579264398927991698">Diweddariadau Cadarnwedd</translation>
 <translation id="2582112259361606227">Ailgychwynnwch i ddiweddaru</translation>
-<translation id="2586561057878260610">Pwyswch Ctrl + W i gyfuno gyda <ph name="DESK_NAME" />. Pwyswch Ctrl + Shift + W i gau desg a ffenestri.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2595239820337756193">5K mewn milltiroedd</translation>
 <translation id="2596078834055697711">Tynnu sgrinlun o'r ffenestr</translation>
@@ -511,7 +509,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3154351730702813399">Mae'n bosib y bydd gweinyddwr y ddyfais yn monitro eich gweithgarwch pori.</translation>
 <translation id="316086887565479535">Apiau heb eu cefnogi mewn templed</translation>
 <translation id="3160929076476941240">2a</translation>
-<translation id="3161500364292033097">Cau desg a ffenestri</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
 <translation id="3170769098533255179">Dim dyfeisiau wedi'u cysylltu. Wrth ddefnyddio'r poethfan, bydd Wi-Fi wedi'i ddiffodd.</translation>
 <translation id="3171170659304083361">Gosodiadau dulliau mewnbynnu</translation>
@@ -672,6 +669,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3702846122927433391">Poblogaeth Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
+<translation id="3712143870407382523">Dewiswch ffenestr ar gyfer yr ochr hon</translation>
 <translation id="371370241367527062">Meicroffon blaen</translation>
 <translation id="3713734891607377840">Agor pan fydd wedi'i gwblhau</translation>
 <translation id="3726171378575546917">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, a <ph name="UNAVAILABLE_APPS_COUNT" /> arall ar y ddyfais hon.</translation>
@@ -1048,7 +1046,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> o ddigwyddiadau</translation>
 <translation id="5198715732953550718">Mae <ph name="MOVED_APP_NAME" /> wedi'i gyfuno â <ph name="IN_PLACE_APP" /> i greu ffolder newydd.</translation>
-<translation id="5203299837691351876">desg weithredol</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 hysbysiad arall}zero{# hysbysiad arall}two{# hysbysiad arall}few{# hysbysiad arall}many{# hysbysiad arall}other{# hysbysiad arall}}</translation>
 <translation id="5207949376430453814">Amlygu caret testun</translation>
@@ -1066,7 +1063,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5258528442992323769">Nid oes unrhyw ddesgiau wedi'u cadw</translation>
 <translation id="5260676007519551770">Desg 4</translation>
 <translation id="5268819379131021772">Rhestr Google tasks</translation>
-<translation id="5275923704957843041">Rhagolwg desg</translation>
 <translation id="5277869901083657836">Toglo offer pwyntil</translation>
 <translation id="5278086053818066789">Troi ymlaen/diffodd ChromeVox (adborth ar lafar)</translation>
 <translation id="5283099933536931082">Mae angen eich sylw ar <ph name="APP_ITEM_TITLE" />.</translation>
@@ -1416,6 +1412,7 @@ Gosodiad newydd</translation>
 <translation id="6613765291890844037">Mae storfa <ph name="STORAGE_IN_USE_SIZE" /> yn cael ei defnyddio | <ph name="STORAGE_TOTAL_SIZE" /> mewn cyfanswm</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
 <translation id="6622679827379792051">Gosod gweld apiau eich ffôn</translation>
+<translation id="6624493541160101248">Desg bresennol: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Mae hysbysiadau <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ac eraill wedi'u cuddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">Symud y ffocws i'r paen nesaf</translation>
@@ -1470,7 +1467,6 @@ Gosodiad newydd</translation>
 <translation id="6819327813400217281">Mae'r camera wedi'i snapio i'r gornel chwith isaf</translation>
 <translation id="6820676911989879663">Cael seibiant!</translation>
 <translation id="6827049576281411231">Cau'r panel digwyddiadau</translation>
-<translation id="6831561626108366035">Ewch i'r botwm <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Ffeil beryglus</translation>
 <translation id="6837621009301897464">I gymryd sgrinlun, pwyswch</translation>
 <translation id="6852052252232534364">Cliciwch i weithredu</translation>
@@ -1509,6 +1505,7 @@ Gosodiad newydd</translation>
 <translation id="698231206551913481">Bydd yr holl ffeiliau a data lleol sy'n gysylltiedig â'r defnyddiwr hwn yn cael eu dileu'n barhaol unwaith y bydd y defnyddiwr hwn wedi'i dynnu.</translation>
 <translation id="6984028004251196682">Nid yw <ph name="DISPLAY_NAME" /> yn cefnogi <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Newidiwyd yr eglurdeb i <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Cliciwch Gadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Ewch ar daith gyflym i ddysgu sut i lywio'ch Chromebook. Gallwch gychwyn arni mewn 6 cam.</translation>
+<translation id="7000027735917578303">Gosodiadau ffenestri a desgiau</translation>
 <translation id="7004910047186208204">Cysylltu â data symudol</translation>
 <translation id="7005239792648594238">Agorwch ap i gychwyn arni</translation>
 <translation id="7007983414944123363">Ni ellid dilysu eich PIN neu gyfrinair. Rhowch gynnig arall arni.</translation>
@@ -1760,6 +1757,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8001755249288974029">Dewis testun o'r cyrchwr i ddechrau'r llinell</translation>
 <translation id="8004512796067398576">Cynyddiad</translation>
 <translation id="8026334261755873520">Clirio data pori</translation>
+<translation id="802782383769312836">Desg flaenorol: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Methwyd y cysylltiad â'r poethfan</translation>
 <translation id="8029629653277878342">Mae angen PIN neu gyfrinair ar gyfer rhagor o ddiogelwch</translation>
 <translation id="8030169304546394654">Wedi datgysylltu</translation>
@@ -1807,6 +1805,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8219451629189078428">Mae angen cadw'ch Chromebook ymlaen ac wedi'i gysylltu i'r pŵer am y cyfnod hwn. Gwnewch yn siŵr bod yr gwefrydd neu geblau'r addasydd wedi'u plygio i mewn, i'ch Chromebook yn ogystal ag i'r cyflenwad pŵer. Peidiwch â diffodd eich Chromebook.</translation>
 <translation id="8230305195727960608">Modd Gwrthdroad Lliw</translation>
 <translation id="8236042855478648955">Amser am egwyl</translation>
+<translation id="8237964652943995219">Desg nesaf: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Gweithredu'r ddesg ar y dde</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ap</translation>
@@ -2034,6 +2033,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="92580429198593979">Gwnaethoch bwyso llwybr byr y bysellfwrdd ar gyfer gwrthdroad lliw. Ydych chi am ei droi ymlaen?</translation>
 <translation id="925832987464884575">Cuddio rhagolygon</translation>
 <translation id="937214777182567951">Mae <ph name="MANAGER" /> yn gofyn i chi ddiweddaru'ch <ph name="DEVICE_TYPE" /> ar unwaith</translation>
+<translation id="938407504481277932">Desg bresennol: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Beth sydd ar fy nghalendr?</translation>
 <translation id="945383118875625837">Llusgo'r ddolen i'r bar nodau tudalen</translation>
 <translation id="945522503751344254">Danfon adborth</translation>

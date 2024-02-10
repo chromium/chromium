@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Personnaliser le menu</translation>
 <translation id="1296581780163690620">Télécharger le fichier? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, vérifiez qu'il s'agit bien de vous.</translation>
+<translation id="1310362642333088424">Pour télécharger des fichiers, des photos et bien plus encore, vous avez besoin de plus d'espace de stockage.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1321993286294231467">Une erreur s'est produite lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation vous demande d'utiliser le mode de navigation privée</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1641316430523156212">Suivre</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
 <translation id="165008673352427892">Nouvelle fonctionnalité</translation>
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mot de passe enregistré proposé en haut du clavier.}one{{count} mot de passe enregistré proposé en haut du clavier.}other{{count} mots de passe enregistrés proposés en haut du clavier.}}</translation>
@@ -511,6 +513,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3603009562372709545">Copier lien URL</translation>
 <translation id="3607167657931203000">Données de saisie auto</translation>
 <translation id="3609785682760573515">Synchronisation en cours...</translation>
+<translation id="3630104167004786843">Ne recevoir aucune mise à jour</translation>
 <translation id="3631443864840848029">Assurez-vous que vous enregistrez votre mot de passe actuel pour ce site.</translation>
 <translation id="3638472932233958418">Précharger pages Web</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}one{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}other{{count} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
@@ -636,6 +639,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4309403553630140242">Touchez l'écran deux fois pour en savoir plus.</translation>
 <translation id="430967081421617822">Toujours</translation>
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
+<translation id="4323142320106872792">Votre espace de stockage est plein</translation>
 <translation id="4331177082088332784">Vous pouvez gérer cela dans les BEGIN_LINKparamètres de contenuEND_LINK</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie les URL des pages que vous consultez à Google.</translation>
@@ -840,6 +844,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis?}one{Suivre {COUNT} colis?}other{Suivre {COUNT} colis?}}</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
+<translation id="5379352933722332597">{count,plural, =1{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}one{{count} favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}other{{count} favoris enregistrés dans « {title} ». Ils sont enregistrés uniquement sur cet appareil.}}</translation>
 <translation id="5386314158584363703">Vous trouverez les sites que vous suivez ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5395707839134961196">Masquer les détails du moteur de recherche</translation>
@@ -867,6 +872,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="5532545557415295622">Boîte de dialogue Délai d'inactivité</translation>
+<translation id="5533967537771071082">Gérer l'espace de stockage</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> trouvés</translation>
 <translation id="5548760955356983418">La fonction de transfert vous permet de commencer à naviguer sur un site Web sur cet appareil et de continuer facilement sur votre Mac. Le site Web actuellement ouvert apparaîtra dans le Dock de votre Mac.
 
@@ -1082,6 +1088,8 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Ne vous protège pas contre les téléchargements, les extensions, ou les sites Web dangereux. Vos paramètres de navigation sécurisée dans les autres produits Google ne seront pas affectés.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Favori enregistré dans « {title} »}one{{count} favori enregistré dans « {title} »}other{{count} favoris enregistrés dans « {title} »}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}one{Favori enregistré dans « {title} ». Il est enregistré uniquement sur cet appareil.}other{Favoris enregistrés dans « {title} ». Ils sont enregistrés uniquement sur cet appareil.}}</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6579867704846662339">Vous pouvez choisir d'ouvrir les URL entrantes provenant d'autres applications en navigation privée.</translation>
 <translation id="6583087784430677195">Pour désactiver, ouvrez <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" /> et accédez à remplissage automatique des mots de passe.</translation>
@@ -1196,6 +1204,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nom et prénom</translation>
 <translation id="7136892417564438900">La caméra est indisponible</translation>
+<translation id="7138080855268384146">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{{count} favori enregistré dans « {title} » dans votre compte, {email}}other{{count} favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="7141960840225504692">Vos onglets seront fermés, et les données de navigation seront supprimées</translation>
 <translation id="7154343200458623869">Terminez votre tâche.</translation>
 <translation id="7161230316646448869">Synchroniser vos favoris, votre historique et plus encore sur tous vos appareils</translation>

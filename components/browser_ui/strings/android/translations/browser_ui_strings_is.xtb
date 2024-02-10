@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="301521992641321250">Sjálfkrafa lokað á</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Leyfa innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="310297983047869047">Fyrri skyggna</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
 <translation id="4151930093518524179">Sjálfgefinn aðdráttur</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
+<translation id="4169019654293892025">Fela <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Tengt við USB-tæki</translation>
 <translation id="4194328954146351878">Spyrja áður en vefsvæði fá að sjá og breyta upplýsingum í NFC-tækjum (ráðlagt)</translation>
 <translation id="4200726100658658164">Opna staðsetningarstillingar</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> úr <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Tilkynningar gætu látið tækið titra</translation>
 <translation id="4259722352634471385">Lokað er fyrir skoðun: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Leyft</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valið}one{# valið}other{# valin}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valin.  Valkostir eru ofarlega á skjánum</translation>
-<translation id="7137403271056944713">Stjórn/endurforritun MIDI-tækis</translation>
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Síðuaðdráttur</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7791543448312431591">Bæta við</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Halda áfram á þessum flipa}one{Halda áfram á þessum flipum}other{Halda áfram á þessum flipum}}</translation>
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7804248752222191302">Vefsvæði er að nota myndavélina</translation>
 <translation id="7807060072011926525">Frá Google</translation>

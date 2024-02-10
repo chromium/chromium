@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Dostosuj menu</translation>
 <translation id="1296581780163690620">Pobrać plik? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Aby móc zawsze używać haseł na koncie Google, potwierdź swoją tożsamość.</translation>
+<translation id="1310362642333088424">Aby pobierać pliki, zdjęcia i inne materiały, potrzebujesz więcej miejsca.</translation>
 <translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
 <translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1641316430523156212">Obserwuj</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="164673457281113247">{count,plural, =1{Zakładka została zapisana}few{Zakładki zostały zapisane}many{Zakładki zostały zapisane}other{Zakładki zostały zapisane}}</translation>
 <translation id="165008673352427892">Nowa funkcja</translation>
 <translation id="1650222530560417226">Kliknij przycisk „Uruchom rejestrowanie dziennika”, by rejestrować przyszłe dzienniki i błędy konsoli JavaScript ze wszystkich kart. Dzienniki będą gromadzone (i przechowywane tylko w pamięci) do czasu zamknięcia tej strony lub kliknięcia „Zatrzymaj rejestrowanie dziennika”.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} zapisane hasło dostępne nad klawiaturą.}few{{count} zapisane hasła dostępne nad klawiaturą.}many{{count} zapisanych haseł dostępnych nad klawiaturą.}other{{count} zapisanego hasła dostępnego nad klawiaturą.}}</translation>
@@ -511,6 +513,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3603009562372709545">Kopiuj URL linku</translation>
 <translation id="3607167657931203000">Autouzupełnianie</translation>
 <translation id="3609785682760573515">Synchronizuję...</translation>
+<translation id="3630104167004786843">Nie otrzymuj powiadomień</translation>
 <translation id="3631443864840848029">Upewnij się, że zapisujesz bieżące hasło do witryny.</translation>
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
@@ -637,6 +640,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="430967081421617822">Od początku</translation>
 <translation id="4322394346347055525">Zamknij inne karty</translation>
+<translation id="4323142320106872792">Pamięć jest pełna</translation>
 <translation id="4331177082088332784">Tymi informacjami możesz zarządzać w START_LINKUstawieniach treściEND_LINK</translation>
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
 <translation id="4338650699862464074">Adresy URL odwiedzanych stron będą wysyłane do Google.</translation>
@@ -843,6 +847,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5345660046352249607">{COUNT,plural, =1{Śledzić tę przesyłkę?}few{Śledzić {COUNT} przesyłki?}many{Śledzić {COUNT} przesyłek?}other{Śledzić {COUNT} przesyłki?}}</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Zakładka została zapisana w folderze „{title}” tylko na tym urządzeniu.}few{{count} zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}many{{count} zakładek zostało zapisanych w folderze „{title}” tylko na tym urządzeniu.}other{{count} zakładki zostało zapisane w folderze „{title}” tylko na tym urządzeniu.}}</translation>
 <translation id="5386314158584363703">Tu znajdziesz swoje ulubione witryny</translation>
 <translation id="5388358297987318779">Otwórz obraz</translation>
 <translation id="5395707839134961196">Ukryj szczegóły wyszukiwarki</translation>
@@ -870,6 +875,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5525269841082836315">Utwórz hasło wielowyrazowe</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
 <translation id="5532545557415295622">Okno limitu czasu bezczynności</translation>
+<translation id="5533967537771071082">Zarządzaj pamięcią</translation>
 <translation id="5542540507657872337">Znaleziono <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Dzięki funkcji Handoff możesz rozpocząć przeglądanie strony na tym urządzeniu, a następnie płynnie kontynuować na Macu. Aktualnie otwarta strona internetowa wyświetli się w Docku na Macu.
 
@@ -1085,6 +1091,8 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="6550891580932862748">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Nie wpływa na ustawienia Bezpiecznego przeglądania dostępne w innych usługach Google.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Zakładka została zapisana tutaj: „{title}”}few{{count} zakładki zostały zapisane tutaj: „{title}”}many{{count} zakładek zostało zapisanych tutaj: „{title}”}other{{count} zakładki zostało zapisane tutaj: „{title}”}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Zakładka została zapisana w folderze „{title}” tylko na tym urządzeniu.}few{Zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}many{Zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}other{Zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}}</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6579867704846662339">Przychodzące adresy URL z innych aplikacji możesz otwierać w trybie incognito.</translation>
 <translation id="6583087784430677195">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Automatyczne wypełnianie haseł.</translation>
@@ -1199,6 +1207,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Imię i nazwisko</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>
+<translation id="7138080855268384146">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="7141960840225504692">Karty zostaną zamknięte, a dane przeglądania usunięte</translation>
 <translation id="7154343200458623869">Wykonaj zadanie.</translation>
 <translation id="7161230316646448869">Synchronizuj zakładki, historię i inne dane na wszystkich swoich urządzeniach</translation>

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">Към приложението</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение Google Play Магазин</translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">неактивен работен кът</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
 <translation id="1235458158152011030">Известни мрежи</translation>
 <translation id="1239161794459865856">Функцията „<ph name="FEATURE_NAME" />“ е свързана.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Централизираният вход е деактивиран</translation>
 <translation id="2579264398927991698">Актуализации на фърмуера</translation>
 <translation id="2582112259361606227">Рестартирайте, за да актуализирате</translation>
-<translation id="2586561057878260610">Натиснете Ctrl + W за комбиниране с(ъс) <ph name="DESK_NAME" />. Натиснете Ctrl + Shift + W за затваряне на работния кът и прозорците.</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2595239820337756193">5 km in miles</translation>
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Администраторът на устройството може да наблюдава активността ви при сърфиране.</translation>
 <translation id="316086887565479535">Шаблонът съдържа неподдържани приложения</translation>
 <translation id="3160929076476941240">2 ч</translation>
-<translation id="3161500364292033097">Затваряне на работния кът и прозорците</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> връща устройството ви <ph name="DEVICE_TYPE" /> към по-стара версия. То ще бъде нулирано и всички данни ще бъдат изтрити.</translation>
 <translation id="3170769098533255179">Няма свързани устройства. Докато използвате точката за достъп, функцията за Wi-Fi ще остане изключена.</translation>
 <translation id="3171170659304083361">Настройки на методите на въвеждане</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
+<translation id="3712143870407382523">Изберете прозорец за тази страна</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и още <ph name="UNAVAILABLE_APPS_COUNT" /> приложения не са инсталирани на това устройство.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="NUMBER" /> събития на <ph name="DATE" /></translation>
 <translation id="5198715732953550718">Приложението <ph name="MOVED_APP_NAME" /> бе комбинирано със <ph name="IN_PLACE_APP" /> и бе създадена нова папка.</translation>
-<translation id="5203299837691351876">активен работен кът</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Още 1 известие}other{Още # известия}}</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
 <translation id="5268819379131021772">Списък със задачи в Google</translation>
-<translation id="5275923704957843041">Визуализация на работния кът</translation>
 <translation id="5277869901083657836">Превключване на инструментите за писане</translation>
 <translation id="5278086053818066789">Включване или изключване на ChromeVox (обратна връзка с говор)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> се нуждае от вниманието ви.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037">Използвано място от хранилището: <ph name="STORAGE_IN_USE_SIZE" /> | Общо: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
 <translation id="6622679827379792051">Настройване на прегледа на приложенията на телефона ви</translation>
+<translation id="6624493541160101248">Текущ работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Известията от <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други приложения са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="6627638273713273709">клавиш „търсене“ + Shift + K</translation>
 <translation id="662830937908749204">Преместване на фокуса върху следващия панел</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">Картината от камерата е прилепена към долния ляв ъгъл</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
 <translation id="6827049576281411231">Затваряне на панела за събития</translation>
-<translation id="6831561626108366035">Бутон за преминаване към <ph name="DESK_NAME" /> (<ph name="ACTIVE_STATE" />).</translation>
 <translation id="6836499262298959512">Опасен файл</translation>
 <translation id="6837621009301897464">За да направите екранна снимка, натиснете</translation>
 <translation id="6852052252232534364">Кликнете за активиране</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">След като този потребител бъде премахнат, всички свързани с него файлове и локални данни ще се изтрият за постоянно.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Направете бърза обиколка, за да научите как да се придвижвате в своя Chromebook. Подгответе се за работа в 6 стъпки.</translation>
+<translation id="7000027735917578303">Настройки за прозорците и работните кътове</translation>
 <translation id="7004910047186208204">Свързване с мрежа за мобилни данни</translation>
 <translation id="7005239792648594238">Отворете приложение, за да започнете</translation>
 <translation id="7007983414944123363">ПИН кодът или паролата ви не бяха потвърдени. Опитайте отново.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">Избиране на текста от курсора до началото на реда</translation>
 <translation id="8004512796067398576">Увеличаване</translation>
 <translation id="8026334261755873520">Изчистване на данните за сърфирането</translation>
+<translation id="802782383769312836">Предишен работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не бе установена връзка с точката за достъп</translation>
 <translation id="8029629653277878342">За по-висока сигурност се изисква парола или ПИН</translation>
 <translation id="8030169304546394654">Няма връзка</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">През това време вашият Chromebook трябва да остане включен и свързан със захранването. Уверете се, че зарядното устройство или кабелите на адаптера са включени добре във вашия Chromebook и в електрическия контакт. Не изключвайте Chromebook.</translation>
 <translation id="8230305195727960608">Режим на инвертиране на цветовете</translation>
 <translation id="8236042855478648955">Време е за почивка</translation>
+<translation id="8237964652943995219">Следващ работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Активиране на работния кът отдясно</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">Използвахте клавишната комбинация за инвертиране на цветовете. Искате ли да включите функцията?</translation>
 <translation id="925832987464884575">Скриване на визуализациите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> изисква незабавно да актуализирате устройството си <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Текущ работен кът: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">„What's on my calendar?“ („Какво има в календара ми?“)</translation>
 <translation id="945383118875625837">С плъзгане преместете връзката в лентата на отметките</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>

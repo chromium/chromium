@@ -66,7 +66,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1217633719248931900">Ir á aplicación</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicación de Play Store</translation>
 <translation id="1225748608451425081">Bloqueouse o teu Chromebook por un problema coñecido. Poderás iniciar sesión despois de: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">escritorio inactivo</translation>
 <translation id="1229194443904279055">Deixar de seleccionar</translation>
 <translation id="1235458158152011030">Redes coñecidas</translation>
 <translation id="1239161794459865856">A función <ph name="FEATURE_NAME" /> está conectada.</translation>
@@ -374,7 +373,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2575685495496069081">Desactivouse o inicio de sesión múltiple</translation>
 <translation id="2579264398927991698">Actualizacións de firmware</translation>
 <translation id="2582112259361606227">Reinicia o sistema para actualizalo</translation>
-<translation id="2586561057878260610">Preme Control + W para combinar con <ph name="DESK_NAME" />. Preme Control + Maiúsculas + W para pechar o escritorio e as ventás.</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
@@ -511,7 +509,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3154351730702813399">O administrador do dispositivo pode supervisar a actividade de navegación.</translation>
 <translation id="316086887565479535">Aplicacións non compatibles no modelo</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Pechar o escritorio e as ventás</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está cambiando o teu dispositivo (<ph name="DEVICE_TYPE" />) a unha versión anterior. O dispositivo restablecerase e eliminaranse todos os datos.</translation>
 <translation id="3170769098533255179">Ningún dispositivo conectado. Cando se use a zona wifi, a wifi permanecerá desactivada.</translation>
 <translation id="3171170659304083361">Configuración dos métodos de introdución de texto</translation>
@@ -1049,7 +1046,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
-<translation id="5203299837691351876">escritorio activo</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
@@ -1067,7 +1063,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5258528442992323769">Non hai escritorios gardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5268819379131021772">Lista de tarefas de Google</translation>
-<translation id="5275923704957843041">Vista previa do escritorio</translation>
 <translation id="5277869901083657836">Activar ou desactivar ferramentas do lapis óptico</translation>
 <translation id="5278086053818066789">Activa ou desactiva ChromeVox (comentarios de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> require a túa atención.</translation>
@@ -1471,7 +1466,6 @@ Nova instalación</translation>
 <translation id="6819327813400217281">Cámara axustada á esquina inferior esquerda</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
 <translation id="6827049576281411231">Pechar panel de eventos</translation>
-<translation id="6831561626108366035">Vai ao botón <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837621009301897464">Para facer unha captura de pantalla, preme</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>

@@ -204,6 +204,7 @@
 <translation id="2132122640199389833">ሁሉንም የተገናኙ መሣሪያዎችን ያስወግዱ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ተዘግቷል</translation>
 <translation id="2139186145475833000">ወደ መነሻ ማያ ገፅ አክል</translation>
+<translation id="2139414603196655536">በገጽ ግንዛቤ ውስጥ ያሎት እንቅስቃሴ በGoogle መለያዎ ውስጥ ተቀምጧል። <ph name="BEGIN_LINK" />ይህን እንዴት ማስተዳደር እንደሚቻል ይወቁ<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">በአጠቃቀምዎ ላይ የተመሠረተ</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2155214902713132423">ይህ የማረጋገጫ ዘዴ ለዚህ መሣሪያ አይገኝም። በሌላ መሣሪያዎ ላይ ሌላ አማራጭ ይምረጡ።</translation>
@@ -873,6 +874,7 @@
 <translation id="5698878456427040674">የተመረጠው መለያ የሚደገፍ እንደሆነ ይፈትሹ።</translation>
 <translation id="570347048394355941">ወደ ትር ቀይር</translation>
 <translation id="5715150588940290235">የተቀመጡ የደህንነት ኮዶች ይሰረዙ?</translation>
+<translation id="571930967925877633">የእርስዎ እልባቶች፣ ታሪክ እና ሌላ የChrome ውሂብ ከእንግዲህ ወደ የእርስዎ Google መለያ ይሰምራሉ</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
 <translation id="5726692708398506830">በገጹ ላይ ያለውን ሁሉንም ነገር ይበልጥ አተልቅ</translation>
 <translation id="5744751019568455640">እነዚህ ድረ ገጾችዎን ለማንበብ ሊመርጧቸው የሚችሏቸው ድምፆች ናቸው። ይህን ድምፅ ከወደዱት እና እሱን መጠቀም እንድቀጥል ከፈለጉ የድምፁን ስም ብቻ መታ ያድርጉ።</translation>
@@ -1081,6 +1083,7 @@
 <translation id="670498945988402717">ትላንትና ተፈትሿል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="671481426037969117">የእርስዎ <ph name="FQDN" /> ሰዓት ቆጣሪ ጊዜ አልቋል። ነገ እንደገና ይጀመራል።</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጠው።}one{ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጠው።}other{ዕልባቶች ወደ <ph name="FOLDER_NAME" /> ተቀምጠዋል። በዚህ መሳሪያ ላይ ብቻ ነው የተቀመጡት።}}</translation>
 <translation id="6715020873764921614">ለማንኛውም <ph name="FILE_NAME" />ን (<ph name="FILE_SIZE" />) ማውረድ ይፈልጋሉ?</translation>
 <translation id="6719634564325948108">ከQR ኮድ ጋር ይገናኙ?</translation>
 <translation id="6723740634201835758">በእርስዎ የGoogle መለያ ውስጥ</translation>
@@ -1402,6 +1405,7 @@
 <translation id="8237871086242677046">የገጽ ግንዛቤዎች የግርጌ ሉህ</translation>
 <translation id="8243077599929149377">የእርስዎን የተጠቃሚ ስም ያክሉ</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል።}one{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል።}other{በመለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ዕልባቶች ወደ <ph name="FOLDER_NAME" /> ተቀምጠዋል።}}</translation>
 <translation id="8255617931166444521">ጣቢያዎች የአሰሳ እንቅስቃሴዎን በራሳቸው ጣቢያ ላይ ብቻ ለማየት የእርስዎን ኩኪዎች ብቻ ሊጠቀሙ ይችላሉ።</translation>
 <translation id="8259179246279078674">ቅድሚያ የሚጫኑ ገጾች የተመሠጠሩ ስለሆኑ Google ቅድሚያ ስለተጫነው የገጽ ይዘት ምንም ነገር አያውቅም። የGoogle አገልጋዮች የትኛዎቹ ጣቢያዎች በግል ቅድሚያ እንደሚጫኑ ይማራል። ይህ መረጃ ገጾቹን ቅድሚያ ለመጫን ብቻ ነው ሥራ ላይ የሚውለው፣ እና ከGoogle መለያዎ ከመጣ ሌላ መረጃ ጋር አይገናኝም።</translation>
 <translation id="8260126382462817229">እንደገና ለመግባት ይሞክሩ</translation>

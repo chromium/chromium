@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web lokacije</translation>
 <translation id="4151930093518524179">Zadano zumiranje</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>
+<translation id="4169019654293892025">Sakrij modul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Web lokacije moraju tražiti odobrenje za pregled i izmjenu informacija na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvaranje postavki lokacije</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 odabrana kartica}one{# odabrana kartica}few{# odabrane kartice}other{# odabranih kartica}}</translation>
 <translation id="7087918508125750058">Odabrali ste <ph name="ITEM_COUNT" />.  Opcije su dostupne pri vrhu ekrana</translation>
-<translation id="7137403271056944713">Kontrola/pon. progr. MIDI uređ.</translation>
 <translation id="7141896414559753902">Blokiranje prikazivanja skočnih prozora na web lokacijama i preusmjeravanje (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osvježi</translation>
@@ -404,7 +404,7 @@
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7791543448312431591">Dodaj</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nastavite s ovom karticom}one{Nastavite s ovim karticama}few{Nastavite s ovim karticama}other{Nastavite s ovim karticama}}</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Nastavi s ovom karticom}one{Nastavi s ovim karticama}few{Nastavi s ovim karticama}other{Nastavi s ovim karticama}}</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web lokacija koristi vašu kameru</translation>
 <translation id="7807060072011926525">Pruža Google</translation>

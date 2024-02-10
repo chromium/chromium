@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
 <translation id="3008272652534848354">ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="301521992641321250">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="4151930093518524179">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਜ਼ੂਮ</translation>
 <translation id="4165986682804962316">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> ਲੁਕਾਓ</translation>
 <translation id="4169549551965910670">USB ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="4194328954146351878">ਸਾਈਟਾਂ ਨੂੰ NFC ਡੀਵਾਈਸਾਂ 'ਤੇ ਜਾਣਕਾਰੀ ਦੇਖਣ ਅਤੇ ਬਦਲਣ ਦੀ ਆਗਿਆ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="4200726100658658164">ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> ਤੋਂ <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4226663524361240545">ਸੂਚਨਾਵਾਂ ਡੀਵਾਈਸ ਨੂੰ ਥਰਥਰਾਹਟ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4259722352634471385">ਨੈਵੀਗੇਸ਼ਨ ਬਲੌਕ ਕੀਤੀ ਹੈ: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ}one{# ਚੁਣੀ ਗਈ}other{# ਚੁਣੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ। ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਨੇੜੇ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ</translation>
-<translation id="7137403271056944713">MIDI ਡੀਵਾਈਸ ਕੰਟਰੋਲ / ਰੀ-ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="7141896414559753902">ਸਾਈਟਾਂ ਨੂੰ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦਿਖਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">ਪੰਨਾ ਜ਼ੂਮ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
 <translation id="7791543448312431591">ਜੋੜੋ</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ}one{ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ}other{ਇਨ੍ਹਾਂ ਟੈਬਾਂ ਨਾਲ ਜਾਰੀ ਰੱਖੋ}}</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7804248752222191302">ਕੋਈ ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7807060072011926525">Google ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਈ ਗਈ</translation>

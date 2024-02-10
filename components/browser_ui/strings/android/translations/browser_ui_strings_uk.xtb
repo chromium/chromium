@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Сторонні файли cookie обмежено</translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Дозволити вхід через сторонні сервіси для певного сайту.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Строк дії закінчується завтра}one{Строк дії закінчується через # день}few{Строк дії закінчується через # дні}many{Строк дії закінчується через # днів}other{Строк дії закінчується через # дня}}</translation>
 <translation id="310297983047869047">Попередній слайд</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4151930093518524179">Масштаб за умовчанням</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
+<translation id="4169019654293892025">Сховати модуль "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">Підключено до пристрою USB</translation>
 <translation id="4194328954146351878">Запитувати, перш ніж дозволяти сайтам переглядати й змінювати інформацію на пристроях NFC (рекомендовано)</translation>
 <translation id="4200726100658658164">Відкрити налаштування доступу до моїх геоданих</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> З пристрою <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Коли надходитимуть сповіщення, пристрій може вібрувати</translation>
 <translation id="4259722352634471385">Веб-сторінку <ph name="URL" /> заблоковано</translation>
 <translation id="4278390842282768270">Дозволено</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Вибрано 1}one{Вибрано #}few{Вибрано #}many{Вибрано #}other{Вибрано #}}</translation>
 <translation id="7087918508125750058">Вибрано <ph name="ITEM_COUNT" />. Панель інструментів розташовано вгорі екрана</translation>
-<translation id="7137403271056944713">Перепрограмування/керування MIDI</translation>
 <translation id="7141896414559753902">Блокувати спливаючі вікна та переадресацію на сайтах (рекомендовано)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Оновити</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продовжити на цій вкладці}one{Продовжити із цими вкладками}few{Продовжити із цими вкладками}many{Продовжити із цими вкладками}other{Продовжити із цими вкладками}}</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804248752222191302">Сайт використовує камеру</translation>
 <translation id="7807060072011926525">Надано компанією Google</translation>

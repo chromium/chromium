@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
 <translation id="4151930093518524179">Стандартны маштаб</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
+<translation id="4169019654293892025">Схаваць: <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
 <translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбрана # элементы}many{Выбрана # элементаў}other{Выбрана # элемента}}</translation>
 <translation id="7087918508125750058">Выбрана: <ph name="ITEM_COUNT" />.  Параметры знаходзяцца ўверсе экрана</translation>
-<translation id="7137403271056944713">Кіраванне/перапраграмаванне MIDI</translation>
 <translation id="7141896414559753902">Заблакіраваць сайтам паказ выплыўных вокнаў і перанакіраванні (рэкамендуецца)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Абнавіць</translation>

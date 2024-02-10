@@ -204,6 +204,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="2132122640199389833">Alih keluar semua peranti terpaut</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> tertutup</translation>
 <translation id="2139186145475833000">Tambahkan kepada Skrin utama</translation>
+<translation id="2139414603196655536">Aktiviti anda dalam Cerapan Halaman disimpan dalam Google Account anda. <ph name="BEGIN_LINK" />Ketahui cara mengurus hal ini<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan anda</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2155214902713132423">Kaedah pengesahan ini tidak tersedia untuk peranti ini. Pilih pilihan lain pada peranti anda yang lain.</translation>
@@ -873,6 +874,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5698878456427040674">Semak sama ada akaun yang dipilih disokong atau tidak.</translation>
 <translation id="570347048394355941">Beralih Kepada Tab</translation>
 <translation id="5715150588940290235">Padamkan kod keselamatan yang disimpan?</translation>
+<translation id="571930967925877633">Penanda halaman, sejarah dan data Chrome yang lain tidak akan disegerakkan kepada Google Account anda lagi</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5726692708398506830">Jadikan semua yang ada pada halaman lebih besar</translation>
 <translation id="5744751019568455640">Yang berikut ialah suara yang boleh anda pilih untuk membacakan halaman web anda. Jika anda suka suara ini dan mahu saya terus menggunakan suara itu, ketik nama suara tersebut.</translation>
@@ -1081,6 +1083,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Pemasa <ph name="FQDN" /> anda sudah tamat. Pemasa akan bermula lagi esok.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada <ph name="FOLDER_NAME" />. Penanda halaman tersebut disimpan pada peranti ini sahaja.}other{Penanda halaman disimpan pada <ph name="FOLDER_NAME" />. Penanda halaman tersebut disimpan pada peranti ini sahaja.}}</translation>
 <translation id="6715020873764921614">Adakah anda mahu memuat turun <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) juga?</translation>
 <translation id="6719634564325948108">Sambung menggunakan Kod QR?</translation>
 <translation id="6723740634201835758">Dalam Google Account anda</translation>
@@ -1402,6 +1405,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8237871086242677046">Helaian bawah cerapan halaman</translation>
 <translation id="8243077599929149377">Tambahkan nama pengguna anda</translation>
 <translation id="8250920743982581267">Dokumen</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada <ph name="FOLDER_NAME" /> dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}other{Penanda halaman disimpan pada <ph name="FOLDER_NAME" /> dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Laman hanya boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada laman mereka sendiri sahaja</translation>
 <translation id="8259179246279078674">Oleh sebab halaman pramuat disulitkan, Google tidak akan mempelajari apa-apa tentang kandungan halaman yang dipramuat. Pelayan Google akan mengetahui laman yang dipramuat secara peribadi. Maklumat ini hanya digunakan untuk pramuat halaman dan tidak dipautkan kepada maklumat lain daripada Google Account anda.</translation>
 <translation id="8260126382462817229">Cuba log masuk semula</translation>

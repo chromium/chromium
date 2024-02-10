@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Prilagodi meni</translation>
 <translation id="1296581780163690620">Želite prenesti datoteko? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi.</translation>
+<translation id="1310362642333088424">Če želite prenašati datoteke, fotografije in drugo, potrebujete več prostora za shranjevanje.</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="1641316430523156212">Spremljaj</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
+<translation id="164673457281113247">{count,plural, =1{Zaznamek je shranjen}one{Zaznamki so shranjeni}two{Zaznamki so shranjeni}few{Zaznamki so shranjeni}other{Zaznamki so shranjeni}}</translation>
 <translation id="165008673352427892">Nova funkcija</translation>
 <translation id="1650222530560417226">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole za JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjeno geslo.}one{Nad tipkovnico je na voljo {count} shranjeno geslo.}two{Nad tipkovnico sta na voljo {count} shranjeni gesli.}few{Nad tipkovnico so na voljo {count} shranjena gesla.}other{Nad tipkovnico je na voljo {count} shranjenih gesel.}}</translation>
@@ -511,6 +513,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3603009562372709545">Kopiraj URL povezave</translation>
 <translation id="3607167657931203000">Autofill Data</translation>
 <translation id="3609785682760573515">Sinhroniziranje ...</translation>
+<translation id="3630104167004786843">Brez prejemanja obvestil</translation>
 <translation id="3631443864840848029">Poskrbite, da boste shranili trenutno geslo za to spletno mesto.</translation>
 <translation id="3638472932233958418">Vnaprej naloži spletne strani</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {email}.}one{{count} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
@@ -637,6 +640,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
 <translation id="430967081421617822">Od začetka</translation>
 <translation id="4322394346347055525">Zapri druge zavihke</translation>
+<translation id="4323142320106872792">Shramba je polna</translation>
 <translation id="4331177082088332784">To lahko upravljate v BEGIN_LINK nastavitvah vsebine END_LINK</translation>
 <translation id="4334428914252001502">1 neprebran članek.</translation>
 <translation id="4338650699862464074">Googlu pošlje URL-je strani, ki jih obiščete.</translation>
@@ -843,6 +847,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5345660046352249607">{COUNT,plural, =1{Želite slediti temu paketu?}one{Želite slediti {COUNT} paketu?}two{Želite slediti {COUNT} paketoma?}few{Želite slediti {COUNT} paketom?}other{Želite slediti {COUNT} paketom?}}</translation>
 <translation id="536067926684072644">Prikaz zaznamkov</translation>
 <translation id="5360976571138293719">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelek <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Zaznamek je shranjen v »{title}«. Shranjen je samo v tej napravi.}one{{count} zaznamek je shranjen v »{title}«. Shranjeni so samo v tej napravi.}two{{count} zaznamka sta shranjena v »{title}«. Shranjena sta oziroma so samo v tej napravi.}few{{count} zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}other{{count} zaznamkov je shranjenih v »{title}«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="5386314158584363703">Spletna mesta, ki jih spremljate, bodo na voljo tukaj</translation>
 <translation id="5388358297987318779">Odpri sliko</translation>
 <translation id="5395707839134961196">Skrivanje podrobnosti o iskalniku</translation>
@@ -870,6 +875,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} šibko geslo}one{{COUNT} šibko geslo}two{{COUNT} šibki gesli}few{{COUNT} šibka gesla}other{{COUNT} šibkih gesel}}</translation>
 <translation id="5532545557415295622">Pogovorno okno za časovno omejitev nedejavnosti</translation>
+<translation id="5533967537771071082">Upravljanje shrambe</translation>
 <translation id="5542540507657872337">Št. najdenih: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
@@ -1085,6 +1091,8 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6550891580932862748">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. To ne vpliva na vaše nastavitve varnega brskanja v drugih Googlovih izdelkih.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Zaznamek je shranjen v »{title}«}one{{count} zaznamek je shranjen v »{title}«}two{{count} zaznamka sta shranjena v »{title}«}few{{count} zaznamki so shranjeni v »{title}«}other{{count} zaznamkov je shranjenih v »{title}«}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Zaznamek je shranjen v »{title}«. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}two{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}few{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6579867704846662339">V anonimnem načinu lahko odprete dohodne URL-je iz drugih aplikacij.</translation>
 <translation id="6583087784430677195">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> in nato »Samodejno izpolnjevanje gesel«.</translation>
@@ -1199,6 +1207,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Polno ime</translation>
 <translation id="7136892417564438900">Fotoaparat ni na voljo</translation>
+<translation id="7138080855268384146">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{{count} zaznamek je shranjen v »{title}« v vašem računu, {email}}two{{count} zaznamka sta shranjena v »{title}« v vašem računu, {email}}few{{count} zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{{count} zaznamkov je shranjenih v »{title}« v vašem računu, {email}}}</translation>
 <translation id="7141960840225504692">Zavihki bodo zaprti in podatki brskanja bodo izbrisani</translation>
 <translation id="7154343200458623869">Dokončajte opravilo.</translation>
 <translation id="7161230316646448869">Sinhronizirajte zaznamke, zgodovino in drugo v vseh napravah</translation>

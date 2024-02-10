@@ -7,8 +7,10 @@
 <translation id="1018656279737460067">Cancelled</translation>
 <translation id="1020274983236703756">Exclusive <ph name="PRODUCT_NAME" /> assets now available</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the existing shortcut, press this shortcut again.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
+<translation id="1049663189809099096">pastel yellow</translation>
 <translation id="1059913517121127803">Couldn't start scanning</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> of <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +23,6 @@
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">multiply</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
 <translation id="1145516343487477149">Find help articles and answers to common Chromebook questions</translation>
 <translation id="1154390310959620237">You can only customise five shortcuts. Delete a shortcut to add a new one.</translation>
@@ -65,6 +66,7 @@
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">orchid</translation>
 <translation id="142228117786570094">I have a keypair</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> key not pressed</translation>
 <translation id="1435763214710588005">Automatically resets data usage every month on a selected day</translation>
@@ -85,11 +87,11 @@
 <translation id="1515129336378114413">browser home</translation>
 <translation id="1526389707933164996">Screen saver animation</translation>
 <translation id="152892567002884378">Volume up</translation>
+<translation id="1531886272553347340">ranunculus</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">backlit colour</translation>
 <translation id="1565038567006703504">Can't update <ph name="DEVICE_NAME" /></translation>
-<translation id="1566493343215789965">divide</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1578784163189013834">Choose screensaver background</translation>
@@ -162,6 +164,7 @@
 <translation id="1977994649430373166">Google profile photo</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1999615961760456652">Captive portal</translation>
+<translation id="2004572381882349402">Airbrushed</translation>
 <translation id="200669432486043882">Replace file</translation>
 <translation id="2006864819935886708">Connectivity</translation>
 <translation id="2008685064673031089">Prime search</translation>
@@ -196,6 +199,7 @@
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Create more</translation>
 <translation id="2236746079896696523">Keyboard backlight toggle</translation>
 <translation id="2240366984605217732">Layout switch</translation>
 <translation id="225692081236532131">Activation status</translation>
@@ -219,6 +223,7 @@
 <translation id="2391082728065870591">Send feedback report</translation>
 <translation id="2407209115954268704">SIM lock status</translation>
 <translation id="241419523391571119">Reopen the lid to test</translation>
+<translation id="2414660853550118611">About wallpaper</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
@@ -236,6 +241,7 @@
 <translation id="2521835766824839541">previous track</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Restarting...</translation>
+<translation id="2531772459602846206">hydrangea</translation>
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
@@ -270,7 +276,6 @@
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="2880569433548999039">Cloud flow screen saver</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
-<translation id="2938573842839598578">For an approximate result, <ph name="OPERATOR_TEXT" /> the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Can’t test device. Reopen the lid to test.</translation>
 <translation id="2941112035454246133">Low</translation>
 <translation id="3008341117444806826">REFRESH</translation>
@@ -361,6 +366,7 @@
 <translation id="361575905210396100">Thanks for your feedback</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
+<translation id="3654530588944650786">A radiant <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> in bloom</translation>
 <translation id="3668449597372804501">Cloud flow wallpaper</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
@@ -401,6 +407,7 @@
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3969602104473960991">Chrome OS password updated</translation>
 <translation id="397105322502079400">Calculating...</translation>
+<translation id="3981099166243641873">light green</translation>
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="3993704782688964914">Your <ph name="DEVICE_NAME" /> is now up to date</translation>
 <translation id="3998976413398910035">Manage printers</translation>
@@ -412,6 +419,7 @@
 <translation id="404928562651467259">WARNING</translation>
 <translation id="4054683689023980771">Downloading image</translation>
 <translation id="4060260348856573701">New APN</translation>
+<translation id="4063039537646912479">light blue</translation>
 <translation id="4093865285251893588">Profile image</translation>
 <translation id="409427325554347132">Save test details</translation>
 <translation id="409469431304488632">Experiment</translation>
@@ -461,7 +469,6 @@
 <translation id="4394049700291259645">Disable</translation>
 <translation id="439429847087949098">Restarting <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">keyboard customise</translation>
-<translation id="4403262788869804671">Shortcut without <ph name="META_KEY" /> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="KEY" /> key.</translation>
 <translation id="4415951057168511744">Current avatar</translation>
 <translation id="4417830657741848074">Your administrator has set up some apps to start automatically. Some of these apps may not be closed.</translation>
 <translation id="4422041425070339732">arrow down</translation>
@@ -605,6 +612,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Choose a new one now</translation>
 <translation id="5333530671332546086">Unknown portal state</translation>
+<translation id="5335373365677455232">pink</translation>
 <translation id="5346687412805619883">Local network</translation>
 <translation id="5358174242040570474">Something went wrong. Try choosing a wallpaper again or reopen the app.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
@@ -612,6 +620,7 @@
 <translation id="5378184552853359930">IP type</translation>
 <translation id="5389159777326897627">Wallpaper and style</translation>
 <translation id="5389224261615877010">Rainbow</translation>
+<translation id="5396811372860835203">calla lily</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
 <translation id="5401938042319910061">Run all routines</translation>
 <translation id="5423849171846380976">Activated</translation>
@@ -634,7 +643,9 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
 <translation id="5620281292257375798">Internal only</translation>
+<translation id="5631759159893697722">abstract</translation>
 <translation id="5649768706273821470">Listen</translation>
+<translation id="5654356773042347102">lily of the valley</translation>
 <translation id="5655283760733841251">Keyboard brightness up</translation>
 <translation id="5655296450510165335">Device enrolment</translation>
 <translation id="5655776422854483175">No print jobs</translation>
@@ -680,11 +691,11 @@
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Delete button for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">File not found</translation>
-<translation id="593880865674747800">Create more in this style</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5946538341867151940">You are not connected yet. If your mobile operator recommends a custom APN, enter the APN information by selecting '+ New APN'</translation>
 <translation id="5972388717451707488">Update engine</translation>
+<translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="6017514345406065928">Green</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
@@ -709,12 +720,14 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> more albums</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Chrome OS input method service</translation>
+<translation id="6127426868813166163">White</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">User certificate</translation>
 <translation id="6146993107019042706">To finish, enter your new password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Created on <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Battery capacity declines with usage</translation>
 <translation id="6191293864534840972">Malformed name servers</translation>
 <translation id="6196607555925437199">Recreate</translation>
@@ -738,6 +751,7 @@
 <translation id="6321407676395378991">Turn on screensaver</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6325525973963619867">Failed</translation>
+<translation id="6327262166342360252">This wallpaper was created with AI using the following text: '<ph name="PROMPT" />'.</translation>
 <translation id="6331191339300272798">Automatic Dark theme</translation>
 <translation id="6340526405444716530">Personalisation</translation>
 <translation id="6348738456043757611">Username and password</translation>
@@ -760,6 +774,7 @@
 <translation id="6462978824459367242">Add APN button is now enabled</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{Rescan page {PAGE_NUMBER}?}other{Rescan page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="64778964625672495">dark red</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> exclusive screen saver</translation>
 <translation id="649050271426829538">Stopped – paper jam</translation>
@@ -811,6 +826,8 @@
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
+<translation id="6866732840889595464">daisy</translation>
+<translation id="6871256179359663621">light purple</translation>
 <translation id="6889786074662672253">While restarting, do not unplug this external device or shut down your computer. You can minimise this window. This may take a few minutes and your external device may not work during this time.</translation>
 <translation id="6900701049656042631">This album doesn't have any photos. To add photos, go to <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Back to <ph name="PAGE_NAME" /></translation>
@@ -824,6 +841,7 @@
 <translation id="6965978654500191972">Device</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6981982820502123353">Accessibility</translation>
+<translation id="6988803763488977828">windflower</translation>
 <translation id="7005833343836210400">Device is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -877,6 +895,7 @@
 <translation id="7311368985037279727">keyboard colour</translation>
 <translation id="7317831949569936035">School enrolment</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">bird of paradise</translation>
 <translation id="7331297744262591636">You must be at least 18 years old and agree that your use of AI wallpapers is subject to <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Terms of Service<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> and <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generative AI Additional Terms of Service<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -925,6 +944,7 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Change avatar</translation>
+<translation id="7673177760638264939">garden rose</translation>
 <translation id="7683228889864052081">keyboard hue</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7701040980221191251">None</translation>
@@ -952,6 +972,7 @@
 <translation id="7841134249932030522">Enable dark mode</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7850847810298646851">Wallpaper powered by Google AI</translation>
+<translation id="785170686607360576">tulip</translation>
 <translation id="7856267634822906833">Bluetooth touchscreen</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1069,7 +1090,6 @@
 <translation id="87646919272181953">Google Photos album</translation>
 <translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the original shortcut, press this shortcut again.</translation>
 <translation id="879568662008399081">This network may have a captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Provider name</translation>
@@ -1121,6 +1141,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS resolution has high latency</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9068296451330120661">Watercolour</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Use this video</translation>

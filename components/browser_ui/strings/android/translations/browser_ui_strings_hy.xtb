@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>
 <translation id="301521992641321250">Ավտոմատ արգելափակված է</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է թույլատրվի։</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Գործողության ժամկետը սպառվում է վաղը}one{Գործողության ժամկետը սպառվում է # օրից}other{Գործողության ժամկետը սպառվում է # օրից}}</translation>
 <translation id="310297983047869047">Նախորդ սլայդը</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Կայքերի պարզեցված դիտակերպ</translation>
 <translation id="4151930093518524179">Կանխադրված մասշտաբ</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
+<translation id="4169019654293892025">Թաքցնել «<ph name="TITLE_OF_MODULE" />» մոդուլը</translation>
 <translation id="4169549551965910670">Կայքը միացած է USB սարքի</translation>
 <translation id="4194328954146351878">Կայքերի համար թույլտվություն խնդրել՝ տեսնելու և փոփոխելու տեղեկությունները NFC սարքերում (խորհուրդ է տրվում)</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-ից</translation>
 <translation id="4226663524361240545">Ծանուցումների ժամանակ սարքը կթրթռա</translation>
 <translation id="4259722352634471385">Նավիգացիան արգելափակված է՝ <ph name="URL" /></translation>
 <translation id="4278390842282768270">Թույլատրված է</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ընտրված տարր}one{# ընտրված տարր}other{# ընտրված տարր}}</translation>
 <translation id="7087918508125750058">Ընտրված է <ph name="ITEM_COUNT" /> տարր։ Ընտրանքները հասանելի են էկրանի վերին հատվածում</translation>
-<translation id="7137403271056944713">MIDI կառավարում/վերածրագրավորում</translation>
 <translation id="7141896414559753902">Արգելափակել ելնող պատուհանները և վերահասցեավորումը կայքերում (խորհուրդ է տրվում)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Էջի մասշտաբավորում</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Շարունակեք այս ներդիրի դիտումը}one{Շարունակեք այս ներդիրի դիտումը}other{Շարունակեք այս ներդիրների դիտումը}}</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7804248752222191302">Կայքն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="7807060072011926525">Տրամադրված է Google-ի կողմից</translation>

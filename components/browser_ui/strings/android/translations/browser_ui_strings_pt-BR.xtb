@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4151930093518524179">Zoom padrão</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4169019654293892025">Ocultar <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}one{# selecionado}other{# selecionados}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> itens selecionados. Opções disponíveis perto da parte superior da tela</translation>
-<translation id="7137403271056944713">Controle / reprogramação de dispositivos MIDI</translation>
 <translation id="7141896414559753902">Impedir pop-ups e redirecionamento dos sites (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atualizar</translation>

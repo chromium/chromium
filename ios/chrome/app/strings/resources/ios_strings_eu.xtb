@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Pertsonalizatu menua</translation>
 <translation id="1296581780163690620">Fitxategia deskargatu nahi duzu? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google-ko kontuko pasahitzak beti erabili ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela.</translation>
+<translation id="1310362642333088424">Fitxategiak, argazkiak eta bestelako edukia deskargatzeko, biltegiratzeko toki gehiago behar duzu.</translation>
 <translation id="1312721752506309252">Babes hobetua dago aktibatuta</translation>
 <translation id="1321993286294231467">Errore bat gertatu da irudia gordetzean.</translation>
 <translation id="1322735045095424339">Ezkutuko modua erabiltzeko eskatzen dizu zure erakundeak</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="1641316430523156212">Jarraitu</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="164673457281113247">{count,plural, =1{Gorde da laster-marka}other{Gorde dira laster-markak}}</translation>
 <translation id="165008673352427892">Eginbide berria</translation>
 <translation id="1650222530560417226">Fitxa guztietako JavaScript-en kontsolaren erregistroak eta erroreak biltzeko, sakatu "Hasi partekatzen" botoia. Bildutako erregistroak memorian bakarrik gordeko dira, orria itxi arte edo "Utzi erregistratzeari" sakatu arte.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Gordetako pasahitz {count} dago erabilgarri teklatuaren gainean.}other{Gordetako {count} pasahitz daude erabilgarri teklatuaren gainean.}}</translation>
@@ -511,6 +513,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3603009562372709545">Kopiatu estekaren URLa</translation>
 <translation id="3607167657931203000">Bete automatikoki</translation>
 <translation id="3609785682760573515">Sinkronizatzen…</translation>
+<translation id="3630104167004786843">Ez jaso berritasunik</translation>
 <translation id="3631443864840848029">Ziurtatu webgune honen pasahitza gordetzen duzula.</translation>
 <translation id="3638472932233958418">Aurrekargatu web-orriak</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan ({email}).}other{{count} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}}</translation>
@@ -637,6 +640,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4309403553630140242">Informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="430967081421617822">Orain artekoak</translation>
 <translation id="4322394346347055525">Itxi beste fitxak</translation>
+<translation id="4323142320106872792">Biltegia beteta dago</translation>
 <translation id="4331177082088332784">Aukera hori kudeatzeko, joan BEGIN_LINK edukiaren ezarpenetara END_LINK</translation>
 <translation id="4334428914252001502">Irakurri gabeko artikulu bat.</translation>
 <translation id="4338650699862464074">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri.</translation>
@@ -843,6 +847,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5345660046352249607">{COUNT,plural, =1{Pakete honen jarraipena egin nahi duzu?}other{{COUNT} paketeren jarraipena egin nahi duzu?}}</translation>
 <translation id="536067926684072644">Erakutsi laster-markak</translation>
 <translation id="5360976571138293719">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Gorde da laster-marka "{title}" karpetan. Gailu honetan soilik dago gordeta.}other{Gorde dira {count} laster-marka "{title}" karpetan. Gailu honetan soilik daude gordeta.}}</translation>
 <translation id="5386314158584363703">Hemen aurkituko dituzu jarraitzaile zaituzten webguneak</translation>
 <translation id="5388358297987318779">Ireki irudia</translation>
 <translation id="5395707839134961196">Ezkutatu bilatzailearen xehetasunak</translation>
@@ -870,6 +875,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5525269841082836315">Sortu pasaesaldia</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
 <translation id="5532545557415295622">Inaktibitate-egoeraren denbora-mugaren leihoa</translation>
+<translation id="5533967537771071082">Kudeatu biltegia</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> aurkitu dira</translation>
 <translation id="5548760955356983418">Handoff eginbidea erabiltzen baduzu, gailu honetan has zaitezke webguneak ikusten eta Mac-ean jarrai dezakezu haiek arakatzen.
 
@@ -1085,6 +1091,8 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6550891580932862748">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Honek ez du eraginik izango Google-ren beste produktuetako Arakatze segurua eginbidearen ezarpenetan.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Gorde da laster-marka "{title}" karpetan}other{{count} laster-marka gorde dira "{title}" karpetan}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Gorde da laster-marka "{title}" karpetan. Gailu honetan soilik dago gordeta.}other{Gorde dira laster-markak "{title}" karpetan. Gailu honetan soilik daude gordeta.}}</translation>
 <translation id="6561262006871132942">Handitu</translation>
 <translation id="6579867704846662339">Beste aplikazioetatik datozen URLak ezkutuko moduan irekitzea aukera dezakezu.</translation>
 <translation id="6583087784430677195">Aukera hori desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan AutoFill Passwords (bete pasahitzak automatikoki) atalera.</translation>
@@ -1199,6 +1207,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Izen-abizenak</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
+<translation id="7138080855268384146">{count,plural, =1{Gorde da laster-marka zure kontuko ({email}) "{title}" karpetan}other{{count} laster-marka gorde dira zure kontuko ({email}) "{title}" karpetan}}</translation>
 <translation id="7141960840225504692">Fitxak itxiko dira, eta arakatze-datuak ezabatuko dira</translation>
 <translation id="7154343200458623869">Osatu zeregina.</translation>
 <translation id="7161230316646448869">Sinkronizatu laster-markak, historia eta beste gauza asko gailu guztietan</translation>

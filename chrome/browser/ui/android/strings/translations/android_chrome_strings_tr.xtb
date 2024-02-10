@@ -150,7 +150,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1807709131360304325">Yeni pencere aç</translation>
 <translation id="1810845389119482123">İlk senkronizasyon kurulumu tamamlanmadı</translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kullanımına devam edemiyor</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kullanarak devam edemiyor</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
 <translation id="185383612275551373">Google'daki en alakalı içeriklere ulaşmak için senkronize edin</translation>
 <translation id="1871098866036088250">Chrome tarayıcıda aç</translation>
@@ -873,6 +873,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5698878456427040674">Seçilen hesabın desteklenip desteklenmediğini kontrol edin.</translation>
 <translation id="570347048394355941">Sekmeye Geç</translation>
 <translation id="5715150588940290235">Kayıtlı güvenlik kodları silinsin mi?</translation>
+<translation id="571930967925877633">Yer işaretleri, geçmiş ve diğer Chrome verileriniz artık Google Hesabınız ile senkronize edilmeyecek.</translation>
 <translation id="572328651809341494">Son sekmeler</translation>
 <translation id="5726692708398506830">Sayfadaki her şeyi büyütür</translation>
 <translation id="5744751019568455640">Web sayfalarınızı sesli okuması için seçebileceğiniz sesleri burada bulabilirsiniz. Bu sesi beğendiyseniz ve kullanmaya devam etmemi istiyorsanız sesin adına dokunmanız yeterli.</translation>

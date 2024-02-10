@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">允许使用第三方账号登录特定网站。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">使用简化版视图查看网页</translation>
 <translation id="4151930093518524179">默认缩放设置</translation>
 <translation id="4165986682804962316">网站设置</translation>
+<translation id="4169019654293892025">隐藏<ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">已连接 USB 设备</translation>
 <translation id="4194328954146351878">需先询问，得到许可后才允许网站查看和更改 NFC 设备上的信息（推荐）</translation>
 <translation id="4200726100658658164">打开位置信息设置</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 来自“<ph name="FROM_DEVICE" />”</translation>
 <translation id="4226663524361240545">收到通知时设备会振动</translation>
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4278390842282768270">允许</translation>
@@ -271,7 +274,7 @@
 <translation id="5591840828808741583">已为 <ph name="SITE_NAME" /> 禁用此权限</translation>
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> 可以在您浏览时使用您的相关信息</translation>
@@ -309,7 +312,7 @@
 <translation id="6181444274883918285">添加例外网站</translation>
 <translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 将于明天再次屏蔽 Cookie}other{Chrome 将于 # 天后再次屏蔽 Cookie}}</translation>
-<translation id="6195163219142236913">第三方 Cookie 受限</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6207207788774442484">删除数据并重置权限</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
 <translation id="7087918508125750058">已选择 <ph name="ITEM_COUNT" /> 项。选项位于屏幕顶部附近</translation>
-<translation id="7137403271056944713">MIDI 设备控制/重新编程</translation>
 <translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">刷新</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">网页缩放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{继续使用此标签页}other{继续使用这些标签页}}</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>

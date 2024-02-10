@@ -204,6 +204,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2132122640199389833">Ukloni sve povezane uređaje</translation>
 <translation id="213279576345780926">Zatvorili ste karticu <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Dodaj na početni ekran</translation>
+<translation id="2139414603196655536">Aktivnosti u Uvidu u stranicu se čuvaju na Google nalogu. <ph name="BEGIN_LINK" />Saznajte kako da upravljate ovim<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Na osnovu korišćenja</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2155214902713132423">Ovaj način verifikacije nije dostupan za ovaj uređaj. Izaberite drugu opciju na drugom uređaju.</translation>
@@ -873,6 +874,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5698878456427040674">Proverite da li je izabrani nalog podržan.</translation>
 <translation id="570347048394355941">Pređi na karticu</translation>
 <translation id="5715150588940290235">Želite da izbrišete sačuvane bezbednosne kodove?</translation>
+<translation id="571930967925877633">Obeleživači, istorija i drugi Chrome podaci više se neće sinhronizovati sa Google nalogom</translation>
 <translation id="572328651809341494">Nedavno korišćene kartice</translation>
 <translation id="5726692708398506830">Uvećavanje celokupnog prikaza stranice</translation>
 <translation id="5744751019568455640">Evo glasova koje možete da izaberete za čitanje veb-stranica. Ako vam se sviđa ovaj glas i želite da nastavim da ga koristim, samo dodirnite naziv glasa.</translation>
@@ -1081,6 +1083,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="670498945988402717">Provereno juče</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="671481426037969117">Tajmer aplikacije <ph name="FQDN" /> je istekao. Počeće ponovo sutra.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u: <ph name="FOLDER_NAME" />. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u: <ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u: <ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u: <ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="6715020873764921614">Da li ipak želite da preuzmete fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Želite da se povežete pomoću QR koda?</translation>
 <translation id="6723740634201835758">Na Google nalogu</translation>
@@ -1402,6 +1405,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8237871086242677046">Donja tabela uvida u stranicu</translation>
 <translation id="8243077599929149377">Dodajte korisničko ime</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}one{Obeleživači su sačuvani u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}few{Obeleživači su sačuvani u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}other{Obeleživači su sačuvani u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja samo na vlastitom sajtu</translation>
 <translation id="8259179246279078674">Pošto su predučitane stranice šifrovane, Google neće saznati ništa o sadržaju predučitanih stranica. Google serveri će saznati koji sajtovi su privatno predučitani. Te informacije se koriste samo za predučitavanje stranica i nisu povezane sa drugim informacijama sa Google naloga.</translation>
 <translation id="8260126382462817229">Probajte ponovo da se prijavite</translation>

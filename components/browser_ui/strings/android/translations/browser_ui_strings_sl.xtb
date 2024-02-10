@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Poenostavljen pogled za spletne strani</translation>
 <translation id="4151930093518524179">Privzeta stopnja povečave</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
+<translation id="4169019654293892025">Skrij: <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Povezano z napravo USB</translation>
 <translation id="4194328954146351878">Vprašaj, preden se spletnim mestom dovoli ogled in spreminjanje podatkov v napravah NFC (priporočeno)</translation>
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
 <translation id="7087918508125750058">Št. izbranih: <ph name="ITEM_COUNT" />. Možnosti so na voljo na zgornjem delu zaslona.</translation>
-<translation id="7137403271056944713">Nadzor/vnovično programiranje naprave MIDI</translation>
 <translation id="7141896414559753902">Preprečevanje, da spletna mesta prikazujejo pojavna okna in preusmeritve (priporočeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Osveži</translation>

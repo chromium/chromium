@@ -9,6 +9,7 @@
 <translation id="1022628058306505708">地球動態</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
+<translation id="1049663189809099096">淡彩黃</translation>
 <translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，共 <ph name="COUNT" /> 項)。</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +22,6 @@
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">乘以</translation>
 <translation id="1145018782460575098">更新外部裝置韌體的視窗已開啟。<ph name="NUM_UPDATES" /> 項可用的更新。</translation>
 <translation id="1145516343487477149">尋找說明文章，並回答 Chromebook 常見問題</translation>
 <translation id="1154390310959620237">你只能自訂 5 個快速鍵。如要新增快速鍵，請刪除現有快速鍵。</translation>
@@ -65,6 +65,7 @@
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1413240736185167732">失敗 - 無法使用過濾器</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">蘭花</translation>
 <translation id="142228117786570094">我有金鑰組</translation>
 <translation id="1423591390236870726">未按下 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="1435763214710588005">系統會在每月指定日期自動重設數據用量</translation>
@@ -85,11 +86,11 @@
 <translation id="1515129336378114413">瀏覽器首頁</translation>
 <translation id="1526389707933164996">螢幕保護程式動畫</translation>
 <translation id="152892567002884378">調高音量</translation>
+<translation id="1531886272553347340">毛茛</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1561927818299383735">背光顏色</translation>
 <translation id="1565038567006703504">無法更新「<ph name="DEVICE_NAME" />」</translation>
-<translation id="1566493343215789965">除以</translation>
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選擇螢幕保護程式背景</translation>
@@ -162,6 +163,7 @@
 <translation id="1977994649430373166">Google 個人資料相片</translation>
 <translation id="1979103255016296513">已超過密碼變更期限</translation>
 <translation id="1999615961760456652">網頁認證入口</translation>
+<translation id="2004572381882349402">美化</translation>
 <translation id="200669432486043882">取代檔案</translation>
 <translation id="2006864819935886708">連線問題</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
@@ -196,6 +198,7 @@
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2230005943220647148">攝氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">建立更多類似桌布</translation>
 <translation id="2236746079896696523">切換鍵盤背光</translation>
 <translation id="2240366984605217732">版面配置切換</translation>
 <translation id="225692081236532131">啟用狀態</translation>
@@ -236,6 +239,7 @@
 <translation id="2521835766824839541">播放上一首曲目</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="253029298928638905">正在重新啟動…</translation>
+<translation id="2531772459602846206">繡球花</translation>
 <translation id="2533048460510040082">建議的說明內容</translation>
 <translation id="2536159006530886390">無法連線至網際網路。</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
@@ -270,7 +274,6 @@
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="2880569433548999039">雲朵動態螢幕保護程式</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
-<translation id="2938573842839598578">求近似結果，將<ph name="CATEGORY_TEXT" />的值<ph name="OPERATOR_TEXT" /><ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -361,6 +364,7 @@
 <translation id="361575905210396100">感謝你提供寶貴意見</translation>
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3651050199673793219">選取溫度單位</translation>
+<translation id="3654530588944650786">盛開的<ph name="FLOWER_COLOR" /><ph name="FLOWER_TYPE" /></translation>
 <translation id="3668449597372804501">雲朵動態桌布</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -401,6 +405,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3969602104473960991">已更新 Chrome OS 密碼</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3981099166243641873">淺綠</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="3993704782688964914">你的「<ph name="DEVICE_NAME" />」目前是最新版本</translation>
 <translation id="3998976413398910035">管理印表機</translation>
@@ -412,6 +417,7 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下載圖片</translation>
 <translation id="4060260348856573701">新增 APN</translation>
+<translation id="4063039537646912479">淺藍</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="409469431304488632">實驗功能</translation>
@@ -461,7 +467,6 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重新啟動「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4395835743215824109">自訂鍵盤</translation>
-<translation id="4403262788869804671">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與某些應用程式的快速鍵衝突。再次按下這個快速鍵即可繼續使用，或是按下<ph name="KEY" />鍵重新輸入快速鍵。</translation>
 <translation id="4415951057168511744">目前的顯示圖片</translation>
 <translation id="4417830657741848074">系統管理員已將某些應用程式設為自動啟動，部分應用程式可能無法關閉。</translation>
 <translation id="4422041425070339732">向下鍵</translation>
@@ -605,6 +610,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">立即選擇新密碼</translation>
 <translation id="5333530671332546086">入口狀態不明</translation>
+<translation id="5335373365677455232">粉紅</translation>
 <translation id="5346687412805619883">區域網路</translation>
 <translation id="5358174242040570474">發生錯誤，請重新選擇桌布或重新開啟應用程式。</translation>
 <translation id="5372659122375744710">WiFi 網路不安全</translation>
@@ -612,6 +618,7 @@
 <translation id="5378184552853359930">IP 類型</translation>
 <translation id="5389159777326897627">桌布和樣式</translation>
 <translation id="5389224261615877010">彩虹</translation>
+<translation id="5396811372860835203">馬蹄蓮</translation>
 <translation id="5400907029458559844">正在連接裝置。</translation>
 <translation id="5401938042319910061">執行所有的日常網路診斷</translation>
 <translation id="5423849171846380976">已啟用</translation>
@@ -634,7 +641,9 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5600027863942488546">已測試 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="5620281292257375798">僅供內部使用</translation>
+<translation id="5631759159893697722">摘要</translation>
 <translation id="5649768706273821470">聆聽</translation>
+<translation id="5654356773042347102">鈴蘭</translation>
 <translation id="5655283760733841251">鍵盤亮度調高</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
 <translation id="5655776422854483175">沒有任何列印工作</translation>
@@ -680,11 +689,11 @@
 <translation id="5921506667911082617">{COUNT,plural, =1{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5928411637936685857">「<ph name="ACCELERATOR_INFO" />」的刪除按鈕。</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
-<translation id="593880865674747800">生成更多這種風格的桌布</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
 <translation id="5946538341867151940">你尚未連線。如果你的行動電信業者建議使用自訂 APN，請選取「+ 新增 APN」，輸入 APN 資訊</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5975130252842127517">珊瑚紅</translation>
 <translation id="5984145644188835034">預設桌布</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
@@ -709,6 +718,7 @@
 <translation id="6117895505466548728">「<ph name="TITLE" />」和另外 <ph name="NUMBER" /> 本相簿</translation>
 <translation id="6122191549521593678">線上</translation>
 <translation id="6122277663991249694">Chrome OS 輸入法服務</translation>
+<translation id="6127426868813166163">白</translation>
 <translation id="6136285399872347291">Backspace 鍵</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入你的新密碼</translation>
@@ -760,6 +770,7 @@
 <translation id="6462978824459367242">現已啟用「新增 APN」按鈕</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃描頁面嗎？}=1{要重新掃描第 {PAGE_NUMBER} 頁嗎？}other{要重新掃描第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">動態密碼</translation>
+<translation id="64778964625672495">深紅</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> 專屬螢幕保護程式</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
@@ -811,6 +822,8 @@
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">提供所選內容的相關資訊。請使用向上鍵存取。</translation>
 <translation id="6853312040151791195">放電率</translation>
+<translation id="6866732840889595464">雛菊</translation>
+<translation id="6871256179359663621">淺紫</translation>
 <translation id="6889786074662672253">在重新啟動新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。這項作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="6900701049656042631">這本相簿中沒有任何相片。如要新增，請前往 <ph name="LINK" /></translation>
 <translation id="6905724422583748843">返回「<ph name="PAGE_NAME" />」頁面</translation>
@@ -824,6 +837,7 @@
 <translation id="6965978654500191972">裝置</translation>
 <translation id="6977381486153291903">韌體版本</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
+<translation id="6988803763488977828">歐洲銀蓮花</translation>
 <translation id="7005833343836210400">裝置處於離線狀態</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 管理這個裝置，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
 <translation id="7040230719604914234">電信業者</translation>
@@ -877,6 +891,7 @@
 <translation id="7311368985037279727">鍵盤顏色</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">天堂鳥</translation>
 <translation id="7331297744262591636">您必須年滿 18 歲，並同意在使用 AI 桌布時遵守《<ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google 服務條款<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />》和《<ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />生成式 AI 附加服務條款<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />》。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -925,6 +940,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />，<ph name="ROW_STATUS" />。</translation>
 <translation id="7665800271478495366">變更顯示圖片</translation>
+<translation id="7673177760638264939">庭園玫瑰</translation>
 <translation id="7683228889864052081">鍵盤色調</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7701040980221191251">無</translation>
@@ -952,6 +968,7 @@
 <translation id="7841134249932030522">啟用深色模式</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7850847810298646851">使用 Google AI 技術生成的桌布</translation>
+<translation id="785170686607360576">鬱金香</translation>
 <translation id="7856267634822906833">藍牙觸控螢幕</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1069,7 +1086,6 @@
 <translation id="87646919272181953">Google 相簿中的相簿</translation>
 <translation id="8775713578693478175">數據機 APN</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。請按下新的快速鍵。如要取代原始快速鍵，請再次按下這個快速鍵。</translation>
 <translation id="879568662008399081">這個網站可能有網頁認證入口</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">提供者名稱</translation>
@@ -1121,6 +1137,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>
 <translation id="9065203028668620118">編輯</translation>
+<translation id="9068296451330120661">水彩</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9082718469794970195">使用這部影片</translation>

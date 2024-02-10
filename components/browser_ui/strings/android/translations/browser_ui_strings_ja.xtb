@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4151930093518524179">デフォルトのズーム</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> を表示しない</translation>
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
@@ -322,7 +323,7 @@
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6304434827459067558"><ph name="SITE" /> は次のサイトであなたの情報を使用できません</translation>
 <translation id="6320088164292336938">バイブレーション</translation>
-<translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="640163077447496506">今日で期限切れ</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
-<translation id="7137403271056944713">MIDI デバイス コントロール / 再プログラミング</translation>
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>

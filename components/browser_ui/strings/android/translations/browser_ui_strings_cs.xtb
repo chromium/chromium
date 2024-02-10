@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
 <translation id="4151930093518524179">Výchozí přiblížení</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
+<translation id="4169019654293892025">Skrýt modul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>
-<translation id="7137403271056944713">Ovládání/přeprogramování zařízení MIDI</translation>
 <translation id="7141896414559753902">Bránit webům v zobrazování vyskakovacích oken a v přesměrování (doporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Obnovit</translation>

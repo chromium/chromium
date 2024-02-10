@@ -575,6 +575,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Xestionar intereses</translation>
 <translation id="3989635538409502728">Pechar sesión</translation>
+<translation id="3994422733891749358">Escolle que notificacións queres recibir</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de páxinas: cargouse <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">A persoa que administra a túa conta desactivou o uso compartido de contrasinais.</translation>
 <translation id="4002019827078931033">Mover barra de enderezos á parte superior</translation>
@@ -684,6 +685,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
+<translation id="4607887340472970274">Seguimento de prezos</translation>
 <translation id="4611811151908969241">Ocultar Deixar de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4616391354457235490">Desfacer</translation>
@@ -724,6 +726,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="4803185665210547709">Xestionado pola túa organización.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="4805558373042023669">Noticias e contido baseados nos teus intereses.</translation>
 <translation id="4805759445554688327">O número de tarxeta non é válido</translation>
 <translation id="4808646838864186379">Cancelouse a entrega</translation>
 <translation id="4808744395915275922">Actualizacións</translation>
@@ -1237,6 +1240,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos non lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
+<translation id="7417689656810783109">Cambiar nome do grupo</translation>
 <translation id="7418640008860669073">Gardar en...</translation>
 <translation id="7425346204213733349">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google.</translation>
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
@@ -1414,6 +1418,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="828291969289324795">{count,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
+<translation id="8292843446079898078">Recibe alertas se os produtos que segues baixan de prezo.</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
 <translation id="8311853334103696030">Ocultar Facer seguimento do prezo</translation>
@@ -1421,6 +1426,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8328777765163860529">Pechar todo</translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="834783239627985533">Sitios máis visitados</translation>
+<translation id="8358401059263985056">Activar notificacións</translation>
 <translation id="8364841868226993049">Gardando imaxe de <ph name="USER_EMAIL" /> en Google Fotos...</translation>
 <translation id="8370406443343902172">Ir a Configuración...</translation>
 <translation id="8374977641764177587">Queres activar as notificacións?</translation>

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ไปที่แอป</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, แอป Play Store</translation>
 <translation id="1225748608451425081">Chromebook ของคุณถูกล็อกเนื่องจากปัญหาที่ทราบแล้ว คุณจะลงชื่อเข้าใช้ได้ในอีก <ph name="TIME_LEFT" /></translation>
-<translation id="1226877728704622336">เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="1229194443904279055">หยุดเลือก</translation>
 <translation id="1235458158152011030">เครือข่ายที่รู้จัก</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> เชื่อมต่อแล้ว</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">ปิดใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีอยู่</translation>
 <translation id="2579264398927991698">การอัปเดตเฟิร์มแวร์</translation>
 <translation id="2582112259361606227">รีสตาร์ทเพื่ออัปเดต</translation>
-<translation id="2586561057878260610">กด Ctrl + W เพื่อรวมเข้ากับ <ph name="DESK_NAME" /> กด Ctrl + Shift + W เพื่อปิดเดสก์และหน้าต่าง</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2595239820337756193">5 กม. เท่ากับกี่ไมล์</translation>
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ผู้ดูแลระบบของอุปกรณ์อาจตรวจสอบกิจกรรมการท่องเว็บของคุณ</translation>
 <translation id="316086887565479535">แอปที่ไม่รองรับในเทมเพลต</translation>
 <translation id="3160929076476941240">2 ชม.</translation>
-<translation id="3161500364292033097">ปิดเดสก์และหน้าต่าง</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="3170769098533255179">ไม่มีอุปกรณ์ที่เชื่อมต่อ Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="3171170659304083361">การตั้งค่าวิธีการป้อนข้อมูล</translation>
@@ -668,6 +665,7 @@
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
+<translation id="3712143870407382523">เลือกหน้าต่างสำหรับด้านนี้</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>
@@ -1043,7 +1041,6 @@
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="5198715732953550718">รวม <ph name="MOVED_APP_NAME" /> กับ <ph name="IN_PLACE_APP" /> เพื่อสร้างโฟลเดอร์ใหม่แล้ว</translation>
-<translation id="5203299837691351876">เดสก์ที่ใช้งานอยู่</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือนอื่น 1 รายการ}other{การแจ้งเตือนอื่น # รายการ}}</translation>
 <translation id="5207949376430453814">ไฮไลต์เครื่องหมาย Caret ของข้อความ</translation>
@@ -1061,7 +1058,6 @@
 <translation id="5258528442992323769">ไม่มีเดสก์ที่บันทึกไว้</translation>
 <translation id="5260676007519551770">เดสก์ที่ 4</translation>
 <translation id="5268819379131021772">รายการงานของ Google</translation>
-<translation id="5275923704957843041">ตัวอย่างเดสก์</translation>
 <translation id="5277869901083657836">เปิด/ปิดเครื่องมือสไตลัส</translation>
 <translation id="5278086053818066789">เปิด/ปิด ChromeVox (อธิบายและอ่านออกเสียง)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ส่งคำขอให้คุณดำเนินการ</translation>
@@ -1411,6 +1407,7 @@
 <translation id="6613765291890844037">พื้นที่เก็บข้อมูลใช้งานอยู่ <ph name="STORAGE_IN_USE_SIZE" /> | ทั้งหมด <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">หน้าจอส่วนตัวเปิดอยู่</translation>
 <translation id="6622679827379792051">ตั้งค่าการดูแอปของโทรศัพท์</translation>
+<translation id="6624493541160101248">เดสก์ปัจจุบัน: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="6625718907317144388">การแจ้งเตือนของ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> และอื่นๆ ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ย้ายโฟกัสไปยังแผงถัดไป</translation>
@@ -1465,7 +1462,6 @@
 <translation id="6819327813400217281">จัดกล้องพอดีกับมุมซ้ายล่างแล้ว</translation>
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
 <translation id="6827049576281411231">ปิดแผงกิจกรรม</translation>
-<translation id="6831561626108366035">ไปที่ปุ่ม <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /></translation>
 <translation id="6836499262298959512">ไฟล์นี้ไม่ปลอดภัย</translation>
 <translation id="6837621009301897464">หากต้องการถ่ายภาพหน้าจอ ให้กด</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
@@ -1504,6 +1500,7 @@
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ความละเอียดเปลี่ยนเป็น <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="6989752354829085073">ดูการแนะนำสั้นๆ เพื่อเรียนรู้วิธีการไปยังส่วนต่างๆ ของ Chromebook เริ่มต้นใช้งานได้ใน 6 ขั้นตอน</translation>
+<translation id="7000027735917578303">การตั้งค่า Windows และเดสก์</translation>
 <translation id="7004910047186208204">เชื่อมต่ออินเทอร์เน็ตมือถือ</translation>
 <translation id="7005239792648594238">เปิดแอปเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="7007983414944123363">ยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ ลองใหม่</translation>
@@ -1755,6 +1752,7 @@
 <translation id="8001755249288974029">เลือกข้อความจากเคอร์เซอร์ไปจนถึงต้นบรรทัด</translation>
 <translation id="8004512796067398576">การเพิ่ม</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
+<translation id="802782383769312836">เดสก์ก่อนหน้า: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="8029247720646289474">เชื่อมต่อฮอตสปอตไม่สำเร็จ</translation>
 <translation id="8029629653277878342">ต้องป้อน PIN หรือรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="8030169304546394654">ยกเลิกการเชื่อมต่อแล้ว</translation>
@@ -1802,6 +1800,7 @@
 <translation id="8219451629189078428">คุณต้องเปิด Chromebook และเสียบปลั๊กไว้ตลอดในระหว่างนี้ ตรวจดูว่าได้เสียบสายที่ชาร์จและอะแดปเตอร์ไว้แน่นดีแล้ว ทั้งกับ Chromebook และเต้ารับ และอย่าปิด Chromebook</translation>
 <translation id="8230305195727960608">โหมดการกลับสี</translation>
 <translation id="8236042855478648955">ได้เวลาพักแล้ว</translation>
+<translation id="8237964652943995219">เดสก์ถัดไป: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="8239034820133090126">เปิดใช้งานเดสก์ทางด้านขวา</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, แอป</translation>
@@ -2029,6 +2028,7 @@
 <translation id="92580429198593979">คุณกดแป้นพิมพ์ลัดสำหรับการกลับสี คุณต้องการเปิดฟีเจอร์นี้ไหม</translation>
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> โดยทันที</translation>
+<translation id="938407504481277932">เดสก์ปัจจุบัน: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
 <translation id="945383118875625837">ลากลิงก์ไปยังแถบบุ๊กมาร์ก</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>

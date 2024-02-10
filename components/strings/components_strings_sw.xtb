@@ -585,6 +585,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2075497153347571252">Msimamizi wako amezuia <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2080021694978766903">Hupaswi kuweka watoa huduma wa utafutaji zaidi ya <ph name="MAX_ITEMS_LIMIT" /> katika sera hii.</translation>
+<translation id="2081482239432306393">Chaguo la namba ya nyumba limeteuliwa</translation>
 <translation id="20817612488360358">Mipangilio ya mfumo ya proksi imewekwa ili kutumiwa lakini usanidi dhahiri wa proksi pia umebainishwa.</translation>
 <translation id="2082238445998314030">Tokeo <ph name="RESULT_NUMBER" /> kati ya <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Ruhusu kila unapotembelea</translation>
@@ -1409,6 +1410,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3723663469265383848">Wakati wa kusasisha hutaweza kutumia kifaa chako kwa hadi dakika 10.</translation>
 <translation id="372429172604983730">Programu zinazoweza kusababisha hitilafu hii ni pamoja na kingavirusi, kinga mtandao, kichujio cha wavuti au programu ya seva mbadala.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uunde wasilisho jipya la Google katika huduma ya Slaidi za Google kwa haraka</translation>
+<translation id="3727309136762649052">Kihifadhi cha majina</translation>
 <translation id="3727850735097852673">Ili utumie Kidhibiti cha Manenosiri cha Google na MacOS Keychain, fungua tena Chrome na uruhusu ufikiaji wa Keychain. Vichupo vyako vitafunguka upya ukishafungua tena.</translation>
 <translation id="3733139489341305600">Magari yanayojiendesha yenyewe</translation>
 <translation id="3736520371357197498">Ikiwa unaelewa kiwango cha hatari kinachoweza kutokea, unaweza <ph name="BEGIN_LINK" />kutembelea tovuti hii isiyo salama<ph name="END_LINK" /> kabla programu hatari hazijaondolewa.</translation>
@@ -1573,6 +1575,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4089152113577680600">Trei ya 14</translation>
 <translation id="4092349052316400070">Jaza anwani</translation>
 <translation id="4096237801206588987">Inchi 11 x 15</translation>
+<translation id="4098306082496067348">Gusa maelezo ya kadi pepe ili uyaweke kwenye sehemu ya kulipa.</translation>
 <translation id="4098354747657067197">Kuna tovuti danganyifu mbele</translation>
 <translation id="4099048595830172239">Sera ya msimamizi haipendekezi kushiriki skrini yako na <ph name="APPLICATION_TITLE" /> wakati maudhui ya siri yanaonekana:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili uweke mapendeleo ya ukubwa wa fonti na miundo ya maandishi katika Chrome</translation>
@@ -1896,6 +1899,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4729147136006144950">Misaada na Uhisani</translation>
 <translation id="4730977633786878901">Maoni</translation>
 <translation id="4731638775147756694">Programu hii imezuiwa na msimamizi wako</translation>
+<translation id="4732860731866514038">Inapakua kifurushi cha lugha ya <ph name="LANGUAGE" />… asilimia <ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" /> inataka kutumia maelezo kuhusu mahali kifaa chako kilipo</translation>
 <translation id="4736491186715342415">Magari</translation>
 <translation id="4736825316280949806">Zima na uwashe Chromium</translation>
@@ -2255,7 +2259,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
           <ph name="LIST_ITEM" />Vidakuzi na data ya tovuti
           <ph name="LIST_ITEM" />Maelezo unayojaza katika fomu
         <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> ingependa kudhibiti na kuweka upya programu kwenye vifaa vyako vya MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Kinyume cha mpangilio wa kuangalia juu</translation>
 <translation id="5447235695608032700">Ruhusu <ph name="SITE" /> itumie maelezo yanayokuhusu iliyoyahifadhi</translation>
 <translation id="5447765697759493033">Tovuti hii haitatafsiriwa</translation>
@@ -2468,7 +2471,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5877831137320480913">Urembo na siha</translation>
 <translation id="5879989559903563723">Hairuhusiwi kwenye kipengele cha Matumizi ya wageni</translation>
 <translation id="5880050725127890683">Nenda kwenye kipengele cha ukaguzi wa usalama katika Chrome</translation>
-<translation id="5883861433316751031">Je, ungependa kudhibiti na kuweka upya programu kwenye vifaa vya MIDI?</translation>
 <translation id="5884465125445718607">Bahasha ya muundo wa Kichina ya ukubwa wa #6</translation>
 <translation id="5887400589839399685">Kadi imehifadhiwa</translation>
 <translation id="5887687176710214216">Ilitembelewa mara ya mwisho jana</translation>
@@ -2819,7 +2821,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6556866813142980365">Rudia</translation>
 <translation id="6557715786897013164">Inchi 14 x 17</translation>
 <translation id="6560786330438719938">Programu zilizosakinishwa au zilizoondolewa na ni mara ngapi zinatumika</translation>
-<translation id="6567084950885568327">Udhibiti na usanidi upya wa kifaa cha MIDI</translation>
 <translation id="6568793038316600992">Kitufe cha 'Dhibiti njia za kulipa', washa ili udhibiti maelezo yako ya malipo na ya kadi ya mikopo katika mipangilio ya Chrome</translation>
 <translation id="6569060085658103619">Unaangalia ukurasa wa kiendelezi</translation>
 <translation id="6569366777234823130">Filamu zilizojaa vituko</translation>
@@ -3200,6 +3201,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="733354035281974745">Futa akaunti ya ndani ya kifaa</translation>
 <translation id="7334320624316649418">Rudia Kupanga Upya</translation>
 <translation id="7335157162773372339">Inaweza kuomba ruhusa ya kutumia kamera yako</translation>
+<translation id="7336636595549675416">Namba ya nyumba</translation>
 <translation id="7337248890521463931">Onyesha mistari zaidi</translation>
 <translation id="7337706099755338005">Haipatikani kwenye mfumo wako.</translation>
 <translation id="733923710415886693">Cheti cha seva hakikufichuliwa kupitia Uwazi wa Cheti.</translation>
@@ -3905,7 +3907,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8671519637524426245">Thamani ya <ph name="SECURE_DNS_SALT" /> haitimizi masharti ya ukubwa.</translation>
 <translation id="867224526087042813">Sahihi</translation>
 <translation id="8672264262457010862">Biashara na viwanda</translation>
-<translation id="8673776281896298303">Kudhibiti na kuweka upya programu kwenye vifaa vyako vya MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Hakuna kuchelewa</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, jibu, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haukuweza kupakiwa kwa sababu:</translation>

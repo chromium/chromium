@@ -246,6 +246,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1428729058023778569">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Selvklebende film</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1431021750861456539">Automatisk fullskjerm</translation>
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
@@ -585,6 +586,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2075497153347571252">Administratoren din har blokkert <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2080021694978766903">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer.</translation>
+<translation id="2081482239432306393">Alternativet for husnummer er valgt</translation>
 <translation id="20817612488360358">Innstillinger for systemmellomtjener er stilt inn på å brukes, men en uttrykkelig mellomtjenerkonfigurasjon er også angitt.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Tillat for alle besøk</translation>
@@ -1409,6 +1411,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3723663469265383848">Under oppdateringen kan du ikke bruke enheten i opptil ti minutter.</translation>
 <translation id="372429172604983730">Apper som kan forårsake denne feilen, omfatter programvare for antivirus, brannmur og nettfiltrering eller proxy-tjenester.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny Google-presentasjon i Presentasjoner raskt</translation>
+<translation id="3727309136762649052">Navneområde</translation>
 <translation id="3727850735097852673">For å bruke Google Passordlagring med en macOS-nøkkelring, start Chrome på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="3733139489341305600">Autonome kjøretøy</translation>
 <translation id="3736520371357197498">Hvis du forstår sikkerhetsrisikoen, kan du <ph name="BEGIN_LINK" />gå til det usikre nettstedet<ph name="END_LINK" /> før de farlige programmene er fjernet.</translation>
@@ -1897,6 +1900,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4729147136006144950">Veldedighet og filantropi</translation>
 <translation id="4730977633786878901">Anmeldelser</translation>
 <translation id="4731638775147756694">Dette programmet er blokkert av administratoren din</translation>
+<translation id="4732860731866514038">Laster ned språkpakke for <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ber om å bruke posisjonen til enheten din</translation>
 <translation id="4736491186715342415">Motorkjøretøy</translation>
 <translation id="4736825316280949806">Start Chromium på nytt</translation>
@@ -2256,7 +2260,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
             <ph name="LIST_ITEM" />informasjon du har lagt inn i skjemaer
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> vil kontrollere og programmere MIDI-enhetene dine (SysEx)</translation>
 <translation id="5443468954631487277">Motsatt rekkefølge – forsiden opp</translation>
 <translation id="5447235695608032700">Tillat at <ph name="SITE" /> bruker informasjon de har lagret om deg</translation>
 <translation id="5447765697759493033">Dette nettstedet oversettes ikke</translation>
@@ -2283,6 +2286,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     <ph name="LINE_BREAK" />
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
+<translation id="5501712702042287009">automatisk fullskjerm</translation>
 <translation id="550365051221576010">Fyll ut alt</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerte bokmerker</translation>
@@ -2469,7 +2473,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5877831137320480913">Skjønnhet og trening</translation>
 <translation id="5879989559903563723">Ikke tillatt i gjestemodus</translation>
 <translation id="5880050725127890683">Gå til Chrome-sikkerhetssjekken</translation>
-<translation id="5883861433316751031">Vil du la nettstedet kontrollere og omprogrammere MIDI-enhetene dine?</translation>
 <translation id="5884465125445718607">Kinesisk konvolutt nr. 6</translation>
 <translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
@@ -2820,7 +2823,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6556866813142980365">Gjør om</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
 <translation id="6560786330438719938">Apper som installeres eller avinstalleres, og hvor ofte de brukes</translation>
-<translation id="6567084950885568327">Styring og omprogrammering av MIDI-enheter</translation>
 <translation id="6568793038316600992">Knappen «Administrer betalingsmåter» – aktiver for å administrere betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
 <translation id="6569366777234823130">Dramafilmer</translation>
@@ -3202,6 +3204,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="733354035281974745">Overstyrt av lokal konto på enheten</translation>
 <translation id="7334320624316649418">&amp;Omorganiser likevel</translation>
 <translation id="7335157162773372339">Kan be om å få bruke kameraet ditt</translation>
+<translation id="7336636595549675416">Husnummer</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
 <translation id="7337706099755338005">Ikke tilgjengelig på plattformen din.</translation>
 <translation id="733923710415886693">Tjenerens sertifikat er ikke vist i henhold til regelen for sertifikatåpenhet.</translation>
@@ -3908,7 +3911,6 @@ Mer informasjon:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-verdien oppfyller ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8672264262457010862">Forretning og industri</translation>
-<translation id="8673776281896298303">kontrollere og omprogrammere MIDI-enhetene dine (SysEx)</translation>
 <translation id="8676424191133491403">Uten forsinkelse</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nettsiden på <ph name="PAGE" /> kunne ikke lastes inn fordi</translation>

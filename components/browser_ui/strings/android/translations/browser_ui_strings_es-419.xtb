@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Las cookies de terceros están limitadas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Permite el acceso de terceros a un sitio específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Vence mañana}other{Vence en # días}}</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
@@ -187,12 +188,14 @@
 <translation id="4149994727733219643">Vista simplificada para páginas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
+<translation id="4169019654293892025">Ocultar <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Se conectó a un dispositivo USB</translation>
 <translation id="4194328954146351878">Preguntar antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir la configuración de la ubicación</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> de <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan vibrar el dispositivo</translation>
 <translation id="4259722352634471385">Navegación bloqueada: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitidas</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336566011000459927">Chrome volverá a limitar las cookies hoy</translation>
@@ -271,7 +274,7 @@
 <translation id="5591840828808741583">Se bloqueó <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> puede usar tu información mientras navegas</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
-<translation id="7137403271056944713">Control y reprogramación de MIDI</translation>
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Zoom de página</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7791543448312431591">Agregar</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continúa con esta pestaña}other{Continúa con estas pestañas}}</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio está utilizando la cámara</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>

@@ -66,7 +66,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1217633719248931900">Fara í forrit</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, forrit úr Play Store</translation>
 <translation id="1225748608451425081">Chromebook er læst vegna þekkts vandamáls. Þú getur skráð þig aftur inn eftir: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">óvirkt skrifborð</translation>
 <translation id="1229194443904279055">Hætta að velja</translation>
 <translation id="1235458158152011030">Þekkt netkerfi</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tengt.</translation>
@@ -374,7 +373,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2575685495496069081">Lokað er á margar innskráningar</translation>
 <translation id="2579264398927991698">Uppfærslur fastbúnaðar</translation>
 <translation id="2582112259361606227">Endurræstu til að uppfæra</translation>
-<translation id="2586561057878260610">Ýttu á Ctrl + W til að sameina við <ph name="DESK_NAME" />. Ýttu á Ctrl + Shift + W til að loka skrifborði og gluggum.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
 <translation id="2595239820337756193">5 km í mílum</translation>
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
@@ -511,7 +509,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3154351730702813399">Stjórnandi tækisins gæti fylgst með vafravirkni þinni.</translation>
 <translation id="316086887565479535">Óstudd forrit í sniðmáti</translation>
 <translation id="3160929076476941240">2 klst.</translation>
-<translation id="3161500364292033097">Loka skrifborði og gluggum</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> niðurfærir <ph name="DEVICE_TYPE" /> í eldri útgáfu. Tækið verður endurstillt og öllum gögnum verður eytt.</translation>
 <translation id="3170769098533255179">Engin tæki eru tengd. Á meðan heitur reitur er notaður verður slökkt á WiFi.</translation>
 <translation id="3171170659304083361">Stillingar innfærsluaðferða</translation>
@@ -672,6 +669,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
+<translation id="3712143870407382523">Veldu glugga fyrir þessa hlið</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> í viðbót eru ekki í þessu tæki.</translation>
@@ -1048,7 +1046,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> viðburðir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> var sameinað við <ph name="IN_PLACE_APP" /> til að búa til nýja möppu.</translation>
-<translation id="5203299837691351876">virkt skrifborð</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 tilkynning í viðbót}one{# tilkynning í viðbót}other{# tilkynningar í viðbót}}</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
@@ -1066,7 +1063,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5258528442992323769">Engin vistuð skrifborð</translation>
 <translation id="5260676007519551770">Skrifborð 4</translation>
 <translation id="5268819379131021772">Google-verkefnalisti</translation>
-<translation id="5275923704957843041">Forskoðun skrifborðs</translation>
 <translation id="5277869901083657836">Skipta á milli pennaverkfæra</translation>
 <translation id="5278086053818066789">Kveikja/slökkva á ChromeVox (raddsvörun)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vill ná athygli þinni.</translation>
@@ -1416,6 +1412,7 @@ Ný uppsetning</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> af geymslurými í notkun | <ph name="STORAGE_TOTAL_SIZE" /> alls</translation>
 <translation id="6614169507485700968">Kveikt er á persónuverndarskjá</translation>
 <translation id="6622679827379792051">Setja upp skoðun forrita símans</translation>
+<translation id="6624493541160101248">Núverandi skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og fleiri tilkynningar eru faldar vegna þess að kveikt er á gægjuvörn</translation>
 <translation id="6627638273713273709">Leit+shift+K</translation>
 <translation id="662830937908749204">Færa fókus á næsta glugga</translation>
@@ -1470,7 +1467,6 @@ Ný uppsetning</translation>
 <translation id="6819327813400217281">Myndavél fest við neðra horn vinstra megin</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>
 <translation id="6827049576281411231">Loka viðburðasvæði</translation>
-<translation id="6831561626108366035">Notaðu hnappinn <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Hættuleg skrá</translation>
 <translation id="6837621009301897464">Til að taka skjáskot skaltu þrýsta</translation>
 <translation id="6852052252232534364">Smelltu til að kveikja</translation>
@@ -1509,6 +1505,7 @@ Ný uppsetning</translation>
 <translation id="698231206551913481">Öllum skrám og staðbundnum gögnum sem tengjast notandanum verður varanlega eytt þegar notandinn er fjarlægður.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Horfðu á stutta kynningu til að læra á grunnatriði Chromebook. Komdu þér á rétta braut í 6 skrefum.</translation>
+<translation id="7000027735917578303">Stillingar glugga og skrifborðs</translation>
 <translation id="7004910047186208204">Tengjast við farsímagögn</translation>
 <translation id="7005239792648594238">Opnaðu forrit til að hefjast handa</translation>
 <translation id="7007983414944123363">Ekki tókst að staðfesta PIN-númerið eða aðgangsorðið. Reyndu aftur.</translation>
@@ -1760,6 +1757,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8001755249288974029">Velja texta frá bendli að upphafi línu</translation>
 <translation id="8004512796067398576">Auka</translation>
 <translation id="8026334261755873520">Hreinsa vafragögn</translation>
+<translation id="802782383769312836">Fyrra skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Tenging við heitan reit mistókst</translation>
 <translation id="8029629653277878342">Krafa er um PIN-númer eða aðgangsorð fyrir aukið öryggi</translation>
 <translation id="8030169304546394654">Aftengt</translation>
@@ -1807,6 +1805,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8219451629189078428">Kveikt þarf að vera á Chromebook og tækið þarf að vera í sambandi á meðan. Gakktu úr skugga um að hleðslutækið eða millistykkið sé örugglega í sambandi, bæði við Chromebook og innstunguna. Ekki slökkva á Chromebook.</translation>
 <translation id="8230305195727960608">umsnúningur lita</translation>
 <translation id="8236042855478648955">Tími til að taka sér hlé</translation>
+<translation id="8237964652943995219">Næsta skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Virkja skrifborð til hægri</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
@@ -2034,6 +2033,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="92580429198593979">Þú ýttir á flýtilykil fyrir umsnúning lita. Viltu kveikja á honum?</translation>
 <translation id="925832987464884575">Fela forskoðun</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> krefst þess að þú uppfærir <ph name="DEVICE_TYPE" /> strax</translation>
+<translation id="938407504481277932">Núverandi skrifborð: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hvað er á dagskránni hjá mér?</translation>
 <translation id="945383118875625837">Dragðu tengil á bókamerkjastikuna</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>

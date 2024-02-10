@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4151930093518524179">Varsayılan yakınlaştırma</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />modülünü gizle</translation>
 <translation id="4169549551965910670">USB cihaza bağlandı</translation>
 <translation id="4194328954146351878">NFC cihazlarda sitelere bilgileri görme ve değiştirme izni vermeden önce sor (önerilir)</translation>
 <translation id="4200726100658658164">Konum Ayarlarını açın</translation>
+<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> cihazından <ph name="RECENCY" /> <ph name="SEPARATOR" /></translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>
-<translation id="7137403271056944713">MIDI cihaz kontrolü/yeniden programlama</translation>
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yenile</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Sayfa yakınlaştırma</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7791543448312431591">Ekle</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Bu sekmeyle devam edin}other{Bu sekmelerle devam edin}}</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804248752222191302">Bir site kameranızı kullanıyor</translation>
 <translation id="7807060072011926525">Google tarafından sağlanır</translation>

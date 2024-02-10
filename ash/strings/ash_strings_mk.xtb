@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">Отворете ја апликацијата</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, апликација од Play Store</translation>
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">неактивна работна површина</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
 <translation id="2579264398927991698">Ажурирања на фирмвер</translation>
 <translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
-<translation id="2586561057878260610">Притиснете Ctrl + W за да комбинирате со <ph name="DESK_NAME" />. Притиснете Ctrl + Shift + W за да ги затворите работната површина и прозорците.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Администраторот на уредот може да ви го следи прелистувањето.</translation>
 <translation id="316086887565479535">Неподдржани апликации во шаблон</translation>
 <translation id="3160929076476941240">2 ч.</translation>
-<translation id="3161500364292033097">Затворете ги работната површина и прозорците</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> го враќа вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="3170769098533255179">Нема поврзани уреди. Wi-Fi ќе остане исклучена додека се користи точка на пристап.</translation>
 <translation id="3171170659304083361">Поставки за методи за внесување</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">Население во Нигерија</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Претходно поврзани</translation>
+<translation id="3712143870407382523">Изберете прозорец за оваа страна</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отвори кога ќе заврши преземањето</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и уште <ph name="UNAVAILABLE_APPS_COUNT" /> не се на уредов.</translation>
@@ -1049,7 +1047,6 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> настани</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> е комбинирана со <ph name="IN_PLACE_APP" /> за да се создаде нова папка.</translation>
-<translation id="5203299837691351876">активна работна површина</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 друго известување}one{# друго известување}other{# други известувања}}</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
@@ -1067,7 +1064,6 @@
 <translation id="5258528442992323769">Нема зачувани работни површини</translation>
 <translation id="5260676007519551770">Биро 4</translation>
 <translation id="5268819379131021772">Список со задачи на Google</translation>
-<translation id="5275923704957843041">Преглед на работна површина</translation>
 <translation id="5277869901083657836">Прикажи/Скриј алатки за пенкало</translation>
 <translation id="5278086053818066789">Вклучете/исклучете ChromeVox (говорни повратни информации)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> го бара вашето внимание.</translation>
@@ -1417,6 +1413,7 @@
 <translation id="6613765291890844037">Искористен простор: <ph name="STORAGE_IN_USE_SIZE" /> | вкупен простор: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
 <translation id="6622679827379792051">Поставете прегледување на апликациите на телефонот</translation>
+<translation id="6624493541160101248">Тековна работна површина: <ph name="DESK_NAME" /> Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
 <translation id="662830937908749204">Преместете го фокусот на следното окно</translation>
@@ -1471,7 +1468,6 @@
 <translation id="6819327813400217281">Камерата е поставена во долниот лев агол</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6827049576281411231">Затворете ја таблата со настани</translation>
-<translation id="6831561626108366035">Одете на копчето за <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Опасна датотека</translation>
 <translation id="6837621009301897464">За да снимите слика од екранот, притиснете</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
@@ -1510,6 +1506,7 @@
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Кликнете „Потврди“ за да ги задржите промените. Претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Разгледајте накратко за да дознаете како се користи вашиот Chromebook. Подгответе се во 6 чекори.</translation>
+<translation id="7000027735917578303">Поставки за прозорци и работни површини</translation>
 <translation id="7004910047186208204">Поврзете се на мобилен интернет</translation>
 <translation id="7005239792648594238">Отворете апликација за да започнете</translation>
 <translation id="7007983414944123363">Не може да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
@@ -1761,6 +1758,7 @@
 <translation id="8001755249288974029">Го избира текстот од курсорот до почетокот на линијата</translation>
 <translation id="8004512796067398576">Зголемување</translation>
 <translation id="8026334261755873520">Исчисти податоци од прелистување</translation>
+<translation id="802782383769312836">Претходна работна површина: <ph name="DESK_NAME" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Поврзувањето со точка на пристап не успеа</translation>
 <translation id="8029629653277878342">Потребен е PIN или лозинка за поголема безбедност</translation>
 <translation id="8030169304546394654">Не е поврзано</translation>
@@ -1808,6 +1806,7 @@
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8230305195727960608">Режим за инверзија на боите</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
+<translation id="8237964652943995219">Следна работна површина: <ph name="DESK_NAME" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Активирајте работна површина оддесно</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
@@ -2035,6 +2034,7 @@
 <translation id="92580429198593979">Притиснавте кратенка од тастатурата за инверзија на боите. Дали сакате да ја вклучите?</translation>
 <translation id="925832987464884575">Скриј ги прегледите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Тековна работна површина: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
 <translation id="945383118875625837">Повлечете го линкот до лентата со обележувачи</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>

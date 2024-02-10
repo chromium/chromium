@@ -575,6 +575,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3968505803272650567">Pārvaldīt intereses</translation>
 <translation id="3989635538409502728">Izrakstīties</translation>
+<translation id="3994422733891749358">Izvēlieties, kurus paziņojumus saņemt</translation>
 <translation id="3995521777587992544">Lapas ielādes norises josla, ielādēti <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Jūsu administrators ir atspējojis paroļu kopīgošanu.</translation>
 <translation id="4002019827078931033">Pārvietot adreses joslu uz augšdaļu</translation>
@@ -684,6 +685,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4592368184551360546">Tastatūra</translation>
 <translation id="4601095002996233687">Detalizēta aizdomīgu lejupielāžu pārbaude.</translation>
 <translation id="4606247758155004938">Pārlūku pārvalda jūsu organizācija.</translation>
+<translation id="4607887340472970274">Cenu izsekošana</translation>
 <translation id="4611811151908969241">Paslēpt vienumu Nesekot domēnam <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Google meklēšana</translation>
 <translation id="4616391354457235490">Atsaukt</translation>
@@ -724,6 +726,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="478808905805139173">Vai atvērt inkognito režīmā?</translation>
 <translation id="4803185665210547709">Pārvalda jūsu organizācija.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="4805558373042023669">Ziņas un jūsu interesēm atbilstošs saturs.</translation>
 <translation id="4805759445554688327">Nederīgs kartes numurs</translation>
 <translation id="4808646838864186379">Piegāde atcelta</translation>
 <translation id="4808744395915275922">Atjauninājumi</translation>
@@ -1237,6 +1240,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7409985198648820906">Nelasīti raksti: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Turpināt</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
+<translation id="7417689656810783109">Pārdēvēt grupu</translation>
 <translation id="7418640008860669073">Saglabāt šajā vietā:</translation>
 <translation id="7425346204213733349">Grāmatzīmju, vēstures, paroļu un citu iestatījumu izmaiņas vairs netiks sinhronizētas ar jūsu Google kontu. Tomēr esošie dati joprojām tiks glabāti jūsu Google kontā.</translation>
 <translation id="7431991332293347422">Kontrolējiet, kā jūsu pārlūkošanas vēsture tiek izmantota Meklēšanas un cita satura personalizēšanai</translation>
@@ -1414,6 +1418,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="828291969289324795">{count,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="8283172974887967105">Iestatīt…</translation>
 <translation id="8286036467436129157">Pierakstīties</translation>
+<translation id="8292843446079898078">Saņemiet paziņojumus par izsekoto produktu cenu kritumu.</translation>
 <translation id="8299417921174340354">Lai izmantotu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="8299613349954694191">Atveriet inkognito cilni, lai privāti pārlūkotu tīmekli.</translation>
 <translation id="8311853334103696030">Paslēpt vienumu “Cenas izsekošana”</translation>
@@ -1421,6 +1426,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8328777765163860529">Aizvērt visu</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
 <translation id="834783239627985533">Visbiežāk apmeklētās vietnes</translation>
+<translation id="8358401059263985056">Ieslēgt paziņojumus</translation>
 <translation id="8364841868226993049">Notiek attēla saglabāšana pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />…</translation>
 <translation id="8370406443343902172">Pāriet uz iestatījumiem...</translation>
 <translation id="8374977641764177587">Vai ieslēgt paziņojumus?</translation>

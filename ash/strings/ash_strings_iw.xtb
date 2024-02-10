@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">פתיחת האפליקציה</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />, אפליקציה מחנות Play</translation>
 <translation id="1225748608451425081">‏ה-Chromebook שלך נעול עקב בעיה ידועה. ניתן יהיה להיכנס בעוד: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">שולחן עבודה וירטואלי לא פעיל</translation>
 <translation id="1229194443904279055">סיום הבחירה</translation>
 <translation id="1235458158152011030">רשתות מוכרות</translation>
 <translation id="1239161794459865856">התכונה <ph name="FEATURE_NAME" /> מחוברת.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">הכניסה עם מספר חשבונות הושבתה</translation>
 <translation id="2579264398927991698">עדכוני קושחה</translation>
 <translation id="2582112259361606227">צריך להפעיל מחדש כדי לעדכן</translation>
-<translation id="2586561057878260610">‏יש להקיש על Ctrl +‏ W כדי לשלב עם <ph name="DESK_NAME" />. יש להקיש על Ctrl +‏ Shift +‏ W כדי לסגור את שולחן העבודה הווירטואלי והחלונות.</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2595239820337756193">כמה מיילים יש ב-5 קילומטרים</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ייתכן שמנהל המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
 <translation id="316086887565479535">האפליקציות בתבנית לא נתמכות</translation>
 <translation id="3160929076476941240">שעתיים</translation>
-<translation id="3161500364292033097">סגירה של שולחן העבודה הווירטואלי והחלונות</translation>
 <translation id="316356270129335934">ה-<ph name="DEVICE_TYPE" /> יוחזר לגרסה הקודמת על ידי <ph name="MANAGER" />. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="3170769098533255179">‏אין מכשירים מחוברים. בזמן השימוש בנקודה לשיתוף אינטרנט, ה-Wi-Fi יישאר כבוי.</translation>
 <translation id="3171170659304083361">הגדרות של שיטות הקלט</translation>
@@ -1048,7 +1045,6 @@
 <translation id="5197255632782567636">אינטרנט</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> אירועים</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
-<translation id="5203299837691351876">שולחן עבודה וירטואלי פעיל</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}one{# התראות נוספות}two{# התראות נוספות}other{# התראות נוספות}}</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
@@ -1066,7 +1062,6 @@
 <translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
 <translation id="5268819379131021772">‏רשימת המשימות של Google</translation>
-<translation id="5275923704957843041">תצוגה מקדימה של שולחן העבודה הווירטואלי</translation>
 <translation id="5277869901083657836">הצגה או הסתרה של כלי הסטיילוס</translation>
 <translation id="5278086053818066789">‏הפעלה/השבתה של ChromeVox (קורא מסך קולי)</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
@@ -1470,7 +1465,6 @@
 <translation id="6819327813400217281">המצלמה מוצמדת לפינה הימנית התחתונה</translation>
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>
 <translation id="6827049576281411231">סגירת חלונית האירועים</translation>
-<translation id="6831561626108366035">מעבר ללחצן <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">קובץ מסוכן</translation>
 <translation id="6837621009301897464">כדי לצלם את המסך, לוחצים על</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>

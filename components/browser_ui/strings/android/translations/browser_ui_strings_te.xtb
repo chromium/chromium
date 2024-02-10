@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">వెబ్ పేజీల కోసం సరళమైన వీక్షణ</translation>
 <translation id="4151930093518524179">ఆటోమేటిక్ జూమ్ సెట్టింగ్</translation>
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />‌ను దాచండి</translation>
 <translation id="4169549551965910670">USB పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="4194328954146351878">NFC పరికరాలలో సమాచారాన్ని చూడటానికి, మార్చడానికి సైట్‌లను అనుమతించే ముందు అడగాలి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="4200726100658658164">లొకేషన్ సెట్టింగ్‌లను తెరవండి</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ఎంచుకోబడింది}other{# ఎంచుకోబడ్డాయి}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ఎంచుకోబడ్డాయి.  ఎంపికలు స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉన్నాయి</translation>
-<translation id="7137403271056944713">MIDI డివైజ్ కంట్రోల్ / రీప్రోగ్రామ్</translation>
 <translation id="7141896414559753902">మళ్లింపులు, పాప్-అప్‌లను చూపనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>

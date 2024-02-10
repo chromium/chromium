@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">Бул эскертүүнү көрүп жатсаңыз, бул сайтта HTTPS колдоого алынбайт. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Өзүн чаптама тасмасы</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
+<translation id="1431021750861456539">Автоматтык толук экран</translation>
 <translation id="1432187715652018471">баракча кызматты иштеткичти орноткону жатат.</translation>
 <translation id="1432581352905426595">Издөө каражаттарын башкаруу</translation>
 <translation id="1433225466058025572">Файлдарыңызды кайра жылдырып көрүңүз</translation>
@@ -585,6 +586,7 @@
 <translation id="2075497153347571252">Администраторуңуз <ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> колдонууга тыюу салды</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2080021694978766903">Бул саясатка киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек.</translation>
+<translation id="2081482239432306393">"Үйдүн номери" деген вариант тандалды</translation>
 <translation id="20817612488360358">Системанын прокси параметрлери коюлду жана ошону менен катар, айкын прокси конфигурайиясы да белгиленди.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
 <translation id="2083256696566019397">Кирген сайын уруксат берүү</translation>
@@ -1408,6 +1410,7 @@
 <translation id="3723663469265383848">Жаңыртылып жатканда түзмөгүңүздү 10 мүнөткө чейин колдоно албайсыз.</translation>
 <translation id="372429172604983730">Мындай катага себеп болуучу колдонмолорго антивирус, тармактык коргоо, веб-чыпкалоо же прокси программа кирет.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides кызматында жаңы Google презентациясын түзүү үчүн Tab, андан кийин Enter баскычын басыңыз.</translation>
+<translation id="3727309136762649052">Ысымдар мейкиндиги</translation>
 <translation id="3727850735097852673">Сырсөздөрдү башкаргычты macOS Keychain менен колдонуу үчүн Chrome'ду кайра иштетип, Keychain'ге мүмкүнчүлүк бериңиз. Кайра иштеткенден кийин өтмөктөрүңүз кайрадан ачылат.</translation>
 <translation id="3733139489341305600">Автономдуу унаалар</translation>
 <translation id="3736520371357197498">Эгер коопсуздугуңузга кандай коркунуч келтирилип жаткандыгын түшүнсөңүз, коркунучтуу программалар алынып салынганга чейин бул <ph name="BEGIN_LINK" />кооптуу сайтка<ph name="END_LINK" /> кире берсеңиз болот.</translation>
@@ -1896,6 +1899,7 @@
 <translation id="4729147136006144950">Кайрымдуулук жана филантропия</translation>
 <translation id="4730977633786878901">Сын-пикирлер</translation>
 <translation id="4731638775147756694">Бул колдонмо администраторуңуз тарабынан бөгөттөлдү</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> тил топтому жүктөлүп алынууда... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> түзмөгүңүздүн жайгашкан жерин пайдаланганы жатат</translation>
 <translation id="4736491186715342415">Автотранспорттор</translation>
 <translation id="4736825316280949806">Chromium’ду өчүрүп-күйгүзүңүз</translation>
@@ -2255,7 +2259,6 @@
             <ph name="LIST_ITEM" />Cookie файлдары жана сайттагы маалымат
             <ph name="LIST_ITEM" />Формаларга киргизилген маалымат
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> MIDI түзмөктөрүңүздү (SysEx) көзөмөлдөп жана кайра программдаганы жатат</translation>
 <translation id="5443468954631487277">Тескери иретте алдыңкы бетин өйдө каратып</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> сайтына анда сакталган маалыматыңызды колдонууга уруксат берүү</translation>
 <translation id="5447765697759493033">Бул сайт которулбайт</translation>
@@ -2282,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     Система администраторуңузга кайрылып көрүңүз.</translation>
 <translation id="549333378215107354">Өлчөмү: 3</translation>
+<translation id="5501712702042287009">автоматтык толук экран</translation>
 <translation id="550365051221576010">Баарын толтуруу</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Башкарылган кыстармалар</translation>
@@ -2468,7 +2472,6 @@
 <translation id="5877831137320480913">Сулуулук жана фитнес</translation>
 <translation id="5879989559903563723">Конок режиминде тыюу салынат</translation>
 <translation id="5880050725127890683">Chrome коопсуздук текшерүүсүнө өтүңүз</translation>
-<translation id="5883861433316751031">MIDI түзмөктөрүн көзөмөлдөп, кайра программалайсызбы?</translation>
 <translation id="5884465125445718607">Конверт Кытайча #6</translation>
 <translation id="5887400589839399685">Карта сакталды</translation>
 <translation id="5887687176710214216">Кечээ акыркы жолу кирген</translation>
@@ -2819,7 +2822,6 @@
 <translation id="6556866813142980365">Кайталоо</translation>
 <translation id="6557715786897013164">14 x 17 дюйм</translation>
 <translation id="6560786330438719938">Орнотулган же чыгарылган колдонмолор жана алар канчалык көп колдонулат</translation>
-<translation id="6567084950885568327">MIDI түзмөктөрүн башкаруу элементтери жана кайра программалоо</translation>
 <translation id="6568793038316600992">"Төлөм ыкмаларын башкаруу" баскычы. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн иштетиңиз</translation>
 <translation id="6569060085658103619">Кеңейтүү баракчасын карап жатасыз</translation>
 <translation id="6569366777234823130">Драма тасмалары</translation>
@@ -3202,6 +3204,7 @@
 <translation id="733354035281974745">Түзмөктөгү аккаунтту өзгөртүү</translation>
 <translation id="7334320624316649418">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="7335157162773372339">Камераңызды колдонууга уруксат сурай алат</translation>
+<translation id="7336636595549675416">Үйдүн номери</translation>
 <translation id="7337248890521463931">Көбүрөөк көрсөтүү</translation>
 <translation id="7337706099755338005">Сиздин платформада жеткиликсиз.</translation>
 <translation id="733923710415886693">Сервердин тастыктамасы "Тастыктаманын тунуктук саясаты" аркылуу ачыкка чыгарылган эмес.</translation>
@@ -3908,7 +3911,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> мааниси өлчөмгө коюлган талаптарга жооп бербейт.</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8672264262457010862">Бизнес жана өнөр-жай</translation>
-<translation id="8673776281896298303">MIDI түзмөктөрүңүздү (SysEx) көзөмөлдөө жана кайра программалоо</translation>
 <translation id="8676424191133491403">Дароо</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жооп, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> дарегиндеги веб-баракча жүктөлбөй койду, анткени:</translation>

@@ -66,7 +66,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1217633719248931900">Přejít na aplikaci</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikace z Obchodu Play</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">neaktivní plocha</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
 <translation id="1235458158152011030">Známé sítě</translation>
 <translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
@@ -374,7 +373,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2575685495496069081">Vícenásobné přihlášení je zakázáno.</translation>
 <translation id="2579264398927991698">Aktualizace firmwaru</translation>
 <translation id="2582112259361606227">Restartovat a aktualizovat</translation>
-<translation id="2586561057878260610">Stisknutím Ctrl + W sloučíte s plochou <ph name="DESK_NAME" />. Stisknutím Ctrl + Shift + W plochu a okna zavřete.</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
@@ -511,7 +509,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3154351730702813399">Správce zařízení může sledovat vaši aktivitu při procházení.</translation>
 <translation id="316086887565479535">Nepodporované aplikace v šabloně</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Zavřít plochu a okna</translation>
 <translation id="316356270129335934">Organizace <ph name="MANAGER" /> vaše zařízení <ph name="DEVICE_TYPE" /> převádí na předchozí verzi. Zařízení se resetuje a všechna data se vymažou.</translation>
 <translation id="3170769098533255179">Nejsou připojena žádná zařízení. Při používání hotspotu zůstane Wi-Fi vypnutá.</translation>
 <translation id="3171170659304083361">Nastavení metody zadávání</translation>
@@ -672,6 +669,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
+<translation id="3712143870407382523">Vyberte okno pro tuto stranu</translation>
 <translation id="371370241367527062">Přední mikrofon</translation>
 <translation id="3713734891607377840">Po dokončení otevřít</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> a další aplikace (<ph name="UNAVAILABLE_APPS_COUNT" />) na tomto zařízení nejsou.</translation>
@@ -1048,7 +1046,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, počet událostí: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> byla sloučena s aplikací <ph name="IN_PLACE_APP" /> a byla vytvořena nová složka.</translation>
-<translation id="5203299837691351876">aktivní plocha</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
@@ -1066,7 +1063,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5258528442992323769">Žádné uložené plochy</translation>
 <translation id="5260676007519551770">Plocha 4</translation>
 <translation id="5268819379131021772">Seznam úkolů Google</translation>
-<translation id="5275923704957843041">Náhled plochy</translation>
 <translation id="5277869901083657836">Přepnout nástroje dotykového pera</translation>
 <translation id="5278086053818066789">Zapnout/vypnout funkci ChromeVox (hlasovou odezvu)</translation>
 <translation id="5283099933536931082">Aplikace <ph name="APP_ITEM_TITLE" /> vyžaduje vaši pozornost.</translation>
@@ -1416,6 +1412,7 @@ Nová instalace</translation>
 <translation id="6613765291890844037">Využité úložiště: <ph name="STORAGE_IN_USE_SIZE" /> | celkem <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>
 <translation id="6622679827379792051">Nastavit zobrazování aplikací z telefonu</translation>
+<translation id="6624493541160101248">Aktuální plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Oznámení aplikací <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a další oznámení jsou skryta, protože je zapnutá ochrana před špehováním</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
 <translation id="662830937908749204">Přejít na další panel</translation>
@@ -1470,7 +1467,6 @@ Nová instalace</translation>
 <translation id="6819327813400217281">Kamera byla připnuta do levého dolního rohu</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
 <translation id="6827049576281411231">Zavřít panel událostí</translation>
-<translation id="6831561626108366035">Přejít na plochu <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Nebezpečný soubor</translation>
 <translation id="6837621009301897464">Pokud chcete pořídit snímek obrazovky, stiskněte</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
@@ -1509,6 +1505,7 @@ Nová instalace</translation>
 <translation id="698231206551913481">Po odebrání tohoto uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena.</translation>
 <translation id="6984028004251196682">Monitor <ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Pokud změny chcete ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Projděte si rychlou prohlídku a naučte se v Chromebooku orientovat. K rozjezdu stačí šest kroků.</translation>
+<translation id="7000027735917578303">Nastavení oken a ploch</translation>
 <translation id="7004910047186208204">Připojte se k mobilní datové síti</translation>
 <translation id="7005239792648594238">Pokud chcete začít, otevřete aplikaci</translation>
 <translation id="7007983414944123363">Váš PIN nebo heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
@@ -1759,6 +1756,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8001755249288974029">Vybrat text od kurzoru do začátku řádku</translation>
 <translation id="8004512796067398576">Zvýšit</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>
+<translation id="802782383769312836">Předchozí plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Připojení k hotspotu se nezdařilo</translation>
 <translation id="8029629653277878342">Kvůli zabezpečení je potřeba zadat PIN nebo heslo</translation>
 <translation id="8030169304546394654">Odpojeno</translation>
@@ -1806,6 +1804,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8219451629189078428">Chromebook po tuto dobu musí zůstat zapnutý a připojený ke zdroji napájení. Kabely adaptéru nebo nabíječky musí být správně zapojeny do Chromebooku i do zásuvky. Chromebook nevypínejte.</translation>
 <translation id="8230305195727960608">Režim převrácení barev</translation>
 <translation id="8236042855478648955">Čas na přestávku</translation>
+<translation id="8237964652943995219">Další plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Aktivovat plochu vpravo</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikace</translation>
@@ -2032,6 +2031,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="92580429198593979">Stiskli jste klávesovou zkratku pro převrácení barev. Chcete ho zapnout?</translation>
 <translation id="925832987464884575">Skrýt náhledy</translation>
 <translation id="937214777182567951">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> okamžitě aktualizovali.</translation>
+<translation id="938407504481277932">Aktuální plocha: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
 <translation id="945383118875625837">Přetáhněte odkaz na lištu záložek</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>

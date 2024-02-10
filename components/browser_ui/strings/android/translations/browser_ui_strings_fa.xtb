@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">نمای ساده‌شده برای صفحه‌های وب</translation>
 <translation id="4151930093518524179">بزرگ‌نمایی پیش‌فرض</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
+<translation id="4169019654293892025">پنهان کردن <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">‏به دستگاه USB متصل است</translation>
 <translation id="4194328954146351878">‏قبل‌از اینکه به سایت‌ها اجازه داده شود اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4200726100658658164">باز کردن «تنظیمات مکان»</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> مورد انتخاب شد.  گزینه‌ها در نزدیکی بالای صفحه دردسترس است</translation>
-<translation id="7137403271056944713">‏برنامه‌ریزی مجدد / کنترل دستگاه MIDI</translation>
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>
 <translation id="7180611975245234373">بازآوری</translation>

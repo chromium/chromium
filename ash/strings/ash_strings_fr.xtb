@@ -66,7 +66,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1217633719248931900">Accéder à l'appli</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">bureau inactif</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
@@ -374,7 +373,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2575685495496069081">La connexion multicompte a été désactivée</translation>
 <translation id="2579264398927991698">Mises à jour du micrologiciel</translation>
 <translation id="2582112259361606227">Redémarrer pour mettre à jour</translation>
-<translation id="2586561057878260610">Appuyez sur Ctrl+W pour combiner avec <ph name="DESK_NAME" />. Appuyez sur Ctrl+Maj+W pour fermer le bureau et les fenêtres.</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
@@ -511,7 +509,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="3170769098533255179">Aucun appareil connecté. Lors de l'utilisation d'un point d'accès, le Wi-Fi reste désactivé.</translation>
 <translation id="3171170659304083361">Paramètres des modes de saisie</translation>
@@ -672,6 +669,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3702846122927433391">Population au Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
+<translation id="3712143870407382523">Choisissez une fenêtre pour ce côté</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
@@ -1048,7 +1046,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
-<translation id="5203299837691351876">bureau actif</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 autre notification}one{# autre notification}other{# autres notifications}}</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
@@ -1066,7 +1063,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5268819379131021772">Liste de tâches Google</translation>
-<translation id="5275923704957843041">Aperçu du bureau</translation>
 <translation id="5277869901083657836">Activer/Désactiver les outils de stylet</translation>
 <translation id="5278086053818066789">Activer/Désactiver ChromeVox (commentaires audio)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiert votre attention.</translation>
@@ -1173,7 +1169,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
-<translation id="5677928146339483299">Bloqué</translation>
+<translation id="5677928146339483299">Bloqués</translation>
 <translation id="5678564054339031017">Afficher la semaine suivante</translation>
 <translation id="5679050765726761783">Adaptateur basse consommation branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas disponible pour le compte utilisateur actuel.</translation>
@@ -1416,6 +1412,7 @@ Nouvelle installation</translation>
 <translation id="6613765291890844037">Espace de stockage : <ph name="STORAGE_IN_USE_SIZE" /> utilisés | <ph name="STORAGE_TOTAL_SIZE" /> au total</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6622679827379792051">Configurer l'affichage des applis de votre téléphone</translation>
+<translation id="6624493541160101248">Bureau actuel : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Les notifications <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection anti-regard est activée</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="662830937908749204">Placer le curseur dans le volet suivant</translation>
@@ -1470,7 +1467,6 @@ Nouvelle installation</translation>
 <translation id="6819327813400217281">Appareil photo aligné sur l'angle inférieur gauche</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
-<translation id="6831561626108366035">Accédez au bouton <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6837621009301897464">Pour prendre une capture d'écran, appuyez sur</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
@@ -1509,6 +1505,7 @@ Nouvelle installation</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> n'est pas compatible avec le <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution a été définie sur <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Découvrez comment utiliser votre Chromebook. Lancez-vous en six étapes.</translation>
+<translation id="7000027735917578303">Paramètres des fenêtres et des bureaux</translation>
 <translation id="7004910047186208204">Connecter aux données mobiles</translation>
 <translation id="7005239792648594238">Ouvrez une appli pour commencer</translation>
 <translation id="7007983414944123363">Impossible de valider votre code ou votre mot de passe. Réessayez.</translation>
@@ -1761,6 +1758,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8001755249288974029">Sélectionner le texte entre le curseur et le début de la ligne</translation>
 <translation id="8004512796067398576">Augmenter</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
+<translation id="802782383769312836">Bureau précédent : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Échec de la connexion au point d'accès</translation>
 <translation id="8029629653277878342">Veuillez saisir le code ou mot de passe pour renforcer la sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
@@ -1808,6 +1806,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché à une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise électrique. N'éteignez pas votre Chromebook.</translation>
 <translation id="8230305195727960608">Mode d'inversion des couleurs</translation>
 <translation id="8236042855478648955">Une pause s'impose !</translation>
+<translation id="8237964652943995219">Bureau suivant : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Activer le bureau à droite</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
@@ -2034,6 +2033,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="92580429198593979">Vous avez utilisé le raccourci clavier pour l'inversion des couleurs. Voulez-vous activer cette option ?</translation>
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> exige la mise à jour immédiate de votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Bureau actuel : <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
 <translation id="945383118875625837">Faire glisser le lien vers la barre de favoris</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>

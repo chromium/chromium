@@ -204,6 +204,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="2132122640199389833">Usuń wszystkie połączone urządzenia</translation>
 <translation id="213279576345780926">Zamknięto: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Dodaj do ekranu głównego</translation>
+<translation id="2139414603196655536">Aktywność w Statystykach strony jest zapisywana na Twoim koncie Google. <ph name="BEGIN_LINK" />Dowiedz się, jak zarządzać tą funkcją<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Na podstawie wykorzystania</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2155214902713132423">Na tym urządzeniu ta metoda weryfikacji jest niedostępna. Wybierz inną opcję na drugim urządzeniu.</translation>
@@ -873,6 +874,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
 <translation id="570347048394355941">Przełącz na kartę</translation>
 <translation id="5715150588940290235">Usunąć zapisane kody zabezpieczające?</translation>
+<translation id="571930967925877633">Twoje zakładki, historia i inne dane z Chrome nie będą już synchronizowane z kontem Google</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5726692708398506830">Powiększ całą zawartość strony</translation>
 <translation id="5744751019568455640">Oto głosy, którymi mogę czytać dla Ciebie strony internetowe. Jeśli podoba Ci się ten głos i chcesz go dalej używać, kliknij jego nazwę.</translation>
@@ -1081,6 +1083,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="671481426037969117">Licznik czasu w aplikacji <ph name="FQDN" /> dobiegł końca. Jutro zacznie działać od nowa.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Zakładka została zapisana w folderze <ph name="FOLDER_NAME" />. Jest ona zapisana tylko na tym urządzeniu.}few{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" />. Są one zapisane tylko na tym urządzeniu.}many{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" />. Są one zapisane tylko na tym urządzeniu.}other{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" />. Są one zapisane tylko na tym urządzeniu.}}</translation>
 <translation id="6715020873764921614">Czy mimo wszystko chcesz pobrać plik <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Połączyć za pomocą kodu QR?</translation>
 <translation id="6723740634201835758">Na Twoim koncie Google</translation>
@@ -1402,6 +1405,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8237871086242677046">Plansza dolna ze statystykami strony</translation>
 <translation id="8243077599929149377">Dodaj nazwę użytkownika</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Zakładka została zapisana w folderze <ph name="FOLDER_NAME" /> na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}few{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" /> na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}many{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" /> na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}other{Zakładki zostały zapisane w folderze <ph name="FOLDER_NAME" /> na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8259179246279078674">Wstępnie wczytywane strony są zaszyfrowane, dlatego Google nie dowie się niczego o ich zawartości. Serwery Google wiedzą, jakie witryny są wstępnie wczytywane w trybie prywatnym. Te informacje są używane tylko w celu wczytywania stron i nie są łączone z innymi informacjami na Twoim koncie Google.</translation>
 <translation id="8260126382462817229">Spróbuj zalogować się jeszcze raz</translation>

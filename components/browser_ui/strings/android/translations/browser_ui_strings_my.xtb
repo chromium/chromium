@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="4151930093518524179">မူရင်းဇူးမ်</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> ကို ဖျောက်ပါ</translation>
 <translation id="4169549551965910670">USB ကိရိယာသို့ ချိတ်ဆက်ပြီး</translation>
 <translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ခု ရွေးထားသည်}other{# ခု ရွေးထားသည်}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်။ မျက်နှာပြင်၏ ထိပ်နားတွင် ရွေးချယ်စရာများ ရှိသည်</translation>
-<translation id="7137403271056944713">MIDI စက်ထိန်းစနစ် / ပရိုဂရမ်ပြန်လုပ်ခြင်း</translation>
 <translation id="7141896414559753902">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ပြန်ညွှန်ချက်များကို မဖော်ပြနိုင်စေရန် ဝဘ်ဆိုက်များအား ပိတ်ပါ (အကြံပြုထားသည်)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>

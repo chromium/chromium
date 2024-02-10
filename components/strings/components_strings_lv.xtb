@@ -1572,6 +1572,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4089152113577680600">14. paplāte</translation>
 <translation id="4092349052316400070">Aizpildiet adresi</translation>
 <translation id="4096237801206588987">11 x 15 collas</translation>
+<translation id="4098306082496067348">Pieskarieties virtuālās kartes informācijai, lai to pievienotu norēķināšanās laikā.</translation>
 <translation id="4098354747657067197">Maldinoša vietne</translation>
 <translation id="4099048595830172239">Administratora politika nosaka, ka nav ieteicams kopīgot ekrānu ar lietotni <ph name="APPLICATION_TITLE" />, ja ir redzams konfidenciāls saturs:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pielāgotu fontu izmērus un burtveidolus pārlūkā Chrome, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
@@ -2254,7 +2255,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
             <ph name="LIST_ITEM" />sīkfaili un vietņu dati;
             <ph name="LIST_ITEM" />veidlapās ievadītā informācija.
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">Vietnē <ph name="URL" /> tiek pieprasīta atļauja kontrolēt un pārprogrammēt jūsu MIDI ierīces (SysEx)</translation>
 <translation id="5443468954631487277">Pretēja secība, virspuse uz augšu</translation>
 <translation id="5447235695608032700">Atļaujiet vietnei <ph name="SITE" /> izmantot informāciju, kas tajā saglabāta par jums.</translation>
 <translation id="5447765697759493033">Šī vietne netiks tulkota</translation>
@@ -2467,7 +2467,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5877831137320480913">Skaistums un fitness</translation>
 <translation id="5879989559903563723">Nav atļauta viesa režīmā</translation>
 <translation id="5880050725127890683">Pāriet uz Chrome drošības pārbaudi</translation>
-<translation id="5883861433316751031">Vai kontrolēt un pārprogrammēt MIDI ierīces?</translation>
 <translation id="5884465125445718607">Ķīniešu aploksne 6</translation>
 <translation id="5887400589839399685">Kartīte ir saglabāta</translation>
 <translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
@@ -2818,7 +2817,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6556866813142980365">Atcelt atsaukšanu</translation>
 <translation id="6557715786897013164">14 x 17 collas</translation>
 <translation id="6560786330438719938">Instalētās vai atinstalētās lietotnes un to izmantošanas biežums</translation>
-<translation id="6567084950885568327">MIDI ierīču vadība un pārprogrammēšana</translation>
 <translation id="6568793038316600992">Poga “Pārvaldīt maksājumu veidus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu savus maksājumu un kredītkaršu informāciju.</translation>
 <translation id="6569060085658103619">Jūs skatāt paplašinājumu lapu.</translation>
 <translation id="6569366777234823130">Drāmas</translation>
@@ -3908,7 +3906,6 @@ Papildu informācija:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> vērtība neatbilst lieluma prasībām.</translation>
 <translation id="867224526087042813">Iespiedloksne</translation>
 <translation id="8672264262457010862">Uzņēmējdarbība un rūpniecība</translation>
-<translation id="8673776281896298303">Kontrolēt un pārprogrammēt MIDI ierīces (SysEx)</translation>
 <translation id="8676424191133491403">Bez aizkaves</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atbilde, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tīmekļa lapu <ph name="PAGE" /> nevarēja ielādēt tālāk norādīto iemeslu dēļ.</translation>

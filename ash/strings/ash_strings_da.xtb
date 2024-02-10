@@ -66,7 +66,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1217633719248931900">Gå til app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Butik-app</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">inaktivt skrivebord</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
 <translation id="1235458158152011030">Kendte netværk</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
@@ -374,7 +373,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2575685495496069081">Samlet login fra flere konti er deaktiveret</translation>
 <translation id="2579264398927991698">Firmwareopdateringer</translation>
 <translation id="2582112259361606227">Genstart for at opdatere</translation>
-<translation id="2586561057878260610">Tryk på Ctrl+W for at kombinere med <ph name="DESK_NAME" />. Tryk på Ctrl+Shift+W for at lukke skrivebordet og vinduerne.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2595239820337756193">5 kilometer i miles</translation>
 <translation id="2596078834055697711">Tag screenshot af vinduet</translation>
@@ -511,7 +509,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3154351730702813399">Administratoren af enheden kan overvåge din browseraktivitet.</translation>
 <translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
 <translation id="3160929076476941240">2 t.</translation>
-<translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="3170769098533255179">Ingen enheder er forbundet. Wi-Fi forbliver deaktiveret, når du bruger hotspot.</translation>
 <translation id="3171170659304083361">Indstillinger for indtastningsmetoder</translation>
@@ -672,6 +669,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3702846122927433391">Befolkningstallet i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
+<translation id="3712143870407382523">Vælg et vindue til denne side</translation>
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="3713734891607377840">Åbn efter download</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> mere er ikke på denne enhed.</translation>
@@ -1048,7 +1046,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> begivenheder</translation>
 <translation id="5198715732953550718">En ny mappe blev oprettet ved at slå <ph name="MOVED_APP_NAME" /> og <ph name="IN_PLACE_APP" /> sammen.</translation>
-<translation id="5203299837691351876">aktivt skrivebord</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 anden notifikation}one{# anden notifikation}other{# andre notifikationer}}</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
@@ -1066,7 +1063,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5258528442992323769">Der er ingen gemte skriveborde</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
 <translation id="5268819379131021772">Opgaver fra Google Huskeliste</translation>
-<translation id="5275923704957843041">Forhåndsvisning af skrivebord</translation>
 <translation id="5277869901083657836">Slå styluspenværktøjer til/fra</translation>
 <translation id="5278086053818066789">Aktivér/deaktiver ChromeVox (talefeedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> kræver din opmærksomhed.</translation>
@@ -1416,6 +1412,7 @@ Installeret for nylig</translation>
 <translation id="6613765291890844037">Der anvendes <ph name="STORAGE_IN_USE_SIZE" /> lagerplads | <ph name="STORAGE_TOTAL_SIZE" /> i alt</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
 <translation id="6622679827379792051">Konfigurer visning af din telefons apps</translation>
+<translation id="6624493541160101248">Aktuelt skrivebord: <ph name="DESK_NAME" /> Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Notifikationer fra <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og andre apps er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="6627638273713273709">Søgetast+Shift+K</translation>
 <translation id="662830937908749204">Flyt fokus til næste rude</translation>
@@ -1470,7 +1467,6 @@ Installeret for nylig</translation>
 <translation id="6819327813400217281">Kameraet er fastgjort til hjørnet nederst til venstre</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
 <translation id="6827049576281411231">Luk panelet for begivenheder</translation>
-<translation id="6831561626108366035">Gå til knappen <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837621009301897464">Du kan tage et screenshot ved at trykke på</translation>
 <translation id="6852052252232534364">Aktivér</translation>
@@ -1509,6 +1505,7 @@ Installeret for nylig</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Få et hurtigt overblik over, hvordan du finder rundt på din Chromebook. Kom godt i gang med 6 trin.</translation>
+<translation id="7000027735917578303">Indstillinger for Windows og skriveborde</translation>
 <translation id="7004910047186208204">Opret forbindelse via mobildata</translation>
 <translation id="7005239792648594238">Åbn en app for at komme i gang</translation>
 <translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke verificeres. Prøv igen.</translation>
@@ -1760,6 +1757,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8001755249288974029">Markér tekst fra markør til begyndelsen af linjen</translation>
 <translation id="8004512796067398576">Forøg</translation>
 <translation id="8026334261755873520">Ryd browserdata</translation>
+<translation id="802782383769312836">Forrige skrivebord: <ph name="DESK_NAME" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Der kunne ikke oprettes forbindelse til hotspot</translation>
 <translation id="8029629653277878342">Der kræves en pinkode eller adgangskode som ekstra sikkerhed</translation>
 <translation id="8030169304546394654">Afbrudt</translation>
@@ -1807,6 +1805,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8219451629189078428">Din Chromebook skal være tændt og tilsluttet strøm i dette tidsrum. Sørg for, at opladeren eller adapterkablerne er sat korrekt i, både i din Chromebook og i stikkontakten. Sluk ikke for din Chromebook.</translation>
 <translation id="8230305195727960608">Tilstand for ombytning af farver</translation>
 <translation id="8236042855478648955">Det er tid til at tage en pause</translation>
+<translation id="8237964652943995219">Næste skrivebord: <ph name="DESK_NAME" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Aktivér skrivebordet til højre</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
@@ -2034,6 +2033,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="92580429198593979">Du trykkede på tastaturgenvejen for ombytning af farver. Vil du aktivere tilstanden?</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme</translation>
+<translation id="938407504481277932">Aktuelt skrivebord: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
 <translation id="945383118875625837">Træk linket til bogmærkelinjen</translation>
 <translation id="945522503751344254">Send feedback</translation>

@@ -204,6 +204,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2132122640199389833">Alle gekoppelde apparaten verwijderen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> gesloten</translation>
 <translation id="2139186145475833000">Toevoegen aan startscherm</translation>
+<translation id="2139414603196655536">Je activiteit in Pagina-inzichten wordt opgeslagen in je Google-account. <ph name="BEGIN_LINK" />Meer informatie over hoe je dit beheert<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Gebaseerd op je gebruik</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2155214902713132423">Deze verificatiemethode is niet beschikbaar voor dit apparaat. Kies een andere optie op je andere apparaat.</translation>
@@ -873,6 +874,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5698878456427040674">Check of het geselecteerde account wordt ondersteund.</translation>
 <translation id="570347048394355941">Overschakelen naar tabblad</translation>
 <translation id="5715150588940290235">Opgeslagen beveiligingscodes verwijderen?</translation>
+<translation id="571930967925877633">Je bookmarks, geschiedenis en andere Chrome-gegevens worden niet meer gesynchroniseerd met je Google-account</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5726692708398506830">Alles op de pagina vergroten</translation>
 <translation id="5744751019568455640">Dit zijn de stemmen die je kunt kiezen om webpagina's voor te lezen. Als je deze stem leuk vindt en wilt dat ik deze blijf gebruiken, tik je op de naam van de stem.</translation>
@@ -1081,6 +1083,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="670498945988402717">Gisteren gecheckt</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="671481426037969117">Je <ph name="FQDN" />-timer is afgelopen. Deze begint morgen opnieuw.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" />. Deze wordt alleen opgeslagen op dit apparaat.}other{Bookmarks opgeslagen in <ph name="FOLDER_NAME" />. Deze worden alleen opgeslagen op dit apparaat.}}</translation>
 <translation id="6715020873764921614">Wil je <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) toch downloaden?</translation>
 <translation id="6719634564325948108">Verbinding maken via een QR-code?</translation>
 <translation id="6723740634201835758">In je Google-account</translation>
@@ -1402,6 +1405,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8237871086242677046">Blad onderaan met pagina-inzichten</translation>
 <translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
 <translation id="8250920743982581267">Documenten</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bookmark opgeslagen in <ph name="FOLDER_NAME" /> in je account, <ph name="ACCOUNT_EMAIL" />}other{Bookmarks opgeslagen in <ph name="FOLDER_NAME" /> in je account, <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="8255617931166444521">Sites kunnen je cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8259179246279078674">Omdat de vooraf geladen pagina's versleuteld zijn, krijgt Google geen informatie over de content van de vooraf geladen pagina. Google-servers kunnen wel zien welke sites privé vooraf worden geladen. Deze informatie wordt alleen gebruikt om de pagina's vooraf te laden en is niet gekoppeld aan andere informatie in je Google-account.</translation>
 <translation id="8260126382462817229">Probeer opnieuw in te loggen</translation>

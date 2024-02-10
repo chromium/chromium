@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">Апп руу очих</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-н апп</translation>
 <translation id="1225748608451425081">Тодорхой асуудлаас болоод таны Chromebook-г түгжлээ. Та <ph name="TIME_LEFT" />-н дараа нэвтрэх боломжтой.</translation>
-<translation id="1226877728704622336">идэвхгүй дэлгэц</translation>
 <translation id="1229194443904279055">Сонголтыг зогсоох</translation>
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Олон зэрэг нэвтрэлтийг идэвхгүй болголоо</translation>
 <translation id="2579264398927991698">Жижиг программын шинэчлэлтүүд</translation>
 <translation id="2582112259361606227">Шинэчлэхийн тулд дахин эхлүүлэх</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" />-тай нэгтгэхийн тулд Ctrl + W дээр дарна уу. Дэлгэц болон цонхыг хаахын тулд Ctrl + Shift + W дээр дарна уу.</translation>
 <translation id="2586657967955657006">Түр санах ой</translation>
 <translation id="2595239820337756193">5 км милиэр</translation>
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Төхөөрөмжийн админ таны хайлтын үйл ажиллагааг хянаж байж магадгүй.</translation>
 <translation id="316086887565479535">Загвар дахь дэмжигдээгүй аппууд</translation>
 <translation id="3160929076476941240">2ц</translation>
-<translation id="3161500364292033097">Дэлгэц болон цонхнуудыг хаана уу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
 <translation id="3170769098533255179">Ямар ч төхөөрөмж холбогдоогүй. Сүлжээний цэг ашиглах үед Wi-Fi унтраалттай байх болно.</translation>
 <translation id="3171170659304083361">Оруулах аргын тохиргоо</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
+<translation id="3712143870407382523">Энэ талд цонх сонгоно уу</translation>
 <translation id="371370241367527062">Урд талын микрофон</translation>
 <translation id="3713734891607377840">Дуусах үед нээх</translation>
 <translation id="3726171378575546917">Энэ төхөөрөмж дээр <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> болон өөр <ph name="UNAVAILABLE_APPS_COUNT" /> апп байхгүй байна.</translation>
@@ -1049,7 +1047,6 @@
 <translation id="5197255632782567636">Интернэт</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> үйл явдал</translation>
 <translation id="5198715732953550718">Шинэ фолдер үүсгэхийн тулд <ph name="MOVED_APP_NAME" />-г <ph name="IN_PLACE_APP" />-тай цуг нийлүүлсэн.</translation>
-<translation id="5203299837691351876">идэвхтэй дэлгэц</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Бусад 1 мэдэгдэл}other{Бусад # мэдэгдэл}}</translation>
 <translation id="5207949376430453814">Текст оруулах тэмдгийг тодруулах</translation>
@@ -1067,7 +1064,6 @@
 <translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
 <translation id="5268819379131021772">Google-н ажлын жагсаалт</translation>
-<translation id="5275923704957843041">Дэлгэцийн урьдчилан үзэлт</translation>
 <translation id="5277869901083657836">Мэдрэгч үзгийн хэрэгслийг асаах/унтраах</translation>
 <translation id="5278086053818066789">ChromeVox-г асаах/унтраах (яриагаар өгөх санал)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
@@ -1417,6 +1413,7 @@
 <translation id="6613765291890844037">Нийт <ph name="STORAGE_TOTAL_SIZE" />-н хадгалах сангаас | <ph name="STORAGE_IN_USE_SIZE" />-г ашиглаж байна</translation>
 <translation id="6614169507485700968">Нууцлалын дэлгэц асаалттай байна</translation>
 <translation id="6622679827379792051">Утасныхаа аппуудыг харахыг тохируулах</translation>
+<translation id="6624493541160101248">Одоогийн дэлгэц: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="6625718907317144388">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> болон бусад мэдэгдлийг нуусан</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">Фокусыг дараагийн хэсэг рүү шилжүүлэх</translation>
@@ -1471,7 +1468,6 @@
 <translation id="6819327813400217281">Камерыг зүүн доод булан руу зэрэгцүүлсэн</translation>
 <translation id="6820676911989879663">Завсарлага аваарай!</translation>
 <translation id="6827049576281411231">Үйл явдлын самбарыг хаах</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> товчлуур луу очно уу.</translation>
 <translation id="6836499262298959512">Аюултай файл</translation>
 <translation id="6837621009301897464">Дэлгэцийн агшин авахын тулд дараахыг дарна уу</translation>
 <translation id="6852052252232534364">Идэвхжүүлэхээр товш</translation>
@@ -1510,6 +1506,7 @@
 <translation id="698231206551913481">Энэ хэрэглэгчийг устгасан тохиолдолд холбоотой бүх файл болон дотоод өгөгдөл нь бүрмөсөн устах болно.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц)-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц) болгож өөрчилсөн. Өөрчлөлтүүдийг хэвээр үлдээхийн тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="6989752354829085073">Chromebook-ийнхээ эргэн тойронд хэрхэн очихыг мэдэж авахын тулд шуурхай аялал хийнэ үү. Босоод, 6 алхмаар ажиллуулаарай.</translation>
+<translation id="7000027735917578303">Windows болон дэлгэцийн тохиргоо</translation>
 <translation id="7004910047186208204">Мобайл датад холбогдох</translation>
 <translation id="7005239792648594238">Эхлүүлэхийн тулд аппыг нээнэ үү</translation>
 <translation id="7007983414944123363">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
@@ -1761,6 +1758,7 @@
 <translation id="8001755249288974029">Курсороос мөрийн эхлэл хүртэлх текстийг сонгох</translation>
 <translation id="8004512796067398576">Тоон өсөлт</translation>
 <translation id="8026334261755873520">Хайлтын өгөгдлийг цэвэрлэх</translation>
+<translation id="802782383769312836">Өмнөх дэлгэц: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="8029247720646289474">Сүлжээний цэгийн холболт амжилтгүй боллоо</translation>
 <translation id="8029629653277878342">Нэмэлт аюулгүй байдлын үүднээс ПИН эсвэл нууц үг шаардлагатай</translation>
 <translation id="8030169304546394654">Салгасан</translation>
@@ -1808,6 +1806,7 @@
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8230305195727960608">Өнгө урвуулах горим</translation>
 <translation id="8236042855478648955">Завсарлах цаг</translation>
+<translation id="8237964652943995219">Дараагийн дэлгэц: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="8239034820133090126">Дэлгэцийг баруун талд идэвхжүүлэх</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апп</translation>
@@ -2036,6 +2035,7 @@
 <translation id="92580429198593979">Та өнгө урвуулах горимын товчлуурын шууд холбоосыг дарсан байна. Та үүнийг асаахыг хүсэж байна уу?</translation>
 <translation id="925832987464884575">Урьдчилан үзэлтийг нуух</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> таныг өөрийн <ph name="DEVICE_TYPE" />-г нэн даруй шинэчлэхийг шаардаж байна</translation>
+<translation id="938407504481277932">Одоогийн дэлгэц: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="938963181863597773">Миний календарьд юу байна вэ?</translation>
 <translation id="945383118875625837">Холбоосыг хавчуургын хэсэг рүү чирэх</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>

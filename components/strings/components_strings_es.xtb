@@ -151,7 +151,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1266469291454105242">Desbloqueo del dispositivo</translation>
-<translation id="126728463333482584">Eres una de las primeras personas en usar Protección Antirastreo, que restringe que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
+<translation id="126728463333482584">Eres una de las primeras personas en usar Protección Antirrastreo, que restringe que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
 <translation id="1268480293435976622">Sobre chino 7</translation>
 <translation id="1269516672602708785">Crea un nuevo sitio con Google Sites rápidamente</translation>
 <translation id="1270328905573953738">Portes y mudanzas</translation>
@@ -585,6 +585,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2075497153347571252">Tu administrador ha bloqueado el permiso de <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080021694978766903">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
+<translation id="2081482239432306393">Opción de número seleccionada</translation>
 <translation id="20817612488360358">Se ha establecido la configuración del proxy del sistema, pero también se han especificado ajustes de proxy explícitos.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir en todas las visitas</translation>
@@ -1409,6 +1410,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3723663469265383848">No podrás usar tu dispositivo durante la actualización, que puede durar hasta 10 minutos.</translation>
 <translation id="372429172604983730">Entre las aplicaciones que pueden provocar este error se incluyen software cortafuegos, antivirus, proxy y de filtrado web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Presentación de Google rápidamente</translation>
+<translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Gestor de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="3733139489341305600">Vehículos autónomos</translation>
 <translation id="3736520371357197498">Si entiendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />acceder a este sitio no seguro<ph name="END_LINK" /> antes de que se hayan eliminado los programas peligrosos.</translation>
@@ -1897,6 +1899,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4729147136006144950">Caridad y filantropía</translation>
 <translation id="4730977633786878901">Reseñas</translation>
 <translation id="4731638775147756694">Tu administrador ha bloqueado esta aplicación</translation>
+<translation id="4732860731866514038">Descargando el paquete de idioma <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quiere utilizar la ubicación de tu dispositivo</translation>
 <translation id="4736491186715342415">Vehículos a motor</translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
@@ -2256,7 +2259,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
             <ph name="LIST_ITEM" />Cookies y datos de sitios
             <ph name="LIST_ITEM" />Información introducida en formularios
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> quiere controlar y reprogramar tus dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Orden inverso boca arriba</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que ha guardado sobre ti</translation>
 <translation id="5447765697759493033">Este sitio web no va a traducirse</translation>
@@ -2469,7 +2471,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5877831137320480913">Belleza y salud</translation>
 <translation id="5879989559903563723">No se permite en el modo Invitado</translation>
 <translation id="5880050725127890683">Ir a la comprobación de seguridad de Chrome</translation>
-<translation id="5883861433316751031">¿Controlar y reprogramar dispositivos MIDI?</translation>
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
@@ -2564,7 +2565,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">Rellenando IBAN</translation>
-<translation id="6053584886670442526">Puedes usar direcciones guardadas en los productos de Google. Esta dirección está guardada en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
+<translation id="6053584886670442526">Puedes usar direcciones guardadas en los productos de Google. Esta dirección se guarda en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Consulta más información sobre cómo protege Google tus datos en nuestra Política de Privacidad.</translation>
 <translation id="6055888660316801977">Hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6055982527635883756">Sobre (archivo)</translation>
@@ -2820,7 +2821,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6557715786897013164">14x17 pulgadas</translation>
 <translation id="6560786330438719938">Aplicaciones instaladas o desinstaladas y frecuencia con que se usan</translation>
-<translation id="6567084950885568327">Control y reprogramación de dispositivos MIDI</translation>
 <translation id="6568793038316600992">Botón Gestionar métodos de pago: actívalo para gestionar tus pagos y la información de tu tarjeta de crédito en la configuración de Chrome</translation>
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
 <translation id="6569366777234823130">Películas dramáticas</translation>
@@ -2924,7 +2924,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6786145470008421571">Sobre de 6x9 pulgadas</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
-<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que veas.</translation>
+<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que ves.</translation>
 <translation id="6789062271869667677">Impresión continua (larga)</translation>
 <translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -3203,6 +3203,7 @@ Más información:
 <translation id="733354035281974745">Anulación de la cuenta local del dispositivo</translation>
 <translation id="7334320624316649418">&amp;Rehacer reorganización</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar tu cámara</translation>
+<translation id="7336636595549675416">Número</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible en esta plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se ha revelado a través de la Transparencia en los Certificados.</translation>
@@ -3909,7 +3910,6 @@ Más información:
 <translation id="8671519637524426245">El valor <ph name="SECURE_DNS_SALT" /> no cumple los requisitos de tamaño.</translation>
 <translation id="867224526087042813">Firma</translation>
 <translation id="8672264262457010862">Empresas e industrias</translation>
-<translation id="8673776281896298303">Controlar y reprogramar tus dispositivos MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Sin retraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, respuesta: <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">No ha sido posible cargar la página web <ph name="PAGE" /> porque:</translation>

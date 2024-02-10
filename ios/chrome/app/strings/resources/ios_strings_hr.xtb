@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Prilagodi izbornik</translation>
 <translation id="1296581780163690620">Preuzeti datoteku? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Da biste uvijek mogli upotrebljavati zaporke na svojem Google računu, potvrdite svoj identitet.</translation>
+<translation id="1310362642333088424">Da biste preuzimali datoteke, fotografije itd., potrebno vam je više prostora za pohranu.</translation>
 <translation id="1312721752506309252">Uključena je Poboljšana zaštita</translation>
 <translation id="1321993286294231467">Pogreška pri spremanju slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahtijeva anonimni način.</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Sigurno pregledavanje</translation>
 <translation id="1641316430523156212">Prati</translation>
 <translation id="1644574205037202324">Povijest</translation>
+<translation id="164673457281113247">{count,plural, =1{Oznaka je spremljena}one{Oznake su spremljene}few{Oznake su spremljene}other{Oznake su spremljene}}</translation>
 <translation id="165008673352427892">Nova značajka</translation>
 <translation id="1650222530560417226">Dodirnite gumb "Pokreni bilježenje" za prikupljanje budućih zapisnika konzole JavaScript i pogrešaka sa svih kartica. Zapisnici će se prikupljati (i pohranjivati samo u memoriju) dok se ne zatvori ova stranica ili dodirne "Prekini bilježenje".</translation>
 <translation id="1653432787084483144">{count,plural, =1{Iznad tipkovnice dostupna je {count} spremljena zaporka.}one{Iznad tipkovnice dostupna je {count} spremljena zaporka.}few{Iznad tipkovnice dostupne su {count} spremljene zaporke.}other{Iznad tipkovnice dostupno je {count} spremljenih zaporki.}}</translation>
@@ -511,6 +513,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3603009562372709545">Kopiraj URL veze</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3609785682760573515">Sinkronizacija...</translation>
+<translation id="3630104167004786843">Nemoj primati ažuriranja</translation>
 <translation id="3631443864840848029">Pazite da spremate trenutačnu zaporku za ovu web-lokaciju.</translation>
 <translation id="3638472932233958418">Već učitane stranice</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} zaporka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, {email}.}one{{count} zaporka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, {email}.}few{{count} zaporke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}other{{count} zaporki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}}</translation>
@@ -637,6 +640,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4309403553630140242">Dvaput dodirnite za više informacija</translation>
 <translation id="430967081421617822">Cijelo vrijeme</translation>
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
+<translation id="4323142320106872792">Pohrana je puna.</translation>
 <translation id="4331177082088332784">Time možete upravljati u odjeljku BEGIN_LINK Postavke sadržaja END_LINK</translation>
 <translation id="4334428914252001502">Jedan nepročitani članak.</translation>
 <translation id="4338650699862464074">Šalje Googleu URL-ove stranica koje posjećujete.</translation>
@@ -843,6 +847,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5345660046352249607">{COUNT,plural, =1{Pratiti taj paket?}one{Pratiti {COUNT} paket?}few{Pratiti {COUNT} paketa?}other{Pratiti {COUNT} paketa?}}</translation>
 <translation id="536067926684072644">Prikaži oznake</translation>
 <translation id="5360976571138293719">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Oznaka je spremljena u {title}. Sprema se samo na ovom uređaju.}one{Ukupno {count} oznaka spremljena je u {title}. Spremaju se samo na ovom uređaju.}few{Ukupno {count} oznake spremljene su u {title}. Spremaju se samo na ovom uređaju.}other{Ukupno {count} oznaka spremljeno je u {title}. Spremaju se samo na ovom uređaju.}}</translation>
 <translation id="5386314158584363703">Ovdje ćete pronaći praćene web-lokacije</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5395707839134961196">Sakrij pojedinosti o tražilici</translation>
@@ -870,6 +875,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5525269841082836315">Stvaranje zaporke</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="5532545557415295622">Dijaloški okvir za vrijeme čekanja u mirovanju</translation>
+<translation id="5533967537771071082">Upravljanje pohranom</translation>
 <translation id="5542540507657872337">Pronađeno: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
@@ -1085,6 +1091,8 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="6537746030088321027">primjeri.hr</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6550891580932862748">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. To neće utjecati na postavke sigurnog pregledavanja u drugim Googleovim proizvodima.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Oznaka je spremljena u {title}}one{{count} oznaka spremljena je u {title}}few{{count} oznake spremljene su u {title}}other{{count} oznaka spremljeno je u {title}}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Oznaka je spremljena u {title}. Sprema se samo na ovom uređaju.}one{Oznake su spremljene u {title}. Spremaju se samo na ovom uređaju.}few{Oznake su spremljene u {title}. Spremaju se samo na ovom uređaju.}other{Oznake su spremljene u {title}. Spremaju se samo na ovom uređaju.}}</translation>
 <translation id="6561262006871132942">Povećaj</translation>
 <translation id="6579867704846662339">U anonimnom načinu možete otvoriti dolazne URL-ove iz drugih aplikacija.</translation>
 <translation id="6583087784430677195">Da biste isključili značajku, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />, a zatim Automatsko popunjavanje zaporki.</translation>
@@ -1199,6 +1207,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Fotoaparat nije dostupan</translation>
+<translation id="7138080855268384146">{count,plural, =1{Oznaka je spremljena u {title} na vašem računu, {email}}one{{count} oznaka spremljena je u {title} na vašem računu, {email}}few{{count} oznake spremljene su u {title} na vašem računu, {email}}other{{count} oznaka spremljeno je u {title} na vašem računu, {email}}}</translation>
 <translation id="7141960840225504692">Kartice će se zatvoriti i izbrisat će se podaci o pregledavanju</translation>
 <translation id="7154343200458623869">Dovršite zadatak.</translation>
 <translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>

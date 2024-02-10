@@ -66,7 +66,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1217633719248931900">Naar de app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-app</translation>
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">inactief bureau</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
@@ -374,7 +373,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2575685495496069081">Toegang tot meerdere accounts is uitgezet</translation>
 <translation id="2579264398927991698">Firmware-updates</translation>
 <translation id="2582112259361606227">Opnieuw starten om updates uit te voeren</translation>
-<translation id="2586561057878260610">Druk op Ctrl + W om te combineren met <ph name="DESK_NAME" />. Druk op Ctrl + Shift + W om het bureau en de vensters te sluiten.</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2595239820337756193">5 km in mijl</translation>
 <translation id="2596078834055697711">Een screenshot van het venster maken</translation>
@@ -511,7 +509,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3154351730702813399">De apparaatbeheerder kan je browseactiviteit controleren.</translation>
 <translation id="316086887565479535">Niet-ondersteunde apps in template</translation>
 <translation id="3160929076476941240">2 u</translation>
-<translation id="3161500364292033097">Bureau en vensters sluiten</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="3170769098533255179">Geen apparaten verbonden. Tijdens het gebruik van de hotspot blijft wifi uit.</translation>
 <translation id="3171170659304083361">Instellingen voor invoermethoden</translation>
@@ -672,6 +669,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
+<translation id="3712143870407382523">Kies een venster voor deze kant</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
@@ -1048,7 +1046,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
-<translation id="5203299837691351876">actief bureau</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
@@ -1066,7 +1063,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5258528442992323769">Geen opgeslagen bureaus</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5268819379131021772">Google-takenlijst</translation>
-<translation id="5275923704957843041">Desktopvoorbeeld</translation>
 <translation id="5277869901083657836">Stylustools aan-/uitzetten</translation>
 <translation id="5278086053818066789">ChromeVox (gesproken feedback) aan-/uitzetten</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vraagt om je aandacht.</translation>
@@ -1416,6 +1412,7 @@ Nieuwe installatie</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> opslag in gebruik | totaal <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
 <translation id="6622679827379792051">De weergave van apps van je telefoon instellen</translation>
+<translation id="6624493541160101248">Huidig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Meldingen van <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> en andere apps zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
 <translation id="662830937908749204">De focus naar het volgende deelvenster verplaatsen</translation>
@@ -1470,7 +1467,6 @@ Nieuwe installatie</translation>
 <translation id="6819327813400217281">Camera uitgelijnd op de linkerbenedenhoek</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
 <translation id="6827049576281411231">Afsprakenvenster sluiten</translation>
-<translation id="6831561626108366035">Knop Naar <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6837621009301897464">Als je een screenshot wilt maken, druk je op</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
@@ -1509,6 +1505,7 @@ Nieuwe installatie</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="6989752354829085073">Volg een korte rondleiding voor meer informatie over hoe je je Chromebook gebruikt. Ga aan de slag in 6 stappen.</translation>
+<translation id="7000027735917578303">Instellingen voor vensters en bureaus</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
 <translation id="7007983414944123363">Je pincode of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
@@ -1760,6 +1757,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8001755249288974029">Tekst vanaf cursor tot het begin van de regel selecteren</translation>
 <translation id="8004512796067398576">Hoger</translation>
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
+<translation id="802782383769312836">Vorig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Hotspotverbinding mislukt</translation>
 <translation id="8029629653277878342">Pincode of wachtwoord vereist voor extra beveiliging</translation>
 <translation id="8030169304546394654">Verbinding verbroken</translation>
@@ -1807,6 +1805,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8230305195727960608">Modus voor kleurinversie</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
+<translation id="8237964652943995219">Volgend bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Bureau aan de rechterkant activeren</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
@@ -2034,6 +2033,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="92580429198593979">Je hebt op de sneltoets voor kleurinversie gedrukt. Wil je dit aanzetten?</translation>
 <translation id="925832987464884575">Voorbeelden verbergen</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> onmiddellijk updatet</translation>
+<translation id="938407504481277932">Huidig bureau: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Wat staat er in mijn agenda?</translation>
 <translation id="945383118875625837">Link naar bookmarkbalk slepen</translation>
 <translation id="945522503751344254">Feedback sturen</translation>

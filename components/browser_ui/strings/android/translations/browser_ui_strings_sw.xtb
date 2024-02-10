@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Vidakuzi vya wahusika wengine vimedhibitiwa</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="310297983047869047">Slaidi iliyotangulia</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4151930093518524179">Kiwango chaguomsingi cha kukuza</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>
+<translation id="4169019654293892025">Ficha <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
 <translation id="4194328954146351878">Uliza kabla ya kuruhusu tovuti zione na zibadilishe maelezo kwenye vifaa vya NFC (inapendekezwa)</translation>
 <translation id="4200726100658658164">Fungua Mipangilio ya Mahali</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Kwenye <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Arifa huenda zitatetemesha kifaa</translation>
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Umechagua 1}other{Umechagua #}}</translation>
 <translation id="7087918508125750058">Imechagua <ph name="ITEM_COUNT" />. Chaguo zinapatikana karibu na sehemu ya juu ya skrini</translation>
-<translation id="7137403271056944713">Kudhibiti au kusanidi upya vifaa vya MIDI</translation>
 <translation id="7141896414559753902">Zuia tovuti zisionyeshe madirisha ibukizi na kuelekeza kwingine (inapendekezwa)</translation>
 <translation id="7176368934862295254">KB <ph name="KILOBYTES" /></translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Kuza ukurasa</translation>
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7791543448312431591">Ongeza</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Endelea ukitumia kichupo hiki}other{Endelea ukitumia vichupo hivi}}</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
 <translation id="7807060072011926525">Imetolewa na Google</translation>

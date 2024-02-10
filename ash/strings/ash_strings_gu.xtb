@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ઍપ પર જાઓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ઍપ</translation>
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">નિષ્ક્રિય ડેસ્ક</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">એકથી વધુ સાઇન ઇનને બંધ કરવામાં આવેલ છે</translation>
 <translation id="2579264398927991698">ફર્મવેયરની અપડેટ</translation>
 <translation id="2582112259361606227">અપડેટ કરવા માટે ફરી શરૂ કરો</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> સાથે ભેગું કરવા માટે Ctrl + W દબાવો. ડેસ્ક અને વિન્ડો બંધ કરવા માટે Ctrl + Shift + W દબાવો.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2595239820337756193">5,000 કિલોમીટર એટલે કેટલા માઇલ?</translation>
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ડિવાઇસ વ્યવસ્થાપક તમારી બ્રાઉઝિંગ પ્રવૃત્તિને મોનિટર કરી શકે છે.</translation>
 <translation id="316086887565479535">સપોર્ટ ન કરવામાં આવતી ઍપ નમૂનામાં છે</translation>
 <translation id="3160929076476941240">2 કલાક</translation>
-<translation id="3161500364292033097">ડેસ્ક અને વિન્ડો બંધ કરો</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> તમારા <ph name="DEVICE_TYPE" />ને અગાઉના વર્ઝન પર લઈ જાય છે. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
 <translation id="3170769098533255179">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી. હૉટસ્પૉટનો ઉપયોગ કરતી વખતે વાઇ-ફાઇ બંધ રહેશે.</translation>
 <translation id="3171170659304083361">ઇનપુટ પદ્ધતિઓના સેટિંગ</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">નાઇજીરીયાની વસ્તી</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
+<translation id="3712143870407382523">આ બાજુ માટે વિન્ડો પસંદ કરો</translation>
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3713734891607377840">પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="5198715732953550718">નવું ફોલ્ડર બનાવવા માટે <ph name="MOVED_APP_NAME" />ને <ph name="IN_PLACE_APP" /> સાથે જોડી.</translation>
-<translation id="5203299837691351876">સક્રિય ડેસ્ક</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{અન્ય 1 નોટિફિકેશન}one{અન્ય # નોટિફિકેશન}other{અન્ય # નોટિફિકેશન}}</translation>
 <translation id="5207949376430453814">ટેક્સ્ટ કૅરેટને હાઇલાઇટ કરો</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
 <translation id="5260676007519551770">ડેસ્ક 4</translation>
 <translation id="5268819379131021772">Google કાર્યોની સૂચિ</translation>
-<translation id="5275923704957843041">ડેસ્ક પ્રીવ્યૂ</translation>
 <translation id="5277869901083657836">સ્ટાઇલસ ટૂલને ટૉગલ કરો</translation>
 <translation id="5278086053818066789">ChromeVox (બોલાયેલ પ્રતિસાદ) ચાલુ/બંધ કરો</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> સંગ્રહ ઉપયોગમાં છે | કુલ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
 <translation id="6622679827379792051">તમારા ફોનની ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="6624493541160101248">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> અને અન્ય નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ફોકસને આગલા વિભાગ પર ખસેડો</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">કૅમેરાને નીચેના ડાબા ખૂણામાં સ્નેપ કર્યો</translation>
 <translation id="6820676911989879663">વિરામ લો!</translation>
 <translation id="6827049576281411231">ઇવેન્ટની પૅનલ બંધ કરો</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> બટન પર જાઓ.</translation>
 <translation id="6836499262298959512">જોખમી ફાઇલ</translation>
 <translation id="6837621009301897464">કોઈ સ્ક્રીનશૉટ લેવા માટે, આ દબાવો</translation>
 <translation id="6852052252232534364">ક્લિકથી સક્રિય</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">આ વપરાશકર્તા કાઢી નાખવામાં આવે તે પછી આ વપરાશકર્તા સાથે સંકળાયેલી તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)ને સપોર્ટ આપતું નથી. રિઝોલ્યુશન બદલીને <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) કરવામાં આવ્યું હતું. ફેરફારો રાખવા માટે 'કન્ફર્મ કરો' પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="6989752354829085073">તમારી Chromebookને જાણવા એક ઝટપટ ટૂર કરો. તો ચાલો અને ઝડપથી 6 પગલાં પૂરા કરો.</translation>
+<translation id="7000027735917578303">Windows અને ડેસ્કના સેટિંગ</translation>
 <translation id="7004910047186208204">મોબાઇલ ડેટા સાથે કનેક્ટ કરો</translation>
 <translation id="7005239792648594238">શરૂ કરવા માટે ઍપ ખોલો</translation>
 <translation id="7007983414944123363">તમારો પિન કે પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">કર્સરથી લાઇનની શરૂઆત સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="8004512796067398576">વૃદ્ધિ</translation>
 <translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
+<translation id="802782383769312836">પાછલી ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">હૉટસ્પૉટ કનેક્શન નિષ્ફળ થયું</translation>
 <translation id="8029629653277878342">વધુ સુરક્ષા માટે પિન અથવા પાસવર્ડ જરૂરી છે</translation>
 <translation id="8030169304546394654">ડિસ્કનેક્ટેડ</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">આ સમય દરમ્યાન, તમારું Chromebook ચાલુ રહેવું અને પાવરથી કનેક્ટ થયેલું હોવું આવશ્યક છે. ખાતરી કરો કે ચાર્જર અથવા અડૅપ્ટર કેબલ તમારા Chromebook અને પાવર આઉટલેટ, એમ બન્નેમાં યોગ્ય રીતે પ્લગ-ઇન કરવામાં આવ્યા હોય. તમારું Chromebook બંધ કરશો નહીં.</translation>
 <translation id="8230305195727960608">વિપરીત રંગમાં બદલવાનો મોડ</translation>
 <translation id="8236042855478648955">વિરામ લેવાનો સમય</translation>
+<translation id="8237964652943995219">આગલી ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="8239034820133090126">જમણી બાજુએ ડેસ્કને સક્રિય કરો</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">તમે વિપરીત રંગમાં બદલવા માટે કીબોર્ડ શૉર્ટકટ દબાવ્યો છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="925832987464884575">પ્રીવ્યૂ છુપાવો</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારું <ph name="DEVICE_TYPE" /> તરત જ અપડેટ કરો</translation>
+<translation id="938407504481277932">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
 <translation id="945383118875625837">લિંકને બુકમાર્ક બાર પર ખેંચો</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>

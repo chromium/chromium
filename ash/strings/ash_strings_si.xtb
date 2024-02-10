@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">යෙදුම වෙත යන්න</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store යෙදුම</translation>
 <translation id="1225748608451425081">දන්නා ගැටලුවක් හේතුවෙන් ඔබගේ Chromebook අගුලු දමා ඇත. ඔබට මෙම කාලයට පසුව පිරීමට හැකි වනු ඇත: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">අක්‍රිය මේසය</translation>
 <translation id="1229194443904279055">තේරීම නවත්වන්න</translation>
 <translation id="1235458158152011030">දන්නා ජාල</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> සම්බන්ධයි.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">බහුවිධ පුරනය අබල කර ඇත</translation>
 <translation id="2579264398927991698">නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="2582112259361606227">යාවත්කාලීන කිරීමට නැවත පණගන්වන්න</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කිරීමට Ctrl + W ඔබන්න. මේසය සහ කවුළු වැසීමට Ctrl + Shift + W ඔබන්න.</translation>
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2595239820337756193">සැතපුම්වලින් 5K</translation>
 <translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">උපාංග පරිපාලක ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් නිරීක්ෂණය කළ හැකිය:</translation>
 <translation id="316086887565479535">අච්චුව තුළ සහාය නොදක්වන යෙදුම්</translation>
 <translation id="3160929076476941240">පැ2</translation>
-<translation id="3161500364292033097">ඩෙස්ක් සහ කවුළු වසන්න</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ඔබගේ <ph name="DEVICE_TYPE" /> ආපසු පෙරළයි. ඔබගේ උපාංගය යළි සකසනු ඇති අතර සියලු දත්ත මකනු ඇත.</translation>
 <translation id="3170769098533255179">උපාංග කිසිවක් සම්බන්ධ කර නැත. හොට්ස්පොට් භාවිතා කරන අතරේ, Wi-Fi ක්‍රියාවිරහිතව පවතිනු ඇත.</translation>
 <translation id="3171170659304083361">ආදාන ක්‍රම සැකසීම්</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">නයිජීරියාවේ ජනගහනය</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
+<translation id="3712143870407382523">මෙම පැත්ත සඳහා කවුළුවක් තෝරන්න</translation>
 <translation id="371370241367527062">ඉදිරිපස මයික්‍රෆෝනය</translation>
 <translation id="3713734891607377840">සම්පූර්ණ විට විවෘත කරන්න</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" /> <ph name="UNAVAILABLE_APPS_TWO" /> සහ තව <ph name="UNAVAILABLE_APPS_COUNT" />ක් මෙම උපාංගයෙහි නැත.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">අන්තර්ජාලය</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, සිදුවීම් <ph name="NUMBER" />ක්</translation>
 <translation id="5198715732953550718">නව ෆෝල්ඩරයක් සෑදීමට <ph name="IN_PLACE_APP" /> සමඟ <ph name="MOVED_APP_NAME" /> සංයුක්ත වේ.</translation>
-<translation id="5203299837691351876">සක්‍රිය මේසය</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{වෙනත් දැනුම්දීම් 1}one{වෙනත් දැනුම්දීම් #}other{වෙනත් දැනුම්දීම් #}}</translation>
 <translation id="5207949376430453814">පෙළ කාකපාදය උද්දීපනය කරන්න</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">සුරැකි මේස නැත</translation>
 <translation id="5260676007519551770">4 වෙනි මේසය</translation>
 <translation id="5268819379131021772">Google කාර්ය ලැයිස්තුව:</translation>
-<translation id="5275923704957843041">මේස පෙරදසුන</translation>
 <translation id="5277869901083657836">පන්හිඳ මෙවලම් ටොගල් කරන්න</translation>
 <translation id="5278086053818066789">ChromeVox සක්‍රීය/අක්‍රිය කරන්න (කථන ප්‍රතිපෝෂණය)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037">ආචයනය <ph name="STORAGE_IN_USE_SIZE" />ක් භාවිතයේ ඇත | මුළු වශයෙන් <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">පෞද්ගලිකත්ව තිරය සක්‍රීයයි</translation>
 <translation id="6622679827379792051">ඔබේ දුරකථනයේ යෙදුම් බැලීම පිහිටුවන්න</translation>
+<translation id="6624493541160101248">වත්මන් මේසය: <ph name="DESK_NAME" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> සහ වෙනත් දැනුම්දීම් බැලීමේ ආරක්ෂාව ක්‍රියාත්මක බැවින් සඟවා ඇත</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ඊළඟ පැනලය වෙත අවධානය යොමු කරන්න</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">කැමරාව පහළ වම් කෙළවරට සවි කර ඇත</translation>
 <translation id="6820676911989879663">විවේකයක් ගන්න!</translation>
 <translation id="6827049576281411231">සිදුවීම් පැනලය වසන්න</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> බොත්තම වෙත යන්න.</translation>
 <translation id="6836499262298959512">අනතුරුදායක ගොනුව</translation>
 <translation id="6837621009301897464">තිර රුවක් ගැනීම සඳහා, ඔබන්න</translation>
 <translation id="6852052252232534364">සක්‍රිය ක්ලික්</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">මෙම පරිශීලකයා ඉවත් කළ විට මෙම පරිශීලක හා සම්බන්ධිත සියලු ගොනු සහ ස්ථානීය දත්ත ස්ථිරවම මකනු ඇත.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) හට සහාය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) වෙත වෙනස් විය. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසීම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධනය කරනු ලැබේ.</translation>
 <translation id="6989752354829085073">ඔබේ Chromebook වටා යන ආකාරය දැන ගැනීමට ඉක්මන් සංචාරයක් කරන්න. අවදි වීම සහ පියවර 6කින් ධාවනය වීම</translation>
+<translation id="7000027735917578303">කවුළු සහ මේස සැකසීම්</translation>
 <translation id="7004910047186208204">ජංගම දත්ත වෙත සම්බන්ධ කරන්න</translation>
 <translation id="7005239792648594238">ආරම්භ කිරීමට යෙදුමක් විවෘත කරන්න</translation>
 <translation id="7007983414944123363">ඔබගේ PIN හෝ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">කර්සරයේ සිට පේළියේ ආරම්භය දක්වා පෙළ තෝරන්න</translation>
 <translation id="8004512796067398576">වැඩිවීම</translation>
 <translation id="8026334261755873520">පිරික්සුම් දත්ත හිස් කරන්න</translation>
+<translation id="802782383769312836">පෙර මේසය: <ph name="DESK_NAME" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">හොට්ස්පොට් සබැඳුම අසාර්ථක විය</translation>
 <translation id="8029629653277878342">වැඩිපුර ආරක්‍ෂාව සඳහා රහස් අංකය හෝ මුරපදය අවශ්‍යයි</translation>
 <translation id="8030169304546394654">විසන්ධි විය</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">මෙම කාලය තුළ ඔබගේ Chromebook ක්‍රියාත්මකව තිබීමට සහ බලයට සම්බන්ධ වීමට අවශ්‍යයි. චාජරය හෝ ඇඩැප්ටර කේබල ඔබගේ Chromebook සහ බල සැපයුම් බිහිදොර වෙත සම්පූර්ණයෙන්ම පේනුගත කර ඇති බවට සහතික කර ගන්න. ඔබගේ Chromebook ක්‍රියාවිරහිත නොකරන්න.</translation>
 <translation id="8230305195727960608">වර්ණ අපවර්තන ප්‍රකාරය</translation>
 <translation id="8236042855478648955">විවේකයක් සඳහා වේලාවයි</translation>
+<translation id="8237964652943995219">ඊළඟ මේසය: <ph name="DESK_NAME" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="8239034820133090126">දකුණු පස ඇති මේසය සක්‍රිය කරන්න</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, යෙදුම</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">ඔබ වර්ණ අපවර්තනය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය ක්‍රියාත්මක කිරීමට අවශ්‍ය ද?</translation>
 <translation id="925832987464884575">පෙරදසුන් සඟවන්න</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> හට ඔබ වහාම ඔබගේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීම අවශ්‍ය වේ</translation>
+<translation id="938407504481277932">වත්මන් මේසය: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">මාගේ දින දර්ශනයෙහි ඇත්තේ කුමක්ද?</translation>
 <translation id="945383118875625837">පොත්සලකුණු තීරුවට සබැඳිය ඇදගෙන යන්න</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>

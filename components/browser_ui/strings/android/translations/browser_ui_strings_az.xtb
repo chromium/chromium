@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
 <translation id="4151930093518524179">Defolt zoom</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
+<translation id="4169019654293892025">Gizlədin: <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 element seçildi}other{# element seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> seçildi. Seçimlər ekranın yuxarısında əlçatandır</translation>
-<translation id="7137403271056944713">MIDI cihaz idarəsi/təkrar proqram</translation>
 <translation id="7141896414559753902">Saytların popapları və yönləndirmələri göstərməyini blok edin (tövsiyə olunur)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>

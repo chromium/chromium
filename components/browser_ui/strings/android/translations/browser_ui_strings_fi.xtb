@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Yksinkertaisempi sivunäkymä</translation>
 <translation id="4151930093518524179">Zoomauksen oletusarvo</translation>
 <translation id="4165986682804962316">Sivustoasetukset</translation>
+<translation id="4169019654293892025">Piilota <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valittu. Toimintoja on käytettävissä näytön yläosassa.</translation>
-<translation id="7137403271056944713">MIDI-laitt. hallinta/uud.ohjelm.</translation>
 <translation id="7141896414559753902">Estä ponnahdusikkunoiden näyttäminen sivustoilla (suositus)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kt</translation>
 <translation id="7180611975245234373">Päivitä</translation>

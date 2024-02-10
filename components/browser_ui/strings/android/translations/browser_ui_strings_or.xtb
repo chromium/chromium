@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ସୀମିତ ଅଟେ</translation>
 <translation id="3008272652534848354">ଅନୁମତି ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="301521992641321250">ସ୍ୱଚାଳିତ ଭାବେ ବ୍ଲକ୍ କରାଗଲା</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ତୃତୀୟ ପକ୍ଷ ସାଇନ-ଇନକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{ଆସନ୍ତାକାଲି ମିଆଦ ଶେଷ ହେବ}other{# ଦିନରେ ମିଆଦ ଶେଷ ହେବ}}</translation>
 <translation id="310297983047869047">ପୂର୍ବବର୍ତ୍ତୀ ସ୍ଲାଇଡ</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">ୱେବ୍ ପୃଷ୍ଠାଗୁଡ଼ିକ ପାଇଁ ସରଳୀକୃତ ଭ୍ୟୁ</translation>
 <translation id="4151930093518524179">ଡିଫଲ୍ଟ ଜୁମ</translation>
 <translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4169549551965910670">ଏକ USB ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4194328954146351878">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4200726100658658164">ଲୋକେସନ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ରୁ</translation>
 <translation id="4226663524361240545">ବିଜ୍ଞପ୍ତି ଡିଭାଇସ୍‍କୁ ଭାଇବ୍ରେଟ୍ କରିପାରେ</translation>
 <translation id="4259722352634471385">ନାଭିଗେସନ୍ ଅବରୋଧ କରାଯାଇଛି: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ଅନୁମୋଦିତ</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1ଟି ଚୟନ କରାଯାଇଛି}other{#ଟି ଚୟନ କରାଯାଇଛି}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />ଟି ଚୟନ କରାଯାଇଛି।  ସ୍କ୍ରିନ୍‌ର ଶୀର୍ଷଭାଗରେ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
-<translation id="7137403271056944713">MIDI ଡିଭାଇସ ନିୟନ୍ତ୍ରଣ / ପୁଣି ପ୍ରୋଗ୍ରାମ</translation>
 <translation id="7141896414559753902">ସାଇଟ୍‌ଗୁଡ଼ିକର ପପ୍‌-ଅପ୍‌ ଏବଂ ରିଡାଇରେକ୍ଟ ଦେଖାଇବାକୁ ଅବରୋଧ କରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">ପୃଷ୍ଠାର ଜୁମ୍</translation>
 <translation id="7781829728241885113">ଗତକଲି</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ଏହି ଟାବ ମାଧ୍ୟମରେ ଜାରି ରଖନ୍ତୁ}other{ଏହି ଟାବଗୁଡ଼ିକ ମାଧ୍ୟମରେ ଜାରି ରଖନ୍ତୁ}}</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7804248752222191302">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7807060072011926525">Google ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଛି</translation>

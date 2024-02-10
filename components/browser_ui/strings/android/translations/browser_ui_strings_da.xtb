@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="310297983047869047">Forrige dias</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Enkel visning af websider</translation>
 <translation id="4151930093518524179">Standardzoom</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
+<translation id="4169019654293892025">Skjul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
 <translation id="4194328954146351878">Spørg, om websites må få adgang til og ændre oplysninger på NFC-enheder (anbefales)</translation>
 <translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> fra <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er markeret. De tilgængelige valgmuligheder er øverst på skærmen</translation>
-<translation id="7137403271056944713">Styring/omprogrammering af MIDI</translation>
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Opdater</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Fortsæt med denne fane}one{Fortsæt med denne fane}other{Fortsæt med disse faner}}</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
 <translation id="7807060072011926525">Leveret af Google</translation>

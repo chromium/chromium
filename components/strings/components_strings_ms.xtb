@@ -246,6 +246,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1428729058023778569">Anda melihat amaran ini kerana laman ini tidak menyokong HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Saput Pelekat Sendiri</translation>
 <translation id="1430915738399379752">Cetak</translation>
+<translation id="1431021750861456539">Skrin penuh automatik</translation>
 <translation id="1432187715652018471">halaman mahu memasang pengendali perkhidmatan.</translation>
 <translation id="1432581352905426595">Urus enjin carian</translation>
 <translation id="1433225466058025572">Cuba alihkan semula fail anda</translation>
@@ -585,6 +586,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2075497153347571252">Pentadbir anda telah menyekat <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2080021694978766903">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri.</translation>
+<translation id="2081482239432306393">Pilihan nombor rumah dipilih</translation>
 <translation id="20817612488360358">Tetapan proksi sistem telah sedia untuk digunakan tetapi konfigurasi proksi jelas juga telah ditentukan.</translation>
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Benarkan setiap kali melawat</translation>
@@ -1410,6 +1412,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3723663469265383848">Semasa pengemaskinian, anda tidak dapat menggunakan peranti anda hingga 10 minit.</translation>
 <translation id="372429172604983730">Aplikasi yang boleh menyebabkan ralat ini termasuk antivirus, tembok api dan perisian penapisan web atau proksi.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat pembentangan Google baharu dalam Slides dengan pantas</translation>
+<translation id="3727309136762649052">Ruang nama</translation>
 <translation id="3727850735097852673">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="3733139489341305600">Kenderaan autonomi</translation>
 <translation id="3736520371357197498">Jika anda memahami risiko terhadap keselamatan anda, anda boleh <ph name="BEGIN_LINK" />melawati laman web yang tidak selamat ini<ph name="END_LINK" /> sebelum program berbahaya dialih keluar.</translation>
@@ -1898,6 +1901,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4729147136006144950">Badan Kebajikan &amp; Filantropi</translation>
 <translation id="4730977633786878901">Ulasan</translation>
 <translation id="4731638775147756694">Aplikasi ini telah disekat oleh pentadbir anda</translation>
+<translation id="4732860731866514038">Memuat turun pek bahasa <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> mahu menggunakan lokasi peranti anda</translation>
 <translation id="4736491186715342415">Kenderaan bermotor</translation>
 <translation id="4736825316280949806">Mulakan semula Chromium</translation>
@@ -2257,7 +2261,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
             <ph name="LIST_ITEM" />Kuki dan data laman
             <ph name="LIST_ITEM" />Maklumat yang dimasukkan dalam borang
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> mahu mengawal dan mengatur cara semula peranti MIDI (SysEx) anda</translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
 <translation id="5447235695608032700">Benarkan <ph name="SITE" /> menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5447765697759493033">Tapak ini tidak akan diterjemah</translation>
@@ -2284,6 +2287,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     <ph name="LINE_BREAK" />
     Cuba hubungi pentadbir sistem anda.</translation>
 <translation id="549333378215107354">Saiz 3</translation>
+<translation id="5501712702042287009">skrin penuh automatik</translation>
 <translation id="550365051221576010">Isi semua maklumat</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Penanda halaman terurus</translation>
@@ -2470,7 +2474,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5877831137320480913">Kecantikan &amp; kecergasan</translation>
 <translation id="5879989559903563723">Tidak dibenarkan dalam mod Tetamu</translation>
 <translation id="5880050725127890683">Akses semakan keselamatan Chrome</translation>
-<translation id="5883861433316751031">Kawal dan atur cara semula peranti MIDI?</translation>
 <translation id="5884465125445718607">Sampul Cina #6</translation>
 <translation id="5887400589839399685">Kad disimpan</translation>
 <translation id="5887687176710214216">Terakhir dilawati semalam</translation>
@@ -2821,7 +2824,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6556866813142980365">Buat semula</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
 <translation id="6560786330438719938">Apl yang dipasang atau dinyahpasang dan kekerapan apl tersebut digunakan</translation>
-<translation id="6567084950885568327">Kawalan peranti MIDI dan pengaturcaraan semula</translation>
 <translation id="6568793038316600992">Butang urus kaedah pembayaran, aktifkan untuk mengurus maklumat pembayaran dan kad kredit anda dalam tetapan Chrome</translation>
 <translation id="6569060085658103619">Anda sedang melihat halaman sambungan</translation>
 <translation id="6569366777234823130">Filem drama</translation>
@@ -3204,6 +3206,7 @@ Butiran tambahan:
 <translation id="733354035281974745">Pembatalan akaun setempat peranti</translation>
 <translation id="7334320624316649418">&amp;Buat semula susun semula</translation>
 <translation id="7335157162773372339">Boleh meminta untuk menggunakan kamera anda</translation>
+<translation id="7336636595549675416">Nombor rumah</translation>
 <translation id="7337248890521463931">Tunjukkan lagi baris</translation>
 <translation id="7337706099755338005">Tidak tersedia pada platform anda.</translation>
 <translation id="733923710415886693">Sijil pelayan tidak didedahkan melalui Ketelusan Sijil.</translation>
@@ -3911,7 +3914,6 @@ Butiran tambahan:
 <translation id="8671519637524426245">Nilai <ph name="SECURE_DNS_SALT" /> tidak memenuhi keperluan saiz.</translation>
 <translation id="867224526087042813">Tandatangan</translation>
 <translation id="8672264262457010862">Perniagaan &amp; industri</translation>
-<translation id="8673776281896298303">Kawal dan atur cara semula peranti MIDI (SysEx) anda</translation>
 <translation id="8676424191133491403">Tiada kelewatan</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, jawapan, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Halaman web di <ph name="PAGE" /> tidak boleh dimuatkan kerana:</translation>

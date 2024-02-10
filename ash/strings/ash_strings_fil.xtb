@@ -66,7 +66,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1217633719248931900">Pumunta sa app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store App</translation>
 <translation id="1225748608451425081">Na-lock ang iyong Chromebook dahil sa hindi alam na isyu. Makakapag-sign in ka pagkalipas ng: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">hindi aktibong desk</translation>
 <translation id="1229194443904279055">Ihinto ang pagpili</translation>
 <translation id="1235458158152011030">Mga kilalang network</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
@@ -374,7 +373,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2575685495496069081">Na-disable ang maraming pag-sign in</translation>
 <translation id="2579264398927991698">Mga Update sa Firmware</translation>
 <translation id="2582112259361606227">I-restart para mag-update</translation>
-<translation id="2586561057878260610">Pindutin ang Ctrl + W para isama sa <ph name="DESK_NAME" />. Pindutin ang Ctrl + Shift + W para isara ang desk at mga window.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2595239820337756193">5K sa milya</translation>
 <translation id="2596078834055697711">Kumuha ng screenshot ng window</translation>
@@ -511,7 +509,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3154351730702813399">Maaaring subaybayan ng admin ng device ang iyong aktibidad sa pag-browse.</translation>
 <translation id="316086887565479535">Mga hindi sinusuportahang app sa template</translation>
 <translation id="3160929076476941240">2h</translation>
-<translation id="3161500364292033097">Isara ang desk at mga window</translation>
 <translation id="316356270129335934">Iniro-roll back ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
 <translation id="3170769098533255179">Walang nakakonektang device. Habang ginagamit ang hotspot, mananatiling naka-off ang Wi-Fi.</translation>
 <translation id="3171170659304083361">Mga setting ng mga pamamaraan ng pag-input</translation>
@@ -672,6 +669,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
+<translation id="3712143870407382523">Pumili ng window para sa bahaging ito</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
 <translation id="3726171378575546917">Wala ang <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, at <ph name="UNAVAILABLE_APPS_COUNT" /> pa sa device na ito.</translation>
@@ -1048,7 +1046,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> (na) event</translation>
 <translation id="5198715732953550718">Ipinagsama ang <ph name="MOVED_APP_NAME" /> at <ph name="IN_PLACE_APP" /> para gumawa ng bagong folder.</translation>
-<translation id="5203299837691351876">aktibong desk</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 pang notification}one{# pang notification}other{# pang notification}}</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
@@ -1066,7 +1063,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5268819379131021772">Listahan ng mga gawain sa Google</translation>
-<translation id="5275923704957843041">Preview ng desk</translation>
 <translation id="5277869901083657836">I-toggle ang mga stylus tool</translation>
 <translation id="5278086053818066789">I-on/i-off ang ChromeVox (pasalitang feedback)</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
@@ -1416,6 +1412,7 @@ Kaka-install lang</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> na storage ang ginagamit | <ph name="STORAGE_TOTAL_SIZE" /> ang kabuuan</translation>
 <translation id="6614169507485700968">Naka-on ang privacy screen</translation>
 <translation id="6622679827379792051">I-set up ang pagtingin sa mga app ng iyong telepono</translation>
+<translation id="6624493541160101248">Kasalukuyang desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Nakatago ang mga notification sa <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, at iba pang notification dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="6627638273713273709">Maghanap+Shift+K</translation>
 <translation id="662830937908749204">Ilipat ang focus sa susunod na pane</translation>
@@ -1470,7 +1467,6 @@ Kaka-install lang</translation>
 <translation id="6819327813400217281">Nag-snap ang camera sa kaliwang sulok sa ibaba</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
 <translation id="6827049576281411231">Isara ang panel ng event</translation>
-<translation id="6831561626108366035">Pumunta sa button na <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Mapanganib na file</translation>
 <translation id="6837621009301897464">Para kumuha ng screenshot, pindutin</translation>
 <translation id="6852052252232534364">I-activate</translation>
@@ -1509,6 +1505,7 @@ Kaka-install lang</translation>
 <translation id="698231206551913481">Permanenteng made-delete ang lahat ng file at lokal na data na nauugnay sa user na ito kapag inalis na ang user na ito.</translation>
 <translation id="6984028004251196682">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ginawang <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Mabilis na mag-tour para matuto kung paano i-explore ang iyong Chromebook. Makapagsimula sa 6 na hakbang.</translation>
+<translation id="7000027735917578303">Mga setting ng mga window at desk</translation>
 <translation id="7004910047186208204">Kumonekta sa mobile data</translation>
 <translation id="7005239792648594238">Magbukas ng app para magsimula</translation>
 <translation id="7007983414944123363">Hindi ma-verify ang iyong PIN o password. Subukan ulit.</translation>
@@ -1759,6 +1756,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8001755249288974029">I-highlight ang text mula sa cursor hanggang sa simula ng linya</translation>
 <translation id="8004512796067398576">Taasan</translation>
 <translation id="8026334261755873520">I-clear ang data sa pag-browse</translation>
+<translation id="802782383769312836">Nakaraang desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Hindi nakakonekta sa hotspot</translation>
 <translation id="8029629653277878342">Kinakailangan ang PIN o password para sa higit pang seguridad</translation>
 <translation id="8030169304546394654">Naalis sa pagkakakonekta</translation>
@@ -1806,6 +1804,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8219451629189078428">Kailangang manatiling naka-on at nakasaksak ang iyong Chromebook sa panahong ito. Tiyaking nakasaksak nang maayos ang charger o mga adapter cable, sa iyong Chromebook at sa saksakan. Huwag i-off ang iyong Chromebook.</translation>
 <translation id="8230305195727960608">Color Inversion Mode</translation>
 <translation id="8236042855478648955">Oras na para magpahinga</translation>
+<translation id="8237964652943995219">Susunod na desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">I-activate ang desk sa kanan</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, App</translation>
@@ -2032,6 +2031,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="92580429198593979">Napindot mo ang keyboard shortcut para sa pag-invert ng kulay. Gusto mo ba itong i-on?</translation>
 <translation id="925832987464884575">Itago ang mga preview</translation>
 <translation id="937214777182567951">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update kaagad ang <ph name="DEVICE_TYPE" /> mo</translation>
+<translation id="938407504481277932">Kasalukuyang desk: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>
 <translation id="945383118875625837">I-drag ang link papunta sa bookmarks bar</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>

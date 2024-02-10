@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
 <translation id="4151930093518524179">Default na pag-zoom</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
+<translation id="4169019654293892025">I-hide ang <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Nakakonekta sa USB device</translation>
 <translation id="4194328954146351878">Magtanong bago payagan ang mga site na tingnan at baguhin ang impormasyon sa mga NFC device (inirerekomenda)</translation>
 <translation id="4200726100658658164">Buksan ang Mga Setting ng Lokasyon</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ang napili.  Available ang mga opsyon malapit sa itaas ng screen</translation>
-<translation id="7137403271056944713">Pagkontrol / pag-reprogram: MIDI device</translation>
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">I-refresh</translation>

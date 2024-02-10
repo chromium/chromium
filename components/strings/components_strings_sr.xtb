@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самолепљива фолија</translation>
 <translation id="1430915738399379752">Штампај</translation>
+<translation id="1431021750861456539">Аутоматски приказ преко целог екрана</translation>
 <translation id="1432187715652018471">Страница жели да инсталира обрађивача услуге.</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
 <translation id="1433225466058025572">Пробајте да поново преместите фајлове</translation>
@@ -585,6 +586,7 @@
 <translation id="2075497153347571252">Администратор је блокирао дозволу (<ph name="PERMISSION" />) на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2080021694978766903">Ове смернице не смеју да имају више од <ph name="MAX_ITEMS_LIMIT" /> уноса.</translation>
+<translation id="2081482239432306393">Изабрана је опција за кућни број</translation>
 <translation id="20817612488360358">Подешено је да се користе системска подешавања проксија, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. од <ph name="TOTAL_RESULTS" /> резултата</translation>
 <translation id="2083256696566019397">Дозволи при свакој посети</translation>
@@ -1409,6 +1411,7 @@
 <translation id="3723663469265383848">Током ажурирања нећете моћи да користите уређај највише 10 минута.</translation>
 <translation id="372429172604983730">Апликације које могу да доведу до ове грешке обухватају антивирусни софтвер, заштитни зид и веб-филтрирање или прокси софтвер.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google презентацију у Презентацијама</translation>
+<translation id="3727309136762649052">Именски простор</translation>
 <translation id="3727850735097852673">Да бисте користили Google менаџер лозинки са macOS Keychain-ом, поново покрените Chrome и дозволите приступ Keychain-у. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="3733139489341305600">Аутономна возила</translation>
 <translation id="3736520371357197498">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај небезбедни сајт<ph name="END_LINK" /> пре него што уклонимо опасне програме.</translation>
@@ -1897,6 +1900,7 @@
 <translation id="4729147136006144950">Добротворни рад и филантропија</translation>
 <translation id="4730977633786878901">Рецензије</translation>
 <translation id="4731638775147756694">Администратор је блокирао ову апликацију</translation>
+<translation id="4732860731866514038">Преузима се језички пакет за језик <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> жели да користи локацију уређаја</translation>
 <translation id="4736491186715342415">Моторна возила</translation>
 <translation id="4736825316280949806">Поново покрените Chromium</translation>
@@ -2256,7 +2260,6 @@
             <ph name="LIST_ITEM" />колачиће и податке о сајтовима
             <ph name="LIST_ITEM" />информације које сте унели у обрасце
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> жели да контролише и репрограмира MIDI уређаје (SysEx)</translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
 <translation id="5447235695608032700">Дозволите да <ph name="SITE" /> користи информације које је сачувао о вама</translation>
 <translation id="5447765697759493033">Овај сајт се неће преводити</translation>
@@ -2283,6 +2286,7 @@
     <ph name="LINE_BREAK" />
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
+<translation id="5501712702042287009">аутоматски приказ преко целог екрана</translation>
 <translation id="550365051221576010">Попуни све</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
@@ -2469,7 +2473,6 @@
 <translation id="5877831137320480913">Лепота и фитнес</translation>
 <translation id="5879989559903563723">Није дозвољено у режиму госта</translation>
 <translation id="5880050725127890683">Иди на Chrome проверу безбедности</translation>
-<translation id="5883861433316751031">Желите да контролишете и репрограмирате MIDI уређаје?</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
@@ -2819,7 +2822,6 @@
 <translation id="6556866813142980365">Понови</translation>
 <translation id="6557715786897013164">14×17 in</translation>
 <translation id="6560786330438719938">Апликације које су инсталиране или деинсталиране и колико често се користе</translation>
-<translation id="6567084950885568327">Контрола и репрограмирање MIDI уређаја</translation>
 <translation id="6568793038316600992">Дугме Управљај начинима плаћања, активирајте га да бисте управљали плаћањима и информацијама о кредитним картицама у подешавањима Chrome-а</translation>
 <translation id="6569060085658103619">Прегледате страницу додатка.</translation>
 <translation id="6569366777234823130">Драме</translation>
@@ -3202,6 +3204,7 @@
 <translation id="733354035281974745">Замена локалног налога на уређају</translation>
 <translation id="7334320624316649418">&amp;Понови промену редоследа</translation>
 <translation id="7335157162773372339">Може да тражи да користи камеру</translation>
+<translation id="7336636595549675416">Кућни број</translation>
 <translation id="7337248890521463931">Прикажи више редова</translation>
 <translation id="7337706099755338005">Није доступно на вашој платформи.</translation>
 <translation id="733923710415886693">Сертификат сервера није откривен помоћу Транспарентности сертификата.</translation>
@@ -3909,7 +3912,6 @@
 <translation id="8671519637524426245">Вредност <ph name="SECURE_DNS_SALT" /> не испуњава услове за величину.</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8672264262457010862">Пословање и индустрија</translation>
-<translation id="8673776281896298303">да контролише и репрограмира MIDI уређаје (SysEx)</translation>
 <translation id="8676424191133491403">Без одлагања</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страница на адреси <ph name="PAGE" /> не може да се учита из следећих разлога:</translation>

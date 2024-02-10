@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">മൂന്നാം-കക്ഷി കുക്കികൾ നിയന്ത്രിച്ചിരിക്കുന്നു</translation>
 <translation id="3008272652534848354">അനുമതികൾ പുനഃസജ്ജീകരിക്കുക</translation>
 <translation id="301521992641321250">സ്വയമേവ ബ്ലോക്കുചെയ്‌തു</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ അനുവദിക്കുക.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{നാളെ കാലഹരണപ്പെടും}other{# ദിവസത്തിനുള്ളിൽ കാലഹരണപ്പെടും}}</translation>
 <translation id="310297983047869047">മുമ്പത്തെ സ്ലൈഡ്</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">വെബ് പേജുകൾക്കായി ലളിതവൽക്കരിച്ച കാഴ്ച</translation>
 <translation id="4151930093518524179">ഡിഫോൾട്ട് സൂം</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> മറയ്ക്കുക</translation>
 <translation id="4169549551965910670">USB ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തു</translation>
 <translation id="4194328954146351878">NFC ഉപകരണങ്ങളിലെ വിവരങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്താനും സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ചോദിക്കുക (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="4200726100658658164">ലൊക്കേഷൻ ക്രമീകരണം തുറക്കുക</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="4226663524361240545">അറിയിപ്പുകൾ ലഭിക്കുമ്പോൾ ഉപകരണം വൈബ്രേറ്റ് ചെയ്‌തേക്കാം</translation>
 <translation id="4259722352634471385">നാവിഗേഷൻ തടഞ്ഞിരിക്കുന്നു: <ph name="URL" /></translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 തിരഞ്ഞെടുത്തു}other{# തിരഞ്ഞെടുത്തു}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു. സ്‌ക്രീനിന്റെ മുകളിലുള്ള ഭാഗത്തിന് സമീപം ഓപ്‌ഷനുകൾ ലഭ്യമാണ്</translation>
-<translation id="7137403271056944713">MIDI ഉപകരണനിയന്ത്രണം/റീപ്രോഗ്രാം</translation>
 <translation id="7141896414559753902">പോപ്പ് അപ്പുകളും റീഡയറക്‌റ്റുകളും കാണിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">പേജ് സൂം ചെയ്യുക</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{ഈ ടാബിൽ തുടരുക}other{ഈ ടാബുകളിൽ തുടരുക}}</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
 <translation id="7804248752222191302">ഒരു സൈറ്റ് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>

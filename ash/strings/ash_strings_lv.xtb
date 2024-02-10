@@ -66,7 +66,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1217633719248931900">Pāriet uz lietotni</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, lietotne Play veikals</translation>
 <translation id="1225748608451425081">Jūsu Chromebook dators ir bloķēts zināmas problēmas dēļ. Jūs varēsiet pierakstīties pēc šāda laika perioda: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">neaktīva darbvieta</translation>
 <translation id="1229194443904279055">Apturēt atlasīšanu</translation>
 <translation id="1235458158152011030">Zināmie tīkli</translation>
 <translation id="1239161794459865856">Izveidots savienojums ar funkciju <ph name="FEATURE_NAME" />.</translation>
@@ -374,7 +373,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2575685495496069081">Vairākkārtēja pierakstīšanās ir atspējota</translation>
 <translation id="2579264398927991698">Aparātprogrammatūras atjauninājumi</translation>
 <translation id="2582112259361606227">Restartēt, lai atjauninātu</translation>
-<translation id="2586561057878260610">Nospiediet taustiņu kombināciju Ctrl+W, lai apvienotu ar darbvietu <ph name="DESK_NAME" />. Nospiediet taustiņu kombināciju Ctrl+Shift+W, lai aizvērtu darbvietu un logus.</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
 <translation id="2595239820337756193">5 kilometri jūdzēs</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
@@ -511,7 +509,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3154351730702813399">Ierīces administrators var uzraudzīt jūsu pārlūkošanas darbības.</translation>
 <translation id="316086887565479535">Veidnē ir neatbalstītas lietotnes</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Aizvērt darbvietu un logus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
 <translation id="3170769098533255179">Nav pievienota neviena ierīce. Tīklāja izmantošanas laikā Wi-Fi savienojums būs izslēgts.</translation>
 <translation id="3171170659304083361">Ievades metožu iestatījumi</translation>
@@ -1048,7 +1045,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5197255632782567636">Internets</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> pasākumi</translation>
 <translation id="5198715732953550718">Lietotne <ph name="MOVED_APP_NAME" /> kombinēta ar lietotni <ph name="IN_PLACE_APP" />, lai izveidotu jaunu mapi.</translation>
-<translation id="5203299837691351876">aktīva darbvieta</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 cits paziņojums}zero{# citu paziņojumu}one{# cits paziņojums}other{# citi paziņojumi}}</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
@@ -1066,7 +1062,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
 <translation id="5260676007519551770">4. galds</translation>
 <translation id="5268819379131021772">Google uzdevumu saraksts</translation>
-<translation id="5275923704957843041">Darbvietas priekšskatījums</translation>
 <translation id="5277869901083657836">Pārslēgt skārienekrāna pildspalvas rīkus</translation>
 <translation id="5278086053818066789">Ieslēgt/izslēgt ChromeVox (balss komentārus)</translation>
 <translation id="5283099933536931082">Lietotne <ph name="APP_ITEM_TITLE" /> aicina pievērst tai uzmanību.</translation>
@@ -1470,7 +1465,6 @@ Jauna instalācija</translation>
 <translation id="6819327813400217281">Kamera pārnesta uz kreiso apakšējo stūri</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
 <translation id="6827049576281411231">Aizvērt pasākumu paneli</translation>
-<translation id="6831561626108366035">Pārejiet uz pogu <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Bīstams fails</translation>
 <translation id="6837621009301897464">Lai izveidotu ekrānuzņēmumu, nospiediet</translation>
 <translation id="6852052252232534364">Noklikšķiniet</translation>

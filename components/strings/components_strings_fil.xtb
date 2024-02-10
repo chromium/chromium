@@ -585,6 +585,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2075497153347571252">Na-block ng iyong administrator ang <ph name="PERMISSION" /> sa <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2080021694978766903">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang patakarang ito.</translation>
+<translation id="2081482239432306393">Pinili ang opsyong numero ng bahay</translation>
 <translation id="20817612488360358">Itinatakda ang mga setting ng proxy ng system upang magamit ngunit tinutukoy rin ang isang tahasang configuration ng proxy.</translation>
 <translation id="2082238445998314030">Resulta <ph name="RESULT_NUMBER" /> sa <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Payagan sa bawat pagbisita</translation>
@@ -1409,6 +1410,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3723663469265383848">Habang ina-update, hindi mo magagamit ang iyong device sa loob ng hanggang 10 minuto.</translation>
 <translation id="372429172604983730">Kabilang ang antivirus, firewall, at pag-filter ng web o proxy na software sa mga application na maaaring magsanhi ng ganitong error.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong Google presentation sa Slides nang mabilis</translation>
+<translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para magamit ang Google Password Manager sa macOS Keychain, ilunsad ulit ang Chrome at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="3733139489341305600">Mga autonomous na sasakyan</translation>
 <translation id="3736520371357197498">Kung nauunawaan mo ang mga peligro sa iyong seguridad, maaari mong <ph name="BEGIN_LINK" />bisitahin ang hindi ligtas na site na ito<ph name="END_LINK" /> bago maalis ang mga mapanganib na program.</translation>
@@ -1897,6 +1899,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4729147136006144950">Kawanggawa at Pilantropiya</translation>
 <translation id="4730977633786878901">Mga Review</translation>
 <translation id="4731638775147756694">Na-block ng iyong administrator ang application na ito</translation>
+<translation id="4732860731866514038">Dina-download ang <ph name="LANGUAGE" /> language pack... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Gustong gamitin ng <ph name="URL" /> ang lokasyon ng iyong device</translation>
 <translation id="4736491186715342415">Mga sasakyang de motor</translation>
 <translation id="4736825316280949806">I-restart ang Chromium</translation>
@@ -2256,7 +2259,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
             <ph name="LIST_ITEM" />Cookies at data ng site
             <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">Gustong kontrolin at i-reprogram ng <ph name="URL" /> ang iyong mga MIDI device (SysEx)</translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="5447765697759493033">Hindi isasalin ang site na ito</translation>
@@ -2469,7 +2471,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5877831137320480913">Pagpapaganda at fitness</translation>
 <translation id="5879989559903563723">Hindi pinapayagan sa Guest mode</translation>
 <translation id="5880050725127890683">Pumunta sa pag-check sa kaligtasan ng Chrome</translation>
-<translation id="5883861433316751031">Kontrolin at i-repogram ang mga MIDI device?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">Na-save ang card</translation>
 <translation id="5887687176710214216">Huling binisita kahapon</translation>
@@ -2820,7 +2821,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
 <translation id="6560786330438719938">Mga naka-install o naka-uninstall na app at kung gaano kadalas gamitin ang mga ito</translation>
-<translation id="6567084950885568327">Pagkontrol at pag-reprogram ng MIDI device</translation>
 <translation id="6568793038316600992">Button na Pamahalaan ang mga paraan ng pagbabayad, i-activate para mapamahalaan ang iyong mga pagbabayad at impormasyon ng credit card mo sa mga setting ng Chrome</translation>
 <translation id="6569060085658103619">Isang page ng extension ang tinitingnan mo</translation>
 <translation id="6569366777234823130">Mga pelikulang drama</translation>
@@ -3203,6 +3203,7 @@ Mga karagdagang detalye:
 <translation id="733354035281974745">Pag-override ng lokal na account ng device</translation>
 <translation id="7334320624316649418">&amp;Gawing muli ang pagbabago sa ayos</translation>
 <translation id="7335157162773372339">Puwedeng hilinging gamitin ang iyong camera</translation>
+<translation id="7336636595549675416">Numero ng bahay</translation>
 <translation id="7337248890521463931">Magpakita ng mas marami pang linya</translation>
 <translation id="7337706099755338005">Hindi available sa iyong platform.</translation>
 <translation id="733923710415886693">Ang certificate ng server ay hindi inihayag sa pamamagitan ng Transparency ng Certificate.</translation>
@@ -3909,7 +3910,6 @@ Mga karagdagang detalye:
 <translation id="8671519637524426245">Hindi natutugunan ng value ng <ph name="SECURE_DNS_SALT" /> ang mga requirement sa laki.</translation>
 <translation id="867224526087042813">Lagda</translation>
 <translation id="8672264262457010862">Negosyo at pang-industriya</translation>
-<translation id="8673776281896298303">Kontrolin at i-reprogram ang iyong mga MIDI device (SysEx)</translation>
 <translation id="8676424191133491403">Walang pagkaantala</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, sagot, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Hindi ma-load ang webpage sa <ph name="PAGE" /> dahil:</translation>

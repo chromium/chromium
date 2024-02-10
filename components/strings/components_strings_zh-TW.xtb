@@ -584,6 +584,7 @@
 <translation id="2075497153347571252">系統管理員已封鎖 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080021694978766903">這項政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目。</translation>
+<translation id="2081482239432306393">已選取「門牌號碼」選項</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確 Proxy 設定。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
 <translation id="2083256696566019397">每次造訪時允許</translation>
@@ -1407,6 +1408,7 @@
 <translation id="3723663469265383848">系統最多需要 10 分鐘的時間進行更新。這段期間內將無法使用裝置。</translation>
 <translation id="372429172604983730">可能造成這個錯誤的應用程式包括防毒軟體、防火牆、網路篩選或 Proxy 軟體。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 簡報中快速建立新簡報</translation>
+<translation id="3727309136762649052">命名空間</translation>
 <translation id="3727850735097852673">如要搭配 macOS 鑰匙圈使用 Google 密碼管理工具，請重新啟動 Chrome 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="3733139489341305600">自動駕駛車</translation>
 <translation id="3736520371357197498">如果你瞭解安全性風險，也可以選擇在危險程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個不安全的網站<ph name="END_LINK" />。</translation>
@@ -1895,6 +1897,7 @@
 <translation id="4729147136006144950">公益機構與慈善事業</translation>
 <translation id="4730977633786878901">查看評論</translation>
 <translation id="4731638775147756694">系統管理員已封鎖這個應用程式</translation>
+<translation id="4732860731866514038">正在下載<ph name="LANGUAGE" />語言套件... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 要求使用裝置的位置資訊</translation>
 <translation id="4736491186715342415">汽車</translation>
 <translation id="4736825316280949806">重新啟動 Chromium</translation>
@@ -2254,7 +2257,6 @@
             <ph name="LIST_ITEM" />Cookie 和網站資料
             <ph name="LIST_ITEM" />在表單中輸入的資訊
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">「<ph name="URL" />」想要控制你的 MIDI 裝置並重設程式 (SysEx)</translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資訊</translation>
 <translation id="5447765697759493033">系統不會翻譯這個網站</translation>
@@ -2467,7 +2469,6 @@
 <translation id="5877831137320480913">美容與健身</translation>
 <translation id="5879989559903563723">在訪客模式下無法使用</translation>
 <translation id="5880050725127890683">前往 Chrome 安全檢查頁面</translation>
-<translation id="5883861433316751031">要控制及重設 MIDI 裝置的程式嗎？</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">已儲存卡片</translation>
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
@@ -2818,7 +2819,6 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 吋</translation>
 <translation id="6560786330438719938">已安裝或解除安裝的應用程式及其使用頻率</translation>
-<translation id="6567084950885568327">控制 MIDI 裝置並重設程式</translation>
 <translation id="6568793038316600992">「管理付款方式」按鈕，啟動後即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
 <translation id="6569366777234823130">劇情片</translation>
@@ -3201,6 +3201,7 @@
 <translation id="733354035281974745">裝置本機帳戶覆寫</translation>
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>
 <translation id="7335157162773372339">可以要求使用你的攝影機</translation>
+<translation id="7336636595549675416">門牌號碼</translation>
 <translation id="7337248890521463931">顯示更多行</translation>
 <translation id="7337706099755338005">你的平台無法使用實驗性功能。</translation>
 <translation id="733923710415886693">伺服器憑證未依憑證透明化政策公開。</translation>
@@ -3907,7 +3908,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 值不符合大小規定。</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8672264262457010862">工商業</translation>
-<translation id="8673776281896298303">控制及重設 MIDI 裝置的程式 (SysEx)</translation>
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入位於 <ph name="PAGE" /> 的網頁，原因如下：</translation>

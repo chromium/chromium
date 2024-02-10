@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">Администраторът ви е блокирал разрешението „<ph name="PERMISSION" />“ на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2080021694978766903">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа.</translation>
+<translation id="2081482239432306393">Избрана е опцията за номер на къща</translation>
 <translation id="20817612488360358">За използване са зададени системни настройки за прокси сървъра, но е посочена и изрична конфигурация.</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешаване при всяко посещение</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3723663469265383848">По време на актуализацията няма да можете да използвате устройството си за период до 10 минути.</translation>
 <translation id="372429172604983730">Тази грешка може да се дължи на приложение, като например антивирусна програма или софтуер за защитна стена или за филтриране на съдържание в мрежата.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо презентация в Google Презентации</translation>
+<translation id="3727309136762649052">Пространство от имена</translation>
 <translation id="3727850735097852673">За да използвате Google Мениджър на пароли с Keychain на macOS, стартирайте Chrome отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="3733139489341305600">Автономни автомобили</translation>
 <translation id="3736520371357197498">Ако разбирате рисковете за сигурността си, може <ph name="BEGIN_LINK" />да посетите този ненадежден сайт<ph name="END_LINK" /> преди премахването на опасните програми.</translation>
@@ -1897,6 +1899,7 @@
 <translation id="4729147136006144950">Благотворителност и филантропия</translation>
 <translation id="4730977633786878901">Отзиви</translation>
 <translation id="4731638775147756694">Това приложение е блокирано от администратора ви</translation>
+<translation id="4732860731866514038">Езиковият пакет за <ph name="LANGUAGE" /> се изтегля... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> иска да използва местоположението на устройството ви</translation>
 <translation id="4736491186715342415">Моторни превозни средства</translation>
 <translation id="4736825316280949806">Рестартирайте Chromium.</translation>
@@ -2256,7 +2259,6 @@
 <ph name="LIST_ITEM" />„бисквитките“ и данните за сайтовете;
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> иска да контролира и препрограмира MIDI устройствата ви (SysEx)</translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
@@ -2469,7 +2471,6 @@
 <translation id="5877831137320480913">Козметика и фитнес</translation>
 <translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
 <translation id="5880050725127890683">Проверка на безопасността в Chrome</translation>
-<translation id="5883861433316751031">Да се контролират и препрограмират ли MIDI устройствата?</translation>
 <translation id="5884465125445718607">Плик, китайски №6</translation>
 <translation id="5887400589839399685">Картата бе запазена</translation>
 <translation id="5887687176710214216">Последно посещение: вчера</translation>
@@ -2820,7 +2821,6 @@
 <translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6557715786897013164">14 x 17 инча</translation>
 <translation id="6560786330438719938">Инсталираните и деинсталираните приложения и колко често са използвани</translation>
-<translation id="6567084950885568327">Управление и препрограмиране на MIDI устройства</translation>
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
 <translation id="6569366777234823130">Драматични филми</translation>
@@ -3203,6 +3203,7 @@
 <translation id="733354035281974745">Отменено от локалния профил на устройството</translation>
 <translation id="7334320624316649418">&amp;Възстановяване на пренареждането</translation>
 <translation id="7335157162773372339">Може да поиска разрешение да използва камерата ви</translation>
+<translation id="7336636595549675416">Номер на къща</translation>
 <translation id="7337248890521463931">Показване на повече редове</translation>
 <translation id="7337706099755338005">Не е налице за платформата ви.</translation>
 <translation id="733923710415886693">Сертификатът на сървъра не е разкрит чрез Прозрачност на сертификатите.</translation>
@@ -3909,7 +3910,6 @@
 <translation id="8671519637524426245">Стойността на <ph name="SECURE_DNS_SALT" /> не отговаря на изискванията за размер.</translation>
 <translation id="867224526087042813">Подпис</translation>
 <translation id="8672264262457010862">Бизнес и индустрия</translation>
-<translation id="8673776281896298303">Контролиране и препрограмиране на MIDI устройствата ви (SysEx)</translation>
 <translation id="8676424191133491403">Без забавяне</translation>
 <translation id="8680536109547170164">„<ph name="QUERY" />“, отговор: „<ph name="ANSWER" />“</translation>
 <translation id="8681531050781943054">Уеб страницата на адрес <ph name="PAGE" /> не можа да бъде заредена, защото:</translation>

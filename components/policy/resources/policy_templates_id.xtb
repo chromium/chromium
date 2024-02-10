@@ -822,7 +822,6 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
       Jika tidak disetel, situs akan meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="1675391557079742340">Aktifkan encoding konten <ph name="ZSTANDARD_SHORTNAME" /> iklan di header Accept-Encoding</translation>
 <translation id="1678137412645922426">Mengontrol penggunaan <ph name="AES_KL_NAME" /> untuk enkripsi penyimpanan pengguna jika didukung</translation>
-<translation id="1681688654564283886">Nonaktifkan Waktu Pemakaian Perangkat untuk situs</translation>
 <translation id="1682063842123336408">Perlu ruang disk kosong (dalam GB) untuk menginstal <ph name="PLUGIN_VM_NAME" />.
 
       Jika kebijakan ini tidak disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari 20 GB (nilai default).
@@ -1481,10 +1480,6 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="2149957154942061013">Khusus Internal</translation>
 <translation id="2151831603578119302">Mengaktifkan pintasan fitur aksesibilitas</translation>
 <translation id="2156132677421487971">Mengonfigurasi kebijakan untuk <ph name="PRODUCT_NAME" />, fitur yang memungkinkan pengguna mengirim konten tab, situs, atau desktop dari browser ke sistem suara dan layar jarak jauh.</translation>
-<translation id="2156179920247248678">Kebijakan ini memungkinkan <ph name="PRODUCT_NAME" /> untuk menggunakan fitur Waktu Pemakaian Perangkat <ph name="MAC_OS_NAME" />.
-
-      Jika kebijakan disetel ke Aktif atau tidak disetel, asal yang dikunjungi akan dilaporkan ke OS, dan asal yang telah diblokir di setelan Waktu Pemakaian Perangkat akan menampilkan layar pemblokiran.
-      Jika kebijakan disetel ke Nonaktif, asal yang dikunjungi tidak akan dilaporkan ke OS, dan asal yang telah diblokir di setelan Waktu Pemakaian Perangkat akan dapat diakses.</translation>
 <translation id="2156755242840687300">Server cetak eksternal diaktifkan</translation>
 <translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
       Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
@@ -1738,6 +1733,16 @@ Fitur ini tidak tersedia jika sinkronisasi Sandi dinonaktifkan (baik melalui set
 
       Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui WebUSB API. Untuk memberikan akses ke perangkat USB melalui Web Serial API, lihat kebijakan <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Izinkan orang tua menambahkan akun yang diawasi</translation>
+<translation id="2319419071295380556">Menetapkan direktori penyimpanan Screenshot (baik screenshot maupun rekaman layar).
+Jika kebijakan ini disetel sesuai rekomendasi, nilainya akan digunakan secara default, tetapi pengguna dapat mengubahnya.
+Jika tidak, pengguna tidak dapat mengubahnya dan hasil screenshot akan selalu disimpan ke direktori yang ditentukan.
+
+Kebijakan ini menggunakan format yang sama dengan kebijakan <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+Lokasi penyimpanan screenshot dapat disetel ke sistem file lokal atau <ph name="GOOGLE_DRIVE_NAME" /> (dengan imbuhan '${google_drive}') atau <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (dengan imbuhan '${onedrive}').
+Jika kebijakan ini disetel ke string kosong, screenshot akan dipaksa untuk disimpan di direktori "Download" lokal.
+Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan direktori "Download" default untuk menyimpan screenshot, dan pengguna dapat mengubahnya.</translation>
 <translation id="2326031114717677574">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
@@ -4462,7 +4467,6 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
       Perlu diketahui bahwa kebijakan ini menggantikan DisabledPlugins dan DisabledPluginsExceptions.
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menonaktifkan plugin apa pun yang diinstal pada sistem.</translation>
-<translation id="4549405078915181477">Aktifkan Waktu Pemakaian Perangkat untuk situs</translation>
 <translation id="4549695018986780856">Manifes v2 diaktifkan</translation>
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
 <translation id="4554991346503872538">Jangan pernah tawarkan terjemahan</translation>
@@ -4666,11 +4670,6 @@ Untuk perangkat terkelola, kebijakan ini diaktifkan secara default dan metrik ak
 Untuk perangkat yang tidak dikelola, pengguna dapat membuat keputusan untuk mengirim metrik.</translation>
 <translation id="4694138212536142867">Aktifkan pelaporan status hardware perangkat</translation>
 <translation id="4697581738794063407">Mengontrol fitur filter parameter URL</translation>
-<translation id="4698147321113652592">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
-
-Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang-tindih.
-
-Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.</translation>
 <translation id="4698895924806859508">Jangan laporkan peristiwa jaringan</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
@@ -5875,6 +5874,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifka
 
       Kebijakan ini hanya tersedia di <ph name="PRODUCT_NAME" />; dan tidak berpengaruh pada <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Nonaktifkan mode latar belakang</translation>
+<translation id="5705632645298500887">Menyetel tempat untuk menyimpan screenshot</translation>
 <translation id="5705828032077475554">Melaporkan sesi CRD</translation>
 <translation id="5706929446669049441">Nonaktifkan berbagi kredensial pengguna</translation>
 <translation id="57072195677044908">Menonaktifkan pemisahan profil</translation>
@@ -8337,6 +8337,15 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
+<translation id="7642884929006659708">Kebijakan ini tidak digunakan lagi sejak <ph name="PRODUCT_NAME" /> versi 122. Sebagai gantinya, gunakan kebijakan AllowedDomainsForAppsList.
+
+      Jika kebijakan ini disetel, fitur login terbatas Chrome di <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diaktifkan dan pengguna tidak dapat mengubah setelan ini. Pengguna hanya dapat mengakses alat Google menggunakan akun dari domain yang telah ditentukan (untuk mengizinkan akun Gmail atau googlemail, tambahkan consumer_accounts ke daftar domain). Setelan ini mencegah pengguna login dan menambahkan Akun Sekunder di perangkat terkelola yang memerlukan autentikasi Google, jika akun tersebut bukan milik salah satu domain yang diizinkan secara eksplisit.
+
+      Jika setelan ini dibiarkan kosong atau tidak disetel, pengguna dapat mengakses <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> dengan akun apa pun.
+
+      Pengguna tidak dapat mengubah atau mengganti setelan ini.
+
+      Catatan: Kebijakan ini menyebabkan header X-GoogApps-Allowed-Domains ditambahkan ke semua permintaan HTTP dan HTTPS di semua domain google.com, seperti yang dijelaskan di https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
 
 Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.

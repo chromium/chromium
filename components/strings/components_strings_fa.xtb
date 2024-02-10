@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">سرپرستتان <ph name="PERMISSION" /> را در <ph name="ORIGIN" /> مسدود کرده است</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2080021694978766903">این خط‌مشی نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد.</translation>
+<translation id="2081482239432306393">گزینه شماره خانه انتخاب شد</translation>
 <translation id="20817612488360358">تنظیمات پروکسی سیستم تنظیم شده تا مورد استفاده قرار گیرد، اما یک پیکربندی مشخص برای پروکسی نیز تعیین شده است.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">در هر بازدید مجاز است</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3723663469265383848">درطول به‌روزرسانی، تا ۱۰ دقیقه نمی‌توانید از دستگاهتان استفاده کنید.</translation>
 <translation id="372429172604983730">برنامه‌هایی که می‌توانند موجب این خطا شوند شامل ضدویروس‌ها، دیوار آتش و نرم‌افزار فیلتر کردن وب یا پراکسی هستند.</translation>
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع ارائه جدید در «اسلایدنگار Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="3727309136762649052">فضای نام</translation>
 <translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3733139489341305600">وسیله نقلیه خودران</translation>
 <translation id="3736520371357197498">اگر خطرات امنیتی که متوجه شما هستند را درک می‌کنید، می‌توانید قبل از حذف شدن برنامه‌های خطرناک از <ph name="BEGIN_LINK" />این سایت غیرایمن بازدید کنید<ph name="END_LINK" />.</translation>
@@ -1897,6 +1899,7 @@
 <translation id="4729147136006144950">خیریه و نیکوکاری</translation>
 <translation id="4730977633786878901">مرورها</translation>
 <translation id="4731638775147756694">سرپرستتان این برنامه را مسدود کرده است</translation>
+<translation id="4732860731866514038">درحال بارگیری بسته زبان <ph name="LANGUAGE" />… ‏<ph name="PERCENT" />٪</translation>
 <translation id="4733082559415072992"><ph name="URL" /> می‌خواهد از مکان دستگاهتان استفاده کند</translation>
 <translation id="4736491186715342415">وسایل نقلیه موتوری</translation>
 <translation id="4736825316280949806">‏Chromium را راه‌اندازی مجدد کنید</translation>
@@ -2256,7 +2259,6 @@
             <ph name="LIST_ITEM" />کوکی‌ها و داده‌های سایت
             <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">‏<ph name="URL" /> می‌خواهد دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند (SysEx)</translation>
 <translation id="5443468954631487277">روبه‌بالا به‌ترتیب معکوس</translation>
 <translation id="5447235695608032700">اجازه دادن به <ph name="SITE" /> برای استفاده از اطلاعاتی که درباره شما ذخیره کرده‌اند</translation>
 <translation id="5447765697759493033">این سایت ترجمه نخواهد شد</translation>
@@ -2469,7 +2471,6 @@
 <translation id="5877831137320480913">زیبایی و تناسب اندام</translation>
 <translation id="5879989559903563723">در «حالت مهمان» مجاز نیست</translation>
 <translation id="5880050725127890683">‏رفتن به بررسی ایمنی Chrome</translation>
-<translation id="5883861433316751031">‏دستگاه‌های MIDI کنترل و مجدداً برنامه‌ریزی شود؟</translation>
 <translation id="5884465125445718607">پاکت چینی شماره ۶</translation>
 <translation id="5887400589839399685">کارت ذخیره‌ شد</translation>
 <translation id="5887687176710214216">آخرین بازدید: دیروز</translation>
@@ -2820,7 +2821,6 @@
 <translation id="6556866813142980365">انجام مجدد</translation>
 <translation id="6557715786897013164">۱۷ × ۱۴ اینچ</translation>
 <translation id="6560786330438719938">برنامه‌های نصب‌شده یا حذف نصب‌شده و تعداد دفعات استفاده از آن‌ها</translation>
-<translation id="6567084950885568327">‏کنترل دستگاه MIDI و برنامه‌ریزی مجدد</translation>
 <translation id="6568793038316600992">‏دکمه «مدیریت روش‌های پرداخت»؛ برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6569060085658103619">درحال مشاهده یک صفحه افزونه هستید</translation>
 <translation id="6569366777234823130">فیلم درام</translation>
@@ -3203,6 +3203,7 @@
 <translation id="733354035281974745">لغو حساب محلی دستگاه</translation>
 <translation id="7334320624316649418">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
 <translation id="7335157162773372339">می‌تواند برای استفاده از دوربین درخواست دهد</translation>
+<translation id="7336636595549675416">پلاک خانه</translation>
 <translation id="7337248890521463931">نمایش خطوط بیشتر</translation>
 <translation id="7337706099755338005">در پلتفورم شما دردسترس نیست.</translation>
 <translation id="733923710415886693">گواهی سرور از طریق شفافیت گواهینامه نشان داده نشده بود.</translation>
@@ -3909,7 +3910,6 @@
 <translation id="8671519637524426245">مقدار <ph name="SECURE_DNS_SALT" /> با الزامات اندازه مطابقت ندارد.</translation>
 <translation id="867224526087042813">امضا</translation>
 <translation id="8672264262457010862">تجارت و صنعت</translation>
-<translation id="8673776281896298303">‏کنترل کردن و برنامه‌ریزی مجدد دستگاه‌های MIDI ‏(SysEx)</translation>
 <translation id="8676424191133491403">بدون تأخیر</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، پاسخ، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">صفحه وب در <ph name="PAGE" /> نمی‌تواند بارگیری شود، زیرا:</translation>

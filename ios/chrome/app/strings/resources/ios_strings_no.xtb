@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Tilpass menyen</translation>
 <translation id="1296581780163690620">Vil du laste ned filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
+<translation id="1310362642333088424">Du trenger mer lagringsplass for å laste ned filer, bilder med mer.</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
 <translation id="1321993286294231467">Feil ved lagring av bilde.</translation>
 <translation id="1322735045095424339">Organisasjonen din krever inkognitomodus</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Følg</translation>
 <translation id="1644574205037202324">Logg</translation>
+<translation id="164673457281113247">{count,plural, =1{Bokmerket er lagret}other{Bokmerkene er lagret}}</translation>
 <translation id="165008673352427892">Ny funksjon</translation>
 <translation id="1650222530560417226">Trykk på «Start logging»-knappen for å samle inn fremtidige JavaScript-konsollogger og -feil fra alle faner. Loggene samles inn (og lagres bare i minnet) frem til denne siden lukkes eller du trykker på «Stopp logging».</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} lagret passord er tilgjengelig over tastaturet.}other{{count} lagrede passord er tilgjengelige over tastaturet.}}</translation>
@@ -511,6 +513,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3603009562372709545">Kopiér linkadressen</translation>
 <translation id="3607167657931203000">Autofylldata</translation>
 <translation id="3609785682760573515">Synkroniserer …</translation>
+<translation id="3630104167004786843">Ikke hent oppdateringer</translation>
 <translation id="3631443864840848029">Sørg for at du lagrer det nåværende passordet ditt for dette nettstedet.</translation>
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
@@ -637,6 +640,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
 <translation id="430967081421617822">Alle datoer</translation>
 <translation id="4322394346347055525">Lukk andre faner</translation>
+<translation id="4323142320106872792">Lagringsplassen din er full</translation>
 <translation id="4331177082088332784">Du kan administrere dette i BEGIN_LINK innholdsinnstillingene END_LINK</translation>
 <translation id="4334428914252001502">1 ulest artikkel.</translation>
 <translation id="4338650699862464074">Sender Google nettadressene til sider du besøker.</translation>
@@ -843,6 +847,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakken?}other{Vil du spore {COUNT} pakker?}}</translation>
 <translation id="536067926684072644">Vis bokmerker</translation>
 <translation id="5360976571138293719">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{{count} bokmerker er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
 <translation id="5386314158584363703">Her finner du nettsteder du følger</translation>
 <translation id="5388358297987318779">Åpne bildet</translation>
 <translation id="5395707839134961196">Skjul søkemotordetaljer</translation>
@@ -870,6 +875,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5532545557415295622">Dialogboks for tidsavbrudd ved inaktivitet</translation>
+<translation id="5533967537771071082">Administrer lagring</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> er funnet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
 
@@ -1085,6 +1091,8 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6537746030088321027">eteksempel.no</translation>
 <translation id="6550675742724504774">Alternativer</translation>
 <translation id="6550891580932862748">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Safe Browsing-innstillingene i andre Google-produkter påvirkes ikke.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Bokmerket er lagret i «{title}»}other{{count} bokmerker er lagret i «{title}»}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{Bokmerkene er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
 <translation id="6579867704846662339">Du kan velge å åpne innkommende nettadresser fra andre apper i Inkognito.</translation>
 <translation id="6583087784430677195">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Autoutfylling av passord.</translation>
@@ -1199,6 +1207,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Fullt navn</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
+<translation id="7138080855268384146">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{{count} bokmerker er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="7141960840225504692">Fanene dine blir lukket, og nettlesingsdataene dine blir slettet</translation>
 <translation id="7154343200458623869">Fullfør oppgaven din.</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>

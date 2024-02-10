@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4151930093518524179">Zmadhimi i parazgjedhur</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
+<translation id="4169019654293892025">Fshih "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">U lidh me një pajisje USB</translation>
 <translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
 <translation id="4200726100658658164">Hap "Cilësimet e vendndodhjes"</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Nga <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Njoftimet mund të bëjnë që pajisja të dridhet</translation>
 <translation id="4259722352634471385">Lundrimi është bllokuar: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Të lejuara</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 i zgjedhur}other{# të zgjedhur}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> të zgjedhura. Opsionet ofrohen pranë kreut të ekranit</translation>
-<translation id="7137403271056944713">Kontrolli/riprogramimi i pajisjes MIDI</translation>
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Rifresko</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Zmadhimi i faqes</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7791543448312431591">Shtoje</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Vazhdo me këtë skedë}other{Vazhdo me këto skeda}}</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7804248752222191302">Një sajt po përdor kamerën tënde</translation>
 <translation id="7807060072011926525">Ofruar nga Google</translation>

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ເຂົ້າໄປແອັບ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, ແອັບ Play Store</translation>
 <translation id="1225748608451425081">Chromebook ຂອງທ່ານຖືກລັອກໄວ້ເນື່ອງຈາກບັນຫາທີ່ຮູ້ແລ້ວ. ທ່ານຈະສາມາດເຂົ້າສູ່ລະບົບໄດ້ຫຼັງຈາກ: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">ໂຕະທີ່ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="1229194443904279055">ຢຸດການເລືອກ</translation>
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="1239161794459865856">ເຊື່ອມຕໍ່ <ph name="FEATURE_NAME" /> ແລ້ວ.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">ປິດນຳໃຊ້ການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີ</translation>
 <translation id="2579264398927991698">ການອັບເດດເຟີມແວ</translation>
 <translation id="2582112259361606227">ປິດເປີດຄືນໃໝ່ເພື່ອອັບເດດ</translation>
-<translation id="2586561057878260610">ກົດ Ctrl + W ເພື່ອຮວມກັບ <ph name="DESK_NAME" />. ກົດ Ctrl + Shift + W ເພື່ອປິດໂຕະ ແລະ ໜ້າຈໍ.</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2595239820337756193">5 ພັນໄມລ໌</translation>
 <translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕິດຕາມເບິ່ງການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານ.</translation>
 <translation id="316086887565479535">ແອັບທີ່ບໍ່ຮອງຮັບໃນແມ່ແບບ</translation>
 <translation id="3160929076476941240">2ຊມ</translation>
-<translation id="3161500364292033097">ປິດໂຕະ ແລະ ໜ້າຈໍ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ກຳລັງປ່ຽນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກັບໄປເປັນເວີຊັນເກົ່າ. ອຸປະກອນຂອງທ່ານຈະຣີເຊັດ ແລະ ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ.</translation>
 <translation id="3170769098533255179">ບໍ່ມີອຸປະກອນທີ່ເຊື່ອມຕໍ່ໄວ້. ໃນຂະນະທີ່ໃຊ້ຮັອດສະປອດ, Wi-Fi ຈະຖືກປິດໄວ້.</translation>
 <translation id="3171170659304083361">ການຕັ້ງຄ່າວິທີການປ້ອນຂໍ້ມູນ</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">ປະຊາກອນໃນໄນຈີເຣຍ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ເຊື່ອມຕໍ່ກ່ອນໜ້ານີ້</translation>
+<translation id="3712143870407382523">ເລືອກໜ້າຈໍສຳລັບດ້ານນີ້</translation>
 <translation id="371370241367527062">ໄມໂຄຣໂຟນໜ້າ</translation>
 <translation id="3713734891607377840">ເປີດເມື່ອສຳເລັດ</translation>
 <translation id="3726171378575546917">ບໍ່ມີ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ແລະ ອີກ <ph name="UNAVAILABLE_APPS_COUNT" /> ແອັບຢູ່ອຸປະກອນນີ້.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ນັດໝາຍ</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ຮວມກັນກັບ <ph name="IN_PLACE_APP" /> ເພື່ອສ້າງໂຟນເດີໃໝ່.</translation>
-<translation id="5203299837691351876">ໂຕະທີ່ນຳໃຊ້</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນອື່ນໆ 1 ລາຍການ}other{ການແຈ້ງເຕືອນອື່ນໆ # ລາຍການ}}</translation>
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">ບໍ່ມີໂຕະທີ່ບັນທຶກໄວ້</translation>
 <translation id="5260676007519551770">ໂຕະ 4</translation>
 <translation id="5268819379131021772">ໜ້າວຽກ Google</translation>
-<translation id="5275923704957843041">ຕົວຢ່າງໂຕະ</translation>
 <translation id="5277869901083657836">ເປີດ/ປິດເຄື່ອງມືປາກກາ</translation>
 <translation id="5278086053818066789">ເປີດ/ປິດ ChromeVox (ການຕອບສະໜອງແບບສຽງເວົ້າ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ຂໍໃຫ້ທ່ານດຳເນີນການ.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນໄປແລ້ວ <ph name="STORAGE_IN_USE_SIZE" /> | ທັງໝົດມີ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
 <translation id="6622679827379792051">ຕັ້ງຄ່າການເບິ່ງແອັບຂອງໂທລະສັບທ່ານ</translation>
+<translation id="6624493541160101248">ໂຕະປັດຈຸບັນ: <ph name="DESK_NAME" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ແລະ ການແຈ້ງເຕືອນອື່ນໆຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ຍ້າຍໂຟກັສໄປຫາແຖບຕໍ່ໄປ</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ</translation>
 <translation id="6820676911989879663">ຢຸດພັກ!</translation>
 <translation id="6827049576281411231">ປິດແຜງນັດໝາຍ</translation>
-<translation id="6831561626108366035">ໄປຫາປຸ່ມ <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">ໄຟລ໌ອັນຕະລາຍ</translation>
 <translation id="6837621009301897464">ເພື່ອຖ່າຍຮູບໜ້າຈໍ, ໃຫ້ກົດ</translation>
 <translation id="6852052252232534364">ຄລິກເພື່ອເປີດນຳໃຊ້</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">ທຸກໄຟລ໌ ແລະ ຂໍ້ມູນພາຍໃນເຄື່ອງທີ່ເຊື່ອມໂຍງກັບຜູ້ໃຊ້ນີ້ຈະຖືກລຶບອອກໂດຍຖາວອນເມື່ອລຶບຜູ້ໃຊ້ນີ້ອອກ.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). ຄວາມລະອຽດປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">ເບິ່ງສາທິດສັ້ນໆສຳລັບວິທີໃຊ້ Chromebook ຂອງທ່ານ. ເລີ່ມຕົ້ນ ແລະ ພ້ອມໃຊ້ໃນ 6 ຂັ້ນຕອນ.</translation>
+<translation id="7000027735917578303">ການຕັ້ງຄ່າ Windows ແລະ ໂຕະ</translation>
 <translation id="7004910047186208204">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດມືຖື</translation>
 <translation id="7005239792648594238">ເປີດແອັບເພື່ອເລີ່ມຕົ້ນ</translation>
 <translation id="7007983414944123363">ບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ອີກ.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">ເລືອກຂໍ້ຄວາມຈາກເຄີເຊີໄປຈົນຮອດຕົ້ນແຖວ</translation>
 <translation id="8004512796067398576">ການເພີ່ມ</translation>
 <translation id="8026334261755873520">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
+<translation id="802782383769312836">ໂຕະກ່ອນໜ້າ: <ph name="DESK_NAME" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">ເຊື່ອມຕໍ່ຮັອດສະປອດບໍ່ສຳເລັດ</translation>
 <translation id="8029629653277878342">ຈຳເປັນຕ້ອງມີ PIN ຫຼື ລະຫັດຜ່ານເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="8030169304546394654">ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">ທ່ານຈຳເປັນຕ້ອງເປີດ Chromebook ຂອງທ່ານ ແລະ ສຽບປລັກໄວ້ຕະຫຼອດເວລາໃນລະຫວ່າງນີ້. ກວດໃຫ້ແນ່ໃຈວ່າໄດ້ສຽບສາຍສາກ ຫຼື ສາຍອະແດັບເຕີຄົບຖ້ວນແລ້ວ, ໃສ່ທັງ Chromebook ແລະ ເຕົ້າສຽບໄຟ. ຢ່າປິດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="8230305195727960608">ໂໝດການປີ້ນສີ</translation>
 <translation id="8236042855478648955">ເວລາພັກ</translation>
+<translation id="8237964652943995219">ໂຕະຕໍ່ໄປ: <ph name="DESK_NAME" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">ເປີດນຳໃຊ້ໂຕະຢູ່ທາງຂວາ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ແອັບ</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">ທ່ານໄດ້ກົດປຸ່ມຄີລັດສຳລັບການປີ້ນສີ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
 <translation id="925832987464884575">ເຊື່ອງຕົວຢ່າງ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານທັນທີ</translation>
+<translation id="938407504481277932">ໂຕະປັດຈຸບັນ: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">ມີຫຍັງໃນປະຕິທິນຂອງຂ້ອຍ?</translation>
 <translation id="945383118875625837">ລາກລິ້ງໄປໃສ່ແຖບບຸກມາກ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>

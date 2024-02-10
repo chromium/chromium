@@ -204,6 +204,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2132122640199389833">Fjarlægja öll tengd tæki</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> lokað</translation>
 <translation id="2139186145475833000">Setja á heimaskjá</translation>
+<translation id="2139414603196655536">Virkni þín á „Upplýsingar um síðu“ er vistuð á Google-reikningnum þínum. <ph name="BEGIN_LINK" />Kynntu þér hvernig á að stjórna þessu<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Miðað við notkun þína</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2155214902713132423">Þessi staðfestingaraðferð er ekki í boði fyrir þetta tæki. Veldu annan valkost í hinu tækinu þínu.</translation>
@@ -873,6 +874,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5698878456427040674">Kannaðu hvort valinn reikningur er studdur.</translation>
 <translation id="570347048394355941">Skipta yfir á flipa</translation>
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
+<translation id="571930967925877633">Bókamerkin þín, ferillinn og önnur gögn úr Chrome verða ekki lengur samstillt við Google reikninginn þinn</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
 <translation id="5726692708398506830">Stækka allt á síðunni</translation>
 <translation id="5744751019568455640">Hér eru raddirnar sem þú getur valið um til að lesa af vefsíðunum þínum. Ef þér líkar við þessa rödd og vilt að ég haldi áfram að nota hana skaltu ýta á heiti raddarinnar.</translation>
@@ -1081,6 +1083,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bókamerki vistað í <ph name="FOLDER_NAME" />. Það er aðeins vistað í þessu tæki.}one{Bókamerki vistuð í <ph name="FOLDER_NAME" />. Þau eru aðeins vistuð í þessu tæki.}other{Bókamerki vistuð í <ph name="FOLDER_NAME" />. Þau eru aðeins vistuð í þessu tæki.}}</translation>
 <translation id="6715020873764921614">Viltu samt sem áður sækja <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Tengja með QR-kóða?</translation>
 <translation id="6723740634201835758">Á Google reikningnum þínum</translation>
@@ -1402,6 +1405,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8237871086242677046">Blað neðst með síðuinnsýn</translation>
 <translation id="8243077599929149377">Bættu notandanafninu þínu við</translation>
 <translation id="8250920743982581267">Skjöl</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bókamerki var vistað í <ph name="FOLDER_NAME" /> á reikningnum þínum, <ph name="ACCOUNT_EMAIL" />.}one{Bókamerki voru vistuð í <ph name="FOLDER_NAME" /> á reikningnum þínum, <ph name="ACCOUNT_EMAIL" />.}other{Bókamerki voru vistuð í <ph name="FOLDER_NAME" /> á reikningnum þínum, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Vefsvæði geta einungis notað fótspor frá þér til að sjá vafranotkun þína á umræddu vefsvæði</translation>
 <translation id="8259179246279078674">Vegna þess að forhlaðnar síður eru dulkóðaðar mun Google ekki fá upplýsingar um efni þeirra. Netþjónar Google fá upplýsingar um hvaða vefsvæðum er forhlaðið á lokaðan hátt. Þær upplýsingar eru eingöngu notaðar til að forhlaða síðum og þær eru ekki tengdar við aðrar upplýsingar á Google reikningnum þínum.</translation>
 <translation id="8260126382462817229">Reyndu að skrá þig inn aftur</translation>

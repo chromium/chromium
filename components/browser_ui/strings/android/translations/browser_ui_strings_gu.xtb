@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{આવતીકાલે સમયસીમા સમાપ્ત થાય છે}one{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}other{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}}</translation>
 <translation id="310297983047869047">પાછલી સ્લાઇડ</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">વેબપેજ માટે સરળ દૃશ્ય</translation>
 <translation id="4151930093518524179">'નાનું-મોટું કરો'નું ડિફૉલ્ટ લેવલ</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />ને છુપાવો</translation>
 <translation id="4169549551965910670">કોઈ USB ડિવાઇસથી કનેક્ટેડ</translation>
 <translation id="4194328954146351878">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાની અને બદલવાની મંજૂરી આપતા પહેલાં પૂછો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="4200726100658658164">સ્થાન સેટિંગ ખોલો</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> તરફથી</translation>
 <translation id="4226663524361240545">સૂચનાઓ ઉપકરણને વાઇબ્રેટ કરી શકે છે</translation>
 <translation id="4259722352634471385">નૅવિગેશન બ્લૉક કરેલું છે: <ph name="URL" /></translation>
 <translation id="4278390842282768270">મંજૂર</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />ની પસંદગી કરી. સ્ક્રીનના ટોચની નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
-<translation id="7137403271056944713">MIDI ડિવાઇસ નિયંત્રણ/રીપ્રોગ્રામ</translation>
 <translation id="7141896414559753902">સાઇટને પૉપ-અપ અને રીડાયરેક્ટ બતાવવા દેવાથી બ્લૉક કરો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">પેજ નાનું-મોટું કરો</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{આ ટૅબ સાથે આગળ ચાલુ રાખો}one{આ ટૅબ સાથે આગળ ચાલુ રાખો}other{આ ટૅબ સાથે આગળ ચાલુ રાખો}}</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>

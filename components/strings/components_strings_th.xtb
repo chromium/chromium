@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">คุณเห็นคำเตือนนี้เพราะเว็บไซต์ไม่รองรับ HTTPS <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ฟิล์มสติกเกอร์</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
+<translation id="1431021750861456539">เต็มหน้าจออัตโนมัติ</translation>
 <translation id="1432187715652018471">หน้าเว็บต้องการติดตั้งเครื่องจัดการบริการ</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1433225466058025572">ลองย้ายไฟล์อีกครั้ง</translation>
@@ -585,6 +586,7 @@
 <translation id="2075497153347571252">ผู้ดูแลระบบบล็อก <ph name="PERMISSION" /> ใน <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080021694978766903">นโยบายนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
+<translation id="2081482239432306393">เลือกตัวเลือกบ้านเลขที่แล้ว</translation>
 <translation id="20817612488360358">มีการกำหนดให้ใช้การตั้งค่าพร็อกซีระบบ แต่ก็มีการระบุการกำหนดค่าพร็อกซีอย่างชัดเจนไว้ด้วยเช่นกัน</translation>
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
 <translation id="2083256696566019397">อนุญาตในทุกๆ การเข้าชม</translation>
@@ -1408,6 +1410,7 @@
 <translation id="3723663469265383848">ในระหว่างการอัปเดต คุณจะใช้อุปกรณ์ไม่ได้นานถึง 10 นาที</translation>
 <translation id="372429172604983730">แอปพลิเคชันที่อาจทำให้เกิดข้อผิดพลาดนี้ ได้แก่ ซอฟต์แวร์ป้องกันไวรัส ซอฟต์แวร์ไฟร์วอลล์ รวมถึงซอฟต์แวร์การกรองเว็บหรือซอฟต์แวร์พร็อกซี</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างงานนำเสนอใหม่ใน Google สไลด์อย่างรวดเร็ว</translation>
+<translation id="3727309136762649052">เนมสเปซ</translation>
 <translation id="3727850735097852673">หากต้องการใช้เครื่องมือจัดการรหัสผ่านบน Google กับ Keychain ของ macOS ให้เปิด Chrome อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="3733139489341305600">ยานพาหนะแบบไร้คนขับ</translation>
 <translation id="3736520371357197498">หากคุณเข้าใจความเสี่ยงต่อความปลอดภัย คุณสามารถ<ph name="BEGIN_LINK" />ไปยังไซต์ที่ไม่ปลอดภัยนี้<ph name="END_LINK" /> ก่อนจะมีการนำโปรแกรมอันตรายออก</translation>
@@ -1896,6 +1899,7 @@
 <translation id="4729147136006144950">องค์กรการกุศลและมูลนิธิ</translation>
 <translation id="4730977633786878901">รีวิว</translation>
 <translation id="4731638775147756694">ผู้ดูแลระบบบล็อกแอปพลิเคชันนี้ไว้</translation>
+<translation id="4732860731866514038">กำลังดาวน์โหลดแพ็กภาษา<ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ต้องการใช้ตำแหน่งอุปกรณ์ของคุณ</translation>
 <translation id="4736491186715342415">ยานยนต์</translation>
 <translation id="4736825316280949806">รีสตาร์ท Chromium</translation>
@@ -2255,7 +2259,6 @@
             <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
             <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> ต้องการควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ (SysEx)</translation>
 <translation id="5443468954631487277">ลำดับย้อนกลับหงายหน้าขึ้น</translation>
 <translation id="5447235695608032700">อนุญาตให้ <ph name="SITE" /> ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="5447765697759493033">ระบบจะไม่แปลไซต์นี้</translation>
@@ -2282,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     โปรดลองติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="549333378215107354">ขนาด 3</translation>
+<translation id="5501712702042287009">เต็มหน้าจออัตโนมัติ</translation>
 <translation id="550365051221576010">กรอกทุกช่อง</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">บุ๊กมาร์กที่มีการจัดการ</translation>
@@ -2468,7 +2472,6 @@
 <translation id="5877831137320480913">สุขภาพและความงาม</translation>
 <translation id="5879989559903563723">ไม่อนุญาตในโหมดผู้มาเยือน</translation>
 <translation id="5880050725127890683">ไปที่การตรวจสอบความปลอดภัยของ Chrome</translation>
-<translation id="5883861433316751031">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">บันทึกการ์ดแล้ว</translation>
 <translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
@@ -2819,7 +2822,6 @@
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6557715786897013164">14 x 17 นิ้ว</translation>
 <translation id="6560786330438719938">แอปที่ติดตั้งหรือถอนการติดตั้ง และความถี่ในการใช้งาน</translation>
-<translation id="6567084950885568327">ระบบควบคุมและการตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="6568793038316600992">ปุ่มจัดการวิธีการชําระเงิน เปิดใช้งานเพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
 <translation id="6569366777234823130">ภาพยนตร์ดราม่า</translation>
@@ -3202,6 +3204,7 @@
 <translation id="733354035281974745">ลบล้างบัญชีภายในอุปกรณ์</translation>
 <translation id="7334320624316649418">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="7335157162773372339">สามารถขอใช้กล้องของคุณได้</translation>
+<translation id="7336636595549675416">บ้านเลขที่</translation>
 <translation id="7337248890521463931">แสดงบรรทัดเพิ่มเติม</translation>
 <translation id="7337706099755338005">ยังไม่พร้อมให้ใช้งานในแพลตฟอร์มของคุณ</translation>
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
@@ -3909,7 +3912,6 @@
 <translation id="8671519637524426245">ค่า <ph name="SECURE_DNS_SALT" /> ไม่เป็นไปตามข้อกำหนดด้านขนาด</translation>
 <translation id="867224526087042813">ลายเซ็น</translation>
 <translation id="8672264262457010862">ธุรกิจและอุตสาหกรรม</translation>
-<translation id="8673776281896298303">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ (SysEx)</translation>
 <translation id="8676424191133491403">ไม่หน่วงเวลา</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, คำตอบ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ไม่สามารถโหลดหน้าเว็บที่ <ph name="PAGE" /> เนื่องจาก:</translation>

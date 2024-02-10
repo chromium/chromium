@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Sesuaikan Menu</translation>
 <translation id="1296581780163690620">Download file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda.</translation>
+<translation id="1310362642333088424">Untuk mendownload file, foto, dan lainnya, Anda memerlukan lebih banyak ruang penyimpanan.</translation>
 <translation id="1312721752506309252">Perlindungan yang ditingkatkan aktif</translation>
 <translation id="1321993286294231467">Error saat menyimpan gambar.</translation>
 <translation id="1322735045095424339">Organisasi Anda mengharuskan mode Samaran</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Ikuti</translation>
 <translation id="1644574205037202324">Histori</translation>
+<translation id="164673457281113247">{count,plural, =1{Bookmark disimpan}other{Bookmark disimpan}}</translation>
 <translation id="165008673352427892">Fitur baru</translation>
 <translation id="1650222530560417226">Ketuk tombol "Mulai Logging" untuk mengumpulkan log dan error konsol JavaScript mendatang dari semua tab. Log akan dikumpulkan (dan disimpan hanya dalam memori) hingga halaman ini ditutup atau "Hentikan Logging" diketuk.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
@@ -511,6 +513,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3603009562372709545">Salin URL Tautan</translation>
 <translation id="3607167657931203000">Data Isi-Otomatis</translation>
 <translation id="3609785682760573515">Menyinkronkan...</translation>
+<translation id="3630104167004786843">Jangan kirimkan info terbaru</translation>
 <translation id="3631443864840848029">Pastikan Anda menyimpan sandi saat ini untuk situs ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}other{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}}</translation>
@@ -637,6 +640,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4309403553630140242">Ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
 <translation id="430967081421617822">Semua</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
+<translation id="4323142320106872792">Penyimpanan Anda Penuh</translation>
 <translation id="4331177082088332784">Anda dapat mengelolanya di BEGIN_LINK Setelan Konten END_LINK</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338650699862464074">Mengirimkan URL halaman yang Anda buka ke Google.</translation>
@@ -843,6 +847,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5345660046352249607">{COUNT,plural, =1{Lacak Paket Ini?}other{Melacak {COUNT} Paket?}}</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
 <translation id="5360976571138293719">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{{count} Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="5386314158584363703">Anda akan menemukan situs yang diikuti di sini</translation>
 <translation id="5388358297987318779">Buka Gambar</translation>
 <translation id="5395707839134961196">Sembunyikan detail mesin telusur</translation>
@@ -870,6 +875,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5525269841082836315">Buat Frasa Sandi</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} sandi lemah}other{{COUNT} sandi lemah}}</translation>
 <translation id="5532545557415295622">Dialog waktu tunggu tidak ada aktivitas</translation>
+<translation id="5533967537771071082">Kelola Penyimpanan</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> Ditemukan</translation>
 <translation id="5548760955356983418">Handoff memungkinkan Anda memulai penjelajahan situs web pada perangkat ini dan melanjutkan di Mac dengan mudah. Situs web yang saat ini terbuka akan muncul di Dock pada Mac Anda.
 
@@ -1085,6 +1091,8 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6537746030088321027">contoh.com</translation>
 <translation id="6550675742724504774">Opsi</translation>
 <translation id="6550891580932862748">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Setelan Safe Browsing Anda di produk Google lainnya tidak akan terpengaruh.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Bookmark disimpan ke "{title}"}other{{count} Bookmark disimpan ke "{title}"}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="6561262006871132942">Perbesar</translation>
 <translation id="6579867704846662339">Anda dapat memilih untuk membuka URL masuk dari aplikasi lain dalam mode Samaran.</translation>
 <translation id="6583087784430677195">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> lalu buka AutoFill Passwords.</translation>
@@ -1199,6 +1207,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nama Lengkap</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
+<translation id="7138080855268384146">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{{count} Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="7141960840225504692">Tab Anda akan ditutup dan data penjelajahan akan dihapus</translation>
 <translation id="7154343200458623869">Selesaikan tugas Anda.</translation>
 <translation id="7161230316646448869">Sinkronkan bookmark, histori, &amp; lainnya di semua perangkat</translation>

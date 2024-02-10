@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">使用簡易檢視模式查看網頁</translation>
 <translation id="4151930093518524179">預設縮放</translation>
 <translation id="4165986682804962316">網站設定</translation>
+<translation id="4169019654293892025">隱藏「<ph name="TITLE_OF_MODULE" />」</translation>
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
-<translation id="7137403271056944713">控制 MIDI 裝置/重設程式</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>

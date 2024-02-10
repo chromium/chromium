@@ -585,6 +585,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2075497153347571252">Din administrator har blokeret <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080021694978766903">Denne politik må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster.</translation>
+<translation id="2081482239432306393">Muligheden for husnummer er valgt</translation>
 <translation id="20817612488360358">Indstillingerne for systemproxy er angivet at blive brugt, men en eksplicit proxykonfiguration er også angivet.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Tillad ved hvert besøg</translation>
@@ -1409,6 +1410,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3723663469265383848">Du kan ikke bruge enheden i op til 10 minutter, mens den opdaterer.</translation>
 <translation id="372429172604983730">Apps, der kan forårsage denne fejl, er blandt andet antivirus-, firewall- og webfiltrerings- eller proxysoftware.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny Google-præsentation i Slides</translation>
+<translation id="3727309136762649052">Navneområde</translation>
 <translation id="3727850735097852673">Hvis du vil bruge Google Adgangskodeadministrator med macOS-nøgleringen, skal du genstarte Chrome og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="3733139489341305600">Selvkørende biler</translation>
 <translation id="3736520371357197498">Hvis du forstår den sikkerhedsrisiko, du udsætter dig for, kan du <ph name="BEGIN_LINK" />gå til dette usikre website<ph name="END_LINK" />, inden de farlige programmer er fjernet.</translation>
@@ -1897,6 +1899,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4729147136006144950">Velgørenhed og filantropi</translation>
 <translation id="4730977633786878901">Anmeldelser</translation>
 <translation id="4731638775147756694">Denne app er blokeret af din administrator</translation>
+<translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
 <translation id="4736491186715342415">Motorkøretøjer</translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
@@ -2256,7 +2259,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
             <ph name="LIST_ITEM" />Cookies og websitedata
             <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> anmoder om at styre og omprogrammere dine MIDI-enheder (SysEx)</translation>
 <translation id="5443468954631487277">Omvendt rækkefølge med forside opad</translation>
 <translation id="5447235695608032700">Tillad, at <ph name="SITE" /> bruger oplysninger om dig, som websitet har gemt</translation>
 <translation id="5447765697759493033">Dette website kan ikke oversættes</translation>
@@ -2469,7 +2471,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5877831137320480913">Skønhed og fitness</translation>
 <translation id="5879989559903563723">Ikke tilladt i gæstetilstand</translation>
 <translation id="5880050725127890683">Gå til Chromes sikkerhedstjek</translation>
-<translation id="5883861433316751031">Vil du styre og omprogrammere MIDI-enheder?</translation>
 <translation id="5884465125445718607">Konvolut Kinesisk nr. 6</translation>
 <translation id="5887400589839399685">Kortet er gemt</translation>
 <translation id="5887687176710214216">Senest besøgt i går</translation>
@@ -2820,7 +2821,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6556866813142980365">Gør det igen</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
 <translation id="6560786330438719938">Apps, der er installeret eller afinstalleret, og hvor ofte de bruges</translation>
-<translation id="6567084950885568327">Styring og omprogrammering af MIDI-enheder</translation>
 <translation id="6568793038316600992">Knappen Administrer betalingsmetoder, aktivér for at administrere dine betalinger og kreditkortoplysninger i Chrome-indstillingerne</translation>
 <translation id="6569060085658103619">Du ser en udvidelsesside</translation>
 <translation id="6569366777234823130">Drama</translation>
@@ -3203,6 +3203,7 @@ Yderligere oplysninger:
 <translation id="733354035281974745">Tilsidesættelse af enhedslokal konto</translation>
 <translation id="7334320624316649418">&amp;Annuller fortryd omarrangering</translation>
 <translation id="7335157162773372339">Websitet kan anmode om tilladelse til at bruge dit kamera</translation>
+<translation id="7336636595549675416">Husnummer</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
 <translation id="7337706099755338005">Ikke tilgængelig på din platform.</translation>
 <translation id="733923710415886693">Servercertifikatet blev ikke fremvist via Certifikatsgennemsigtighed.</translation>
@@ -3910,7 +3911,6 @@ Yderligere oplysninger:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-værdien opfylder ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Underskrift</translation>
 <translation id="8672264262457010862">Erhverv og industri</translation>
-<translation id="8673776281896298303">Administrere og omprogrammere dine MIDI-enheder (SysEx)</translation>
 <translation id="8676424191133491403">Ingen forsinkelse</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Websiden på <ph name="PAGE" /> kunne ikke indlæses, fordi:</translation>

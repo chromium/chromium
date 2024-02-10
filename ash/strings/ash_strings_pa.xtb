@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ਐਪ 'ਤੇ ਜਾਓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ਐਪ</translation>
 <translation id="1225748608451425081">ਕਿਸੇ ਜਾਣੂ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡੀ Chromebook ਲਾਕ ਹੈ। ਤੁਸੀਂ ਇੰਨੇ ਸਮੇਂ ਬਾਅਦ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋਗੇ: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">ਅਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ</translation>
 <translation id="1229194443904279055">ਚੋਣ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1235458158152011030">ਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਹੈ।</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2579264398927991698">ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="2582112259361606227">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> ਨਾਲ ਸੁਮੇਲ ਕਰਨ ਲਈ Ctrl + W ਦਬਾਓ। ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Shift + W ਦਬਾਓ।</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
 <translation id="2595239820337756193">ਮੀਲ ਵਿੱਚ 5K</translation>
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3160929076476941240">2 ਘੰ.</translation>
-<translation id="3161500364292033097">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3170769098533255179">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="3171170659304083361">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">ਨਾਈਜੀਰੀਆ ਦੀ ਜਨਸੰਖਿਆ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
+<translation id="3712143870407382523">ਇਸ ਪਾਸੇ ਲਈ ਵਿੰਡੋ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="371370241367527062">ਮੂਹਰਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="3713734891607377840">ਪੂਰਾ ਹੋਣ 'ਤੇ ਖੁੱਲ੍ਹੇ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ਅਤੇ <ph name="UNAVAILABLE_APPS_COUNT" /> ਹੋਰ ਐਪਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</translation>
@@ -1049,7 +1047,6 @@
 <translation id="5197255632782567636">ਇੰਟਰਨੈਟ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ਇਵੈਂਟ</translation>
 <translation id="5198715732953550718">ਨਵਾਂ ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ <ph name="MOVED_APP_NAME" /> ਨੂੰ <ph name="IN_PLACE_APP" /> ਨਾਲ ਮਿਲਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
-<translation id="5203299837691351876">ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ਹੋਰ ਸੂਚਨਾ}one{# ਹੋਰ ਸੂਚਨਾ}other{# ਹੋਰ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
@@ -1067,7 +1064,6 @@
 <translation id="5258528442992323769">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਨਹੀਂ</translation>
 <translation id="5260676007519551770">ਡੈਸਕ 4</translation>
 <translation id="5268819379131021772">Google Tasks ਦੀ ਸੂਚੀ</translation>
-<translation id="5275923704957843041">ਡੈਸਕ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="5277869901083657836">ਸਟਾਈਲਸ ਟੂਲਾਂ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5278086053818066789">ChromeVox ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
@@ -1417,6 +1413,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ਦੀ ਸਟੋਰੇਜ ਵਰਤੋਂ ਵਿੱਚ ਹੈ | ਕੁੱਲ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਚਾਲੂ ਹੈ</translation>
 <translation id="6622679827379792051">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="6624493541160101248">ਮੌਜੂਦਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ਅਤੇ ਹੋਰ ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">ਫੋਕਸ ਨੂੰ ਅਗਲੀ ਪੂਰਵ-ਝਲਕ 'ਤੇ ਲੈ ਜਾਓ</translation>
@@ -1471,7 +1468,6 @@
 <translation id="6819327813400217281">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6820676911989879663">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰੋ!</translation>
 <translation id="6827049576281411231">ਇਵੈਂਟ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> ਬਟਨ 'ਤੇ ਜਾਓ।</translation>
 <translation id="6836499262298959512">ਖਤਰਨਾਕ ਫ਼ਾਈਲ</translation>
 <translation id="6837621009301897464">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ, ਇਹ ਦਬਾਓ</translation>
 <translation id="6852052252232534364">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -1510,6 +1506,7 @@
 <translation id="698231206551913481">ਇਸ ਵਰਤੋਂਕਾਰ ਦੇ ਹਟਾਏ ਜਾਣ ਤੋਂ ਬਾਅਦ ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਲ ਸਬੰਧਿਤ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6989752354829085073">ਆਪਣੀ Chromebook ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ। ਅੱਗੇ ਵਧੋ ਅਤੇ 6 ਪੜਾਵਾਂ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
+<translation id="7000027735917578303">ਵਿੰਡੋਆਂ ਅਤੇ ਡੈਸਕਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7004910047186208204">ਮੋਬਾਈਲ ਡਾਟੇ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7005239792648594238">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="7007983414944123363">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1761,6 +1758,7 @@
 <translation id="8001755249288974029">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੀ ਸ਼ੁਰੂਆਤ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
 <translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
+<translation id="802782383769312836">ਪਿਛਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">ਹੌਟਸਪੌਟ ਕਨੈਕਸ਼ਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8029629653277878342">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8030169304546394654">ਡਿਸਕਨੈਕਟ ਕੀਤਾ</translation>
@@ -1808,6 +1806,7 @@
 <translation id="8219451629189078428">ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਚਾਲੂ ਰਹਿਣ ਅਤੇ ਪਾਵਰ ਨਾਲ ਕਨੈਕਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਚਾਰਜਰ ਜਾਂ ਅਡਾਪਟਰ ਕੇਬਲਾਂ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਪਾਵਰ ਸਾਕੇਟ ਦੋਵਾਂ ਵਿੱਚ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੱਗੀਆਂ ਹੋਈਆਂ ਹਨ। ਆਪਣੀ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
 <translation id="8230305195727960608">ਰੰਗ ਪਲਟਨਾ ਮੋਡ</translation>
 <translation id="8236042855478648955">ਆਰਾਮ ਕਰਨ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ</translation>
+<translation id="8237964652943995219">ਅਗਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="8239034820133090126">ਡੈਸਕ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ਐਪ</translation>
@@ -2035,6 +2034,7 @@
 <translation id="92580429198593979">ਤੁਸੀਂ ਰੰਗ ਪਲਟਨਾ ਵਿਸ਼ੇਸ਼ਤਾ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="925832987464884575">ਪੂਰਵ-ਝਲਕਾਂ ਲੁਕਾਓ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਤੁਰੰਤ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="938407504481277932">ਮੌਜੂਦਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">ਮੇਰੇ ਕੈਲੰਡਰ 'ਤੇ ਕੀ ਹੈ?</translation>
 <translation id="945383118875625837">ਬੁੱਕਮਾਰਕ ਬਾਰ 'ਤੇ ਲਿੰਕ ਘਸੀਟੋ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>

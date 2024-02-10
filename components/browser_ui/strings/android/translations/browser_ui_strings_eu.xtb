@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
 <translation id="4151930093518524179">Zoom lehenetsia</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
+<translation id="4169019654293892025">Ezkutatu <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">USB bidezko gailu batera konektatuta</translation>
 <translation id="4194328954146351878">Webguneei NFC darabilten gailuetako informazioa ikusi eta aldatzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4200726100658658164">Ireki kokapen-ezarpenak</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>
-<translation id="7137403271056944713">MIDI gailua kontrolatu/berriro programatu</translation>
 <translation id="7141896414559753902">Ez utzi webguneei leiho gainerakorrak eta birbideratzeak erakusten (gomendatua)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Freskatu</translation>

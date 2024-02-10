@@ -7,8 +7,10 @@
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
+<translation id="1026212596705997935">Pintasan digunakan untuk '<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baharu. Untuk menggantikan pintasan sedia ada, tekan pintasan ini sekali lagi.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
+<translation id="1049663189809099096">kuning pastel</translation>
 <translation id="1059913517121127803">Tidak dapat memulakan pengimbasan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> daripada <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +23,6 @@
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">darab</translation>
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
 <translation id="1145516343487477149">Cari artikel bantuan dan jawapan kepada soalan lazim Chromebook</translation>
 <translation id="1154390310959620237">Anda hanya boleh menyesuaikan 5 pintasan. Padam satu pintasan untuk menambahkan pintasan baharu.</translation>
@@ -65,6 +66,7 @@
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1413240736185167732">Gagal - Penapis gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">bunga orkid</translation>
 <translation id="142228117786570094">Saya mempunyai pasangan kunci</translation>
 <translation id="1423591390236870726">Kekunci <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Menetapkan semula penggunaan data secara automatik setiap bulan pada hari yang dipilih</translation>
@@ -85,11 +87,11 @@
 <translation id="1515129336378114413">laman utama penyemak imbas</translation>
 <translation id="1526389707933164996">Animasi penyelamat skrin</translation>
 <translation id="152892567002884378">Tambah kelantangan</translation>
+<translation id="1531886272553347340">bunga ranunculus</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1561927818299383735">warna cahaya belakang</translation>
 <translation id="1565038567006703504">Tidak dapat mengemas kini <ph name="DEVICE_NAME" /></translation>
-<translation id="1566493343215789965">bahagi</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Tetapkan sebagai kertas dinding</translation>
 <translation id="1578784163189013834">Pilih latar penyelamat skrin</translation>
@@ -162,6 +164,7 @@
 <translation id="1977994649430373166">Foto profil Google</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
+<translation id="2004572381882349402">Berus sembur</translation>
 <translation id="200669432486043882">Gantikan fail</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
@@ -196,6 +199,7 @@
 <translation id="222447520299472966">Sekurang-kurangnya satu album Galeri seni perlu dipilih</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Buat lagi</translation>
 <translation id="2236746079896696523">Togol cahaya belakang papan kekunci</translation>
 <translation id="2240366984605217732">Penukaran reka letak</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
@@ -219,6 +223,7 @@
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
 <translation id="241419523391571119">Buka semula penutup untuk menguji</translation>
+<translation id="2414660853550118611">Perihal hiasan latar</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
@@ -236,6 +241,7 @@
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Memulakan semula...</translation>
+<translation id="2531772459602846206">bunga tiga bulan</translation>
 <translation id="2533048460510040082">Kandungan bantuan yang dicadangkan</translation>
 <translation id="2536159006530886390">Tidak dapat menyambung kepada Internet.</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
@@ -270,7 +276,6 @@
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="2880569433548999039">Penyelamat skrin aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
-<translation id="2938573842839598578">Untuk jawapan anggaran, <ph name="OPERATOR_TEXT" /> nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
 <translation id="2941112035454246133">Rendah</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
@@ -361,6 +366,7 @@
 <translation id="361575905210396100">Terima kasih atas maklum balas anda</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
+<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> mekar berseri</translation>
 <translation id="3668449597372804501">Hiasan latar aliran awan</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
@@ -401,6 +407,7 @@
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3969602104473960991">Kata laluan Chrome OS dikemas kini</translation>
 <translation id="397105322502079400">Mengira...</translation>
+<translation id="3981099166243641873">hijau cerah</translation>
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="3993704782688964914">Kini <ph name="DEVICE_NAME" /> anda terkini</translation>
 <translation id="3998976413398910035">Urus pencetak</translation>
@@ -412,6 +419,7 @@
 <translation id="404928562651467259">AMARAN</translation>
 <translation id="4054683689023980771">Memuat turun imej</translation>
 <translation id="4060260348856573701">APN Baharu</translation>
+<translation id="4063039537646912479">biru cerah</translation>
 <translation id="4093865285251893588">Imej profil</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="409469431304488632">Percubaan</translation>
@@ -461,7 +469,6 @@
 <translation id="4394049700291259645">Lumpuhkan</translation>
 <translation id="439429847087949098">Memulakan semula <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">penyesuaian papan kekunci</translation>
-<translation id="4403262788869804671">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar Semasa</translation>
 <translation id="4417830657741848074">Pentadbir anda telah menyediakan sesetengah apl untuk bermula secara automatik. Sesetengah apl tersebut mungkin tidak ditutup.</translation>
 <translation id="4422041425070339732">anak panah ke bawah</translation>
@@ -605,6 +612,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pilih kata laluan baharu sekarang</translation>
 <translation id="5333530671332546086">Keadaan portal tidak diketahui</translation>
+<translation id="5335373365677455232">merah jambu</translation>
 <translation id="5346687412805619883">Rangkaian Setempat</translation>
 <translation id="5358174242040570474">Kesilapan telah berlaku. Cuba pilih kertas dinding sekali lagi atau buka semula apl tersebut.</translation>
 <translation id="5372659122375744710">Rangkaian Wi-Fi tidak selamat</translation>
@@ -612,6 +620,7 @@
 <translation id="5378184552853359930">Jenis IP</translation>
 <translation id="5389159777326897627">Hiasan latar &amp; gaya</translation>
 <translation id="5389224261615877010">Pelangi</translation>
+<translation id="5396811372860835203">bunga calla lily</translation>
 <translation id="5400907029458559844">Peranti sedang menyambung.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutin</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
@@ -634,7 +643,9 @@
 <translation id="5583640892426849032">Undur ruang</translation>
 <translation id="5600027863942488546">Kekunci <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
+<translation id="5631759159893697722">abstrak</translation>
 <translation id="5649768706273821470">Dengar</translation>
+<translation id="5654356773042347102">bunga lili lembah</translation>
 <translation id="5655283760733841251">Meningkatkan kecerahan papan kekunci</translation>
 <translation id="5655296450510165335">Pendaftaran peranti</translation>
 <translation id="5655776422854483175">Tiada tugas cetakan</translation>
@@ -680,11 +691,11 @@
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Padamkan butang untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
-<translation id="593880865674747800">Buat lagi dalam gaya ini</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="594552776027197022">Jana pasangan kunci rawak</translation>
 <translation id="5946538341867151940">Anda belum disambungkan lagi. Jika pembawa mudah alih anda mengesyorkan APN yang tersuai, masukkan maklumat APN dengan memilih "+ APN Baharu"</translation>
 <translation id="5972388717451707488">Enjin Kemaskinian</translation>
+<translation id="5975130252842127517">merjan</translation>
 <translation id="5984145644188835034">Kertas Dinding Lalai</translation>
 <translation id="6017514345406065928">Hijau</translation>
 <translation id="6019566113895157499">Pintasan Kekunci</translation>
@@ -709,12 +720,14 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> lagi album</translation>
 <translation id="6122191549521593678">Dalam talian</translation>
 <translation id="6122277663991249694">Perkhidmatan Kaedah Input Chrome OS</translation>
+<translation id="6127426868813166163">putih</translation>
 <translation id="6136285399872347291">undur ruang</translation>
 <translation id="6137767437444130246">Sijil pengguna</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasiti bateri menurun seiring dengan penggunaan</translation>
 <translation id="6191293864534840972">Pelayan nama cacat</translation>
 <translation id="6196607555925437199">Buat semula</translation>
@@ -738,6 +751,7 @@
 <translation id="6321407676395378991">Hidupkan penyelamat skrin</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6325525973963619867">Gagal</translation>
+<translation id="6327262166342360252">Hiasan latar ini dibuat dengan AI menggunakan teks yang berikut: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema gelap automatik</translation>
 <translation id="6340526405444716530">Pemperibadian</translation>
 <translation id="6348738456043757611">Nama pengguna dan kata laluan</translation>
@@ -760,6 +774,7 @@
 <translation id="6462978824459367242">Butang tambahkan APN kini didayakan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="64778964625672495">merah gelap</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Penyelamat skrin eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
@@ -811,6 +826,8 @@
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
+<translation id="6866732840889595464">bunga daisi</translation>
+<translation id="6871256179359663621">ungu muda</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6900701049656042631">Album ini tidak mengandungi sebarang foto. Untuk menambahkan foto, akses <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
@@ -824,6 +841,7 @@
 <translation id="6965978654500191972">Peranti</translation>
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
+<translation id="6988803763488977828">bunga anemone</translation>
 <translation id="7005833343836210400">Peranti di luar talian</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="7040230719604914234">Pengendali</translation>
@@ -877,6 +895,7 @@
 <translation id="7311368985037279727">warna papan kekunci</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">bunga cenderawasih</translation>
 <translation id="7331297744262591636">Anda mestilah berumur sekurang-kurangnya 18 tahun dan bersetuju bahawa penggunaan anda berkenaan dengan hiasan latar AI tertakluk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Syarat Perkhidmatan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Syarat Perkhidmatan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -925,6 +944,7 @@
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Tukar avatar</translation>
+<translation id="7673177760638264939">bunga ros kebun</translation>
 <translation id="7683228889864052081">rona papan kekunci</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7701040980221191251">Tiada</translation>
@@ -952,6 +972,7 @@
 <translation id="7841134249932030522">Dayakan mod gelap</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7850847810298646851">Hiasan latar dikuasakan oleh Google AI</translation>
+<translation id="785170686607360576">bunga tulip</translation>
 <translation id="7856267634822906833">Skrin sentuh Bluetooth</translation>
 <translation id="7869143217755017858">Lumpuhkan mod gelap</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1069,7 +1090,6 @@
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">APN modem</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">Pintasan digunakan untuk '<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baharu. Untuk menggantikan pintasan asal, tekan pintasan ini lagi.</translation>
 <translation id="879568662008399081">Rangkaian ini mungkin mempunyai portal terbolot</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
@@ -1121,6 +1141,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Peleraian DNS mempunyai kependaman tinggi</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9068296451330120661">cat air</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>

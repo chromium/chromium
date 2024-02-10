@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Поједностављен приказ веб-страница</translation>
 <translation id="4151930093518524179">Подразумевани зум</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
+<translation id="4169019654293892025">Сакриј: <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Повезано са USB уређајем</translation>
 <translation id="4194328954146351878">Пре него што дозволите сајтовима да виде и мењају информације на NFC уређајима приказује се упит (препоручено)</translation>
 <translation id="4200726100658658164">Отворите подешавања локације</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Изабрано: 1}one{Изабрано: #}few{Изабрано: #}other{Изабрано: #}}</translation>
 <translation id="7087918508125750058">Изабрали сте <ph name="ITEM_COUNT" />. Опције су доступне при врху екрана</translation>
-<translation id="7137403271056944713">MIDI – контрола, репрограмирање</translation>
 <translation id="7141896414559753902">Блокирај приказивање искачућих прозора и преусмеравања на сајтовима (препоручено)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Освежи</translation>

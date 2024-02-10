@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">حظر المشرف استخدام "<ph name="PERMISSION" />" على <ph name="ORIGIN" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080021694978766903">يجب ألا تحتوي هذه السياسة على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال.</translation>
+<translation id="2081482239432306393">تم تحديد خيار رقم المنزل.</translation>
 <translation id="20817612488360358">تم ضبط إعدادات الخادم الوكيل ليتم استخدامها وتم أيضًا تحديد إعداد صريح للخادم الوكيل.</translation>
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">السماح بالاستخدام في كل زيارة</translation>
@@ -1411,6 +1412,7 @@
 <translation id="3723663469265383848">أثناء إجراء التحديث، لن تتمكّن من استخدام الجهاز لمدة تصل إلى 10 دقائق.</translation>
 <translation id="372429172604983730">تتضمن التطبيقات التي يمكن أن تسبب ذلك الخطأ برنامج مكافحة الفيروسات والجدار الناري وبرنامج تصفية الويب أو برنامج الخادم الوكيل.</translation>
 <translation id="3727101516080730231">‏<ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء عرض تقديمي جديد من Google في "العروض التقديمية من Google" بسرعة.</translation>
+<translation id="3727309136762649052">مساحة الاسم</translation>
 <translation id="3727850735097852673">‏لاستخدام "مدير كلمات المرور في Google" في تطبيق macOS Keychain، يجب إعادة تشغيل Chrome ومنحه إذن الوصول إلى التطبيق. وستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="3733139489341305600">مركبات ذاتية القيادة</translation>
 <translation id="3736520371357197498">إذا كنت على دراية بالمخاطر على أمنك، يمكنك <ph name="BEGIN_LINK" />زيارة هذا الموقع غير الآمن<ph name="END_LINK" /> قبل أن تتم إزالة البرامج الخطيرة.</translation>
@@ -1902,6 +1904,7 @@
 <translation id="4729147136006144950">مؤسسات وأعمال خيرية</translation>
 <translation id="4730977633786878901">عرض المراجعات</translation>
 <translation id="4731638775147756694">حظَر مشرفك هذا التطبيق.</translation>
+<translation id="4732860731866514038">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />… %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992">يريد <ph name="URL" /> استخدام الموقع الجغرافي لجهازك.</translation>
 <translation id="4736491186715342415">مركبات آلية</translation>
 <translation id="4736825316280949806">‏إعادة تشغيل Chromium</translation>
@@ -2261,7 +2264,6 @@
           <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
           <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
         <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">‏يريد <ph name="URL" /> التحكّم في أجهزة MIDI وإعادة برمجتها باستخدام رسائل النظام الحصرية (SysEx).</translation>
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
 <translation id="5447235695608032700">السماح للموقع الإلكتروني <ph name="SITE" /> باستخدام معلوماتك المحفوظة عليه</translation>
 <translation id="5447765697759493033">لن تتم ترجمة هذا الموقع</translation>
@@ -2456,7 +2458,7 @@
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5838278095973806738">يجب عدم إدخال معلومات حسّاسة على هذا الموقع (مثل كلمات المرور أو بطاقات الائتمان) لأنه قد تتم سرقتها من قِبل المهاجمين.</translation>
 <translation id="5838732667866024867">يمكنك استخدام السهم المتّجه لليسار أو لليمين لمراجعة تغييرات السعر على الرسم البياني.</translation>
-<translation id="5840318881868981258">‏سيتم حفظ التعديل في حسابك على Google، <ph name="ACCOUNT" />.</translation>
+<translation id="5840318881868981258">‏سيتم حفظ التعديل في حسابك على Google،‏ <ph name="ACCOUNT" />.</translation>
 <translation id="5841338463993781099">هل تريد الحفظ في الحساب؟</translation>
 <translation id="5843987376989109187">هذه اللغة غير متوفّرة بعد.
     <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -2474,7 +2476,6 @@
 <translation id="5877831137320480913">جمال ولياقة بدنية</translation>
 <translation id="5879989559903563723">غير مسموح بهذا الإذن في "وضع الضيف"</translation>
 <translation id="5880050725127890683">‏الانتقال إلى صفحة ميزة "التحقّق من الأمان" في Chrome</translation>
-<translation id="5883861433316751031">‏هل تريد السماح للموقع الإلكتروني بالتحكّم في أجهزة MIDI وإعادة برمجتها؟</translation>
 <translation id="5884465125445718607">ظرف صيني رقم 6</translation>
 <translation id="5887400589839399685">تم حفظ البطاقة</translation>
 <translation id="5887687176710214216">تمّت زيارة الموقع الإلكتروني آخر مرة أمس.</translation>
@@ -2825,7 +2826,6 @@
 <translation id="6556866813142980365">إعادة</translation>
 <translation id="6557715786897013164">14 × 17 بوصة</translation>
 <translation id="6560786330438719938">التطبيقات المثبّتة أو التي تم إلغاء تثبيتها ومعدّل استخدامها</translation>
-<translation id="6567084950885568327">‏التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="6568793038316600992">‏زر إدارة طرق الدفع: انقر على هذا الزر لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="6569060085658103619">أنت تعرض صفحة إضافة</translation>
 <translation id="6569366777234823130">أفلام درامية</translation>
@@ -3208,6 +3208,7 @@
 <translation id="733354035281974745">إلغاء حساب الجهاز المحلي</translation>
 <translation id="7334320624316649418">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="7335157162773372339">السماح للموقع الإلكتروني بطلب استخدام الكاميرا</translation>
+<translation id="7336636595549675416">رقم المنزل</translation>
 <translation id="7337248890521463931">عرض المزيد من الأسطر</translation>
 <translation id="7337706099755338005">غير متاحة على نظامك الأساسي.</translation>
 <translation id="733923710415886693">لم يتم الكشف عن شهادة الخادم عن طريق شهادة الشفافية.</translation>
@@ -3917,7 +3918,6 @@
 <translation id="8671519637524426245">قيمة <ph name="SECURE_DNS_SALT" /> لا تستوفي متطلبات الحجم.</translation>
 <translation id="867224526087042813">التوقيع</translation>
 <translation id="8672264262457010862">خدمات تجارية وأسواق صناعية</translation>
-<translation id="8673776281896298303">‏التحكّم في أجهزة MIDI وإعادة برمجتها باستخدام رسائل النظام الحصرية (Sysex)</translation>
 <translation id="8676424191133491403">بلا تأخير</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، إجابة، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">تعذر تحميل صفحة الويب على <ph name="PAGE" /> لأن:</translation>

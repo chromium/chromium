@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">ৱেবপৃষ্ঠাৰ বাবে সৰলকৰণ কৰা ভিউ</translation>
 <translation id="4151930093518524179">ডিফ’ল্ট জুম</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> লুকুৱাওক</translation>
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টা বস্তু বাছনি কৰা হ’ল}one{#টা বস্তু বাছনি কৰা হ’ল}other{#টা বস্তু বাছনি কৰা হ’ল}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />টা বাছনি কৰা হ’ল।  স্ক্ৰীনৰ ওপৰৰ অংশত কাষত থকা বিকল্পসমূহ</translation>
-<translation id="7137403271056944713">MIDIৰ ডিভাইচ নিয়ন্ত্ৰণ / ৰিপ্ৰ’গ্ৰাম</translation>
 <translation id="7141896414559753902">ছাইটসমূহে পপ্‌-আপ দেখুওৱাটো আৰু বেলেগ লিংকলৈ লৈ যোৱাটো অৱৰোধ কৰক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কে.বি.</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>

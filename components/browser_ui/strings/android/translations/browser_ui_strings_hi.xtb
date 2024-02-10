@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">तीसरे पक्ष की कुकी सीमित हैं</translation>
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन करने की अनुमति दें.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिन में खत्म हो जाएगी}}</translation>
 <translation id="310297983047869047">पिछली स्लाइड</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">वेब पेजों के लिए आसान बनाया गया व्यू</translation>
 <translation id="4151930093518524179">डिफ़ॉल्ट ज़ूम</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> को छिपाएं</translation>
 <translation id="4169549551965910670">यूएसबी डिवाइस से कनेक्ट है</translation>
 <translation id="4194328954146351878">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर, जानकारी देखने और उसमें बदलाव करने की अनुमति देने से पहले पूछा जाए (सुझाई गई सेटिंग)</translation>
 <translation id="4200726100658658164">जगह की सेटिंग खोलें</translation>
+<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> से <ph name="RECENCY" /> <ph name="SEPARATOR" /></translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमति है</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">ब्लॉक करें</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 चुना गया}one{# चुने गए}other{# चुने गए}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चुने गए.  विकल्प, स्क्रीन के ऊपरी भाग के पास उपलब्ध हैं</translation>
-<translation id="7137403271056944713">MIDI डिवाइस कंट्रोल / रीप्रोग्राम</translation>
 <translation id="7141896414559753902">साइटों को पॉप-अप और रीडायरेक्ट दिखाने से रोकें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> केबी</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">पेज ज़ूम</translation>
 <translation id="7781829728241885113">बीता कल</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{इस टैब के साथ जारी रखें}one{इस टैब के साथ जारी रखें}other{इन टैब के साथ जारी रखें}}</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7804248752222191302">कोई साइट आपका कैमरा इस्तेमाल कर रही है</translation>
 <translation id="7807060072011926525">Google से मिला फ़ीड</translation>

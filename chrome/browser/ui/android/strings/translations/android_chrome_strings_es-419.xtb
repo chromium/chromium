@@ -402,7 +402,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3166827708714933426">Accesos directos a ventanas y pestañas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando aquí.</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio móvil de <ph name="HOST_NAME" /></translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Descubre</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
@@ -873,6 +873,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5698878456427040674">Revisa si se admite la cuenta seleccionada.</translation>
 <translation id="570347048394355941">Cambiar a la pestaña</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
+<translation id="571930967925877633">Ya no se sincronizarán con tu Cuenta de Google los favoritos, el historial ni otros datos de Chrome</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5726692708398506830">Agrandar todos los elementos de la página</translation>
 <translation id="5744751019568455640">Estas son las voces que puedes seleccionar para la lectura de páginas web. Si te gusta esta voz y quieres que siga usándola, presiona el nombre de la voz.</translation>

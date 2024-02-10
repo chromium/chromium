@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Prilagodite meni</translation>
 <translation id="1296581780163690620">Želite da preuzmete fajl? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet.</translation>
+<translation id="1310362642333088424">Da biste preuzimali fajlove, slike i drugo, treba vam još memorijskog prostora.</translation>
 <translation id="1312721752506309252">Poboljšana zaštita je uključena</translation>
 <translation id="1321993286294231467">Došlo je do greške pri čuvanju slike.</translation>
 <translation id="1322735045095424339">Organizacija zahteva režim bez arhiviranja</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
 <translation id="1641316430523156212">Prati</translation>
 <translation id="1644574205037202324">Istorija</translation>
+<translation id="164673457281113247">{count,plural, =1{Obeleživač je sačuvan}one{Obeleživači su sačuvani}few{Obeleživači su sačuvani}other{Obeleživači su sačuvani}}</translation>
 <translation id="165008673352427892">Nova funkcija</translation>
 <translation id="1650222530560417226">Dodirnite dugme „Pokreni evidentiranje“ da biste prikupljali buduće evidencije JavaScript konzole i greške sa svih kartica. Evidencija će se prikupljati (i čuvati samo u memoriji) sve dok se ta stanica ne zatvori ili ne dodirnete dugme „Zaustavi evidentiranje“.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sačuvana lozinka je dostupna iznad tastature.}one{{count} sačuvana lozinka je dostupna iznad tastature.}few{{count} sačuvane lozinke su dostupne iznad tastature.}other{{count} sačuvanih lozinki je dostupno iznad tastature.}}</translation>
@@ -511,6 +513,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3603009562372709545">Kopiraj URL adresu linka</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3609785682760573515">Sinhronizovanje...</translation>
+<translation id="3630104167004786843">Ne šalji mi novosti</translation>
 <translation id="3631443864840848029">Uverite se da čuvate aktuelnu lozinku za ovaj sajt.</translation>
 <translation id="3638472932233958418">Unap. učitaj veb-stranice</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} lozinka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu, {email}.}one{{count} lozinka je sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}few{{count} lozinke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}other{{count} lozinki je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}}</translation>
@@ -637,6 +640,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4309403553630140242">Dvaput dodirnite za više informacija</translation>
 <translation id="430967081421617822">Oduvek</translation>
 <translation id="4322394346347055525">Zatvori druge kartice</translation>
+<translation id="4323142320106872792">Memorijski prostor je pun</translation>
 <translation id="4331177082088332784">Ovim možete da upravljate u BEGIN_LINK Podešavanjima sadržaja END_LINK</translation>
 <translation id="4334428914252001502">1 nepročitan članak.</translation>
 <translation id="4338650699862464074">Šalje URL-ove stranica koje posećujete Google-u.</translation>
@@ -843,6 +847,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5345660046352249607">{COUNT,plural, =1{Želite da pratite ovaj paket?}one{Želite da pratite {COUNT} paket?}few{Želite da pratite {COUNT} paketa?}other{Želite da pratite {COUNT} paketa?}}</translation>
 <translation id="536067926684072644">Prikaži obeleživače</translation>
 <translation id="5360976571138293719">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Obeleživač je sačuvan u: {title}. Čuva se samo na ovom uređaju.}one{{count} obeleživač je sačuvan u: {title}. Čuvaju se samo na ovom uređaju.}few{{count} obeleživača su sačuvana u: {title}. Čuvaju se samo na ovom uređaju.}other{{count} obeleživača je sačuvano u: {title}. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="5386314158584363703">Ovde ćete pronaći sajtove koje pratite</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5395707839134961196">Sakrijte detalje o pretraživaču</translation>
@@ -870,6 +875,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5525269841082836315">Pravljenje pristupne fraze</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
 <translation id="5532545557415295622">Dijalog za vremensko ograničenje za neaktivnost</translation>
+<translation id="5533967537771071082">Upravljaj memorijskim prostorom</translation>
 <translation id="5542540507657872337">Pronađeno je <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
@@ -1085,6 +1091,8 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6550891580932862748">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. To neće uticati na podešavanja Bezbednog pregledanja u drugim Google proizvodima.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Obeleživač je sačuvan u: {title}}one{{count} obeleživač je sačuvan u: {title}}few{{count} obeleživača su sačuvana u: {title}}other{{count} obeleživača je sačuvano u: {title}}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Obeleživač je sačuvan u: {title}. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u: {title}. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u: {title}. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u: {title}. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="6561262006871132942">Uvećajte</translation>
 <translation id="6579867704846662339">Možete da odaberete da se dolazni URL-ovi iz drugih aplikacija otvaraju u režimu bez arhiviranja.</translation>
 <translation id="6583087784430677195">Da biste isključili, otvorite <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" /> i idite u Automatski popunjavaj lozinke.</translation>
@@ -1199,6 +1207,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
+<translation id="7138080855268384146">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{{count} obeleživač je sačuvan u folderu {title} na nalogu, {email}}few{{count} obeleživača su sačuvana u folderu {title} na nalogu, {email}}other{{count} obeleživača je sačuvano u folderu {title} na nalogu, {email}}}</translation>
 <translation id="7141960840225504692">Kartice će biti zatvorene i podaci pregledanja će biti izbrisani</translation>
 <translation id="7154343200458623869">Dovršite zadatak.</translation>
 <translation id="7161230316646448869">Sinhronizujte obeleživače, istoriju i drugi sadržaj na svim uređajima</translation>

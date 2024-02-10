@@ -66,7 +66,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1217633719248931900">Ir a la aplicación</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicación de Play Store</translation>
 <translation id="1225748608451425081">Se ha bloqueado tu Chromebook debido a un problema conocido. Podrás volver a iniciar sesión dentro de <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">escritorio inactivo</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> se ha conectado.</translation>
@@ -374,7 +373,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
 <translation id="2579264398927991698">Actualizaciones de firmware</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
-<translation id="2586561057878260610">Pulsa Ctrl + W para combinarlo con <ph name="DESK_NAME" />. Pulsa Ctrl + Shift + W para cerrar el escritorio y las ventanas.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
@@ -511,7 +509,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3154351730702813399">Es posible que el administrador del dispositivo supervise tu actividad de navegación.</translation>
 <translation id="316086887565479535">Hay aplicaciones no admitidas en la plantilla</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Cerrar escritorio y ventanas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> va a restaurar tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>
 <translation id="3170769098533255179">No hay dispositivos conectados. Mientras se esté usando la función Compartir Internet, la conexión Wi-Fi permanecerá desactivada.</translation>
 <translation id="3171170659304083361">Configuración de métodos de introducción de texto</translation>
@@ -672,6 +669,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Conectado anteriormente</translation>
+<translation id="3712143870407382523">Elige una ventana para este lado</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir al terminar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y <ph name="UNAVAILABLE_APPS_COUNT" /> más no están en este dispositivo.</translation>
@@ -1049,7 +1047,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, eventos: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Se ha combinado <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una carpeta.</translation>
-<translation id="5203299837691351876">escritorio activo</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
@@ -1067,7 +1064,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5268819379131021772">Lista de tareas de Google</translation>
-<translation id="5275923704957843041">Vista previa del escritorio</translation>
 <translation id="5277869901083657836">Activar o desactivar herramientas del lápiz óptico</translation>
 <translation id="5278086053818066789">Activar/Desactivar ChromeVox (mensajes de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> solicita tu atención.</translation>
@@ -1417,6 +1413,7 @@ Nueva instalación</translation>
 <translation id="6613765291890844037">Almacenamiento en uso: <ph name="STORAGE_IN_USE_SIZE" /> | Almacenamiento total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
 <translation id="6622679827379792051">Configurar la visualización de las aplicaciones de tu teléfono</translation>
+<translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" />, entre otras, porque la protección contra fisgones está activada</translation>
 <translation id="6627638273713273709">Tecla de búsqueda + Mayús + K</translation>
 <translation id="662830937908749204">Mover el enfoque al siguiente panel</translation>
@@ -1471,7 +1468,6 @@ Nueva instalación</translation>
 <translation id="6819327813400217281">Cámara ajustada a la esquina inferior izquierda</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
 <translation id="6827049576281411231">Cerrar panel de eventos</translation>
-<translation id="6831561626108366035">Ir al botón <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Archivo peligroso</translation>
 <translation id="6837621009301897464">Para hacer una captura de pantalla, pulsa</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
@@ -1510,6 +1506,7 @@ Nueva instalación</translation>
 <translation id="698231206551913481">Una vez que se haya quitado este usuario, todos los archivos y datos asociados a él se eliminarán de forma permanente.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La resolución se ha cambiado a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Con una visita rápida puedes aprender cómo funciona tu Chromebook. Empieza a usarlo en 6 pasos.</translation>
+<translation id="7000027735917578303">Configuración de Windows y escritorios</translation>
 <translation id="7004910047186208204">Conectarse a datos móviles</translation>
 <translation id="7005239792648594238">Abre una aplicación para empezar</translation>
 <translation id="7007983414944123363">No se ha podido verificar tu PIN o contraseña. Inténtalo de nuevo.</translation>
@@ -1761,6 +1758,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8001755249288974029">Seleccionar el texto desde el cursor hasta el principio de la línea</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
+<translation id="802782383769312836">Escritorio anterior: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">No se ha podido conectar con el punto de acceso</translation>
 <translation id="8029629653277878342">Debes introducir el PIN o la contraseña como medida de seguridad adicional</translation>
 <translation id="8030169304546394654">Desconectado</translation>
@@ -1808,6 +1806,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8219451629189078428">Mientras tanto, tu Chromebook debe estar encendido y conectado a la corriente. Asegúrate de que los cables del cargador o del adaptador estén enchufados correctamente al Chromebook y a la toma de corriente. No apagues el Chromebook.</translation>
 <translation id="8230305195727960608">Modo Inversión de colores</translation>
 <translation id="8236042855478648955">Es hora de descansar</translation>
+<translation id="8237964652943995219">Siguiente escritorio: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Activar escritorio de la derecha</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicación</translation>
@@ -2035,6 +2034,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="92580429198593979">Has pulsado la combinación de teclas para invertir los colores. ¿Quieres activar la función?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> inmediatamente</translation>
+<translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
 <translation id="945383118875625837">Arrastra el enlace a la barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>

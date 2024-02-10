@@ -21,7 +21,6 @@
 <translation id="1119447706177454957">Iekšēja kļūda</translation>
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">reiziniet</translation>
 <translation id="1145018782460575098">Ir atvērts ārējo ierīču aparātprogrammatūras atjaunināšanas logs. Pieejamie atjauninājumi: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Atrodiet palīdzības rakstus un atbildes uz bieži uzdotiem jautājumiem par Chromebook datoru.</translation>
 <translation id="1154390310959620237">Varat pielāgot tikai piecus īsinājumtaustiņus. Dzēsiet kādu īsinājumtaustiņu, lai pievienotu jaunu īsinājumtaustiņu.</translation>
@@ -89,7 +88,6 @@
 <translation id="155865706765934889">Skārienpaliktnis</translation>
 <translation id="1561927818299383735">aizmugures apgaismojuma krāsa</translation>
 <translation id="1565038567006703504">Nevar atjaunināt ierīci “<ph name="DEVICE_NAME" />”</translation>
-<translation id="1566493343215789965">daliet</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1578784163189013834">Izvēlēties ekrānsaudzētāja fonu</translation>
@@ -196,6 +194,7 @@
 <translation id="222447520299472966">Jāatlasa vismaz viens mākslas galerijas albums</translation>
 <translation id="2230005943220647148">Celsija skala</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Izveidot vēl</translation>
 <translation id="2236746079896696523">Tastatūras fona apgaismojuma slēdzis</translation>
 <translation id="2240366984605217732">Izkārtojuma slēdzis</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
@@ -270,7 +269,6 @@
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
 <translation id="2880569433548999039">Ekrānsaudzētājs Peldošie mākoņi</translation>
 <translation id="2926057806159140518">Ievadiet savu lietotājvārdu un paroli vai skenējiet kvadrātkodu</translation>
-<translation id="2938573842839598578">Lai iegūtu aptuvenu rezultātu, <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" /> vērtību ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Nevar pārbaudīt ierīci. Lai pārbaudītu, atkal atveriet vāku.</translation>
 <translation id="2941112035454246133">Zema</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
@@ -461,7 +459,6 @@
 <translation id="4394049700291259645">Atspējot</translation>
 <translation id="439429847087949098">Notiek ierīces “<ph name="DEVICE_NAME" />” restartēšana</translation>
 <translation id="4395835743215824109">tastatūras pielāgošana</translation>
-<translation id="4403262788869804671">Īsinājumtaustiņi, kuros netiek izmantots <ph name="META_KEY" /> taustiņš, var būt pretrunā ar noteiktas lietotnes īsinājumtaustiņiem. Vēlreiz nospiediet šos īsinājumtaustiņus, lai turpinātu tos lietot, vai nospiediet jaunus īsinājumtaustiņus, kuros izmantots taustiņš <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Pašreizējais iemiesojums</translation>
 <translation id="4417830657741848074">Administrators ir iestatījis dažu lietotņu automātisku palaišanu. Dažas no šīm lietotnēm nevar aizvērt.</translation>
 <translation id="4422041425070339732">lejupvērstais bulttaustiņš</translation>
@@ -634,6 +631,7 @@
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
+<translation id="5631759159893697722">kopsavilkums</translation>
 <translation id="5649768706273821470">Klausīties</translation>
 <translation id="5655283760733841251">Palielināt tastatūras spilgtumu</translation>
 <translation id="5655296450510165335">Ierīces reģistrācija</translation>
@@ -680,7 +678,6 @@
 <translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Dzēšanas poga īsinājumtaustiņam <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Fails nav atrasts</translation>
-<translation id="593880865674747800">Izveidot vēl, izmantojot šo stilu</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="594552776027197022">Ģenerēt nejauši izveidotu atslēgu pāri</translation>
 <translation id="5946538341867151940">Jūs vēl neesat izveidojis savienojumu. Ja mobilo sakaru operators iesaka pielāgotu APN, ievadiet APN informāciju, atlasot “+ Jauns APN”.</translation>
@@ -1069,7 +1066,6 @@
 <translation id="87646919272181953">Google fotoattēlu albumi</translation>
 <translation id="8775713578693478175">Modema APN</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">Īsinājumtaustiņš tiek izmantots darbībai “<ph name="CONFLICT_ACCEL_NAME" />”. Nospiediet jaunu īsinājumtaustiņu. Lai aizstātu sākotnējo īsinājumtaustiņu, vēlreiz nospiediet šo īsinājumtaustiņu.</translation>
 <translation id="879568662008399081">Iespējams, tīklam ir caurlaides lapa</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
@@ -1121,6 +1117,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
 <translation id="9065203028668620118">Labot</translation>
+<translation id="9068296451330120661">akvarelis</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>

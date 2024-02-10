@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ಆ್ಯಪ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ‌‌ ಆ್ಯಪ್</translation>
 <translation id="1225748608451425081">ತಿಳಿದಿರುವ ಸಮಸ್ಯೆಯಿಂದಾಗಿ ನಿಮ್ಮ Chromebook ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಈ ಸಮಯದ ನಂತರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">ನಿಷ್ಕ್ರಿಯ ಡೆಸ್ಕ್</translation>
 <translation id="1229194443904279055">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1235458158152011030">ತಿಳಿದಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">ಬಹು ಸೈನ್-ಇನ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2579264398927991698">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="2582112259361606227">ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> ಜೊತೆಗೆ ಸಂಯೋಜಿಸಲು Ctrl + W ಒತ್ತಿರಿ. ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಲು Ctrl + Shift + W ಒತ್ತಿರಿ.</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
 <translation id="2595239820337756193">5 ಕಿ.ಮೀ. ಅನ್ನು ಮೈಲಿಗಳಲ್ಲಿ</translation>
 <translation id="2596078834055697711">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">ಸಾಧನದ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು.</translation>
 <translation id="316086887565479535">ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="3160929076476941240">2ಗಂ</translation>
-<translation id="3161500364292033097">ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="316356270129335934">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು <ph name="MANAGER" /> ಹಿಂತಿರುಗಿಸುತ್ತಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="3170769098533255179">ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವಾಗ, ವೈ-ಫೈ ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
 <translation id="3171170659304083361">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -1049,7 +1046,6 @@
 <translation id="5197255632782567636">ಇಂಟರ್ನೆಟ್</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ಈವೆಂಟ್‌ಗಳು</translation>
 <translation id="5198715732953550718">ಹೊಸ ಫೋಲ್ಡರ್ ಅನ್ನು ರಚಿಸಲು <ph name="MOVED_APP_NAME" /> ಆ್ಯಪ್, <ph name="IN_PLACE_APP" /> ಆ್ಯಪ್ ಜೊತೆಗೆ ಸಂಯೋಜಿತವಾಗಿದೆ.</translation>
-<translation id="5203299837691351876">ಸಕ್ರಿಯೆ ಡೆಸ್ಕ್</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ಇತರ 1 ನೋಟಿಫಿಕೇಶನ್}one{ಇತರ # ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ಇತರ # ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
@@ -1067,7 +1063,6 @@
 <translation id="5258528442992323769">ಯಾವುದೇ ಉಳಿಸಿದ ಡೆಸ್ಕ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5260676007519551770">ಡೆಸ್ಕ್ 4</translation>
 <translation id="5268819379131021772">Google ಕಾರ್ಯಗಳ ಪಟ್ಟಿ</translation>
-<translation id="5275923704957843041">ಡೆಸ್ಕ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="5277869901083657836">ಸ್ಟೈಲಸ್ ಟೂಲ್‌ಗಳನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5278086053818066789">ChromeVox ಅನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
@@ -1472,7 +1467,6 @@
 <translation id="6819327813400217281">ಕ್ಯಾಮರಾವನ್ನು ಕೆಳಗಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6820676911989879663">ವಿರಾಮ ತೆಗೆದುಕೊಳ್ಳಿ!</translation>
 <translation id="6827049576281411231">ಈವೆಂಟ್ ಪ್ಯಾನೆಲ್ ಮುಚ್ಚಿ</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> ಬಟನ್‌ಗೆ ಹೋಗಿ.</translation>
 <translation id="6836499262298959512">ಅಪಾಯಕಾರಿ ಫೈಲ್</translation>
 <translation id="6837621009301897464">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಲು, ಒತ್ತಿರಿ</translation>
 <translation id="6852052252232534364">ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>

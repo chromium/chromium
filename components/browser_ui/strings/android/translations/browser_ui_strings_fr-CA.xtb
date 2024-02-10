@@ -187,6 +187,7 @@
 <translation id="4149994727733219643">Affichage simplifié pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
+<translation id="4169019654293892025">Masquer <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Demander l'autorisation avant de permettre aux sites de consulter et de modifier les données stockées sur les appareils CCP (recommandé)</translation>
 <translation id="4200726100658658164">Ouvrir les paramètres de localisation</translation>
@@ -364,7 +365,6 @@
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>
-<translation id="7137403271056944713">Contrôle/reprog. des appar. MIDI</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres contextuelles et de redirections à partir des sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ko</translation>
 <translation id="7180611975245234373">Actualiser</translation>

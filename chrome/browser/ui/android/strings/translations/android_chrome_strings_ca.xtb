@@ -204,6 +204,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="2132122640199389833">Suprimeix tots els dispositius enllaçats</translation>
 <translation id="213279576345780926">Pestanya <ph name="TAB_TITLE" /> tancada</translation>
 <translation id="2139186145475833000">Afegeix a pantalla d'inici</translation>
+<translation id="2139414603196655536">La teva activitat a Page Insights es desarà al teu Compte de Google. <ph name="BEGIN_LINK" />Més informació sobre com pots gestionar-ho<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Segons l'ús que en fas</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2155214902713132423">Aquest mètode de verificació no està disponible per a aquest dispositiu. Selecciona una opció diferent a l'altre dispositiu.</translation>
@@ -873,6 +874,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5698878456427040674">Comprova si s'admet el compte seleccionat.</translation>
 <translation id="570347048394355941">Canvia a la pestanya</translation>
 <translation id="5715150588940290235">Vols suprimir els codis de seguretat desats?</translation>
+<translation id="571930967925877633">Les adreces d'interès, l'historial i altres dades de Chrome ja no se sincronitzaran amb el teu Compte de Google</translation>
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5726692708398506830">Augmenta la mida de tots els elements de la pàgina</translation>
 <translation id="5744751019568455640">Aquestes són les veus que pots triar perquè llegeixin en veu alta el contingut de les pàgines web. Si t'agrada aquesta veu i vols que la continuï fent servir, només cal que toquis el seu nom.</translation>
@@ -1081,6 +1083,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="670498945988402717">Es va comprovar ahir</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">S'ha esgotat el temps definit al temporitzador per a <ph name="FQDN" />. Es tornarà a iniciar demà.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{S'ha desat l'adreça d'interès a <ph name="FOLDER_NAME" />. Només es desa en aquest dispositiu.}other{S'han desat les adreces d'interès a <ph name="FOLDER_NAME" />. Només es desen en aquest dispositiu.}}</translation>
 <translation id="6715020873764921614">Vols baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) igualment?</translation>
 <translation id="6719634564325948108">Vols connectar amb el codi QR?</translation>
 <translation id="6723740634201835758">Al teu Compte de Google</translation>
@@ -1402,6 +1405,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8237871086242677046">Full inferior d'estadístiques de la pàgina</translation>
 <translation id="8243077599929149377">Afegeix el teu nom d'usuari</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{S'ha desat l'adreça d'interès a <ph name="FOLDER_NAME" /> al teu compte, <ph name="ACCOUNT_EMAIL" />.}other{S'han desat les adreces d'interès a <ph name="FOLDER_NAME" /> al teu compte, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Els llocs web només poden fer servir les teves galetes per veure la teva activitat de navegació només en aquests mateixos llocs web</translation>
 <translation id="8259179246279078674">Com que les pàgines precarregades estan encriptades, Google no obtindrà informació del contingut de la pàgina precarregada. Els servidors de Google sabran quins llocs web es precarreguen de manera privada. Aquesta informació només s'utilitza per precarregar les pàgines i no es vincula amb cap altra informació del teu Compte de Google.</translation>
 <translation id="8260126382462817229">Prova d'iniciar la sessió de nou</translation>

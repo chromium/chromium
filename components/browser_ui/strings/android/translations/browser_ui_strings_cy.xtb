@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
 <translation id="4151930093518524179">Chwyddo diofyn</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
+<translation id="4169019654293892025">Cuddio <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
 <translation id="7087918508125750058">Dewiswyd <ph name="ITEM_COUNT" />.  Mae dewisiadau ar gael yn agos at waelod y sgrîn</translation>
-<translation id="7137403271056944713">Rheoli / ailraglennu dyfais MIDI</translation>
 <translation id="7141896414559753902">Rhwystro gwefannau rhag dangos ffenestri naid ac ailgyfeiriadau (argymhellir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>

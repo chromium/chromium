@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
 <translation id="301521992641321250">Automaticky blokované</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Na konkrétnom webe môžete povoliť prihlasovanie tretími stranami.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="310297983047869047">Predchádzajúca snímka</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4151930093518524179">Predvolená lupa</translation>
 <translation id="4165986682804962316">Nastavenia webov</translation>
+<translation id="4169019654293892025">Skryť <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> zo zariadenia <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povolené</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 vybratá položka}few{# vybraté položky}many{Niekoľko (#) vybratých položiek}other{# vybratých položiek}}</translation>
 <translation id="7087918508125750058">Vybrané: <ph name="ITEM_COUNT" />.  Možnosti sú k dispozícii v hornej časti obrazovky.</translation>
-<translation id="7137403271056944713">Ovládanie/preprogram. zar. MIDI</translation>
 <translation id="7141896414559753902">Brániť webom otvárať vyskakovacie okná a používať presmerovania (odporúčané)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Priblíženie stránky</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Pridať</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Pokračovať s touto kartou}few{Pokračovať s týmito kartami}many{Pokračovať s týmito kartami}other{Pokračovať s týmito kartami}}</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">अ‍ॅपवर जा</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">इनॅक्टिव्ह डेस्‍क</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">एकाहून अधिक साइन इन बंद करण्यात आले आहे</translation>
 <translation id="2579264398927991698">फर्मवेअर अपडेट</translation>
 <translation id="2582112259361606227">अपडेट करण्यासाठी रीस्टार्ट करा</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> सोबत एकत्रित करण्यासाठी Ctrl + W प्रेस करा. डेस्क आणि विंडो बंद करण्यासाठी Ctrl + Shift + W प्रेस करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2595239820337756193">५००० मैल</translation>
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">डिव्हाइस प्रशासक कदाचित आपल्या ब्राउझिंग क्रियाकलापाचे परीक्षण करू शकतो.</translation>
 <translation id="316086887565479535">टेंप्लेटमधील सपोर्ट करत नसलेली ॲप्स</translation>
 <translation id="3160929076476941240">२ तास</translation>
-<translation id="3161500364292033097">डेस्‍क आणि विंडो बंद करा</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तुमचे <ph name="DEVICE_TYPE" /> मागे घेत आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="3170769098533255179">कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत. हॉटस्पॉट वापरत असताना, वाय-फाय बंद राहील.</translation>
 <translation id="3171170659304083361">इनपुट पद्धतींची सेटिंग्ज</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">नायजेरियामधील लोकसंख्या</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
+<translation id="3712143870407382523">या बाजूची विंडो निवडा</translation>
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> आणि<ph name="UNAVAILABLE_APPS_COUNT" /> ही ॲप्स या डिव्हाइसवर उपलब्ध नाहीत.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
-<translation id="5203299837691351876">अ‍ॅक्टिव्ह डेस्क</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{एक इतर सूचना}other{# इतर सूचना}}</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">कोणतीही सेव्ह केलेली डेस्‍क नाहीत</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
 <translation id="5268819379131021772">Google टास्क सूची</translation>
-<translation id="5275923704957843041">डेस्‍कचे पूर्वावलोकन</translation>
 <translation id="5277869901083657836">स्टायलस टूल टॉगल करा</translation>
 <translation id="5278086053818066789">ChromeVox सुरू/बंद करा (वाचिक फीडबॅक)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज वापरात आहे | <ph name="STORAGE_TOTAL_SIZE" /> एकूण</translation>
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
 <translation id="6622679827379792051">तुमच्या फोनमधील ॲप्स पाहणे सेट करा</translation>
+<translation id="6624493541160101248">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="6625718907317144388">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> आणि इतर सूचना लपवल्या आहेत</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">पुढील पेनवर फोकस हलवा</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">कॅमेरा सर्वात खालच्या डाव्या कोपऱ्यात स्नॅप केला आहे</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
 <translation id="6827049576281411231">इव्हेंट पॅनल बंद करा</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> बटणावर जा.</translation>
 <translation id="6836499262298959512">धोकादायक फाइल</translation>
 <translation id="6837621009301897464">स्क्रीनशॉट घेण्यासाठी प्रेस करा</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) वर बदलले. बदल राखण्यासाठी कन्फर्म करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="6989752354829085073">तुमच्या Chromebook वर सुरुवात कशी करावी हे जाणून घेण्यासाठी झटपट फेरफटका मारा. ६ पायऱ्या वापरून सुरुवात करा.</translation>
+<translation id="7000027735917578303">Windows आणि डेस्‍क सेटिंग्ज</translation>
 <translation id="7004910047186208204">मोबाइल डेटाशी कनेक्ट करा</translation>
 <translation id="7005239792648594238">सुरुवात करण्यासाठी अ‍ॅप उघडा</translation>
 <translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">कर्सरपासून ओळीच्या सुरुवातीपर्यंत मजकूर निवडा</translation>
 <translation id="8004512796067398576">बढती</translation>
 <translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
+<translation id="802782383769312836">मागील डेस्‍क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="8029247720646289474">हॉटस्पॉट कनेक्ट करता आले नाही</translation>
 <translation id="8029629653277878342">आणखी सुरक्षिततेसाठी पिन किंवा पासवर्ड आवश्यक आहे</translation>
 <translation id="8030169304546394654">डिस्कनेक्ट केलेले</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">या कालावधी दरम्यान Chromebook सुरू असणे आणि पॉवरशी कनेक्ट केलेले असणे आवश्यक आहे. चार्जर किंवा अडॅप्टर केबल तुमचे Chromebook आणि पॉवर आउटलेट या दोन्ही गोष्टींशी पूर्णपणे प्लग इन केल्या असल्याची खात्री करा. तुमचे Chromebook बंद करू नका.</translation>
 <translation id="8230305195727960608">कलर इन्व्हर्जन मोड</translation>
 <translation id="8236042855478648955">विश्रांतीची वेळ</translation>
+<translation id="8237964652943995219">पुढील डेस्‍क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="8239034820133090126">उजवीकडील डेस्‍क अ‍ॅक्टिव्हेट करा</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ॲप</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">तुम्ही कलर इन्व्हर्जनसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते बंद करायचे आहे का?</translation>
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> त्वरित अपडेट करणे आवश्यक आहे</translation>
+<translation id="938407504481277932">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
 <translation id="945383118875625837">लिंक बुकमार्क बारवर ड्रॅग करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>

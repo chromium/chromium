@@ -9,6 +9,7 @@
 <translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
+<translation id="1049663189809099096">kuning pastel</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> dari <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +22,6 @@
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">kali</translation>
 <translation id="1145018782460575098">Jendela update firmware untuk perangkat eksternal terbuka. <ph name="NUM_UPDATES" /> update tersedia.</translation>
 <translation id="1145516343487477149">Temukan artikel bantuan dan jawaban atas pertanyaan umum tentang Chromebook</translation>
 <translation id="1154390310959620237">Anda hanya dapat menyesuaikan 5 pintasan. Hapus satu pintasan untuk menambahkan pintasan baru</translation>
@@ -65,6 +65,7 @@
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">bunga anggrek</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
 <translation id="1423591390236870726">Tombol <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Otomatis mereset penggunaan data setiap bulan pada tanggal yang dipilih</translation>
@@ -85,11 +86,11 @@
 <translation id="1515129336378114413">beranda browser</translation>
 <translation id="1526389707933164996">Animasi screensaver</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
+<translation id="1531886272553347340">bunga ranunculus</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">warna backlit</translation>
 <translation id="1565038567006703504">Tidak dapat mengupdate <ph name="DEVICE_NAME" /></translation>
-<translation id="1566493343215789965">bagi</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Setel sebagai wallpaper</translation>
 <translation id="1578784163189013834">Pilih latar belakang screen saver</translation>
@@ -162,6 +163,7 @@
 <translation id="1977994649430373166">Foto profil Google</translation>
 <translation id="1979103255016296513">Perubahan sandi melewati batas waktu</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
+<translation id="2004572381882349402">Dengan Airbrush</translation>
 <translation id="200669432486043882">Ganti file</translation>
 <translation id="2006864819935886708">Konektivitas</translation>
 <translation id="2008685064673031089">Penelusuran bilangan prima</translation>
@@ -196,6 +198,7 @@
 <translation id="222447520299472966">Minimal satu album Galeri seni harus dipilih</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Buat lagi</translation>
 <translation id="2236746079896696523">Tombol lampu latar keyboard</translation>
 <translation id="2240366984605217732">Beralih tata letak</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
@@ -236,6 +239,7 @@
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Memulai ulang ...</translation>
+<translation id="2531772459602846206">bunga bokor</translation>
 <translation id="2533048460510040082">Konten bantuan yang disarankan</translation>
 <translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
@@ -270,7 +274,6 @@
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="2880569433548999039">Screensaver Aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
-<translation id="2938573842839598578">Untuk mendapatkan perkiraan hasil, <ph name="OPERATOR_TEXT" /> nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
 <translation id="2941112035454246133">Rendah</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
@@ -361,6 +364,7 @@
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
+<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> berwarna <ph name="FLOWER_COLOR" /> cerah sedang mekar</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -401,6 +405,7 @@
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3969602104473960991">Sandi ChromeOS diperbarui</translation>
 <translation id="397105322502079400">Menghitung...</translation>
+<translation id="3981099166243641873">hijau muda</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> Anda sekarang sudah diupdate</translation>
 <translation id="3998976413398910035">Kelola printer</translation>
@@ -412,6 +417,7 @@
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4060260348856573701">APN baru</translation>
+<translation id="4063039537646912479">biru muda</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="409469431304488632">Eksperimen</translation>
@@ -461,7 +467,6 @@
 <translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="439429847087949098">Memulai ulang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sesuaikan keyboard</translation>
-<translation id="4403262788869804671">Pintasan tanpa tombol <ph name="META_KEY" /> mungkin bertentangan dengan pintasan aplikasi tertentu. Tekan pintasan ini lagi untuk terus menggunakannya, atau tekan pintasan baru menggunakan tombol <ph name="KEY" />.</translation>
 <translation id="4415951057168511744">Avatar Saat Ini</translation>
 <translation id="4417830657741848074">Administrator Anda telah menyiapkan beberapa aplikasi agar dimulai secara otomatis. Anda tidak dapat menutup beberapa aplikasi tersebut.</translation>
 <translation id="4422041425070339732">panah bawah</translation>
@@ -605,6 +610,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Pilih satu sandi baru sekarang</translation>
 <translation id="5333530671332546086">Status portal tidak diketahui</translation>
+<translation id="5335373365677455232">merah muda</translation>
 <translation id="5346687412805619883">Jaringan Lokal</translation>
 <translation id="5358174242040570474">Terjadi error. Coba pilih wallpaper lagi atau buka aplikasi lagi.</translation>
 <translation id="5372659122375744710">Jaringan Wi-Fi tidak aman</translation>
@@ -612,6 +618,7 @@
 <translation id="5378184552853359930">Jenis IP</translation>
 <translation id="5389159777326897627">Wallpaper &amp; Gaya</translation>
 <translation id="5389224261615877010">Pelangi</translation>
+<translation id="5396811372860835203">bunga kala lili</translation>
 <translation id="5400907029458559844">Perangkat sedang menghubungkan.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutinitas</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
@@ -634,7 +641,9 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5600027863942488546">Tombol <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
+<translation id="5631759159893697722">abstrak</translation>
 <translation id="5649768706273821470">Dengar</translation>
+<translation id="5654356773042347102">bunga bakung gunung</translation>
 <translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
 <translation id="5655296450510165335">Pendaftaran perangkat</translation>
 <translation id="5655776422854483175">Tidak ada tugas pencetakan</translation>
@@ -680,11 +689,11 @@
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Tombol hapus untuk <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
-<translation id="593880865674747800">Buat lebih banyak wallpaper dengan gaya ini</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Buat pasangan kunci acak</translation>
 <translation id="5946538341867151940">Anda belum terhubung. Jika operator seluler Anda merekomendasikan APN khusus, masukkan informasi APN dengan memilih "+ APN Baru"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5975130252842127517">koral</translation>
 <translation id="5984145644188835034">Wallpaper Default</translation>
 <translation id="6017514345406065928">Hijau</translation>
 <translation id="6019566113895157499">Pintasan Keyboard</translation>
@@ -709,6 +718,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, + <ph name="NUMBER" /> album lainnya</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Layanan Metode Input ChromeOS</translation>
+<translation id="6127426868813166163">putih</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Sertifikat pengguna</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
@@ -760,6 +770,7 @@
 <translation id="6462978824459367242">Tombol Tambahkan APN kini diaktifkan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pindai ulang halaman?}=1{Pindai ulang halaman {PAGE_NUMBER}?}other{Pindai ulang halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="64778964625672495">merah tua</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Screensaver eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas macet</translation>
@@ -811,6 +822,8 @@
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
+<translation id="6866732840889595464">bunga aster</translation>
+<translation id="6871256179359663621">ungu muda</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
 <translation id="6900701049656042631">Album ini tidak memiliki foto. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
@@ -824,6 +837,7 @@
 <translation id="6965978654500191972">Perangkat</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
+<translation id="6988803763488977828">bunga anemon</translation>
 <translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -877,6 +891,7 @@
 <translation id="7311368985037279727">warna keyboard</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">bunga cendrawasih</translation>
 <translation id="7331297744262591636">Anda harus berusia minimal 18 tahun dan setuju bahwa penggunaan wallpaper AI oleh Anda tunduk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Persyaratan Layanan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Persyaratan Layanan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -925,6 +940,7 @@
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>
+<translation id="7673177760638264939">bunga mawar taman</translation>
 <translation id="7683228889864052081">hue keyboard</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
@@ -952,6 +968,7 @@
 <translation id="7841134249932030522">Aktifkan mode gelap</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7850847810298646851">Wallpaper yang didukung teknologi AI Google</translation>
+<translation id="785170686607360576">bunga tulip</translation>
 <translation id="7856267634822906833">Layar sentuh Bluetooth</translation>
 <translation id="7869143217755017858">Nonaktifkan mode gelap</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1069,7 +1086,6 @@
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="8775713578693478175">APN Modem</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru. Untuk mengganti pintasan awal, tekan lagi pintasan ini.</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
@@ -1121,6 +1137,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9068296451330120661">cat air</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>

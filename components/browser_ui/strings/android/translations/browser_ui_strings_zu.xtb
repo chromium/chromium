@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">Ukubuka okwenziwe lula kwamakhasi ewebhu</translation>
 <translation id="4151930093518524179">Ukusondeza okuzenzakalelayo</translation>
 <translation id="4165986682804962316">Izilungiselelo zesayithi</translation>
+<translation id="4169019654293892025">Fihla i-<ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Ixhumeke kudivayisi ye-USB</translation>
 <translation id="4194328954146351878">Buza ngaphambi kokuvumela amasayithi ukuthi abone futhi aguqule ulwazi kumadivayisi e-NFC (kuyanconywa)</translation>
 <translation id="4200726100658658164">Vula Izilungiselelo zendawo</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">Vimba</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ekhethiwe}one{# ekhethiwe}other{# ekhethiwe}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> kukhethiwe.  Izinketho zitholakala eceleni naphezu kwesikrini</translation>
-<translation id="7137403271056944713">Ukulawula / ukuhlela kabusha idivayisi ye-MIDI</translation>
 <translation id="7141896414559753902">Vimbela amasayithi kusukela ekuboniseni okwesikhashana nokuqondiswa kabusha (kunconyiwe)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>

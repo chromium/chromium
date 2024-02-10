@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">自訂選單</translation>
 <translation id="1296581780163690620">要下載檔案嗎？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分。</translation>
+<translation id="1310362642333088424">如要下載檔案、相片和其他內容，請新增更多儲存空間。</translation>
 <translation id="1312721752506309252">已啟用強化防護功能</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
@@ -125,10 +126,11 @@
 <translation id="1612730193129642006">顯示分頁方格</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1622717322707146952">選取「新增至 Google 日曆」或「新增至 Apple 行事曆」。</translation>
-<translation id="1626771852476987600"><ph name="COUNT" /> 組重複使用的密碼</translation>
+<translation id="1626771852476987600">有 <ph name="COUNT" /> 組密碼重複使用</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641316430523156212">追蹤</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
+<translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
 <translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">輕觸 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕觸 [停止記錄] 為止。</translation>
 <translation id="1653432787084483144">{count,plural, =1{鍵盤上方顯示 {count} 組已儲存的密碼。}other{鍵盤上方顯示 {count} 組已儲存的密碼。}}</translation>
@@ -379,7 +381,7 @@
 <translation id="2895084600668778673">查看所有自動填入資料</translation>
 <translation id="2898963176829412617">新資料夾…</translation>
 <translation id="2902684821701498619">加入閱讀清單</translation>
-<translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組重複使用的密碼，可能導致安全性風險。</translation>
+<translation id="2905479111267140204">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組密碼重複使用，可能導致安全性風險。</translation>
 <translation id="291754862089661335">將這個方框對準 QR 圖碼或條碼</translation>
 <translation id="2920866371965792875">如要查看這個網站的最新資訊，請按這裡追蹤網站。</translation>
 <translation id="2921219216347069551">無法分享網頁</translation>
@@ -413,7 +415,7 @@
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3087734570205094154">置底</translation>
 <translation id="3090455602619185166">使用代管帳戶登入</translation>
-<translation id="309710370695886264">你有 1 組重複使用的密碼，請立即修正以確保安全。</translation>
+<translation id="309710370695886264">你有 1 組密碼重複使用，請立即修正以確保安全。</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">歷史記錄和其他資料</translation>
@@ -511,6 +513,7 @@
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中...</translation>
+<translation id="3630104167004786843">不要接收更新</translation>
 <translation id="3631443864840848029">請確認你儲存的是這個網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3643338347976071250">{count,plural, =1{這 {count} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
@@ -637,6 +640,7 @@
 <translation id="4309403553630140242">輕觸兩下即可查看更多資訊</translation>
 <translation id="430967081421617822">不限時間</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
+<translation id="4323142320106872792">儲存空間已滿</translation>
 <translation id="4331177082088332784">你可以前往「BEGIN_LINK內容設定END_LINK」管理這個選項</translation>
 <translation id="4334428914252001502">1 篇未讀文章。</translation>
 <translation id="4338650699862464074">將你造訪的網頁網址傳送給 Google。</translation>
@@ -694,7 +698,7 @@
 <translation id="4620246317052452550">你看過的網頁</translation>
 <translation id="4620888520263267479">顯示連結預覽</translation>
 <translation id="4630540211544979320">翻譯網頁</translation>
-<translation id="4631335160486397366">有 <ph name="COUNT" /> 組重複使用的密碼</translation>
+<translation id="4631335160486397366">有 <ph name="COUNT" /> 組密碼重複使用</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
@@ -843,6 +847,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{要追蹤這個包裹嗎？}other{要追蹤這 {COUNT} 個包裹嗎？}}</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
+<translation id="5379352933722332597">{count,plural, =1{這個書籤已儲存到「{title}」。系統只會將這項資料儲存在這部裝置。}other{這 {count} 個書籤已儲存到「{title}」。系統只會將這些資料儲存在這部裝置。}}</translation>
 <translation id="5386314158584363703">此處會顯示你已追蹤的網站</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5395707839134961196">隱藏搜尋引擎詳細資料</translation>
@@ -870,6 +875,7 @@
 <translation id="5525269841082836315">建立通關密語</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話方塊</translation>
+<translation id="5533967537771071082">管理儲存空間</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
@@ -1027,7 +1033,7 @@
 <translation id="6321526113093607004">加入書籤</translation>
 <translation id="6324669097367352121">登入設定</translation>
 <translation id="6328337032497818759">自訂選單</translation>
-<translation id="6331180460633101391">有 <ph name="COUNT" /> 組重複使用的密碼</translation>
+<translation id="6331180460633101391">有 <ph name="COUNT" /> 組密碼重複使用</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="633809752005859102">發生重大錯誤，我們將設法解決。</translation>
 <translation id="6339793034470834130">如要使用網頁檢閱器，請利用傳輸線連上電腦的 Safari，從「開發」選單存取 iPhone。你可以透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
@@ -1085,6 +1091,8 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
+<translation id="6552223548936340886">{count,plural, =1{這個書籤已儲存到「{title}」}other{這 {count} 個書籤已儲存到「{title}」}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{這個書籤已儲存到「{title}」。系統只會將這項資料儲存在這部裝置。}other{這些書籤已儲存到「{title}」。系統只會將這些資料儲存在這部裝置。}}</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6579867704846662339">你可以選擇以無痕模式開啟其他應用程式傳入的網址。</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」部分。</translation>
@@ -1199,6 +1207,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
+<translation id="7138080855268384146">{count,plural, =1{這個書籤已儲存到帳戶 ({email}) 中的「{title}」}other{這 {count} 個書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
 <translation id="7154343200458623869">完成工作。</translation>
 <translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
@@ -1335,7 +1344,7 @@
 <translation id="7866993391592926595">如果隱藏這張資訊卡，系統會關閉包裹追蹤功能，並移除你的所有資料</translation>
 <translation id="7870750252270996949">你複製的智慧鏡頭圖片</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>
-<translation id="7883882164760409935">你有多組重複使用的密碼。</translation>
+<translation id="7883882164760409935">你有多組密碼重複使用。</translation>
 <translation id="7884694604461143138">在歷史記錄中搜尋 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>

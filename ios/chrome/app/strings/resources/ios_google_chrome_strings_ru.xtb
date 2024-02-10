@@ -75,7 +75,9 @@
 <translation id="2689064829982324496">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Браузеру Chrome не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
 <translation id="2702250627063295552">Добавить в список для чтения в Chrome</translation>
+<translation id="2703746758996815929">Чтобы получать советы по Chrome, включите уведомления в настройках iOS.</translation>
 <translation id="2736805085127235148">Включите уведомления Chrome на своем устройстве.</translation>
+<translation id="2750626042242931740">Изменить список выбранных уведомлений можно в любой момент в настройках Chrome.</translation>
 <translation id="2767464022270041271">Нет сохраненных паролей. Чтобы Google Менеджер паролей мог проверять пароли, сохраните их.</translation>
 <translation id="2789947168960170215">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Удалить данные о работе в Chrome</translation>
@@ -297,6 +299,7 @@
 Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Менеджеру паролей не удается проверить все пароли. Повторите попытку завтра.</translation>
 <translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
+<translation id="8874688701962049679">Советы по эффективной работе с Chrome.</translation>
 <translation id="8891935667620843985">Чтобы автоматически открывать ссылки в Chrome, сделайте его браузером по умолчанию.</translation>
 <translation id="8897749957032330183">Пароли сохраняются в Google Менеджере паролей на этом устройстве.</translation>
 <translation id="8949681853939555434">Как сделать Chrome браузером по умолчанию</translation>

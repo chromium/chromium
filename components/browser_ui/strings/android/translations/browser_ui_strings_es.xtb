@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Las cookies de terceros están limitadas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="301521992641321250">Bloqueado automáticamente</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Permite el inicio de sesión de terceros en un sitio específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Vista simplificada de páginas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
+<translation id="4169019654293892025">Ocultar <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Conectado a un dispositivo USB</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan que el dispositivo vibre</translation>
 <translation id="4259722352634471385">Se ha bloqueado la navegación: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hay opciones disponibles en la parte superior de la pantalla</translation>
-<translation id="7137403271056944713">Controlar/reprogramar disp. MIDI</translation>
 <translation id="7141896414559753902">Impide que los sitios muestren ventanas emergentes y redirecciones (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Zoom de la página</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7791543448312431591">Añadir</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuar con esta pestaña}other{Continuar con estas pestañas}}</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio web está usando tu cámara</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>

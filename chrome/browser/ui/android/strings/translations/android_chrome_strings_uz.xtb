@@ -873,6 +873,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5698878456427040674">Tanlangan hisob ishlashini tekshiring.</translation>
 <translation id="570347048394355941">Varaqqa oʻtish</translation>
 <translation id="5715150588940290235">Saqlangan xavfsizlik kodlari oʻchirilsinmi?</translation>
+<translation id="571930967925877633">Bukmarklar, tarix, parollar va boshqa Chrome maʼlumotlaringiz bilan Google hisobingiz sinxronizatsiyasi uziladi</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5726692708398506830">Sahifadagi hamma narsani kattalashtirish</translation>
 <translation id="5744751019568455640">Internet sahifalari oʻqib berilishi uchun quyidagi ovozlardan birini tanlash mumkin. Bu ovoz yoqsa va qolishini istasangiz, ovoz nomini bosing.</translation>
@@ -1538,7 +1539,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
-<translation id="8998837250940831980">Sahifa yigʻilmadi. Keyinroq qayta urining.</translation>
+<translation id="8998837250940831980">Varaq kichraytirilmadi. Keyinroq qayta urining.</translation>
 <translation id="9012585441087414258">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Agar sahifa shubhali biror ish qilsa, URL manzillari va sahifa kontentining bitlari Google Saytlarni xavfsiz kezish xizmatiga yuboriladi.</translation>
 <translation id="9019199799064251516">Avtomobil profil qulfisiz davom etasizmi?</translation>
 <translation id="9022774213089566801">Eng koʻp ochilgan</translation>

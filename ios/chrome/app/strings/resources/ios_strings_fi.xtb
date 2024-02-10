@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Muokkaa valikkoa</translation>
 <translation id="1296581780163690620">Ladataanko tiedosto? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Vahvista henkilöllisyytesi, jotta voit aina käyttää Google-tilisi salasanoja.</translation>
+<translation id="1310362642333088424">Tarvitset lisää tallennustilaa, jotta voit ladata esimerkiksi tiedostoja ja kuvia.</translation>
 <translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
 <translation id="1321993286294231467">Virhe tallennettaessa kuvaa</translation>
 <translation id="1322735045095424339">Organisaatiosi edellyttää incognito-tilaa</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1641316430523156212">Seuraa</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="164673457281113247">{count,plural, =1{Kirjanmerkki tallennettu}other{Kirjanmerkit tallennettu}}</translation>
 <translation id="165008673352427892">Uusi ominaisuus</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu salasana.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua salasanaa.}}</translation>
@@ -511,6 +513,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3603009562372709545">Kopioi linkin URL-osoite</translation>
 <translation id="3607167657931203000">Automaattisen täytön tiedot</translation>
 <translation id="3609785682760573515">Synkronoidaan…</translation>
+<translation id="3630104167004786843">Älä lähetä ilmoituksia</translation>
 <translation id="3631443864840848029">Varmista, että tallennat tämän sivuston nykyisen salasanasi.</translation>
 <translation id="3638472932233958418">Lataa verkkosivut</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
@@ -637,6 +640,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4309403553630140242">Katso lisätietoja kaksoisnapauttamalla</translation>
 <translation id="430967081421617822">Koko historia</translation>
 <translation id="4322394346347055525">Sulje muut välilehdet</translation>
+<translation id="4323142320106872792">Tallennustila on täynnä</translation>
 <translation id="4331177082088332784">Voit hallita tätä BEGIN_LINK Sisältöasetuksissa END_LINK</translation>
 <translation id="4334428914252001502">1 lukematon artikkeli</translation>
 <translation id="4338650699862464074">Lähettää avaamiesi sivujen URL-osoitteet Googlelle.</translation>
@@ -843,6 +847,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Seurataanko tätä pakettia?}other{Seurataanko {COUNT} pakettia?}}</translation>
 <translation id="536067926684072644">Näytä kirjanmerkit</translation>
 <translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Kirjanmerkki tallennettu tänne: "{title}". Se tallennetaan vain tälle laitteelle.}other{{count} kirjanmerkkiä tallennettu tänne: "{title}". Ne tallennetaan vain tälle laitteelle.}}</translation>
 <translation id="5386314158584363703">Näet seuraamasi sivustot täällä</translation>
 <translation id="5388358297987318779">Avaa kuva</translation>
 <translation id="5395707839134961196">Piilota hakukoneen tiedot</translation>
@@ -870,6 +875,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5525269841082836315">Luo tunnuslause</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} heikko salasana}other{{COUNT} heikkoa salasanaa}}</translation>
 <translation id="5532545557415295622">Epäaktiivisuudesta johtuvan aikakatkaisun valintaikkuna</translation>
+<translation id="5533967537771071082">Ylläpidä tallennustilaa</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> löytyi</translation>
 <translation id="5548760955356983418">Handoffin avulla voit aloittaa verkkosivuston lukemisen laitteellasi ja jatkaa sitä Macilla. Avoin verkkosivusto näytetään Dockissa.
 
@@ -1085,6 +1091,8 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Asetukset</translation>
 <translation id="6550891580932862748">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Muutos ei vaikuta selaussuojan asetuksiin muissa Googlen tuotteissa.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Kirjanmerkki tallennettu tänne: "{title}"}other{{count} kirjanmerkkiä tallennettu tänne: "{title}"}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Kirjanmerkki tallennettu tänne: "{title}". Se tallennetaan vain tälle laitteelle.}other{Kirjanmerkit tallennettu tänne: "{title}". Ne tallennetaan vain tälle laitteelle.}}</translation>
 <translation id="6561262006871132942">Lähennä</translation>
 <translation id="6579867704846662339">Voit halutessasi avata muista sovelluksista saapuvat URL-osoitteet incognito-tilassa.</translation>
 <translation id="6583087784430677195">Jos haluat laittaa ominaisuuden pois päältä, avaa <ph name="BEGIN_LINK" />Asetukset<ph name="END_LINK" /> ja siirry Täytä salasanat automaattisesti ‑kohtaan.</translation>
@@ -1199,6 +1207,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Koko nimi</translation>
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>
+<translation id="7138080855268384146">{count,plural, =1{Kirjanmerkki tallennettu tilin {email} kansioon "{title}"}other{{count} kirjanmerkkiä tallennettu tilin {email} kansioon "{title}"}}</translation>
 <translation id="7141960840225504692">Välilehdet suljetaan ja selausdata poistetaan</translation>
 <translation id="7154343200458623869">Suorita tehtävä.</translation>
 <translation id="7161230316646448869">Synkronoi kirjanmerkkisi, historiasi ja paljon muuta kaikilla laitteilla</translation>

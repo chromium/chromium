@@ -204,6 +204,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2132122640199389833">Fjern alle tilknyttede enheter</translation>
 <translation id="213279576345780926">Lukket <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Legg til på startsiden</translation>
+<translation id="2139414603196655536">Aktiviteten din i sidestatistikk lagres i Google-kontoen din. <ph name="BEGIN_LINK" />Finn ut hvordan du administrerer dette<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2155214902713132423">Denne bekreftelsesmåten er ikke tilgjengelig for denne enheten. Velg et annet alternativ på den andre enheten.</translation>
@@ -873,6 +874,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5698878456427040674">Sjekk om den valgte kontoen støttes.</translation>
 <translation id="570347048394355941">Bytt til fane</translation>
 <translation id="5715150588940290235">Vil du slette lagrede sikkerhetskoder?</translation>
+<translation id="571930967925877633">Bokmerker, logg og andre Chrome-data synkroniseres ikke lenger med Google-kontoen din</translation>
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5726692708398506830">Gjør alt på siden større</translation>
 <translation id="5744751019568455640">Dette er stemmene du kan velge for opplesing av nettsidene dine. Hvis du liker denne stemmen og vil at jeg skal fortsette å bruke den, er det bare å trykke på stemmenavnet.</translation>
@@ -1081,6 +1083,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i <ph name="FOLDER_NAME" />. Det lagres bare på denne enheten.}other{Bokmerkene er lagret i <ph name="FOLDER_NAME" />. Det lagres bare på denne enheten.}}</translation>
 <translation id="6715020873764921614">Vil du laste ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) likevel?</translation>
 <translation id="6719634564325948108">Vil du koble til med QR-kode?</translation>
 <translation id="6723740634201835758">I Google-kontoen din</translation>
@@ -1402,6 +1405,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8237871086242677046">Sidestatistikkfeltet nederst</translation>
 <translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i <ph name="FOLDER_NAME" /> i kontoen din, <ph name="ACCOUNT_EMAIL" />.}other{Bokmerkene er lagret i <ph name="FOLDER_NAME" /> i kontoen din, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
 <translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>

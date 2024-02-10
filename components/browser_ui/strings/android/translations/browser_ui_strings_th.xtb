@@ -188,6 +188,7 @@
 <translation id="4149994727733219643">มุมมองอย่างง่ายสำหรับหน้าเว็บ</translation>
 <translation id="4151930093518524179">การซูมเริ่มต้น</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>
+<translation id="4169019654293892025">ซ่อน <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">เชื่อมต่ออยู่กับอุปกรณ์ USB</translation>
 <translation id="4194328954146351878">ถามก่อนที่จะอนุญาตให้เว็บไซต์ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC (แนะนำ)</translation>
 <translation id="4200726100658658164">เปิดการตั้งค่าตำแหน่ง</translation>
@@ -366,7 +367,6 @@
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{เลือก 1 รายการ}other{เลือก # รายการ}}</translation>
 <translation id="7087918508125750058">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
-<translation id="7137403271056944713">การควบคุม / การตั้งโปรแกรมใหม่อุปกรณ์ MIDI</translation>
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>

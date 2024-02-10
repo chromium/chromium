@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="3008272652534848354">Зөвшөөрлийг шинэчлэх</translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Тодорхой сайтын гуравдагч талын нэвтрэлтийг зөвшөөрнө үү.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Маргааш хугацаа нь дуусна}other{# хоногийн дараа хугацаа нь дуусна}}</translation>
 <translation id="310297983047869047">Өмнөх слайд</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4151930093518524179">Өгөгдмөл томруулалт</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />-г нуух</translation>
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 сонгосон}other{# сонгосон}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />-г сонгосон. Сонголт дэлгэцийн дээд хэсэгт боломжтой</translation>
-<translation id="7137403271056944713">MIDI-н төхөөрөмжийн хяналт / дахин программчлах</translation>
 <translation id="7141896414559753902">Сайтыг попап болон дахин чиглүүлэлтийг харуулахаас блоклох (санал болгосон)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Энэ табтай үргэлжлүүлэх}other{Эдгээр табтай үргэлжлүүлэх}}</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804248752222191302">Сайт таны камерыг ашиглаж байна</translation>
 <translation id="7807060072011926525">Google-с олгосон</translation>

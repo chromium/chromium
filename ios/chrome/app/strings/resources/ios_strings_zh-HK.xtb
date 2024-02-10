@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">自訂選單</translation>
 <translation id="1296581780163690620">要下載檔案嗎？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">為確保您可隨時使用 Google 帳戶中的密碼，請驗證身分。</translation>
+<translation id="1310362642333088424">如要下載檔案、相片和其他內容，請新增更多儲存空間。</translation>
 <translation id="1312721752506309252">已開啟「強化保護功能」</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">您的機構要求使用無痕模式</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641316430523156212">追蹤</translation>
 <translation id="1644574205037202324">記錄</translation>
+<translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
 <translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
 <translation id="1653432787084483144">{count,plural, =1{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}}</translation>
@@ -511,6 +513,7 @@
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
+<translation id="3630104167004786843">不要接收更新</translation>
 <translation id="3631443864840848029">請確保要儲存此網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3643338347976071250">{count,plural, =1{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
@@ -637,6 +640,7 @@
 <translation id="4309403553630140242">㩒兩下就可以了解詳情</translation>
 <translation id="430967081421617822">不限時間</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
+<translation id="4323142320106872792">儲存空間已滿</translation>
 <translation id="4331177082088332784">你可前往「BEGIN_LINK內容設定END_LINK」管理此選項</translation>
 <translation id="4334428914252001502">1 篇未讀嘅文章。</translation>
 <translation id="4338650699862464074">將您瀏覽的網頁網址傳送給 Google。</translation>
@@ -843,6 +847,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{要追蹤此包裹嗎？}other{要追蹤 {COUNT} 個包裹嗎？}}</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5360976571138293719">如需更多與私隱權、安全性和資料收集相關的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
+<translation id="5379352933722332597">{count,plural, =1{這個書籤已儲存到「{title}」。系統只會將這項資料儲存在這部裝置。}other{這 {count} 個書籤已儲存到「{title}」。系統只會將這些資料儲存在這部裝置。}}</translation>
 <translation id="5386314158584363703">此處會顯示您已追蹤的網站</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5395707839134961196">隱藏搜尋引擎詳細資料</translation>
@@ -870,6 +875,7 @@
 <translation id="5525269841082836315">建立密碼短語</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話框</translation>
+<translation id="5533967537771071082">管理儲存空間</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
 
@@ -1085,6 +1091,8 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6550891580932862748">無法防範危險網站、下載檔案和擴充程式。其他 Google 產品的「安全瀏覽」設定不會受影響。</translation>
+<translation id="6552223548936340886">{count,plural, =1{這個書籤已儲存到「{title}」}other{這 {count} 個書籤已儲存到「{title}」}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{這個書籤已儲存到「{title}」。系統只會將這項資料儲存在這部裝置。}other{這些書籤已儲存到「{title}」。系統只會將這些資料儲存在這部裝置。}}</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6579867704846662339">你可選擇在無痕模式中開啟從其他應用程式收到的網址。</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」。</translation>
@@ -1199,6 +1207,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">全名</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
+<translation id="7138080855268384146">{count,plural, =1{這個書籤已儲存到帳戶 ({email}) 中的「{title}」}other{這 {count} 個書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
 <translation id="7154343200458623869">完成工作。</translation>
 <translation id="7161230316646448869">將您的書籤、記錄等資料同步至所有裝置</translation>

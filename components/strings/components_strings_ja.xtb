@@ -151,7 +151,7 @@
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
 <translation id="1266469291454105242">デバイスのロック解除</translation>
-<translation id="126728463333482584">トラッキング保護機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
+<translation id="126728463333482584">トラッキング防止機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
 <translation id="1268480293435976622">中国 #7 封筒</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270328905573953738">引越し、移転</translation>
@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">管理者が <ph name="ORIGIN" /> で <ph name="PERMISSION" /> をブロックしました</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2080021694978766903">このポリシーで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
+<translation id="2081482239432306393">番地のオプションが選択されました</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
 <translation id="2083256696566019397">すべてのアクセスで許可</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3723663469265383848">更新中は、デバイスを最大 10 分間使用できなくなります。</translation>
 <translation id="372429172604983730">このエラーの原因としては、ウィルス対策ソフトウェア、ファイアウォール ソフトウェア、ウェブ フィルタリング ソフトウェア、プロキシ ソフトウェアなどが考えられます。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
+<translation id="3727309136762649052">名前空間</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3733139489341305600">自律走行車</translation>
 <translation id="3736520371357197498">危険なプログラムが削除されるより前に<ph name="BEGIN_LINK" />この安全でないサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
@@ -1897,6 +1899,7 @@
 <translation id="4729147136006144950">チャリティ、慈善活動</translation>
 <translation id="4730977633786878901">レビュー</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="4736491186715342415">自動車</translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
@@ -2256,7 +2259,6 @@
             <ph name="LIST_ITEM" />Cookie とサイトデータ
             <ph name="LIST_ITEM" />フォームに入力した情報
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> が MIDI デバイスの操作と再プログラム（SysEx）をリクエストしています</translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> があなたに関する保存済みの情報を使用することを許可する</translation>
 <translation id="5447765697759493033">このサイトは翻訳されません</translation>
@@ -2469,7 +2471,6 @@
 <translation id="5877831137320480913">美容、フィットネス</translation>
 <translation id="5879989559903563723">ゲストモードで許可しないサイト</translation>
 <translation id="5880050725127890683">Chrome の安全チェックに移動</translation>
-<translation id="5883861433316751031">MIDI デバイスの操作と再プログラムを行いますか？</translation>
 <translation id="5884465125445718607">中国 #6 封筒</translation>
 <translation id="5887400589839399685">カードが保存されました</translation>
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
@@ -2701,7 +2702,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> の値は無効なため、使用されません。</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
-<translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="634500758737709758">経路案内</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
@@ -2820,7 +2821,6 @@
 <translation id="6556866813142980365">やり直す</translation>
 <translation id="6557715786897013164">14x17 インチ</translation>
 <translation id="6560786330438719938">インストールまたはアンインストールしたアプリと使用頻度</translation>
-<translation id="6567084950885568327">MIDI デバイス コントロールと再プログラミング</translation>
 <translation id="6568793038316600992">[お支払い方法を管理] ボタンです。実行すると、Chrome の設定でお支払いとクレジット カードの情報を管理できます</translation>
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6569366777234823130">ドラマ映画</translation>
@@ -3203,6 +3203,7 @@
 <translation id="733354035281974745">デバイスのローカル アカウントのオーバーライド</translation>
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
 <translation id="7335157162773372339">カメラの使用を要求できる</translation>
+<translation id="7336636595549675416">番地</translation>
 <translation id="7337248890521463931">表示する行数を増やす</translation>
 <translation id="7337706099755338005">現在のプラットフォームではご利用いただけません。</translation>
 <translation id="733923710415886693">サーバーの証明書は、証明書の透明性ポリシーを介して公開されていません。</translation>
@@ -3822,7 +3823,7 @@
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
 <translation id="8479754468255770962">ステープル（左下）</translation>
-<translation id="8479926481822108747">トラッキング保護を管理</translation>
+<translation id="8479926481822108747">トラッキング防止機能を管理</translation>
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
@@ -3911,7 +3912,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> の値がサイズ要件を満たしていません。</translation>
 <translation id="867224526087042813">署名</translation>
 <translation id="8672264262457010862">ビジネス、産業</translation>
-<translation id="8673776281896298303">MIDI デバイスの操作と再プログラム（SysEx）</translation>
 <translation id="8676424191133491403">今すぐ</translation>
 <translation id="8680536109547170164">「<ph name="QUERY" />」に対する答え: 「<ph name="ANSWER" />」</translation>
 <translation id="8681531050781943054">ウェブページ（<ph name="PAGE" />）は次の理由で読み込めませんでした:</translation>

@@ -110,7 +110,7 @@
 <translation id="2750481671343847896">بإمكان المواقع الإلكترونية حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات.</translation>
 <translation id="2790501146643349491">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية التي تم إغلاقها مؤخرًا إتمام إرسال البيانات واستلامها. وعند إيقافه، لا يمكن لتلك المواقع الإلكترونية إرسال البيانات أو استلامها.</translation>
 <translation id="2822354292072154809">هل تريد فعلاً إعادة ضبط جميع أذونات الموقع الإلكتروني للكائن <ph name="CHOSEN_OBJECT_NAME" />؟</translation>
-<translation id="2850913818900871965">طلب العرض المخصّص للجهاز الجوّال</translation>
+<translation id="2850913818900871965">سيتم طلب عرضه بالإصدار المخصّص للأجهزة الجوّالة</translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2891975107962658722">منع موقع إلكتروني من حفظ البيانات على جهازك</translation>
@@ -122,6 +122,7 @@
 <translation id="2979365474350987274">ملفات تعريف الارتباط التابعة لجهات خارجية محدودة</translation>
 <translation id="3008272652534848354">إعادة ضبط الأذونات</translation>
 <translation id="301521992641321250">تم الحظر تلقائيًا</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">يمكنك السماح بتسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{تنتهي الصلاحية غدًا}zero{تنتهي الصلاحية بعد # يوم}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
 <translation id="310297983047869047">الشريحة السابقة</translation>
@@ -188,9 +189,11 @@
 <translation id="4149994727733219643">عرض مبسَّط لصفحات الويب</translation>
 <translation id="4151930093518524179">المستوى التلقائي للتكبير/التصغير</translation>
 <translation id="4165986682804962316">إعدادات الموقع الإلكتروني</translation>
+<translation id="4169019654293892025">إخفاء "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">‏تم ربط الموقع الإلكتروني بجهاز USB.</translation>
 <translation id="4194328954146351878">‏يتم طلب الإذن قبل السماح للمواقع الإلكترونية بالاطّلاع على المعلومات وتعديلها على الأجهزة المزوَّدة بتقنية NFC (إعداد مُقترَح).</translation>
 <translation id="4200726100658658164">فتح إعدادات الموقع الجغرافي</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> من <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">يمكن أن تؤدي الإشعارات إلى اهتزاز الجهاز</translation>
 <translation id="4259722352634471385">التنقل محظور: <ph name="URL" /></translation>
 <translation id="4278390842282768270">مسموح به</translation>
@@ -235,7 +238,7 @@
 <translation id="5050380848339752099">هذا الموقع الإلكتروني على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفُّح المتخفي.</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
 <translation id="5091013926750941408">إصدار الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
-<translation id="509133520954049755">طلب العرض المخصَّص للكمبيوتر المكتبي</translation>
+<translation id="509133520954049755">سيتم طلب عرضه بالإصدار المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="5091663350197390230">‏عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية استخدام JavaScript. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام JavaScript.</translation>
 <translation id="5099358668261120049">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" /> أو من خلال التطبيق على الشاشة الرئيسية.</translation>
 <translation id="5100237604440890931">تم التصغير - انقر للتوسيع.</translation>
@@ -329,7 +332,7 @@
 <translation id="6439114592976064011">منع المواقع الإلكترونية من استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6452138246455930388">‏انخفاض في السعر ضِمن علامة التبويب المفتوحة من ‎<ph name="OLD_PRICE" /> إلى ‎<ph name="NEW_PRICE" />، للمنتج "<ph name="PRODUCT_NAME" />"، على النطاق <ph name="DOMAIN_NAME" /></translation>
-<translation id="6500423977866688905">تفعيل الإعداد "العرض المخصص للجهاز الجوّال" عند صغر حجم النافذة</translation>
+<translation id="6500423977866688905">طلب تفعيل ميزة "العرض المخصص للجهاز الجوّال" إذا كان حجم الشاشة صغيرًا</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="652937045869844725">جرِّب السماح باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا.</translation>
 <translation id="6530703012083415527">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية استخدام النوافذ المنبثقة وعمليات إعادة التوجيه. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام النوافذ المنبثقة وعمليات إعادة التوجيه.</translation>
@@ -337,7 +340,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
-<translation id="6593061639179217415">إصدار الموقع الإلكتروني المخصّص لأجهزة الكمبيوتر</translation>
+<translation id="6593061639179217415">الموقع على الكمبيوتر</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
 <translation id="662080504995468778">البقاء</translation>
@@ -365,7 +368,6 @@
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{تم اختيار عنصر واحد}zero{تم اختيار # عنصر}two{تم اختيار عنصرين (#)}few{تم اختيار # عناصر}many{تم اختيار # عنصرًا}other{تم اختيار # عنصر}}</translation>
 <translation id="7087918508125750058">تم اختيار <ph name="ITEM_COUNT" /> عنصر، ويمكنك الاطّلاع على الخيارات في الجزء العلوي من الشاشة.</translation>
-<translation id="7137403271056944713">‏التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="7141896414559753902">منع المواقع الإلكترونية من عرض النوافذ المنبثقة وعمليات إعادة التوجيه (مُوصى به)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> كيلوبايت</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
@@ -403,6 +405,7 @@
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7791543448312431591">إضافة</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{المتابعة باستخدام علامة التبويب هذه}zero{المتابعة باستخدام علامات التبويب هذه}two{المتابعة باستخدام علامتَي التبويب هاتين}few{المتابعة باستخدام علامات التبويب هذه}many{المتابعة باستخدام علامات التبويب هذه}other{المتابعة باستخدام علامات التبويب هذه}}</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804248752222191302">هناك موقع إلكتروني يستخدم الكاميرا.</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>

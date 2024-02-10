@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">Перейти в додаток</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, додаток із Play Маркету</translation>
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">неактивний робочий стіл</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Паралельний вхід вимкнено</translation>
 <translation id="2579264398927991698">Оновлення мікропрограми</translation>
 <translation id="2582112259361606227">Перезапустіть, щоб оновити</translation>
-<translation id="2586561057878260610">Щоб об’єднати з робочим столом "<ph name="DESK_NAME" />", натисніть Ctrl + W. Щоб закрити робочий стіл і вікна, натисніть Ctrl + Shift + W.</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2595239820337756193">Скільки миль у 5 км</translation>
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Адміністратор пристрою може відстежувати дані веб-перегляду.</translation>
 <translation id="316086887565479535">Непідтримувані додатки в шаблоні</translation>
 <translation id="3160929076476941240">2 години</translation>
-<translation id="3161500364292033097">Закрити робочий стіл і вікна</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="3170769098533255179">Немає підключених пристроїв. Під час використання точки доступу Wi-Fi буде вимкнено.</translation>
 <translation id="3171170659304083361">Налаштування методів введення</translation>
@@ -672,6 +669,7 @@
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
+<translation id="3712143870407382523">Виберіть вікно для цієї сторони</translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="5197255632782567636">Інтернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Щоб створити нову папку, об'єднано додатки <ph name="MOVED_APP_NAME" /> і <ph name="IN_PLACE_APP" />.</translation>
-<translation id="5203299837691351876">активний робочий стіл</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
@@ -1066,7 +1063,6 @@
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
 <translation id="5268819379131021772">Список завдань Google</translation>
-<translation id="5275923704957843041">Попередній перегляд робочого столу</translation>
 <translation id="5277869901083657836">Увімкнути або вимкнути інструменти стилуса</translation>
 <translation id="5278086053818066789">Увімкнути або вимкнути ChromeVox (голосові підказки)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />: потрібно переглянути.</translation>
@@ -1416,6 +1412,7 @@
 <translation id="6613765291890844037">Використаний обсяг пам’яті: <ph name="STORAGE_IN_USE_SIZE" /> | Усього: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
 <translation id="6622679827379792051">Налаштувати перегляд додатків на телефоні</translation>
+<translation id="6624493541160101248">Поточний робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Сповіщення з додатків <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> та інших приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">Виділити наступну панель</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6819327813400217281">Зображення з камери закріплено в нижньому лівому куті</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6827049576281411231">Закрити панель подій</translation>
-<translation id="6831561626108366035">Перейти до кнопки <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Небезпечний файл</translation>
 <translation id="6837621009301897464">Щоб зробити знімок екрана, натисніть</translation>
 <translation id="6852052252232534364">Активувати</translation>
@@ -1509,6 +1505,7 @@
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
 <translation id="6984028004251196682">Дисплей "<ph name="DISPLAY_NAME" />" не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц), тому вибрано <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Ознайомтеся з коротким оглядом Chromebook. Щоб почати роботу, виконайте 6 кроків.</translation>
+<translation id="7000027735917578303">Налаштування Windows і робочих столів</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
 <translation id="7007983414944123363">Не вдалося підтвердити PIN-код або пароль. Повторіть спробу.</translation>
@@ -1760,6 +1757,7 @@
 <translation id="8001755249288974029">Вибрати текст від курсора до початку рядка</translation>
 <translation id="8004512796067398576">Підвищити</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
+<translation id="802782383769312836">Попередній робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не вдалося підключити точку доступу</translation>
 <translation id="8029629653277878342">Для додаткового захисту потрібно ввести PIN-код або пароль</translation>
 <translation id="8030169304546394654">Роз'єднано</translation>
@@ -1807,6 +1805,7 @@
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
 <translation id="8230305195727960608">Режим інверсії кольорів</translation>
 <translation id="8236042855478648955">Час зробити перерву</translation>
+<translation id="8237964652943995219">Наступний робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Активувати робочий стіл праворуч</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, додаток</translation>
@@ -2034,6 +2033,7 @@
 <translation id="92580429198593979">Ви натиснули комбінацію клавіш для інверсії кольорів. Увімкнути цей режим?</translation>
 <translation id="925832987464884575">Вимкнути попередній перегляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Поточний робочий стіл: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Які події заплановано?</translation>
 <translation id="945383118875625837">Перетягнути посилання на панель закладок</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>

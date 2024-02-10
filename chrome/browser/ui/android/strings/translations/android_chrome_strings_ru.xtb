@@ -465,7 +465,7 @@
 <translation id="3509330069915219067">Вы не в Сети. Браузеру Chrome не удается проверить наличие обновлений.</translation>
 <translation id="3513704683820682405">Дополненная реальность</translation>
 <translation id="3518985090088779359">Продолжить</translation>
-<translation id="3521388823983121502">Не удалось авторизоваться с помощью сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="3521388823983121502">Не удалось войти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Доступно обновление. Другие параметры…</translation>
 <translation id="3524138585025253783">Интерфейс разработчика</translation>
 <translation id="3524334353996115845">Сайт <ph name="ORIGIN" /> подтвердит вашу личность.</translation>
@@ -873,6 +873,7 @@
 <translation id="5698878456427040674">Проверьте, поддерживается ли выбранный аккаунт.</translation>
 <translation id="570347048394355941">Переключиться на вкладку</translation>
 <translation id="5715150588940290235">Удалить сохраненные защитные коды?</translation>
+<translation id="571930967925877633">Ваши закладки, история и другие данные Chrome больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5726692708398506830">Увеличить масштаб страницы</translation>
 <translation id="5744751019568455640">Здесь представлены голоса для озвучивания текста на веб-страницах. Нажмите на название понравившегося голоса, и я буду использовать именно его.</translation>

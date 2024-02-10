@@ -585,6 +585,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2075497153347571252">Administratorius užblokavo <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2080021694978766903">Šioje politikoje gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš.</translation>
+<translation id="2081482239432306393">Pasirinkta namo numerio parinktis</translation>
 <translation id="20817612488360358">Sistemos įgaliotojo serverio nustatymai nustatyti kaip naudotini, bet taip pat nurodyta tiksli įgaliotojo serverio konfigūracija.</translation>
 <translation id="2082238445998314030">Rezultatų: <ph name="RESULT_NUMBER" /> iš <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Leisti per kiekvieną apsilankymą</translation>
@@ -1410,6 +1411,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3723663469265383848">Atnaujindami negalėsite naudoti įrenginio iki dešimt minučių.</translation>
 <translation id="372429172604983730">Ši klaida galėjo įvykti dėl antivirusinės, užkardos ar žiniatinklio filtravimo programos arba tarpinio serverio programinės įrangos.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite greitai sukurti naują „Google“ pristatymą Skaidrėse</translation>
+<translation id="3727309136762649052">Pavadinimų sritis</translation>
 <translation id="3727850735097852673">Jei norite naudoti „Google“ slaptažodžių tvarkyklę su „macOS Keychain“, iš naujo paleiskite „Chrome“ ir leiskite pasiekti „Keychain“. Paleidus iš naujo skirtukai bus atidaryti iš naujo.</translation>
 <translation id="3733139489341305600">Autonominės transporto priemonės</translation>
 <translation id="3736520371357197498">Jei suprantate, kokia rizika gali kilti jūsų saugai, galite <ph name="BEGIN_LINK" />apsilankyti šioje nesaugioje svetainėje<ph name="END_LINK" />, kol iš jos dar nepašalintos pavojingos programos.</translation>
@@ -1898,6 +1900,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4729147136006144950">Labdara ir filantropija</translation>
 <translation id="4730977633786878901">Apžvalgos</translation>
 <translation id="4731638775147756694">Programą užblokavo administratorius</translation>
+<translation id="4732860731866514038">Atsisiunčiamas <ph name="LANGUAGE" /> k. paketas... <ph name="PERCENT" /> proc.</translation>
 <translation id="4733082559415072992"><ph name="URL" /> nori naudoti įrenginio vietovę</translation>
 <translation id="4736491186715342415">Motorinės transporto priemonės</translation>
 <translation id="4736825316280949806">Iš naujo paleiskite „Chromium“</translation>
@@ -2257,7 +2260,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
           <ph name="LIST_ITEM" />slapukų ir svetainių duomenų;
           <ph name="LIST_ITEM" />formose įvestos informacijos.
         <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> nori valdyti ir iš naujo suprogramuoti MIDI įrenginius („SysEx“)</translation>
 <translation id="5443468954631487277">Atvirkštine tvarka, gerąja puse į viršų</translation>
 <translation id="5447235695608032700">Leisti <ph name="SITE" /> naudoti informaciją apie jus, kurią išsaugojo</translation>
 <translation id="5447765697759493033">Ši svetainė nebus verčiama</translation>
@@ -2470,7 +2472,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5877831137320480913">Grožis ir kūno rengyba</translation>
 <translation id="5879989559903563723">Neleidžiama svečio režimu</translation>
 <translation id="5880050725127890683">Eiti į „Chrome“ saugos patikrą</translation>
-<translation id="5883861433316751031">Valdyti ir iš naujo suprogramuoti MIDI įrenginius?</translation>
 <translation id="5884465125445718607">Nr. 6 kinietiškas vokas</translation>
 <translation id="5887400589839399685">Kortelė išsaugota</translation>
 <translation id="5887687176710214216">Paskutinį kartą lankytasi vakar</translation>
@@ -2821,7 +2822,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6556866813142980365">Grąžinti</translation>
 <translation id="6557715786897013164">14 x 17 col.</translation>
 <translation id="6560786330438719938">Įdiegtos arba pašalintos programos ir kaip dažnai jos naudojamos</translation>
-<translation id="6567084950885568327">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
 <translation id="6568793038316600992">Mygtukas „Tvarkyti mokėjimo metodus“; suaktyvinkite, kad būtų galima tvarkyti mokėjimų ir kredito kortelės informaciją „Chrome“ nustatymuose</translation>
 <translation id="6569060085658103619">Peržiūrite plėtinio puslapį</translation>
 <translation id="6569366777234823130">Dramos</translation>
@@ -3204,6 +3204,7 @@ Papildoma išsami informacija:
 <translation id="733354035281974745">Įrenginio vietos paskyros nepaisymas</translation>
 <translation id="7334320624316649418">&amp;Pertvarkyti dar kartą</translation>
 <translation id="7335157162773372339">Gali būti prašoma naudoti fotoaparatą</translation>
+<translation id="7336636595549675416">Namo numeris</translation>
 <translation id="7337248890521463931">Rodyti daugiau eilučių</translation>
 <translation id="7337706099755338005">Nepasiekiama jūsų platformoje.</translation>
 <translation id="733923710415886693">Serverio sertifikatas nebuvo atskleistas taikant sertifikato skaidrumą.</translation>
@@ -3911,7 +3912,6 @@ Papildoma išsami informacija:
 <translation id="8671519637524426245">„<ph name="SECURE_DNS_SALT" />“ vertė neatitinka dydžio reikalavimų.</translation>
 <translation id="867224526087042813">Parašas</translation>
 <translation id="8672264262457010862">Verslas ir pramonė</translation>
-<translation id="8673776281896298303">Valdykite ir iš naujo suprogramuokite MIDI įrenginius („SysEx“)</translation>
 <translation id="8676424191133491403">Be delsos</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atsakymas, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tinklalapio adresu <ph name="PAGE" /> nepavyko įkelti, nes:</translation>

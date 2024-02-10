@@ -585,6 +585,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2075497153347571252">Administratzaileak <ph name="PERMISSION" /> blokeatu du <ph name="ORIGIN" /> webgunean</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080021694978766903">Gidalerro honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar.</translation>
+<translation id="2081482239432306393">Etxearen zenbakiaren aukera hautatu da</translation>
 <translation id="20817612488360358">Erabiltzeko ezarri dira sistemaren proxy-ezarpenak, baina proxy-konfigurazio esplizitu bat ere zehaztu da.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /> emaitza</translation>
 <translation id="2083256696566019397">Eman baimena bisita guztietan</translation>
@@ -1405,6 +1406,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3723663469265383848">Eguneratu bitartean, ezingo duzu erabili gailua 10 minutuz, gehienez.</translation>
 <translation id="372429172604983730">Hona hemen errore hau sor dezaketen software motak: antibirusak, suebakiak, web-iragazkiak edo proxy-softwarea.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Aurkezpenak zerbitzuan Google-ko aurkezpen bat bizkor sortzeko</translation>
+<translation id="3727309136762649052">Izenen edukiontzia</translation>
 <translation id="3727850735097852673">Google-ren Pasahitz-kudeatzailea macOS Keychain-ekin erabiltzeko, exekutatu berriro Chrome eta eman Keychain erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="3733139489341305600">Ibilgailu autonomoak</translation>
 <translation id="3736520371357197498">Segurtasunari eragiten dioten arriskuak ulertzen badituzu, beharbada <ph name="BEGIN_LINK" />webgune ez-seguru hau bisitatu<ph name="END_LINK" /> nahi izango duzu programa arriskutsuak kendu aurretik.</translation>
@@ -1569,6 +1571,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4089152113577680600">14. erretilua</translation>
 <translation id="4092349052316400070">Bete helbidea</translation>
 <translation id="4096237801206588987">27,94 × 38,1 cm (11 × 15 in)</translation>
+<translation id="4098306082496067348">Txartel birtualaren xehetasunak ordainketa-prozesuan gehitzeko, saka itzazu.</translation>
 <translation id="4098354747657067197">Webgune engainagarria</translation>
 <translation id="4099048595830172239">Administratzailearen gidalerroek ez dute gomendatzen pantaila <ph name="APPLICATION_TITLE" /> aplikazioarekin partekatzea isilpeko edukia ikusgai dagoenean:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" letra-tamaina eta -tipoa pertsonalizatzeko Chrome-n</translation>
@@ -1892,6 +1895,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4729147136006144950">Ongintza eta filantropia</translation>
 <translation id="4730977633786878901">Iritziak</translation>
 <translation id="4731638775147756694">Administratzaileak blokeatu du aplikazio hori</translation>
+<translation id="4732860731866514038">Hizkuntza-paketea (<ph name="LANGUAGE" />) deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" /> webguneak gailuaren kokapena erabili nahi du</translation>
 <translation id="4736491186715342415">Ibilgailu motordunak</translation>
 <translation id="4736825316280949806">Berrabiarazi Chromium</translation>
@@ -2251,7 +2255,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
           <ph name="LIST_ITEM" />cookieak eta webguneetako datuak
           <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
         <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> webguneak zure MIDI gailuak (SysEx) kontrolatu eta berriro programatu behar ditu</translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447235695608032700">Eman zuri buruz gordetako informazioa erabiltzeko baimena <ph name="SITE" /> webguneari</translation>
 <translation id="5447765697759493033">Webgune hau ez da itzuliko</translation>
@@ -2464,7 +2467,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5877831137320480913">Edertasuna eta fitnessa</translation>
 <translation id="5879989559903563723">Ez da onartzen gonbidatu moduan</translation>
 <translation id="5880050725127890683">Joan Chrome-ko segurtasun-egiaztapenera</translation>
-<translation id="5883861433316751031">MIDI gailuak kontrolatu eta berriro programatu nahi dituzu?</translation>
 <translation id="5884465125445718607">Gutun-azal txinatarra 6</translation>
 <translation id="5887400589839399685">Gorde da txartela</translation>
 <translation id="5887687176710214216">Atzo bisitatu zenuen azkenengoz</translation>
@@ -2814,7 +2816,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6557715786897013164">35,56 × 43,18 cm (14 × 17 in)</translation>
 <translation id="6560786330438719938">Instalatuta edo desinstalatuta dauden aplikazioak eta zer maiztasunekin erabiltzen diren</translation>
-<translation id="6567084950885568327">MIDI gailuak kontrolatzea eta berriro programatzea</translation>
 <translation id="6568793038316600992">Ordainketa-metodoak kudeatzeko botoia: aktiba ezazu ordainketak eta kreditu-txartelaren informazioa kudeatzeko Chrome-ren ezarpenetan</translation>
 <translation id="6569060085658103619">Luzapen baten orria ari zara ikusten</translation>
 <translation id="6569366777234823130">Drama-filmak</translation>
@@ -3197,6 +3198,7 @@ Xehetasun gehiago:
 <translation id="733354035281974745">Gailuko kontua ordeztea</translation>
 <translation id="7334320624316649418">&amp;Berregin berrantolatzea</translation>
 <translation id="7335157162773372339">Kamera erabiltzea eska dezake</translation>
+<translation id="7336636595549675416">Etxearen zenbakia</translation>
 <translation id="7337248890521463931">Erakutsi lerro gehiago</translation>
 <translation id="7337706099755338005">Ez dago erabilgarri darabilzun plataforman.</translation>
 <translation id="733923710415886693">Zerbitzariaren ziurtagiria ez da ezagutarazi ziurtagirien gardentasun-gidalerroa erabilita.</translation>
@@ -3903,7 +3905,6 @@ Xehetasun gehiago:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> balioak ez ditu betetzen tamaina-eskakizunak.</translation>
 <translation id="867224526087042813">Sinadura</translation>
 <translation id="8672264262457010862">Enpresak eta industria</translation>
-<translation id="8673776281896298303">Kontrolatu eta programatu berriro MIDI gailuak (SysEx)</translation>
 <translation id="8676424191133491403">Atzerapenik gabe</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, erantzuna, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ezin izan da kargatu <ph name="PAGE" /> helbideko web-orria, arrazoi honengatik:</translation>

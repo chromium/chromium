@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">থার্ড-পার্টি কুকি সীমিত করা হয়েছে</translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইনের অনুমতি দিন।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{আগামীকাল মেয়াদ শেষ}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
 <translation id="310297983047869047">আগের স্লাইড</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">ওয়েব পৃষ্ঠার জন্য সরলীকৃত ভিউ</translation>
 <translation id="4151930093518524179">ডিফল্ট জুম</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
+<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> লুকান</translation>
 <translation id="4169549551965910670">একটি ইউএসবি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="4194328954146351878">সাইটগুলিকে NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করার অনুমতি দেওয়ার আগে জিজ্ঞাসা করে নিন (প্রস্তাবিত)</translation>
 <translation id="4200726100658658164">লোকেশন সেটিংস খুলুন</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="FROM_DEVICE" /> থেকে <ph name="SEPARATOR" /></translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টি বেছে নেওয়া হয়েছে}one{#টি বেছে নেওয়া হয়েছে}other{#টি বেছে নেওয়া হয়েছে}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> বেছে নেওয়া হয়েছে।  স্ক্রিনের উপরে বিকল্পগুলি পাওয়া যাবে</translation>
-<translation id="7137403271056944713">MIDI ডিভাইস কন্ট্রোল / রিপ্রোগ্রাম</translation>
 <translation id="7141896414559753902">সাইটগুলিকে পপ-আপ দেখাতে এবং রিডাইরেক্ট করা থেকে বাধা দিন (প্রস্তাবিত)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কেবি</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
@@ -402,6 +404,7 @@
 <translation id="7719367874908701697">পৃষ্ঠা জুম</translation>
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{এই ট্যাবের মাধ্যমে চালিয়ে যান}one{এইসব ট্যাবের মাধ্যমে চালিয়ে যান}other{এইসব ট্যাবের মাধ্যমে চালিয়ে যান}}</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7804248752222191302">একটি সাইট আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>

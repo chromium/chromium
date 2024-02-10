@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">Ваш адміністратор заблокував дозвіл "<ph name="PERMISSION" />" для сайту <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2080021694978766903">Максимальна кількість записів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2081482239432306393">Вибрано опцію "Номер будинку"</translation>
 <translation id="20817612488360358">Системні параметри проксі-сервера налаштовано для використання, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дозволити під час кожного відвідування</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3723663469265383848">Під час оновлення ви не зможете користуватися пристроєм до 10 хвилин.</translation>
 <translation id="372429172604983730">До додатків, що можуть спричиняти цю помилку, належать антивіруси, брандмауери та програми для веб-фільтрування доступу через проксі.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову презентацію в Google Презентаціях</translation>
+<translation id="3727309136762649052">Простір імен</translation>
 <translation id="3727850735097852673">Щоб використовувати Google Менеджер паролів із додатком Ключар у macOS, перезапустіть Chrome і надайте доступ до цього додатка. Після перезапуску поточні вкладки відкриються знову.</translation>
 <translation id="3733139489341305600">Автономні транспортні засоби</translation>
 <translation id="3736520371357197498">Якщо ви розумієте ризики, пов’язані з безпекою, <ph name="BEGIN_LINK" />перейдіть на цей ненадійний сайт<ph name="END_LINK" /> до того, як небезпечні програми буде видалено.</translation>
@@ -1573,6 +1575,7 @@
 <translation id="4089152113577680600">Лоток 14</translation>
 <translation id="4092349052316400070">Введіть адресу</translation>
 <translation id="4096237801206588987">11 x 15 дюйм.</translation>
+<translation id="4098306082496067348">Натисніть дані віртуальної картки, щоб додати їх для оплати.</translation>
 <translation id="4098354747657067197">Оманливий сайт</translation>
 <translation id="4099048595830172239">Згідно з правилом адміністратора не рекомендовано ділитися з додатком <ph name="APPLICATION_TITLE" /> екраном, коли на ньому видно конфіденційний контент:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати розміри та гарнітури шрифтів у Chrome</translation>
@@ -1896,6 +1899,7 @@
 <translation id="4729147136006144950">Благодійність і філантропія</translation>
 <translation id="4730977633786878901">Відгуки</translation>
 <translation id="4731638775147756694">Цей додаток заблоковано адміністратором</translation>
+<translation id="4732860731866514038">Завантаження мовного пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> хоче отримати доступ до геоданих вашого пристрою</translation>
 <translation id="4736491186715342415">Автотранспортні засоби</translation>
 <translation id="4736825316280949806">Перезапустіть Chromium</translation>
@@ -2255,7 +2259,6 @@
             <ph name="LIST_ITEM" />файли cookie й дані сайтів;
             <ph name="LIST_ITEM" />інформацію, введену у формах.
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768">Сайт <ph name="URL" /> хоче керувати вашими пристроями MIDI (SysEx) і перепрограмовувати їх</translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447235695608032700">Дозволити сайту <ph name="SITE" /> використовувати збережену про вас інформацію</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
@@ -2468,7 +2471,6 @@
 <translation id="5877831137320480913">Краса й фітнес</translation>
 <translation id="5879989559903563723">Заборонено в режимі гостя</translation>
 <translation id="5880050725127890683">Перейти на сторінку "Перевірка безпеки Chrome"</translation>
-<translation id="5883861433316751031">Дозволити керувати пристроями MIDI і перепрограмовувати їх?</translation>
 <translation id="5884465125445718607">Конверт Chinese № 6</translation>
 <translation id="5887400589839399685">Картку збережено</translation>
 <translation id="5887687176710214216">Останнє відвідування: вчора</translation>
@@ -2819,7 +2821,6 @@
 <translation id="6556866813142980365">Повторити</translation>
 <translation id="6557715786897013164">14 x 17 дюйм.</translation>
 <translation id="6560786330438719938">Установлені й видалені додатки та частота їх використання</translation>
-<translation id="6567084950885568327">Перепрограмування пристроїв MIDI й керування ними</translation>
 <translation id="6568793038316600992">Кнопка "Керувати способами оплати"; активуйте, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
 <translation id="6569060085658103619">Ви переглядаєте сторінку розширень</translation>
 <translation id="6569366777234823130">Драми</translation>
@@ -3202,6 +3203,7 @@
 <translation id="733354035281974745">Заміна локального облікового запису на пристрої</translation>
 <translation id="7334320624316649418">&amp;Повторити перевпорядкування</translation>
 <translation id="7335157162773372339">Може просити доступ до камери</translation>
+<translation id="7336636595549675416">Номер будинку</translation>
 <translation id="7337248890521463931">Показати більше рядків</translation>
 <translation id="7337706099755338005">Недоступний на вашій платформі.</translation>
 <translation id="733923710415886693">Сертифікат сервера не надав інформацію про перевірку.</translation>
@@ -3909,7 +3911,6 @@
 <translation id="8671519637524426245">Значення <ph name="SECURE_DNS_SALT" /> не відповідає вимогам щодо розміру.</translation>
 <translation id="867224526087042813">Підпис</translation>
 <translation id="8672264262457010862">Бізнес і промисловість</translation>
-<translation id="8673776281896298303">керувати вашими пристроями MIDI (SysEx) і перепрограмовувати їх</translation>
 <translation id="8676424191133491403">Без затримки</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
 <translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>

@@ -151,7 +151,7 @@
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
 <translation id="1266469291454105242">设备解锁</translation>
-<translation id="126728463333482584">您是率先体验“跟踪保护”功能的用户之一，该功能可限制网站使用第三方 Cookie 来跟踪您的浏览活动。</translation>
+<translation id="126728463333482584">欢迎率先体验“跟踪保护”功能，该功能可限制网站使用第三方 Cookie 来跟踪您的浏览活动。</translation>
 <translation id="1268480293435976622">中式 #7 信封</translation>
 <translation id="1269516672602708785">在 Google 协作平台中快速创建新网站</translation>
 <translation id="1270328905573953738">搬迁</translation>
@@ -585,6 +585,7 @@
 <translation id="2075497153347571252">您的管理员已禁止 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080021694978766903">此政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目。</translation>
+<translation id="2081482239432306393">已选择“门牌号”选项</translation>
 <translation id="20817612488360358">已设置为使用系统代理设置，但同时指定了一个明确的代理配置。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
 <translation id="2083256696566019397">每次访问时都允许</translation>
@@ -784,7 +785,7 @@
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2479410451996844060">搜索网址无效。</translation>
-<translation id="2480300195898055381">在您的 Google 账号 <ph name="USER_EMAIL" /> 中更新</translation>
+<translation id="2480300195898055381">保存到 Google 账号 <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">设备政策</translation>
 <translation id="2490199669743245365">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1405,6 +1406,7 @@
 <translation id="3723663469265383848">更新期间，您可能最多会有 10 分钟的时间无法使用设备。</translation>
 <translation id="372429172604983730">可能导致此错误的应用包括防病毒软件、防火墙软件和网络过滤/代理软件。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 幻灯片中快速创建新的 Google 演示文稿</translation>
+<translation id="3727309136762649052">命名空间</translation>
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3733139489341305600">自动驾驶汽车</translation>
 <translation id="3736520371357197498">如果您了解自己将面临的安全风险，则可以在危险程序被清除前<ph name="BEGIN_LINK" />访问这个不安全的网站<ph name="END_LINK" />。</translation>
@@ -1569,6 +1571,7 @@
 <translation id="4089152113577680600">纸匣 14</translation>
 <translation id="4092349052316400070">填充地址</translation>
 <translation id="4096237801206588987">11 x 15 英寸</translation>
+<translation id="4098306082496067348">点按虚拟卡详细信息，即可将其添加到结账流程。</translation>
 <translation id="4098354747657067197">您要访问的是诈骗网站</translation>
 <translation id="4099048595830172239">管理员政策不建议在屏幕显示机密内容时与 <ph name="APPLICATION_TITLE" /> 共享屏幕：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义 Chrome 中的字号和字型</translation>
@@ -1892,6 +1895,7 @@
 <translation id="4729147136006144950">公益慈善</translation>
 <translation id="4730977633786878901">评价</translation>
 <translation id="4731638775147756694">您的管理员已禁用此应用</translation>
+<translation id="4732860731866514038">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 想使用您设备的位置信息</translation>
 <translation id="4736491186715342415">机动车</translation>
 <translation id="4736825316280949806">重新启动 Chromium</translation>
@@ -2251,7 +2255,6 @@
             <ph name="LIST_ITEM" />Cookie 和网站数据
             <ph name="LIST_ITEM" />在表单中填写的信息
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> 想控制您的 MIDI 设备 (SysEx) 以及为其重新编程</translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
 <translation id="5447235695608032700">允许 <ph name="SITE" /> 使用其保存的与您相关的信息</translation>
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
@@ -2372,7 +2375,7 @@
 <translation id="5666606186680807225">海滩与岛屿</translation>
 <translation id="5667827081946850877">有声读物</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678007133659493065">箔</translation>
 <translation id="568292603005599551">图片 X 轴位置</translation>
 <translation id="5684277895745049190">列表</translation>
@@ -2464,7 +2467,6 @@
 <translation id="5877831137320480913">美容与健身</translation>
 <translation id="5879989559903563723">在访客模式下不支持</translation>
 <translation id="5880050725127890683">前往 Chrome 安全检查页面</translation>
-<translation id="5883861433316751031">控制 MIDI 设备以及为其重新编程？</translation>
 <translation id="5884465125445718607">中式 #6 信封</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
@@ -2618,7 +2620,7 @@
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="61877208875190028">女装</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
-<translation id="6195163219142236913">第三方 Cookie 受限</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>
@@ -2814,7 +2816,6 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 英寸</translation>
 <translation id="6560786330438719938">已安装或卸载的应用及其使用频率</translation>
-<translation id="6567084950885568327">MIDI 设备控制和重新编程</translation>
 <translation id="6568793038316600992">“管理付款方式”按钮，激活它即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6569366777234823130">剧情片</translation>
@@ -3197,6 +3198,7 @@
 <translation id="733354035281974745">设备本地账号替换</translation>
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
 <translation id="7335157162773372339">可以询问能否使用您的摄像头</translation>
+<translation id="7336636595549675416">门牌号</translation>
 <translation id="7337248890521463931">显示更多行</translation>
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
@@ -3904,7 +3906,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 值不符合大小要求。</translation>
 <translation id="867224526087042813">签名</translation>
 <translation id="8672264262457010862">工商业</translation>
-<translation id="8673776281896298303">控制您的 MIDI 设备 (SysEx) 以及为其重新编程</translation>
 <translation id="8676424191133491403">无延迟</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案，<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">位于 <ph name="PAGE" /> 的网页无法加载，因为：</translation>
