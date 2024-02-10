@@ -62,6 +62,7 @@ class RemotePlaybackTest : public testing::Test,
     page_holder_ = std::make_unique<DummyPageHolder>();
     element_ =
         MakeGarbageCollected<HTMLVideoElement>(page_holder_->GetDocument());
+    ChangeMediaElementDuration(60);
   }
 
  protected:
@@ -87,6 +88,14 @@ class RemotePlaybackTest : public testing::Test,
   void DisableRemotePlaybackAttr() {
     HTMLMediaElementRemotePlayback::SetBooleanAttribute(
         *element_, html_names::kDisableremoteplaybackAttr, true);
+  }
+
+  void ChangeMediaElementDuration(double duration) {
+    element_->DurationChanged(duration, false);
+  }
+
+  void UpdateAvailabilityUrlsAndStartListening() {
+    get_remote_playback().UpdateAvailabilityUrlsAndStartListening();
   }
 
   RemotePlayback& get_remote_playback() {
@@ -341,10 +350,10 @@ TEST_F(RemotePlaybackTest, IsListening) {
 
   EXPECT_CALL(*mock_controller,
               AddAvailabilityObserver(testing::Eq(&remote_playback)))
-      .Times(2);
+      .Times(3);
   EXPECT_CALL(*mock_controller,
               RemoveAvailabilityObserver(testing::Eq(&remote_playback)))
-      .Times(2);
+      .Times(3);
 
   MockFunction* callback_function = MakeGarbageCollected<MockFunction>();
   V8RemotePlaybackAvailabilityCallback* availability_callback =
@@ -379,6 +388,18 @@ TEST_F(RemotePlaybackTest, IsListening) {
   ASSERT_TRUE(IsListening(remote_playback));
   remote_playback.AvailabilityChanged(mojom::ScreenAvailability::AVAILABLE);
 
+  // Background monitoring is disabled for short videos.
+  ChangeMediaElementDuration(10);
+  UpdateAvailabilityUrlsAndStartListening();
+  ASSERT_TRUE(remote_playback.Urls().empty());
+  ASSERT_FALSE(IsListening(remote_playback));
+
+  ChangeMediaElementDuration(60);
+  UpdateAvailabilityUrlsAndStartListening();
+  ASSERT_EQ((size_t)1, remote_playback.Urls().size());
+  ASSERT_TRUE(IsListening(remote_playback));
+
+  // Background monitoring is disabled for invalid sources.
   remote_playback.SourceChanged(WebURL(), false);
   ASSERT_TRUE(remote_playback.Urls().empty());
   ASSERT_FALSE(IsListening(remote_playback));
