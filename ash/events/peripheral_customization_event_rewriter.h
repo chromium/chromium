@@ -116,9 +116,10 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   // Rewrites the given event that came from `button` within the
   // `rewritten_event` param. Returns true if the original event should be
   // discarded.
-  bool RewriteEventFromButton(const ui::Event& event,
-                              const mojom::Button& button,
-                              std::unique_ptr<ui::Event>& rewritten_event);
+  bool RewriteEventFromButton(
+      const ui::Event& event,
+      const mojom::Button& button,
+      std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
 
   ui::EventDispatchDetails RewriteMouseEvent(const ui::MouseEvent& mouse_event,
                                              const Continuation continuation);
@@ -134,7 +135,7 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   void UpdatePressedButtonMap(
       mojom::ButtonPtr button,
       const ui::Event& original_event,
-      const std::unique_ptr<ui::Event>& rewritten_event);
+      const std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
 
   // Removes the set of remapped modifiers from the event that should be
   // discarded.
