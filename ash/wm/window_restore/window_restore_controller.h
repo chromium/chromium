@@ -18,6 +18,7 @@
 #include "components/app_restore/window_info.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace aura {
 class Window;
@@ -33,6 +34,7 @@ class Widget;
 
 namespace ash {
 
+struct PineContentsData;
 class WindowState;
 
 class ASH_EXPORT WindowRestoreController
@@ -79,6 +81,10 @@ class ASH_EXPORT WindowRestoreController
     return to_be_snapped_window_;
   }
 
+  const PineContentsData* pine_contents_data() const {
+    return pine_contents_data_.get();
+  }
+
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.
   void SaveWindow(WindowState* window_state);
@@ -100,10 +106,26 @@ class ASH_EXPORT WindowRestoreController
   bool IsRestoringWindow(aura::Window* window) const;
 
   // Starts an overview session with the pine contents view if certain
+  // conditions are met. Uses fake for testing only data.
+  // TODO(hewer): Remove this temporary function.
+  void MaybeStartPineOverviewSessionDevAccelerator();
+
+  // Starts an overview session with the pine contents view if certain
   // conditions are met. Triggered by developer accelerator or on login.
-  // TODO(sammiequon): This function is temporary and should be repurposed or
-  // removed for production.
-  void MaybeStartPineOverviewSession();
+  // `pine_contents_data` is stored in `pine_contents_data_` as we will support
+  // re-entering the pine session if no windows have opened for example. It will
+  // be populated with a screenshot if possible and then referenced when an
+  // overview pine session is entered.
+  void MaybeStartPineOverviewSession(
+      std::unique_ptr<PineContentsData> pine_contents_data);
+
+  // TODO(sammiequon): Create a separate controller for pine related things as
+  // we need to support first-time experience and other things.
+  // TODO(sammiequon): Add a `MaybeEndPineOverviewSession()` function which is
+  // controlled by the full restore service. This will clear
+  // `pine_contents_data_`.
+  // TODO(sammiequon): Entering overview normally should show the pine dialog if
+  // `pine_contents_data_` is not null.
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -153,6 +175,11 @@ class ASH_EXPORT WindowRestoreController
   // from `restore_property_clear_callbacks_`.
   void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
 
+  // Callback function for when the pine image is finished decoding.
+  void OnPineImageDecoded(const gfx::ImageSkia& pine_image);
+
+  void StartPineOverviewSession();
+
   // Sets a callback for testing that will be fired immediately when
   // `SaveWindowImpl()` is about to notify the window restore component we want
   // to write to file.
@@ -175,6 +202,12 @@ class ASH_EXPORT WindowRestoreController
   // track of these posted tasks so we can cancel them upon window deletion.
   std::map<aura::Window*, base::CancelableOnceClosure>
       restore_property_clear_callbacks_;
+
+  // Stores the data needed to display the pine dialog. Created on login, and
+  // deleted after the user interacts with the dialog. If the user exits
+  // overview, this will persist until a window is opened.
+  // TODO(sammiequon): Delete this object when an app window is created.
+  std::unique_ptr<PineContentsData> pine_contents_data_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

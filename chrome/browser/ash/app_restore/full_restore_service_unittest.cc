@@ -105,7 +105,10 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
       const MockFullRestoreServiceDelegate&) = delete;
   ~MockFullRestoreServiceDelegate() override = default;
 
-  MOCK_METHOD(void, MaybeStartPineOverviewSession, (), (override));
+  MOCK_METHOD(void,
+              MaybeStartPineOverviewSession,
+              (std::unique_ptr<::app_restore::RestoreData> restore_data),
+              (override));
 };
 
 }  // namespace
@@ -626,7 +629,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession).Times(1);
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
   // The notification should not show up anymore with forest enabled.

@@ -13,7 +13,9 @@
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "base/barrier_callback.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/strcat.h"
@@ -21,7 +23,6 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "pine_contents_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -481,7 +482,7 @@ END_METADATA
 
 }  // namespace
 
-PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
+PineContentsView::PineContentsView() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
@@ -546,8 +547,12 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
       ->SetFlexForView(spacer, 1);
 
-  if (pine_image.isNull()) {
-    // TODO(hewer|sammiequon): Remove this temporary data used for testing.
+  const PineContentsData* pine_contents_data =
+      WindowRestoreController::Get()->pine_contents_data();
+  CHECK(pine_contents_data);
+  if (pine_contents_data->image.isNull()) {
+    // TODO(hewer|sammiequon): Move this developer testing data to
+    // `WindowRestoreController::MaybeStartPineOverviewSessionDevAccelerator()`.
     AppsData kTestingAppsData = {
         {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
          {"https://www.cnn.com/", "https://www.youtube.com/",
@@ -565,7 +570,7 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
   } else {
     views::ImageView* preview =
         AddChildView(std::make_unique<views::ImageView>());
-    preview->SetImage(pine_image);
+    preview->SetImage(pine_contents_data->image);
     // TODO(minch): Make this respect the aspect ratio of the screenshot.
     preview->SetImageSize(kItemsContainerPreferredSize);
   }
@@ -574,10 +579,8 @@ PineContentsView::PineContentsView(const gfx::ImageSkia& pine_image) {
 PineContentsView::~PineContentsView() = default;
 
 // static
-std::unique_ptr<views::Widget> PineContentsView::Create(
-    aura::Window* root,
-    const gfx::ImageSkia& pine_image) {
-  auto contents_view = std::make_unique<PineContentsView>(pine_image);
+std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
+  auto contents_view = std::make_unique<PineContentsView>();
   gfx::Rect contents_bounds = root->GetBoundsInScreen();
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 

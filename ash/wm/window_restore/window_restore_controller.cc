@@ -8,7 +8,9 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,6 +23,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -30,6 +33,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -122,6 +126,26 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
   } else {
     window->SetBoundsInScreen(current_bounds, closest_display);
   }
+}
+
+// Records the UMA metrics for the pine screenshot taken on the last shutdown.
+// Resets the prefs used to store the metrics across shutdowns.
+void RecordPineScreenshotMetrics(PrefService* local_state) {
+  auto record_uma = [](PrefService* local_state, const std::string& name,
+                       const std::string& pref_name) -> void {
+    const base::TimeDelta duration = local_state->GetTimeDelta(pref_name);
+    // Don't record the metric if we don't have a value.
+    if (!duration.is_zero()) {
+      base::UmaHistogramTimes(name, duration);
+      // Reset the pref in case the next shutdown doesn't take the screenshot.
+      local_state->SetTimeDelta(pref_name, base::TimeDelta());
+    }
+  };
+
+  record_uma(local_state, "Ash.Pine.ScreenshotTakenDuration",
+             prefs::kPineScreenshotTakenDuration);
+  record_uma(local_state, "Ash.Pine.ScreenshotEncodeAndSaveDuration",
+             prefs::kPineScreenshotEncodeAndSaveDuration);
 }
 
 // Self deleting class which watches a unparented window and deletes itself once
@@ -502,17 +526,36 @@ bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
   return windows_observation_.IsObservingSource(window);
 }
 
-void WindowRestoreController::MaybeStartPineOverviewSession() {
+void WindowRestoreController::MaybeStartPineOverviewSessionDevAccelerator() {
+  MaybeStartPineOverviewSession(std::make_unique<PineContentsData>());
+}
+
+void WindowRestoreController::MaybeStartPineOverviewSession(
+    std::unique_ptr<PineContentsData> pine_contents_data) {
   CHECK(features::IsForestFeatureEnabled());
 
-  OverviewController* overview_controller = OverviewController::Get();
-  if (overview_controller->InOverviewSession()) {
+  if (OverviewController::Get()->InOverviewSession()) {
     return;
   }
 
-  // TODO(sammiequon): Add a new start action for this type of overview session.
-  overview_controller->StartOverview(OverviewStartAction::kAccelerator,
-                                     OverviewEnterExitType::kPine);
+  // TODO(hewer|sammiequon): This function should only be called once in
+  // production code when `pine_contents_data_` is null. It can be called
+  // multiple times currently via dev accelerator. Remove this block when
+  // `MaybeStartPineOverviewSessionDevAccelerator()` is removed.
+  if (pine_contents_data_) {
+    StartPineOverviewSession();
+    return;
+  }
+
+  pine_contents_data_ = std::move(pine_contents_data);
+
+  // TODO(minch|sammiequon): Record the metrics on start up when determining
+  // whether to show the pine dialog.
+  RecordPineScreenshotMetrics(Shell::Get()->local_state());
+  image_util::DecodeImageFile(
+      base::BindOnce(&WindowRestoreController::OnPineImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetShutdownPineImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
 void WindowRestoreController::SaveWindowImpl(
@@ -643,6 +686,20 @@ void WindowRestoreController::CancelAndRemoveRestorePropertyClearCallback(
 
   restore_property_clear_callbacks_[window].Cancel();
   restore_property_clear_callbacks_.erase(window);
+}
+
+void WindowRestoreController::OnPineImageDecoded(
+    const gfx::ImageSkia& pine_image) {
+  CHECK(pine_contents_data_);
+  pine_contents_data_->image = pine_image;
+
+  StartPineOverviewSession();
+}
+
+void WindowRestoreController::StartPineOverviewSession() {
+  // TODO(sammiequon): Add a new start action for this type of overview session.
+  OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
+                                           OverviewEnterExitType::kPine);
 }
 
 void WindowRestoreController::SetSaveWindowCallbackForTesting(

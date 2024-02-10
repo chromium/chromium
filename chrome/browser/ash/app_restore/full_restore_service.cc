@@ -14,6 +14,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -129,13 +130,17 @@ class DelegateImpl : public FullRestoreService::Delegate {
   DelegateImpl& operator=(const DelegateImpl&) = delete;
   ~DelegateImpl() override = default;
 
-  void MaybeStartPineOverviewSession() override {
+  void MaybeStartPineOverviewSession(
+      std::unique_ptr<::app_restore::RestoreData> restore_data) override {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
-      Shell::Get()
-          ->window_restore_controller()
-          ->MaybeStartPineOverviewSession();
+      // TODO(sammiequon): Instead of passing the whole restore data, we should
+      // pull out the data we need.
+      auto pine_contents_data = std::make_unique<PineContentsData>();
+      pine_contents_data->restore_data = std::move(restore_data);
+      Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession(
+          std::move(pine_contents_data));
     }
   }
 };
@@ -486,7 +491,8 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
 
   if (features::IsForestFeatureEnabled()) {
     CHECK(delegate_);
-    delegate_->MaybeStartPineOverviewSession();
+    delegate_->MaybeStartPineOverviewSession(
+        app_launch_handler_->restore_data()->Clone());
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
     return;

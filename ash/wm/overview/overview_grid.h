@@ -592,11 +592,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                          size_t position,
                          bool animate);
 
-  // Creates and shows the `pine_widget_`. The given `pine_image` will be shown
-  // if it exists, otherwise some other data like apps info will be shown
-  // instead.
-  void CreateAndShowPine(const gfx::ImageSkia& pine_image);
-
   // Called when the faster splitview toast skip button is pressed.
   void OnSkipButtonPressed();
 

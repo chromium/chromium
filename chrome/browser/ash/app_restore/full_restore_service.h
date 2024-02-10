@@ -21,6 +21,10 @@
 
 class Profile;
 
+namespace app_restore {
+class RestoreData;
+}  // namespace app_restore
+
 namespace message_center {
 class Notification;
 }  // namespace message_center
@@ -73,7 +77,8 @@ class FullRestoreService : public KeyedService,
    public:
     virtual ~Delegate() = default;
     // Starts overview with the pine dialog unless overview is already active.
-    virtual void MaybeStartPineOverviewSession() = 0;
+    virtual void MaybeStartPineOverviewSession(
+        std::unique_ptr<::app_restore::RestoreData> restore_data) = 0;
   };
 
   static FullRestoreService* GetForProfile(Profile* profile);

@@ -82,6 +82,14 @@ void WaitForOverviewExitAnimation() {
   WaitForOverviewAnimationState(OverviewAnimationState::kExitAnimationComplete);
 }
 
+void WaitForOverviewEntered() {
+  base::RunLoop run_loop;
+  OverviewTestApi().WaitForOverviewState(
+      OverviewAnimationState::kEnterAnimationComplete,
+      base::IgnoreArgs<bool>(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
   DCHECK(root->IsRootWindow());
 
