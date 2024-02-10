@@ -588,9 +588,8 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE,
-          peripheral_name),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE),
       l10n_util::GetStringFUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION,
           peripheral_name),
@@ -618,9 +617,8 @@ void InputDeviceSettingsNotificationController::
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE,
-          peripheral_name),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_GRAPHICS_TABLET_TITLE),
       l10n_util::GetStringFUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION,
           peripheral_name),
