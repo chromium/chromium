@@ -388,11 +388,6 @@ if (!is_fuchsia && !is_win) {
       "//components/openscreen_platform",
       "//testing/gmock",
     ]
-
-    # TODO(issues.chromium.org/41496044): Re-enable for MSAN once fixed.
-    if (!is_msan) {
-      deps += [ "//third_party/openscreen/src:openscreen_unittests_all" ]
-    }
   }
 }
 
