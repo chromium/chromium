@@ -285959,6 +285959,19 @@
         {}
        ]
       ],
+      "marker-implicit-subpaths.html": [
+       "7f87ae05e6f3463892d5868865c7088c4edfd580",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "marker-path-001.svg": [
        "7fb4adf4277321eb69e50fecb9018c1950aef4ca",
        [
@@ -286576,6 +286589,32 @@
         }
        ]
       ],
+      "gradient-transform-01.svg": [
+       "310cb7de513e0c63684650a1eb25d89cad685fcd",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-transform-02.svg": [
+       "1ce1006b8399f9aaba85328cdfb6109dfe9a30f7",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "meshgradient-basic-001.svg": [
        "24290d40d6c37583d86aae4a098293c6cb8a6653",
        [
@@ -286713,6 +286752,19 @@
         [
          [
           "/svg/pservers/reftests/reference/pattern-transform-01-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "pattern-transform-02.svg": [
+       "93acd1d6273604a82d91eedd197d5cf8bebc031f",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
           "=="
          ]
         ],
@@ -293444,7 +293496,7 @@
       []
      ],
      "helpers.js": [
-      "488e3b33e3e708d45f9a8e085d9e0f846d163cb7",
+      "5778159d4c8f0ae56801d169841bf1aaf3c2b9ed",
       []
      ],
      "reporting_origin.py": [
@@ -510315,6 +510367,17 @@
         {}
        ]
       ],
+      "request-constructor-init-body-override.any.js": [
+       "27bb991871a8a183436ab14613147aba6fc8c231",
+       [
+        "fetch/api/request/request-constructor-init-body-override.any.html",
+        {}
+       ],
+       [
+        "fetch/api/request/request-constructor-init-body-override.any.worker.html",
+        {}
+       ]
+      ],
       "request-consume-empty.any.js": [
        "034a86041a74f58c4d0310ef809f6170b09dbb05",
        [
@@ -575905,6 +575968,15 @@
          {}
         ]
        ],
+       "dialog-close-via-attribute.html": [
+        "5c2e70f87a6101c0ed32dac3fbec8a9d7df0f13f",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "dialog-close.html": [
         "9029612b2418df3be8f41a23f4aba9cedd39d569",
         [
@@ -576045,7 +576117,7 @@
         ]
        ],
        "dialog-showModal.html": [
-        "5edff18614225d07ca737511c23f04a2ff389583",
+        "47612e759eaa4996f56366cbbd333ba676a08824",
         [
          null,
          {}
@@ -606018,6 +606090,60 @@
       ]
      ]
     },
+    "pointer-events-none-skip-scroll-in-iframe.html": [
+     "bf5c53566dfc3bca30c2bf36fb2d6b424ecdcaaf",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer-events-none-skip-scroll-scrollbar.html": [
+     "f3dc4d6c7b9194bba6c56ed8ad07950da3c261f6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer-events-none-skip-scroll-will-change-in-iframe.html": [
+     "e05bb915fba8aabc19be4253dfe6a73b479dd90b",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer-events-none-skip-scroll-will-change-scrollbar.html": [
+     "3acf1527b7160c0da3ad8a9ff6974c7a74625faf",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer-events-none-skip-scroll-will-change.html": [
+     "1fc3a2fdd05824b60c4e21567d30b896f3f7fe24",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer-events-none-skip-scroll.html": [
+     "e69eaaf61b5ecfe2381ada2df4363dbe255d42e8",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_after_target_appended.html": [
      "5d73702aca8744888dc7f80614ccf19a11a755c8",
      [
