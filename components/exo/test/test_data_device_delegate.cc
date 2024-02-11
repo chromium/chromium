@@ -31,7 +31,10 @@ void TestDataDeviceDelegate::OnDataDeviceDestroying(DataDevice* data_device) {
 
 DataOffer* TestDataDeviceDelegate::OnDataOffer() {
   events_.push_back(DataEvent::kOffer);
-  data_offer_ = std::make_unique<DataOffer>(new test::TestDataOfferDelegate());
+  // Reset data_offer_ while delegate is still valid.
+  data_offer_.reset();
+  data_offer_delegate_ = std::make_unique<TestDataOfferDelegate>();
+  data_offer_ = std::make_unique<DataOffer>(data_offer_delegate_.get());
   return data_offer_.get();
 }
 
