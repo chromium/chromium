@@ -1243,7 +1243,7 @@
 <translation id="1940546824932169984">연결된 기기</translation>
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
-<translation id="194174710521904357">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안이 취약해졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다.</translation>
+<translation id="194174710521904357">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안 수준이 낮아졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다.</translation>
 <translation id="1941995177877935582">키 매핑 표시</translation>
 <translation id="1942128823046546853">모든 웹사이트에 있는 전체 내 데이터 읽기 및 변경</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
@@ -5939,7 +5939,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="567643736130151854">로그인 후 동기화를 사용 설정하여 모든 기기에서 내 북마크, 비밀번호 등을 사용하세요.</translation>
 <translation id="567740581294087470">무엇에 관련된 의견인가요?</translation>
 <translation id="5677503058916217575">페이지 언어:</translation>
-<translation id="5677928146339483299">차단</translation>
+<translation id="5677928146339483299">차단됨</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />에 대한 읽기/쓰기 액세스 권한이 부여되었습니다.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />에 보내는 중</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />에서 데이터 읽기</translation>
@@ -8371,7 +8371,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7635048370253485243">관리자가 고정함</translation>
 <translation id="7635711411613274199">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />광고 주제<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
-<translation id="7636346903338549690">사이트에서 서드 파티 쿠키를 사용할 수 있음</translation>
+<translation id="7636346903338549690">서드 파티 쿠키 사용이 허용된 사이트</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7637253234491814483">키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치합니다. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="7637272932128132922">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다. 언제든지 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
@@ -9504,7 +9504,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8497219075884839166">Windows 유틸리티</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
-<translation id="8499951261760185742">방문하는 사이트가 제대로 작동하지 않는 경우 해당 사이트에 대한 서드 파티 쿠키를 일시적으로 허용해 보세요. 보안은 취약해지지만, 사이트 기능이 제대로 작동할 가능성은 높아집니다.</translation>
+<translation id="8499951261760185742">방문하는 사이트가 제대로 작동하지 않는 경우 해당 사이트에 대한 서드 파티 쿠키를 일시적으로 허용해 보세요. 보안 수준은 낮아지지만, 사이트 기능이 제대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="850382998924680137">오늘 조회함</translation>
