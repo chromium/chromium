@@ -197,8 +197,20 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 
 void SodaInstallerImplChromeOS::UninstallLanguage(const std::string& language,
                                                   PrefService* global_prefs) {
-  // TODO(crbug.com/1161569): SODA is only available for en-US right now.
-  // Update this to uninstall the language pack.
+  SodaInstaller::UnregisterLanguage(language, global_prefs);
+  const auto& language_info = available_languages_.find(language);
+  if (language_info == available_languages_.end()) {
+    LOG(FATAL) << "Unable to uninstall language " << language
+               << " as it is not in the list of available languages.";
+  }
+  const auto& dlc_name = language_info->second.dlc_name;
+  installed_languages_.erase(language_info->second.language_code);
+  installed_language_paths_.erase(language_info->second.language_code);
+  language_pack_progress_.erase(language_info->second.language_code);
+
+  ash::DlcserviceClient::Get()->Uninstall(
+      dlc_name, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
+                               base::Unretained(this), dlc_name));
 }
 
 std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
