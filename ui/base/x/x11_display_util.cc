@@ -8,6 +8,7 @@
 
 #include <bit>
 #include <bitset>
+#include <numeric>
 #include <queue>
 #include <unordered_set>
 
@@ -240,7 +241,7 @@ gfx::PointF DisplayOriginPxToDip(const display::Display& parent,
                             int child_r_px, float parent_l_dip) {
     const base::ClampedNumeric<int> l = std::max(parent_l_px, child_l_px);
     const base::ClampedNumeric<int> r = std::min(parent_r_px, child_r_px);
-    const float mid_px = (l + r) / 2.0f;
+    const float mid_px = std::midpoint<float>(float(l), float(r));
     const float mid_dip = (mid_px - parent_l_px) / parent_scale + parent_l_dip;
     return (child_l_px - mid_px) / child_scale + mid_dip;
   };

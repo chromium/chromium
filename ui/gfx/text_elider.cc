@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <vector>
 
@@ -258,7 +259,7 @@ std::u16string ElideText(const std::u16string& text,
   size_t hi = text.length() - 1;
   size_t guess;
   std::u16string cut;
-  for (guess = (lo + hi) / 2; lo <= hi; guess = (lo + hi) / 2) {
+  for (guess = std::midpoint(lo, hi); lo <= hi; guess = std::midpoint(lo, hi)) {
     // We check the width of the whole desired string at once to ensure we
     // handle kerning/ligatures/etc. correctly.
     // TODO(skanuj) : Handle directionality of ellipsis based on adjacent

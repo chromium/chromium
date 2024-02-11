@@ -5,6 +5,7 @@
 #include "ui/gfx/color_conversions.h"
 
 #include <cmath>
+#include <numeric>
 #include <tuple>
 
 #include "skia/ext/skcolorspace_primaries.h"
@@ -593,15 +594,14 @@ std::tuple<float, float, float> HSLToSRGB(float h, float s, float l) {
 
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
   // See https://www.w3.org/TR/css-color-4/#rgb-to-hsl
-  float max = std::max({r, g, b});
-  float min = std::min({r, g, b});
-  float hue = 0.0f, saturation = 0.0f, ligth = (max + min) / 2.0f;
+  auto [min, max] = std::minmax({r, g, b});
+  float hue = 0.0f, saturation = 0.0f, lightness = std::midpoint(min, max);
   float d = max - min;
 
   if (d != 0.0f) {
-    saturation = (ligth == 0.0f || ligth == 1.0f)
+    saturation = (lightness == 0.0f || lightness == 1.0f)
                      ? 0.0f
-                     : (max - ligth) / std::min(ligth, 1 - ligth);
+                     : (max - lightness) / std::min(lightness, 1 - lightness);
     if (max == r) {
       hue = (g - b) / d + (g < b ? 6.0f : 0.0f);
     } else if (max == g) {
@@ -612,7 +612,7 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
     hue *= 60.0f;
   }
 
-  return std::make_tuple(hue, saturation, ligth);
+  return std::make_tuple(hue, saturation, lightness);
 }
 
 std::tuple<float, float, float> HWBToSRGB(float h, float w, float b) {
