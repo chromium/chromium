@@ -383832,6 +383832,10 @@
      "59643ca5ba557acb22f73e0033f61ecbb31b955f",
      []
     ],
+    "pointerevent_pointermove_after_pointerup_target_removed-expected.txt": [
+     "8d5fc176e25f1df475f5460d1b906f120916e253",
+     []
+    ],
     "pointerevent_pointerout_no_pointer_movement-expected.txt": [
      "896c84eff0ff75e9ad3ee041c8ed86e136cf4fd3",
      []
@@ -606776,6 +606780,15 @@
       }
      ]
     ],
+    "pointerevent_pointermove_after_pointerup_target_removed.html": [
+     "7ece87237c6f4309983a4fb010982a43e71e3ba9",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_pointermove_isprimary_same_as_pointerdown.html": [
      "3073076a49fde1d926548a2d076176b50fc8ecc6",
      [
@@ -624458,7 +624471,7 @@
       ]
      ],
      "scroll-timeline-name-shadow.html": [
-      "d165335099f32c65c3e644963cb37a26a215039c",
+      "a535b2a44fe80678f74a08564784a5ef43f593fd",
       [
        null,
        {}
@@ -624661,7 +624674,7 @@
       ]
      ],
      "view-timeline-name-shadow.html": [
-      "ad15f56a6b1b17c7d17190ae5a72c94a31af90ce",
+      "11902a3c6ebe07230cc80133b0e06d0215952c2e",
       [
        null,
        {}
@@ -629711,7 +629724,7 @@
       ]
      ],
      "declarative-shadow-dom-basic.html": [
-      "8799978804a53b40d01a178707735b9d56d3ea36",
+      "8bc6bec5f50f741e8b48e5c2f1020707c8d56408",
       [
        null,
        {}
@@ -629725,7 +629738,7 @@
       ]
      ],
      "declarative-shadow-dom-repeats.html": [
-      "5a992c6c69dd4bcfc730645c37a0803bdecca385",
+      "69f5c0f077afbc651fdeb7c8f99091942ef2f57d",
       [
        null,
        {}
@@ -629739,7 +629752,7 @@
       ]
      ],
      "gethtml.tentative.html": [
-      "564caaa97e8a1aee1a62384a2fa133df61d5f5de",
+      "c48230c17017cf6909bc281557c6acffbbbcb28b",
       [
        null,
        {}
@@ -630440,7 +630453,7 @@
      ]
     ],
     "shadow-root-clonable.html": [
-     "6272d11403fe856575a6f94b59933d860d27d8bf",
+     "a8d4a4ca5167549f89a1c154794befc5de706cd4",
      [
       null,
       {}

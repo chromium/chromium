@@ -2573,6 +2573,7 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 crbug.com/626703 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/xhr/send-redirect-bogus-sync.htm [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-position-negative-percentage-comparison-002.html [ Failure ]
 crbug.com/626703 external/wpt/svg/text/reftests/first-letter.svg [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/fetch-later/send-on-deactivate.tentative.https.window.html [ Timeout ]
