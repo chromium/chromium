@@ -441,7 +441,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Win failures     #
 ####################
 
-crbug.com/1251626 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/7109 [ win angle-d3d11 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
@@ -452,7 +451,6 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/t
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 
-crbug.com/1523814 [ win nvidia-0x2184 nvidia_ge_31.0.15.4601 ] deqp/functional/gles3/texturefiltering/2d_formats_04.html [ RetryOnFailure ]
 
 ## Win / AMD ##
 
