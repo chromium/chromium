@@ -42,7 +42,7 @@ import * as openVideoMediaAppTests from './file_manager/open_video_media_app.js'
 // import * as recentsTests from './file_manager/recents.js';
 // import * as restorePrefsTests from './file_manager/restore_prefs.js';
 // import * as searchTests from './file_manager/search.js';
-// import * as shareTests from './file_manager/share.js';
+import * as shareTests from './file_manager/share.js';
 // import * as shareAndManageDialogTests from './file_manager/share_and_manage_dialog.js';
 // import * as sortColumnsTests from './file_manager/sort_columns.js';
 // import * as tabIndexTests from './file_manager/tab_index.js';
@@ -100,7 +100,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...recentsTests,
   // ...restorePrefsTests,
   // ...searchTests,
-  // ...shareTests,
+  ...shareTests,
   // ...shareAndManageDialogTests,
   // ...sortColumnsTests,
   // ...tabIndexTests,
