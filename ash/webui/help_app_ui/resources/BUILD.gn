@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/help_app_ui/help_app_files.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
@@ -40,6 +41,8 @@ ts_library("build_ts") {
   foreach(o, get_target_outputs(":copy_for_tsc")) {
     in_files += [ rebase_path(o, ts_root_dir) ]
   }
+
+  composite = true
   definitions = [ "//ash/webui/help_app_ui/resources/js/help_app.d.ts" ]
 
   # The out_dir needs to be a different folder from the folder containing files
@@ -96,4 +99,16 @@ optimize_webui("receiver_rollup") {
     ":stage_static",
   ]
   external_paths = [ "//system_apps/|$system_apps_dir" ]
+}
+
+ts_library("test_build_ts") {
+  root_dir = ts_root_dir
+  testonly = true
+  in_files = help_app_test_ts
+  definitions = [
+    "//ash/webui/help_app_ui/resources/js/help_app.d.ts",
+    "//ash/webui/help_app_ui/test/test_api.d.ts",
+  ]
+  deps = [ ":build_ts" ]
+  extra_deps = [ "//ash/webui/help_app_ui/test:stage_for_test_tsc" ]
 }

@@ -1,32 +1,24 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './receiver.js';
 
 const {parentMessagePipe} = TEST_ONLY;
 
-/**
- * @typedef {{
- *     name: string,
- *     message: string,
- *     stack: string,
- * }}
- */
-let GenericErrorResponse;
+interface GenericErrorResponse {
+  name: string;
+  message: string;
+  stack: string;
+}
 
-/**
- * Test cases registered by GUEST_TEST.
- * @type {!Map<string, function(): Promise<undefined>>}
- */
-const guestTestCases = new Map();
+/** Test cases registered by GUEST_TEST. */
+const guestTestCases = new Map<string, () => unknown>();
 
-/**
- * Acts on TestMessageRunTestCase.
- * @param {!TestMessageRunTestCase} data
- * @return {!Promise<!TestMessageResponseData>}
- */
-async function runTestCase(data) {
+/** Acts on TestMessageRunTestCase. */
+async function runTestCase(data: TestMessageRunTestCase):
+  Promise<TestMessageResponseData> {
   const testCase = guestTestCases.get(data.testCase);
   if (!testCase) {
     throw new Error(`Unknown test case: '${data.testCase}'`);
@@ -37,11 +29,10 @@ async function runTestCase(data) {
 
 /**
  * Registers a test that runs in the guest context. To indicate failure, the
- * test logs a console error which fails these browser tests.
- * @param {!string} testName
- * @param {!function(): Promise<undefined>} testCase
+ * test throws an exception (e.g. via assertEquals).
  */
-export function GUEST_TEST(testName, testCase) {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function GUEST_TEST(testName: string, testCase: () => unknown) {
   guestTestCases.set(testName, testCase);
 }
 
@@ -61,9 +52,12 @@ async function signalTestHandlersReady() {
   let attempts = 10;
   while (--attempts >= 0) {
     try {
+      // Try to limit log output from message pipe errors.
+      await new Promise(resolve => setTimeout(resolve, 100));
       await parentMessagePipe.sendMessage('test-handlers-ready', {});
       return;
-    } catch (/** @type {!GenericErrorResponse} */ e) {
+    } catch (error: unknown) {
+      const e = error as GenericErrorResponse;
       if (!EXPECTED_ERROR.test(e.message)) {
         console.error('Unexpected error in signalTestHandlersReady', e);
         return;
@@ -79,14 +73,15 @@ function installTestHandlers() {
   // our error handling tests as failed.
   parentMessagePipe.rethrowErrors = false;
 
-  parentMessagePipe.registerHandler('run-test-case', (data) => {
-    return runTestCase(/** @type {!TestMessageRunTestCase} */ (data));
+  parentMessagePipe.registerHandler(
+    'run-test-case', (data: TestMessageRunTestCase) => {
+    return runTestCase(data);
   });
 
   // Log errors, rather than send them to console.error. This allows the error
   // handling tests to work correctly, and is also required for
   // signalTestHandlersReady() to operate without failing tests.
-  parentMessagePipe.logClientError = error =>
+  parentMessagePipe.logClientError = (error: unknown) =>
       console.log(JSON.stringify(error));
 
   signalTestHandlersReady();

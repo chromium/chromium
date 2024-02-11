@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@ GUEST_TEST('GuestHasLang', () => {
 });
 
 GUEST_TEST('GuestLoadsLoadTimeData', () => {
-  /** @type {{getString: function(string): string}} */
-  const loadTimeData = window['loadTimeData'];
+  // TODO(b/313562946): Add types for `sandboxed_load_time_data.js`.
+  const loadTimeData = (window as any)['loadTimeData'];
   // Check `LoadTimeData` exists on the global window object.
   chai.assert.isTrue(loadTimeData !== undefined);
-  chai.expect(loadTimeData.getString('appLocale')).to.equal('en-US');
+  assertEquals(loadTimeData.getString('appLocale'), 'en-US');
 });
 
 /**
@@ -81,8 +81,7 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
   ]);
 
   // Keep polling until the index finishes updating or too much time has passed.
-  /** @type {?helpApp.FindResponse} */
-  let response = null;
+  let response: FindResponse | undefined;
   for (let numTries = 0; numTries < 50; numTries++) {
     // This search query was chosen because it is unlikely to show any search
     // results for the real app's data.
@@ -95,7 +94,7 @@ GUEST_TEST('GuestCanSearchWithHeadings', async () => {
     });
   }
 
-  assertDeepEquals(response.results, [
+  assertDeepEquals(response!.results, [
     // The first result only matches on the title.
     {
       id: 'test-id-1',
@@ -157,8 +156,7 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
   ]);
 
   // Keep polling until the index finishes updating or too much time has passed.
-  /** @type {?helpApp.FindResponse} */
-  let response = null;
+  let response: FindResponse | undefined;
   for (let numTries = 0; numTries < 50; numTries++) {
     // This search query was chosen because it is unlikely to show any search
     // results for the real app's data.
@@ -173,7 +171,7 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
 
   // Don't test the ordering of search results because they should have similar
   // relevance.
-  chai.expect(response.results).to.have.deep.members([
+  chai.assert.sameDeepMembers(response!.results, [
     // This result only matches on the main category.
     {
       id: 'test-id-1',
@@ -225,15 +223,15 @@ GUEST_TEST('GuestCanLimitMaxSearchResults', async () => {
   // show any search results for the real app's data.
   const res = await delegate.findInSearchIndex('verycomplicatedsearchtoken', 1);
 
-  chai.expect(res.results).to.have.deep.members([
-      {
-        id: 'test-id-1',
-        titlePositions: [],
-        subheadingIndex: null,
-        subheadingPositions: null,
-        bodyPositions: [],
-      },
-    ]);
+  assertDeepEquals(res.results, [
+    {
+      id: 'test-id-1',
+      titlePositions: [],
+      subheadingIndex: null,
+      subheadingPositions: null,
+      bodyPositions: [],
+    },
+  ]);
 });
 
 // Test that the guest frame can clear the search index.
@@ -253,9 +251,9 @@ GUEST_TEST('GuestCanGetDeviceInfo', async () => {
   const delegate = window.customLaunchData.delegate;
 
   const deviceInfo = await delegate.getDeviceInfo();
-  chai.expect(deviceInfo.board).to.be.a('string');
-  chai.expect(deviceInfo.model).to.be.a('string');
-  chai.expect(deviceInfo.userType).to.be.a('string');
+  assertEquals(typeof deviceInfo.board, 'string');
+  assertEquals(typeof deviceInfo.model, 'string');
+  assertEquals(typeof deviceInfo.userType, 'string');
 
-  chai.expect(deviceInfo.isSteamAllowed).to.be.a('boolean');
+  assertEquals(typeof deviceInfo.isSteamAllowed, 'boolean');
 });

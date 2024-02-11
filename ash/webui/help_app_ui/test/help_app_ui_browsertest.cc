@@ -16,7 +16,7 @@
 
 // Path to test files loaded via the TestFileRequestFilter.
 constexpr base::FilePath::CharType kTestFileLocation[] =
-    FILE_PATH_LITERAL("ash/webui/help_app_ui/test");
+    FILE_PATH_LITERAL("ash/webui/help_app_ui/resources");
 
 // Test cases that run in the guest (untrusted) context.
 constexpr char kGuestTestCases[] = "help_app_guest_ui_browsertest.js";
