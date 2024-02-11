@@ -1,5 +1,8 @@
+monorail: {
+  project: "chromium"
+  component: "Internals>Network>First-Party-Sets"
+}
 team_email: "chrome-first-party-sets@chromium.org"
-monorail {
-        project: "chromium"
-        component: "Internals>Network>First-Party-Sets"
+buganizer_public: {
+  component_id: 1456243
 }

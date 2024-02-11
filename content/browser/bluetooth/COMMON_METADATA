@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>Bluetooth"
 }
 team_email: "web-bluetooth@chromium.org"
+buganizer_public: {
+  component_id: 1456303
+}
