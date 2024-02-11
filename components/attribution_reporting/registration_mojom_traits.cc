@@ -378,6 +378,10 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
 
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
+
+  if (!out->pam_epsilon.SetIfValid(data.pam_epsilon())) {
+    return false;
+  }
   return true;
 }
 

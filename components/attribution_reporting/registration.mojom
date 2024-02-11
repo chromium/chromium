@@ -198,6 +198,9 @@ struct TriggerRegistration {
   // Specifies the context ID associated with the trigger. The context ID
   // cannot be empty or longer than 64 bytes.
   string? trigger_context_id;
+
+  // Controls the epsilon parameter requested to be consumed by user. Must be greater than or equal to 0.
+  double pam_epsilon;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

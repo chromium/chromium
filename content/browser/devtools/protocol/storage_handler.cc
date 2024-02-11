@@ -2130,6 +2130,7 @@ void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
           .SetSourceRegistrationTimeConfig(ToSourceRegistrationTimeConfig(
               registration.aggregatable_trigger_config
                   .source_registration_time_config()))
+          .SetPamEpsilon(registration.pam_epsilon)
           .Build();
 
   if (registration.debug_key.has_value()) {

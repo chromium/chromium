@@ -10227,6 +10227,7 @@ experimental domain Storage
       optional string aggregationCoordinatorOrigin
       AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
       optional string triggerContextId
+      optional number pamEpsilon
 
   experimental type AttributionReportingEventLevelResult extends string
     enum

@@ -364,6 +364,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.aggregatable_trigger_config.trigger_context_id();
   }
+  
+  static double pam_epsilon(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.pam_epsilon;
+  }
 
   static bool Read(
       attribution_reporting::mojom::TriggerRegistrationDataView data,

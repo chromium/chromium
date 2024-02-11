@@ -3989,6 +3989,8 @@ Called by update_net_error_codes.py.-->
   <int value="38"
       label="trigger_context_id disallowed for
              aggregatable_source_registration_time"/>
+  <int value="39" label="pam_epsilon has wrong type"/>
+  <int value="40" label="pam_epsilon value is invalid"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">

@@ -48,4 +48,7 @@ enum TriggerRegistrationError {
 
   kTriggerContextIdInvalidValue = 37,
   kTriggerContextIdInvalidSourceRegistrationTimeConfig = 38,
+
+  kPamEpsilonWrongType = 39,
+  kPamEpsilonValueInvalid = 40,
 };

@@ -41,6 +41,7 @@ struct WebUIReportAggregatableAttributionData {
   string aggregation_coordinator;
   bool is_null_report;
 };
+// TODO(kelly): add here `double pam_epsilon;`?
 
 union WebUIReportData {
   WebUIReportEventLevelData event_level_data;

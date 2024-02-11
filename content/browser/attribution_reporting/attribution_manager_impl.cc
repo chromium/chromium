@@ -852,7 +852,7 @@ void AttributionManagerImpl::OnReportStored(
     min_new_report_time = report->report_time();
     MaybeSendDebugReport(std::move(*report));
   }
-
+  // # TODO(kelly): here we might need to change the the timing of the aaggregatable report
   if (auto& report = result.new_aggregatable_report()) {
     min_new_report_time = AttributionReport::MinReportTime(
         min_new_report_time, report->report_time());

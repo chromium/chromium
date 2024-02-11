@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/pam_epsilon.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -116,7 +117,7 @@ void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   static_assert(
       TriggerRegistrationError::kMaxValue ==
           TriggerRegistrationError::
-              kTriggerContextIdInvalidSourceRegistrationTimeConfig,
+              kPamEpsilonValueInvalid,
       "Bump version of Conversions.TriggerRegistrationError9 histogram.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
 }
@@ -151,6 +152,9 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   ASSIGN_OR_RETURN(
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
+  
+  ASSIGN_OR_RETURN(registration.pam_epsilon,
+                   PamEpsilon::Parse(dict));
 
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
@@ -233,6 +237,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   }
 
   aggregatable_trigger_config.Serialize(dict);
+  pam_epsilon.Serialize(dict);
 
   return dict;
 }
