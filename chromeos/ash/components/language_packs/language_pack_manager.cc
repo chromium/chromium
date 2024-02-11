@@ -306,6 +306,7 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
 
           // Fonts.
           {{kFontsFeatureId, "ja"}, "extrafonts-ja"},
+          {{kFontsFeatureId, "ko"}, "extrafonts-ko"},
       });
 
   return *all_dlc_ids;

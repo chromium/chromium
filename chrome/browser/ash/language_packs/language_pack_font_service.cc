@@ -57,15 +57,21 @@ LanguagePackFontService::~LanguagePackFontService() = default;
 
 base::flat_set<std::string>
 LanguagePackFontService::GetLanguagePacksForAcceptLanguage() {
+  base::flat_set<std::string> language_packs;
+
   for (std::string& locale :
        base::SplitString(pref_accept_language_.GetValue(), ",",
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    if (language::ExtractBaseLanguage(locale) == "ja") {
-      return {"ja"};
+    std::string_view language = language::ExtractBaseLanguage(locale);
+    if (language == "ja") {
+      language_packs.insert("ja");
+    }
+    if (language == "ko") {
+      language_packs.insert("ko");
     }
   }
 
-  return {};
+  return language_packs;
 }
 
 void LanguagePackFontService::InstallFontDlcs() {

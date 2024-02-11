@@ -80,8 +80,8 @@ INSTANTIATE_TEST_SUITE_P(
     LanguagePackFontServiceTest,
     ValidFontLanguageTest,
     testing::ValuesIn<ValidFontLanguageTestCase>(
-        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja",
-          "/path/for/ja"}}),
+        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
+         {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}}),
     [](const testing::TestParamInfo<ValidFontLanguageTest::ParamType>& info) {
       return info.param.test_name;
     });
