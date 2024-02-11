@@ -6578,7 +6578,6 @@ interface Navigator
     getter presentation
     getter product
     getter productSub
-    getter protectedAudience
     getter scheduling
     getter serial
     getter serviceWorker
@@ -7492,10 +7491,6 @@ interface PromiseRejectionEvent : Event
     getter promise
     getter reason
     method constructor
-interface ProtectedAudience
-    attribute @@toStringTag
-    method constructor
-    method queryFeatureSupport
 interface PublicKeyCredential : Credential
     static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable

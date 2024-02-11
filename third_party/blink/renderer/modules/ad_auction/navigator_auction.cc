@@ -4046,9 +4046,6 @@ bool NavigatorAuction::deprecatedRunAdAuctionEnforcesKAnonymity(
 ProtectedAudience* NavigatorAuction::protectedAudience(
     ScriptState* script_state,
     Navigator& navigator) {
-  if (!navigator.DomWindow()) {
-    return nullptr;
-  }
   return From(ExecutionContext::From(script_state), navigator)
       .protected_audience_;
 }
