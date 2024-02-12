@@ -28,7 +28,6 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {cast} from '../assert_extras.js';
 import {Constructor} from '../common/types.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './cups_edit_printer_dialog.html.js';
 import {getBaseName, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
@@ -298,7 +297,6 @@ export class SettingsCupsEditPrinterDialogElement extends
               this.onPrinterEditSucceeded_.bind(this),
               this.onPrinterEditFailed_.bind(this));
     }
-    recordSettingChange();
   }
 
   /**
