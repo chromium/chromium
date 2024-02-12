@@ -1,34 +1,29 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_FIDO_MAC_KEYCHAIN_H_
-#define DEVICE_FIDO_MAC_KEYCHAIN_H_
+#ifndef CRYPTO_APPLE_KEYCHAIN_V2_H_
+#define CRYPTO_APPLE_KEYCHAIN_V2_H_
 
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
+#include "crypto/crypto_export.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/component_export.h"
 #include "base/no_destructor.h"
 
-namespace device::fido::mac {
+namespace crypto {
 
-// Keychain wraps some operations from the macOS Security framework to work with
-// keys and keychain items.
-//
-// The Touch ID authenticator creates keychain items in the "iOS-style"
-// keychain, which scopes item access based on the application-identifier or
-// keychain-access-group entitlements, and therefore requires code signing with
-// a real Apple developer ID. We therefore group these function here, so they
-// can be mocked out in testing.
-class COMPONENT_EXPORT(DEVICE_FIDO) Keychain {
+// AppleKeychainV2 wraps iOS-style operations from the macOS Security framework
+// to work with keys and keychain items. These functions are grouped here so
+// they can be mocked out in testing.
+class CRYPTO_EXPORT AppleKeychainV2 {
  public:
-  static Keychain& GetInstance();
+  static AppleKeychainV2& GetInstance();
 
-  Keychain(const Keychain&) = delete;
-  Keychain& operator=(const Keychain&) = delete;
+  AppleKeychainV2(const AppleKeychainV2&) = delete;
+  AppleKeychainV2& operator=(const AppleKeychainV2&) = delete;
 
   // KeyCreateRandomKey wraps the |SecKeyCreateRandomKey| function.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
@@ -54,20 +49,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Keychain {
       base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data);
 
  protected:
-  Keychain();
-  virtual ~Keychain();
+  AppleKeychainV2();
+  virtual ~AppleKeychainV2();
 
  protected:
-  friend class base::NoDestructor<Keychain>;
+  friend class base::NoDestructor<AppleKeychainV2>;
   friend class ScopedTouchIdTestEnvironment;
 
   // Set an override to the singleton instance returned by |GetInstance|. The
   // caller keeps ownership of the injected keychain and must remove the
   // override by calling |ClearInstanceOverride| before deleting it.
-  static void SetInstanceOverride(Keychain* keychain);
+  static void SetInstanceOverride(AppleKeychainV2* keychain);
   static void ClearInstanceOverride();
 };
 
-}  // namespace device::fido::mac
+}  // namespace crypto
 
-#endif  // DEVICE_FIDO_MAC_KEYCHAIN_H_
+#endif  // CRYPTO_APPLE_KEYCHAIN_V2_H_

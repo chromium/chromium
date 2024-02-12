@@ -8,6 +8,7 @@
 #include <Security/Security.h>
 
 #include <optional>
+
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 
@@ -19,6 +20,7 @@ using AppleSecKeychainItemRef = void*;
 using AppleSecKeychainItemRef = SecKeychainItemRef;
 #endif
 
+// DEPRECATED: use `AppleKeychainV2` instead.
 // Wraps the KeychainServices API in a very thin layer, to allow it to be
 // mocked out for testing.
 
@@ -27,6 +29,10 @@ using AppleSecKeychainItemRef = SecKeychainItemRef;
 // SecKeychainFoo). The only exception is Free, which should be used for
 // anything returned from this class that would normally be freed with
 // CFRelease (to aid in testing).
+//
+// The underlying API was deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251
+// New code should use AppleKeychainV2.
 class CRYPTO_EXPORT AppleKeychain {
  public:
   AppleKeychain();

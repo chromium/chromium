@@ -63,6 +63,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Credential {
 
 // TouchIdCredentialStore allows operations on Touch ID platform authenticator
 // credentials stored in the macOS keychain.
+//
+// The Touch ID authenticator creates keychain items in the "iOS-style"
+// keychain, which scopes item access based on the application-identifier or
+// keychain-access-group entitlements, and therefore requires code signing with
+// a real Apple developer ID.
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
     : public device::fido::PlatformCredentialStore {
  public:

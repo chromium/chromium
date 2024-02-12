@@ -22,11 +22,11 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/apple_keychain_v2.h"
 #include "crypto/random.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/credential_metadata.h"
-#include "device/fido/mac/keychain.h"
 #include "device/fido/mac/touch_id_context.h"
 
 namespace device::fido::mac {
@@ -108,7 +108,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
   {
-    OSStatus status = Keychain::GetInstance().ItemCopyMatching(
+    OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
         query.get(),
         reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
     if (status == errSecItemNotFound) {
@@ -278,14 +278,15 @@ TouchIdCredentialStore::CreateCredential(
   }
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      Keychain::GetInstance().KeyCreateRandomKey(params.get(),
-                                                 cferr.InitializeInto());
+      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+          params.get(), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      Keychain::GetInstance().KeyCopyPublicKey(private_key.get()));
+      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+          private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
     return std::nullopt;
@@ -368,14 +369,15 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
   }
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key =
-      Keychain::GetInstance().KeyCreateRandomKey(params.get(),
-                                                 cferr.InitializeInto());
+      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+          params.get(), cferr.InitializeInto());
   if (!private_key) {
     FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr.get();
     return std::nullopt;
   }
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
-      Keychain::GetInstance().KeyCopyPublicKey(private_key.get()));
+      crypto::AppleKeychainV2::GetInstance().KeyCopyPublicKey(
+          private_key.get()));
   if (!public_key) {
     FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
     return std::nullopt;
@@ -536,7 +538,7 @@ TouchIdCredentialStore::FindCredentialsImpl(
   CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
 
   base::apple::ScopedCFTypeRef<CFArrayRef> keychain_items;
-  OSStatus status = Keychain::GetInstance().ItemCopyMatching(
+  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
       query.get(),
       reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
   if (status == errSecItemNotFound) {
@@ -648,7 +650,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   //                                 &kCFTypeDictionaryKeyCallBacks,
   //                                 &kCFTypeDictionaryValueCallBacks));
   //   CFDictionarySetValue(query, kSecValueRef, sec_key_ref);
-  //   OSStatus status = Keychain::GetInstance().ItemDelete(query);
+  //   OSStatus status = AppleKeychainV2::GetInstance().ItemDelete(query);
   //
   // But on macOS that looks for `sec_key_ref` in the legacy keychain instead of
   // the "iOS" keychain that secure enclave credentials live in, and so the call
@@ -670,7 +672,8 @@ bool TouchIdCredentialStore::DeleteCredentialById(
       query.get(), kSecAttrApplicationLabel,
       base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
                                                 length:credential_id.size()]));
-  OSStatus status = Keychain::GetInstance().ItemDelete(query.get());
+  OSStatus status =
+      crypto::AppleKeychainV2::GetInstance().ItemDelete(query.get());
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
     return false;
@@ -724,7 +727,8 @@ bool TouchIdCredentialStore::UpdateCredential(
       query.get(), kSecAttrApplicationLabel,
       base::apple::NSToCFPtrCast([NSData dataWithBytes:credential_id.data()
                                                 length:credential_id.size()]));
-  OSStatus status = Keychain::GetInstance().ItemUpdate(query.get(), params);
+  OSStatus status =
+      crypto::AppleKeychainV2::GetInstance().ItemUpdate(query.get(), params);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemUpdate failed";
     return false;

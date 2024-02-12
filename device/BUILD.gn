@@ -121,6 +121,7 @@ test("device_unittests") {
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
+    "//crypto:test_support",
     "//device/base",
     "//device/base/synchronization",
     "//device/bluetooth",

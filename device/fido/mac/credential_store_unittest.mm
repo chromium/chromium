@@ -10,8 +10,9 @@
 #include <optional>
 
 #include "base/apple/foundation_util.h"
+#include "crypto/fake_apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
-#include "device/fido/mac/fake_keychain.h"
+#include "device/fido/mac/credential_store.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +71,7 @@ class CredentialStoreTest : public testing::Test {
   AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
-  ScopedFakeKeychain keychain_{config_.keychain_access_group};
+  crypto::ScopedFakeAppleKeychainV2 keychain_{config_.keychain_access_group};
   TouchIdCredentialStore store_{config_};
 };
 
@@ -105,7 +106,7 @@ TEST_F(CredentialStoreTest, FindCredentialsFromCredentialDescriptorList_Basic) {
   found = store_.FindCredentialsFromCredentialDescriptorList(
       kRpId,
       std::vector<PublicKeyCredentialDescriptor>({PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey, /*credential_id=*/{})}));
+          CredentialType::kPublicKey, /*id=*/{})}));
   EXPECT_TRUE(found && found->empty());
 
   found = store_.FindCredentialsFromCredentialDescriptorList(

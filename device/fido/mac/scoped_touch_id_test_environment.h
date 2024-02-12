@@ -12,10 +12,13 @@
 #include "base/component_export.h"
 #include "device/fido/mac/authenticator_config.h"
 
+namespace crypto {
+class ScopedFakeAppleKeychainV2;
+}  // namespace crypto
+
 namespace device::fido::mac {
 
 class FakeTouchIdContext;
-class ScopedFakeKeychain;
 class TouchIdContext;
 
 // ScopedTouchIdTestEnvironment overrides behavior of the Touch ID
@@ -64,7 +67,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   TouchIdAvailableFuncPtr touch_id_context_touch_id_available_ptr_;
 
   AuthenticatorConfig config_;
-  std::unique_ptr<ScopedFakeKeychain> keychain_;
+  std::unique_ptr<crypto::ScopedFakeAppleKeychainV2> keychain_;
   std::unique_ptr<FakeTouchIdContext> next_touch_id_context_;
   bool touch_id_available_ = true;
 };

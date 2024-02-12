@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/mac/fake_keychain.h"
+#include "crypto/fake_apple_keychain_v2.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -16,15 +16,15 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
-#include "device/fido/mac/credential_store.h"
-#include "device/fido/mac/keychain.h"
+#include "crypto/apple_keychain_v2.h"
 
-namespace device::fido::mac {
+namespace crypto {
 
-FakeKeychain::FakeKeychain(const std::string& keychain_access_group)
+FakeAppleKeychainV2::FakeAppleKeychainV2(
+    const std::string& keychain_access_group)
     : keychain_access_group_(
           base::SysUTF8ToCFStringRef(keychain_access_group)) {}
-FakeKeychain::~FakeKeychain() {
+FakeAppleKeychainV2::~FakeAppleKeychainV2() {
   // Avoid shutdown leak of error string in Security.framework.
   // See https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
 #if defined(LEAK_SANITIZER)
@@ -32,7 +32,7 @@ FakeKeychain::~FakeKeychain() {
 #endif
 }
 
-base::apple::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
+base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
     CFDictionaryRef params,
     CFErrorRef* error) {
   // Validate certain fields that we always expect to be set.
@@ -98,7 +98,7 @@ base::apple::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
   return private_key;
 }
 
-OSStatus FakeKeychain::ItemCopyMatching(CFDictionaryRef query,
+OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
                                         CFTypeRef* result) {
   // In practice we don't need to care about limit queries, or leaving out the
   // SecKeyRef or attributes from the result set.
@@ -155,7 +155,7 @@ OSStatus FakeKeychain::ItemCopyMatching(CFDictionaryRef query,
   return errSecSuccess;
 }
 
-OSStatus FakeKeychain::ItemDelete(CFDictionaryRef query) {
+OSStatus FakeAppleKeychainV2::ItemDelete(CFDictionaryRef query) {
   // Validate certain fields that we always expect to be set.
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
             kSecClassKey);
@@ -182,7 +182,7 @@ OSStatus FakeKeychain::ItemDelete(CFDictionaryRef query) {
   return errSecItemNotFound;
 }
 
-OSStatus FakeKeychain::ItemUpdate(
+OSStatus FakeAppleKeychainV2::ItemUpdate(
     CFDictionaryRef query,
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update) {
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
@@ -221,13 +221,14 @@ OSStatus FakeKeychain::ItemUpdate(
   return errSecItemNotFound;
 }
 
-ScopedFakeKeychain::ScopedFakeKeychain(const std::string& keychain_access_group)
-    : FakeKeychain(keychain_access_group) {
+ScopedFakeAppleKeychainV2::ScopedFakeAppleKeychainV2(
+    const std::string& keychain_access_group)
+    : FakeAppleKeychainV2(keychain_access_group) {
   SetInstanceOverride(this);
 }
 
-ScopedFakeKeychain::~ScopedFakeKeychain() {
+ScopedFakeAppleKeychainV2::~ScopedFakeAppleKeychainV2() {
   ClearInstanceOverride();
 }
 
-}  // namespace device::fido::mac
+}  // namespace crypto

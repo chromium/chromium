@@ -18,9 +18,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
+#include "crypto/apple_keychain_v2.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/mac/keychain.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
@@ -124,7 +124,7 @@ std::optional<std::vector<uint8_t>> GenerateSignature(
                     client_data_hash.size());
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> sig_data(
-      Keychain::GetInstance().KeyCreateSignature(
+      crypto::AppleKeychainV2::GetInstance().KeyCreateSignature(
           private_key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256,
           sig_input.get(), err.InitializeInto()));
   if (!sig_data) {
