@@ -9,5 +9,6 @@ declare_args() {
   enable_ml_internal =
       build_with_internal_optimization_guide && checkout_src_internal &&
       ((is_win && target_cpu != "arm64" && target_cpu != "arm") || is_mac ||
-       is_linux)
+       is_linux ||
+       (is_chromeos && target_cpu != "arm64" && target_cpu != "arm"))
 }
