@@ -15,7 +15,6 @@
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/database_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
@@ -38,7 +37,6 @@ class LocalDataContainer {
  public:
   // Friendly typedefs for the multiple types of lists used in the model.
   using CookieList = std::list<net::CanonicalCookie>;
-  using DatabaseInfoList = std::list<content::StorageUsageInfo>;
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
   using SessionStorageInfoList = std::list<content::StorageUsageInfo>;
   using QuotaInfoList = std::list<BrowsingDataQuotaHelper::QuotaInfo>;
@@ -57,7 +55,6 @@ class LocalDataContainer {
 
   LocalDataContainer(
       scoped_refptr<browsing_data::CookieHelper> cookie_helper,
-      scoped_refptr<browsing_data::DatabaseHelper> database_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
@@ -77,7 +74,6 @@ class LocalDataContainer {
  private:
   friend class CookiesTreeModel;
   friend class CookieTreeCookieNode;
-  friend class CookieTreeDatabaseNode;
   friend class CookieTreeLocalStorageNode;
   friend class CookieTreeSessionStorageNode;
   friend class CookieTreeQuotaNode;
@@ -87,7 +83,6 @@ class LocalDataContainer {
 
   // Callback methods to be invoked when fetching the data is complete.
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
-  void OnDatabaseModelInfoLoaded(const DatabaseInfoList& database_info);
   void OnLocalStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info);
   void OnSessionStorageModelInfoLoaded(
@@ -102,7 +97,6 @@ class LocalDataContainer {
   // Pointers to the helper objects, needed to retreive all the types of locally
   // stored data.
   scoped_refptr<browsing_data::CookieHelper> cookie_helper_;
-  scoped_refptr<browsing_data::DatabaseHelper> database_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
@@ -113,7 +107,6 @@ class LocalDataContainer {
   // Storage for all the data that was retrieved through the helper objects.
   // The collected data is used for (re)creating the CookiesTreeModel.
   CookieList cookie_list_;
-  DatabaseInfoList database_info_list_;
   LocalStorageInfoList local_storage_info_list_;
   LocalStorageInfoList session_storage_info_list_;
   QuotaInfoList quota_info_list_;

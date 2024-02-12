@@ -872,7 +872,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     auto container = std::make_unique<LocalDataContainer>(
         mock_browsing_data_cookie_helper,
-        /*database_helper=*/nullptr, mock_browsing_data_local_storage_helper,
+        mock_browsing_data_local_storage_helper,
         /*session_storage_helper=*/nullptr,
         /*quota_helper=*/nullptr,
         /*service_worker_helper=*/nullptr,

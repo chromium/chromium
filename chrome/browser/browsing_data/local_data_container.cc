@@ -21,10 +21,10 @@ std::unique_ptr<LocalDataContainer>
 LocalDataContainer::CreateFromLocalSharedObjectsContainer(
     const browsing_data::LocalSharedObjectsContainer& shared_objects) {
   return std::make_unique<LocalDataContainer>(
-      shared_objects.cookies(), shared_objects.databases(),
-      shared_objects.local_storages(), shared_objects.session_storages(),
-      /*quota_helper=*/nullptr, shared_objects.service_workers(),
-      shared_objects.shared_workers(), shared_objects.cache_storages());
+      shared_objects.cookies(), shared_objects.local_storages(),
+      shared_objects.session_storages(), /*quota_helper=*/nullptr,
+      shared_objects.service_workers(), shared_objects.shared_workers(),
+      shared_objects.cache_storages());
 }
 
 // static
@@ -39,7 +39,6 @@ LocalDataContainer::CreateFromStoragePartition(
           ? nullptr
           : base::MakeRefCounted<browsing_data::CookieHelper>(
                 storage_partition, is_cookie_deletion_disabled_callback),
-      /*database_helper=*/nullptr,
       /*local_storage_helper=*/nullptr,
       /*session_storage_helper=*/nullptr,
       /*quota_helper=*/nullptr,
@@ -50,7 +49,6 @@ LocalDataContainer::CreateFromStoragePartition(
 
 LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::CookieHelper> cookie_helper,
-    scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
@@ -58,7 +56,6 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
     scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : cookie_helper_(std::move(cookie_helper)),
-      database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
       session_storage_helper_(std::move(session_storage_helper)),
       quota_helper_(std::move(quota_helper)),
@@ -77,13 +74,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started++;
     cookie_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnCookiesModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (database_helper_.get()) {
-    batches_started++;
-    database_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnDatabaseModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -160,13 +150,6 @@ void LocalDataContainer::OnCookiesModelInfoLoaded(
                       cookie_list.end());
   DCHECK(model_);
   model_->PopulateCookieInfo(this);
-}
-
-void LocalDataContainer::OnDatabaseModelInfoLoaded(
-    const DatabaseInfoList& database_info) {
-  database_info_list_ = database_info;
-  DCHECK(model_);
-  model_->PopulateDatabaseInfo(this);
 }
 
 void LocalDataContainer::OnLocalStorageModelInfoLoaded(

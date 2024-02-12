@@ -109,18 +109,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_DATABASE: {
-      dict.Set(kKeyType, "database");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE: {
       dict.Set(kKeyType, "local_storage");
 

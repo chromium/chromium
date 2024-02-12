@@ -23,8 +23,6 @@ class CookieTreeCacheStorageNode;
 class CookieTreeCacheStoragesNode;
 class CookieTreeCookieNode;
 class CookieTreeCookiesNode;
-class CookieTreeDatabaseNode;
-class CookieTreeDatabasesNode;
 class CookieTreeHostNode;
 class CookieTreeIndexedDBNode;
 class CookieTreeIndexedDBsNode;
@@ -53,8 +51,8 @@ class CanonicalCookie;
 }
 
 // CookieTreeNode -------------------------------------------------------------
-// The base node type in the Cookies, Databases, and Local Storage options
-// view, from which all other types are derived. Specialized from TreeNode in
+// The base node type in the Cookies, and Local Storage options view, from which
+// all other types are derived. Specialized from TreeNode in
 // that it has a notion of deleting objects stored in the profile, and being
 // able to have its children do the same.
 class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
@@ -69,8 +67,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_HOST,              // This is used for CookieTreeHostNode nodes.
       TYPE_COOKIES,           // This is used for CookieTreeCookiesNode nodes.
       TYPE_COOKIE,            // This is used for CookieTreeCookieNode nodes.
-      TYPE_DATABASES,         // This is used for CookieTreeDatabasesNode.
-      TYPE_DATABASE,          // This is used for CookieTreeDatabaseNode.
       TYPE_LOCAL_STORAGES,    // This is used for CookieTreeLocalStoragesNode.
       TYPE_LOCAL_STORAGE,     // This is used for CookieTreeLocalStorageNode.
       TYPE_SESSION_STORAGES,  // This is used for CookieTreeSessionStoragesNode.
@@ -93,8 +89,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     DetailedInfo& Init(NodeType type);
     DetailedInfo& InitHost(const GURL& host);
     DetailedInfo& InitCookie(const net::CanonicalCookie* canonical_cookie);
-    DetailedInfo& InitDatabase(
-        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitLocalStorage(
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSessionStorage(
@@ -112,8 +106,7 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     NodeType node_type;
     url::Origin origin;
     raw_ptr<const net::CanonicalCookie> cookie = nullptr;
-    // Used for Database (WebSQL), IndexedDB, Service Worker, and
-    // Cache Storage node types.
+    // Used for Service Worker and Cache Storage node types.
     raw_ptr<const content::StorageUsageInfo> usage_info = nullptr;
     raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
     raw_ptr<const browsing_data::SharedWorkerInfo> shared_worker_info = nullptr;
@@ -190,7 +183,6 @@ class CookieTreeHostNode : public CookieTreeNode {
 
   // CookieTreeHostNode methods:
   CookieTreeCookiesNode* GetOrCreateCookiesNode();
-  CookieTreeDatabasesNode* GetOrCreateDatabasesNode();
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
   CookieTreeIndexedDBsNode* GetOrCreateIndexedDBsNode();
@@ -215,15 +207,13 @@ class CookieTreeHostNode : public CookieTreeNode {
   void UpdateHostUrl(const GURL& url);
 
  private:
-  // Pointers to the cookies, databases, local and session storage nodes.
+  // Pointers to the cookies, local and session storage nodes.
   // When we build up the tree we need to quickly get a reference to
   // the COOKIES node to add children. Checking each child and interrogating
-  // them to see if they are a COOKIES, DATABASES, etc node seems
-  // less preferable than storing an extra pointer per origin.
+  // them to see if they are a COOKIES, etc node seems less preferable than
+  // storing an extra pointer per origin.
   raw_ptr<CookieTreeCookiesNode, AcrossTasksDanglingUntriaged> cookies_child_ =
       nullptr;
-  raw_ptr<CookieTreeDatabasesNode, AcrossTasksDanglingUntriaged>
-      databases_child_ = nullptr;
   raw_ptr<CookieTreeLocalStoragesNode, AcrossTasksDanglingUntriaged>
       local_storages_child_ = nullptr;
   raw_ptr<CookieTreeSessionStoragesNode, AcrossTasksDanglingUntriaged>
@@ -263,7 +253,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // Because non-cookie nodes are fetched in a background thread, they are not
   // present at the time the Model is created. The Model then notifies its
-  // observers for every item added from databases and local storage.
+  // observers for every item added from local storage.
   // We extend the Observer interface to add notifications before and
   // after these batch inserts.
   // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
@@ -328,7 +318,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // Methods that update the model based on the data retrieved by the browsing
   // data helpers.
   void PopulateCookieInfo(LocalDataContainer* container);
-  void PopulateDatabaseInfo(LocalDataContainer* container);
   void PopulateLocalStorageInfo(LocalDataContainer* container);
   void PopulateSessionStorageInfo(LocalDataContainer* container);
   void PopulateIndexedDBInfo(LocalDataContainer* container);
@@ -371,9 +360,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateCookieInfoWithFilter(LocalDataContainer* container,
                                     ScopedBatchUpdateNotifier* notifier,
                                     const std::u16string& filter);
-  void PopulateDatabaseInfoWithFilter(LocalDataContainer* container,
-                                      ScopedBatchUpdateNotifier* notifier,
-                                      const std::u16string& filter);
   void PopulateLocalStorageInfoWithFilter(LocalDataContainer* container,
                                           ScopedBatchUpdateNotifier* notifier,
                                           const std::u16string& filter);
