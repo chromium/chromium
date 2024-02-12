@@ -9,15 +9,25 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,16 +55,52 @@ using MockAddFontDir =
 class LanguagePackFontServiceTest : public testing::Test {
  public:
   LanguagePackFontServiceTest()
-      : profile_(std::make_unique<TestingProfile>()) {}
+      : scoped_feature_list_(features::kLanguagePacksFonts),
+        testing_prefs_(
+            std::make_unique<sync_preferences::TestingPrefServiceSyncable>()) {
+    ::RegisterUserProfilePrefs(testing_prefs_->registry());
+  }
 
-  PrefService* prefs() { return profile_->GetPrefs(); }
+  void InitProfileWithServices() {
+    profile_ =
+        TestingProfile::Builder()
+            .SetPrefService(std::move(testing_prefs_))
+            .AddTestingFactory(
+                LanguagePackFontServiceFactory::GetInstance(),
+                base::BindRepeating(&LanguagePackFontServiceTest::CreateService,
+                                    base::Unretained(this)))
+            .Build();
+  }
+
+  PrefService* prefs() {
+    if (testing_prefs_) {
+      CHECK(!profile_);
+      return testing_prefs_.get();
+    }
+    return profile_->GetPrefs();
+  }
   FakeDlcserviceClient* dlcservice_client() { return &dlcservice_client_; }
   MockAddFontDir* add_font_dir() { return &add_font_dir_; }
 
  private:
+  std::unique_ptr<KeyedService> CreateService(
+      content::BrowserContext* context) {
+    return std::make_unique<LanguagePackFontService>(
+        Profile::FromBrowserContext(context)->GetPrefs(),
+        base::BindRepeating(&MockAddFontDir::Call,
+                            base::Unretained(&add_font_dir_)));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   MockAddFontDir add_font_dir_;
   FakeDlcserviceClient dlcservice_client_;
   content::BrowserTaskEnvironment task_environment_;
+  // At any point in time, exactly one of the below `unique_ptr`s should be
+  // null.
+  // On construction, `testing_prefs_` will be created with `profile_` null.
+  // After `InitProfile()`, `profile_` will be created by moving in
+  // `testing_prefs_`, setting it to null.
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -63,9 +109,7 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
   // Both zz and xx (used below) are not valid ISO 639 locales as of 2024.
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
   base::RunLoop().RunUntilIdle();
 
@@ -102,9 +146,7 @@ TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
 
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
@@ -123,9 +165,7 @@ TEST_P(ValidFontLanguageTest,
 
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);
   base::RunLoop().RunUntilIdle();
@@ -146,9 +186,7 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
@@ -169,9 +207,7 @@ TEST_P(ValidFontLanguageTest,
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
@@ -194,9 +230,7 @@ TEST_P(ValidFontLanguageTest,
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
@@ -219,9 +253,7 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
     dlcservice_client()->set_dlc_state(std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
   base::RunLoop().RunUntilIdle();
 }
@@ -238,9 +270,7 @@ TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
     dlcservice_client()->set_dlc_state(std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
@@ -257,9 +287,7 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -279,9 +307,7 @@ TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -302,9 +328,7 @@ TEST_P(ValidFontLanguageTest,
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);
 
-  LanguagePackFontService service(
-      prefs(), base::BindRepeating(&MockAddFontDir::Call,
-                                   base::Unretained(add_font_dir())));
+  InitProfileWithServices();
   base::RunLoop().RunUntilIdle();
 }
 
