@@ -333,6 +333,13 @@ WebContentsInteractionTestUtil::DeepQuery::operator=(
   segments_ = segments;
   return *this;
 }
+WebContentsInteractionTestUtil::DeepQuery
+WebContentsInteractionTestUtil::DeepQuery::operator+(
+    const std::string& segment) const {
+  DeepQuery result(*this);
+  result.segments_.emplace_back(segment);
+  return result;
+}
 WebContentsInteractionTestUtil::DeepQuery::~DeepQuery() = default;
 
 WebContentsInteractionTestUtil::StateChange::StateChange() = default;
