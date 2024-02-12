@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_event_targeter.h"
+#include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
@@ -190,7 +191,10 @@ void AppListBubblePresenter::Show(int64_t display_id) {
     bubble_view_->AbortAllAnimations();
 
   is_target_visibility_show_ = true;
-  target_page_ = AppListBubblePage::kApps;
+
+  target_page_ = app_list_features::IsAppsCollectionsEnabled()
+                     ? AppListBubblePage::kAppsCollections
+                     : AppListBubblePage::kApps;
 
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
 

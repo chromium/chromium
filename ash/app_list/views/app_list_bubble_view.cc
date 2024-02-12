@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
+#include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -29,6 +30,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -319,6 +322,8 @@ void AppListBubbleView::InitContentsView(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
           a11y_announcer_.get(), /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
+  apps_collections_page_ = pages_container->AddChildView(
+      std::make_unique<AppListBubbleAppsCollectionsPage>());
 
   // Skip the "hide continue section" button on arrow up/down in app list.
   button_focus_skipper_->AddButton(
@@ -513,6 +518,7 @@ void AppListBubbleView::StartHideAnimation(
 void AppListBubbleView::AbortAllAnimations() {
   apps_page_->AbortAllAnimations();
   search_page_->AbortAllAnimations();
+  apps_collections_page_->AbortAllAnimations();
   layer()->GetAnimator()->AbortAllAnimations();
 }
 
@@ -554,7 +560,9 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   separator_->SetVisible(page != AppListBubblePage::kAssistant);
 
   const bool supports_anchored_dialogs =
-      page == AppListBubblePage::kApps || page == AppListBubblePage::kSearch;
+      page == AppListBubblePage::kApps ||
+      page == AppListBubblePage::kAppsCollections ||
+      page == AppListBubblePage::kSearch;
 
   search_page_dialog_controller_->Reset(/*enabled=*/supports_anchored_dialogs);
   assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
@@ -568,19 +576,42 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         // Trigger hiding first so animations don't overlap.
         search_page_->AnimateHidePage();
         apps_page_->AnimateShowPage();
+      } else if (previous_page == AppListBubblePage::kAppsCollections) {
+        apps_collections_page_->AnimateHidePage();
+        apps_page_->AnimateShowPage();
       } else {
         apps_page_->SetVisible(true);
+        apps_collections_page_->SetVisible(false);
         search_page_->SetVisible(false);
       }
       a11y_announcer_->AnnounceAppListShown();
+      MaybeFocusAndActivateSearchBox();
+      break;
+    case AppListBubblePage::kAppsCollections:
+      if (previous_page == AppListBubblePage::kApps) {
+        apps_page_->AnimateHidePage();
+        apps_collections_page_->AnimateShowPage();
+      } else if (previous_page == AppListBubblePage::kSearch) {
+        // Trigger hiding first so animations don't overlap.
+        search_page_->AnimateHidePage();
+        apps_collections_page_->AnimateShowPage();
+      } else {
+        search_page_->SetVisible(false);
+        apps_page_->SetVisible(false);
+        apps_collections_page_->SetVisible(true);
+      }
       MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kSearch:
       if (previous_page == AppListBubblePage::kApps) {
         apps_page_->AnimateHidePage();
         search_page_->AnimateShowPage();
+      } else if (previous_page == AppListBubblePage::kAppsCollections) {
+        apps_collections_page_->AnimateHidePage();
+        search_page_->AnimateShowPage();
       } else {
         apps_page_->SetVisible(false);
+        apps_collections_page_->SetVisible(false);
         search_page_->SetVisible(true);
       }
       MaybeFocusAndActivateSearchBox();
@@ -593,6 +624,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       else
         apps_page_->SetVisible(false);
       search_page_->SetVisible(false);
+      apps_collections_page_->SetVisible(false);
       // Explicitly set search box inactive so the next attempt to activate it
       // will succeed.
       search_box_view_->SetSearchBoxActive(false,
@@ -702,10 +734,13 @@ void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
                                      bool initiated_by_user) {
   if (current_page_ != AppListBubblePage::kNone) {
     search_page_->search_view()->UpdateForNewSearch(!trimmed_query.empty());
-    if (!trimmed_query.empty())
+    if (!trimmed_query.empty()) {
       ShowPage(AppListBubblePage::kSearch);
-    else
+    } else if (app_list_features::IsAppsCollectionsEnabled()) {
+      ShowPage(AppListBubblePage::kAppsCollections);
+    } else {
       ShowPage(AppListBubblePage::kApps);
+    }
   }
   SchedulePaint();
 }

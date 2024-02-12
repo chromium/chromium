@@ -274,6 +274,8 @@ enum class AppListBubblePage {
   kNone = 0,
   // The apps grid, as well as continue tasks and recent apps.
   kApps,
+  // The apps collections page.
+  kAppsCollections,
   // The search page.
   kSearch,
   // The assistant page.

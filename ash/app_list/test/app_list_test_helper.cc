@@ -315,6 +315,13 @@ AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {
       ->apps_page_;
 }
 
+AppListBubbleAppsCollectionsPage*
+AppListTestHelper::GetBubbleAppsCollectionsPage() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->apps_collections_page_;
+}
+
 ContinueSectionView* AppListTestHelper::GetBubbleContinueSectionView() {
   return GetBubbleAppsPage()->continue_section_;
 }
