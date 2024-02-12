@@ -9679,9 +9679,15 @@ experimental domain Storage
   # Details for an origin's shared storage.
   type SharedStorageMetadata extends object
     properties
+      # Time when the origin's shared storage was last created.
       Network.TimeSinceEpoch creationTime
+      # Number of key-value pairs stored in origin's shared storage.
       integer length
+      # Current amount of bits of entropy remaining in the navigation budget.
       number remainingBudget
+      # Total number of bytes stored as key-value pairs in origin's shared
+      # storage.
+      integer bytesUsed
 
   # Pair of reporting metadata details for a candidate URL for `selectURL()`.
   type SharedStorageReportingMetadata extends object

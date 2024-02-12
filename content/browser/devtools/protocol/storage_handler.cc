@@ -1243,6 +1243,10 @@ void SendSharedStorageMetadata(
     error_message += "Unable to retrieve `remainingBudget`. ";
   }
 
+  if (metadata.bytes_used == -1) {
+    error_message += "Unable to retrieve `bytes_used`. ";
+  }
+
   if (!error_message.empty()) {
     callback->sendFailure(Response::ServerError(error_message));
     return;
@@ -1253,6 +1257,7 @@ void SendSharedStorageMetadata(
           .SetLength(metadata.length)
           .SetCreationTime(metadata.creation_time.InSecondsFSinceUnixEpoch())
           .SetRemainingBudget(metadata.remaining_budget)
+          .SetBytesUsed(metadata.bytes_used)
           .Build();
 
   callback->sendSuccess(std::move(protocol_metadata));

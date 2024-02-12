@@ -1,5 +1,6 @@
 Tests disabling of shared storage event tracking.
 Metadata: {
+    bytesUsed : 124
     creationTime : <number>
     length : 2
     remainingBudget : 12
