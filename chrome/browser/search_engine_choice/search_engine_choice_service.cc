@@ -112,10 +112,11 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
       base::debug::DumpWithoutCrashing();
     }
 
-    CHECK(search_engine);
-    TemplateURL search_engine_template_url = TemplateURL(*search_engine);
-    template_url_service_->SetUserSelectedDefaultSearchProvider(
-        &search_engine_template_url);
+    if (search_engine) {
+      TemplateURL search_engine_template_url = TemplateURL(*search_engine);
+      template_url_service_->SetUserSelectedDefaultSearchProvider(
+          &search_engine_template_url);
+    }
   } else {
     // Make sure that the default search engine is a custom search engine.
     const TemplateURL* default_search_provider =
