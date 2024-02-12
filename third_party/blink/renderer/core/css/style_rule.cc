@@ -615,55 +615,6 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
   }
 }
 
-StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
-                             CSSPropertyValueSet* properties,
-                             HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleBase(kPage),
-      properties_(properties),
-      selector_list_(selector_list),
-      child_rules_(std::move(child_rules)) {}
-
-StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
-    : StyleRuleBase(page_rule),
-      properties_(page_rule.properties_->MutableCopy()),
-      selector_list_(page_rule.selector_list_->Copy()) {}
-
-MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
-  if (!properties_->IsMutable()) {
-    properties_ = properties_->MutableCopy();
-  }
-  return *To<MutableCSSPropertyValueSet>(properties_.Get());
-}
-
-void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(properties_);
-  visitor->Trace(layer_);
-  visitor->Trace(selector_list_);
-  visitor->Trace(child_rules_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
-}
-
-StyleRulePageMargin::StyleRulePageMargin(CSSAtRuleID id,
-                                         CSSPropertyValueSet* properties)
-    : StyleRuleBase(kPageMargin), id_(id), properties_(properties) {}
-
-StyleRulePageMargin::StyleRulePageMargin(
-    const StyleRulePageMargin& page_margin_rule)
-    : StyleRuleBase(page_margin_rule),
-      properties_(page_margin_rule.properties_->MutableCopy()) {}
-
-MutableCSSPropertyValueSet& StyleRulePageMargin::MutableProperties() {
-  if (!properties_->IsMutable()) {
-    properties_ = properties_->MutableCopy();
-  }
-  return *To<MutableCSSPropertyValueSet>(properties_.Get());
-}
-
-void StyleRulePageMargin::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(properties_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
-}
-
 StyleRuleProperty::StyleRuleProperty(const String& name,
                                      CSSPropertyValueSet* properties)
     : StyleRuleBase(kProperty), name_(name), properties_(properties) {}
@@ -847,6 +798,55 @@ Vector<String> StyleRuleLayerStatement::GetNamesAsStrings() const {
     result.push_back(LayerNameAsString(name));
   }
   return result;
+}
+
+StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
+                             CSSPropertyValueSet* properties,
+                             HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleBase(kPage),
+      properties_(properties),
+      selector_list_(selector_list),
+      child_rules_(std::move(child_rules)) {}
+
+StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
+    : StyleRuleBase(page_rule),
+      properties_(page_rule.properties_->MutableCopy()),
+      selector_list_(page_rule.selector_list_->Copy()) {}
+
+MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
+  if (!properties_->IsMutable()) {
+    properties_ = properties_->MutableCopy();
+  }
+  return *To<MutableCSSPropertyValueSet>(properties_.Get());
+}
+
+void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(properties_);
+  visitor->Trace(layer_);
+  visitor->Trace(selector_list_);
+  visitor->Trace(child_rules_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+StyleRulePageMargin::StyleRulePageMargin(CSSAtRuleID id,
+                                         CSSPropertyValueSet* properties)
+    : StyleRuleBase(kPageMargin), id_(id), properties_(properties) {}
+
+StyleRulePageMargin::StyleRulePageMargin(
+    const StyleRulePageMargin& page_margin_rule)
+    : StyleRuleBase(page_margin_rule),
+      properties_(page_margin_rule.properties_->MutableCopy()) {}
+
+MutableCSSPropertyValueSet& StyleRulePageMargin::MutableProperties() {
+  if (!properties_->IsMutable()) {
+    properties_ = properties_->MutableCopy();
+  }
+  return *To<MutableCSSPropertyValueSet>(properties_.Get());
+}
+
+void StyleRulePageMargin::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(properties_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
 StyleRuleCondition::StyleRuleCondition(RuleType type,

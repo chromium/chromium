@@ -417,67 +417,6 @@ class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
   Member<const CascadeLayer> layer_;
 };
 
-// TODO(sesse): When we get CSSOM support for page margin rules, consider
-// whether this should be a StyleRuleGroup or not. (The page margin rules
-// are not strictly selectors, though.)
-class StyleRulePage : public StyleRuleBase {
- public:
-  StyleRulePage(CSSSelectorList* selector_list,
-                CSSPropertyValueSet* properties,
-                HeapVector<Member<StyleRuleBase>> child_rules);
-  StyleRulePage(const StyleRulePage&);
-
-  const CSSSelector* Selector() const { return selector_list_->First(); }
-  const CSSPropertyValueSet& Properties() const { return *properties_; }
-  MutableCSSPropertyValueSet& MutableProperties();
-
-  void WrapperAdoptSelectorList(CSSSelectorList* selectors) {
-    selector_list_ = selectors;
-  }
-
-  StyleRulePage* Copy() const {
-    return MakeGarbageCollected<StyleRulePage>(*this);
-  }
-
-  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
-
-  const HeapVector<Member<StyleRuleBase>, 4>& ChildRules() const {
-    return child_rules_;
-  }
-  HeapVector<Member<StyleRuleBase>, 4>& ChildRules() { return child_rules_; }
-
-  void TraceAfterDispatch(blink::Visitor*) const;
-
- private:
-  Member<CSSPropertyValueSet> properties_;  // Cannot be null.
-  Member<const CascadeLayer> layer_;
-  Member<CSSSelectorList> selector_list_;
-
-  // Page margin rules (e.g. @top-left).
-  HeapVector<Member<StyleRuleBase>, 4> child_rules_;
-};
-
-class StyleRulePageMargin : public StyleRuleBase {
- public:
-  StyleRulePageMargin(CSSAtRuleID id, CSSPropertyValueSet* properties);
-  StyleRulePageMargin(const StyleRulePageMargin&);
-
-  const CSSPropertyValueSet& Properties() const { return *properties_; }
-  MutableCSSPropertyValueSet& MutableProperties();
-  CSSAtRuleID ID() const { return id_; }
-
-  StyleRulePageMargin* Copy() const {
-    return MakeGarbageCollected<StyleRulePageMargin>(*this);
-  }
-
-  void TraceAfterDispatch(blink::Visitor*) const;
-
- private:
-  CSSAtRuleID id_;                          // What margin, e.g. @top-right.
-  Member<CSSPropertyValueSet> properties_;  // Cannot be null.
-};
-
 class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
  public:
   StyleRuleProperty(const String& name, CSSPropertyValueSet*);
@@ -587,6 +526,67 @@ class CORE_EXPORT StyleRuleLayerStatement : public StyleRuleBase {
 
  private:
   Vector<LayerName> names_;
+};
+
+// TODO(sesse): When we get CSSOM support for page margin rules, consider
+// whether this should be a StyleRuleGroup or not. (The page margin rules
+// are not strictly selectors, though.)
+class StyleRulePage : public StyleRuleBase {
+ public:
+  StyleRulePage(CSSSelectorList* selector_list,
+                CSSPropertyValueSet* properties,
+                HeapVector<Member<StyleRuleBase>> child_rules);
+  StyleRulePage(const StyleRulePage&);
+
+  const CSSSelector* Selector() const { return selector_list_->First(); }
+  const CSSPropertyValueSet& Properties() const { return *properties_; }
+  MutableCSSPropertyValueSet& MutableProperties();
+
+  void WrapperAdoptSelectorList(CSSSelectorList* selectors) {
+    selector_list_ = selectors;
+  }
+
+  StyleRulePage* Copy() const {
+    return MakeGarbageCollected<StyleRulePage>(*this);
+  }
+
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
+
+  const HeapVector<Member<StyleRuleBase>, 4>& ChildRules() const {
+    return child_rules_;
+  }
+  HeapVector<Member<StyleRuleBase>, 4>& ChildRules() { return child_rules_; }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  Member<CSSPropertyValueSet> properties_;  // Cannot be null.
+  Member<const CascadeLayer> layer_;
+  Member<CSSSelectorList> selector_list_;
+
+  // Page margin rules (e.g. @top-left).
+  HeapVector<Member<StyleRuleBase>, 4> child_rules_;
+};
+
+class StyleRulePageMargin : public StyleRuleBase {
+ public:
+  StyleRulePageMargin(CSSAtRuleID id, CSSPropertyValueSet* properties);
+  StyleRulePageMargin(const StyleRulePageMargin&);
+
+  const CSSPropertyValueSet& Properties() const { return *properties_; }
+  MutableCSSPropertyValueSet& MutableProperties();
+  CSSAtRuleID ID() const { return id_; }
+
+  StyleRulePageMargin* Copy() const {
+    return MakeGarbageCollected<StyleRulePageMargin>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  CSSAtRuleID id_;                          // What margin, e.g. @top-right.
+  Member<CSSPropertyValueSet> properties_;  // Cannot be null.
 };
 
 // If you add new children of this class, remember to update IsConditionRule()
