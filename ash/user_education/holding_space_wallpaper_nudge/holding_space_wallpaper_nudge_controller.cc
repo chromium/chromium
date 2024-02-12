@@ -625,53 +625,67 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
   // Calculates and persists the user's eligibility for the nudge based on
   // account type and new-ness. This is a simple pref fetch once the eligibility
-  // is persisted. Returns true if the user is eligible.
+  // is persisted. Returns whether the user is eligible.
   bool DetermineEligibility() {
+    using IneligibleReason =
+        holding_space_wallpaper_nudge_metrics::IneligibleReason;
+
     const auto* const session_controller = Shell::Get()->session_controller();
-    PrefService* const prefs =
-        session_controller->GetLastActiveUserPrefService();
+    auto* const prefs = session_controller->GetLastActiveUserPrefService();
 
-    auto eligibility =
-        holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs);
+    // Return early if we've already persisted the user's eligibility.
+    if (std::optional<bool> eligibility =
+            holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs)) {
+      return eligibility.value();
+    }
 
-    // If there isn't a cached eligibility value for the user, determine and
-    // cache it now.
-    if (eligibility == std::nullopt) {
-      eligibility = true;
+    // Otherwise, determine the user's eligibility and persist it now.
+    std::optional<IneligibleReason> ineligible_reason;
 
-      // The nudge is supported for regular users only.
-      if (const auto user_type = session_controller->GetUserType();
-          user_type != user_manager::UserType::kRegular) {
-        eligibility = false;
-      }
+    // Only regular users are eligible.
+    if (const auto user_type = session_controller->GetUserType();
+        user_type != user_manager::UserType::kRegular) {
+      ineligible_reason = IneligibleReason::kUserTypeNotRegular;
+    }
 
-      // The nudge is not supported for managed accounts.
-      if (session_controller->IsActiveAccountManaged()) {
-        eligibility = false;
-      }
+    // Only un-managed users are eligible.
+    if (!ineligible_reason && session_controller->IsActiveAccountManaged()) {
+      ineligible_reason = IneligibleReason::kManagedAccount;
+    }
 
-      // For sanity, confirm that the user is also considered "new" locally in
-      // case the proxy check proves to be erroneous.
-      if (!session_controller->IsUserFirstLogin()) {
-        eligibility = false;
-      }
+    // Only new users are eligible. Note that this check of local newness is
+    // necessary in case the cross-device check below proves to be erroneous.
+    if (!ineligible_reason && !session_controller->IsUserFirstLogin()) {
+      ineligible_reason = IneligibleReason::kUserNotNewLocally;
+    }
 
+    // Check cross-device newness.
+    if (!ineligible_reason.has_value()) {
       const std::optional<bool>& is_new_user =
           UserEducationController::Get()->IsNewUser(
               user_education_private_api_key_);
 
-      // If we were unable to fetch cross device user new-ness, assume the user
-      // is not new.
-      if (!is_new_user.value_or(false)) {
-        eligibility = false;
+      // Only new users are eligible.
+      if (is_new_user == false) {
+        ineligible_reason = IneligibleReason::kUserNotNewCrossDevice;
       }
 
-      // Persist eligibility.
-      holding_space_wallpaper_nudge_prefs::SetUserEligibility(
-          prefs, eligibility.value());
+      // If we aren't sure if the user is new, err on the side of being overly
+      // conservative and treat the user as ineligible.
+      if (!is_new_user.has_value()) {
+        ineligible_reason = IneligibleReason::kUserNewnessNotAvailable;
+      }
     }
 
-    return eligibility.value();
+    // Persist the user's eligibility.
+    if (holding_space_wallpaper_nudge_prefs::SetUserEligibility(
+            prefs, /*eligible=*/!ineligible_reason.has_value())) {
+      holding_space_wallpaper_nudge_metrics::RecordUserEligibility(
+          ineligible_reason);
+    }
+
+    // Return the user's eligibility.
+    return !ineligible_reason.has_value();
   }
 
   // Indicates whether the nudge should be shown based on when it was last

@@ -80,16 +80,20 @@ namespace {
 using ::ash::holding_space_metrics::EventSource;
 using ::ash::holding_space_metrics::ItemAction;
 using ::ash::holding_space_metrics::PodAction;
+using ::ash::holding_space_wallpaper_nudge_metrics::IneligibleReason;
 using ::ash::holding_space_wallpaper_nudge_metrics::Interaction;
 using ::base::Bucket;
 using ::base::BucketsAreArray;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Ge;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Le;
 using ::testing::Pair;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArgs;
@@ -884,6 +888,27 @@ class HoldingSpaceWallpaperNudgeControllerEligibilityTest
   // Returns whether user eligibility is forced based on test parameterization.
   bool ForceUserEligibility() const { return std::get<0>(GetParam()); }
 
+  // Returns the reason for the user's ineligibility based on test
+  // parameterization. Note that this does not consider forced user eligibility.
+  std::optional<IneligibleReason> GetUserIneligibleReason() const {
+    if (GetUserType() != user_manager::UserType::kRegular) {
+      return IneligibleReason::kUserTypeNotRegular;
+    }
+    if (IsManagedUser()) {
+      return IneligibleReason::kManagedAccount;
+    }
+    if (!IsNewUserFirstLoginLocally()) {
+      return IneligibleReason::kUserNotNewLocally;
+    }
+    if (!IsNewUserFirstLoginCrossDevice()) {
+      return IneligibleReason::kUserNewnessNotAvailable;
+    }
+    if (IsNewUserFirstLoginCrossDevice() == false) {
+      return IneligibleReason::kUserNotNewCrossDevice;
+    }
+    return std::nullopt;
+  }
+
   // Returns the user type based on test parameterization.
   user_manager::UserType GetUserType() const { return std::get<4>(GetParam()); }
 
@@ -947,9 +972,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest,
        FirstSessionMarked) {
   const bool expect_first_session_marked =
-      !IsManagedUser() && IsNewUserFirstLoginLocally() &&
-      IsNewUserFirstLoginCrossDevice().value_or(false) &&
-      GetUserType() == user_manager::UserType::kRegular;
+      !GetUserIneligibleReason().has_value();
 
   const auto before = base::Time::Now();
 
@@ -969,23 +992,19 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest,
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   auto first_session_time =
       holding_space_wallpaper_nudge_prefs::GetTimeOfFirstEligibleSession(prefs);
-  EXPECT_EQ(first_session_time.has_value(), expect_first_session_marked);
-
-  if (first_session_time.has_value()) {
-    EXPECT_GE(first_session_time.value(), before);
-    EXPECT_LE(first_session_time.value(), after);
-  }
+  EXPECT_THAT(first_session_time,
+              Conditional(expect_first_session_marked,
+                          AllOf(Ge(before), Le(after)), Eq(std::nullopt)));
 }
 
 // Verifies that the Holding Space wallpaper nudge is shown only for new, non-
 // managed users, and will still be shown as appropriate after a user logs out
 // and back in.
 TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
-  const bool expect_eligibility =
-      ForceUserEligibility() ||
-      (!IsManagedUser() && IsNewUserFirstLoginLocally() &&
-       IsNewUserFirstLoginCrossDevice().value_or(false) &&
-       GetUserType() == user_manager::UserType::kRegular);
+  const auto ineligible_reason = GetUserIneligibleReason();
+  const bool expect_eligibility = ForceUserEligibility() || !ineligible_reason;
+
+  base::HistogramTester histogram_tester;
 
   // Log in a user type based on parameterization.
   auto* session = GetSessionControllerClient();
@@ -996,6 +1015,21 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
                           /*given_name=*/std::string(), IsManagedUser());
   session->SwitchActiveUser(account_id);
   session->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  // Verify user eligibility histograms are recorded after first login.
+  // NOTE: The `IneligibleReason::kMinValue` fallback value below is never used,
+  // it's only necessary because the `Conditional()` is not lazily evaluated.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.HoldingSpaceWallpaperNudge.Eligible"),
+      BucketsAre(Bucket(/*sample=*/!ineligible_reason, /*count=*/1u)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Ash.HoldingSpaceWallpaperNudge.IneligibleReason"),
+              Conditional(ineligible_reason.has_value(),
+                          BucketsAre(Bucket(
+                              /*sample=*/ineligible_reason.value_or(
+                                  IneligibleReason::kMinValue),
+                              /*count=*/1u)),
+                          IsEmpty()));
 
   // Register a model and client for holding space.
   HoldingSpaceModel holding_space_model;
@@ -1064,6 +1098,21 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
                           /*given_name=*/std::string(), IsManagedUser());
   session->SwitchActiveUser(account_id);
   session->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  // Verify that user eligibility histograms are not recorded on future logins.
+  // NOTE: The `IneligibleReason::kMinValue` fallback value below is never used,
+  // it's only necessary because the `Conditional()` is not lazily evaluated.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.HoldingSpaceWallpaperNudge.Eligible"),
+      BucketsAre(Bucket(/*sample=*/!ineligible_reason, /*count=*/1u)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Ash.HoldingSpaceWallpaperNudge.IneligibleReason"),
+              Conditional(ineligible_reason.has_value(),
+                          BucketsAre(Bucket(
+                              /*sample=*/ineligible_reason.value_or(
+                                  IneligibleReason::kMinValue),
+                              /*count=*/1u)),
+                          IsEmpty()));
 
   // Advance the clock because nudges can only be shown once per day.
   task_environment()->AdvanceClock(base::Hours(24));
