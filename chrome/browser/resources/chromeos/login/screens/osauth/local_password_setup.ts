@@ -176,7 +176,7 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
     return this.i18n(key);
   }
 
-  private isValid_(password: string) {
+  private isValid(password: string) {
     return !!password;
   }
 }
