@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 
 #include <cstddef>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -186,7 +187,7 @@ void PluginVmLicenseChecker::CallEndpointWithAccessToken(
 }
 
 std::unique_ptr<network::ResourceRequest>
-PluginVmLicenseChecker::CreateResourceRequest(base::StringPiece access_token) {
+PluginVmLicenseChecker::CreateResourceRequest(std::string_view access_token) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
       GURL(base::StrCat({validation_url_.spec(), access_token}));
