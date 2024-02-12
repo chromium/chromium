@@ -85,8 +85,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           client_state_checker_remote,
       const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void DeleteForStorageKey(const blink::StorageKey& storage_key,
-                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
@@ -220,12 +218,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::mojom::ForceCloseReason reason,
       base::OnceClosure closure,
       const std::optional<storage::BucketLocator>& bucket_locator);
-
-  void OnGotBucketsForDeletion(
-      base::OnceCallback<void(bool)> callback,
-      storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets);
-  void DoDeleteBucketData(const storage::BucketLocator& bucket_locator,
-                          base::OnceCallback<void(bool)> callback);
 
   // Always run immediately before destruction.
   void ShutdownOnIDBSequence();

@@ -60,10 +60,6 @@ interface IndexedDBControl {
     mojo_base.mojom.UnguessableToken client_token,
     pending_receiver<blink.mojom.IDBFactory> receiver);
 
-  // Deletes all indexed db files (across all buckets) for the given
-  // `storage_key`.
-  DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);
-
   // Forcibly closes all connections to all databases within the bucket.
   ForceClose(storage.mojom.BucketId bucket_id, ForceCloseReason reason) => ();
 

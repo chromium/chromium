@@ -355,9 +355,10 @@ class IndexedDBTest
     return std::get<0>(GetParam());
   }
 
-  bool DeleteForStorageKeySync(blink::StorageKey key) {
+  bool DeleteBucket(const storage::BucketInfo* bucket_info) {
     base::test::TestFuture<bool> success;
-    context()->DeleteForStorageKey(key, success.GetCallback());
+    context()->DeleteBucketData(bucket_info->ToBucketLocator(),
+                                success.GetCallback());
     return success.Get();
   }
 
@@ -1428,9 +1429,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnDelete) {
   storage::BucketInfo bucket_info;
   VerifyForcedClosedCalled(
-      base::BindOnce(
-          base::IgnoreResult(&IndexedDBTest::DeleteForStorageKeySync),
-          base::Unretained(this), GetTestStorageKey()),
+      base::BindOnce(base::IgnoreResult(&IndexedDBTest::DeleteBucket),
+                     base::Unretained(this), &bucket_info),
       &bucket_info);
   // Additionally, the directory should be deleted.
   base::FilePath test_path =

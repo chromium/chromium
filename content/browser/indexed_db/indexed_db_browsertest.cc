@@ -218,18 +218,21 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
         storage::GetHardCodedSettings(per_host_quota_kilobytes * KB));
   }
 
-  bool DeleteForStorageKey(const blink::StorageKey& storage_key,
-                           Shell* browser = nullptr) {
-    base::RunLoop loop;
-    auto& control = GetControl(browser);
-    bool result = false;
-    control.DeleteForStorageKey(storage_key,
-                                base::BindLambdaForTesting([&](bool success) {
-                                  result = success;
-                                  loop.Quit();
-                                }));
-    loop.Run();
-    return result;
+  // Deletes the default bucket for `storage_key`, verifying the behavior of
+  // `IndexedDBContextImpl::DeleteBucketData`.
+  bool DeleteBucketData(const blink::StorageKey& storage_key,
+                        Shell* browser = nullptr) {
+    base::test::TestFuture<blink::mojom::QuotaStatusCode> future;
+    (browser ? browser : shell())
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetQuotaManager()
+        ->proxy()
+        ->DeleteBucket(storage_key, storage::kDefaultBucketName,
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       future.GetCallback());
+    return future.Take() == blink::mojom::QuotaStatusCode::kOk;
   }
 
   int64_t RequestUsage(Shell* browser = nullptr) {
@@ -777,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "empty_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  DeleteForStorageKey(kTestStorageKey);
+  DeleteBucketData(kTestStorageKey);
   ASSERT_OK_AND_ASSIGN(
       const auto bucket_info,
       GetOrCreateBucket(
@@ -799,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_4mb_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
@@ -807,11 +810,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
   int64_t size = RequestUsage();
   // This assertion assumes that we do not compress blobs.
   EXPECT_GT(size, 4 << 20 /* 4 MB */);
-  DeleteForStorageKey(kTestStorageKey);
+  DeleteBucketData(kTestStorageKey);
   EXPECT_EQ(0, RequestUsage());
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
   const GURL test_url = GetTestUrl("indexeddb", "fill_up_5k.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
@@ -821,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
 
   EXPECT_GT(RequestUsage(browser), 5 * 1024);
 
-  DeleteForStorageKey(kTestStorageKey, browser);
+  DeleteBucketData(kTestStorageKey, browser);
 
   EXPECT_EQ(0, RequestUsage(browser));
 }
@@ -1204,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
-  DeleteForStorageKey(blink::StorageKey::CreateFirstParty(
+  DeleteBucketData(blink::StorageKey::CreateFirstParty(
       url::Origin::Create(GetTestUrl("indexeddb", kFilename))));
   std::u16string expected_title16(u"connection closed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);

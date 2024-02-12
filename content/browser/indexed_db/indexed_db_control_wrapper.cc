@@ -60,14 +60,6 @@ void IndexedDBControlWrapper::BindIndexedDB(
                                      client_token, std::move(receiver));
 }
 
-void IndexedDBControlWrapper::DeleteForStorageKey(
-    const blink::StorageKey& storage_key,
-    DeleteForStorageKeyCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->DeleteForStorageKey(storage_key, std::move(callback));
-}
-
 void IndexedDBControlWrapper::ForceClose(
     storage::BucketId bucket_id,
     storage::mojom::ForceCloseReason reason,

@@ -244,53 +244,10 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
   }
 }
 
-// Note - this is being kept async (instead of having a 'sync' version) to allow
-// ForceClose to become asynchronous.  This is required for
-// https://crbug.com/965142.
-void IndexedDBContextImpl::DeleteForStorageKey(
-    const blink::StorageKey& storage_key,
-    DeleteForStorageKeyCallback callback) {
-  quota_manager_proxy_->GetBucketsForStorageKey(
-      storage_key, blink::mojom::StorageType::kTemporary,
-      /*delete_expired=*/false, IDBTaskRunner(),
-      base::BindOnce(&IndexedDBContextImpl::OnGotBucketsForDeletion,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void IndexedDBContextImpl::OnGotBucketsForDeletion(
-    base::OnceCallback<void(bool)> callback,
-    storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-  if (!buckets.has_value() || buckets.value().empty()) {
-    std::move(callback).Run(buckets.has_value());
-    return;
-  }
-
-  auto barrier = base::BarrierCallback<bool>(
-      buckets->size(),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> final_callback,
-             const std::vector<bool>& successes) {
-            std::move(final_callback)
-                .Run(base::ranges::all_of(
-                    successes, [](bool success) { return success; }));
-          },
-          std::move(callback)));
-
-  for (const storage::BucketInfo& bucket : buckets.value()) {
-    DoDeleteBucketData(bucket.ToBucketLocator(), barrier);
-  }
-}
-
 void IndexedDBContextImpl::DeleteBucketData(
     const BucketLocator& bucket_locator,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  DoDeleteBucketData(bucket_locator, std::move(callback));
-}
-
-void IndexedDBContextImpl::DoDeleteBucketData(
-    const BucketLocator& bucket_locator,
-    base::OnceCallback<void(bool)> callback) {
   ForceClose(bucket_locator.id,
              storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
              base::DoNothing());
