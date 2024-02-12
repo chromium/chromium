@@ -139,10 +139,15 @@ def download_icons_from_android_search():
         engine = config_data['engine_aliases'][engine]
 
       directory_url = f'https://www.gstatic.com/android_search/search_providers/{engine}/'
-      try_filenames = [
-          config_data['non_default_icon_filenames'][engine] + 'mdpi.png'
-      ] if engine in config_data['non_default_icon_filenames'] else [
-          'mdpi.png', f'{engine}_mdpi.png'
+      try_filenames = []
+      if engine in config_data['non_default_icon_filenames']:
+        try_filenames = [
+            config_data['non_default_icon_filenames'][engine] + 'mdpi.png'
+        ]
+      try_filenames = try_filenames + [
+          f'{engine}_icon_mdpi.png',
+          f'{engine}_mdpi.png',
+          'mdpi.png',
       ]
       any_found = False
       for filename in try_filenames:
