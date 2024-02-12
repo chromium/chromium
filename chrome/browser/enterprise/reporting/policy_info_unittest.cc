@@ -107,10 +107,9 @@ TEST_F(PolicyInfoTest, ChromePolicy) {
 
   EXPECT_CALL(*policy_service(), GetPolicies(_));
 
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile());
   AppendChromePolicyInfoIntoProfileReport(
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(profile()))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
           .ToValueDict(),
@@ -156,10 +155,9 @@ TEST_F(PolicyInfoTest, ExtensionPolicy) {
                               policy::POLICY_SOURCE_PLATFORM, base::Value(3),
                               nullptr);
   em::ChromeUserProfileInfo profile_info;
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile());
   AppendExtensionPolicyInfoIntoProfileReport(
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(profile()))
           .EnableConvertTypes(false)
           .EnablePrettyPrint(false)
           .ToValueDict(),

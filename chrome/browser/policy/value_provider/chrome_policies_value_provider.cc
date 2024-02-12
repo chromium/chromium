@@ -45,10 +45,10 @@ ChromePoliciesValueProvider::~ChromePoliciesValueProvider() {
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetValues() {
-  auto client =
-      std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
-  auto policy_conversions = policy::ChromePolicyConversions(std::move(client));
-  return policy_conversions.ToValueDict();
+  return policy::PolicyConversions(
+             std::make_unique<policy::ChromePolicyConversionsClient>(profile_))
+      .UseChromePolicyConversions()
+      .ToValueDict();
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetNames() {

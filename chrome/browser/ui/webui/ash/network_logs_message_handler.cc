@@ -38,9 +38,10 @@ base::FilePath GetDownloadsDirectory(content::WebUI* web_ui) {
 }
 
 std::string GetJsonPolicies(content::WebUI* web_ui) {
-  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
-      web_ui->GetWebContents()->GetBrowserContext());
-  return policy::DictionaryPolicyConversions(std::move(client)).ToJSON();
+  return policy::PolicyConversions(
+             std::make_unique<policy::ChromePolicyConversionsClient>(
+                 web_ui->GetWebContents()->GetBrowserContext()))
+      .ToJSON();
 }
 
 bool WriteTimestampedFile(const base::FilePath& file_path,

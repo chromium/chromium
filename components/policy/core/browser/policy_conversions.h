@@ -41,12 +41,36 @@ extern const POLICY_EXPORT char kPrecedencePoliciesName[];
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // A convenience class to retrieve all policies values.
+// Usage example:
+// PolicyConversions
+//    .EnableConvertTypes(false)     // Using enable* functions to turn on/off
+//    .EnableConvertValues(false)    // some features. All enable* functions are
+//    .EnableConvertValues(true)     // optional.
+//    .UseChromePolicyConversions()  // Choose different delegate if needed.
+//    .ToValueDict();                // Choose the data format in the end.
 class POLICY_EXPORT PolicyConversions {
  public:
   // Maps known policy names to their schema. If a policy is not present, it is
   // not known (either through policy_templates.json or through an extension's
   // managed storage schema).
   using PolicyToSchemaMap = base::flat_map<std::string, Schema>;
+
+  // Delegate class that controls the structure and content of the output.
+  class Delegate {
+   public:
+    explicit Delegate(PolicyConversionsClient* client);
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    virtual ~Delegate();
+
+    virtual base::Value::Dict ToValueDict() = 0;
+
+   protected:
+    PolicyConversionsClient* client() { return client_; }
+
+   private:
+    raw_ptr<PolicyConversionsClient> client_;
+  };
 
   // |client| provides embedder-specific policy information and must not be
   // nullptr.
@@ -58,105 +82,74 @@ class POLICY_EXPORT PolicyConversions {
   // Set to get policy types as human friendly string instead of enum integer.
   // Policy types includes policy source, policy scope and policy level.
   // Enabled by default.
-  virtual PolicyConversions& EnableConvertTypes(bool enabled);
+  PolicyConversions& EnableConvertTypes(bool enabled);
   // Set to get dictionary policy value as JSON string.
   // Disabled by default.
-  virtual PolicyConversions& EnableConvertValues(bool enabled);
+  PolicyConversions& EnableConvertValues(bool enabled);
   // Set to get device local account policies on ChromeOS.
   // Disabled by default.
-  virtual PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
+  PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
   // Set to get device basic information on ChromeOS.
   // Disabled by default.
-  virtual PolicyConversions& EnableDeviceInfo(bool enabled);
+  PolicyConversions& EnableDeviceInfo(bool enabled);
   // Set to enable pretty print for all JSON string.
   // Enabled by default.
-  virtual PolicyConversions& EnablePrettyPrint(bool enabled);
+  PolicyConversions& EnablePrettyPrint(bool enabled);
   // Set to get all user scope policies.
   // Enabled by default.
-  virtual PolicyConversions& EnableUserPolicies(bool enabled);
+  PolicyConversions& EnableUserPolicies(bool enabled);
   // Set to drop the policies of which value is a default one set by the policy
   // provider. Disabled by default.
-  virtual PolicyConversions& SetDropDefaultValues(bool enabled);
+  PolicyConversions& SetDropDefaultValues(bool enabled);
+
+  // Switch to Chrome policy conversion to get Chrome policies.
+  // Chrome policy conversion can't be used to return device local account
+  // policies and device info.
+  PolicyConversions& UseChromePolicyConversions();
 
   // Returns the policy data as a JSON string;
-  virtual std::string ToJSON() = 0;
-
- protected:
-  PolicyConversionsClient* client() { return client_.get(); }
-
- private:
-  std::unique_ptr<PolicyConversionsClient> client_;
-};
-
-class POLICY_EXPORT DictionaryPolicyConversions : public PolicyConversions {
- public:
-  explicit DictionaryPolicyConversions(
-      std::unique_ptr<PolicyConversionsClient> client);
-  DictionaryPolicyConversions(const DictionaryPolicyConversions&) = delete;
-  DictionaryPolicyConversions& operator=(const DictionaryPolicyConversions&) =
-      delete;
-  ~DictionaryPolicyConversions() override;
-
-  DictionaryPolicyConversions& EnableConvertTypes(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableConvertValues(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableDeviceLocalAccountPolicies(
-      bool enabled) override;
-
-  DictionaryPolicyConversions& EnableDeviceInfo(bool enabled) override;
-
-  DictionaryPolicyConversions& EnablePrettyPrint(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableUserPolicies(bool enabled) override;
-
-  DictionaryPolicyConversions& SetDropDefaultValues(bool enabled) override;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  base::Value::Dict GetExtensionPolicies();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  std::string ToJSON() override;
+  std::string ToJSON();
 
   base::Value::Dict ToValueDict();
 
  private:
+  std::unique_ptr<PolicyConversionsClient> client_;
+  std::unique_ptr<Delegate> delegate_;
+};
+
+// Used to export all policies.
+class POLICY_EXPORT DefaultPolicyConversions
+    : public PolicyConversions::Delegate {
+ public:
+  explicit DefaultPolicyConversions(PolicyConversionsClient* client);
+  DefaultPolicyConversions(const DefaultPolicyConversions&) = delete;
+  DefaultPolicyConversions& operator=(const DefaultPolicyConversions&) = delete;
+  ~DefaultPolicyConversions() override;
+
+  base::Value::Dict ToValueDict() override;
+
+ private:
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  base::Value::Dict GetExtensionPolicies();
   base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Value::Dict GetDeviceLocalAccountPolicies();
 #endif
 };
 
-// PolicyConversions implementation that retrieves Chrome policies. The
-// retrieved policies include precedence policies for non-ChromeOS and device
-// local account policies and identity fields for ChromeOS Ash.
-class POLICY_EXPORT ChromePolicyConversions : public PolicyConversions {
+// Used to export all Chrome policies. It also splits precedence
+// policies into a different section.
+class POLICY_EXPORT ChromePolicyConversions
+    : public PolicyConversions::Delegate {
  public:
-  explicit ChromePolicyConversions(
-      std::unique_ptr<PolicyConversionsClient> client);
+  explicit ChromePolicyConversions(PolicyConversionsClient* client);
   ChromePolicyConversions(const ChromePolicyConversions&) = delete;
   ChromePolicyConversions& operator=(const ChromePolicyConversions&) = delete;
   ~ChromePolicyConversions() override;
 
-  ChromePolicyConversions& EnableConvertTypes(bool enabled) override;
-
-  ChromePolicyConversions& EnableConvertValues(bool enabled) override;
-
-  ChromePolicyConversions& EnableDeviceLocalAccountPolicies(
-      bool enabled) override;
-
-  ChromePolicyConversions& EnableDeviceInfo(bool enabled) override;
-
-  ChromePolicyConversions& EnablePrettyPrint(bool enabled) override;
-
-  ChromePolicyConversions& EnableUserPolicies(bool enabled) override;
-
-  ChromePolicyConversions& SetDropDefaultValues(bool enabled) override;
-
-  std::string ToJSON() override;
-
-  base::Value::Dict ToValueDict();
+  base::Value::Dict ToValueDict() override;
 
  private:
   base::Value::Dict GetChromePolicies();

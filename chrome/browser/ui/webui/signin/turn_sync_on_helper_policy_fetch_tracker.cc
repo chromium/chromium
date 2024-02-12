@@ -69,7 +69,7 @@ class PolicyFetchTracker
     if (provider != profile_->GetUserCloudPolicyManager())
       return;
     VLOG(2) << "Policies after sign in:";
-    VLOG(2) << policy::DictionaryPolicyConversions(
+    VLOG(2) << policy::PolicyConversions(
                    std::make_unique<policy::ChromePolicyConversionsClient>(
                        profile_))
                    .ToJSON();

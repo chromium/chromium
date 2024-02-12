@@ -267,11 +267,10 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
 }
 
 std::string PolicyUIHandler::GetPoliciesAsJson() {
-  auto client = std::make_unique<PolicyConversionsClientIOS>(
-      ChromeBrowserState::FromWebUIIOS(web_ui()));
-
   return policy::GenerateJson(
-      /*policy_values=*/policy::DictionaryPolicyConversions(std::move(client))
+      /*policy_values=*/policy::PolicyConversions(
+          std::make_unique<PolicyConversionsClientIOS>(
+              ChromeBrowserState::FromWebUIIOS(web_ui())))
           .ToValueDict(),
       GetStatusValue(),
       policy::JsonGenerationParams()
@@ -340,11 +339,11 @@ base::Value::Dict PolicyUIHandler::GetPolicyValues() const {
   base::Value::List policy_ids;
   policy_ids.Append(policy::kChromePoliciesId);
 
-  auto client = std::make_unique<PolicyConversionsClientIOS>(
-      ChromeBrowserState::FromWebUIIOS(web_ui()));
   base::Value::Dict policy_values =
-      policy::ChromePolicyConversions(std::move(client))
+      policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
+                                    ChromeBrowserState::FromWebUIIOS(web_ui())))
           .EnableConvertValues(true)
+          .UseChromePolicyConversions()
           .ToValueDict();
 
   base::Value::Dict dict;

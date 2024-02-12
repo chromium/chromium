@@ -191,9 +191,9 @@ std::string SystemLogDelegate::GetPolicyAsJSON() {
           user_manager::UserManager::Get()->GetPrimaryUser()->IsAffiliated();
     }
   }
-  auto client = std::make_unique<ChromePolicyConversionsClient>(
-      ProfileManager::GetActiveUserProfile());
-  return DictionaryPolicyConversions(std::move(client))
+
+  return PolicyConversions(std::make_unique<ChromePolicyConversionsClient>(
+                               ProfileManager::GetActiveUserProfile()))
       .EnableUserPolicies(include_user_policies)
       .EnableDeviceLocalAccountPolicies(true)
       .EnableDeviceInfo(true)

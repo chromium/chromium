@@ -1514,10 +1514,10 @@ ExtensionFunction::ResponseAction
 AutotestPrivateGetAllEnterprisePoliciesFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetAllEnterprisePoliciesFunction";
 
-  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
-      browser_context());
   base::Value::Dict all_policies_dict =
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(
+              browser_context()))
           .EnableDeviceLocalAccountPolicies(true)
           .EnableDeviceInfo(true)
           .ToValueDict();
