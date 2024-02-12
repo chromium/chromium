@@ -5395,6 +5395,15 @@ crbug.com/1370307 external/wpt/encoding-detection/yi-windows-1255-late.tentative
 crbug.com/1370307 external/wpt/encoding-detection/zh-Big5-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ Failure Pass ]
 
+# Implement lazy loading scroll margin for iframes
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-horizontal.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-nested-2.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-nested-3.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-nested-4.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-nested-5.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller-nested.html [ Failure ]
+crbug.com/40943726 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-in-scroller.html [ Failure ]
+
 # Disable top flakes trigger step failure on builders
 crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Failure Pass ]
 crbug.com/1380069 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
