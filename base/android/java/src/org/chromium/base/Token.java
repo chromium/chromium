@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
 
@@ -75,7 +76,8 @@ public final class Token {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         Token createRandom();
     }
 }
