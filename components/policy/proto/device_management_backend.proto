@@ -269,6 +269,13 @@ message DeviceRegisterRequest {
     // Attestation re-enrollment just failed, attempt manual enrollment as
     // fallback.
     FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 17;
+    // Device state downloaded from the server indicated that initial enrollment
+    // is mandatory and should be token-based.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
+    // Device state downloaded from the server indicated that initial token-based
+    // enrollment is mandatory, but it failed and we are doing fallback to
+    // manual enrollment.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
