@@ -37,8 +37,7 @@ class TestMessageView : public MessageView {
   }
 
  private:
-  raw_ptr<NotificationControlButtonsView, DanglingUntriaged> buttons_view_ =
-      nullptr;
+  raw_ptr<NotificationControlButtonsView> buttons_view_ = nullptr;
 };
 
 }  // namespace
@@ -69,6 +68,7 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
+    message_view_->set_control_buttons_view(nullptr);
     widget_.reset();
     views::ViewsTestBase::TearDown();
   }
