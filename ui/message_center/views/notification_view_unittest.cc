@@ -126,8 +126,7 @@ class NotificationViewTest : public views::ViewObserver,
 
     if (notification_view_) {
       static_cast<views::View*>(notification_view_)->RemoveObserver(this);
-      notification_view_->GetWidget()->Close();
-      notification_view_ = nullptr;
+      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
     }
     MessageCenter::Shutdown();
     views::ViewsTestBase::TearDown();
@@ -273,8 +272,7 @@ class NotificationViewTest : public views::ViewObserver,
     if (delete_on_notification_removed_) {
       views::InkDrop::Get(notification_view_)
           ->SetMode(views::InkDropHost::InkDropMode::OFF);
-      notification_view_->GetWidget()->CloseNow();
-      notification_view_ = nullptr;
+      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
       return;
     }
   }
@@ -287,7 +285,7 @@ class NotificationViewTest : public views::ViewObserver,
     ink_drop_stopped_ = true;
   }
 
-  raw_ptr<NotificationView, DanglingUntriaged> notification_view_ = nullptr;
+  raw_ptr<NotificationView> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
