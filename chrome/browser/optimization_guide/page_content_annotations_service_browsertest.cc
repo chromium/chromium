@@ -917,6 +917,7 @@ class PageContentAnnotationsServiceBatchVisitTest
          {features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "2"}}},
+         {features::kPageEntitiesPageContentAnnotations, {}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
