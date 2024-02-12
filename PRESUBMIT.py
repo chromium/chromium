@@ -1779,7 +1779,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      pattern = r'\bg_signal_connect',
+      pattern = r'/\bg_signal_connect',
       explanation = (
         'Use ScopedGSignal instead of g_signal_connect*()',
       ),
