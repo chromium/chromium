@@ -109,6 +109,24 @@ void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
 }
 
+int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
+  // The default GetHeightForWidth() does not consider the heights of children
+  // correctly, thus we need to estimate the height of promo card by ourself.
+
+  const int current_height = views::View::GetHeightForWidth(width);
+  const int current_height_title = title_->GetPreferredSize().height();
+  const int current_height_description =
+      description_->GetPreferredSize().height();
+
+  const int future_label_width = GetPromoCardLabelWidth(width);
+  const int future_height_title = title_->GetHeightForWidth(future_label_width);
+  const int future_height_description =
+      description_->GetHeightForWidth(future_label_width);
+
+  return current_height - current_height_title - current_height_description +
+         future_height_title + future_height_description;
+}
+
 void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
 
@@ -144,21 +162,7 @@ bool EditorMenuPromoCardView::AcceleratorPressed(
 
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
-  // Multiline labels aren't resized properly in flex or box layouts. According
-  // to https://crbug.com/678337#c7 this isn't easy to fix. As a workaround, we
-  // explicitly set the labels' maximum width.
-  const int promo_card_width = anchor_view_bounds.width();
-  const int label_width = GetPromoCardLabelWidth(promo_card_width);
-  title_->SetMaximumWidth(label_width);
-  description_->SetMaximumWidth(label_width);
-
-  // Since the width of the labels can affect their preferred height, compute
-  // promo card preferred size after label width has been set.
-  const gfx::Size promo_card_size(promo_card_width,
-                                  GetHeightForWidth(promo_card_width));
-
-  GetWidget()->SetBounds(
-      GetEditorMenuBounds(anchor_view_bounds, promo_card_size));
+  GetWidget()->SetBounds(GetEditorMenuBounds(anchor_view_bounds, this));
 }
 
 void EditorMenuPromoCardView::InitLayout() {

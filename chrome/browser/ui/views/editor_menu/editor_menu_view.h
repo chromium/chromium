@@ -53,6 +53,7 @@ class EditorMenuView : public PreTargetHandlerView {
   void AddedToWidget() override;
   void RequestFocus() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  int GetHeightForWidth(int width) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
