@@ -50,8 +50,8 @@ AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
-    : webdata_service_(webdata_service),
-      notify_pdm_observers_(notify_pdm_observers),
+    : notify_pdm_observers_(notify_pdm_observers),
+      webdata_service_(webdata_service),
       app_locale_(app_locale) {
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.

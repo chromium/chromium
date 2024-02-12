@@ -275,7 +275,7 @@ class PersonalDataManager : public KeyedService,
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
   // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
-  virtual AutofillProfile* GetProfileByGUID(const std::string& guid) const;
+  AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.
@@ -440,11 +440,11 @@ class PersonalDataManager : public KeyedService,
   // The profiles are returned in the specified `order`.
   // TODO(crbug.com/1487119): Change return type to
   // std::vector<const AutofillProfile*>
-  virtual std::vector<AutofillProfile*> GetProfiles(
+  std::vector<AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
   // TODO(crbug.com/1487119): Change return type to
   // std::vector<const AutofillProfile*>
-  virtual std::vector<AutofillProfile*> GetProfilesFromSource(
+  std::vector<AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
   // Returns just LOCAL_CARD cards.
@@ -789,9 +789,6 @@ class PersonalDataManager : public KeyedService,
   AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
-
-  // Loads the saved profiles from the web database.
-  virtual void LoadProfiles();
 
   // Loads the saved credit cards from the web database.
   virtual void LoadCreditCards();

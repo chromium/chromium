@@ -364,11 +364,15 @@ void PersonalDataManager::Init(
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler) {
-  address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database,
-      base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                          base::Unretained(this)),
-      app_locale_);
+  // TODO(b/322170538): Some tests use the TestPDM, but still call Init(),
+  // effectively overwriting the TestADM with a real ADM.
+  if (!address_data_manager_) {
+    address_data_manager_ = std::make_unique<AddressDataManager>(
+        profile_database,
+        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
+                            base::Unretained(this)),
+        app_locale_);
+  }
   database_helper_->Init(profile_database, account_database);
 
   SetPrefService(pref_service);
@@ -1541,7 +1545,7 @@ PersonalDataManager::GetVirtualCardUsageData() const {
 }
 
 void PersonalDataManager::Refresh() {
-  LoadProfiles();
+  address_data_manager_->LoadProfiles();
   LoadCreditCards();
   LoadCreditCardCloudTokenData();
   LoadIbans();
@@ -2097,10 +2101,6 @@ void PersonalDataManager::SetCreditCards(
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
-}
-
-void PersonalDataManager::LoadProfiles() {
-  address_data_manager_->LoadProfiles();
 }
 
 void PersonalDataManager::LoadCreditCards() {

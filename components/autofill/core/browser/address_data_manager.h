@@ -21,7 +21,6 @@
 namespace autofill {
 
 class PersonalDataManager;
-class TestPersonalDataManager;
 
 // Intended to contain all address-related logic of the `PersonalDataManager`.
 // Owned by the PDM.
@@ -77,17 +76,17 @@ class AddressDataManager : public WebDataServiceConsumer {
   AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Adds |profile| to the web database.
-  void AddProfile(const AutofillProfile& profile);
+  virtual void AddProfile(const AutofillProfile& profile);
 
   // Updates |profile| which already exists in the web database.
-  void UpdateProfile(const AutofillProfile& profile);
+  virtual void UpdateProfile(const AutofillProfile& profile);
 
   // Removes the profile by `guid`.
-  void RemoveProfile(const std::string& guid);
+  virtual void RemoveProfile(const std::string& guid);
 
   // Asynchronously loads all `AutofillProfile`s (from all sources) into the
   // class's state. See `synced_local_profiles_` and `account_profiles_`.
-  void LoadProfiles();
+  virtual void LoadProfiles();
 
   void CancelAllPendingQueries() {
     CancelPendingQuery(pending_synced_local_profiles_query_);
@@ -99,20 +98,7 @@ class AddressDataManager : public WebDataServiceConsumer {
            pending_account_profiles_query_;
   }
 
- private:
-  // TODO(b/322170538): Remove once all code writing to `synced_local_profiles_`
-  // and `account_profile_` moved to this class.
-  friend class PersonalDataManager;
-  friend class TestPersonalDataManager;
-
-  // A profile change with a boolean representing if the change is ongoing or
-  // not. "Ongoing" means that the change is taking place asynchronously on the
-  // DB sequence at the moment. Ongoing changes are still part of
-  // `ongoing_profile_changes_` to prevent other changes from being scheduled.
-  using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
-
-  void CancelPendingQuery(WebDataServiceBase::Handle& handle);
-
+ protected:
   // Profiles of different sources are stored in different vectors.
   // Several function need to read/write from the correct vector, depending
   // on the source of the profile they are dealing with. This helper function
@@ -124,6 +110,25 @@ class AddressDataManager : public WebDataServiceConsumer {
     return const_cast<std::vector<std::unique_ptr<AutofillProfile>>&>(
         const_cast<const AddressDataManager*>(this)->GetProfileStorage(source));
   }
+
+  // TODO(b/322170538): Remove once the PDM observer is split.
+  base::RepeatingClosure notify_pdm_observers_;
+
+  // Tracks whether the first `LoadProfiles()` call has already finished.
+  bool has_initial_load_finished_ = false;
+
+ private:
+  // TODO(b/322170538): Remove once all code writing to `synced_local_profiles_`
+  // and `account_profile_` moved to this class.
+  friend class PersonalDataManager;
+
+  // A profile change with a boolean representing if the change is ongoing or
+  // not. "Ongoing" means that the change is taking place asynchronously on the
+  // DB sequence at the moment. Ongoing changes are still part of
+  // `ongoing_profile_changes_` to prevent other changes from being scheduled.
+  using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
+
+  void CancelPendingQuery(WebDataServiceBase::Handle& handle);
 
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);
@@ -163,15 +168,9 @@ class AddressDataManager : public WebDataServiceConsumer {
   // The WebDataService used to schedule tasks on the `AddressAutofillTable`.
   scoped_refptr<AutofillWebDataService> webdata_service_;
 
-  // TODO(b/322170538): Remove once the PDM observer is split.
-  base::RepeatingClosure notify_pdm_observers_;
-
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
       ongoing_profile_changes_;
-
-  // Tracks whether the first `LoadProfiles()` call has already finished.
-  bool has_initial_load_finished_ = false;
 
   const std::string app_locale_;
 

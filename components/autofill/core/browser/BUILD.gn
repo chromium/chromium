@@ -888,6 +888,8 @@ static_library("test_support") {
     "strike_databases/payments/test_strike_database.h",
     "strike_databases/test_inmemory_strike_database.cc",
     "strike_databases/test_inmemory_strike_database.h",
+    "test_address_data_manager.cc",
+    "test_address_data_manager.h",
     "test_address_normalizer.cc",
     "test_address_normalizer.h",
     "test_autofill_client.h",
