@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_SETTINGS_SUPERVISED_USER_CROS_SETTINGS_PROVIDER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 
@@ -27,9 +27,9 @@ class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
   ~SupervisedUserCrosSettingsProvider() override;
 
   // CrosSettingsProvider:
-  const base::Value* Get(base::StringPiece path) const override;
+  const base::Value* Get(std::string_view path) const override;
   TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) override;
-  bool HandlesSetting(base::StringPiece path) const override;
+  bool HandlesSetting(std::string_view path) const override;
 
  private:
   // Cros pref name to pref value.

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -1382,7 +1383,7 @@ DeviceSettingsProvider::~DeviceSettingsProvider() {
 }
 
 // static
-bool DeviceSettingsProvider::IsDeviceSetting(base::StringPiece name) {
+bool DeviceSettingsProvider::IsDeviceSetting(std::string_view name) {
   return base::Contains(kKnownSettings, name);
 }
 
@@ -1616,7 +1617,7 @@ bool DeviceSettingsProvider::MitigateMissingPolicy() {
   return true;
 }
 
-const base::Value* DeviceSettingsProvider::Get(base::StringPiece path) const {
+const base::Value* DeviceSettingsProvider::Get(std::string_view path) const {
   if (IsDeviceSetting(path)) {
     const base::Value* value;
     if (values_cache_.GetValue(path, &value))
@@ -1636,7 +1637,7 @@ DeviceSettingsProvider::PrepareTrustedValues(base::OnceClosure* callback) {
   return status;
 }
 
-bool DeviceSettingsProvider::HandlesSetting(base::StringPiece path) const {
+bool DeviceSettingsProvider::HandlesSetting(std::string_view path) const {
   return IsDeviceSetting(path);
 }
 
