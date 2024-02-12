@@ -59,8 +59,14 @@ AutofillWalletCredentialSyncBridge::AutofillWalletCredentialSyncBridge(
     AutofillWebDataBackend* web_data_backend)
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
-  CHECK(web_data_backend_);
-  CHECK(GetAutofillTable());
+  // Report an error for the wallet credential sync data type if the web
+  // database isn't loaded.
+  if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
+      !GetAutofillTable()) {
+    ModelTypeSyncBridge::change_processor()->ReportError(
+        {FROM_HERE, "Failed to load AutofillWebDatabase."});
+    return;
+  }
   scoped_observation_.Observe(web_data_backend_.get());
   LoadMetadata();
 }
