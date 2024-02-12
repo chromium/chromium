@@ -5663,21 +5663,6 @@
             ]
         }
     ],
-    "DeferTabSwitcherLayoutCreation": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeferTabSwitcherLayoutCreation"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferredOverlayRelease": [
         {
             "platforms": [
