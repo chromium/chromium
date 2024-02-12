@@ -194,6 +194,7 @@ enum class ExternalActionDefaultBrowserPromoUsage {
       itemType == ItemTypeSelectChromeStep) {
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
   }
+  cell.userInteractionEnabled = NO;
   return cell;
 }
 
