@@ -2,16 +2,15 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Downloads package lists and records package versions into
 dist_package_versions.json.
 """
 
 import binascii
-import gzip
 import hashlib
 import io
 import json
+import lzma
 import os
 import re
 import subprocess
@@ -23,13 +22,14 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 SUPPORTED_DEBIAN_RELEASES = {
     "Debian 10 (Buster)": "buster",
-    # TODO: bullseye-updates does not have a .gz file.
-    # 'Debian 11 (Bullseye)': 'bullseye',
+    "Debian 11 (Bullseye)": "bullseye",
+    "Debian 12 (Bookworm)": "bookworm",
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
     "Ubuntu 18.04 (Bionic)": "bionic",
     "Ubuntu 20.04 (Focal)": "focal",
+    "Ubuntu 22.04 (Jammy)": "jammy",
 }
 
 PACKAGE_FILTER = {
@@ -44,7 +44,10 @@ PACKAGE_FILTER = {
     "libdrm2",
     "libexpat1",
     "libgbm1",
-    "libgcc1",
+    # See the comment in calculate_package_deps.py about libgcc_s.
+    # TODO(https://crbug.com/40549424): Add this once support for
+    # Debian Buster and Ubuntu Bionic are dropped.
+    # "libgcc-s1",
     "libglib2.0-0",
     "libnspr4",
     "libnss3",
@@ -87,11 +90,12 @@ for release in SUPPORTED_DEBIAN_RELEASES:
     codename = SUPPORTED_DEBIAN_RELEASES[release]
     deb_sources[release] = [{
         "base_url": url,
-        "packages": ["main/binary-amd64/Packages.gz"]
+        "packages": ["main/binary-amd64/Packages.xz"]
     } for url in [
         "http://ftp.us.debian.org/debian/dists/%s" % codename,
         "http://ftp.us.debian.org/debian/dists/%s-updates" % codename,
-        "http://security.debian.org/dists/%s/updates" % codename,
+        "http://security.debian.org/dists/%s/updates" %
+        (codename if codename == "buster" else codename + "-security"),
     ]]
 for release in SUPPORTED_UBUNTU_RELEASES:
     codename = SUPPORTED_UBUNTU_RELEASES[release]
@@ -99,7 +103,7 @@ for release in SUPPORTED_UBUNTU_RELEASES:
     deb_sources[release] = [{
         "base_url":
         url,
-        "packages": ["%s/binary-amd64/Packages.gz" % repo for repo in repos],
+        "packages": ["%s/binary-amd64/Packages.xz" % repo for repo in repos],
     } for url in [
         "http://us.archive.ubuntu.com/ubuntu/dists/%s" % codename,
         "http://us.archive.ubuntu.com/ubuntu/dists/%s-updates" % codename,
@@ -128,21 +132,21 @@ for distro in deb_sources:
             release_gpg_file.name,
             release_file.name,
         ])
-        for packages_gz in source["packages"]:
+        for packages_xz in source["packages"]:
             with urllib.request.urlopen("%s/%s" %
-                                        (base_url, packages_gz)) as response:
-                gz_data = response.read()
+                                        (base_url, packages_xz)) as response:
+                xz_data = response.read()
 
             sha = hashlib.sha256()
-            sha.update(gz_data)
+            sha.update(xz_data)
             digest = binascii.hexlify(sha.digest()).decode("utf-8")
             matches = [
                 line for line in release.split("\n")
-                if digest in line and packages_gz in line
+                if digest in line and packages_xz in line
             ]
             assert len(matches) == 1
 
-            with gzip.open(io.BytesIO(gz_data), "rb") as f:
+            with lzma.open(io.BytesIO(xz_data), "rb") as f:
                 contents = f.read().decode("utf-8")
             package = ""
             for line in contents.split("\n"):
