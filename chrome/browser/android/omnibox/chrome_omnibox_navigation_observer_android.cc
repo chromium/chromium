@@ -77,11 +77,10 @@ ChromeOmniboxNavigationObserverAndroid::
 
 bool ChromeOmniboxNavigationObserverAndroid::NavigationEligible(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame()) {
-    if (!navigation_handle->HasCommitted() ||
-        !navigation_handle->GetResponseHeaders()) {
-      return false;
-    }
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      !navigation_handle->GetResponseHeaders()) {
+    return false;
   }
 
   int response_code = navigation_handle->GetResponseHeaders()->response_code();
