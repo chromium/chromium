@@ -49,8 +49,8 @@ class TestCalendarClient : public CalendarClient {
 
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
-      const base::Time& start_time,
-      const base::Time& end_time) override {
+      const base::Time start_time,
+      const base::Time end_time) override {
     // Store these off.
     start_time_ = start_time;
     callback_ = std::move(callback);
@@ -61,6 +61,17 @@ class TestCalendarClient : public CalendarClient {
     StartResponseDelayTimeout();
     return base::BindOnce(&TestCalendarClient::CancelCallback,
                           weak_factory_.GetWeakPtr());
+  }
+
+  base::OnceClosure GetEventList(
+      google_apis::calendar::CalendarEventListCallback callback,
+      const base::Time start_time,
+      const base::Time end_time,
+      const std::string& calendar_id,
+      const std::string& calendar_color_id) override {
+    // TODO(b/320738368): Implement TestCalendarClient changes to follow
+    // incoming CalendarEventFetch changes.
+    return base::DoNothing();
   }
 
   void CancelCallback() { set_api_error_code(google_apis::CANCELLED); }
@@ -170,7 +181,7 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
   }
 
   std::unique_ptr<CalendarEventFetch> PerformFetch(
-      const base::Time& start_of_month) {
+      const base::Time start_of_month) {
     std::unique_ptr<CalendarEventFetch> fetch =
         std::make_unique<CalendarEventFetch>(
             start_of_month,

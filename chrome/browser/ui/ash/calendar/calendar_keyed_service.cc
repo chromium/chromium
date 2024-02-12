@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "ash/calendar/calendar_controller.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -134,23 +136,42 @@ base::OnceClosure CalendarKeyedService::GetCalendarList(
 
 base::OnceClosure CalendarKeyedService::GetEventList(
     CalendarEventListCallback callback,
-    const base::Time& start_time,
-    const base::Time& end_time) {
+    const base::Time start_time,
+    const base::Time end_time) {
   CHECK(thread_checker_.CalledOnValidThread());
   CHECK(callback);
   CHECK_LT(start_time, end_time);
 
   if (!sender_) {
-    std::move(callback).Run(google_apis::OTHER_ERROR, nullptr);
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
     return base::DoNothing();
   }
 
-  std::unique_ptr<CalendarApiEventsRequest> request =
+  return sender_->StartRequestWithAuthRetry(
       std::make_unique<CalendarApiEventsRequest>(sender_.get(), url_generator_,
                                                  std::move(callback),
-                                                 start_time, end_time);
+                                                 start_time, end_time));
+}
 
-  return sender_->StartRequestWithAuthRetry(std::move(request));
+base::OnceClosure CalendarKeyedService::GetEventList(
+    CalendarEventListCallback callback,
+    const base::Time start_time,
+    const base::Time end_time,
+    const std::string& calendar_id,
+    const std::string& calendar_color_id) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK(callback);
+  CHECK_LT(start_time, end_time);
+
+  if (!sender_) {
+    std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
+    return base::DoNothing();
+  }
+
+  return sender_->StartRequestWithAuthRetry(
+      std::make_unique<CalendarApiEventsRequest>(
+          sender_.get(), url_generator_, std::move(callback), start_time,
+          end_time, calendar_id, calendar_color_id));
 }
 
 }  // namespace ash
