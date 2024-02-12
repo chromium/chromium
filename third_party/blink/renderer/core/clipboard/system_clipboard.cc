@@ -424,7 +424,7 @@ void SystemClipboard::ReadUnsanitizedCustomFormat(
   // reject promises if the context is detached.
   if (!clipboard_.is_bound())
     return;
-  // The format size restriction is added in `ClipboardWriter::IsValidType`.
+  // The format size restriction is added in `ClipboardItem::supports`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->ReadUnsanitizedCustomFormat(type, std::move(callback));
 }
@@ -437,7 +437,7 @@ void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
       data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
     return;
   }
-  // The format size restriction is added in `ClipboardWriter::IsValidType`.
+  // The format size restriction is added in `ClipboardItem::supports`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->WriteUnsanitizedCustomFormat(type, std::move(data));
 }

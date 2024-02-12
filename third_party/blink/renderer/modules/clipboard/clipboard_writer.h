@@ -54,23 +54,12 @@ class SystemClipboard;
 class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
                         public FileReaderAccumulator {
  public:
-  // For writing sanitized and custom MIME types.
-  // IsValidType() must return true on types passed into `mime_type`.
   static ClipboardWriter* Create(SystemClipboard* system_clipboard,
                                  const String& mime_type,
                                  ClipboardPromise* promise);
 
   ~ClipboardWriter() override;
 
-  // Returns whether ClipboardWriter has implemented support for this type.
-  //
-  // IsValidType() is expected to be called before Create(). If it returns false
-  // for a `mime_type`, Create() must not be called with that `mime_type`.
-  //
-  // IsValidType() is used for both ClipboardWriter and ClipboardReader, as read
-  // and write currently support the same types. If this changes in the future,
-  // please create separate IsValidType functions.
-  static bool IsValidType(const String& mime_type);
   // Begins the sequence of writing the Blob to the system clipbaord.
   void WriteToSystem(Blob* blob);
 

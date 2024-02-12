@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -83,11 +84,21 @@ ScriptPromise ClipboardItem::getType(ScriptState* script_state,
 
 // static
 bool ClipboardItem::supports(const String& type) {
-  if (type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-      type == kMimeTypeTextHTML) {
+  if (type.length() >= mojom::blink::ClipboardHost::kMaxFormatSize) {
+    return false;
+  }
+
+  if (!Clipboard::ParseWebCustomFormat(type).empty()) {
     return true;
   }
-  return !Clipboard::ParseWebCustomFormat(type).empty();
+
+  if (type == kMimeTypeImageSvg) {
+    return RuntimeEnabledFeatures::ClipboardSvgEnabled();
+  }
+
+  // TODO(https://crbug.com/1029857): Add support for other types.
+  return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
+         type == kMimeTypeTextHTML;
 }
 
 void ClipboardItem::Trace(Visitor* visitor) const {

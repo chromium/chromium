@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -325,7 +324,7 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise,
                                          bool sanitize_html) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  CHECK(ClipboardItem::supports(mime_type));
   // If this is a web custom format then read the unsanitized version.
   if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
     // We read the custom MIME type that has the "web " prefix.
