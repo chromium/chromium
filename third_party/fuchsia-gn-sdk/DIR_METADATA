@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Fuchsia"
 }
 os: FUCHSIA
+buganizer_public: {
+  component_id: 1456675
+}

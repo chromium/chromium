@@ -1,3 +1,6 @@
 monorail: {
   component: "Blink>XML"
 }
+buganizer_public: {
+  component_id: 1456730
+}
