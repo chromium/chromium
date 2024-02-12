@@ -1889,15 +1889,17 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     node_data->SetDefaultActionVerb(Action());
   }
 
-  if (NextOnLine() && !NextOnLine()->IsDetached()) {
+  if (AXObject* next_on_line = NextOnLine()) {
+    CHECK(!next_on_line->IsDetached());
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
-                               NextOnLine()->AXObjectID());
+                               next_on_line->AXObjectID());
   }
 
-  if (PreviousOnLine() && !PreviousOnLine()->IsDetached()) {
+  if (AXObject* prev_on_line = PreviousOnLine()) {
+    CHECK(!prev_on_line->IsDetached());
     node_data->AddIntAttribute(
         ax::mojom::blink::IntAttribute::kPreviousOnLineId,
-        PreviousOnLine()->AXObjectID());
+        prev_on_line->AXObjectID());
   }
 
   AXObjectVector error_messages = ErrorMessage();
@@ -7968,8 +7970,9 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (!cached_values_only && !CanHaveChildren()) {
       string_builder = string_builder + " cannotHaveChildren";
     }
-    if (!GetLayoutObject())
+    if (!GetLayoutObject() && !IsAXInlineTextBox()) {
       string_builder = string_builder + " missingLayout";
+    }
 
     if (cached_values_only ? cached_is_used_for_label_or_description_
                            : IsUsedForLabelOrDescription()) {
