@@ -433,6 +433,10 @@ config("coverage_flags") {
         ]
       }
     }
+    if (sanitizer_coverage_allowlist != "") {
+      cflags += [ "-fsanitize-coverage-allowlist=" +
+                  rebase_path(sanitizer_coverage_allowlist, root_build_dir) ]
+    }
   }
 }
 
