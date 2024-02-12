@@ -26,10 +26,6 @@
 namespace {
 
 // Delay at the startup before performing the model execution validation.
-constexpr base::TimeDelta kModelExecutionValidationStartupDelay =
-    base::Seconds(2);
-
-// Delay at the startup before performing the model execution validation.
 constexpr base::TimeDelta kOnDeviceModelExecutionValidationStartupDelay =
     base::Seconds(5);
 
@@ -84,12 +80,11 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
       identity_manager_observation_.Observe(identity_manager);
       return;
     }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelValidatorKeyedService::StartModelExecutionValidation,
-            weak_ptr_factory_.GetWeakPtr()),
-        kModelExecutionValidationStartupDelay);
+            weak_ptr_factory_.GetWeakPtr()));
   }
   if (switches::GetOnDeviceValidationRequestOverride()) {
     base::FilePath ondevice_override_file =
@@ -119,11 +114,10 @@ void ModelValidatorKeyedService::OnPrimaryAccountChanged(
     return;
   }
   identity_manager_observation_.Reset();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ModelValidatorKeyedService::StartModelExecutionValidation,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kModelExecutionValidationStartupDelay);
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ModelValidatorKeyedService::StartModelExecutionValidation() {
