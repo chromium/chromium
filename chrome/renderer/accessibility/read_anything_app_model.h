@@ -332,6 +332,9 @@ class ReadAnythingAppModel {
 
   bool IsTextForReadAnything(ui::AXNodeID ax_node_id) const;
 
+  bool ShouldSplitAtParagraph(ui::AXNodePosition::AXPositionInstance& position,
+                              ReadAloudCurrentGranularity& current_granularity);
+
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called
   // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition

@@ -1171,8 +1171,7 @@ ReadAnythingAppModel::GetNextNodes() {
       // If the position is now at the start of a paragraph and we already have
       // nodes to return, return the current list of nodes so that we don't
       // cross paragraph boundaries with text.
-      if (ax_position_->AtStartOfParagraph() &&
-          current_granularity.node_ids.size() > 0) {
+      if (ShouldSplitAtParagraph(ax_position_, current_granularity)) {
         return current_granularity;
       }
 
@@ -1442,4 +1441,14 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
 
 bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
   return (c == '(' || c == '{' || c == '[' || c == '<');
+}
+
+// We should split the current utterance at a paragraph boundary if the
+// AXPosition is at the start of a paragraph and we already have nodes in
+// our current granularity segment.
+bool ReadAnythingAppModel::ShouldSplitAtParagraph(
+    ui::AXNodePosition::AXPositionInstance& position,
+    ReadAloudCurrentGranularity& current_granularity) {
+  return position->AtStartOfParagraph() &&
+         (current_granularity.node_ids.size() > 0);
 }
