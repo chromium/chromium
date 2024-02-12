@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_AFFILIATION_AFFILIATION_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_POLICY_AFFILIATION_AFFILIATION_TEST_HELPER_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 class AccountId;
@@ -46,7 +47,7 @@ class AffiliationTestHelper {
   // modified by this function.
   void SetDeviceAffiliationIDs(
       DevicePolicyCrosTestHelper* test_helper,
-      const base::span<const base::StringPiece>& device_affiliation_ids);
+      const base::span<const std::string_view>& device_affiliation_ids);
 
   // Sets user affiliation IDs to |user_affiliation_ids| in
   // |fake_session_manager_client| and modifies |user_policy| so that it
@@ -56,7 +57,7 @@ class AffiliationTestHelper {
   void SetUserAffiliationIDs(
       UserPolicyBuilder* user_policy,
       const AccountId& user_account_id,
-      const base::span<const base::StringPiece>& user_affiliation_ids);
+      const base::span<const std::string_view>& user_affiliation_ids);
 
   // Registers the user with the given |account_id| on the device and marks OOBE
   // as completed. This method should be called in PRE_* test.

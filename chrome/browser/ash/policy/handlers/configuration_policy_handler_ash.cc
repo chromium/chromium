@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
@@ -148,7 +148,7 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
   return ConvertToActionEnumValue(idle_action_value);
 }
 
-bool IsSupportedAppTypePolicyId(base::StringPiece policy_id) {
+bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
   return apps_util::IsChromeAppPolicyId(policy_id) ||
          apps_util::IsArcAppPolicyId(policy_id) ||
          apps_util::IsSystemWebAppPolicyId(policy_id) ||
@@ -268,7 +268,7 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
       &validation_result);
 
   // Pass error/warning message and non-localized debug_info to PolicyErrorMap.
-  std::vector<base::StringPiece> messages;
+  std::vector<std::string_view> messages;
   for (const chromeos::onc::Validator::ValidationIssue& issue :
        validator.validation_issues()) {
     messages.push_back(issue.message);
@@ -476,7 +476,7 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 }
 
 bool DefaultHandlersForFileExtensionsPolicyHandler::IsValidPolicyId(
-    base::StringPiece policy_id) const {
+    std::string_view policy_id) const {
   return IsSupportedAppTypePolicyId(policy_id) ||
          apps_util::IsFileManagerVirtualTaskPolicyId(policy_id);
 }

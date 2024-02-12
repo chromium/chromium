@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,9 +21,9 @@ psm_rlwe::RlwePlaintextId ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  const std::optional<base::StringPiece> device_serial_number =
+  const std::optional<std::string_view> device_serial_number =
       provider->GetMachineID();
-  const std::optional<base::StringPiece> device_rlz_brand_code =
+  const std::optional<std::string_view> device_rlz_brand_code =
       provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
 
   // Verify the existence of the device's data.

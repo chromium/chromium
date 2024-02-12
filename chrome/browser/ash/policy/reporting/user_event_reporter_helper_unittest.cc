@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_testing_record.pb.h"
@@ -32,7 +33,7 @@ TEST(UserEventReporterHelperTest, TestReportEvent) {
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
-      .WillOnce([&enqueued_record, &priority](base::StringPiece record_string,
+      .WillOnce([&enqueued_record, &priority](std::string_view record_string,
                                               Priority event_priority,
                                               ReportQueue::EnqueueCallback) {
         EXPECT_TRUE(
@@ -66,7 +67,7 @@ TEST(UserEventReporterHelperTest, TestReportEventWithCallback) {
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
-      .WillOnce([&enqueued_record, &priority](base::StringPiece record_string,
+      .WillOnce([&enqueued_record, &priority](std::string_view record_string,
                                               Priority event_priority,
                                               ReportQueue::EnqueueCallback cb) {
         EXPECT_TRUE(

@@ -1063,7 +1063,7 @@ class EnrollmentStateFetcherImpl::Sequence {
         fetch_duration);
   }
 
-  void ReportStepDurationAndResetTimer(base::StringPiece uma_step_suffix) {
+  void ReportStepDurationAndResetTimer(std::string_view uma_step_suffix) {
     base::UmaHistogramTimes(
         base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
         base::TimeTicks::Now() - step_started_);

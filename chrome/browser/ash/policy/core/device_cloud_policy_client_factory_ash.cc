@@ -6,12 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -22,7 +22,7 @@ constexpr int kDottedMacAddressSize = 17;
 // Parses MAC address string frommated as AA:AA:AA:AA:AA:AA. Returns nullopt if
 // `mac_address_string` is empty or ill-formated.
 std::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
-    base::StringPiece mac_address_string) {
+    std::string_view mac_address_string) {
   if (mac_address_string.size() != kDottedMacAddressSize)
     return std::nullopt;
 
@@ -51,8 +51,8 @@ std::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
   return parsed_mac_address;
 }
 
-base::StringPiece EmptyIfAbsent(std::optional<base::StringPiece> opt) {
-  return opt.value_or(base::StringPiece());
+std::string_view EmptyIfAbsent(std::optional<std::string_view> opt) {
+  return opt.value_or(std::string_view());
 }
 
 }  // namespace

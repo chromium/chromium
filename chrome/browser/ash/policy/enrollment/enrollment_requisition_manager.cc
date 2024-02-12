@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
@@ -39,7 +41,7 @@ void EnrollmentRequisitionManager::Initialize() {
   const PrefService::Preference* pref =
       local_state->FindPreference(prefs::kDeviceEnrollmentRequisition);
   if (pref->IsDefaultValue()) {
-    const std::optional<base::StringPiece> requisition =
+    const std::optional<std::string_view> requisition =
         provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
 
     if (requisition && !requisition->empty()) {

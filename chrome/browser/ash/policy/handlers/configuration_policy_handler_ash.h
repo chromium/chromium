@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "chrome/browser/extensions/policy_handlers.h"
@@ -120,7 +121,7 @@ class DefaultHandlersForFileExtensionsPolicyHandler
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
-  bool IsValidPolicyId(base::StringPiece policy_id) const;
+  bool IsValidPolicyId(std::string_view policy_id) const;
 };
 
 class ScreenMagnifierPolicyHandler : public IntRangePolicyHandlerBase {

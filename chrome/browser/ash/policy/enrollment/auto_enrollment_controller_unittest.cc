@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -39,7 +40,7 @@ namespace policy {
 namespace {
 
 constexpr auto kPortalStateToStateString =
-    base::MakeFixedFlatMap<ash::NetworkState::PortalState, base::StringPiece>(
+    base::MakeFixedFlatMap<ash::NetworkState::PortalState, std::string_view>(
         {{ash::NetworkState::PortalState::kNoInternet,
           shill::kStateNoConnectivity},
          {ash::NetworkState::PortalState::kOnline, shill::kStateOnline}});
@@ -297,7 +298,7 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
   }
 
   void SetupUnifiedStateDetermination(bool enabled) {
-    const base::StringPiece switch_value =
+    const std::string_view switch_value =
         enabled ? AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways
                 : AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever;
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(

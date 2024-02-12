@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -37,7 +38,7 @@ static bool IsOfficialGoogleChrome() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
 #else
-  const std::optional<base::StringPiece> firmware_type =
+  const std::optional<std::string_view> firmware_type =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kFirmwareTypeKey);
   return firmware_type != ash::system::kFirmwareTypeValueNonchrome;
@@ -338,7 +339,7 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     return FRERequirement::kExplicitlyRequired;
   }
 
-  const std::optional<base::StringPiece> check_enrollment_value =
+  const std::optional<std::string_view> check_enrollment_value =
       statistics_provider->GetMachineStatistic(
           ash::system::kCheckEnrollmentKey);
 
@@ -453,7 +454,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
   }
   const ash::system::FactoryPingEmbargoState embargo_state =
       ash::system::GetEnterpriseManagementPingEmbargoState(statistics_provider);
-  const std::optional<base::StringPiece> serial_number =
+  const std::optional<std::string_view> serial_number =
       statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {
     LOG(WARNING)
@@ -461,7 +462,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
-  const std::optional<base::StringPiece> rlz_brand_code =
+  const std::optional<std::string_view> rlz_brand_code =
       statistics_provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
   if (!rlz_brand_code || rlz_brand_code->empty()) {
     LOG(WARNING)
