@@ -71,6 +71,11 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
   if (promo == "promos_manager::Promo::StaySafeDefaultBrowser") {
     return promos_manager::Promo::StaySafeDefaultBrowser;
   }
+
+  if (promo == "promos_manager::Promo::PostDefaultAbandonment") {
+    return promos_manager::Promo::PostDefaultAbandonment;
+  }
+
   return std::nullopt;
 }
 
@@ -110,6 +115,8 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "MadeForIOSDefaultBrowser";
     case promos_manager::Promo::StaySafeDefaultBrowser:
       return "StaySafeDefaultBrowser";
+    case promos_manager::Promo::PostDefaultAbandonment:
+      return "PostDefaultAbandonment";
   }
 }
 

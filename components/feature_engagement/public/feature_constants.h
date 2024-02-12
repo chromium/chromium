@@ -236,6 +236,7 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoAllTabsFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoMadeForIOSFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoStaySafeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSwipeBackForwardFeature);
+BASE_DECLARE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

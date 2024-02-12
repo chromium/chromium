@@ -60,6 +60,10 @@ enum class IOSDefaultBrowserVideoPromoAction {
 
 // Visible for testing
 
+// Key in storage containing an NSDate corresponding to the last time
+// an HTTP(S) link was sent and opened by the app.
+extern NSString* const kLastHTTPURLOpenTime;
+
 // Key in storage containing an NSDate indicating the last time a user
 // interacted with a non-modal promo.
 extern NSString* const kLastTimeUserInteractedWithNonModalPromo;

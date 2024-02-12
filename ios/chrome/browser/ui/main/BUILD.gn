@@ -22,6 +22,7 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/default_promo",
+    "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
     "//ios/chrome/browser/ui/default_promo/post_restore:features",
     "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
   ]
@@ -185,6 +186,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/browser_view",
+    "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
     "//ios/chrome/browser/ui/default_promo/post_restore:features",
     "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
     "//ios/chrome/test:block_cleanup_test",

@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -47,12 +48,15 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using ::testing::Mock;
+
 class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
   DefaultBrowserPromoSceneAgentTest() : PlatformTest() {}
 
  protected:
   void SetUp() override {
+    ClearDefaultBrowserPromoData();
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
@@ -276,4 +280,239 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestOmniboxPasteShowsPromo) {
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
       .Times(1);
   task_environment_.FastForwardBy(base::Seconds(3));
+}
+
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       TestPostDefaultAbandonmentPromoDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kPostDefaultAbandonmentPromo);
+
+  // Verify that the promo is never registered regardless of the eligibility
+  // interval and the last external URL open time if the feature is disabled.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* two_days_ago =
+      (base::Time::Now() - base::Days(2) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, two_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* under_seven_days_ago =
+      (base::Time::Now() - base::Days(7) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, under_seven_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* over_seven_days_ago =
+      (base::Time::Now() - base::Days(7) - base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, over_seven_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* twelve_days_ago =
+      (base::Time::Now() - base::Days(12) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, twelve_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* fifty_days_ago =
+      (base::Time::Now() - base::Days(50) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, fifty_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       TestPostDefaultAbandonmentPromoDefaultParamValues) {
+  scoped_feature_list_.InitAndEnableFeature(kPostDefaultAbandonmentPromo);
+
+  // Verify scenario where Chrome was never likely default browser. Promo should
+  // not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenarios where Chrome is still likely default browser. Promo should
+  // not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* two_days_ago =
+      (base::Time::Now() - base::Days(2) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, two_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* under_seven_days_ago =
+      (base::Time::Now() - base::Days(7) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, under_seven_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenarios where Chrome was likely default browser, but no longer is.
+  // Promo should be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(1);
+  NSDate* over_seven_days_ago =
+      (base::Time::Now() - base::Days(7) - base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, over_seven_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(1);
+  NSDate* twelve_days_ago =
+      (base::Time::Now() - base::Days(12) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, twelve_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenario where Chrome was likely default browser, but only a long
+  // time ago. Promo should not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* fifty_days_ago =
+      (base::Time::Now() - base::Days(50) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, fifty_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       TestPostDefaultAbandonmentPromoCustomParamValues) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kPostDefaultAbandonmentPromo,
+      {
+          {kPostDefaultAbandonmentIntervalStart.name, "35"},
+          {kPostDefaultAbandonmentIntervalEnd.name, "14"},
+      });
+
+  // Verify scenario where Chrome was never likely default browser. Promo should
+  // not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenarios where Chrome is still likely default browser. Promo should
+  // not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* two_days_ago =
+      (base::Time::Now() - base::Days(2) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, two_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* under_fourteen_days_ago =
+      (base::Time::Now() - base::Days(14) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, under_fourteen_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenarios where Chrome was likely default browser, but no longer is.
+  // Promo should be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(1);
+  NSDate* over_fourteen_days_ago =
+      (base::Time::Now() - base::Days(14) - base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, over_fourteen_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(1);
+  NSDate* twenty_five_days_ago =
+      (base::Time::Now() - base::Days(25) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, twenty_five_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
+  ClearDefaultBrowserPromoData();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Verify scenario where Chrome was likely default browser, but only a long
+  // time ago. Promo should not be registered.
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostDefaultAbandonment))
+      .Times(0);
+  NSDate* fifty_days_ago =
+      (base::Time::Now() - base::Days(50) + base::Minutes(10)).ToNSDate();
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, fifty_days_ago);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }

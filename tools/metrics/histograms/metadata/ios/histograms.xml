@@ -2381,6 +2381,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PostDefaultAbandonmentPromo.UserAction"
+    enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
+    expires_after="2024-07-21">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records which action the user took when the post-default browser abandonment
+    promo was displayed. Recorded once per promo impression, when the promo is
+    dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PostRestoreDefaultBrowser.ActionOnPrompt"
     enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
     expires_after="2024-07-21">
