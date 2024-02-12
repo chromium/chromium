@@ -428,10 +428,6 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // connections that _would_ have been proxied, but were not.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 
-// Controls whether the BlindSignAuth library used by IP Protection should use
-// the privacy pass token format.
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass;
-
 // The PSK added to connections to proxyB with `Proxy-Authorization: Preshared
 // $PSK`.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;

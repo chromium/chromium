@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -63,13 +62,7 @@ void IpProtectionConfigProvider::SetUp() {
   if (!bsa_) {
     if (!blind_sign_auth_) {
       privacy::ppn::BlindSignAuthOptions bsa_options{};
-      // Note: If a substantial number of new options get added to
-      // BlindSignAuthOptions, we could use one feature flag that contains the
-      // base64-encoded proto contents and then initialize `bsa_options` from
-      // that. For now just use individual feature flags for each of the
-      // options.
-      bsa_options.set_enable_privacy_pass(
-          net::features::kIpPrivacyBsaEnablePrivacyPass.Get());
+      bsa_options.set_enable_privacy_pass(true);
 
       blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
           ip_protection_config_http_.get(), std::move(bsa_options));
@@ -436,18 +429,12 @@ IpProtectionConfigProvider::CreateBlindSignedAuthToken(
   // What the network service will receive as a "token" is the fully constructed
   // authorization header value.
   std::string token_header_value = "";
-  if (net::features::kIpPrivacyBsaEnablePrivacyPass.Get()) {
-    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
-    if (privacy_pass_token_data.ParseFromString(bsa_token.token)) {
-      token_header_value =
-          base::StrCat({"PrivateToken token=\"",
-                        privacy_pass_token_data.token(), "\" extensions=\"",
-                        privacy_pass_token_data.encoded_extensions(), "\""});
-    }
-  } else {
-    std::string encoded_token = base::Base64Encode(bsa_token.token);
-
-    token_header_value = base::StrCat({"Bearer ", encoded_token});
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+  if (privacy_pass_token_data.ParseFromString(bsa_token.token)) {
+    token_header_value =
+        base::StrCat({"PrivateToken token=\"", privacy_pass_token_data.token(),
+                      "\" extensions=\"",
+                      privacy_pass_token_data.encoded_extensions(), "\""});
   }
   return network::mojom::BlindSignedAuthToken::New(
       std::move(token_header_value), expiration);

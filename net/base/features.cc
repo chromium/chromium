@@ -410,10 +410,6 @@ const base::FeatureParam<bool> kIpPrivacyDirectOnly{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyDirectOnly",
     /*default_value=*/false};
 
-const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass{
-    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyBsaEnablePrivacyPass",
-    /*default_value=*/false};
-
 const base::FeatureParam<std::string> kIpPrivacyProxyBPsk{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyBPsk",
     /*default_value=*/""};

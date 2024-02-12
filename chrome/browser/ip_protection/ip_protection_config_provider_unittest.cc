@@ -59,15 +59,10 @@ privacy::ppn::PrivacyPassTokenData CreateMockPrivacyPassToken(
 // will return them.
 quiche::BlindSignToken CreateMockBlindSignToken(std::string token_value,
                                                 base::Time expiration) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
+      CreateMockPrivacyPassToken(std::move(token_value));
   quiche::BlindSignToken blind_sign_token;
-
-  if (net::features::kIpPrivacyBsaEnablePrivacyPass.Get()) {
-    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
-        CreateMockPrivacyPassToken(std::move(token_value));
-    blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
-  } else {
-    blind_sign_token.token = std::move(token_value);
-  }
+  blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
   blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
   return blind_sign_token;
 }
@@ -361,47 +356,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
   std::unique_ptr<MockBlindSignAuth> bsa_;
 };
 
-enum class TokenFormatTestCase {
-  kTokenFormatRegular,
-  kTokenFormatPrivacyPass,
-};
-
-class IpProtectionConfigProviderTest_TokenFormat
-    : public IpProtectionConfigProviderTest,
-      public ::testing::WithParamInterface<TokenFormatTestCase> {
- public:
-  IpProtectionConfigProviderTest_TokenFormat() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy,
-        {{net::features::kIpPrivacyBsaEnablePrivacyPass.name,
-          IsPrivacyPassTokenFormatEnabled() ? "true" : "false"}});
-  }
-
-  bool IsPrivacyPassTokenFormatEnabled() const {
-    return GetParam() == TokenFormatTestCase::kTokenFormatPrivacyPass;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    IpProtectionConfigProviderTest_TokenFormat,
-    testing::ValuesIn({TokenFormatTestCase::kTokenFormatRegular,
-                       TokenFormatTestCase::kTokenFormatPrivacyPass}),
-    [](const testing::TestParamInfo<TokenFormatTestCase>& info) {
-      switch (info.param) {
-        case (TokenFormatTestCase::kTokenFormatRegular):
-          return "TokenFormatRegular";
-        case (TokenFormatTestCase::kTokenFormatPrivacyPass):
-          return "TokenFormatPrivacyPass";
-      }
-    });
-
 // The success case: a primary account is available, and BSA gets a token for
 // it.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, Success) {
+TEST_F(IpProtectionConfigProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
                    CreateMockBlindSignToken("single-use-2", expiration_time_)};
@@ -445,12 +402,7 @@ TEST_F(IpProtectionConfigProviderTest, NoTokens) {
 }
 
 // BSA returns malformed tokens.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, MalformedTokens) {
-  if (!IsPrivacyPassTokenFormatEnabled()) {
-    // We can't detect malformed tokens unless the privacy pass token format is
-    // being used.
-    return;
-  }
+TEST_F(IpProtectionConfigProviderTest, MalformedTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {{"invalid-token-proto-data", absl::Now() + absl::Hours(1)}};
 
@@ -908,14 +860,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
 }
 
 // Do a basic check of the token formats.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, TokenFormat) {
+TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
   network::mojom::BlindSignedAuthTokenPtr result =
       CreateMockBlindSignedAuthToken("single-use-1", expiration_time_);
 
-  if (IsPrivacyPassTokenFormatEnabled()) {
-    EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
-    EXPECT_NE((*result).token.find("extensions="), std::string::npos);
-  } else {
-    EXPECT_TRUE(base::StartsWith((*result).token, "Bearer "));
-  }
+  EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
+  EXPECT_NE((*result).token.find("extensions="), std::string::npos);
 }
