@@ -38,6 +38,8 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -94,6 +96,12 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback) {
+  // If the confirmation view is still showing, close it before showing the new
+  // offer.
+  if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
+    HideBubble();
+  }
+
   // Don't show the bubble if it's already visible.
   if (bubble_view())
     return;
@@ -121,6 +129,12 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     const LegalMessageLines& legal_message_lines,
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback) {
+  // If the confirmation view is still showing, close it before showing the new
+  // offer.
+  if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
+    HideBubble();
+  }
+
   // Don't show the bubble if it's already visible.
   if (bubble_view())
     return;
@@ -171,7 +185,7 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
   ShowBubble();
 }
 
-void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView() {
+void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(bool card_saved) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     // Hide the current bubble if still showing.
@@ -180,6 +194,11 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView() {
     is_reshow_ = false;
     is_triggered_by_user_gesture_ = false;
     current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
+    confirmation_ui_params_ =
+        card_saved ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                         CreateForSaveCardSuccess()
+                   : SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                         CreateForSaveCardFailure();
 
     // Show upload confirmation bubble.
     ShowBubble();
@@ -346,6 +365,12 @@ SaveCardBubbleControllerImpl::GetOnBubbleClosedCallback() {
                         weak_ptr_factory_.GetWeakPtr());
 }
 
+const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+SaveCardBubbleControllerImpl::GetConfirmationUiParams() const {
+  CHECK(confirmation_ui_params_.has_value());
+  return confirmation_ui_params_.value();
+}
+
 bool SaveCardBubbleControllerImpl::ShouldRequestNameFromUser() const {
   return options_.should_request_name_from_user;
 }
@@ -506,34 +531,51 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
       break;
   }
 
+  // If the bubble is closed with the current_bubble_type_ as
+  // UPLOAD_COMPLETED, transition the current_bubble_type_ to INACTIVE and reset
+  // the confirmation_ui_model.
+  if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
+    current_bubble_type_ = BubbleType::INACTIVE;
+    confirmation_ui_params_.reset();
+
+    UpdatePageActionIcon();
+
+    return;
+  }
+
   // Handles |current_bubble_type_| change according to its current type and the
   // |closed_reason|.
   using SaveCardOfferUserDecision = AutofillClient::SaveCardOfferUserDecision;
   std::optional<SaveCardOfferUserDecision> user_decision;
-  if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    user_decision = SaveCardOfferUserDecision::kAccepted;
-    switch (current_bubble_type_) {
-      case BubbleType::LOCAL_SAVE:
-      case BubbleType::LOCAL_CVC_SAVE:
-        current_bubble_type_ = BubbleType::MANAGE_CARDS;
-        break;
-      case BubbleType::UPLOAD_SAVE:
-      case BubbleType::UPLOAD_CVC_SAVE:
-      case BubbleType::MANAGE_CARDS:
-        current_bubble_type_ = BubbleType::INACTIVE;
-        break;
-      default:
-        NOTREACHED();
-    }
-  } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
-    user_decision = SaveCardOfferUserDecision::kDeclined;
-  } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
-    user_decision = SaveCardOfferUserDecision::kIgnored;
-  } else if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
-    // If the bubble is closed with the current_bubble_type_ as
-    // UPLOAD_COMPLETED, transition the current_bubble_type_ to INACTIVE
-    // regardless of the reason.
-    current_bubble_type_ = BubbleType::INACTIVE;
+  switch (closed_reason) {
+    case PaymentsBubbleClosedReason::kAccepted:
+      user_decision = SaveCardOfferUserDecision::kAccepted;
+      switch (current_bubble_type_) {
+        case BubbleType::LOCAL_SAVE:
+        case BubbleType::LOCAL_CVC_SAVE:
+          current_bubble_type_ = BubbleType::MANAGE_CARDS;
+          break;
+        case BubbleType::UPLOAD_SAVE:
+        case BubbleType::UPLOAD_CVC_SAVE:
+        case BubbleType::MANAGE_CARDS:
+          current_bubble_type_ = BubbleType::INACTIVE;
+          break;
+        case BubbleType::INACTIVE:
+        case BubbleType::UPLOAD_IN_PROGRESS:
+        case BubbleType::UPLOAD_COMPLETED:
+          NOTREACHED();
+      }
+      break;
+    case PaymentsBubbleClosedReason::kCancelled:
+      user_decision = SaveCardOfferUserDecision::kDeclined;
+      break;
+    case PaymentsBubbleClosedReason::kClosed:
+      user_decision = SaveCardOfferUserDecision::kIgnored;
+      break;
+    case PaymentsBubbleClosedReason::kUnknown:
+    case PaymentsBubbleClosedReason::kNotInteracted:
+    case PaymentsBubbleClosedReason::kLostFocus:
+      break;
   }
 
   if (user_decision && *user_decision != SaveCardOfferUserDecision::kAccepted) {

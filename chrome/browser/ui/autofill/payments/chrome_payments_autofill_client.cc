@@ -94,7 +94,7 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
 #if !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-    controller->ShowConfirmationBubbleView();
+    controller->ShowConfirmationBubbleView(card_saved);
   }
 #endif
 }

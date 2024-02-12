@@ -12,7 +12,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {
@@ -61,7 +63,9 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     return static_cast<SavePaymentIconView*>(icon);
   }
 
-  void ShowBubble() { Controller()->ShowConfirmationBubbleView(); }
+  void ShowBubble(bool card_saved) {
+    Controller()->ShowConfirmationBubbleView(card_saved);
+  }
 
   void HideBubble(views::Widget::ClosedReason closed_reason) {
     views::test::WidgetDestroyedWaiter destroyed_waiter(
@@ -77,10 +81,46 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
-                       ShowThenHideBubbleView) {
-  ShowBubble();
+                       ShowSuccessBubbleViewThenHideBubbleView) {
+  ShowBubble(/*card_saved=*/true);
   EXPECT_NE(BubbleView(), nullptr);
   EXPECT_TRUE(IconView()->GetVisible());
+
+  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
+      BubbleView()->ui_params_;
+  EXPECT_TRUE(ui_params.is_success);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT));
+  EXPECT_EQ(ui_params.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_TRUE(ui_params.failure_button_text.empty());
+
+  HideBubble(views::Widget::ClosedReason::kLostFocus);
+  EXPECT_EQ(BubbleView(), nullptr);
+  EXPECT_FALSE(IconView()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+                       ShowFailureBubbleViewThenHideBubbleView) {
+  ShowBubble(/*card_saved=*/false);
+  EXPECT_NE(BubbleView(), nullptr);
+  EXPECT_TRUE(IconView()->GetVisible());
+
+  SaveCardAndVirtualCardEnrollConfirmationUiParams ui_params =
+      BubbleView()->ui_params_;
+  EXPECT_FALSE(ui_params.is_success);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT));
+  EXPECT_EQ(ui_params.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_button_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_BUTTON_TEXT));
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
   EXPECT_EQ(BubbleView(), nullptr);

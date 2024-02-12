@@ -77,7 +77,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       : SaveCardBubbleControllerImpl(web_contents) {}
   ~MockSaveCardBubbleController() override = default;
 
-  MOCK_METHOD(void, ShowConfirmationBubbleView, (), (override));
+  MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
 };
 #endif
 
@@ -255,9 +255,15 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
 }
 
 TEST_F(ChromeAutofillClientTest,
-       CreditCardUploadCompleted_HidesSaveCardBubbleAndIcon) {
-  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView);
+       CreditCardUploadCompleted_ShowConfirmationBubbleView_CardSaved) {
+  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(true));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(true);
+}
+
+TEST_F(ChromeAutofillClientTest,
+       CreditCardUploadCompleted_ShowConfirmationBubbleView_CardNotSaved) {
+  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(false));
+  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(false);
 }
 #endif
 

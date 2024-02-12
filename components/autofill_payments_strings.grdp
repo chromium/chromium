@@ -1108,4 +1108,36 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_SUMMARY_SEPARATED_BY_PIPE" desc="Summary text separator with pipe symbol. i.e. arg1 | arg2" formatter_data="android_java">
     <ph name="EXPIRATION_DATE">%1$s<ex>12/24</ex></ph> | <ph name="SECURITY_CODE">%2$s<ex>123</ex></ph>
   </message>
+
+  <!-- Card upload and virtual card enrollment confirmation related strings-->
+  <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after save card is successfully uploaded and saved to the server.">
+    Card saved
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after save card upload to the server was unsuccessful.">
+    Card saved only to device
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after virtual card enrollment is successful.">
+    Virtual card turned on
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after virtual card enrollment is unsuccessful.">
+    Can't turn on virtual card
+  </message>
+
+  <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card is successfully uploaded and saved to the server.">
+    This card is saved in your Google Account so you can use it across Google services.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
+    This card could not be saved in your Google Account. It's been saved to Chrome on this device instead.
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after virtual card enrollment is successful.">
+    You can now use a virtual card to check out more securely with autofill.
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after virtual card enrollment is unsuccessful.">
+    Your bank can't offer virtual cards for this payment method right now, but you can still use your <ph name="CARD_LABEL">$1<ex>Visa **4444</ex></ph> to pay online.
+  </message>
+
+  <message name="IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_BUTTON_TEXT" desc="Text shown on the button of the confirmation prompt after card upload or vcn enrollment failure.">
+    Got it
+  </message>
+
 </grit-part>
