@@ -74,6 +74,7 @@ mojom("mojom") {
     "login.mojom",
     "login_screen_storage.mojom",
     "login_state.mojom",
+    "mahi.mojom",
     "media_ui.mojom",
     "message_center.mojom",
     "metrics.mojom",

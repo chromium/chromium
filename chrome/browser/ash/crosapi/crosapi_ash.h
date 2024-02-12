@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
+#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "media/gpu/buildflags.h"
@@ -32,6 +33,7 @@ class DigitalGoodsFactoryAsh;
 
 namespace ash {
 class DiagnosticsServiceAsh;
+class MahiBrowserDelegateAsh;
 class ProbeServiceAsh;
 class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
@@ -302,6 +304,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
       override;
+  void BindMahiBrowserDelegate(
+      mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) override;
   void BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) override;
   void BindMediaSessionAudioFocus(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
@@ -535,6 +539,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
+  ash::MahiBrowserDelegateAsh* mahi_browser_delegate_ash() {
+    return mahi_browser_delegate_ash_.get();
+  }
+
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
 
   MultiCaptureServiceAsh* multi_capture_service_ash() {
@@ -683,6 +691,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
+  std::unique_ptr<ash::MahiBrowserDelegateAsh> mahi_browser_delegate_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsAsh> metrics_ash_;

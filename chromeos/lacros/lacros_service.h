@@ -212,6 +212,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver);
 
+  // Binds the mahi browser delegate to the mahi browser client.
+  void BindMahiBrowserDelegate(
+      mojo::PendingReceiver<crosapi::mojom::MahiBrowserDelegate> receiver);
+
   // This may be called on any thread.
   void BindMediaControllerManager(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
