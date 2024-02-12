@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/smb_client/smb_url.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/smb_client/smb_constants.h"
@@ -167,7 +167,7 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
     // So both "smb://foo" and "smb://foo//bar/" have the share name "", but
     // "smb://foo/bar/" has the share name "bar".
     std::string path_str = url_.substr(path.begin, path.len);
-    std::vector<base::StringPiece> split_path = base::SplitStringPiece(
+    std::vector<std::string_view> split_path = base::SplitStringPiece(
         path_str, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (split_path.size() >= 2) {
       DCHECK_EQ(split_path[0], "");
