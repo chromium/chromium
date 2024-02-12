@@ -1165,9 +1165,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
     GTEST_SKIP();
   }
 
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  // Load page with embedded PDF and make sure it succeeds.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(u"TabWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
+  if (UseOopif()) {
+    // Verify the pdf has loaded. The test will timeout if the PDF fails to
+    // load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        web_contents->GetPrimaryMainFrame()));
+  }
+
+  EXPECT_EQ(u"TabWithEmbeddedPdf", web_contents->GetTitle());
 }
 
 // Flaky, http://crbug.com/767427
