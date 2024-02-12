@@ -1258,6 +1258,53 @@ TEST_P(WaylandDataDragControllerTest,
             WaylandDataDragController::State::kIdle);
 }
 
+// Emulate an incoming DnD session and verifies that data drag controller aborts
+// data fetching, if needed, upon wl_data_device.leave.
+TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
+  ASSERT_TRUE(window_);
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+
+  // None other event expected because the window gets destroyed in the middle
+  // of the test.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+
+  // 3 mime types are offered, which gives as time to hook up partial data
+  // fetching and process wl_data_device.leave while it's still ongoing.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    const auto data = ToClipboardData(std::string(kSampleTextForDragAndDrop));
+    auto* server_device = server->data_device_manager()->data_device();
+    auto* server_offer = server_device->CreateAndSendDataOffer();
+    server_offer->OnOffer(kMimeTypeText, data);
+    server_offer->OnOffer(kMimeTypeTextUtf8, data);
+    server_offer->OnOffer(kMimeTypeHTML, data);
+
+    const uint32_t surface_id = window_->root_surface()->get_surface_id();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    server_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                           wl_fixed_from_int(0), wl_fixed_from_int(0),
+                           server_offer);
+
+    // This should trigger data fetching task cancellation at client side,
+    // assuming it is still in progress.
+    server_device->OnLeave();
+  });
+
+  // Wait for the full data transfer flow and requests/events to finish before
+  // checking all expectations.
+  WaitForDragDropTasks();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_FALSE(drop_handler_->dropped_data());
+  EXPECT_FALSE(data_device()->drag_delegate_);
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kIdle);
+}
+
 // Cursor position should be updated during a (outgoing) drag with mouse.
 TEST_P(WaylandDataDragControllerTest,
        CursorPositionShouldBeUpdatedDuringMouseDrag) {
