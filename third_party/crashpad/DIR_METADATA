@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Internals>CrashReporting"
 }
 team_email: "crashpad-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456911
+}
