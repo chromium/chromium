@@ -871,10 +871,10 @@
 <translation id="7311368985037279727">warna keyboard</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
-<translation id="7331297744262591636">Anda harus berusia minimal 18 tahun dan setuju bahwa penggunaan wallpaper AI oleh Anda tunduk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Persyaratan Layanan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Persyaratan Layanan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+<translation id="7331297744262591636">Anda harus berusia minimal 18 tahun dan setuju bahwa penggunaan wallpaper AI oleh Anda tunduk kepada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Persyaratan Layanan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Persyaratan Layanan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Anda hanya dapat membuat wallpaper dengan AI untuk penggunaan pribadi dan non-komersial. Saat Anda mendapatkan bantuan terkait wallpaper, teks akan dikirim ke server AI Google untuk membuat saran wallpaper, yang tunduk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+          Anda hanya dapat membuat wallpaper dengan AI untuk penggunaan pribadi dan non-komersial. Saat Anda mendapatkan bantuan terkait wallpaper, teks akan dikirim ke server AI Google untuk membuat saran wallpaper, yang tunduk kepada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7353413232959255829">Hasil penelusuran <ph name="LIST_POSITION" /> dari <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk membuka pintasan.</translation>
