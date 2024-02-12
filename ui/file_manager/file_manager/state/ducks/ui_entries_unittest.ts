@@ -115,6 +115,7 @@ export async function testAddUiEntryForMyFiles(done: () => void) {
           uiEntry.toURL(),
           childEntry.toURL(),
         ],
+        canExpand: true,
       },
       [childEntry.toURL()]: convertEntryToFileData(childEntry),
       [uiEntry.toURL()]: convertEntryToFileData(uiEntry),
@@ -294,6 +295,7 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
       [myFilesEntry.toURL()]: {
         ...convertEntryToFileData(myFilesEntry),
         children: [],
+        canExpand: false,
       },
       [uiEntry.toURL()]: convertEntryToFileData(uiEntry),
     },
@@ -353,6 +355,7 @@ export async function testPlayFilesAddedDuringScanningMyFiles() {
           subDirEntry.toURL(),
           playFilesUiEntry.toURL(),
         ],
+        canExpand: true,
       },
       [playFilesUiEntry.toURL()]: convertEntryToFileData(playFilesUiEntry),
       [subDirEntry.toURL()]: convertEntryToFileData(subDirEntry),

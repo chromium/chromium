@@ -601,3 +601,46 @@ export async function directoryTreeClickDriveRootWhenMyDriveIsActive() {
   // Current directory is still My Drive, not Google Drive.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
 }
+
+/**
+ * When the last sub folder is deleted, the expand icon should disappear
+ * for its parent folder, it will reappear after adding a new sub folder back.
+ */
+export async function directoryTreeHideExpandIconWhenLastSubFolderIsRemoved() {
+  // Create a parent folder with a child folder inside it.
+  const entries = [
+    createFolderTestEntry('parent-folder'),
+    createFolderTestEntry('parent-folder/child-folder'),
+  ];
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
+
+  // Expand Downloads and parent-folder.
+  await directoryTree.expandTreeItemByLabel('Downloads');
+  await directoryTree.waitForItemByLabel('parent-folder');
+  await directoryTree.expandTreeItemByLabel('parent-folder');
+  // Expand icon should show for parent-folder.
+  await directoryTree.waitForItemExpandIconToShowByLabel('parent-folder');
+
+  // Select to navigate to parent-folder.
+  await directoryTree.selectItemByLabel('parent-folder');
+
+  // Delete the child folder from the file list.
+  await remoteCall.waitUntilSelected(appId, 'child-folder');
+  await remoteCall.clickTrashButton(appId);
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="child-folder"]');
+
+  // Expand icon should disappear for parent-folder.
+  await directoryTree.waitForItemExpandIconToHideByLabel('parent-folder');
+
+  // Add a new folder by Ctrl + E under parent-folder.
+  await remoteCall.fakeKeyDown(appId, 'body', 'e', true, false, false);
+  await remoteCall.waitForElement(appId, '#file-list [file-name="New folder"]');
+
+  // Expand icon should appear again.
+  await directoryTree.waitForItemExpandIconToShowByLabel('parent-folder');
+}

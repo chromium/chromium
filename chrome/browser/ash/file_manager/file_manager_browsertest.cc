@@ -864,6 +864,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandAndSelectedOnDragMove").NewDirectoryTree(),
         TestCase("directoryTreeClickDriveRootWhenMyDriveIsActive")
             .NewDirectoryTree(),
+        TestCase("directoryTreeHideExpandIconWhenLastSubFolderIsRemoved")
+            .NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("directoryTreeActiveDirectory"),
         TestCase("directoryTreeSelectedDirectory"),
@@ -878,7 +880,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume"),
         TestCase("directoryTreeExpandFolderOnDelayExpansionVolume"),
         TestCase("directoryTreeExpandAndSelectedOnDragMove"),
-        TestCase("directoryTreeClickDriveRootWhenMyDriveIsActive")));
+        TestCase("directoryTreeClickDriveRootWhenMyDriveIsActive"),
+        TestCase("directoryTreeHideExpandIconWhenLastSubFolderIsRemoved")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */
