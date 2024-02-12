@@ -735,7 +735,7 @@ const osRegistrationResultText:
     };
 
 class OsRegistration {
-  timestamp: Date;
+  time: Date;
   registrationUrl: string;
   topLevelOrigin: string;
   registrationType: string;
@@ -744,7 +744,7 @@ class OsRegistration {
   result: string;
 
   constructor(mojo: WebUIOsRegistration) {
-    this.timestamp = new Date(mojo.time);
+    this.time = new Date(mojo.time);
     this.registrationUrl = mojo.registrationUrl.url;
     this.topLevelOrigin = originToText(mojo.topLevelOrigin);
     this.debugKeyAllowed = mojo.isDebugKeyAllowed;
@@ -759,7 +759,7 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
   constructor() {
     super(
         [
-          ValueColumn.of('Timestamp', 'timestamp', asDate),
+          ValueColumn.of('Time', 'time', asDate),
           ValueColumn.of(
               'Registration Type', 'registrationType', asStringOrBool),
           ValueColumn.of('Registration URL', 'registrationUrl', asUrl),
