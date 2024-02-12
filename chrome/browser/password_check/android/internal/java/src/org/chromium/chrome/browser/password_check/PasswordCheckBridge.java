@@ -172,6 +172,10 @@ class PasswordCheckBridge {
         PasswordCheckBridgeJni.get().removeCredential(mNativePasswordCheckBridge, credential);
     }
 
+    boolean hasAccountForRequest() {
+        return PasswordCheckBridgeJni.get().hasAccountForRequest(mNativePasswordCheckBridge);
+    }
+
     /** Destroys its C++ counterpart. */
     void destroy() {
         if (mNativePasswordCheckBridge != 0) {
@@ -212,6 +216,8 @@ class PasswordCheckBridge {
                 SettingsLauncher settingsLauncher);
 
         void removeCredential(long nativePasswordCheckBridge, CompromisedCredential credentials);
+
+        boolean hasAccountForRequest(long nativePasswordCheckBridge);
 
         void destroy(long nativePasswordCheckBridge);
     }

@@ -149,4 +149,9 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     public void stopCheck() {
         mPasswordCheckBridge.stopCheck();
     }
+
+    @Override
+    public boolean hasAccountForRequest() {
+        return mPasswordCheckBridge.hasAccountForRequest();
+    }
 }

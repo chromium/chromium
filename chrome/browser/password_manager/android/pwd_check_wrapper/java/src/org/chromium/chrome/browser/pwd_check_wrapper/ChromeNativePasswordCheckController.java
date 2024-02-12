@@ -45,6 +45,17 @@ class ChromeNativePasswordCheckController
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
             int passwordStorageType) {
         mPasswordCheckResult = new CompletableFuture<>();
+
+        // Check if the user is signed out.
+        if (!getPasswordCheck().hasAccountForRequest()) {
+            PasswordCheckNativeException error =
+                    new PasswordCheckNativeException(
+                            "The user is signed out of their account.",
+                            PasswordCheckUIStatus.ERROR_SIGNED_OUT);
+            mPasswordCheckResult.complete(new PasswordCheckResult(error));
+            return mPasswordCheckResult;
+        }
+
         mPasswordsTotalCount = new CompletableFuture<>();
         getPasswordCheck().addObserver(this, true);
         return mPasswordCheckResult;
