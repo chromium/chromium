@@ -7,7 +7,6 @@ module.exports = {
     'browser' : true,
     'es6' : true,
   },
-  'extends': '../../../ui/webui/resources/tools/eslint_import_type.config.js',
   'rules' : {
     'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
   },

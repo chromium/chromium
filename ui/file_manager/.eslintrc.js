@@ -36,6 +36,10 @@ module.exports = {
         },
       ],
 
+      // Turn off until all violations under this folder are fixed. This was
+      // done for other parts of the codebase in http://crbug.com/1494527
+      '@typescript-eslint/consistent-type-imports': 'off',
+
       // Turn off until all TS violations under this folder are fixed. This was
       // done for other parts of the codebase in http://crbug.com/1521107
       'no-restricted-syntax': 'off',
