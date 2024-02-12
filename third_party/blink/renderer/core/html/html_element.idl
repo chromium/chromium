@@ -77,6 +77,8 @@
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;
+
+    [RuntimeEnabled=WritingSuggestions, CEReactions] attribute DOMString writingSuggestions;
 };
 
 HTMLElement includes GlobalEventHandlers;

@@ -4522,6 +4522,13 @@
       name: "WindowPlacementPermissionAlias",
       status: "stable",
     },
+    {
+      // Allows browser-providers writing suggestions to be turned on/off
+      // through the attribute.
+      // https://chromestatus.com/feature/5153375153029120
+      name: "WritingSuggestions",
+      status: "experimental",
+    },
     // Flag guard for change to XML parser to merge adjacent CDATA sections.
     // See https://crrev.com/c/4790343.
     {

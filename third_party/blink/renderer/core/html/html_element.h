@@ -309,6 +309,13 @@ class CORE_EXPORT HTMLElement : public Element {
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
   virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
 
+  // This allows developers to enable or disable browser-provided writing
+  // suggestions. If the attribute is not explicitly set on an element, it
+  // inherits its value from ancestor elements; otherwise, it defaults to
+  // "true". Spec: https://github.com/whatwg/html/pull/10018.
+  AtomicString writingSuggestions() const;
+  void setWritingSuggestions(const AtomicString& value);
+
  protected:
   bool SupportsFocus(UpdateBehavior update_behavior =
                          UpdateBehavior::kStyleAndLayout) const override;
