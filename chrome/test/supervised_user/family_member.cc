@@ -79,4 +79,20 @@ GURL FamilyMember::GetPermissionsUrlFor(const FamilyMember& member) const {
 void FamilyMember::TurnOnSync() {
   sign_in_functions_.TurnOnSync(account_, 0);
 }
+
+CoreAccountId FamilyMember::GetAccountId() const {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+  CHECK(supervised_user_service) << "Incognito mode is not supported.";
+  CHECK(
+      supervised_user::IsUrlFilteringEnabled(*browser()->profile()->GetPrefs()))
+      << "Blocklist control page is only available to user who have that "
+         "feature enabled. Check if member is a subject to parental controls.";
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+
+  return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+}
+
 }  // namespace supervised_user

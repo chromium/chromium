@@ -7,9 +7,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -36,6 +40,18 @@ class FamilyMember {
 
   // Browsertest apis expect pointer.
   Browser* browser() const { return &browser_.get(); }
+
+  signin::IdentityManager* identity_manager() const {
+    return IdentityManagerFactory::GetForProfile(browser()->profile());
+  }
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() const {
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetURLLoaderFactoryForBrowserProcess();
+  }
+
+  CoreAccountId GetAccountId() const;
 
  private:
   signin::test::TestAccount account_;
