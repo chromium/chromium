@@ -10723,6 +10723,10 @@ if (!is_android && !is_chromeos_device) {
       "base/interactive_ui_tests_main.cc",
     ]
 
+    if (!is_chrome_for_testing) {
+      sources += [ "../browser/search_engine_choice/search_engine_choice_dialog_interactive_uitest.cc" ]
+    }
+
     if (is_mac || is_linux || is_win) {
       sources +=
           [ "../browser/ui/views/default_link_capturing_interactive_uitest.cc" ]
