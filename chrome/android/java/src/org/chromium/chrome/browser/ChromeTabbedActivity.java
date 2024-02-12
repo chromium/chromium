@@ -3963,10 +3963,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * hub expects which is a double.
      */
     private DoubleConsumer adaptOnToolbarAlphaChange() {
-        return alpha ->
-                getToolbarManager()
-                        .getToolbarAlphaInOverviewObserver()
-                        .onOverviewAlphaChanged((float) alpha);
+        return alpha -> {
+            // If the manager is still null, it doesn't matter whatever is happening. Can safely
+            // ignore any signal.
+            @Nullable ToolbarManager toolbarManager = getToolbarManager();
+            if (toolbarManager == null) {
+                return;
+            }
+
+            toolbarManager
+                    .getToolbarAlphaInOverviewObserver()
+                    .onOverviewAlphaChanged((float) alpha);
+        };
     }
 
     public void showStartSurfaceForTesting() {
